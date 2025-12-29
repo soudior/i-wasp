@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
 
 // Card mockup imports
 import cardBlackMatte from "@/assets/cards/card-black-matte.png";
@@ -26,7 +27,7 @@ const categories = ["Tous", "Business", "Essential", "Premium", "Hospitality", "
 
 const templates = [
   { 
-    id: "signature", 
+    id: "signature",
     name: "Signature", 
     category: "Business", 
     cardImage: cardBlackMatte, 
@@ -82,8 +83,18 @@ const templates = [
 ];
 
 const Templates = () => {
+  const navigate = useNavigate();
+  const { setSelectedTemplate: setCartTemplate } = useCart();
   const [activeCategory, setActiveCategory] = useState("Tous");
   const [selectedTemplate, setSelectedTemplate] = useState<typeof templates[0] | null>(null);
+
+  // Handle template selection and navigation
+  const handleSelectTemplate = (template: typeof templates[0]) => {
+    // Store template ID in cart context
+    setCartTemplate(template.id);
+    // Navigate to create page with template ID
+    navigate(`/create?template=${template.id}`);
+  };
 
   const filteredTemplates = activeCategory === "Tous" 
     ? templates 
@@ -270,15 +281,14 @@ const Templates = () => {
                   </div>
 
                   {/* CTA */}
-                  <Link to="/create">
-                    <Button
-                      size="lg"
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-background font-semibold rounded-full shadow-lg shadow-amber-500/25"
-                    >
-                      Utiliser ce template
-                      <ArrowRight size={18} className="ml-2" />
-                    </Button>
-                  </Link>
+                  <Button
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-background font-semibold rounded-full shadow-lg shadow-amber-500/25"
+                    onClick={() => handleSelectTemplate(selectedTemplate)}
+                  >
+                    Utiliser ce template
+                    <ArrowRight size={18} className="ml-2" />
+                  </Button>
                 </div>
               </div>
             </motion.div>

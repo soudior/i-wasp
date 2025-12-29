@@ -9,7 +9,10 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { useCreateCard, useUpdateCard, useCards, DigitalCard } from "@/hooks/useCards";
+import { templateInfo } from "@/components/templates/CardTemplates";
+import { PRICING } from "@/lib/pricing";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -634,15 +637,30 @@ function AddBlockSheet({
 export default function CardEditor() {
   const [searchParams] = useSearchParams();
   const editId = searchParams.get("edit");
+  const templateParam = searchParams.get("template");
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { addItem: addToCart } = useCart();
   const { data: cards = [] } = useCards();
   const createCard = useCreateCard();
   const updateCard = useUpdateCard();
 
   const [blocks, setBlocks] = useState<CardBlock[]>([]);
-  const [template, setTemplate] = useState<string>("production");
+  const [template, setTemplate] = useState<string>(templateParam || "production");
   const [showPreview, setShowPreview] = useState(false);
+
+  // Get template name for display
+  const getTemplateName = (templateId: string) => {
+    const info = templateInfo.find(t => t.id === templateId);
+    return info?.name || "IWASP Production";
+  };
+
+  // Update template when URL param changes
+  useEffect(() => {
+    if (templateParam && !editId) {
+      setTemplate(templateParam);
+    }
+  }, [templateParam, editId]);
 
   // Initialize with default identity block
   useEffect(() => {
@@ -747,8 +765,8 @@ export default function CardEditor() {
     setBlocks(reordered);
   }, []);
 
-  // Save card
-  const handleSave = async () => {
+  // Save card and optionally add to cart
+  const handleSave = async (addToCartAfter: boolean = false) => {
     const identityBlock = blocks.find((b) => b.type === "identity") as IdentityBlock | undefined;
     if (!identityBlock || !identityBlock.data.firstName || !identityBlock.data.lastName) {
       toast.error("Veuillez renseigner au moins un prénom et un nom");
@@ -756,6 +774,7 @@ export default function CardEditor() {
     }
 
     const legacyData = convertBlocksToLegacy(blocks);
+    const cardName = `${legacyData.firstName} ${legacyData.lastName}`;
 
     try {
       if (editId) {
@@ -781,8 +800,9 @@ export default function CardEditor() {
             blocks,
           } as any,
         });
+        navigate("/dashboard");
       } else {
-        await createCard.mutateAsync({
+        const newCard = await createCard.mutateAsync({
           first_name: legacyData.firstName,
           last_name: legacyData.lastName,
           title: legacyData.title,
@@ -801,8 +821,25 @@ export default function CardEditor() {
           social_links: legacyData.socialLinks,
           blocks,
         });
+
+        if (addToCartAfter) {
+          // Add to cart and redirect to cart
+          addToCart({
+            templateId: template,
+            templateName: getTemplateName(template),
+            cardName,
+            quantity: 1,
+            unitPriceCents: PRICING.b2c.single,
+            blocks,
+            photoUrl: legacyData.photoUrl,
+            logoUrl: legacyData.logoUrl,
+          });
+          toast.success("Carte ajoutée au panier !");
+          navigate("/cart");
+        } else {
+          navigate("/dashboard");
+        }
       }
-      navigate("/dashboard");
     } catch (error) {
       // Error handled by mutation
     }
@@ -904,7 +941,7 @@ export default function CardEditor() {
         initial={{ y: 100 }}
         animate={{ y: 0 }}
       >
-        <Button variant="chrome" className="w-full h-12" onClick={handleSave} disabled={createCard.isPending || updateCard.isPending}>
+        <Button variant="chrome" className="w-full h-12" onClick={() => handleSave(false)} disabled={createCard.isPending || updateCard.isPending}>
           {createCard.isPending || updateCard.isPending ? (
             <span className="flex items-center gap-2">
               <span className="w-5 h-5 rounded-full border-2 border-background/30 border-t-background animate-spin" />
@@ -925,7 +962,7 @@ export default function CardEditor() {
           variant="chrome"
           size="lg"
           className="shadow-2xl shadow-primary/20"
-          onClick={handleSave}
+          onClick={() => handleSave(false)}
           disabled={createCard.isPending || updateCard.isPending}
         >
           {createCard.isPending || updateCard.isPending ? (
