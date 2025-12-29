@@ -117,7 +117,7 @@ const PublicCard = () => {
             {cardData && (
               <DigitalCard
                 data={cardData}
-                template={(card?.template as TemplateType) || "executive"}
+                template={(card?.template as TemplateType) || "signature"}
                 showWalletButtons={true}
                 onShareInfo={() => setShowLeadForm(true)}
                 cardId={card?.id}

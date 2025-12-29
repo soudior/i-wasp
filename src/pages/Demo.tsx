@@ -136,11 +136,11 @@ export default function Demo() {
             </p>
           </div>
 
-          {/* Digital Card Preview */}
+          {/* Digital Card Preview - Using IWASP Signature template */}
           <div className="perspective-2000">
             <DigitalCard
               data={demoCardData}
-              template="executive"
+              template="signature"
               showWalletButtons={false}
             />
           </div>

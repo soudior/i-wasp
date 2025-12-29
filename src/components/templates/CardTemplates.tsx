@@ -526,11 +526,18 @@ export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onS
   );
 }
 
+// Import IWASP Signature templates
+import { IWASPSignatureTemplate, IWASPSignatureLightTemplate } from "./IWASPSignatureTemplate";
+
 // Template selector component
-export type TemplateType = "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "default";
+export type TemplateType = "signature" | "signature-light" | "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "default";
 
 export function getTemplateComponent(template: TemplateType) {
   switch (template) {
+    case "signature":
+      return IWASPSignatureTemplate;
+    case "signature-light":
+      return IWASPSignatureLightTemplate;
     case "executive":
       return ExecutiveTemplate;
     case "minimal":
@@ -544,15 +551,17 @@ export function getTemplateComponent(template: TemplateType) {
     case "luxe":
       return LuxeTemplate;
     default:
-      return ExecutiveTemplate;
+      return IWASPSignatureTemplate; // IWASP Signature is the DEFAULT
   }
 }
 
 export const templateInfo = [
-  { id: "executive", name: "Executive", description: "Design premium pour dirigeants" },
-  { id: "minimal", name: "Minimal", description: "Élégance épurée et sobre" },
-  { id: "modern", name: "Modern", description: "Effet verre avec dégradés" },
-  { id: "creative", name: "Creative", description: "Layout audacieux et coloré" },
-  { id: "tech", name: "Tech", description: "Style cyberpunk futuriste" },
+  { id: "signature", name: "IWASP Signature", description: "Template officielle IWASP - Recommandée" },
+  { id: "signature-light", name: "IWASP Signature Light", description: "Variante claire de la Signature" },
+  { id: "executive", name: "Série Business", description: "Pour les dirigeants et cadres" },
+  { id: "minimal", name: "Série Essential", description: "Élégance épurée" },
+  { id: "modern", name: "Série Contemporary", description: "Design intemporel" },
+  { id: "creative", name: "Creative", description: "Layout audacieux" },
+  { id: "tech", name: "Tech", description: "Style futuriste" },
   { id: "luxe", name: "Luxe", description: "Raffinement ultime" },
 ] as const;
