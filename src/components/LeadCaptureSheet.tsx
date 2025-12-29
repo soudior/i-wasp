@@ -7,11 +7,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Mail, Phone, Building2, Check, ArrowRight, Shield, MessageSquare } from "lucide-react";
+import { User, Mail, Phone, Check, Shield } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -56,11 +55,9 @@ export function LeadCaptureSheet({
   cardId 
 }: LeadCaptureSheetProps) {
   const [formData, setFormData] = useState({
-    name: "",
+    firstname: "",
     email: "",
     phone: "",
-    company: "",
-    message: "",
   });
   const [consentGiven, setConsentGiven] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,23 +68,23 @@ export function LeadCaptureSheet({
       return;
     }
     
-    if (!formData.name && !formData.email && !formData.phone) {
-      toast.error("Veuillez remplir au moins un champ de contact");
+    if (!formData.firstname.trim()) {
+      toast.error("Le prénom est requis");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const leadScore = calculateLeadScore(formData);
+      const leadScore = calculateLeadScore({ name: formData.firstname, email: formData.email, phone: formData.phone });
       const deviceType = getDeviceType();
       
       const { error } = await supabase.from("leads").insert({
         card_id: cardId,
-        name: formData.name || null,
+        name: formData.firstname || null,
         email: formData.email || null,
         phone: formData.phone || null,
-        company: formData.company || null,
-        message: formData.message || null,
+        company: null,
+        message: null,
         consent_given: true,
         consent_timestamp: new Date().toISOString(),
         source: "nfc",
@@ -98,7 +95,7 @@ export function LeadCaptureSheet({
 
       if (error) throw error;
       
-      toast.success("Coordonnées partagées avec succès !");
+      toast.success("Merci, vos coordonnées ont été partagées.");
       onComplete(true);
       resetForm();
     } catch (error) {
@@ -116,7 +113,7 @@ export function LeadCaptureSheet({
   };
 
   const resetForm = () => {
-    setFormData({ name: "", email: "", phone: "", company: "", message: "" });
+    setFormData({ firstname: "", email: "", phone: "" });
     setConsentGiven(false);
   };
 
@@ -124,7 +121,7 @@ export function LeadCaptureSheet({
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
-  const isFormValid = consentGiven && (formData.name || formData.email || formData.phone);
+  const isFormValid = consentGiven && formData.firstname.trim();
 
   return (
     <AnimatePresence>
@@ -183,16 +180,17 @@ export function LeadCaptureSheet({
                   </p>
                 </div>
                 
-                {/* Form - Premium inputs */}
+                {/* Form - Premium inputs - Minimal as requested */}
                 <div className="space-y-3 mb-5">
                   <div className="relative">
                     <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
                     <Input
-                      value={formData.name}
-                      onChange={handleChange("name")}
-                      placeholder="Nom & prénom"
+                      value={formData.firstname}
+                      onChange={handleChange("firstname")}
+                      placeholder="Prénom *"
                       className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
                       autoFocus
+                      required
                     />
                   </div>
                   
@@ -202,7 +200,7 @@ export function LeadCaptureSheet({
                       type="email"
                       value={formData.email}
                       onChange={handleChange("email")}
-                      placeholder="Email"
+                      placeholder="Email (optionnel)"
                       className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
                     />
                   </div>
@@ -217,26 +215,6 @@ export function LeadCaptureSheet({
                       className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
                     />
                   </div>
-                  
-                  <div className="relative">
-                    <Building2 size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-                    <Input
-                      value={formData.company}
-                      onChange={handleChange("company")}
-                      placeholder="Société (optionnel)"
-                      className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
-                    />
-                  </div>
-                  
-                  <div className="relative">
-                    <MessageSquare size={18} className="absolute left-4 top-4 text-muted-foreground/50" />
-                    <Textarea
-                      value={formData.message}
-                      onChange={handleChange("message")}
-                      placeholder="Message (facultatif)"
-                      className="pl-12 min-h-[80px] bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20 resize-none"
-                    />
-                  </div>
                 </div>
                 
                 {/* RGPD Consent Checkbox - Required */}
@@ -248,8 +226,7 @@ export function LeadCaptureSheet({
                     className="mt-0.5 data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
                   />
                   <label htmlFor="consent" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                    J'accepte le traitement de mes données personnelles conformément au RGPD. 
-                    Mes informations seront uniquement utilisées pour être recontacté.
+                    J'accepte que mes informations soient utilisées à des fins de contact professionnel.
                   </label>
                 </div>
                 
