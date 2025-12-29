@@ -122,7 +122,6 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
           background={signatureBackground}
           cardColor={color}
           forPrint={forPrint}
-          showMark={templateConfig.showBrand}
           showGuides={showGuides}
           className={className}
         />

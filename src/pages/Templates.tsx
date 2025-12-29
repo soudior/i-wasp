@@ -103,12 +103,12 @@ const Templates = () => {
               className="overflow-hidden border-primary/40 relative"
             >
               <div className="grid lg:grid-cols-2 gap-0">
-                {/* Physical Card Preview - "Card on table" feeling */}
-                <div className="bg-secondary relative overflow-hidden min-h-[420px] lg:min-h-[500px] flex items-center justify-center p-10">
+                {/* Physical Card Preview - Front & Back */}
+                <div className="bg-secondary relative overflow-hidden min-h-[420px] lg:min-h-[520px] flex items-center justify-center p-10">
                   {/* Subtle surface texture */}
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--secondary))_0%,hsl(var(--background))_100%)]" />
                   
-                  {/* Badges - positioned above the card */}
+                  {/* Badges - positioned above the cards */}
                   <div className="absolute top-6 left-6 z-10 flex flex-wrap gap-2">
                     {signatureTemplate.badges.map((badge) => (
                       <Badge
@@ -122,57 +122,134 @@ const Templates = () => {
                     ))}
                   </div>
 
-                  {/* Physical NFC Card - realistic depth and shadows */}
-                  <div 
-                    className="relative w-full max-w-[380px] aspect-[85.6/54] transform perspective-1000"
-                    style={{ 
-                      transform: "rotateX(5deg) rotateY(-2deg)",
-                      transformStyle: "preserve-3d"
-                    }}
-                  >
-                    {/* Card shadow - soft, wide, "on table" feeling */}
+                  {/* Front & Back Cards Display */}
+                  <div className="relative flex items-center justify-center gap-6">
+                    {/* FRONT CARD */}
                     <div 
-                      className="absolute inset-0 rounded-2xl bg-black/30 blur-2xl"
+                      className="relative"
                       style={{ 
-                        transform: "translateY(20px) translateZ(-30px) scale(0.95)",
-                      }}
-                    />
-                    
-                    {/* Physical card body */}
-                    <div 
-                      className="relative w-full h-full rounded-2xl bg-card border border-border/50 overflow-hidden"
-                      style={{
-                        boxShadow: `
-                          0 25px 50px -12px rgba(0,0,0,0.4),
-                          0 12px 24px -8px rgba(0,0,0,0.3),
-                          0 4px 8px -2px rgba(0,0,0,0.2),
-                          inset 0 1px 0 rgba(255,255,255,0.1)
-                        `
+                        transform: "rotateY(-8deg) rotateX(3deg)",
+                        transformStyle: "preserve-3d"
                       }}
                     >
-                      {/* Matte surface finish */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent" />
-                      
-                      {/* IWASP + NFC mark */}
-                      <div className="absolute top-4 right-4 flex items-center gap-2 text-xs text-muted-foreground/50 font-medium tracking-widest">
-                        <span>IWASP</span>
-                        <div className="w-5 h-5 rounded border border-muted-foreground/20 flex items-center justify-center">
-                          <div className="w-2.5 h-2.5 rounded-sm bg-primary/30" />
-                        </div>
+                      {/* Label */}
+                      <div className="absolute -top-6 left-0 right-0 text-center">
+                        <span className="text-xs text-muted-foreground/60 font-medium tracking-wider uppercase">Front</span>
                       </div>
                       
-                      {/* LARGE centered logo placeholder - dominant element */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div 
-                          className="w-44 h-28 rounded-xl bg-muted/50 border-2 border-dashed border-muted-foreground/20 flex items-center justify-center"
+                      {/* Card shadow */}
+                      <div 
+                        className="absolute inset-0 rounded-2xl bg-black/25 blur-xl"
+                        style={{ transform: "translateY(16px) translateZ(-20px) scale(0.94)" }}
+                      />
+                      
+                      {/* Physical card body - FRONT */}
+                      <div 
+                        className="relative w-[280px] aspect-[85.6/54] rounded-2xl bg-card border border-border/50 overflow-hidden"
+                        style={{
+                          boxShadow: `
+                            0 20px 40px -12px rgba(0,0,0,0.35),
+                            0 10px 20px -8px rgba(0,0,0,0.25),
+                            inset 0 1px 0 rgba(255,255,255,0.1)
+                          `
+                        }}
+                      >
+                        {/* Matte surface */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent" />
+                        
+                        {/* IWASP ))) mark - LOCKED top-right */}
+                        <div className="absolute top-3 right-3 flex items-center gap-1 opacity-50">
+                          <span className="text-[9px] text-muted-foreground font-semibold tracking-widest">IWASP</span>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-muted-foreground">
+                            <path d="M2 12a5 5 0 0 1 5-5" />
+                            <path d="M2 12a9 9 0 0 1 9-9" />
+                            <circle cx="2" cy="12" r="1.5" fill="currentColor" />
+                          </svg>
+                        </div>
+                        
+                        {/* CENTERED CLIENT LOGO - dominant */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div 
+                            className="w-36 h-20 rounded-lg border-2 border-dashed border-muted-foreground/20 flex items-center justify-center"
+                          >
+                            <span className="text-sm text-muted-foreground/50 font-semibold tracking-wide">YOUR LOGO</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* BACK CARD */}
+                    <div 
+                      className="relative"
+                      style={{ 
+                        transform: "rotateY(8deg) rotateX(3deg)",
+                        transformStyle: "preserve-3d"
+                      }}
+                    >
+                      {/* Label */}
+                      <div className="absolute -top-6 left-0 right-0 text-center">
+                        <span className="text-xs text-muted-foreground/60 font-medium tracking-wider uppercase">Back</span>
+                      </div>
+                      
+                      {/* Card shadow */}
+                      <div 
+                        className="absolute inset-0 rounded-2xl bg-black/25 blur-xl"
+                        style={{ transform: "translateY(16px) translateZ(-20px) scale(0.94)" }}
+                      />
+                      
+                      {/* Physical card body - BACK */}
+                      <div 
+                        className="relative w-[280px] aspect-[85.6/54] rounded-2xl bg-card border border-border/50 overflow-hidden flex flex-col items-center justify-center"
+                        style={{
+                          boxShadow: `
+                            0 20px 40px -12px rgba(0,0,0,0.35),
+                            0 10px 20px -8px rgba(0,0,0,0.25),
+                            inset 0 1px 0 rgba(255,255,255,0.1)
+                          `
+                        }}
+                      >
+                        {/* Matte surface */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent" />
+                        
+                        {/* NFC waves icon - centered */}
+                        <svg 
+                          width="32" 
+                          height="32" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="1.5" 
+                          strokeLinecap="round"
+                          className="text-muted-foreground/50 mb-2"
                         >
-                          <span className="text-base text-muted-foreground/70 font-semibold tracking-wide">YOUR LOGO</span>
-                        </div>
-                      </div>
-                      
-                      {/* NFC chip indicator */}
-                      <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full border border-primary/20 flex items-center justify-center">
-                        <div className="w-4 h-4 rounded-full bg-primary/15" />
+                          <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36" />
+                          <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58" />
+                          <path d="M12.91 4.1a16.07 16.07 0 0 1 0 15.8" />
+                          <circle cx="2" cy="12" r="2" fill="currentColor" />
+                        </svg>
+                        
+                        {/* Tap gesture */}
+                        <svg
+                          width="48"
+                          height="48"
+                          viewBox="0 0 48 48"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-muted-foreground/30"
+                        >
+                          <rect x="16" y="8" width="16" height="32" rx="2" />
+                          <line x1="16" y1="12" x2="32" y2="12" />
+                          <line x1="16" y1="36" x2="32" y2="36" />
+                          <circle cx="24" cy="24" r="1.5" fill="currentColor" />
+                        </svg>
+                        
+                        {/* Powered by IWASP - bottom subtle */}
+                        <span className="absolute bottom-3 text-[8px] text-muted-foreground/40 tracking-widest uppercase">
+                          Powered by IWASP
+                        </span>
                       </div>
                     </div>
                   </div>
