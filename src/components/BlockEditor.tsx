@@ -246,15 +246,16 @@ function WifiBlockEditor({
       <div className="space-y-2">
         <Label className="text-xs text-muted-foreground">Type de sécurité</Label>
         <Select
-          value={block.data.networkType || "WPA"}
-          onValueChange={(value) => updateData("networkType", value)}
+          value={block.data.security || "WPA2"}
+          onValueChange={(value) => updateData("security", value)}
         >
           <SelectTrigger className="h-10">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="WPA">WPA/WPA2</SelectItem>
-            <SelectItem value="WEP">WEP</SelectItem>
+            <SelectItem value="WPA2">WPA2 (Recommandé)</SelectItem>
+            <SelectItem value="WPA">WPA</SelectItem>
+            <SelectItem value="WEP">WEP (Ancien)</SelectItem>
             <SelectItem value="open">Ouvert (pas de mot de passe)</SelectItem>
           </SelectContent>
         </Select>
