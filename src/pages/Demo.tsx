@@ -11,11 +11,13 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { downloadVCard } from "@/lib/vcard";
-import { downloadAppleWalletPass, downloadGoogleWalletPass } from "@/lib/walletMock";
+import { addToAppleWallet, addToGoogleWallet, WalletCardData } from "@/lib/walletService";
 import { toast } from "sonner";
 
 // Demo card data - IWASP showcase
 const demoCardData: CardData = {
+  id: "demo-card-001",
+  slug: "sarah-laurent-demo",
   firstName: "Sarah",
   lastName: "Laurent",
   title: "Directrice Marketing",
@@ -59,31 +61,37 @@ export default function Demo() {
   };
 
   // Handle Apple Wallet
-  const handleAppleWallet = () => {
-    downloadAppleWalletPass({
-      firstName: demoCardData.firstName,
-      lastName: demoCardData.lastName,
+  const handleAppleWallet = async () => {
+    const walletData: WalletCardData = {
+      id: demoCardData.id!,
+      firstName: demoCardData.firstName!,
+      lastName: demoCardData.lastName!,
       title: demoCardData.title,
       company: demoCardData.company,
       email: demoCardData.email,
       phone: demoCardData.phone,
       website: demoCardData.website,
       location: demoCardData.location,
-    });
+      slug: demoCardData.slug!,
+    };
+    await addToAppleWallet(walletData);
   };
 
   // Handle Google Wallet
-  const handleGoogleWallet = () => {
-    downloadGoogleWalletPass({
-      firstName: demoCardData.firstName,
-      lastName: demoCardData.lastName,
+  const handleGoogleWallet = async () => {
+    const walletData: WalletCardData = {
+      id: demoCardData.id!,
+      firstName: demoCardData.firstName!,
+      lastName: demoCardData.lastName!,
       title: demoCardData.title,
       company: demoCardData.company,
       email: demoCardData.email,
       phone: demoCardData.phone,
       website: demoCardData.website,
       location: demoCardData.location,
-    });
+      slug: demoCardData.slug!,
+    };
+    await addToGoogleWallet(walletData);
   };
 
   // Handle lead form submission

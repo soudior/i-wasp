@@ -2,3 +2,9 @@ project_id = "fyxiyevbbvidckzaequx"
 
 [functions.lead-webhook]
 verify_jwt = false
+
+[functions.apple-wallet]
+verify_jwt = false
+
+[functions.google-wallet]
+verify_jwt = false

@@ -52,6 +52,8 @@ const PublicCard = () => {
 
   // Transform card data to template format
   const cardData: CardData | undefined = card ? {
+    id: card.id,
+    slug: card.slug,
     firstName: card.first_name,
     lastName: card.last_name,
     title: card.title || undefined,
