@@ -53,29 +53,34 @@ const Signup = () => {
     navigate("/dashboard");
   };
 
-  // Don't render content while checking auth - but keep consistent structure
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center py-12">
-        <div className="absolute inset-0 bg-grid opacity-30" />
-        <div className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
-      </div>
-    );
-  }
+  // Render consistent structure - use visibility for loading state
+  const showLoading = loading;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center py-12">
-      {/* Background effects */}
+      {/* Background effects - always rendered */}
       <div className="absolute inset-0 bg-grid opacity-30" />
-      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] orb opacity-30 animate-pulse-glow" />
+      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] orb opacity-30" />
       <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] orb opacity-20" />
-      
-      {/* Noise overlay */}
       <div className="noise" />
 
-      <div className="relative z-10 w-full max-w-md px-6">
+      {/* Loading spinner */}
+      <div 
+        className={`absolute inset-0 z-20 flex items-center justify-center bg-background transition-opacity duration-200 ${
+          showLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
+      </div>
+
+      {/* Main content - always in DOM */}
+      <div 
+        className={`relative z-10 w-full max-w-md px-6 transition-opacity duration-200 ${
+          showLoading ? 'opacity-0' : 'opacity-100'
+        }`}
+      >
         {/* Logo */}
-        <div className="text-center mb-8 animate-fade-down">
+        <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 hover:scale-105 transition-transform">
             <div className="relative w-10 h-10 rounded-xl bg-foreground flex items-center justify-center">
               <Sparkles size={20} className="text-background" />
@@ -85,7 +90,7 @@ const Signup = () => {
         </div>
 
         {/* Card */}
-        <div className="card-glass p-8 animate-scale-up" style={{ animationDelay: '0.1s' }}>
+        <div className="card-glass p-8">
           <div className="text-center mb-8">
             <h1 className="font-display text-2xl font-bold text-foreground mb-2">
               Créer un compte
@@ -199,7 +204,7 @@ const Signup = () => {
         </div>
 
         {/* Back to home */}
-        <div className="text-center mt-6 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+        <div className="text-center mt-6">
           <Link
             to="/"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
