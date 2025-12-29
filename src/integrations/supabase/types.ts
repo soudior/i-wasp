@@ -354,6 +354,108 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_configs: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          field_mapping: Json | null
+          id: string
+          name: string
+          provider: string
+          retry_count: number
+          sync_consented_only: boolean
+          updated_at: string
+          user_id: string
+          webhook_url: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          field_mapping?: Json | null
+          id?: string
+          name?: string
+          provider?: string
+          retry_count?: number
+          sync_consented_only?: boolean
+          updated_at?: string
+          user_id: string
+          webhook_url: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          field_mapping?: Json | null
+          id?: string
+          name?: string
+          provider?: string
+          retry_count?: number
+          sync_consented_only?: boolean
+          updated_at?: string
+          user_id?: string
+          webhook_url?: string
+        }
+        Relationships: []
+      }
+      webhook_logs: {
+        Row: {
+          attempts: number
+          created_at: string
+          error_message: string | null
+          event_type: string
+          id: string
+          last_attempt_at: string | null
+          lead_id: string | null
+          payload: Json | null
+          response_status: number | null
+          status: string
+          user_id: string
+          webhook_config_id: string | null
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          error_message?: string | null
+          event_type: string
+          id?: string
+          last_attempt_at?: string | null
+          lead_id?: string | null
+          payload?: Json | null
+          response_status?: number | null
+          status?: string
+          user_id: string
+          webhook_config_id?: string | null
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          last_attempt_at?: string | null
+          lead_id?: string | null
+          payload?: Json | null
+          response_status?: number | null
+          status?: string
+          user_id?: string
+          webhook_config_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_logs_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "webhook_logs_webhook_config_id_fkey"
+            columns: ["webhook_config_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_configs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

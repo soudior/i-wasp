@@ -58,7 +58,10 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { testWebhookConnection, triggerLeadCreatedWebhook, buildLeadPayload, sendDirectWebhook } from "@/hooks/useCRMWebhook";
+import { CRMIntegrationPanel } from "@/components/CRMIntegrationPanel";
+import { useWebhookConfigs } from "@/hooks/useWebhookConfig";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Score badge component
 function ScoreBadge({ score }: { score: number }) {
@@ -103,8 +106,10 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 const Leads = () => {
+  const { user } = useAuth();
   const { data: leads = [], isLoading } = useLeads();
   const { data: cards = [] } = useCards();
+  const { data: webhookConfigs = [] } = useWebhookConfigs();
   const updateStatus = useUpdateLeadStatus();
   const deleteLead = useDeleteLead();
   
@@ -115,10 +120,8 @@ const Leads = () => {
   const [selectedLead, setSelectedLead] = useState<LeadWithCard | null>(null);
   const [leadToDelete, setLeadToDelete] = useState<LeadWithCard | null>(null);
   
-  // CRM Webhook state
-  const [webhookModalOpen, setWebhookModalOpen] = useState(false);
-  const [webhookUrl, setWebhookUrl] = useState("");
-  const [webhookTesting, setWebhookTesting] = useState(false);
+  // CRM Integration panel
+  const [crmPanelOpen, setCrmPanelOpen] = useState(false);
 
   // Date range filter helper
   const isWithinDateRange = (dateStr: string, range: string): boolean => {
@@ -262,34 +265,47 @@ const Leads = () => {
     toast.success(`${filteredLeads.length} leads exportés en Excel`);
   };
 
-  // Test webhook connection
-  const handleTestWebhook = async () => {
-    if (!webhookUrl) {
-      toast.error("Entrez une URL webhook");
-      return;
-    }
-    
-    setWebhookTesting(true);
-    await testWebhookConnection(webhookUrl);
-    setWebhookTesting(false);
-  };
-
-  // Send lead to webhook (Zapier/Make)
+  // Send lead to webhook (using configured webhooks)
   const handleSendToWebhook = async (lead: LeadWithCard) => {
-    if (!webhookUrl) {
-      setWebhookModalOpen(true);
+    if (webhookConfigs.length === 0) {
+      setCrmPanelOpen(true);
+      toast.error("Configurez d'abord une intégration CRM");
       return;
     }
-    
-    const payload = buildLeadPayload({
-      ...lead,
-      card_owner_name: `${lead.digital_cards?.first_name || ""} ${lead.digital_cards?.last_name || ""}`.trim(),
-      card_owner_company: "",
-    });
-    
-    const success = await sendDirectWebhook(webhookUrl, payload);
-    if (success) {
-      toast.success("Lead envoyé au CRM !");
+
+    // RGPD check
+    if (!lead.consent_given) {
+      toast.error("Ce lead n'a pas donné son consentement (RGPD)");
+      return;
+    }
+
+    const activeConfig = webhookConfigs.find(c => c.enabled);
+    if (!activeConfig) {
+      toast.error("Aucune intégration active");
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke("lead-webhook", {
+        body: {
+          action: "sync_lead",
+          lead_id: lead.id,
+          webhook_url: activeConfig.webhook_url,
+          config_id: activeConfig.id,
+          user_id: user?.id,
+          field_mapping: activeConfig.field_mapping,
+          retry_count: activeConfig.retry_count,
+          sync_consented_only: activeConfig.sync_consented_only,
+        },
+      });
+
+      if (error || !data?.success) {
+        toast.error("Échec de l'envoi au CRM");
+      } else {
+        toast.success("Lead envoyé au CRM !");
+      }
+    } catch (err) {
+      toast.error("Erreur de connexion");
     }
   };
 
@@ -344,11 +360,14 @@ const Leads = () => {
                 <Button 
                   variant="outline" 
                   size="icon"
-                  onClick={() => setWebhookModalOpen(true)}
-                  className="rounded-full"
-                  title="Configurer webhook CRM"
+                  onClick={() => setCrmPanelOpen(true)}
+                  className="rounded-full relative"
+                  title="Intégrations CRM"
                 >
                   <Zap size={18} />
+                  {webhookConfigs.filter(c => c.enabled).length > 0 && (
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full" />
+                  )}
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -753,46 +772,8 @@ const Leads = () => {
         </div>
       )}
 
-      {/* Webhook Configuration Modal */}
-      <Dialog open={webhookModalOpen} onOpenChange={setWebhookModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Zap size={20} className="text-amber-500" />
-              Intégration CRM
-            </DialogTitle>
-            <DialogDescription>
-              Connectez IWASP à votre CRM via Zapier, Make ou tout autre webhook.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>URL du Webhook</Label>
-              <Input
-                value={webhookUrl}
-                onChange={(e) => setWebhookUrl(e.target.value)}
-                placeholder="https://hooks.zapier.com/..."
-                className="font-mono text-sm"
-              />
-              <p className="text-xs text-muted-foreground">
-                Collez l'URL de votre webhook Zapier, Make, ou n8n
-              </p>
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              onClick={handleTestWebhook}
-              disabled={webhookTesting || !webhookUrl}
-            >
-              {webhookTesting ? "Test..." : "Tester"}
-            </Button>
-            <Button onClick={() => setWebhookModalOpen(false)}>
-              Enregistrer
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* CRM Integration Panel */}
+      <CRMIntegrationPanel open={crmPanelOpen} onOpenChange={setCrmPanelOpen} />
 
       {/* RGPD Delete Confirmation Dialog */}
       <AlertDialog open={!!leadToDelete} onOpenChange={() => setLeadToDelete(null)}>
