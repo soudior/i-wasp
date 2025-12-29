@@ -18,6 +18,7 @@ import Checkout from "./pages/Checkout";
 import AdminOrders from "./pages/AdminOrders";
 import Demo from "./pages/Demo";
 import HotelDemo from "./pages/HotelDemo";
+import HotelDashboard from "./pages/HotelDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="/c/:slug" element={<PublicCard />} />
               <Route path="/demo" element={<Demo />} />
               <Route path="/hotel-demo" element={<HotelDemo />} />
+              <Route path="/hotel-dashboard" element={<HotelDashboard />} />
               <Route
                 path="/checkout"
                 element={
