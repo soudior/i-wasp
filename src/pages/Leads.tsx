@@ -111,6 +111,7 @@ const Leads = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCardId, setSelectedCardId] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedDateRange, setSelectedDateRange] = useState<string>("all");
   const [selectedLead, setSelectedLead] = useState<LeadWithCard | null>(null);
   const [leadToDelete, setLeadToDelete] = useState<LeadWithCard | null>(null);
   
@@ -119,11 +120,36 @@ const Leads = () => {
   const [webhookUrl, setWebhookUrl] = useState("");
   const [webhookTesting, setWebhookTesting] = useState(false);
 
+  // Date range filter helper
+  const isWithinDateRange = (dateStr: string, range: string): boolean => {
+    if (range === "all") return true;
+    
+    const date = new Date(dateStr);
+    const now = new Date();
+    
+    switch (range) {
+      case "today":
+        return date.toDateString() === now.toDateString();
+      case "week":
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return date >= weekAgo;
+      case "month":
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        return date >= monthAgo;
+      case "quarter":
+        const quarterAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+        return date >= quarterAgo;
+      default:
+        return true;
+    }
+  };
+
   // Filter leads
   const filteredLeads = useMemo(() => {
     return leads.filter(lead => {
       if (selectedCardId !== "all" && lead.card_id !== selectedCardId) return false;
       if (selectedStatus !== "all" && lead.status !== selectedStatus) return false;
+      if (!isWithinDateRange(lead.created_at, selectedDateRange)) return false;
       
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
@@ -137,7 +163,7 @@ const Leads = () => {
       
       return true;
     });
-  }, [leads, selectedCardId, selectedStatus, searchQuery]);
+  }, [leads, selectedCardId, selectedStatus, selectedDateRange, searchQuery]);
 
   // Stats with scoring
   const stats = useMemo(() => {
@@ -282,9 +308,10 @@ const Leads = () => {
     setSearchQuery("");
     setSelectedCardId("all");
     setSelectedStatus("all");
+    setSelectedDateRange("all");
   };
 
-  const hasActiveFilters = searchQuery || selectedCardId !== "all" || selectedStatus !== "all";
+  const hasActiveFilters = searchQuery || selectedCardId !== "all" || selectedStatus !== "all" || selectedDateRange !== "all";
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -410,6 +437,20 @@ const Leads = () => {
                 <SelectItem value="contacted">Contacté</SelectItem>
                 <SelectItem value="converted">Converti</SelectItem>
                 <SelectItem value="archived">Archivé</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
+              <SelectTrigger className="w-full md:w-[150px] h-12 bg-secondary/50 border-0 rounded-xl">
+                <Calendar size={16} className="mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Période" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes dates</SelectItem>
+                <SelectItem value="today">Aujourd'hui</SelectItem>
+                <SelectItem value="week">7 derniers jours</SelectItem>
+                <SelectItem value="month">30 derniers jours</SelectItem>
+                <SelectItem value="quarter">3 derniers mois</SelectItem>
               </SelectContent>
             </Select>
 
