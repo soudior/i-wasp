@@ -135,6 +135,27 @@ export type PrintColor = keyof typeof PRINT_COLORS;
 
 export type PrintTemplateType = "iwasp-black" | "iwasp-pure" | "iwasp-corporate";
 
+// Logo background options
+export type LogoBackgroundType = "solid" | "image";
+
+export interface LogoBackgroundConfig {
+  type: LogoBackgroundType;
+  color?: string; // For solid backgrounds
+  imageUrl?: string; // For image backgrounds
+  opacity?: number; // 0-100
+  blur?: number; // 0-20px
+}
+
+// Logo quality requirements
+export const LOGO_REQUIREMENTS = {
+  MIN_WIDTH: 200, // pixels
+  MIN_HEIGHT: 100, // pixels
+  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB for quality
+  RECOMMENDED_WIDTH: 500, // pixels
+  RECOMMENDED_HEIGHT: 250, // pixels
+  ALLOWED_FORMATS: ["image/png", "image/jpeg", "image/svg+xml", "image/webp"],
+};
+
 export interface TemplateConfig {
   id: PrintTemplateType;
   name: string;
@@ -151,8 +172,10 @@ export interface TemplateConfig {
     titleSize: number;
     companySize: number;
   };
-  // Fixed positions (mm from top-left)
+  // Fixed positions (mm from top-left) - LOGO IS PRIMARY ELEMENT
   logoPosition: { x: number; y: number; maxWidth: number; maxHeight: number };
+  // Logo background area (larger than logo for visual impact)
+  logoBackgroundArea: { x: number; y: number; width: number; height: number; borderRadius: number };
   namePosition: { x: number; y: number };
   titlePosition: { x: number; y: number };
   companyPosition: { x: number; y: number };
@@ -165,7 +188,7 @@ export interface TemplateConfig {
 }
 
 export const PRINT_TEMPLATES: Record<PrintTemplateType, TemplateConfig> = {
-  // 1️⃣ IWASP Black - Minimal Luxury
+  // 1️⃣ IWASP Black - Minimal Luxury (LOGO-CENTRIC)
   "iwasp-black": {
     id: "iwasp-black",
     name: "IWASP Black",
@@ -174,24 +197,26 @@ export const PRINT_TEMPLATES: Record<PrintTemplateType, TemplateConfig> = {
     allowedColors: ["black", "charcoal"],
     defaultColor: "black",
     typography: {
-      nameSize: 4.5,
+      nameSize: 3.8,
       nameFontWeight: 500,
       nameLetterSpacing: 0.08,
-      titleSize: 2.4,
-      companySize: 2.2,
+      titleSize: 2.2,
+      companySize: 2.0,
     },
-    logoPosition: { x: 42.8, y: 10, maxWidth: 22, maxHeight: 10 },
-    namePosition: { x: 42.8, y: 26 },
-    titlePosition: { x: 42.8, y: 33 },
-    companyPosition: { x: 42.8, y: 39 },
-    nfcIconPosition: { x: 42.8, y: 46 },
-    brandPosition: { x: 78, y: 49 },
+    // LARGE CENTERED LOGO - Primary visual element (x1.8 size increase)
+    logoPosition: { x: 42.8, y: 12, maxWidth: 40, maxHeight: 18 },
+    logoBackgroundArea: { x: 10, y: 6, width: 65.6, height: 26, borderRadius: 2 },
+    namePosition: { x: 42.8, y: 36 },
+    titlePosition: { x: 42.8, y: 42 },
+    companyPosition: { x: 42.8, y: 47 },
+    nfcIconPosition: { x: 78, y: 47 },
+    brandPosition: { x: 78, y: 50 },
     centered: true,
     showNfcIcon: true,
     showBrand: true,
   },
 
-  // 2️⃣ IWASP Pure - Apple-like Clean Tech
+  // 2️⃣ IWASP Pure - Apple-like Clean Tech (LOGO-CENTRIC)
   "iwasp-pure": {
     id: "iwasp-pure",
     name: "IWASP Pure",
@@ -200,24 +225,26 @@ export const PRINT_TEMPLATES: Record<PrintTemplateType, TemplateConfig> = {
     allowedColors: ["white", "silver"],
     defaultColor: "white",
     typography: {
-      nameSize: 5,
+      nameSize: 4.2,
       nameFontWeight: 600,
       nameLetterSpacing: 0.02,
-      titleSize: 2.5,
-      companySize: 2.3,
+      titleSize: 2.3,
+      companySize: 2.1,
     },
-    logoPosition: { x: 10, y: 10, maxWidth: 18, maxHeight: 10 },
-    namePosition: { x: 10, y: 28 },
-    titlePosition: { x: 10, y: 35 },
-    companyPosition: { x: 10, y: 41 },
-    nfcIconPosition: { x: 72, y: 38 },
-    brandPosition: { x: 78, y: 49 },
+    // LARGE LEFT-ALIGNED LOGO (x1.8 size increase)
+    logoPosition: { x: 10, y: 10, maxWidth: 35, maxHeight: 16 },
+    logoBackgroundArea: { x: 6, y: 5, width: 45, height: 24, borderRadius: 3 },
+    namePosition: { x: 10, y: 34 },
+    titlePosition: { x: 10, y: 40 },
+    companyPosition: { x: 10, y: 46 },
+    nfcIconPosition: { x: 75, y: 42 },
+    brandPosition: { x: 78, y: 50 },
     centered: false,
     showNfcIcon: true,
     showBrand: true,
   },
 
-  // 3️⃣ IWASP Corporate - B2B Professional
+  // 3️⃣ IWASP Corporate - B2B Professional (LOGO-CENTRIC)
   "iwasp-corporate": {
     id: "iwasp-corporate",
     name: "IWASP Corporate",
@@ -226,18 +253,20 @@ export const PRINT_TEMPLATES: Record<PrintTemplateType, TemplateConfig> = {
     allowedColors: ["navy", "slate", "burgundy", "forest"],
     defaultColor: "navy",
     typography: {
-      nameSize: 4.2,
+      nameSize: 3.6,
       nameFontWeight: 600,
       nameLetterSpacing: 0.03,
-      titleSize: 2.4,
-      companySize: 2.5,
+      titleSize: 2.2,
+      companySize: 2.4,
     },
-    logoPosition: { x: 65, y: 8, maxWidth: 16, maxHeight: 14 },
-    namePosition: { x: 10, y: 30 },
-    titlePosition: { x: 10, y: 37 },
-    companyPosition: { x: 10, y: 44 },
-    nfcIconPosition: { x: 75, y: 42 },
-    brandPosition: { x: 78, y: 49 },
+    // LARGE TOP-RIGHT LOGO (x1.8 size increase)
+    logoPosition: { x: 60, y: 8, maxWidth: 28, maxHeight: 20 },
+    logoBackgroundArea: { x: 50, y: 4, width: 32, height: 26, borderRadius: 2 },
+    namePosition: { x: 10, y: 34 },
+    titlePosition: { x: 10, y: 40 },
+    companyPosition: { x: 10, y: 46 },
+    nfcIconPosition: { x: 75, y: 46 },
+    brandPosition: { x: 78, y: 50 },
     centered: false,
     showNfcIcon: true,
     showBrand: true,
@@ -266,9 +295,32 @@ export interface PrintOrderData {
   printedTitle?: string;
   printedCompany?: string;
   logoUrl?: string;
+  logoBackground?: LogoBackgroundConfig;
   isLocked: boolean;
   lockedAt?: string;
   validatedAt?: string;
+}
+
+// Helper to validate logo dimensions
+export function validateLogoDimensions(width: number, height: number): { valid: boolean; message?: string } {
+  if (width < LOGO_REQUIREMENTS.MIN_WIDTH || height < LOGO_REQUIREMENTS.MIN_HEIGHT) {
+    return {
+      valid: false,
+      message: `Logo trop petit. Minimum: ${LOGO_REQUIREMENTS.MIN_WIDTH}x${LOGO_REQUIREMENTS.MIN_HEIGHT}px. Votre logo: ${width}x${height}px`,
+    };
+  }
+  return { valid: true };
+}
+
+// Helper to check if logo meets recommended quality
+export function checkLogoQuality(width: number, height: number): { isOptimal: boolean; message?: string } {
+  if (width >= LOGO_REQUIREMENTS.RECOMMENDED_WIDTH && height >= LOGO_REQUIREMENTS.RECOMMENDED_HEIGHT) {
+    return { isOptimal: true };
+  }
+  return {
+    isOptimal: false,
+    message: `Pour une qualité optimale, utilisez un logo d'au moins ${LOGO_REQUIREMENTS.RECOMMENDED_WIDTH}x${LOGO_REQUIREMENTS.RECOMMENDED_HEIGHT}px`,
+  };
 }
 
 // Print sheet data for production

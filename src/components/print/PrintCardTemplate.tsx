@@ -7,6 +7,7 @@ import {
   PrintColor,
   PrintTemplateType,
   MM_TO_PX_300DPI,
+  LogoBackgroundConfig,
 } from "@/lib/printTypes";
 
 interface PrintCardTemplateProps {
@@ -14,6 +15,7 @@ interface PrintCardTemplateProps {
   printedTitle?: string;
   printedCompany?: string;
   logoUrl?: string;
+  logoBackground?: LogoBackgroundConfig;
   color: PrintColor;
   template: PrintTemplateType;
   showGuides?: boolean;
@@ -40,6 +42,7 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
       printedTitle,
       printedCompany,
       logoUrl,
+      logoBackground,
       color,
       template,
       showGuides = false,
@@ -164,25 +167,56 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
           </>
         )}
 
-        {/* Logo */}
+        {/* Logo Background Area - Enhances brand visibility */}
+        {logoUrl && logoBackground && (
+          <div
+            className="absolute overflow-hidden"
+            style={{
+              top: mmToPx(templateConfig.logoBackgroundArea.y),
+              left: mmToPx(templateConfig.logoBackgroundArea.x),
+              width: mmToPx(templateConfig.logoBackgroundArea.width),
+              height: mmToPx(templateConfig.logoBackgroundArea.height),
+              borderRadius: mmToPx(templateConfig.logoBackgroundArea.borderRadius),
+              backgroundColor: logoBackground.type === "solid" ? (logoBackground.color || "transparent") : undefined,
+              opacity: (logoBackground.opacity ?? 100) / 100,
+            }}
+          >
+            {logoBackground.type === "image" && logoBackground.imageUrl && (
+              <img
+                src={logoBackground.imageUrl}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{
+                  filter: logoBackground.blur ? `blur(${logoBackground.blur}px)` : undefined,
+                }}
+              />
+            )}
+          </div>
+        )}
+
+        {/* Logo - PRIMARY VISUAL ELEMENT */}
         {logoUrl && (
           <div
-            className="absolute"
+            className="absolute z-10 flex items-center justify-center"
             style={{
               top: mmToPx(templateConfig.logoPosition.y),
               left: isCentered ? "50%" : mmToPx(templateConfig.logoPosition.x),
               transform: isCentered ? "translateX(-50%)" : undefined,
-              maxWidth: mmToPx(templateConfig.logoPosition.maxWidth),
-              maxHeight: mmToPx(templateConfig.logoPosition.maxHeight),
+              width: mmToPx(templateConfig.logoPosition.maxWidth),
+              height: mmToPx(templateConfig.logoPosition.maxHeight),
             }}
           >
             <img
               src={logoUrl}
               alt="Logo"
+              className="max-w-full max-h-full object-contain"
               style={{
-                maxWidth: mmToPx(templateConfig.logoPosition.maxWidth),
-                maxHeight: mmToPx(templateConfig.logoPosition.maxHeight),
+                maxWidth: "100%",
+                maxHeight: "100%",
+                // Preserve aspect ratio, no aggressive cropping
                 objectFit: "contain",
+                // Ensure crisp rendering for print
+                imageRendering: forPrint ? "auto" : undefined,
               }}
             />
           </div>

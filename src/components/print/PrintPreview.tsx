@@ -9,6 +9,7 @@ import {
   PRINT_TEMPLATES,
   PrintColor, 
   PrintTemplateType,
+  LogoBackgroundConfig,
 } from "@/lib/printTypes";
 import { Eye, Ruler, ZoomIn, ZoomOut, Check, AlertTriangle } from "lucide-react";
 
@@ -17,6 +18,7 @@ interface PrintPreviewProps {
   printedTitle?: string;
   printedCompany?: string;
   logoUrl?: string;
+  logoBackground?: LogoBackgroundConfig;
   color: PrintColor;
   template: PrintTemplateType;
   onValidate?: () => void;
@@ -29,6 +31,7 @@ export function PrintPreview({
   printedTitle,
   printedCompany,
   logoUrl,
+  logoBackground,
   color,
   template,
   onValidate,
@@ -131,6 +134,7 @@ export function PrintPreview({
             printedTitle={printedTitle}
             printedCompany={printedCompany}
             logoUrl={logoUrl}
+            logoBackground={logoBackground}
             color={color}
             template={template}
             showGuides={showGuides}
