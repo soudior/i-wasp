@@ -1,9 +1,7 @@
-import { Phone, Mail, MapPin, Globe, Linkedin, Instagram, MessageCircle, Twitter } from "lucide-react";
 import { CardActionButtons } from "./CardActions";
-import { LocationPicker } from "@/components/LocationPicker";
-import { handlePhoneTap, handleEmailTap, handleWhatsAppTap, handleSmsTap, handleWebsiteTap, handleSocialTap } from "@/lib/smartActions";
+import { ActionsList } from "./ActionsList";
 import { SocialLink } from "@/lib/socialNetworks";
-import { SocialIcon } from "@/components/SocialIcon";
+
 export interface CardData {
   firstName?: string;
   lastName?: string;
@@ -94,116 +92,19 @@ export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true
             </div>
           )}
 
-          {/* Contact info with smart actions */}
-          <div className="space-y-2 mb-6">
-            {cardData.phone && (
-              <button 
-                onClick={() => handlePhoneTap(cardData.phone!)} 
-                className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-800/50 transition-colors text-left"
-              >
-                <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center">
-                  <Phone size={16} className="text-amber-400" />
-                </div>
-                <span className="text-sm text-slate-300">{cardData.phone}</span>
-              </button>
-            )}
-            {cardData.email && (
-              <button 
-                onClick={() => handleEmailTap(cardData.email!)} 
-                className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-800/50 transition-colors text-left"
-              >
-                <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center">
-                  <Mail size={16} className="text-amber-400" />
-                </div>
-                <span className="text-sm text-slate-300 truncate">{cardData.email}</span>
-              </button>
-            )}
-            {cardData.location && (
-              <LocationPicker 
-                address={cardData.location}
-                iconClassName="text-amber-400"
-                textClassName="text-sm text-slate-400"
-              />
-            )}
-          </div>
-
-          {/* Action buttons with smart handlers */}
-          <div className="grid grid-cols-4 gap-2 mb-6">
-            {cardData.phone && (
-              <button 
-                onClick={() => handlePhoneTap(cardData.phone!)}
-                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-amber-500/30 transition-all"
-              >
-                <Phone size={18} className="text-amber-400" />
-                <span className="text-xs text-slate-400">Appeler</span>
-              </button>
-            )}
-            {cardData.email && (
-              <button 
-                onClick={() => handleEmailTap(cardData.email!)}
-                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-amber-500/30 transition-all"
-              >
-                <Mail size={18} className="text-amber-400" />
-                <span className="text-xs text-slate-400">Email</span>
-              </button>
-            )}
-            {cardData.phone && (
-              <button 
-                onClick={() => handleSmsTap(cardData.phone!)}
-                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-amber-500/30 transition-all"
-              >
-                <MessageCircle size={18} className="text-amber-400" />
-                <span className="text-xs text-slate-400">Message</span>
-              </button>
-            )}
-            {cardData.website && (
-              <button 
-                onClick={() => handleWebsiteTap(cardData.website!)}
-                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-amber-500/30 transition-all"
-              >
-                <Globe size={18} className="text-amber-400" />
-                <span className="text-xs text-slate-400">Site</span>
-              </button>
-            )}
-          </div>
-
-          {/* Social with smart tap handlers */}
-          <div className="flex justify-center gap-4 pb-6 border-b border-slate-700/50">
-            {cardData.linkedin && (
-              <button 
-                onClick={() => handleSocialTap('linkedin', cardData.linkedin!)}
-                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
-              >
-                <Linkedin size={18} className="text-slate-400" />
-              </button>
-            )}
-            {cardData.instagram && (
-              <button 
-                onClick={() => handleSocialTap('instagram', cardData.instagram!)}
-                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
-              >
-                <Instagram size={18} className="text-slate-400" />
-              </button>
-            )}
-            {cardData.twitter && (
-              <button 
-                onClick={() => handleSocialTap('twitter', cardData.twitter!)}
-                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
-              >
-                <Twitter size={18} className="text-slate-400" />
-              </button>
-            )}
-            {/* Dynamic social links */}
-            {cardData.socialLinks?.map((link) => (
-              <button 
-                key={link.id}
-                onClick={() => handleSocialTap(link.networkId, link.value)}
-                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
-              >
-                <SocialIcon networkId={link.networkId} size={18} className="text-slate-400" />
-              </button>
-            ))}
-          </div>
+          {/* Actions list with labels - Apple style */}
+          <ActionsList
+            phone={cardData.phone}
+            email={cardData.email}
+            location={cardData.location}
+            website={cardData.website}
+            linkedin={cardData.linkedin}
+            instagram={cardData.instagram}
+            twitter={cardData.twitter}
+            socialLinks={cardData.socialLinks}
+            variant="dark"
+            className="mb-6"
+          />
 
           {/* CTA Buttons */}
           <div className="mt-6">
@@ -260,59 +161,19 @@ export function MinimalTemplate({ data = defaultData, showWalletButtons = true, 
             </p>
           )}
 
-          {/* Simple contact list with smart actions */}
-          <div className="space-y-3 mb-8">
-            {cardData.phone && (
-              <button onClick={() => handlePhoneTap(cardData.phone!)} className="w-full flex items-center gap-3 text-neutral-600 hover:text-neutral-900 transition-colors text-left">
-                <Phone size={16} />
-                <span className="text-sm">{cardData.phone}</span>
-              </button>
-            )}
-            {cardData.email && (
-              <button onClick={() => handleEmailTap(cardData.email!)} className="w-full flex items-center gap-3 text-neutral-600 hover:text-neutral-900 transition-colors text-left">
-                <Mail size={16} />
-                <span className="text-sm truncate">{cardData.email}</span>
-              </button>
-            )}
-            {cardData.location && (
-              <LocationPicker 
-                address={cardData.location}
-                variant="minimal"
-                iconClassName="text-neutral-400"
-                textClassName="text-sm text-neutral-400"
-              />
-            )}
-            {cardData.website && (
-              <button onClick={() => handleWebsiteTap(cardData.website!)} className="w-full flex items-center gap-3 text-neutral-600 hover:text-neutral-900 transition-colors text-left">
-                <Globe size={16} />
-                <span className="text-sm">{cardData.website}</span>
-              </button>
-            )}
-          </div>
-
-          {/* Social row with smart tap */}
-          <div className="flex justify-center gap-4 mb-8">
-            {cardData.linkedin && (
-              <button onClick={() => handleSocialTap('linkedin', cardData.linkedin!)} className="text-neutral-400 hover:text-neutral-600 transition-colors">
-                <Linkedin size={20} />
-              </button>
-            )}
-            {cardData.instagram && (
-              <button onClick={() => handleSocialTap('instagram', cardData.instagram!)} className="text-neutral-400 hover:text-neutral-600 transition-colors">
-                <Instagram size={20} />
-              </button>
-            )}
-            {cardData.twitter && (
-              <button onClick={() => handleSocialTap('twitter', cardData.twitter!)} className="text-neutral-400 hover:text-neutral-600 transition-colors">
-                <Twitter size={20} />
-              </button>
-            )}
-            {cardData.socialLinks?.map((link) => (
-              <button key={link.id} onClick={() => handleSocialTap(link.networkId, link.value)} className="text-neutral-400 hover:text-neutral-600 transition-colors">
-                <SocialIcon networkId={link.networkId} size={20} />
-              </button>
-            ))}
-          </div>
+          {/* Actions list with labels - Apple style */}
+          <ActionsList
+            phone={cardData.phone}
+            email={cardData.email}
+            location={cardData.location}
+            website={cardData.website}
+            linkedin={cardData.linkedin}
+            instagram={cardData.instagram}
+            twitter={cardData.twitter}
+            socialLinks={cardData.socialLinks}
+            variant="light"
+            className="mb-8"
+          />
 
           {/* CTA Buttons */}
           <CardActionButtons 
@@ -381,76 +242,19 @@ export function ModernTemplate({ data = defaultData, showWalletButtons = true, o
               </div>
             )}
 
-            {/* Contact with smart actions */}
-            <div className="space-y-2 mb-6">
-              {cardData.phone && (
-                <button onClick={() => handlePhoneTap(cardData.phone!)} className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-left">
-                  <Phone size={16} className="text-white" />
-                  <span className="text-sm text-white/90">{cardData.phone}</span>
-                </button>
-              )}
-              {cardData.email && (
-                <button onClick={() => handleEmailTap(cardData.email!)} className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-left">
-                  <Mail size={16} className="text-white" />
-                  <span className="text-sm text-white/90 truncate">{cardData.email}</span>
-                </button>
-              )}
-              {cardData.location && (
-                <LocationPicker 
-                  address={cardData.location}
-                  className="bg-white/10 hover:bg-white/20 rounded-xl"
-                  iconClassName="text-white/60"
-                  textClassName="text-sm text-white/60"
-                />
-              )}
-            </div>
-
-            {/* Actions with smart handlers */}
-            <div className="grid grid-cols-4 gap-2 mb-6">
-              {cardData.phone && (
-                <button onClick={() => handlePhoneTap(cardData.phone!)} className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all">
-                  <Phone size={18} className="text-white" />
-                  <span className="text-xs text-white/70">Appeler</span>
-                </button>
-              )}
-              {cardData.email && (
-                <button onClick={() => handleEmailTap(cardData.email!)} className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all">
-                  <Mail size={18} className="text-white" />
-                  <span className="text-xs text-white/70">Email</span>
-                </button>
-              )}
-              {cardData.phone && (
-                <button onClick={() => handleSmsTap(cardData.phone!)} className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all">
-                  <MessageCircle size={18} className="text-white" />
-                  <span className="text-xs text-white/70">Message</span>
-                </button>
-              )}
-              {cardData.website && (
-                <button onClick={() => handleWebsiteTap(cardData.website!)} className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all">
-                  <Globe size={18} className="text-white" />
-                  <span className="text-xs text-white/70">Site</span>
-                </button>
-              )}
-            </div>
-
-            {/* Social with smart tap */}
-            <div className="flex justify-center gap-4 pb-6 border-b border-white/10">
-              {cardData.linkedin && (
-                <button onClick={() => handleSocialTap('linkedin', cardData.linkedin!)} className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                  <Linkedin size={18} className="text-white" />
-                </button>
-              )}
-              {cardData.instagram && (
-                <button onClick={() => handleSocialTap('instagram', cardData.instagram!)} className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                  <Instagram size={18} className="text-white" />
-                </button>
-              )}
-              {cardData.socialLinks?.map((link) => (
-                <button key={link.id} onClick={() => handleSocialTap(link.networkId, link.value)} className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                  <SocialIcon networkId={link.networkId} size={18} className="text-white" />
-                </button>
-              ))}
-            </div>
+            {/* Actions list with labels - Apple style */}
+            <ActionsList
+              phone={cardData.phone}
+              email={cardData.email}
+              location={cardData.location}
+              website={cardData.website}
+              linkedin={cardData.linkedin}
+              instagram={cardData.instagram}
+              twitter={cardData.twitter}
+              socialLinks={cardData.socialLinks}
+              variant="glass"
+              className="mb-6"
+            />
 
             {/* CTA Buttons */}
             <div className="mt-6">
@@ -516,40 +320,19 @@ export function CreativeTemplate({ data = defaultData, showWalletButtons = true,
             )}
           </div>
 
-          {/* Contact strips */}
-          <div className="space-y-2 mb-6">
-            {cardData.phone && (
-              <a href={`tel:${cardData.phone}`} className="flex items-center gap-3 p-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 transition-colors">
-                <Phone size={18} className="text-rose-400" />
-                <span className="text-sm text-stone-200">{cardData.phone}</span>
-              </a>
-            )}
-            {cardData.email && (
-              <a href={`mailto:${cardData.email}`} className="flex items-center gap-3 p-3 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 transition-colors">
-                <Mail size={18} className="text-orange-400" />
-                <span className="text-sm text-stone-200 truncate">{cardData.email}</span>
-              </a>
-            )}
-          </div>
-
-          {/* Social row */}
-          <div className="flex gap-3 mb-6">
-            {cardData.linkedin && (
-              <a href={`https://linkedin.com/in/${cardData.linkedin}`} className="flex-1 py-3 bg-stone-800 hover:bg-stone-700 rounded-xl flex items-center justify-center transition-colors">
-                <Linkedin size={20} className="text-stone-400" />
-              </a>
-            )}
-            {cardData.instagram && (
-              <a href={`https://instagram.com/${cardData.instagram?.replace('@', '')}`} className="flex-1 py-3 bg-stone-800 hover:bg-stone-700 rounded-xl flex items-center justify-center transition-colors">
-                <Instagram size={20} className="text-stone-400" />
-              </a>
-            )}
-            {cardData.website && (
-              <a href={`https://${cardData.website}`} className="flex-1 py-3 bg-stone-800 hover:bg-stone-700 rounded-xl flex items-center justify-center transition-colors">
-                <Globe size={20} className="text-stone-400" />
-              </a>
-            )}
-          </div>
+          {/* Actions list with labels - Apple style */}
+          <ActionsList
+            phone={cardData.phone}
+            email={cardData.email}
+            location={cardData.location}
+            website={cardData.website}
+            linkedin={cardData.linkedin}
+            instagram={cardData.instagram}
+            twitter={cardData.twitter}
+            socialLinks={cardData.socialLinks}
+            variant="rose"
+            className="mb-6"
+          />
 
           {/* CTA Buttons */}
           <CardActionButtons 
@@ -627,57 +410,19 @@ export function TechTemplate({ data = defaultData, showWalletButtons = true, onS
             </div>
           )}
 
-          {/* Data entries */}
-          <div className="space-y-2 mb-6">
-            {cardData.phone && (
-              <a href={`tel:${cardData.phone}`} className="flex items-center gap-3 p-2 rounded bg-gray-900/50 hover:bg-gray-800/50 border border-gray-800 transition-colors">
-                <Phone size={14} className="text-cyan-500" />
-                <span className="text-xs font-mono text-gray-300">{cardData.phone}</span>
-              </a>
-            )}
-            {cardData.email && (
-              <a href={`mailto:${cardData.email}`} className="flex items-center gap-3 p-2 rounded bg-gray-900/50 hover:bg-gray-800/50 border border-gray-800 transition-colors">
-                <Mail size={14} className="text-cyan-500" />
-                <span className="text-xs font-mono text-gray-300 truncate">{cardData.email}</span>
-              </a>
-            )}
-            {cardData.location && (
-              <div className="flex items-center gap-3 p-2 rounded bg-gray-900/50 border border-gray-800">
-                <MapPin size={14} className="text-gray-600" />
-                <span className="text-xs font-mono text-gray-500">{cardData.location}</span>
-              </div>
-            )}
-          </div>
-
-          {/* Quick actions */}
-          <div className="grid grid-cols-4 gap-2 mb-6">
-            {[
-              { icon: Phone },
-              { icon: Mail },
-              { icon: MessageCircle },
-              { icon: Globe },
-            ].map((action, i) => (
-              <button key={i} className="p-3 bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-cyan-500/50 rounded transition-all">
-                <action.icon size={16} className="mx-auto text-cyan-500" />
-              </button>
-            ))}
-          </div>
-
-          {/* Social */}
-          <div className="flex gap-2 mb-6">
-            {cardData.linkedin && (
-              <a href={`https://linkedin.com/in/${cardData.linkedin}`} className="flex-1 py-2 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded flex items-center justify-center gap-2 transition-colors">
-                <Linkedin size={14} className="text-gray-500" />
-                <span className="text-xs font-mono text-gray-500">LinkedIn</span>
-              </a>
-            )}
-            {cardData.instagram && (
-              <a href={`https://instagram.com/${cardData.instagram?.replace('@', '')}`} className="flex-1 py-2 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded flex items-center justify-center gap-2 transition-colors">
-                <Instagram size={14} className="text-gray-500" />
-                <span className="text-xs font-mono text-gray-500">IG</span>
-              </a>
-            )}
-          </div>
+          {/* Actions list with labels - Tech style */}
+          <ActionsList
+            phone={cardData.phone}
+            email={cardData.email}
+            location={cardData.location}
+            website={cardData.website}
+            linkedin={cardData.linkedin}
+            instagram={cardData.instagram}
+            twitter={cardData.twitter}
+            socialLinks={cardData.socialLinks}
+            variant="tech"
+            className="mb-6"
+          />
 
           {/* CTA Buttons */}
           <CardActionButtons 
@@ -752,46 +497,19 @@ export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onS
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
           </div>
 
-          {/* Contact */}
-          <div className="space-y-4 mb-8">
-            {cardData.phone && (
-              <a href={`tel:${cardData.phone}`} className="flex items-center justify-center gap-3 text-amber-100/70 hover:text-amber-100 transition-colors">
-                <Phone size={16} className="text-amber-500/70" />
-                <span className="text-sm tracking-wide">{cardData.phone}</span>
-              </a>
-            )}
-            {cardData.email && (
-              <a href={`mailto:${cardData.email}`} className="flex items-center justify-center gap-3 text-amber-100/70 hover:text-amber-100 transition-colors">
-                <Mail size={16} className="text-amber-500/70" />
-                <span className="text-sm tracking-wide">{cardData.email}</span>
-              </a>
-            )}
-            {cardData.location && (
-              <div className="flex items-center justify-center gap-3 text-amber-100/40">
-                <MapPin size={16} className="text-amber-500/40" />
-                <span className="text-sm tracking-wide">{cardData.location}</span>
-              </div>
-            )}
-          </div>
-
-          {/* Social */}
-          <div className="flex justify-center gap-4 mb-8">
-            {cardData.linkedin && (
-              <a href={`https://linkedin.com/in/${cardData.linkedin}`} className="w-10 h-10 rounded-full bg-amber-500/10 hover:bg-amber-500/20 flex items-center justify-center transition-colors">
-                <Linkedin size={18} className="text-amber-500/70" />
-              </a>
-            )}
-            {cardData.instagram && (
-              <a href={`https://instagram.com/${cardData.instagram?.replace('@', '')}`} className="w-10 h-10 rounded-full bg-amber-500/10 hover:bg-amber-500/20 flex items-center justify-center transition-colors">
-                <Instagram size={18} className="text-amber-500/70" />
-              </a>
-            )}
-            {cardData.website && (
-              <a href={`https://${cardData.website}`} className="w-10 h-10 rounded-full bg-amber-500/10 hover:bg-amber-500/20 flex items-center justify-center transition-colors">
-                <Globe size={18} className="text-amber-500/70" />
-              </a>
-            )}
-          </div>
+          {/* Actions list with labels - Luxe style */}
+          <ActionsList
+            phone={cardData.phone}
+            email={cardData.email}
+            location={cardData.location}
+            website={cardData.website}
+            linkedin={cardData.linkedin}
+            instagram={cardData.instagram}
+            twitter={cardData.twitter}
+            socialLinks={cardData.socialLinks}
+            variant="amber"
+            className="mb-8"
+          />
 
           {/* CTA Buttons */}
           <CardActionButtons 
