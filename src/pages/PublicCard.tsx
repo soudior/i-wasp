@@ -2,16 +2,19 @@
  * IWASP Public Card Page
  * Premium NFC card viewing with lead capture flow
  * Apple-level UX - Non-blocking consent
+ * RGPD compliant with subtle banner + explicit form consent
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useCard } from "@/hooks/useCards";
 import { useRecordScan } from "@/hooks/useScans";
+import { useVisitorTracking } from "@/hooks/useVisitorTracking";
 import { DigitalCard } from "@/components/DigitalCard";
 import { TemplateType, CardData } from "@/components/templates/CardTemplates";
 import { LeadConsentModal } from "@/components/LeadConsentModal";
 import { LeadCaptureSheet } from "@/components/LeadCaptureSheet";
+import { ConsentBanner } from "@/components/ConsentBanner";
 import { Sparkles } from "lucide-react";
 
 // Detect source from URL or referrer
@@ -41,31 +44,37 @@ const PublicCard = () => {
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [hasSeenConsent, setHasSeenConsent] = useState(false);
   const [source] = useState<"nfc" | "qr" | "link">(detectSource);
+  const [scanRecorded, setScanRecorded] = useState(false);
 
-  // Record scan and show consent on first load
+  // Visitor tracking with consent
+  const {
+    hasConsent,
+    trackAction,
+    giveConsent,
+    declineConsent,
+    saveVisitorLead,
+  } = useVisitorTracking(card?.id || "");
+
+  // Record scan on first load (without consent - just scan count)
   useEffect(() => {
-    if (card?.id && !hasSeenConsent) {
-      // Record the scan
+    if (card?.id && !scanRecorded) {
       recordScan.mutate(card.id);
-      
-      // Check if user has already seen consent for this card
-      const consentKey = `iwasp_consent_${card.id}`;
-      const hasConsented = sessionStorage.getItem(consentKey);
-      
-      if (!hasConsented) {
-        // Show consent modal after a brief delay for premium feel
-        const timer = setTimeout(() => {
-          setShowConsentModal(true);
-          setHasSeenConsent(true);
-        }, 1500);
-        
-        return () => clearTimeout(timer);
-      } else {
-        setHasSeenConsent(true);
-      }
+      setScanRecorded(true);
     }
-  }, [card?.id, hasSeenConsent]);
+  }, [card?.id, scanRecorded]);
 
+  // Handle consent from banner
+  const handleBannerAccept = useCallback(() => {
+    giveConsent();
+    // Save anonymous visitor lead with consent
+    saveVisitorLead();
+  }, [giveConsent, saveVisitorLead]);
+
+  const handleBannerDecline = useCallback(() => {
+    declineConsent();
+  }, [declineConsent]);
+
+  // Handle consent from modal (for sharing contact info)
   const handleConsent = () => {
     setShowConsentModal(false);
     setShowLeadForm(true);
@@ -87,7 +96,10 @@ const PublicCard = () => {
 
   const handleLeadComplete = (shared: boolean) => {
     setShowLeadForm(false);
-    // Could track analytics here
+    // Track the action if consent given
+    if (shared) {
+      trackAction("shared_contact");
+    }
   };
 
   // Transform card data to template format
@@ -182,7 +194,16 @@ const PublicCard = () => {
         </div>
       </div>
 
-      {/* Lead Consent Modal - Apple-style */}
+      {/* Subtle Consent Banner - Non-blocking */}
+      {card && (
+        <ConsentBanner
+          cardId={card.id}
+          onAccept={handleBannerAccept}
+          onDecline={handleBannerDecline}
+        />
+      )}
+
+      {/* Lead Consent Modal - For explicit contact sharing */}
       <LeadConsentModal
         open={showConsentModal}
         onConsent={handleConsent}
