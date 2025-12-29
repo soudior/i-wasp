@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { Plus, X, GripVertical } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Plus, X, GripVertical, AlertCircle, Check } from "lucide-react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SocialLink, getNetworkById } from "@/lib/socialNetworks";
+import { SocialLink, getNetworkById, normalizeUsername, validateUsername } from "@/lib/socialNetworks";
 import { SocialIcon } from "@/components/SocialIcon";
 import { SocialBottomSheet } from "@/components/SocialBottomSheet";
+import { cn } from "@/lib/utils";
 
 interface SocialLinksManagerProps {
   value: SocialLink[];
@@ -14,6 +15,7 @@ interface SocialLinksManagerProps {
 
 export function SocialLinksManager({ value, onChange }: SocialLinksManagerProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const handleAddNetwork = (network: { id: string }) => {
     const newLink: SocialLink = {
@@ -26,11 +28,45 @@ export function SocialLinksManager({ value, onChange }: SocialLinksManagerProps)
 
   const handleRemoveLink = (linkId: string) => {
     onChange(value.filter(l => l.id !== linkId));
+    // Clear validation error
+    setValidationErrors(prev => {
+      const next = { ...prev };
+      delete next[linkId];
+      return next;
+    });
   };
 
-  const handleUpdateLink = (linkId: string, newValue: string) => {
-    onChange(value.map(l => l.id === linkId ? { ...l, value: newValue } : l));
-  };
+  const handleUpdateLink = useCallback((linkId: string, newValue: string, networkId: string) => {
+    // Normalize the input as user types
+    const normalized = normalizeUsername(newValue, networkId);
+    
+    // Validate
+    const validation = validateUsername(newValue, networkId);
+    
+    if (newValue && !validation.valid) {
+      setValidationErrors(prev => ({ ...prev, [linkId]: validation.error || "Invalide" }));
+    } else {
+      setValidationErrors(prev => {
+        const next = { ...prev };
+        delete next[linkId];
+        return next;
+      });
+    }
+    
+    // Store normalized value
+    onChange(value.map(l => l.id === linkId ? { ...l, value: normalized } : l));
+  }, [value, onChange]);
+
+  // Handle blur to finalize normalization
+  const handleBlur = useCallback((linkId: string, networkId: string) => {
+    const link = value.find(l => l.id === linkId);
+    if (link && link.value) {
+      const normalized = normalizeUsername(link.value, networkId);
+      if (normalized !== link.value) {
+        onChange(value.map(l => l.id === linkId ? { ...l, value: normalized } : l));
+      }
+    }
+  }, [value, onChange]);
 
   const addedNetworkIds = value.map(l => l.networkId);
 
@@ -51,6 +87,9 @@ export function SocialLinksManager({ value, onChange }: SocialLinksManagerProps)
           {value.map((link) => {
             const network = getNetworkById(link.networkId);
             if (!network) return null;
+            
+            const error = validationErrors[link.id];
+            const isValid = link.value && !error;
 
             return (
               <Reorder.Item
@@ -61,23 +100,45 @@ export function SocialLinksManager({ value, onChange }: SocialLinksManagerProps)
                 exit={{ opacity: 0, x: -100 }}
                 transition={{ duration: 0.15 }}
               >
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/30 group">
+                <div className={cn(
+                  "flex items-center gap-3 p-3 rounded-xl bg-muted/30 border group transition-colors",
+                  error ? "border-destructive/50" : "border-border/30",
+                  isValid && "border-emerald-500/30"
+                )}>
                   <div className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-muted-foreground transition-colors">
                     <GripVertical size={16} />
                   </div>
                   
-                  <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center shrink-0 border border-border/50">
+                  <div className={cn(
+                    "w-10 h-10 rounded-xl bg-background flex items-center justify-center shrink-0 border transition-colors",
+                    error ? "border-destructive/30" : "border-border/50",
+                    isValid && "border-emerald-500/30"
+                  )}>
                     <SocialIcon networkId={link.networkId} size={18} className="text-muted-foreground" />
                   </div>
                   
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-muted-foreground mb-1 font-medium">{network.label}</p>
-                    <Input
-                      value={link.value}
-                      onChange={(e) => handleUpdateLink(link.id, e.target.value)}
-                      placeholder={network.placeholder}
-                      className="h-9 bg-background border-border/30 text-sm"
-                    />
+                    <div className="relative">
+                      <Input
+                        value={link.value}
+                        onChange={(e) => handleUpdateLink(link.id, e.target.value, link.networkId)}
+                        onBlur={() => handleBlur(link.id, link.networkId)}
+                        placeholder={network.placeholder}
+                        className={cn(
+                          "h-9 bg-background text-sm pr-8",
+                          error ? "border-destructive/50 focus-visible:ring-destructive/50" : "border-border/30"
+                        )}
+                      />
+                      {/* Status indicator */}
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                        {error && <AlertCircle size={14} className="text-destructive" />}
+                        {isValid && <Check size={14} className="text-emerald-500" />}
+                      </div>
+                    </div>
+                    {error && (
+                      <p className="text-xs text-destructive mt-1">{error}</p>
+                    )}
                   </div>
                   
                   <motion.button

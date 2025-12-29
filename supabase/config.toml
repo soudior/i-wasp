@@ -1,1 +1,4 @@
 project_id = "fyxiyevbbvidckzaequx"
+
+[functions.lead-webhook]
+verify_jwt = false
