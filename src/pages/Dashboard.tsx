@@ -4,12 +4,18 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCards, useUpdateCard, useDeleteCard } from "@/hooks/useCards";
 import { useLeads } from "@/hooks/useLeads";
 import { useScans } from "@/hooks/useScans";
+import { useUserOrders, getOrderStatusLabel, getOrderStatusColor } from "@/hooks/useOrders";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { DashboardCard } from "@/components/DashboardCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { formatPrice } from "@/lib/pricing";
+import { generateInvoicePDF, downloadInvoice } from "@/lib/invoiceGenerator";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import { 
   generateAppleWalletPass, 
   generateGoogleWalletPass,
@@ -20,7 +26,9 @@ import {
   Plus, CreditCard, Users, Eye, TrendingUp, 
   MoreVertical, Wallet, QrCode,
   Wifi, WifiOff, Pencil, Trash2, ExternalLink, Copy,
-  LogOut, X, Apple, Smartphone, ShoppingBag
+  LogOut, X, Apple, Smartphone, ShoppingBag,
+  Clock, CheckCircle2, Factory, Truck, Package,
+  Download, MapPin, ChevronRight, FileText, Loader2
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -47,21 +55,91 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+// Status icon mapping
+function getStatusIcon(status: string) {
+  switch (status) {
+    case "pending":
+      return <Clock className="h-3.5 w-3.5" />;
+    case "paid":
+      return <CheckCircle2 className="h-3.5 w-3.5" />;
+    case "in_production":
+      return <Factory className="h-3.5 w-3.5" />;
+    case "shipped":
+      return <Truck className="h-3.5 w-3.5" />;
+    case "delivered":
+      return <Package className="h-3.5 w-3.5" />;
+    default:
+      return <Package className="h-3.5 w-3.5" />;
+  }
+}
+
+// Order timeline step
+function OrderTimelineStep({ 
+  status, 
+  currentStatus, 
+  label 
+}: { 
+  status: string; 
+  currentStatus: string; 
+  label: string;
+}) {
+  const statusOrder = ["pending", "paid", "in_production", "shipped", "delivered"];
+  const currentIndex = statusOrder.indexOf(currentStatus);
+  const stepIndex = statusOrder.indexOf(status);
+  const isCompleted = stepIndex < currentIndex;
+  const isActive = stepIndex === currentIndex;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all ${
+        isCompleted 
+          ? "bg-green-500 text-white" 
+          : isActive 
+            ? "bg-primary text-primary-foreground animate-pulse" 
+            : "bg-secondary text-muted-foreground"
+      }`}>
+        {isCompleted ? <CheckCircle2 className="h-3 w-3" /> : getStatusIcon(status)}
+      </div>
+      <span className={`text-[10px] mt-1 text-center max-w-[60px] leading-tight ${
+        isCompleted || isActive ? "text-foreground" : "text-muted-foreground"
+      }`}>
+        {label}
+      </span>
+    </div>
+  );
+}
+
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { data: cards = [], isLoading: cardsLoading } = useCards();
   const { data: leads = [] } = useLeads();
   const { data: scans = [] } = useScans();
+  const { data: orders = [], isLoading: ordersLoading } = useUserOrders();
   const updateCard = useUpdateCard();
   const deleteCard = useDeleteCard();
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [walletCardId, setWalletCardId] = useState<string | null>(null);
+  const [downloadingInvoice, setDownloadingInvoice] = useState<string | null>(null);
 
   const selectedCard = cards.find(c => c.id === selectedCardId);
   const walletCard = cards.find(c => c.id === walletCardId);
+
+  const handleDownloadInvoice = async (order: any) => {
+    setDownloadingInvoice(order.id);
+    try {
+      const blob = await generateInvoicePDF(order);
+      downloadInvoice(blob, order.order_number);
+      toast.success("Facture téléchargée");
+    } catch (error) {
+      console.error("Failed to generate invoice:", error);
+      toast.error("Erreur lors de la génération");
+    } finally {
+      setDownloadingInvoice(null);
+    }
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -156,7 +234,7 @@ const Dashboard = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
             {[
               { label: "Cartes actives", value: cards.filter(c => c.is_active).length.toString(), icon: CreditCard },
-              { label: "Vues totales", value: totalViews.toString(), icon: Eye },
+              { label: "Commandes", value: orders.length.toString(), icon: ShoppingBag },
               { label: "Leads capturés", value: totalLeads.toString(), icon: Users },
               { label: "Taux de conversion", value: `${conversionRate}%`, icon: TrendingUp },
             ].map((stat, index) => (
@@ -178,6 +256,160 @@ const Dashboard = () => {
                 </Card>
               </div>
             ))}
+          </div>
+
+          {/* Orders Section - Premium Glassmorphism */}
+          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.15s' }}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-display text-xl font-semibold text-foreground flex items-center gap-2">
+                <ShoppingBag className="h-5 w-5" />
+                Mes commandes
+              </h2>
+              {orders.length > 0 && (
+                <Link to="/orders">
+                  <Button variant="outline" size="sm" className="gap-2">
+                    Voir tout
+                    <ChevronRight size={14} />
+                  </Button>
+                </Link>
+              )}
+            </div>
+
+            {ordersLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : orders.length === 0 ? (
+              <Card className="p-8 text-center card-glass border-border/50 backdrop-blur-xl">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-secondary/50 flex items-center justify-center">
+                  <ShoppingBag className="h-7 w-7 text-muted-foreground" />
+                </div>
+                <h3 className="font-display text-lg font-semibold mb-2">
+                  Aucune commande
+                </h3>
+                <p className="text-muted-foreground text-sm mb-5 max-w-xs mx-auto">
+                  Commandez votre carte NFC IWASP et rejoignez l'ère du networking intelligent.
+                </p>
+                <Link to="/checkout">
+                  <Button variant="chrome" className="gap-2">
+                    <ShoppingBag size={16} />
+                    Commander
+                  </Button>
+                </Link>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {orders.slice(0, 3).map((order, index) => (
+                  <Card 
+                    key={order.id} 
+                    className="card-glass border-border/50 backdrop-blur-xl overflow-hidden animate-fade-up hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
+                    style={{ animationDelay: `${0.2 + index * 0.05}s` }}
+                  >
+                    <div className="p-5">
+                      {/* Order header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                            <Package className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono font-semibold text-foreground">
+                                {order.order_number}
+                              </span>
+                              <Badge className={`${getOrderStatusColor(order.status)} text-xs`}>
+                                {getStatusIcon(order.status)}
+                                <span className="ml-1">{getOrderStatusLabel(order.status)}</span>
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {format(new Date(order.created_at), "d MMMM yyyy", { locale: fr })}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-foreground">
+                            {formatPrice(order.total_price_cents)}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {order.quantity} carte{order.quantity > 1 ? "s" : ""}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Timeline mini */}
+                      <div className="flex items-center justify-between px-2 py-3 bg-secondary/30 rounded-xl mb-4">
+                        <OrderTimelineStep status="pending" currentStatus={order.status} label="Reçue" />
+                        <div className="flex-1 h-0.5 bg-border mx-1" />
+                        <OrderTimelineStep status="paid" currentStatus={order.status} label="Confirmée" />
+                        <div className="flex-1 h-0.5 bg-border mx-1" />
+                        <OrderTimelineStep status="in_production" currentStatus={order.status} label="Production" />
+                        <div className="flex-1 h-0.5 bg-border mx-1" />
+                        <OrderTimelineStep status="shipped" currentStatus={order.status} label="Expédiée" />
+                        <div className="flex-1 h-0.5 bg-border mx-1" />
+                        <OrderTimelineStep status="delivered" currentStatus={order.status} label="Livrée" />
+                      </div>
+
+                      {/* Order details */}
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="flex items-start gap-2">
+                          <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                          <div className="text-sm">
+                            <p className="font-medium text-foreground">{order.shipping_name}</p>
+                            <p className="text-muted-foreground text-xs line-clamp-2">
+                              {order.shipping_address}, {order.shipping_city}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CreditCard className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                          <div className="text-sm">
+                            <p className="font-medium text-foreground">Paiement à la livraison</p>
+                            <p className="text-muted-foreground text-xs">
+                              Cash ou carte
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2 pt-3 border-t border-border/50">
+                        <Link to={`/orders/${order.id}`} className="flex-1">
+                          <Button variant="outline" size="sm" className="w-full gap-2">
+                            <ExternalLink size={14} />
+                            Voir détails
+                          </Button>
+                        </Link>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="gap-2"
+                          onClick={() => handleDownloadInvoice(order)}
+                          disabled={downloadingInvoice === order.id}
+                        >
+                          {downloadingInvoice === order.id ? (
+                            <Loader2 size={14} className="animate-spin" />
+                          ) : (
+                            <Download size={14} />
+                          )}
+                          Facture
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+
+                {orders.length > 3 && (
+                  <Link to="/orders" className="block">
+                    <Card className="p-4 text-center hover:bg-secondary/30 transition-colors cursor-pointer border-dashed">
+                      <span className="text-sm text-muted-foreground">
+                        Voir les {orders.length - 3} autres commandes
+                      </span>
+                    </Card>
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Cards Grid - 3D Floating Cards */}
