@@ -11,11 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DigitalCard as DigitalCardPreview } from "@/components/DigitalCard";
+import { PhotoUpload } from "@/components/PhotoUpload";
 import { toast } from "sonner";
 import { 
   User, Mail, Phone, MapPin, Globe, Briefcase, Building2, 
   MessageSquare, Linkedin, Instagram, Twitter, Save, ArrowLeft,
-  Sparkles
+  Sparkles, Camera, Image
 } from "lucide-react";
 
 const CreateCard = () => {
@@ -40,6 +41,8 @@ const CreateCard = () => {
     instagram: "",
     twitter: "",
     tagline: "",
+    photoUrl: null as string | null,
+    logoUrl: null as string | null,
   });
 
   // Load card data if editing
@@ -60,6 +63,8 @@ const CreateCard = () => {
           instagram: card.instagram || "",
           twitter: card.twitter || "",
           tagline: card.tagline || "",
+          photoUrl: card.photo_url || null,
+          logoUrl: card.logo_url || null,
         });
       }
     }
@@ -92,6 +97,8 @@ const CreateCard = () => {
             instagram: formData.instagram || null,
             twitter: formData.twitter || null,
             tagline: formData.tagline || null,
+            photo_url: formData.photoUrl,
+            logo_url: formData.logoUrl,
           },
         });
       } else {
@@ -108,6 +115,8 @@ const CreateCard = () => {
           instagram: formData.instagram || undefined,
           twitter: formData.twitter || undefined,
           tagline: formData.tagline || undefined,
+          photo_url: formData.photoUrl || undefined,
+          logo_url: formData.logoUrl || undefined,
         });
       }
       navigate("/dashboard");
@@ -152,11 +161,46 @@ const CreateCard = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <Card variant="premium" className="p-6">
-                <Tabs defaultValue="info" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 bg-secondary mb-6">
+                <Tabs defaultValue="media" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3 bg-secondary mb-6">
+                    <TabsTrigger value="media">Photo & Logo</TabsTrigger>
                     <TabsTrigger value="info">Informations</TabsTrigger>
                     <TabsTrigger value="social">Réseaux sociaux</TabsTrigger>
                   </TabsList>
+
+                  <TabsContent value="media" className="space-y-6">
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="flex items-center gap-2 mb-3">
+                          <Camera size={14} className="text-chrome" />
+                          Photo de profil
+                        </Label>
+                        <PhotoUpload
+                          value={formData.photoUrl}
+                          onChange={(url) => setFormData({ ...formData, photoUrl: url })}
+                          type="photo"
+                        />
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Recommandé: Image carrée, 400x400px minimum
+                        </p>
+                      </div>
+
+                      <div>
+                        <Label className="flex items-center gap-2 mb-3">
+                          <Image size={14} className="text-chrome" />
+                          Logo de l'entreprise
+                        </Label>
+                        <PhotoUpload
+                          value={formData.logoUrl}
+                          onChange={(url) => setFormData({ ...formData, logoUrl: url })}
+                          type="logo"
+                        />
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Recommandé: Format rectangulaire, fond transparent
+                        </p>
+                      </div>
+                    </div>
+                  </TabsContent>
 
                   <TabsContent value="info" className="space-y-5">
                     <div className="grid grid-cols-2 gap-4">
@@ -399,6 +443,8 @@ const CreateCard = () => {
                   linkedin: formData.linkedin || "alexandre-dubois",
                   instagram: formData.instagram || "@adubois",
                   tagline: formData.tagline || "L'excellence en toute simplicité",
+                  photoUrl: formData.photoUrl,
+                  logoUrl: formData.logoUrl,
                 }} 
                 showWalletButtons={false}
               />
