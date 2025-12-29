@@ -12,11 +12,12 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DigitalCard as DigitalCardPreview } from "@/components/DigitalCard";
 import { PhotoUpload } from "@/components/PhotoUpload";
+import { templateInfo, TemplateType } from "@/components/templates/CardTemplates";
 import { toast } from "sonner";
 import { 
   User, Mail, Phone, MapPin, Globe, Briefcase, Building2, 
   MessageSquare, Linkedin, Instagram, Twitter, Save, ArrowLeft,
-  Sparkles, Camera, Image
+  Sparkles, Camera, Image, Palette, Check
 } from "lucide-react";
 
 const CreateCard = () => {
@@ -28,6 +29,7 @@ const CreateCard = () => {
   const createCard = useCreateCard();
   const updateCard = useUpdateCard();
   
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>("executive");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -66,6 +68,7 @@ const CreateCard = () => {
           photoUrl: card.photo_url || null,
           logoUrl: card.logo_url || null,
         });
+        setSelectedTemplate((card.template as TemplateType) || "executive");
       }
     }
   }, [editId, cards]);
@@ -99,6 +102,7 @@ const CreateCard = () => {
             tagline: formData.tagline || null,
             photo_url: formData.photoUrl,
             logo_url: formData.logoUrl,
+            template: selectedTemplate,
           },
         });
       } else {
@@ -117,6 +121,7 @@ const CreateCard = () => {
           tagline: formData.tagline || undefined,
           photo_url: formData.photoUrl || undefined,
           logo_url: formData.logoUrl || undefined,
+          template: selectedTemplate,
         });
       }
       navigate("/dashboard");
@@ -161,12 +166,44 @@ const CreateCard = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <Card variant="premium" className="p-6">
-                <Tabs defaultValue="media" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 bg-secondary mb-6">
-                    <TabsTrigger value="media">Photo & Logo</TabsTrigger>
-                    <TabsTrigger value="info">Informations</TabsTrigger>
-                    <TabsTrigger value="social">Réseaux sociaux</TabsTrigger>
+                <Tabs defaultValue="template" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4 bg-secondary mb-6">
+                    <TabsTrigger value="template">Template</TabsTrigger>
+                    <TabsTrigger value="media">Media</TabsTrigger>
+                    <TabsTrigger value="info">Infos</TabsTrigger>
+                    <TabsTrigger value="social">Social</TabsTrigger>
                   </TabsList>
+
+                  <TabsContent value="template" className="space-y-4">
+                    <div>
+                      <Label className="flex items-center gap-2 mb-4">
+                        <Palette size={14} className="text-chrome" />
+                        Choisissez un template
+                      </Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {templateInfo.map((template) => (
+                          <button
+                            key={template.id}
+                            type="button"
+                            onClick={() => setSelectedTemplate(template.id as TemplateType)}
+                            className={`relative p-4 rounded-xl border-2 text-left transition-all ${
+                              selectedTemplate === template.id
+                                ? "border-primary bg-primary/5"
+                                : "border-border/50 hover:border-border"
+                            }`}
+                          >
+                            {selectedTemplate === template.id && (
+                              <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                                <Check size={12} className="text-primary-foreground" />
+                              </div>
+                            )}
+                            <h4 className="font-medium text-foreground mb-1">{template.name}</h4>
+                            <p className="text-xs text-muted-foreground">{template.description}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </TabsContent>
 
                   <TabsContent value="media" className="space-y-6">
                     <div className="space-y-4">
@@ -446,6 +483,7 @@ const CreateCard = () => {
                   photoUrl: formData.photoUrl,
                   logoUrl: formData.logoUrl,
                 }} 
+                template={selectedTemplate}
                 showWalletButtons={false}
               />
             </motion.div>
