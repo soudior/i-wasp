@@ -9,6 +9,8 @@ import { getMapUrl, isIOS } from "@/lib/socialNetworks";
 
 interface LocationPickerProps {
   address: string;
+  latitude?: number;
+  longitude?: number;
   className?: string;
   iconClassName?: string;
   textClassName?: string;
@@ -17,15 +19,35 @@ interface LocationPickerProps {
 
 export function LocationPicker({ 
   address, 
+  latitude,
+  longitude,
   className = "", 
   iconClassName = "",
   textClassName = "",
   variant = "inline" 
 }: LocationPickerProps) {
-  if (!address) return null;
+  if (!address && !latitude && !longitude) return null;
+
+  const hasCoordinates = latitude !== undefined && longitude !== undefined;
 
   const handleOpenMap = (app: "google" | "waze" | "apple") => {
-    window.open(getMapUrl(address, app), "_blank");
+    let url: string;
+    
+    if (hasCoordinates) {
+      // Use precise coordinates when available
+      if (app === "google") {
+        url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+      } else if (app === "waze") {
+        url = `https://www.waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+      } else {
+        url = `https://maps.apple.com/?ll=${latitude},${longitude}&q=${encodeURIComponent(address || "Location")}`;
+      }
+    } else {
+      // Fall back to address-based navigation
+      url = getMapUrl(address, app);
+    }
+    
+    window.open(url, "_blank");
   };
 
   if (variant === "minimal") {
