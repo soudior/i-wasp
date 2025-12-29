@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Playfair Display', 'Georgia', 'serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['SF Pro Display', 'Inter', 'system-ui', 'sans-serif'],
+        body: ['SF Pro Text', 'Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,14 +51,21 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        gold: {
-          DEFAULT: "hsl(var(--gold))",
-          light: "hsl(var(--gold-light))",
-          dark: "hsl(var(--gold-dark))",
-        },
         chrome: {
           DEFAULT: "hsl(var(--chrome))",
           light: "hsl(var(--chrome-light))",
+          dark: "hsl(var(--chrome-dark))",
+        },
+        glass: "hsl(var(--glass) / var(--glass-opacity))",
+        surface: {
+          0: "hsl(var(--surface-0))",
+          1: "hsl(var(--surface-1))",
+          2: "hsl(var(--surface-2))",
+          3: "hsl(var(--surface-3))",
+        },
+        glow: {
+          primary: "hsl(var(--glow-primary))",
+          subtle: "hsl(var(--glow-subtle))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -75,6 +82,9 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
+        "4xl": "2rem",
       },
       keyframes: {
         "accordion-down": {
@@ -89,7 +99,7 @@ export default {
           from: { opacity: "0" },
           to: { opacity: "1" },
         },
-        "slide-up": {
+        "fade-up": {
           from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
@@ -97,17 +107,58 @@ export default {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
+        "float-3d": {
+          "0%, 100%": { 
+            transform: "translateY(0px) rotateX(0deg) rotateY(0deg)" 
+          },
+          "25%": {
+            transform: "translateY(-8px) rotateX(2deg) rotateY(-1deg)"
+          },
+          "50%": { 
+            transform: "translateY(-12px) rotateX(0deg) rotateY(2deg)" 
+          },
+          "75%": {
+            transform: "translateY(-6px) rotateX(-1deg) rotateY(0deg)"
+          },
+        },
+        "pulse-glow": {
+          "0%, 100%": { 
+            opacity: "0.4",
+            transform: "scale(1)"
+          },
+          "50%": { 
+            opacity: "0.7",
+            transform: "scale(1.02)"
+          },
+        },
+        "shimmer": {
+          from: { transform: "translateX(-100%)" },
+          to: { transform: "translateX(100%)" },
+        },
+        "spin-slow": {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.6s ease-out forwards",
-        "slide-up": "slide-up 0.6s ease-out forwards",
+        "fade-up": "fade-up 0.6s ease-out forwards",
         "scale-in": "scale-in 0.5s ease-out forwards",
+        "float-3d": "float-3d 8s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 4s ease-in-out infinite",
+        "shimmer": "shimmer 3s ease-in-out infinite",
+        "spin-slow": "spin-slow 20s linear infinite",
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-gold': 'linear-gradient(135deg, hsl(43 74% 66%), hsl(43 74% 50%))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      boxShadow: {
+        'glass': '0 25px 50px -12px hsl(0 0% 0% / 0.6), 0 0 0 1px hsl(0 0% 100% / 0.05)',
+        'glow': '0 0 60px hsl(220 100% 70% / 0.2)',
+        'glow-lg': '0 0 100px hsl(220 100% 70% / 0.3)',
       },
     },
   },

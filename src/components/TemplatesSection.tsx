@@ -108,7 +108,7 @@ export function TemplatesSection() {
           className="text-center"
         >
           <Link to="/templates">
-            <Button variant="gold" size="lg">
+            <Button variant="chrome" size="lg">
               Voir tous les templates
             </Button>
           </Link>

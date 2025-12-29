@@ -53,7 +53,7 @@ const Dashboard = () => {
               </p>
             </div>
             <Link to="/create">
-              <Button variant="gold">
+              <Button variant="chrome">
                 <Plus size={18} />
                 Nouvelle carte
               </Button>
