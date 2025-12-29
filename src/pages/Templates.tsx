@@ -14,6 +14,7 @@ import cardNavyExecutive from "@/assets/cards/card-navy-executive.png";
 import cardGoldAccent from "@/assets/cards/card-gold-accent.png";
 import cardHotel from "@/assets/cards/card-hotel.png";
 import cardTourism from "@/assets/cards/card-tourism.png";
+import cardLuxuryEco from "@/assets/cards/card-luxury-eco.png";
 
 // Phone preview imports
 import phoneBlack from "@/assets/phones/phone-black.png";
@@ -22,8 +23,9 @@ import phoneNavy from "@/assets/phones/phone-navy.png";
 import phoneGold from "@/assets/phones/phone-gold.png";
 import phoneHotel from "@/assets/phones/phone-hotel.png";
 import phoneTourism from "@/assets/phones/phone-tourism.png";
+import phoneLuxury from "@/assets/phones/phone-luxury.png";
 
-const categories = ["Tous", "Business", "Essential", "Premium", "Hospitality", "Travel"];
+const categories = ["Tous", "Business", "Essential", "Premium", "Eco-Luxe", "Hospitality", "Travel"];
 
 const templates = [
   { 
@@ -61,6 +63,15 @@ const templates = [
     phoneImage: phoneGold,
     description: "L'opulence assumée. Or champagne pour une présence inoubliable.",
     features: ["Finition or champagne", "Gravure premium", "Metal brossé", "Éclat luxueux"]
+  },
+  { 
+    id: "luxury", 
+    name: "Liana x I-WASP", 
+    category: "Eco-Luxe", 
+    cardImage: cardLuxuryEco, 
+    phoneImage: phoneLuxury,
+    description: "Luxe numérique éco-responsable. Design émeraude premium pour une identité durable.",
+    features: ["Design éco-luxe", "Émeraude premium", "Carbon neutral", "Tech durable"]
   },
   { 
     id: "hotel", 
