@@ -532,9 +532,10 @@ export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onS
 // Import IWASP templates
 import { IWASPSignatureTemplate, IWASPSignatureLightTemplate } from "./IWASPSignatureTemplate";
 import { HotelGuideTemplate, HotelGuideLightTemplate } from "./HotelGuideTemplate";
+import { HotelConciergeTemplate } from "./HotelConciergeTemplate";
 
 // Template selector component
-export type TemplateType = "production" | "production-light" | "signature" | "signature-light" | "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "hotel-guide" | "hotel-guide-light" | "default";
+export type TemplateType = "production" | "production-light" | "signature" | "signature-light" | "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "hotel-guide" | "hotel-guide-light" | "hotel-concierge" | "default";
 
 export function getTemplateComponent(template: TemplateType) {
   switch (template) {
@@ -562,6 +563,8 @@ export function getTemplateComponent(template: TemplateType) {
       return HotelGuideTemplate as any;
     case "hotel-guide-light":
       return HotelGuideLightTemplate as any;
+    case "hotel-concierge":
+      return HotelConciergeTemplate as any;
     default:
       return IWASPProductionTemplate; // IWASP Production is the DEFAULT
   }
@@ -574,6 +577,7 @@ export const templateInfo = [
   { id: "signature-light", name: "IWASP Signature Light", description: "Variante claire de la Signature" },
   { id: "hotel-guide", name: "Hotel & Tourist Guide", description: "Hôtels, riads, guides touristiques", category: "hospitality" },
   { id: "hotel-guide-light", name: "Hotel Guide Light", description: "Variante claire pour hôtels", category: "hospitality" },
+  { id: "hotel-concierge", name: "Hotel Concierge", description: "Services de conciergerie premium", category: "hospitality" },
   { id: "executive", name: "Série Business", description: "Pour les dirigeants et cadres" },
   { id: "minimal", name: "Série Essential", description: "Élégance épurée" },
   { id: "modern", name: "Série Contemporary", description: "Design intemporel" },
