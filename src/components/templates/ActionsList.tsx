@@ -18,6 +18,7 @@ interface ActionItem {
   value: string;
   onClick: () => void;
   priority: number;
+  trackingAction?: string; // For lead scoring
 }
 
 interface ActionsListProps {
@@ -31,6 +32,7 @@ interface ActionsListProps {
   socialLinks?: SocialLink[];
   variant?: "dark" | "light" | "glass" | "amber" | "rose" | "tech";
   className?: string;
+  onActionTrack?: (actionName: string) => void; // For lead scoring
 }
 
 // Labels and subtitles for actions - Apple style descriptive
@@ -138,6 +140,7 @@ export function ActionsList({
   socialLinks = [],
   variant = "dark",
   className,
+  onActionTrack,
 }: ActionsListProps) {
   const s = variantStyles[variant];
   
@@ -176,6 +179,10 @@ export function ActionsList({
   const handleClick = (action: ActionItem) => {
     if (!isLongPress.current) {
       action.onClick();
+      // Track action for lead scoring
+      if (onActionTrack && action.trackingAction) {
+        onActionTrack(action.trackingAction);
+      }
     }
     isLongPress.current = false;
   };
@@ -206,6 +213,7 @@ export function ActionsList({
       value: phone,
       onClick: () => handlePhoneTap(phone),
       priority: 1,
+      trackingAction: "phone_click",
     });
   }
   
@@ -221,6 +229,7 @@ export function ActionsList({
       value: phone,
       onClick: () => handleWhatsAppTap(phone),
       priority: 2,
+      trackingAction: "whatsapp_click",
     });
   }
   
@@ -236,6 +245,7 @@ export function ActionsList({
       value: phone,
       onClick: () => handleSmsTap(phone),
       priority: 3,
+      trackingAction: "sms_click",
     });
   }
   
@@ -251,6 +261,7 @@ export function ActionsList({
       value: email,
       onClick: () => handleEmailTap(email),
       priority: 4,
+      trackingAction: "email_click",
     });
   }
   
@@ -266,6 +277,7 @@ export function ActionsList({
       value: website,
       onClick: () => handleWebsiteTap(website),
       priority: 5,
+      trackingAction: "website_click",
     });
   }
   
@@ -281,6 +293,7 @@ export function ActionsList({
       value: `https://linkedin.com/in/${linkedin}`,
       onClick: () => handleSocialTap("linkedin", linkedin),
       priority: 6,
+      trackingAction: "social_click",
     });
   }
   
@@ -296,6 +309,7 @@ export function ActionsList({
       value: `https://instagram.com/${instagram.replace("@", "")}`,
       onClick: () => handleSocialTap("instagram", instagram),
       priority: 7,
+      trackingAction: "social_click",
     });
   }
   
@@ -311,6 +325,7 @@ export function ActionsList({
       value: `https://x.com/${twitter.replace("@", "")}`,
       onClick: () => handleSocialTap("twitter", twitter),
       priority: 8,
+      trackingAction: "social_click",
     });
   }
   
@@ -327,6 +342,7 @@ export function ActionsList({
       value: link.value,
       onClick: () => handleSocialTap(link.networkId, link.value),
       priority: 10 + index,
+      trackingAction: "social_click",
     });
   });
   
