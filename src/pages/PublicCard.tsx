@@ -68,20 +68,33 @@ const PublicCard = () => {
     logoUrl: card.logo_url || undefined,
   } : undefined;
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4 animate-fade-in">
+  // Consistent structure - always render container, toggle visibility
+  return (
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background effects - always rendered */}
+      <div className="absolute inset-0 bg-grid opacity-30" />
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] orb opacity-30" />
+      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] orb opacity-20" />
+      <div className="noise" />
+
+      {/* Loading state */}
+      <div 
+        className={`absolute inset-0 z-20 flex items-center justify-center bg-background transition-opacity duration-200 ${
+          isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="flex flex-col items-center gap-4">
           <div className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
         </div>
       </div>
-    );
-  }
 
-  if (error || !card) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <div className="text-center animate-fade-up">
+      {/* Error state */}
+      <div 
+        className={`absolute inset-0 z-20 flex items-center justify-center p-6 bg-background transition-opacity duration-200 ${
+          !isLoading && (error || !card) ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="text-center">
           <Sparkles size={48} className="mx-auto mb-4 text-muted-foreground" />
           <h1 className="font-display text-2xl font-bold text-foreground mb-2">
             Carte introuvable
@@ -91,25 +104,20 @@ const PublicCard = () => {
           </p>
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-grid opacity-30" />
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] orb opacity-30 animate-pulse-glow" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] orb opacity-20" />
-      <div className="noise" />
-
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-6 py-12">
+      {/* Main content */}
+      <div 
+        className={`relative z-10 min-h-screen flex items-center justify-center p-6 py-12 transition-opacity duration-200 ${
+          !isLoading && card && !error ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+      >
         <div className="w-full max-w-md">
           {/* Card using selected template */}
-          <div className="perspective-2000 animate-card-enter">
+          <div className="perspective-2000">
             {cardData && (
               <DigitalCard
                 data={cardData}
-                template={(card.template as TemplateType) || "executive"}
+                template={(card?.template as TemplateType) || "executive"}
                 showWalletButtons={true}
                 onShareInfo={() => setShowLeadForm(true)}
               />
@@ -117,7 +125,7 @@ const PublicCard = () => {
           </div>
 
           {/* IWASP branding */}
-          <div className="text-center mt-8 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+          <div className="text-center mt-8">
             <p className="text-xs text-muted-foreground">
               Powered by <span className="font-semibold text-foreground">IWASP</span>
             </p>
@@ -125,92 +133,94 @@ const PublicCard = () => {
         </div>
       </div>
 
-      {/* Lead capture modal */}
-      {showLeadForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-background/80 backdrop-blur-xl animate-fade-in">
-          <div className="w-full max-w-sm card-glass p-6 animate-scale-up">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-display text-lg font-semibold text-foreground">
-                Partager mes coordonnées
-              </h2>
-              <button
-                onClick={() => setShowLeadForm(false)}
-                className="w-8 h-8 rounded-full bg-surface-2 hover:bg-surface-3 flex items-center justify-center transition-colors"
-              >
-                <X size={16} />
-              </button>
+      {/* Lead capture modal - always in DOM, toggled via CSS */}
+      <div 
+        className={`fixed inset-0 z-50 flex items-center justify-center p-6 bg-background/80 backdrop-blur-xl transition-opacity duration-200 ${
+          showLeadForm ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="w-full max-w-sm card-glass p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-display text-lg font-semibold text-foreground">
+              Partager mes coordonnées
+            </h2>
+            <button
+              onClick={() => setShowLeadForm(false)}
+              className="w-8 h-8 rounded-full bg-surface-2 hover:bg-surface-3 flex items-center justify-center transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          <form onSubmit={handleShareInfo} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="lead-name" className="flex items-center gap-2 text-sm">
+                <User size={14} className="text-chrome" />
+                Nom complet
+              </Label>
+              <Input
+                id="lead-name"
+                value={leadData.name}
+                onChange={(e) => setLeadData({ ...leadData, name: e.target.value })}
+                placeholder="Jean Dupont"
+                className="bg-surface-2 border-border/50 h-11"
+              />
             </div>
 
-            <form onSubmit={handleShareInfo} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="lead-name" className="flex items-center gap-2 text-sm">
-                  <User size={14} className="text-chrome" />
-                  Nom complet
-                </Label>
-                <Input
-                  id="lead-name"
-                  value={leadData.name}
-                  onChange={(e) => setLeadData({ ...leadData, name: e.target.value })}
-                  placeholder="Jean Dupont"
-                  className="bg-surface-2 border-border/50 h-11"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="lead-email" className="flex items-center gap-2 text-sm">
+                <Mail size={14} className="text-chrome" />
+                Email
+              </Label>
+              <Input
+                id="lead-email"
+                type="email"
+                value={leadData.email}
+                onChange={(e) => setLeadData({ ...leadData, email: e.target.value })}
+                placeholder="jean@exemple.com"
+                className="bg-surface-2 border-border/50 h-11"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="lead-email" className="flex items-center gap-2 text-sm">
-                  <Mail size={14} className="text-chrome" />
-                  Email
-                </Label>
-                <Input
-                  id="lead-email"
-                  type="email"
-                  value={leadData.email}
-                  onChange={(e) => setLeadData({ ...leadData, email: e.target.value })}
-                  placeholder="jean@exemple.com"
-                  className="bg-surface-2 border-border/50 h-11"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="lead-phone" className="flex items-center gap-2 text-sm">
+                <Phone size={14} className="text-chrome" />
+                Téléphone
+              </Label>
+              <Input
+                id="lead-phone"
+                value={leadData.phone}
+                onChange={(e) => setLeadData({ ...leadData, phone: e.target.value })}
+                placeholder="+33 6 12 34 56 78"
+                className="bg-surface-2 border-border/50 h-11"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="lead-phone" className="flex items-center gap-2 text-sm">
-                  <Phone size={14} className="text-chrome" />
-                  Téléphone
-                </Label>
-                <Input
-                  id="lead-phone"
-                  value={leadData.phone}
-                  onChange={(e) => setLeadData({ ...leadData, phone: e.target.value })}
-                  placeholder="+33 6 12 34 56 78"
-                  className="bg-surface-2 border-border/50 h-11"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="lead-company" className="flex items-center gap-2 text-sm">
+                <Building2 size={14} className="text-chrome" />
+                Entreprise
+              </Label>
+              <Input
+                id="lead-company"
+                value={leadData.company}
+                onChange={(e) => setLeadData({ ...leadData, company: e.target.value })}
+                placeholder="Ma Société"
+                className="bg-surface-2 border-border/50 h-11"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="lead-company" className="flex items-center gap-2 text-sm">
-                  <Building2 size={14} className="text-chrome" />
-                  Entreprise
-                </Label>
-                <Input
-                  id="lead-company"
-                  value={leadData.company}
-                  onChange={(e) => setLeadData({ ...leadData, company: e.target.value })}
-                  placeholder="Ma Société"
-                  className="bg-surface-2 border-border/50 h-11"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                variant="chrome"
-                className="w-full h-11"
-                disabled={createLead.isPending}
-              >
-                {createLead.isPending ? "Envoi..." : "Envoyer"}
-              </Button>
-            </form>
-          </div>
+            <Button
+              type="submit"
+              variant="chrome"
+              className="w-full h-11"
+              disabled={createLead.isPending}
+            >
+              {createLead.isPending ? "Envoi..." : "Envoyer"}
+            </Button>
+          </form>
         </div>
-      )}
+      </div>
     </div>
   );
 };
