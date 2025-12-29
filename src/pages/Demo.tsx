@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, MouseEvent } from "react";
 import { CardData } from "@/components/templates/CardTemplates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +12,54 @@ import { downloadVCard } from "@/lib/vcard";
 import { addToAppleWallet, addToGoogleWallet, WalletCardData } from "@/lib/walletService";
 import { toast } from "sonner";
 import { IWASPLogoSimple } from "@/components/IWASPLogo";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
 import demoProfileImage from "@/assets/demo-profile.jpg";
+
+// 3D Tilt hook for premium hover effect
+function useTilt3D(intensity: number = 15) {
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const brightness = useMotionValue(1);
+  
+  const springConfig = { stiffness: 300, damping: 30 };
+  const smoothRotateX = useSpring(rotateX, springConfig);
+  const smoothRotateY = useSpring(rotateY, springConfig);
+  const smoothBrightness = useSpring(brightness, { stiffness: 200, damping: 25 });
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const mouseX = e.clientX - centerX;
+    const mouseY = e.clientY - centerY;
+    
+    const rotateXValue = (mouseY / (rect.height / 2)) * -intensity;
+    const rotateYValue = (mouseX / (rect.width / 2)) * intensity;
+    
+    rotateX.set(rotateXValue);
+    rotateY.set(rotateYValue);
+    brightness.set(1.05);
+  };
+
+  const handleMouseLeave = () => {
+    rotateX.set(0);
+    rotateY.set(0);
+    brightness.set(1);
+  };
+
+  return {
+    style: {
+      rotateX: smoothRotateX,
+      rotateY: smoothRotateY,
+      filter: smoothBrightness,
+    },
+    handlers: {
+      onMouseMove: handleMouseMove,
+      onMouseLeave: handleMouseLeave,
+    },
+  };
+}
 
 // Demo card data - IWASP showcase
 const demoCardData: CardData = {
@@ -124,6 +170,9 @@ export default function Demo() {
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [loadingApple, setLoadingApple] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
+  
+  // 3D Tilt effect
+  const { style: tiltStyle, handlers: tiltHandlers } = useTilt3D(12);
   
   // Parallax scroll effect
   const containerRef = useRef<HTMLDivElement>(null);
@@ -246,12 +295,23 @@ export default function Demo() {
           style={{ y: smoothY, opacity: parallaxOpacity }}
         >
           
-          {/* Premium Card Container with entry animation */}
+          {/* Premium Card Container with entry animation and 3D tilt */}
           <motion.div 
             className="relative rounded-[28px] overflow-hidden bg-[hsl(0,0%,6%)] border border-white/[0.06] shadow-2xl shadow-black/50"
             variants={cardVariants}
             initial="hidden"
             animate="visible"
+            style={{ 
+              rotateX: tiltStyle.rotateX, 
+              rotateY: tiltStyle.rotateY,
+              transformPerspective: 1000,
+              transformStyle: "preserve-3d",
+            }}
+            {...tiltHandlers}
+            whileHover={{ 
+              boxShadow: "0 50px 100px -20px rgba(0,0,0,0.7), 0 0 60px rgba(245,158,11,0.08)",
+            }}
+            transition={{ boxShadow: { duration: 0.3 } }}
           >
             {/* Subtle top gradient line */}
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
