@@ -40,6 +40,99 @@ export const CARD_PREVIEW_PX = {
   HEIGHT: Math.round(CARD_DIMENSIONS.HEIGHT_MM * PREVIEW_SCALE), // ~189px
 };
 
+// ============= LOCKED LOGO SIZE CONSTRAINTS (IWASP SIGNATURE) =============
+
+export const LOGO_SIZE_CONSTRAINTS = {
+  // Print dimensions in mm
+  DEFAULT_WIDTH_MM: 45, // 42-48mm default range center
+  MIN_WIDTH_MM: 36,
+  MAX_WIDTH_MM: 52,
+  // Screen preview conversions (mm * PREVIEW_SCALE)
+  get DEFAULT_WIDTH_PX() { return Math.round(this.DEFAULT_WIDTH_MM * PREVIEW_SCALE); }, // ~158px
+  get MIN_WIDTH_PX() { return Math.round(this.MIN_WIDTH_MM * PREVIEW_SCALE); }, // ~126px
+  get MAX_WIDTH_PX() { return Math.round(this.MAX_WIDTH_MM * PREVIEW_SCALE); }, // ~182px
+  // 300 DPI for print
+  get DEFAULT_WIDTH_300DPI() { return Math.round(this.DEFAULT_WIDTH_MM * MM_TO_PX_300DPI); }, // ~531px
+  get MIN_WIDTH_300DPI() { return Math.round(this.MIN_WIDTH_MM * MM_TO_PX_300DPI); }, // ~425px
+  get MAX_WIDTH_300DPI() { return Math.round(this.MAX_WIDTH_MM * MM_TO_PX_300DPI); }, // ~614px
+};
+
+// ============= OFFICIAL IWASP PREMIUM BACKGROUNDS =============
+
+export const PREMIUM_BACKGROUNDS = {
+  white: {
+    id: "white",
+    name: "Blanc Premium",
+    hex: "#ffffff",
+    cmyk: "0,0,0,0",
+    textColor: "#0a0a0a",
+    accentColor: "#6b7280",
+  },
+  black: {
+    id: "black",
+    name: "Noir Luxe",
+    hex: "#0a0a0a",
+    cmyk: "0,0,0,100",
+    textColor: "#ffffff",
+    accentColor: "#a0a0a0",
+  },
+  navy: {
+    id: "navy",
+    name: "Bleu Navy",
+    hex: "#1e3a5f",
+    cmyk: "68,40,0,63",
+    textColor: "#ffffff",
+    accentColor: "#94a3b8",
+  },
+  burgundy: {
+    id: "burgundy",
+    name: "Bordeaux",
+    hex: "#722f37",
+    cmyk: "0,58,52,55",
+    textColor: "#ffffff",
+    accentColor: "#e8d5d7",
+  },
+  lightGrey: {
+    id: "lightGrey",
+    name: "Gris Clair",
+    hex: "#f0f0f0",
+    cmyk: "0,0,0,6",
+    textColor: "#1a1a1a",
+    accentColor: "#6b7280",
+  },
+} as const;
+
+export type PremiumBackgroundId = keyof typeof PREMIUM_BACKGROUNDS;
+
+// ============= BRAND BACKGROUND IMAGE CONFIG =============
+
+export interface BrandBackgroundConfig {
+  type: "solid" | "image";
+  // Solid background
+  solidColorId?: PremiumBackgroundId;
+  // Image background
+  imageUrl?: string;
+  imageBlur?: number; // 0-15px (light blur for readability)
+  imageOverlay?: number; // 0-60% overlay darkness
+}
+
+export const DEFAULT_BRAND_BACKGROUND: BrandBackgroundConfig = {
+  type: "solid",
+  solidColorId: "white",
+};
+
+// Image background quality requirements
+export const BACKGROUND_IMAGE_REQUIREMENTS = {
+  MIN_WIDTH: 1000, // pixels
+  MIN_HEIGHT: 600, // pixels
+  MAX_FILE_SIZE: 15 * 1024 * 1024, // 15MB
+  ALLOWED_FORMATS: ["image/png", "image/jpeg", "image/webp"],
+  DEFAULT_BLUR: 4, // px
+  DEFAULT_OVERLAY: 20, // %
+  MAX_BLUR: 15,
+  MAX_OVERLAY: 60,
+};
+
 // ============= OFFICIAL IWASP COLOR PALETTES =============
 
 // IWASP Black - Premium dark luxury
@@ -127,15 +220,22 @@ export const PRINT_COLORS = {
     textColor: "#ffffff",
     accentColor: "#a8d5c5",
   },
+  lightGrey: { 
+    name: "Gris Clair", 
+    hex: "#f0f0f0", 
+    cmyk: "0,0,0,6",
+    textColor: "#1a1a1a",
+    accentColor: "#6b7280",
+  },
 } as const;
 
 export type PrintColor = keyof typeof PRINT_COLORS;
 
 // ============= OFFICIAL IWASP TEMPLATES =============
 
-export type PrintTemplateType = "iwasp-black" | "iwasp-pure" | "iwasp-corporate";
+export type PrintTemplateType = "iwasp-signature" | "iwasp-black" | "iwasp-pure" | "iwasp-corporate";
 
-// Logo background options
+// Logo background options (legacy support)
 export type LogoBackgroundType = "solid" | "image";
 
 export interface LogoBackgroundConfig {
@@ -148,11 +248,11 @@ export interface LogoBackgroundConfig {
 
 // Logo quality requirements
 export const LOGO_REQUIREMENTS = {
-  MIN_WIDTH: 200, // pixels
-  MIN_HEIGHT: 100, // pixels
+  MIN_WIDTH: 400, // pixels (increased for print quality)
+  MIN_HEIGHT: 200, // pixels
   MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB for quality
-  RECOMMENDED_WIDTH: 500, // pixels
-  RECOMMENDED_HEIGHT: 250, // pixels
+  RECOMMENDED_WIDTH: 800, // pixels
+  RECOMMENDED_HEIGHT: 400, // pixels
   ALLOWED_FORMATS: ["image/png", "image/jpeg", "image/svg+xml", "image/webp"],
 };
 
@@ -164,6 +264,8 @@ export interface TemplateConfig {
   // Allowed colors for this template
   allowedColors: PrintColor[];
   defaultColor: PrintColor;
+  // Is this a signature (logo-only) template?
+  isSignature?: boolean;
   // Typography settings
   typography: {
     nameSize: number; // mm
@@ -188,6 +290,44 @@ export interface TemplateConfig {
 }
 
 export const PRINT_TEMPLATES: Record<PrintTemplateType, TemplateConfig> = {
+  // 🌟 IWASP SIGNATURE - Logo-Only Premium Card (MAIN TEMPLATE)
+  "iwasp-signature": {
+    id: "iwasp-signature",
+    name: "IWASP Signature",
+    tagline: "Logo Premium",
+    description: "Carte signature avec logo dominant",
+    allowedColors: ["white", "black", "navy", "burgundy", "lightGrey"],
+    defaultColor: "white",
+    isSignature: true,
+    typography: {
+      nameSize: 0, // No name on signature cards
+      nameFontWeight: 0,
+      nameLetterSpacing: 0,
+      titleSize: 0,
+      companySize: 0,
+    },
+    // LOCKED LOGO SIZE: Centered, 36-52mm width (default 45mm)
+    // Logo is centered both horizontally and vertically
+    logoPosition: { 
+      x: 42.8, // Center horizontal
+      y: 27, // Center vertical
+      maxWidth: LOGO_SIZE_CONSTRAINTS.MAX_WIDTH_MM, // 52mm max
+      maxHeight: 32 // Generous height for aspect ratio
+    },
+    // Full card background area
+    logoBackgroundArea: { x: 0, y: 0, width: 85.6, height: 54, borderRadius: 0 },
+    // No text positions (signature card = logo only)
+    namePosition: { x: 0, y: 0 },
+    titlePosition: { x: 0, y: 0 },
+    companyPosition: { x: 0, y: 0 },
+    // IWASP + NFC mark in top-right corner
+    nfcIconPosition: { x: 78, y: 5 },
+    brandPosition: { x: 78, y: 5 },
+    centered: true,
+    showNfcIcon: true,
+    showBrand: true,
+  },
+
   // 1️⃣ IWASP Black - Minimal Luxury (LOGO-CENTRIC)
   "iwasp-black": {
     id: "iwasp-black",
