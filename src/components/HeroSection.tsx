@@ -1,113 +1,142 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { DigitalCard } from "@/components/DigitalCard";
-import { ArrowRight, Sparkles, Wallet, Smartphone, Zap } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
+import { motion } from "framer-motion";
+import heroHandCard from "@/assets/hero-hand-card.png";
+import phonePreview from "@/assets/phone-preview.png";
+
+const stats = [
+  { value: "10K+", label: "Professionnels" },
+  { value: "4.9/5", label: "Note moyenne" },
+  { value: "50K+", label: "Cartes créées" },
+];
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Deep background */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       <div className="absolute inset-0 bg-background" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[800px] bg-gradient-radial from-amber-500/[0.08] via-amber-600/[0.03] to-transparent blur-3xl" />
+      <div className="absolute top-1/3 -left-40 w-[500px] h-[500px] rounded-full bg-amber-500/[0.04] blur-[150px]" />
+      <div className="absolute bottom-1/4 -right-40 w-[400px] h-[400px] rounded-full bg-amber-600/[0.03] blur-[120px]" />
+      <div className="absolute inset-0 bg-grid opacity-20" />
 
-      {/* Ambient orbs */}
-      <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] rounded-full bg-glow-subtle/20 blur-[120px] opacity-60" />
-      <div className="absolute bottom-1/4 -right-20 w-[400px] h-[400px] rounded-full bg-glow-subtle/15 blur-[100px] opacity-50" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-glow-subtle/10 blur-[150px] opacity-40" />
-
-      {/* Subtle grid */}
-      <div className="absolute inset-0 bg-grid opacity-30" />
-
-      {/* Radial gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-radial from-transparent via-background/50 to-background" />
-
-      <div className="container mx-auto px-6 py-20 pt-32 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
-          {/* Left content */}
-          <div className="space-y-8 animate-fade-right">
-            {/* Badge */}
-            <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass animate-fade-up"
-              style={{ animationDelay: "0.2s" }}
+      <div className="container mx-auto px-6 py-20 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-8 items-center">
+          <div className="space-y-8 max-w-xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20"
             >
-              <Sparkles size={14} className="text-chrome" />
-              <span className="text-sm text-chrome font-medium">Nouvelle génération de networking</span>
-            </div>
+              <Zap size={14} className="text-amber-400" />
+              <span className="text-sm text-amber-400 font-medium">Technologie NFC Premium</span>
+            </motion.div>
 
-            {/* Headline */}
-            <div className="space-y-6">
-              <h1
-                className="text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.1] tracking-tight animate-fade-up"
-                style={{ animationDelay: "0.3s" }}
-              >
-                <span className="text-foreground">Votre identité</span>
-                <br />
-                <span className="text-chrome">digitale premium</span>
-              </h1>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-display font-semibold leading-[1.1] tracking-tight"
+            >
+              <span className="text-foreground">Carte NFC IWASP</span>
+              <br />
+              <span className="bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 bg-clip-text text-transparent">
+                votre identité pro en un geste
+              </span>
+            </motion.h1>
 
-              <p
-                className="text-xl text-muted-foreground leading-relaxed max-w-xl animate-fade-up"
-                style={{ animationDelay: "0.5s" }}
-              >
-                Créez des cartes de visite NFC élégantes et partagez-les instantanément. Apple Wallet, Google Wallet, un
-                simple toucher suffit.
-              </p>
-            </div>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="text-lg text-muted-foreground leading-relaxed"
+            >
+              Partagez vos coordonnées instantanément. Compatible Apple Wallet, Google Wallet, 
+              et tous les smartphones NFC. Un simple toucher suffit.
+            </motion.p>
 
-            {/* Features list */}
-            <div className="grid grid-cols-2 gap-4 animate-fade-up" style={{ animationDelay: "0.6s" }}>
-              {[
-                { icon: Wallet, text: "Apple & Google Wallet" },
-                { icon: Smartphone, text: "NFC compatible" },
-                { icon: Zap, text: "Mise à jour instantanée" },
-                { icon: Sparkles, text: "Templates premium" },
-              ].map((feature, index) => (
-                <div
-                  key={feature.text}
-                  className="flex items-center gap-3 group animate-fade-up"
-                  style={{ animationDelay: `${0.7 + index * 0.1}s` }}
-                >
-                  <div className="w-10 h-10 rounded-xl glass flex items-center justify-center group-hover:bg-foreground/10 transition-colors duration-300">
-                    <feature.icon size={18} className="text-chrome" />
-                  </div>
-                  <span className="text-sm text-secondary-foreground">{feature.text}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap gap-4 pt-4 animate-fade-up" style={{ animationDelay: "0.9s" }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="flex flex-wrap gap-4 pt-2"
+            >
               <Link to="/signup">
-                <Button variant="hero" size="xl">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-background font-semibold px-8 py-6 rounded-full shadow-lg shadow-amber-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105"
+                >
                   Créer ma carte
-                  <ArrowRight size={20} />
+                  <ArrowRight size={18} className="ml-2" />
                 </Button>
               </Link>
               <Link to="/demo">
-                <Button variant="heroOutline" size="xl">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5 px-8 py-6 rounded-full font-medium transition-all duration-300"
+                >
                   Voir une démo
                 </Button>
               </Link>
-            </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="flex items-center gap-8 pt-6 border-t border-foreground/10"
+            >
+              {stats.map((stat, i) => (
+                <div key={i} className="text-center">
+                  <p className="text-2xl font-display font-semibold text-foreground">{stat.value}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+                </div>
+              ))}
+            </motion.div>
           </div>
 
-          {/* Right content - Card preview */}
-          <div className="relative lg:pl-8 animate-fade-left" style={{ animationDelay: "0.4s" }}>
-            {/* NFC pulse effect */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0">
-              <div className="nfc-wave w-48 h-48" style={{ animationDelay: "0s" }} />
-              <div className="nfc-wave w-48 h-48" style={{ animationDelay: "0.8s" }} />
-              <div className="nfc-wave w-48 h-48" style={{ animationDelay: "1.6s" }} />
+          <motion.div
+            initial={{ opacity: 0, x: 40, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="relative"
+          >
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-radial from-amber-500/20 via-transparent to-transparent blur-3xl scale-110" />
+              <img
+                src={heroHandCard}
+                alt="Carte NFC IWASP tenue en main"
+                className="relative z-10 w-full h-auto rounded-3xl shadow-2xl shadow-black/50"
+              />
+              <motion.div
+                className="absolute -bottom-8 -right-8 lg:-right-16 w-32 lg:w-48 z-20"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.6 }}
+              >
+                <motion.img
+                  src={phonePreview}
+                  alt="Aperçu sur mobile"
+                  className="w-full h-auto rounded-2xl shadow-xl shadow-black/40"
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </motion.div>
+              <motion.div
+                className="absolute top-4 right-4 lg:top-8 lg:right-8 flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/80 backdrop-blur-sm border border-foreground/10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+              >
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-medium text-foreground/70">NFC Actif</span>
+              </motion.div>
             </div>
-
-            {/* Floating card */}
-            <div className="relative z-10">
-              <DigitalCard />
-            </div>
-          </div>
+          </motion.div>
         </div>
       </div>
-
-      {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
