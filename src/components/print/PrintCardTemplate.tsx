@@ -8,7 +8,10 @@ import {
   PrintTemplateType,
   MM_TO_PX_300DPI,
   LogoBackgroundConfig,
+  BrandBackgroundConfig,
+  LOGO_SIZE_CONSTRAINTS,
 } from "@/lib/printTypes";
+import { BrandHeader } from "./BrandHeader";
 
 interface PrintCardTemplateProps {
   printedName: string;
@@ -16,6 +19,8 @@ interface PrintCardTemplateProps {
   printedCompany?: string;
   logoUrl?: string;
   logoBackground?: LogoBackgroundConfig;
+  brandBackground?: BrandBackgroundConfig;
+  logoWidthMm?: number; // For Signature template: 36-52mm
   color: PrintColor;
   template: PrintTemplateType;
   showGuides?: boolean;
@@ -35,6 +40,48 @@ function NfcIcon({ color = "currentColor", size = 16 }: { color?: string; size?:
   );
 }
 
+// IWASP + NFC Mark for Signature template
+function IwaspNfcMark({ 
+  color = "currentColor", 
+  size = 24,
+  opacity = 0.4,
+}: { 
+  color?: string; 
+  size?: number;
+  opacity?: number;
+}) {
+  return (
+    <div 
+      className="flex flex-col items-end gap-0.5"
+      style={{ opacity }}
+    >
+      <svg 
+        width={size * 0.6} 
+        height={size * 0.6} 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke={color} 
+        strokeWidth="1.5" 
+        strokeLinecap="round"
+      >
+        <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36" />
+        <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58" />
+        <path d="M12.91 4.1a16.07 16.07 0 0 1 0 15.8" />
+      </svg>
+      <span 
+        style={{ 
+          fontSize: size * 0.35,
+          fontWeight: 500,
+          letterSpacing: "0.12em",
+          color,
+        }}
+      >
+        IWASP
+      </span>
+    </div>
+  );
+}
+
 export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplateProps>(
   (
     {
@@ -43,6 +90,8 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
       printedCompany,
       logoUrl,
       logoBackground,
+      brandBackground,
+      logoWidthMm = LOGO_SIZE_CONSTRAINTS.DEFAULT_WIDTH_MM,
       color,
       template,
       showGuides = false,
@@ -57,6 +106,30 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
     const textColor = colorConfig.textColor;
     const accentColor = colorConfig.accentColor;
 
+    // ============= IWASP SIGNATURE TEMPLATE =============
+    // Uses BrandHeader as single source of truth
+    if (template === "iwasp-signature") {
+      const signatureBackground: BrandBackgroundConfig = brandBackground || {
+        type: "solid",
+        solidColorId: color as any,
+      };
+      
+      return (
+        <BrandHeader
+          ref={ref}
+          logoUrl={logoUrl}
+          logoWidthMm={logoWidthMm}
+          background={signatureBackground}
+          cardColor={color}
+          forPrint={forPrint}
+          showMark={templateConfig.showBrand}
+          showGuides={showGuides}
+          className={className}
+        />
+      );
+    }
+
+    // ============= OTHER TEMPLATES =============
     // Dimensions based on mode
     const scale = forPrint ? MM_TO_PX_300DPI : CARD_PREVIEW_PX.WIDTH / CARD_DIMENSIONS.WIDTH_MM;
     const width = forPrint
@@ -223,25 +296,27 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
         )}
 
         {/* Name */}
-        <div
-          className="absolute"
-          style={{
-            top: mmToPx(templateConfig.namePosition.y),
-            left: isCentered ? "50%" : mmToPx(templateConfig.namePosition.x),
-            transform: isCentered ? "translateX(-50%)" : undefined,
-            fontSize: `${mmToPx(typography.nameSize)}px`,
-            fontWeight: typography.nameFontWeight,
-            color: textColor,
-            letterSpacing: `${typography.nameLetterSpacing}em`,
-            textAlign: isCentered ? "center" : "left",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {printedName || "Votre Nom"}
-        </div>
+        {typography.nameSize > 0 && (
+          <div
+            className="absolute"
+            style={{
+              top: mmToPx(templateConfig.namePosition.y),
+              left: isCentered ? "50%" : mmToPx(templateConfig.namePosition.x),
+              transform: isCentered ? "translateX(-50%)" : undefined,
+              fontSize: `${mmToPx(typography.nameSize)}px`,
+              fontWeight: typography.nameFontWeight,
+              color: textColor,
+              letterSpacing: `${typography.nameLetterSpacing}em`,
+              textAlign: isCentered ? "center" : "left",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {printedName || "Votre Nom"}
+          </div>
+        )}
 
         {/* Title */}
-        {(printedTitle || !printedName) && (
+        {typography.titleSize > 0 && (printedTitle || !printedName) && (
           <div
             className="absolute"
             style={{
@@ -260,7 +335,7 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
         )}
 
         {/* Company */}
-        {(printedCompany || !printedName) && (
+        {typography.companySize > 0 && (printedCompany || !printedName) && (
           <div
             className="absolute"
             style={{
