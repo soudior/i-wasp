@@ -9,6 +9,7 @@ import { AppShell } from "@/components/AppShell";
 import Index from "./pages/Index";
 import Templates from "./pages/Templates";
 import CreateCard from "./pages/CreateCard";
+import CardEditor from "./pages/CardEditor";
 import Dashboard from "./pages/Dashboard";
 import Leads from "./pages/Leads";
 import Login from "./pages/Login";
@@ -40,7 +41,15 @@ const App = () => (
                 path="/create"
                 element={
                   <ProtectedRoute>
-                    <CreateCard />
+                    <CardEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/edit"
+                element={
+                  <ProtectedRoute>
+                    <CardEditor />
                   </ProtectedRoute>
                 }
               />
