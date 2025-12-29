@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, Globe, MessageCircle, Plus, Send, Calendar, Video, Store, FileText, Briefcase, Building2 } from "lucide-react";
+import { Phone, Mail, MapPin, Globe, MessageCircle, Plus } from "lucide-react";
 import { handlePhoneTap, handleEmailTap, handleWhatsAppTap, handleSmsTap, handleWebsiteTap, handleSocialTap } from "@/lib/smartActions";
 import { SocialLink, getNetworkById } from "@/lib/socialNetworks";
 import { SocialIcon } from "@/components/SocialIcon";
@@ -9,6 +9,7 @@ interface ActionItem {
   id: string;
   icon: React.ReactNode;
   label: string;
+  subtitle: string;
   sublabel?: string;
   onClick: () => void;
   priority: number;
@@ -27,90 +28,96 @@ interface ActionsListProps {
   className?: string;
 }
 
-// Labels for social networks and actions
-const LABELS: Record<string, string> = {
+// Labels and subtitles for actions - Apple style descriptive
+const ACTION_CONFIG: Record<string, { label: string; subtitle: string }> = {
   // Primary actions
-  phone: "Appeler",
-  whatsapp: "WhatsApp",
-  email: "Envoyer un email",
-  sms: "Message",
-  location: "Itinéraire",
-  website: "Site web",
+  phone: { label: "Appeler", subtitle: "Appel direct" },
+  whatsapp: { label: "WhatsApp", subtitle: "Message instantané" },
+  sms: { label: "Message", subtitle: "Envoyer un SMS" },
+  email: { label: "Envoyer un email", subtitle: "Contact professionnel" },
+  location: { label: "Itinéraire", subtitle: "Google Maps / Waze" },
+  website: { label: "Site web", subtitle: "Visiter le site" },
   
   // Social networks
-  linkedin: "LinkedIn",
-  instagram: "Instagram",
-  twitter: "X (Twitter)",
-  tiktok: "TikTok",
-  snapchat: "Snapchat",
-  youtube: "YouTube",
-  facebook: "Facebook",
-  telegram: "Telegram",
-  calendly: "Calendly",
-  github: "GitHub",
-  behance: "Behance",
-  dribbble: "Dribbble",
-  notion: "Notion",
-  medium: "Medium",
-  google_business: "Google Business",
-  custom_website: "Site web",
-  store: "Boutique",
+  linkedin: { label: "LinkedIn", subtitle: "Voir le profil pro" },
+  instagram: { label: "Instagram", subtitle: "Voir le profil" },
+  twitter: { label: "X (Twitter)", subtitle: "Voir le profil" },
+  tiktok: { label: "TikTok", subtitle: "Voir les vidéos" },
+  snapchat: { label: "Snapchat", subtitle: "Ajouter sur Snap" },
+  youtube: { label: "YouTube", subtitle: "Voir la chaîne" },
+  facebook: { label: "Facebook", subtitle: "Voir le profil" },
+  telegram: { label: "Telegram", subtitle: "Contacter sur Telegram" },
+  calendly: { label: "Calendly", subtitle: "Prendre rendez-vous" },
+  github: { label: "GitHub", subtitle: "Voir les projets" },
+  behance: { label: "Behance", subtitle: "Voir le portfolio" },
+  dribbble: { label: "Dribbble", subtitle: "Voir les créations" },
+  notion: { label: "Notion", subtitle: "Accéder à Notion" },
+  medium: { label: "Medium", subtitle: "Lire les articles" },
+  google_business: { label: "Google Business", subtitle: "Voir l'entreprise" },
+  custom_website: { label: "Site web", subtitle: "Lien personnalisé" },
+  store: { label: "Boutique", subtitle: "Voir la boutique" },
 };
 
-// Variant styles
+// Variant styles - Premium glassmorphism
 const variantStyles = {
   dark: {
-    container: "bg-slate-900/50 border-slate-700/50",
-    item: "hover:bg-slate-800/70 active:bg-slate-700/70",
-    iconBg: "bg-slate-800",
+    container: "bg-slate-900/60 backdrop-blur-xl border-slate-700/50 shadow-xl shadow-black/20",
+    item: "hover:bg-slate-800/80 active:bg-slate-700/80 active:scale-[0.98]",
+    iconBg: "bg-gradient-to-br from-slate-700 to-slate-800 shadow-inner",
     icon: "text-amber-400",
-    label: "text-slate-100",
-    sublabel: "text-slate-400",
-    divider: "border-slate-700/50",
+    label: "text-slate-100 font-medium",
+    subtitle: "text-slate-400",
+    sublabel: "text-slate-500 text-xs",
+    divider: "border-slate-700/30",
   },
   light: {
-    container: "bg-white border-neutral-200",
-    item: "hover:bg-neutral-50 active:bg-neutral-100",
-    iconBg: "bg-neutral-100",
-    icon: "text-neutral-600",
-    label: "text-neutral-900",
-    sublabel: "text-neutral-500",
+    container: "bg-white/90 backdrop-blur-xl border-neutral-200/80 shadow-xl shadow-neutral-200/30",
+    item: "hover:bg-neutral-50/90 active:bg-neutral-100/90 active:scale-[0.98]",
+    iconBg: "bg-gradient-to-br from-neutral-100 to-neutral-200 shadow-inner",
+    icon: "text-neutral-700",
+    label: "text-neutral-900 font-medium",
+    subtitle: "text-neutral-500",
+    sublabel: "text-neutral-400 text-xs",
     divider: "border-neutral-100",
   },
   glass: {
-    container: "bg-white/10 border-white/20 backdrop-blur-sm",
-    item: "hover:bg-white/20 active:bg-white/30",
-    iconBg: "bg-white/20",
+    container: "bg-white/15 backdrop-blur-2xl border-white/25 shadow-2xl shadow-black/10",
+    item: "hover:bg-white/25 active:bg-white/35 active:scale-[0.98]",
+    iconBg: "bg-white/25 backdrop-blur-sm shadow-inner",
     icon: "text-white",
-    label: "text-white",
-    sublabel: "text-white/60",
-    divider: "border-white/10",
+    label: "text-white font-medium",
+    subtitle: "text-white/70",
+    sublabel: "text-white/50 text-xs",
+    divider: "border-white/15",
   },
   amber: {
-    container: "bg-amber-900/20 border-amber-500/20",
-    item: "hover:bg-amber-900/40 active:bg-amber-900/50",
-    iconBg: "bg-amber-900/40",
+    container: "bg-amber-950/40 backdrop-blur-xl border-amber-500/20 shadow-xl shadow-amber-950/30",
+    item: "hover:bg-amber-900/50 active:bg-amber-900/60 active:scale-[0.98]",
+    iconBg: "bg-gradient-to-br from-amber-800/50 to-amber-900/50 shadow-inner",
     icon: "text-amber-400",
-    label: "text-amber-100",
-    sublabel: "text-amber-200/60",
-    divider: "border-amber-500/20",
+    label: "text-amber-100 font-medium",
+    subtitle: "text-amber-200/60",
+    sublabel: "text-amber-300/40 text-xs",
+    divider: "border-amber-500/15",
   },
   rose: {
-    container: "bg-stone-900/50 border-rose-500/20",
-    item: "hover:bg-stone-800/70 active:bg-stone-700/70",
-    iconBg: "bg-rose-500/20",
+    container: "bg-stone-900/60 backdrop-blur-xl border-rose-500/20 shadow-xl shadow-stone-950/30",
+    item: "hover:bg-stone-800/80 active:bg-stone-700/80 active:scale-[0.98]",
+    iconBg: "bg-gradient-to-br from-rose-500/30 to-rose-600/20 shadow-inner",
     icon: "text-rose-400",
-    label: "text-stone-100",
-    sublabel: "text-stone-400",
-    divider: "border-stone-700/50",
+    label: "text-stone-100 font-medium",
+    subtitle: "text-stone-400",
+    sublabel: "text-stone-500 text-xs",
+    divider: "border-stone-700/30",
   },
   tech: {
-    container: "bg-gray-900/50 border-cyan-500/20",
-    item: "hover:bg-gray-800/70 active:bg-gray-700/70",
-    iconBg: "bg-gray-900",
+    container: "bg-gray-950/80 backdrop-blur-xl border-cyan-500/30 shadow-xl shadow-cyan-500/10",
+    item: "hover:bg-gray-900/90 active:bg-gray-800/90 active:scale-[0.98] hover:border-cyan-500/30",
+    iconBg: "bg-gray-900 border border-cyan-500/20",
     icon: "text-cyan-400",
-    label: "text-gray-100 font-mono",
-    sublabel: "text-gray-500 font-mono",
+    label: "text-gray-100 font-mono font-medium",
+    subtitle: "text-gray-500 font-mono",
+    sublabel: "text-gray-600 font-mono text-xs",
     divider: "border-gray-800",
   },
 };
@@ -129,15 +136,19 @@ export function ActionsList({
 }: ActionsListProps) {
   const s = variantStyles[variant];
   
-  // Build actions list with priority ordering
+  // Build actions list with IWASP priority ordering
   const actions: ActionItem[] = [];
+  
+  const getConfig = (id: string) => ACTION_CONFIG[id] || { label: id, subtitle: "" };
   
   // Priority 1: Phone call
   if (phone) {
+    const config = getConfig("phone");
     actions.push({
       id: "phone",
       icon: <Phone size={18} className={s.icon} />,
-      label: LABELS.phone,
+      label: config.label,
+      subtitle: config.subtitle,
       sublabel: phone,
       onClick: () => handlePhoneTap(phone),
       priority: 1,
@@ -146,10 +157,12 @@ export function ActionsList({
   
   // Priority 2: WhatsApp (if phone exists)
   if (phone) {
+    const config = getConfig("whatsapp");
     actions.push({
       id: "whatsapp",
       icon: <SocialIcon networkId="whatsapp" size={18} className={s.icon} />,
-      label: LABELS.whatsapp,
+      label: config.label,
+      subtitle: config.subtitle,
       sublabel: phone,
       onClick: () => handleWhatsAppTap(phone),
       priority: 2,
@@ -158,10 +171,12 @@ export function ActionsList({
   
   // Priority 3: SMS
   if (phone) {
+    const config = getConfig("sms");
     actions.push({
       id: "sms",
       icon: <MessageCircle size={18} className={s.icon} />,
-      label: LABELS.sms,
+      label: config.label,
+      subtitle: config.subtitle,
       onClick: () => handleSmsTap(phone),
       priority: 3,
     });
@@ -169,10 +184,12 @@ export function ActionsList({
   
   // Priority 4: Email
   if (email) {
+    const config = getConfig("email");
     actions.push({
       id: "email",
       icon: <Mail size={18} className={s.icon} />,
-      label: LABELS.email,
+      label: config.label,
+      subtitle: config.subtitle,
       sublabel: email,
       onClick: () => handleEmailTap(email),
       priority: 4,
@@ -181,10 +198,12 @@ export function ActionsList({
   
   // Priority 5: Website
   if (website) {
+    const config = getConfig("website");
     actions.push({
       id: "website",
       icon: <Globe size={18} className={s.icon} />,
-      label: LABELS.website,
+      label: config.label,
+      subtitle: config.subtitle,
       sublabel: website,
       onClick: () => handleWebsiteTap(website),
       priority: 5,
@@ -193,10 +212,12 @@ export function ActionsList({
   
   // Priority 6: LinkedIn (if present in legacy fields)
   if (linkedin) {
+    const config = getConfig("linkedin");
     actions.push({
       id: "linkedin",
       icon: <SocialIcon networkId="linkedin" size={18} className={s.icon} />,
-      label: LABELS.linkedin,
+      label: config.label,
+      subtitle: config.subtitle,
       sublabel: linkedin,
       onClick: () => handleSocialTap("linkedin", linkedin),
       priority: 6,
@@ -205,10 +226,12 @@ export function ActionsList({
   
   // Priority 7: Instagram (if present in legacy fields)
   if (instagram) {
+    const config = getConfig("instagram");
     actions.push({
       id: "instagram",
       icon: <SocialIcon networkId="instagram" size={18} className={s.icon} />,
-      label: LABELS.instagram,
+      label: config.label,
+      subtitle: config.subtitle,
       sublabel: instagram.replace("@", ""),
       onClick: () => handleSocialTap("instagram", instagram),
       priority: 7,
@@ -217,10 +240,12 @@ export function ActionsList({
   
   // Priority 8: Twitter (if present in legacy fields)
   if (twitter) {
+    const config = getConfig("twitter");
     actions.push({
       id: "twitter",
       icon: <SocialIcon networkId="twitter" size={18} className={s.icon} />,
-      label: LABELS.twitter,
+      label: config.label,
+      subtitle: config.subtitle,
       sublabel: twitter.replace("@", ""),
       onClick: () => handleSocialTap("twitter", twitter),
       priority: 8,
@@ -230,10 +255,12 @@ export function ActionsList({
   // Add dynamic social links with lower priority
   socialLinks.forEach((link, index) => {
     const network = getNetworkById(link.networkId);
+    const config = getConfig(link.networkId);
     actions.push({
       id: `social-${link.id}`,
       icon: <SocialIcon networkId={link.networkId} size={18} className={s.icon} />,
-      label: LABELS[link.networkId] || network?.label || link.networkId,
+      label: config.label || network?.label || link.networkId,
+      subtitle: config.subtitle,
       sublabel: link.value,
       onClick: () => handleSocialTap(link.networkId, link.value),
       priority: 10 + index,
@@ -249,14 +276,14 @@ export function ActionsList({
 
   return (
     <div className={cn("rounded-2xl border overflow-hidden", s.container, className)}>
-      {/* Location at top if present */}
+      {/* Location at top - Itinéraire */}
       {location && (
         <>
           <LocationPicker
             address={location}
             variant="inline"
             className={cn(
-              "w-full min-h-[52px] px-4 transition-colors",
+              "w-full min-h-[56px] px-4 transition-all duration-150",
               s.item
             )}
             iconClassName={s.icon}
@@ -266,29 +293,27 @@ export function ActionsList({
         </>
       )}
       
-      {/* Action items */}
+      {/* Action items with Apple-style layout */}
       {actions.map((action, index) => (
         <div key={action.id}>
           <button
             onClick={action.onClick}
             className={cn(
-              "w-full flex items-center gap-3 px-4 py-3 min-h-[52px] transition-all duration-150 text-left",
+              "w-full flex items-center gap-4 px-4 py-3.5 min-h-[56px] transition-all duration-150 text-left",
               s.item
             )}
             aria-label={action.label}
           >
-            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", s.iconBg)}>
+            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", s.iconBg)}>
               {action.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <span className={cn("text-sm font-medium block", s.label)}>
+              <span className={cn("text-sm block", s.label)}>
                 {action.label}
               </span>
-              {action.sublabel && (
-                <span className={cn("text-xs truncate block", s.sublabel)}>
-                  {action.sublabel}
-                </span>
-              )}
+              <span className={cn("text-xs block mt-0.5", s.subtitle)}>
+                {action.subtitle}
+              </span>
             </div>
           </button>
           {index < actions.length - 1 && (
