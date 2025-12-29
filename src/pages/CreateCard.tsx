@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCreateCard, useUpdateCard, useCards, DigitalCard } from "@/hooks/useCards";
@@ -137,12 +136,7 @@ const CreateCard = () => {
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-6">
           {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8"
-          >
+          <div className="mb-8 animate-fade-up">
             <button
               onClick={() => navigate("/dashboard")}
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
@@ -156,15 +150,11 @@ const CreateCard = () => {
             <p className="text-muted-foreground">
               {editId ? "Mettez à jour les informations de votre carte" : "Personnalisez votre carte de visite digitale"}
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Form */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
+            <div className="animate-fade-right" style={{ animationDelay: '0.2s' }}>
               <Card variant="premium" className="p-6">
                 <Tabs defaultValue="template" className="w-full">
                   <TabsList className="grid w-full grid-cols-4 bg-secondary mb-6">
@@ -446,15 +436,10 @@ const CreateCard = () => {
                   </Button>
                 </div>
               </Card>
-            </motion.div>
+            </div>
 
             {/* Preview */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="lg:sticky lg:top-24 self-start"
-            >
+            <div className="lg:sticky lg:top-24 self-start animate-fade-left" style={{ animationDelay: '0.4s' }}>
               <div className="text-center mb-6">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/5 border border-foreground/10 mb-4">
                   <Sparkles size={14} className="text-chrome" />
@@ -484,7 +469,7 @@ const CreateCard = () => {
                 template={selectedTemplate}
                 showWalletButtons={false}
               />
-            </motion.div>
+            </div>
           </div>
         </div>
       </main>

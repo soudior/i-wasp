@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCards, useUpdateCard, useDeleteCard } from "@/hooks/useCards";
@@ -128,12 +128,7 @@ const Dashboard = () => {
       <main className="relative z-10 pt-24 pb-16">
         <div className="container mx-auto px-6">
           {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8"
-          >
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 animate-fade-up">
             <div>
               <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
                 Tableau de bord
@@ -150,26 +145,20 @@ const Dashboard = () => {
                 </Button>
               </Link>
             </div>
-          </motion.div>
+          </div>
 
           {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
-          >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
             {[
               { label: "Cartes actives", value: cards.filter(c => c.is_active).length.toString(), icon: CreditCard },
               { label: "Vues totales", value: totalViews.toString(), icon: Eye },
               { label: "Leads capturés", value: totalLeads.toString(), icon: Users },
               { label: "Taux de conversion", value: `${conversionRate}%`, icon: TrendingUp },
             ].map((stat, index) => (
-              <motion.div
+              <div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 + index * 0.05 }}
+                className="animate-fade-up"
+                style={{ animationDelay: `${0.1 + index * 0.05}s` }}
               >
                 <Card variant="premium" className="p-5">
                   <div className="flex items-start justify-between mb-3">
@@ -182,17 +171,12 @@ const Dashboard = () => {
                   </p>
                   <p className="text-sm text-muted-foreground">{stat.label}</p>
                 </Card>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
 
           {/* Cards Grid - 3D Floating Cards */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-12"
-          >
+          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.2s' }}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-display text-xl font-semibold text-foreground">
                 Mes cartes
@@ -212,18 +196,10 @@ const Dashboard = () => {
                 <div className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
               </div>
             ) : cards.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="card-glass p-12 text-center"
-              >
-                <motion.div
-                  initial={{ y: 10 }}
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
+              <div className="card-glass p-12 text-center animate-scale-in">
+                <div className="animate-float-subtle">
                   <CreditCard size={64} className="mx-auto mb-6 text-chrome" />
-                </motion.div>
+                </div>
                 <h3 className="font-display text-xl font-semibold text-foreground mb-3">
                   Créez votre première carte
                 </h3>
@@ -236,7 +212,7 @@ const Dashboard = () => {
                     Créer ma carte
                   </Button>
                 </Link>
-              </motion.div>
+              </div>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {cards.map((card, index) => (
@@ -302,38 +278,28 @@ const Dashboard = () => {
                 ))}
 
                 {/* Add new card tile */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: cards.length * 0.1 + 0.2 }}
+                <div
+                  className="animate-fade-up"
+                  style={{ animationDelay: `${cards.length * 0.1 + 0.2}s` }}
                 >
                   <Link to="/create">
                     <div className="h-full min-h-[280px] card-glass border-dashed border-2 border-foreground/10 hover:border-foreground/30 transition-all cursor-pointer group flex flex-col items-center justify-center p-6">
-                      <motion.div
-                        whileHover={{ scale: 1.1, rotate: 90 }}
-                        transition={{ duration: 0.3 }}
-                        className="w-14 h-14 rounded-2xl bg-foreground/10 flex items-center justify-center mb-4 group-hover:bg-foreground/20 transition-colors"
-                      >
+                      <div className="w-14 h-14 rounded-2xl bg-foreground/10 flex items-center justify-center mb-4 group-hover:bg-foreground/20 transition-colors group-hover:scale-110 group-hover:rotate-90 duration-300">
                         <Plus size={24} className="text-chrome" />
-                      </motion.div>
+                      </div>
                       <span className="font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                         Nouvelle carte
                       </span>
                     </div>
                   </Link>
-                </motion.div>
+                </div>
               </div>
             )}
-          </motion.div>
+          </div>
 
           {/* Recent leads */}
           {leads.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="mb-12"
-            >
+            <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.3s' }}>
               <h2 className="font-display text-xl font-semibold text-foreground mb-4">
                 Leads récents
               </h2>
@@ -373,16 +339,12 @@ const Dashboard = () => {
                   </table>
                 </div>
               </Card>
-            </motion.div>
+            </div>
           )}
 
           {/* Recent scans */}
           {scans.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
+            <div className="animate-fade-up" style={{ animationDelay: '0.4s' }}>
               <h2 className="font-display text-xl font-semibold text-foreground mb-4">
                 Historique des scans
               </h2>
@@ -420,7 +382,7 @@ const Dashboard = () => {
                   </table>
                 </div>
               </Card>
-            </motion.div>
+            </div>
           )}
         </div>
       </main>
@@ -459,25 +421,21 @@ const Dashboard = () => {
           </DialogHeader>
           
           <div className="space-y-3 pt-4">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={() => handleWalletAction("apple")}
-              className="w-full p-4 rounded-2xl bg-foreground text-background font-medium flex items-center justify-center gap-3 hover:bg-foreground/90 transition-colors"
+              className="w-full p-4 rounded-2xl bg-foreground text-background font-medium flex items-center justify-center gap-3 hover:bg-foreground/90 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <Apple size={20} />
               Apple Wallet
-            </motion.button>
+            </button>
             
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={() => handleWalletAction("google")}
-              className="w-full p-4 rounded-2xl bg-surface-2 text-foreground font-medium flex items-center justify-center gap-3 hover:bg-surface-3 transition-colors border border-border"
+              className="w-full p-4 rounded-2xl bg-surface-2 text-foreground font-medium flex items-center justify-center gap-3 hover:bg-surface-3 transition-all border border-border hover:scale-[1.02] active:scale-[0.98]"
             >
               <Smartphone size={20} />
               Google Wallet
-            </motion.button>
+            </button>
           </div>
           
           <p className="text-xs text-muted-foreground text-center pt-4">

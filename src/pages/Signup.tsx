@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -76,30 +75,17 @@ const Signup = () => {
 
       <div className="relative z-10 w-full max-w-md px-6">
         {/* Logo */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8"
-        >
-          <Link to="/" className="inline-flex items-center gap-2">
-            <motion.div 
-              className="relative w-10 h-10 rounded-xl bg-foreground flex items-center justify-center"
-              whileHover={{ scale: 1.05 }}
-            >
+        <div className="text-center mb-8 animate-fade-down">
+          <Link to="/" className="inline-flex items-center gap-2 hover:scale-105 transition-transform">
+            <div className="relative w-10 h-10 rounded-xl bg-foreground flex items-center justify-center">
               <Sparkles size={20} className="text-background" />
-            </motion.div>
+            </div>
             <span className="font-display text-2xl font-bold text-foreground">IWASP</span>
           </Link>
-        </motion.div>
+        </div>
 
         {/* Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="card-glass p-8"
-        >
+        <div className="card-glass p-8 animate-scale-up" style={{ animationDelay: '0.1s' }}>
           <div className="text-center mb-8">
             <h1 className="font-display text-2xl font-bold text-foreground mb-2">
               Créer un compte
@@ -210,22 +196,17 @@ const Signup = () => {
               </Link>
             </p>
           </div>
-        </motion.div>
+        </div>
 
         {/* Back to home */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="text-center mt-6"
-        >
+        <div className="text-center mt-6 animate-fade-in" style={{ animationDelay: '0.4s' }}>
           <Link
             to="/"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             ← Retour à l'accueil
           </Link>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
