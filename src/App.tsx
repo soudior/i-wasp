@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Templates from "./pages/Templates";
 import CreateCard from "./pages/CreateCard";
 import Dashboard from "./pages/Dashboard";
+import Leads from "./pages/Leads";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import PublicCard from "./pages/PublicCard";
@@ -46,6 +47,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/leads"
+                element={
+                  <ProtectedRoute>
+                    <Leads />
                   </ProtectedRoute>
                 }
               />
