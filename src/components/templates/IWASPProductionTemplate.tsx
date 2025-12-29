@@ -6,16 +6,20 @@
  * 
  * This template is used by real B2B clients, hotels, executives.
  * Apple-level UX quality standard.
+ * 
+ * SMART CONTEXTUAL FEATURES:
+ * - Context-aware action priority (hotel/event/business)
+ * - Time-based styling adjustments
  */
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { IWASPLogoSimple } from "@/components/IWASPLogo";
 import { CardActionButtons } from "./CardActions";
 import { CardData, TemplateProps } from "./CardTemplates";
 import { 
   Phone, Mail, MapPin, Globe, MessageCircle, MessageSquare,
-  MoreHorizontal, Navigation
+  MoreHorizontal, Navigation, Wifi
 } from "lucide-react";
 import { SocialIcon } from "@/components/SocialIcon";
 import { 
@@ -30,6 +34,7 @@ import { getNetworkById, SocialLink } from "@/lib/socialNetworks";
 import { LocationPicker } from "@/components/LocationPicker";
 import { ActionSheet, ActionSheetType } from "@/components/ActionSheet";
 import { cn } from "@/lib/utils";
+import { sortActionsByPriority } from "@/hooks/useSmartContext";
 
 // Animation variants
 const containerVariants = {
@@ -195,7 +200,8 @@ export function IWASPProductionTemplate({
   showWalletButtons = true, 
   onShareInfo, 
   cardId, 
-  enableLeadCapture 
+  enableLeadCapture,
+  smartContext
 }: TemplateProps) {
   const cardData = data;
   const photoSrc = cardData.photoUrl || (cardData as any).photo;
@@ -216,13 +222,13 @@ export function IWASPProductionTemplate({
     setSheetOpen(true);
   };
 
-  // Build actions list with STRICT ORDER
-  const actions: ActionItemData[] = [];
+  // Build actions list - will be sorted by context priority
+  const rawActions: ActionItemData[] = [];
   const iconClass = "text-amber-400/70";
   
   // 1. Call
   if (cardData.phone) {
-    actions.push({
+    rawActions.push({
       id: "call",
       icon: <Phone size={18} className={iconClass} />,
       label: "Appeler",
@@ -235,7 +241,7 @@ export function IWASPProductionTemplate({
   
   // 2. WhatsApp
   if (cardData.phone) {
-    actions.push({
+    rawActions.push({
       id: "whatsapp",
       icon: <SocialIcon networkId="whatsapp" size={18} className={iconClass} />,
       label: "WhatsApp",
@@ -248,7 +254,7 @@ export function IWASPProductionTemplate({
   
   // 3. SMS
   if (cardData.phone) {
-    actions.push({
+    rawActions.push({
       id: "sms",
       icon: <MessageCircle size={18} className={iconClass} />,
       label: "Message",
@@ -261,7 +267,7 @@ export function IWASPProductionTemplate({
   
   // 4. Email
   if (cardData.email) {
-    actions.push({
+    rawActions.push({
       id: "email",
       icon: <Mail size={18} className={iconClass} />,
       label: "Email",
@@ -276,7 +282,7 @@ export function IWASPProductionTemplate({
   
   // 6. Website
   if (cardData.website) {
-    actions.push({
+    rawActions.push({
       id: "website",
       icon: <Globe size={18} className={iconClass} />,
       label: "Site web",
@@ -289,7 +295,7 @@ export function IWASPProductionTemplate({
   
   // 7. Social Networks - LinkedIn first
   if (cardData.linkedin) {
-    actions.push({
+    rawActions.push({
       id: "linkedin",
       icon: <SocialIcon networkId="linkedin" size={18} className={iconClass} />,
       label: "LinkedIn",
@@ -301,7 +307,7 @@ export function IWASPProductionTemplate({
   }
   
   if (cardData.instagram) {
-    actions.push({
+    rawActions.push({
       id: "instagram",
       icon: <SocialIcon networkId="instagram" size={18} className={iconClass} />,
       label: "Instagram",
@@ -313,7 +319,7 @@ export function IWASPProductionTemplate({
   }
   
   if (cardData.twitter) {
-    actions.push({
+    rawActions.push({
       id: "twitter",
       icon: <SocialIcon networkId="twitter" size={18} className={iconClass} />,
       label: "X (Twitter)",
@@ -329,7 +335,7 @@ export function IWASPProductionTemplate({
     cardData.socialLinks.forEach((link: SocialLink) => {
       const network = getNetworkById(link.networkId);
       if (network) {
-        actions.push({
+        rawActions.push({
           id: `social-${link.id}`,
           icon: <SocialIcon networkId={link.networkId} size={18} className={iconClass} />,
           label: network.label,
@@ -341,6 +347,11 @@ export function IWASPProductionTemplate({
       }
     });
   }
+
+  // Sort actions by smart context priority (hotel puts wifi first, event puts LinkedIn first, etc.)
+  const actions = smartContext?.actionPriority 
+    ? sortActionsByPriority(rawActions, smartContext.actionPriority)
+    : rawActions;
 
   return (
     <>
@@ -546,7 +557,8 @@ export function IWASPProductionLightTemplate({
   showWalletButtons = true, 
   onShareInfo, 
   cardId, 
-  enableLeadCapture 
+  enableLeadCapture,
+  smartContext
 }: TemplateProps) {
   const cardData = data;
   const photoSrc = cardData.photoUrl || (cardData as any).photo;
@@ -567,13 +579,13 @@ export function IWASPProductionLightTemplate({
     setSheetOpen(true);
   };
 
-  // Build actions list with STRICT ORDER
-  const actions: ActionItemData[] = [];
+  // Build actions list - will be sorted by context priority
+  const rawActions: ActionItemData[] = [];
   const iconClass = "text-neutral-600";
   
   // Same order as dark variant...
   if (cardData.phone) {
-    actions.push({
+    rawActions.push({
       id: "call",
       icon: <Phone size={18} className={iconClass} />,
       label: "Appeler",
@@ -582,7 +594,7 @@ export function IWASPProductionLightTemplate({
       onClick: () => handlePhoneTap(cardData.phone!),
       sheetType: "phone",
     });
-    actions.push({
+    rawActions.push({
       id: "whatsapp",
       icon: <SocialIcon networkId="whatsapp" size={18} className={iconClass} />,
       label: "WhatsApp",
@@ -591,7 +603,7 @@ export function IWASPProductionLightTemplate({
       onClick: () => handleWhatsAppTap(cardData.phone!),
       sheetType: "phone",
     });
-    actions.push({
+    rawActions.push({
       id: "sms",
       icon: <MessageCircle size={18} className={iconClass} />,
       label: "Message",
@@ -603,7 +615,7 @@ export function IWASPProductionLightTemplate({
   }
   
   if (cardData.email) {
-    actions.push({
+    rawActions.push({
       id: "email",
       icon: <Mail size={18} className={iconClass} />,
       label: "Email",
@@ -615,7 +627,7 @@ export function IWASPProductionLightTemplate({
   }
   
   if (cardData.website) {
-    actions.push({
+    rawActions.push({
       id: "website",
       icon: <Globe size={18} className={iconClass} />,
       label: "Site web",
@@ -627,7 +639,7 @@ export function IWASPProductionLightTemplate({
   }
   
   if (cardData.linkedin) {
-    actions.push({
+    rawActions.push({
       id: "linkedin",
       icon: <SocialIcon networkId="linkedin" size={18} className={iconClass} />,
       label: "LinkedIn",
@@ -639,7 +651,7 @@ export function IWASPProductionLightTemplate({
   }
   
   if (cardData.instagram) {
-    actions.push({
+    rawActions.push({
       id: "instagram",
       icon: <SocialIcon networkId="instagram" size={18} className={iconClass} />,
       label: "Instagram",
@@ -649,6 +661,11 @@ export function IWASPProductionLightTemplate({
       sheetType: "social",
     });
   }
+
+  // Sort actions by smart context priority
+  const actions = smartContext?.actionPriority 
+    ? sortActionsByPriority(rawActions, smartContext.actionPriority)
+    : rawActions;
 
   return (
     <>

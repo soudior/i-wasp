@@ -2,6 +2,7 @@ import { CardActionButtons } from "./CardActions";
 import { ActionsList } from "./ActionsList";
 import { SocialLink } from "@/lib/socialNetworks";
 import { IWASPProductionTemplate, IWASPProductionLightTemplate } from "./IWASPProductionTemplate";
+import { SmartContext } from "@/hooks/useSmartContext";
 
 export interface CardData {
   id?: string;
@@ -30,6 +31,7 @@ export interface TemplateProps {
   onShareInfo?: () => void;
   cardId?: string; // For lead capture on public cards
   enableLeadCapture?: boolean;
+  smartContext?: SmartContext; // For contextual action reordering
 }
 
 const defaultData: CardData = {
