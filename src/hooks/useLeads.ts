@@ -11,6 +11,15 @@ export interface Lead {
   phone: string | null;
   company: string | null;
   notes: string | null;
+  message: string | null;
+  consent_given: boolean;
+  consent_timestamp: string | null;
+  source: string | null;
+  device_type: string | null;
+  location_city: string | null;
+  location_country: string | null;
+  lead_score: number;
+  status: string;
   created_at: string;
 }
 
@@ -28,7 +37,32 @@ export interface CreateLeadData {
   email?: string;
   phone?: string;
   company?: string;
+  message?: string;
   notes?: string;
+  consent_given?: boolean;
+  source?: string;
+  device_type?: string;
+}
+
+// Calculate lead score based on data provided
+function calculateLeadScore(data: CreateLeadData): number {
+  let score = 0;
+  if (data.email) score += 10;
+  if (data.phone) score += 15;
+  if (data.message) score += 10;
+  if (data.company) score += 5;
+  if (data.name) score += 5;
+  return score;
+}
+
+// Detect device type from user agent
+function getDeviceType(): string {
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod/i.test(ua)) return "iOS";
+  if (/Android/i.test(ua)) return "Android";
+  if (/Mac/i.test(ua)) return "Mac";
+  if (/Windows/i.test(ua)) return "Windows";
+  return "Other";
 }
 
 export function useLeads() {
@@ -60,9 +94,26 @@ export function useCreateLead() {
 
   return useMutation({
     mutationFn: async (data: CreateLeadData): Promise<Lead> => {
+      const leadScore = calculateLeadScore(data);
+      const deviceType = getDeviceType();
+      
       const { data: lead, error } = await supabase
         .from("leads" as any)
-        .insert(data as any)
+        .insert({
+          card_id: data.card_id,
+          name: data.name || null,
+          email: data.email || null,
+          phone: data.phone || null,
+          company: data.company || null,
+          message: data.message || null,
+          notes: data.notes || null,
+          consent_given: data.consent_given ?? true,
+          consent_timestamp: data.consent_given ? new Date().toISOString() : null,
+          source: data.source || "nfc",
+          device_type: data.device_type || deviceType,
+          lead_score: leadScore,
+          status: "new",
+        } as any)
         .select()
         .single();
 
@@ -71,7 +122,29 @@ export function useCreateLead() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
-      toast.success("Information partagée avec succès !");
+      toast.success("Coordonnées partagées avec succès !");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+}
+
+export function useUpdateLeadStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }): Promise<void> => {
+      const { error } = await supabase
+        .from("leads" as any)
+        .update({ status } as any)
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+      toast.success("Statut mis à jour");
     },
     onError: (error: Error) => {
       toast.error(error.message);

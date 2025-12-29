@@ -137,32 +137,59 @@ export type Database = {
         Row: {
           card_id: string
           company: string | null
+          consent_given: boolean | null
+          consent_timestamp: string | null
           created_at: string
+          device_type: string | null
           email: string | null
           id: string
+          lead_score: number | null
+          location_city: string | null
+          location_country: string | null
+          message: string | null
           name: string | null
           notes: string | null
           phone: string | null
+          source: string | null
+          status: string | null
         }
         Insert: {
           card_id: string
           company?: string | null
+          consent_given?: boolean | null
+          consent_timestamp?: string | null
           created_at?: string
+          device_type?: string | null
           email?: string | null
           id?: string
+          lead_score?: number | null
+          location_city?: string | null
+          location_country?: string | null
+          message?: string | null
           name?: string | null
           notes?: string | null
           phone?: string | null
+          source?: string | null
+          status?: string | null
         }
         Update: {
           card_id?: string
           company?: string | null
+          consent_given?: boolean | null
+          consent_timestamp?: string | null
           created_at?: string
+          device_type?: string | null
           email?: string | null
           id?: string
+          lead_score?: number | null
+          location_city?: string | null
+          location_country?: string | null
+          message?: string | null
           name?: string | null
           notes?: string | null
           phone?: string | null
+          source?: string | null
+          status?: string | null
         }
         Relationships: [
           {
