@@ -59,15 +59,11 @@ export function LeadConsentModal({
                 </div>
                 
                 <h2 className="font-display text-xl font-semibold text-foreground tracking-tight mb-3">
-                  Partager vos coordonnées ?
+                  Souhaitez-vous partager vos coordonnées avec ce contact ?
                 </h2>
                 
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Souhaitez-vous partager vos coordonnées avec{" "}
-                  <span className="text-foreground font-medium">{cardOwnerName}</span> ?
-                </p>
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                  Vos informations seront utilisées uniquement pour un contact professionnel.
+                  Vos informations resteront privées et ne seront jamais partagées sans votre accord.
                 </p>
               </div>
               
