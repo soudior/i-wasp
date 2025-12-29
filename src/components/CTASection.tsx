@@ -1,73 +1,82 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, Shield, Clock, Sparkles } from "lucide-react";
+
+const trustBadges = [
+  { icon: Shield, label: "Sans engagement" },
+  { icon: Sparkles, label: "RGPD compliant" },
+  { icon: Clock, label: "Configuration en 2 min" },
+];
 
 export function CTASection() {
   return (
-    <section className="py-24 bg-background relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-      </div>
-
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/10 rounded-full blur-3xl" />
+    <section className="py-32 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-surface-1 via-background to-background" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-radial from-amber-500/[0.08] via-amber-600/[0.03] to-transparent blur-3xl" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center max-w-3xl mx-auto animate-fade-up">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/5 mb-8">
-            <Sparkles size={14} className="text-primary" />
-            <span className="text-sm text-primary font-medium">Rejoignez 10,000+ professionnels</span>
-          </div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="max-w-3xl mx-auto text-center"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-8"
+          >
+            <Sparkles size={14} className="text-amber-400" />
+            <span className="text-sm text-amber-400 font-medium">Créez votre carte aujourd'hui</span>
+          </motion.div>
 
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            Prêt à révolutionner
-            <br />
-            <span className="text-gradient-gold">votre networking ?</span>
+          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold mb-6 leading-tight">
+            Prêt à révolutionner votre{" "}
+            <span className="bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 bg-clip-text text-transparent">
+              networking
+            </span>
+            ?
           </h2>
 
-          <p className="text-xl text-muted-foreground mb-10 leading-relaxed">
-            Créez votre première carte digitale gratuitement et découvrez une nouvelle façon de partager votre identité
-            professionnelle.
+          <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">
+            Rejoignez des milliers de professionnels qui ont adopté la carte NFC IWASP 
+            pour développer leur réseau.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link to="/signup">
-              <Button variant="hero" size="xl">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-background font-semibold px-8 py-6 rounded-full shadow-lg shadow-amber-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105"
+              >
                 Créer ma carte gratuitement
-                <ArrowRight size={20} />
+                <ArrowRight size={18} className="ml-2" />
               </Button>
             </Link>
             <Link to="/demo">
-              <Button variant="heroOutline" size="xl">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5 px-8 py-6 rounded-full font-medium"
+              >
                 Voir une démo
               </Button>
             </Link>
           </div>
 
-          {/* Trust badges */}
-          <div className="mt-12 flex items-center justify-center gap-8 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-11v6h2v-6h-2zm0-4v2h2V7h-2z" />
-              </svg>
-              <span className="text-sm">Sans engagement</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
-              </svg>
-              <span className="text-sm">RGPD compliant</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-              </svg>
-              <span className="text-sm">Configuration en 2 min</span>
-            </div>
+          <div className="flex flex-wrap justify-center gap-6">
+            {trustBadges.map((badge) => (
+              <div key={badge.label} className="flex items-center gap-2 text-muted-foreground">
+                <badge.icon size={16} className="text-amber-400/60" />
+                <span className="text-sm">{badge.label}</span>
+              </div>
+            ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

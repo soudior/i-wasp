@@ -1,144 +1,126 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
-// Minimal card preview component
-function CardPreview({ bgClass = "bg-[hsl(0,0%,4%)]" }: { bgClass?: string }) {
-  return (
-    <div 
-      className="relative w-full max-w-[180px]"
-      style={{ aspectRatio: "85.6/54" }}
-    >
-      {/* Subtle shadow */}
-      <div 
-        className="absolute inset-0 rounded-lg bg-black/20 blur-xl"
-        style={{ transform: "translateY(10px) scale(0.9)" }}
-      />
-      
-      {/* Card body - pure, no decorative elements */}
-      <div 
-        className={`relative w-full h-full rounded-lg ${bgClass} overflow-hidden`}
-        style={{
-          boxShadow: `
-            0 15px 30px -10px rgba(0,0,0,0.5),
-            0 0 0 1px rgba(255,255,255,0.02)
-          `
-        }}
-      >
-        {/* Logo placeholder - clean circle */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="w-10 h-10 rounded-full border border-foreground/8" />
-        </div>
+// Card mockup imports
+import cardBlackMatte from "@/assets/cards/card-black-matte.png";
+import cardWhiteMinimal from "@/assets/cards/card-white-minimal.png";
+import cardNavyExecutive from "@/assets/cards/card-navy-executive.png";
+import cardGoldAccent from "@/assets/cards/card-gold-accent.png";
+import cardHotel from "@/assets/cards/card-hotel.png";
+import cardTourism from "@/assets/cards/card-tourism.png";
 
-        {/* Name lines - subtle */}
-        <div className="absolute bottom-3 left-3">
-          <div className="w-12 h-0.5 rounded-full bg-foreground/12" />
-          <div className="w-8 h-0.5 rounded-full bg-foreground/6 mt-1" />
-        </div>
-      </div>
-    </div>
-  );
-}
+// Phone preview imports
+import phoneBlack from "@/assets/phones/phone-black.png";
+import phoneWhite from "@/assets/phones/phone-white.png";
+import phoneNavy from "@/assets/phones/phone-navy.png";
+import phoneGold from "@/assets/phones/phone-gold.png";
+import phoneHotel from "@/assets/phones/phone-hotel.png";
+import phoneTourism from "@/assets/phones/phone-tourism.png";
+
+const templates = [
+  { id: "signature", name: "Signature", category: "Business", cardImage: cardBlackMatte, phoneImage: phoneBlack },
+  { id: "minimal", name: "Minimal", category: "Essential", cardImage: cardWhiteMinimal, phoneImage: phoneWhite },
+  { id: "executive", name: "Executive", category: "Business", cardImage: cardNavyExecutive, phoneImage: phoneNavy },
+  { id: "luxe", name: "Luxe", category: "Premium", cardImage: cardGoldAccent, phoneImage: phoneGold },
+  { id: "hotel", name: "Hôtellerie", category: "Hospitality", cardImage: cardHotel, phoneImage: phoneHotel },
+  { id: "tourism", name: "Tourisme", category: "Travel", cardImage: cardTourism, phoneImage: phoneTourism },
+];
 
 export function TemplatesSection() {
   return (
-    <section className="py-32 bg-background relative overflow-hidden">
-      <div className="container mx-auto px-6 max-w-5xl">
-        
-        {/* Header - Minimal, elegant */}
-        <div className="text-center mb-20">
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground tracking-tight mb-6">
-            Carte Signature
-          </h2>
-          <p className="text-muted-foreground text-lg font-light tracking-wide max-w-lg mx-auto">
-            L'identité professionnelle dans sa forme la plus pure.
-          </p>
-        </div>
+    <section className="py-32 relative overflow-hidden">
+      <div className="absolute inset-0 bg-background" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-gradient-radial from-amber-500/[0.05] via-transparent to-transparent blur-3xl" />
 
-        {/* Single card showcase - centered, prominent */}
-        <div className="flex flex-col items-center mb-16">
-          {/* Card container with subtle background */}
-          <div className="relative w-full max-w-md aspect-[4/3] rounded-3xl bg-[hsl(0,0%,3%)] flex items-center justify-center mb-12">
-            {/* Top gradient line */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-foreground/8 to-transparent" />
-            
-            {/* Card preview - larger, centered */}
-            <div 
-              className="relative w-[280px]"
-              style={{ aspectRatio: "85.6/54" }}
+      <div className="container mx-auto px-6 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <span className="inline-block px-4 py-1.5 rounded-full bg-amber-500/10 text-amber-400 text-sm font-medium mb-6">
+            Collection
+          </span>
+          <h2 className="font-display text-4xl md:text-5xl font-semibold mb-6">
+            Templates premium
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Choisissez parmi nos designs exclusifs, créés pour impressionner
+          </p>
+        </motion.div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {templates.map((template, index) => (
+            <motion.div
+              key={template.id}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              className="group"
             >
-              {/* Shadow */}
-              <div 
-                className="absolute inset-0 rounded-xl bg-black/25 blur-2xl"
-                style={{ transform: "translateY(16px) scale(0.88)" }}
-              />
-              
-              {/* Card body */}
-              <div 
-                className="relative w-full h-full rounded-xl bg-[hsl(0,0%,4%)] overflow-hidden"
-                style={{
-                  boxShadow: `
-                    0 25px 50px -15px rgba(0,0,0,0.6),
-                    0 0 0 1px rgba(255,255,255,0.02)
-                  `
-                }}
-              >
-                {/* IWASP mark */}
-                <div className="absolute top-4 right-4 flex items-center gap-1.5 opacity-25">
-                  <span className="text-[8px] text-foreground font-semibold tracking-[0.15em] uppercase">IWASP</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-foreground/70">
-                    <path d="M2 12a5 5 0 0 1 5-5" />
-                    <path d="M2 12a9 9 0 0 1 9-9" />
-                    <circle cx="2" cy="12" r="1.5" fill="currentColor" />
-                  </svg>
-                </div>
-                
-                {/* Logo placeholder */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <div className="w-14 h-14 rounded-full border border-foreground/10 flex items-center justify-center">
-                    <span className="text-[8px] text-foreground/25 font-medium tracking-wider uppercase">Logo</span>
+              <Link to="/templates" className="block">
+                <div className="relative rounded-2xl overflow-hidden bg-surface-1 border border-foreground/5 hover:border-amber-500/20 transition-all duration-500">
+                  {/* Card + Phone composite */}
+                  <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-surface-2 to-background p-6">
+                    {/* Card image */}
+                    <motion.img
+                      src={template.cardImage}
+                      alt={template.name}
+                      className="absolute inset-4 w-[60%] h-auto object-contain z-10"
+                      whileHover={{ scale: 1.05, rotate: -2 }}
+                      transition={{ duration: 0.4 }}
+                    />
+                    {/* Phone preview - positioned right */}
+                    <motion.img
+                      src={template.phoneImage}
+                      alt={`${template.name} preview`}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-[45%] h-auto object-contain z-20"
+                      initial={{ x: 20, opacity: 0.8 }}
+                      whileHover={{ x: 0, opacity: 1, scale: 1.02 }}
+                      transition={{ duration: 0.4 }}
+                    />
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent z-30" />
+                  </div>
+
+                  {/* Info */}
+                  <div className="p-6 relative z-40">
+                    <span className="text-xs text-amber-400 font-medium tracking-wider uppercase">
+                      {template.category}
+                    </span>
+                    <h3 className="text-lg font-semibold text-foreground mt-1 group-hover:text-amber-400 transition-colors">
+                      {template.name}
+                    </h3>
                   </div>
                 </div>
-
-                {/* Name */}
-                <div className="absolute bottom-4 left-4">
-                  <div className="w-16 h-0.5 rounded-full bg-foreground/15" />
-                  <div className="w-10 h-0.5 rounded-full bg-foreground/8 mt-1.5" />
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom gradient line */}
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-foreground/5 to-transparent" />
-          </div>
-
-          {/* Features - minimal list */}
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mb-12 text-sm text-muted-foreground/60">
-            <span className="flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full bg-foreground/30" />
-              NFC intégré
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full bg-foreground/30" />
-              Qualité premium
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full bg-foreground/30" />
-              Design personnalisé
-            </span>
-          </div>
+              </Link>
+            </motion.div>
+          ))}
         </div>
 
-        {/* CTA - elegant button */}
-        <div className="text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="text-center mt-12"
+        >
           <Link to="/templates">
-            <Button 
-              size="lg" 
-              className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-10 py-6 text-sm font-medium tracking-wide"
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-foreground/20 hover:border-amber-500/40 hover:bg-amber-500/5 px-8 rounded-full font-medium group"
             >
-              Voir la collection
+              Voir tous les templates
+              <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
