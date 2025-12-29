@@ -71,6 +71,10 @@ const CreateCard = () => {
           logoUrl: card.logo_url || null,
         });
         setSelectedTemplate((card.template as TemplateType) || "executive");
+        // Load social links from database
+        if (card.social_links && Array.isArray(card.social_links)) {
+          setSocialLinks(card.social_links);
+        }
       }
     }
   }, [editId, cards]);
@@ -105,7 +109,8 @@ const CreateCard = () => {
             photo_url: formData.photoUrl,
             logo_url: formData.logoUrl,
             template: selectedTemplate,
-          },
+            social_links: socialLinks,
+          } as any,
         });
       } else {
         await createCard.mutateAsync({
@@ -124,6 +129,7 @@ const CreateCard = () => {
           photo_url: formData.photoUrl || undefined,
           logo_url: formData.logoUrl || undefined,
           template: selectedTemplate,
+          social_links: socialLinks.length > 0 ? socialLinks : undefined,
         });
       }
       navigate("/dashboard");
@@ -432,6 +438,7 @@ const CreateCard = () => {
                   tagline: formData.tagline || "L'excellence en toute simplicité",
                   photoUrl: formData.photoUrl,
                   logoUrl: formData.logoUrl,
+                  socialLinks: socialLinks,
                 }} 
                 template={selectedTemplate}
                 showWalletButtons={false}

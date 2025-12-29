@@ -66,6 +66,7 @@ export type Database = {
           phone: string | null
           photo_url: string | null
           slug: string
+          social_links: Json | null
           tagline: string | null
           template: string
           title: string | null
@@ -92,6 +93,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           slug: string
+          social_links?: Json | null
           tagline?: string | null
           template?: string
           title?: string | null
@@ -118,6 +120,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           slug?: string
+          social_links?: Json | null
           tagline?: string | null
           template?: string
           title?: string | null

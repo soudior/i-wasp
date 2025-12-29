@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { SocialLink } from "@/lib/socialNetworks";
 
 export interface DigitalCard {
   id: string;
@@ -28,6 +29,7 @@ export interface DigitalCard {
   view_count: number;
   created_at: string;
   updated_at: string;
+  social_links: SocialLink[] | null;
 }
 
 export interface CreateCardData {
@@ -46,6 +48,7 @@ export interface CreateCardData {
   photo_url?: string;
   logo_url?: string;
   template?: string;
+  social_links?: SocialLink[];
 }
 
 export function useCards() {
