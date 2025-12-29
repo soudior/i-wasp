@@ -1,20 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCreateCard, useUpdateCard, useCards, DigitalCard } from "@/hooks/useCards";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DigitalCard } from "@/components/DigitalCard";
+import { DigitalCard as DigitalCardPreview } from "@/components/DigitalCard";
+import { toast } from "sonner";
 import { 
   User, Mail, Phone, MapPin, Globe, Briefcase, Building2, 
-  MessageSquare, Linkedin, Instagram, Twitter, Save, Eye
+  MessageSquare, Linkedin, Instagram, Twitter, Save, ArrowLeft,
+  Sparkles
 } from "lucide-react";
 
 const CreateCard = () => {
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get("edit");
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: cards = [] } = useCards();
+  const createCard = useCreateCard();
+  const updateCard = useUpdateCard();
+  
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -30,8 +42,78 @@ const CreateCard = () => {
     tagline: "",
   });
 
+  // Load card data if editing
+  useEffect(() => {
+    if (editId && cards.length > 0) {
+      const card = cards.find(c => c.id === editId);
+      if (card) {
+        setFormData({
+          firstName: card.first_name || "",
+          lastName: card.last_name || "",
+          title: card.title || "",
+          company: card.company || "",
+          email: card.email || "",
+          phone: card.phone || "",
+          location: card.location || "",
+          website: card.website || "",
+          linkedin: card.linkedin || "",
+          instagram: card.instagram || "",
+          twitter: card.twitter || "",
+          tagline: card.tagline || "",
+        });
+      }
+    }
+  }, [editId, cards]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.firstName || !formData.lastName) {
+      toast.error("Veuillez renseigner votre prénom et nom");
+      return;
+    }
+
+    try {
+      if (editId) {
+        await updateCard.mutateAsync({
+          id: editId,
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            title: formData.title || null,
+            company: formData.company || null,
+            email: formData.email || null,
+            phone: formData.phone || null,
+            location: formData.location || null,
+            website: formData.website || null,
+            linkedin: formData.linkedin || null,
+            instagram: formData.instagram || null,
+            twitter: formData.twitter || null,
+            tagline: formData.tagline || null,
+          },
+        });
+      } else {
+        await createCard.mutateAsync({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          title: formData.title || undefined,
+          company: formData.company || undefined,
+          email: formData.email || undefined,
+          phone: formData.phone || undefined,
+          location: formData.location || undefined,
+          website: formData.website || undefined,
+          linkedin: formData.linkedin || undefined,
+          instagram: formData.instagram || undefined,
+          twitter: formData.twitter || undefined,
+          tagline: formData.tagline || undefined,
+        });
+      }
+      navigate("/dashboard");
+    } catch (error) {
+      // Error is handled by the mutation
+    }
   };
 
   return (
@@ -45,13 +127,20 @@ const CreateCard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="mb-8"
           >
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
-              Créez votre <span className="text-gradient-gold">carte digitale</span>
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
+            >
+              <ArrowLeft size={18} />
+              Retour au dashboard
+            </button>
+            <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
+              {editId ? "Modifier la carte" : "Créer une carte"}
             </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Personnalisez votre carte de visite et partagez-la instantanément
+            <p className="text-muted-foreground">
+              {editId ? "Mettez à jour les informations de votre carte" : "Personnalisez votre carte de visite digitale"}
             </p>
           </motion.div>
 
@@ -64,18 +153,17 @@ const CreateCard = () => {
             >
               <Card variant="premium" className="p-6">
                 <Tabs defaultValue="info" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 bg-secondary mb-6">
+                  <TabsList className="grid w-full grid-cols-2 bg-secondary mb-6">
                     <TabsTrigger value="info">Informations</TabsTrigger>
-                    <TabsTrigger value="social">Réseaux</TabsTrigger>
-                    <TabsTrigger value="style">Style</TabsTrigger>
+                    <TabsTrigger value="social">Réseaux sociaux</TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="info" className="space-y-6">
+                  <TabsContent value="info" className="space-y-5">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName" className="flex items-center gap-2">
-                          <User size={14} className="text-primary" />
-                          Prénom
+                          <User size={14} className="text-chrome" />
+                          Prénom *
                         </Label>
                         <Input
                           id="firstName"
@@ -83,13 +171,13 @@ const CreateCard = () => {
                           placeholder="Alexandre"
                           value={formData.firstName}
                           onChange={handleChange}
-                          className="bg-secondary border-border"
+                          className="bg-surface-2 border-border/50 h-11"
                         />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="lastName" className="flex items-center gap-2">
-                          <User size={14} className="text-primary" />
-                          Nom
+                          <User size={14} className="text-chrome" />
+                          Nom *
                         </Label>
                         <Input
                           id="lastName"
@@ -97,14 +185,14 @@ const CreateCard = () => {
                           placeholder="Dubois"
                           value={formData.lastName}
                           onChange={handleChange}
-                          className="bg-secondary border-border"
+                          className="bg-surface-2 border-border/50 h-11"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="title" className="flex items-center gap-2">
-                        <Briefcase size={14} className="text-primary" />
+                        <Briefcase size={14} className="text-chrome" />
                         Fonction
                       </Label>
                       <Input
@@ -113,13 +201,13 @@ const CreateCard = () => {
                         placeholder="Directeur Général"
                         value={formData.title}
                         onChange={handleChange}
-                        className="bg-secondary border-border"
+                        className="bg-surface-2 border-border/50 h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="company" className="flex items-center gap-2">
-                        <Building2 size={14} className="text-primary" />
+                        <Building2 size={14} className="text-chrome" />
                         Entreprise
                       </Label>
                       <Input
@@ -128,13 +216,13 @@ const CreateCard = () => {
                         placeholder="Prestige Corp"
                         value={formData.company}
                         onChange={handleChange}
-                        className="bg-secondary border-border"
+                        className="bg-surface-2 border-border/50 h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="email" className="flex items-center gap-2">
-                        <Mail size={14} className="text-primary" />
+                        <Mail size={14} className="text-chrome" />
                         Email
                       </Label>
                       <Input
@@ -144,13 +232,13 @@ const CreateCard = () => {
                         placeholder="contact@example.com"
                         value={formData.email}
                         onChange={handleChange}
-                        className="bg-secondary border-border"
+                        className="bg-surface-2 border-border/50 h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="phone" className="flex items-center gap-2">
-                        <Phone size={14} className="text-primary" />
+                        <Phone size={14} className="text-chrome" />
                         Téléphone
                       </Label>
                       <Input
@@ -159,13 +247,13 @@ const CreateCard = () => {
                         placeholder="+33 6 12 34 56 78"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="bg-secondary border-border"
+                        className="bg-surface-2 border-border/50 h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="location" className="flex items-center gap-2">
-                        <MapPin size={14} className="text-primary" />
+                        <MapPin size={14} className="text-chrome" />
                         Localisation
                       </Label>
                       <Input
@@ -174,13 +262,13 @@ const CreateCard = () => {
                         placeholder="Paris, France"
                         value={formData.location}
                         onChange={handleChange}
-                        className="bg-secondary border-border"
+                        className="bg-surface-2 border-border/50 h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="tagline" className="flex items-center gap-2">
-                        <MessageSquare size={14} className="text-primary" />
+                        <MessageSquare size={14} className="text-chrome" />
                         Phrase emblématique
                       </Label>
                       <Input
@@ -189,15 +277,15 @@ const CreateCard = () => {
                         placeholder="L'excellence en toute simplicité"
                         value={formData.tagline}
                         onChange={handleChange}
-                        className="bg-secondary border-border"
+                        className="bg-surface-2 border-border/50 h-11"
                       />
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="social" className="space-y-6">
+                  <TabsContent value="social" className="space-y-5">
                     <div className="space-y-2">
                       <Label htmlFor="website" className="flex items-center gap-2">
-                        <Globe size={14} className="text-primary" />
+                        <Globe size={14} className="text-chrome" />
                         Site web
                       </Label>
                       <Input
@@ -206,13 +294,13 @@ const CreateCard = () => {
                         placeholder="www.example.com"
                         value={formData.website}
                         onChange={handleChange}
-                        className="bg-secondary border-border"
+                        className="bg-surface-2 border-border/50 h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="linkedin" className="flex items-center gap-2">
-                        <Linkedin size={14} className="text-primary" />
+                        <Linkedin size={14} className="text-chrome" />
                         LinkedIn
                       </Label>
                       <Input
@@ -221,13 +309,13 @@ const CreateCard = () => {
                         placeholder="votre-profil"
                         value={formData.linkedin}
                         onChange={handleChange}
-                        className="bg-secondary border-border"
+                        className="bg-surface-2 border-border/50 h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="instagram" className="flex items-center gap-2">
-                        <Instagram size={14} className="text-primary" />
+                        <Instagram size={14} className="text-chrome" />
                         Instagram
                       </Label>
                       <Input
@@ -236,13 +324,13 @@ const CreateCard = () => {
                         placeholder="@votre_compte"
                         value={formData.instagram}
                         onChange={handleChange}
-                        className="bg-secondary border-border"
+                        className="bg-surface-2 border-border/50 h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="twitter" className="flex items-center gap-2">
-                        <Twitter size={14} className="text-primary" />
+                        <Twitter size={14} className="text-chrome" />
                         Twitter / X
                       </Label>
                       <Input
@@ -251,28 +339,31 @@ const CreateCard = () => {
                         placeholder="@votre_compte"
                         value={formData.twitter}
                         onChange={handleChange}
-                        className="bg-secondary border-border"
+                        className="bg-surface-2 border-border/50 h-11"
                       />
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="style" className="space-y-6">
-                    <div className="text-center py-12">
-                      <p className="text-muted-foreground">
-                        Options de personnalisation avancées bientôt disponibles
-                      </p>
                     </div>
                   </TabsContent>
                 </Tabs>
 
                 <div className="flex gap-4 mt-8">
-                  <Button variant="chrome" className="flex-1">
-                    <Save size={18} />
-                    Enregistrer
-                  </Button>
-                  <Button variant="outline">
-                    <Eye size={18} />
-                    Aperçu
+                  <Button 
+                    variant="chrome" 
+                    className="flex-1"
+                    onClick={handleSubmit}
+                    disabled={createCard.isPending || updateCard.isPending}
+                  >
+                    {createCard.isPending || updateCard.isPending ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        className="w-5 h-5 rounded-full border-2 border-background/30 border-t-background"
+                      />
+                    ) : (
+                      <>
+                        <Save size={18} />
+                        {editId ? "Enregistrer" : "Créer la carte"}
+                      </>
+                    )}
                   </Button>
                 </div>
               </Card>
@@ -283,18 +374,19 @@ const CreateCard = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="lg:sticky lg:top-24"
+              className="lg:sticky lg:top-24 self-start"
             >
               <div className="text-center mb-6">
-                <h3 className="font-display text-xl font-semibold text-foreground mb-2">
-                  Aperçu en direct
-                </h3>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/5 border border-foreground/10 mb-4">
+                  <Sparkles size={14} className="text-chrome" />
+                  <span className="text-sm text-muted-foreground">Aperçu en direct</span>
+                </div>
                 <p className="text-sm text-muted-foreground">
                   Votre carte se met à jour automatiquement
                 </p>
               </div>
               
-              <DigitalCard 
+              <DigitalCardPreview 
                 data={{
                   firstName: formData.firstName || "Alexandre",
                   lastName: formData.lastName || "Dubois",
@@ -308,6 +400,7 @@ const CreateCard = () => {
                   instagram: formData.instagram || "@adubois",
                   tagline: formData.tagline || "L'excellence en toute simplicité",
                 }} 
+                showWalletButtons={false}
               />
             </motion.div>
           </div>

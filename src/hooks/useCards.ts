@@ -53,17 +53,17 @@ export function useCards() {
 
   return useQuery({
     queryKey: ["cards", user?.id],
-    queryFn: async () => {
+    queryFn: async (): Promise<DigitalCard[]> => {
       if (!user) return [];
       
       const { data, error } = await supabase
-        .from("digital_cards")
+        .from("digital_cards" as any)
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as DigitalCard[];
+      return (data || []) as unknown as DigitalCard[];
     },
     enabled: !!user,
   });
@@ -72,16 +72,16 @@ export function useCards() {
 export function useCard(slug: string) {
   return useQuery({
     queryKey: ["card", slug],
-    queryFn: async () => {
+    queryFn: async (): Promise<DigitalCard | null> => {
       const { data, error } = await supabase
-        .from("digital_cards")
+        .from("digital_cards" as any)
         .select("*")
         .eq("slug", slug)
         .eq("is_active", true)
         .maybeSingle();
 
       if (error) throw error;
-      return data as DigitalCard | null;
+      return data as unknown as DigitalCard | null;
     },
     enabled: !!slug,
   });
@@ -92,20 +92,20 @@ export function useCreateCard() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async (data: CreateCardData) => {
+    mutationFn: async (data: CreateCardData): Promise<DigitalCard> => {
       if (!user) throw new Error("User not authenticated");
 
       const { data: card, error } = await supabase
-        .from("digital_cards")
+        .from("digital_cards" as any)
         .insert({
           ...data,
           user_id: user.id,
-        })
+        } as any)
         .select()
         .single();
 
       if (error) throw error;
-      return card as DigitalCard;
+      return card as unknown as DigitalCard;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cards"] });
@@ -121,16 +121,16 @@ export function useUpdateCard() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<DigitalCard> }) => {
+    mutationFn: async ({ id, data }: { id: string; data: Partial<DigitalCard> }): Promise<DigitalCard> => {
       const { data: card, error } = await supabase
-        .from("digital_cards")
-        .update(data)
+        .from("digital_cards" as any)
+        .update(data as any)
         .eq("id", id)
         .select()
         .single();
 
       if (error) throw error;
-      return card as DigitalCard;
+      return card as unknown as DigitalCard;
     },
     onSuccess: (card) => {
       queryClient.invalidateQueries({ queryKey: ["cards"] });
@@ -147,9 +147,9 @@ export function useDeleteCard() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (id: string): Promise<void> => {
       const { error } = await supabase
-        .from("digital_cards")
+        .from("digital_cards" as any)
         .delete()
         .eq("id", id);
 
