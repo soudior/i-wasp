@@ -213,12 +213,15 @@ export type Database = {
           card_color: string
           created_at: string
           currency: string
+          customer_email: string | null
           delivered_at: string | null
           id: string
           logo_url: string | null
+          order_items: Json
           order_number: string
           order_type: Database["public"]["Enums"]["order_type"]
           paid_at: string | null
+          payment_method: string
           print_file_url: string | null
           production_started_at: string | null
           quantity: number
@@ -245,12 +248,15 @@ export type Database = {
           card_color?: string
           created_at?: string
           currency?: string
+          customer_email?: string | null
           delivered_at?: string | null
           id?: string
           logo_url?: string | null
+          order_items?: Json
           order_number: string
           order_type?: Database["public"]["Enums"]["order_type"]
           paid_at?: string | null
+          payment_method?: string
           print_file_url?: string | null
           production_started_at?: string | null
           quantity?: number
@@ -277,12 +283,15 @@ export type Database = {
           card_color?: string
           created_at?: string
           currency?: string
+          customer_email?: string | null
           delivered_at?: string | null
           id?: string
           logo_url?: string | null
+          order_items?: Json
           order_number?: string
           order_type?: Database["public"]["Enums"]["order_type"]
           paid_at?: string | null
+          payment_method?: string
           print_file_url?: string | null
           production_started_at?: string | null
           quantity?: number
