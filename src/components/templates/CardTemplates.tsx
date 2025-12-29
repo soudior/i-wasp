@@ -2,6 +2,7 @@ import { CardActionButtons } from "./CardActions";
 import { ActionsList } from "./ActionsList";
 import { SocialLink } from "@/lib/socialNetworks";
 import { IWASPProductionTemplate, IWASPProductionLightTemplate } from "./IWASPProductionTemplate";
+import { LuxuryProfile } from "./LuxuryProfile";
 import { SmartContext } from "@/hooks/useSmartContext";
 
 export interface CardData {
@@ -537,7 +538,7 @@ import { HotelGuideTemplate, HotelGuideLightTemplate } from "./HotelGuideTemplat
 import { HotelConciergeTemplate } from "./HotelConciergeTemplate";
 
 // Template selector component
-export type TemplateType = "production" | "production-light" | "signature" | "signature-light" | "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "hotel-guide" | "hotel-guide-light" | "hotel-concierge" | "default";
+export type TemplateType = "production" | "production-light" | "signature" | "signature-light" | "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "luxury" | "hotel-guide" | "hotel-guide-light" | "hotel-concierge" | "default";
 
 export function getTemplateComponent(template: TemplateType) {
   switch (template) {
@@ -561,6 +562,8 @@ export function getTemplateComponent(template: TemplateType) {
       return TechTemplate;
     case "luxe":
       return LuxeTemplate;
+    case "luxury":
+      return LuxuryProfile;
     case "hotel-guide":
       return HotelGuideTemplate as any;
     case "hotel-guide-light":
@@ -577,6 +580,7 @@ export const templateInfo = [
   { id: "production-light", name: "IWASP Production Light", description: "Variante claire Production" },
   { id: "signature", name: "IWASP Signature", description: "Template classique IWASP" },
   { id: "signature-light", name: "IWASP Signature Light", description: "Variante claire de la Signature" },
+  { id: "luxury", name: "Liana x I-WASP", description: "Luxe numérique éco-responsable", category: "premium" },
   { id: "hotel-guide", name: "Hotel & Tourist Guide", description: "Hôtels, riads, guides touristiques", category: "hospitality" },
   { id: "hotel-guide-light", name: "Hotel Guide Light", description: "Variante claire pour hôtels", category: "hospitality" },
   { id: "hotel-concierge", name: "Hotel Concierge", description: "Services de conciergerie premium", category: "hospitality" },
