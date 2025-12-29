@@ -4,6 +4,7 @@ import {
   CardData,
   ExecutiveTemplate 
 } from "./templates/CardTemplates";
+import { SmartContext } from "@/hooks/useSmartContext";
 
 interface DigitalCardProps {
   data?: CardData;
@@ -12,6 +13,7 @@ interface DigitalCardProps {
   onShareInfo?: () => void;
   cardId?: string;
   enableLeadCapture?: boolean;
+  smartContext?: SmartContext;
 }
 
 const defaultData: CardData = {
@@ -34,7 +36,8 @@ export function DigitalCard({
   showWalletButtons = true,
   onShareInfo,
   cardId,
-  enableLeadCapture = false
+  enableLeadCapture = false,
+  smartContext
 }: DigitalCardProps) {
   const TemplateComponent = getTemplateComponent(template);
   const cardData = { ...defaultData, ...data };
@@ -46,6 +49,7 @@ export function DigitalCard({
       onShareInfo={onShareInfo}
       cardId={cardId}
       enableLeadCapture={enableLeadCapture}
+      smartContext={smartContext}
     />
   );
 }

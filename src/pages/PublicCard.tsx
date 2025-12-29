@@ -3,6 +3,11 @@
  * Premium NFC card viewing with lead capture flow
  * Apple-level UX - Non-blocking consent
  * RGPD compliant with subtle banner + explicit form consent
+ * 
+ * SMART CONTEXTUAL FEATURES:
+ * - Time-based UI (night mode after 8pm)
+ * - Returning visitor greeting
+ * - Context-aware action priority (hotel/event/business)
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -10,11 +15,13 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { useCard } from "@/hooks/useCards";
 import { useRecordScan } from "@/hooks/useScans";
 import { useVisitorTracking } from "@/hooks/useVisitorTracking";
+import { useSmartContext } from "@/hooks/useSmartContext";
 import { DigitalCard } from "@/components/DigitalCard";
 import { TemplateType, CardData } from "@/components/templates/CardTemplates";
 import { LeadConsentModal } from "@/components/LeadConsentModal";
 import { LeadCaptureSheet } from "@/components/LeadCaptureSheet";
 import { ConsentBanner } from "@/components/ConsentBanner";
+import { SmartGreeting, ContextBadge } from "@/components/SmartGreeting";
 import { Sparkles } from "lucide-react";
 
 // Detect source from URL or referrer
@@ -38,6 +45,14 @@ const PublicCard = () => {
   const [searchParams] = useSearchParams();
   const { data: card, isLoading, error } = useCard(slug || "");
   const recordScan = useRecordScan();
+  
+  // Smart context detection
+  const smartContext = useSmartContext(
+    slug || "",
+    searchParams,
+    card?.company || undefined,
+    undefined // We don't know visitor's name yet
+  );
   
   // Lead capture flow state
   const [showConsentModal, setShowConsentModal] = useState(false);
@@ -125,12 +140,15 @@ const PublicCard = () => {
 
   const cardOwnerName = card ? `${card.first_name} ${card.last_name}` : "";
 
+  // Dynamic theme class based on time
+  const nightModeClass = smartContext.isNight ? "dark" : "";
+
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background effects */}
+    <div className={`min-h-screen bg-background relative overflow-hidden ${nightModeClass}`}>
+      {/* Background effects - adjusted for night mode */}
       <div className="absolute inset-0 bg-grid opacity-30" />
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] orb opacity-30" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] orb opacity-20" />
+      <div className={`absolute top-1/4 left-1/4 w-[500px] h-[500px] orb ${smartContext.isNight ? 'opacity-20' : 'opacity-30'}`} />
+      <div className={`absolute bottom-1/4 right-1/4 w-[400px] h-[400px] orb ${smartContext.isNight ? 'opacity-10' : 'opacity-20'}`} />
       <div className="noise" />
 
       {/* Loading state */}
@@ -168,6 +186,12 @@ const PublicCard = () => {
         }`}
       >
         <div className="w-full max-w-md">
+          {/* Smart Greeting - shows for returning visitors or special contexts */}
+          <SmartGreeting context={smartContext} className="mb-2" />
+          
+          {/* Context Badge - shows mode (hotel/event) */}
+          <ContextBadge context={smartContext} />
+          
           {/* Card using selected template */}
           <div className="perspective-2000">
             {cardData && (
@@ -178,6 +202,7 @@ const PublicCard = () => {
                 onShareInfo={() => setShowLeadForm(true)}
                 cardId={card?.id}
                 enableLeadCapture={true}
+                smartContext={smartContext}
               />
             )}
           </div>
