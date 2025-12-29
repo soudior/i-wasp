@@ -63,27 +63,56 @@ import { useWebhookConfigs } from "@/hooks/useWebhookConfig";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Score badge component
+// Lead temperature based on score
+type LeadTemperature = "cold" | "warm" | "hot";
+
+function getLeadTemperature(score: number): LeadTemperature {
+  if (score >= 51) return "hot";
+  if (score >= 21) return "warm";
+  return "cold";
+}
+
+function getTemperatureLabel(temp: LeadTemperature): string {
+  switch (temp) {
+    case "hot": return "Chaud";
+    case "warm": return "Tiède";
+    case "cold": return "Froid";
+  }
+}
+
+// Score badge component with temperature status
 function ScoreBadge({ score }: { score: number }) {
-  if (score >= 50) {
+  const temp = getLeadTemperature(score);
+  
+  if (temp === "hot") {
     return (
-      <Badge className="bg-emerald-500/20 text-emerald-500 border-emerald-500/30 gap-1">
-        <Flame size={12} />
-        {score}
-      </Badge>
+      <div className="flex items-center gap-2">
+        <Badge className="bg-emerald-500/20 text-emerald-500 border-emerald-500/30 gap-1 animate-pulse">
+          <Flame size={12} />
+          Chaud
+        </Badge>
+        <span className="text-xs text-muted-foreground font-medium">{score} pts</span>
+      </div>
     );
   }
-  if (score >= 20) {
+  if (temp === "warm") {
     return (
-      <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30">
-        {score}
-      </Badge>
+      <div className="flex items-center gap-2">
+        <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30 gap-1">
+          <TrendingUp size={12} />
+          Tiède
+        </Badge>
+        <span className="text-xs text-muted-foreground">{score} pts</span>
+      </div>
     );
   }
   return (
-    <Badge variant="secondary" className="text-muted-foreground">
-      {score}
-    </Badge>
+    <div className="flex items-center gap-2">
+      <Badge variant="secondary" className="text-muted-foreground gap-1">
+        Froid
+      </Badge>
+      <span className="text-xs text-muted-foreground">{score} pts</span>
+    </div>
   );
 }
 
@@ -117,6 +146,8 @@ const Leads = () => {
   const [selectedCardId, setSelectedCardId] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedDateRange, setSelectedDateRange] = useState<string>("all");
+  const [selectedTemperature, setSelectedTemperature] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"date" | "score">("score"); // Default sort by score
   const [selectedLead, setSelectedLead] = useState<LeadWithCard | null>(null);
   const [leadToDelete, setLeadToDelete] = useState<LeadWithCard | null>(null);
   
@@ -147,12 +178,18 @@ const Leads = () => {
     }
   };
 
-  // Filter leads
+  // Filter and sort leads
   const filteredLeads = useMemo(() => {
-    return leads.filter(lead => {
+    let result = leads.filter(lead => {
       if (selectedCardId !== "all" && lead.card_id !== selectedCardId) return false;
       if (selectedStatus !== "all" && lead.status !== selectedStatus) return false;
       if (!isWithinDateRange(lead.created_at, selectedDateRange)) return false;
+      
+      // Temperature filter
+      if (selectedTemperature !== "all") {
+        const temp = getLeadTemperature(lead.lead_score);
+        if (temp !== selectedTemperature) return false;
+      }
       
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
@@ -166,7 +203,17 @@ const Leads = () => {
       
       return true;
     });
-  }, [leads, selectedCardId, selectedStatus, selectedDateRange, searchQuery]);
+
+    // Sort leads
+    result.sort((a, b) => {
+      if (sortBy === "score") {
+        return b.lead_score - a.lead_score; // Highest score first
+      }
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime(); // Newest first
+    });
+
+    return result;
+  }, [leads, selectedCardId, selectedStatus, selectedDateRange, selectedTemperature, sortBy, searchQuery]);
 
   // Stats with scoring
   const stats = useMemo(() => {
@@ -325,9 +372,11 @@ const Leads = () => {
     setSelectedCardId("all");
     setSelectedStatus("all");
     setSelectedDateRange("all");
+    setSelectedTemperature("all");
+    setSortBy("score");
   };
 
-  const hasActiveFilters = searchQuery || selectedCardId !== "all" || selectedStatus !== "all" || selectedDateRange !== "all";
+  const hasActiveFilters = searchQuery || selectedCardId !== "all" || selectedStatus !== "all" || selectedDateRange !== "all" || selectedTemperature !== "all";
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -470,6 +519,30 @@ const Leads = () => {
                 <SelectItem value="week">7 derniers jours</SelectItem>
                 <SelectItem value="month">30 derniers jours</SelectItem>
                 <SelectItem value="quarter">3 derniers mois</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={selectedTemperature} onValueChange={setSelectedTemperature}>
+              <SelectTrigger className="w-full md:w-[140px] h-12 bg-secondary/50 border-0 rounded-xl">
+                <Flame size={16} className="mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Score" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous scores</SelectItem>
+                <SelectItem value="hot">🔥 Chauds (51+)</SelectItem>
+                <SelectItem value="warm">🌡️ Tièdes (21-50)</SelectItem>
+                <SelectItem value="cold">❄️ Froids (0-20)</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as "date" | "score")}>
+              <SelectTrigger className="w-full md:w-[140px] h-12 bg-secondary/50 border-0 rounded-xl">
+                <TrendingUp size={16} className="mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Trier par" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="score">Score (haut → bas)</SelectItem>
+                <SelectItem value="date">Date (récent)</SelectItem>
               </SelectContent>
             </Select>
 
