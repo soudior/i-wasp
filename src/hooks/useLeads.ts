@@ -14,6 +14,14 @@ export interface Lead {
   created_at: string;
 }
 
+export interface LeadWithCard extends Lead {
+  digital_cards: {
+    user_id: string;
+    first_name: string;
+    last_name: string;
+  };
+}
+
 export interface CreateLeadData {
   card_id: string;
   name?: string;
@@ -28,11 +36,11 @@ export function useLeads() {
 
   return useQuery({
     queryKey: ["leads", user?.id],
-    queryFn: async () => {
+    queryFn: async (): Promise<LeadWithCard[]> => {
       if (!user) return [];
 
       const { data, error } = await supabase
-        .from("leads")
+        .from("leads" as any)
         .select(`
           *,
           digital_cards!inner(user_id, first_name, last_name)
@@ -41,7 +49,7 @@ export function useLeads() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as (Lead & { digital_cards: { user_id: string; first_name: string; last_name: string } })[];
+      return (data || []) as unknown as LeadWithCard[];
     },
     enabled: !!user,
   });
@@ -51,15 +59,15 @@ export function useCreateLead() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: CreateLeadData) => {
+    mutationFn: async (data: CreateLeadData): Promise<Lead> => {
       const { data: lead, error } = await supabase
-        .from("leads")
-        .insert(data)
+        .from("leads" as any)
+        .insert(data as any)
         .select()
         .single();
 
       if (error) throw error;
-      return lead as Lead;
+      return lead as unknown as Lead;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
