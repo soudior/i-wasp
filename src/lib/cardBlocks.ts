@@ -48,7 +48,7 @@ export interface WifiBlock extends BaseBlock {
   data: {
     ssid: string;
     password: string;
-    security: "WPA" | "WPA2" | "WEP" | "open";
+    security: "WPA" | "WPA2" | "WPA3" | "WEP" | "open";
     label?: string;
   };
 }
@@ -179,7 +179,7 @@ export function createWifiBlock(data: Partial<WifiBlock["data"]> = {}): WifiBloc
       ssid: "",
       password: "",
       security: "WPA2",
-      label: "WiFi",
+      label: "Accès Wi-Fi",
       ...data,
     },
   };
@@ -447,15 +447,23 @@ export function getWazeUrl(location: LocationBlock["data"]): string {
   return `https://waze.com/ul?q=${encodeURIComponent(location.address)}`;
 }
 
-// Generate WiFi QR code data string
+// Generate WiFi QR code data string (standard format)
 export function getWifiQrString(wifi: WifiBlock["data"]): string {
   const security = wifi.security || "WPA2";
+  
+  // Open network - no password
   if (security === "open") {
-    return `WIFI:S:${wifi.ssid};;`;
+    return `WIFI:S:${escapeWifiString(wifi.ssid)};T:nopass;;`;
   }
-  // WPA and WPA2 both use "WPA" in QR code spec
+  
+  // WPA, WPA2, WPA3 all use "WPA" in QR code spec (backward compatible)
   const qrType = security === "WEP" ? "WEP" : "WPA";
-  return `WIFI:T:${qrType};S:${wifi.ssid};P:${wifi.password};;`;
+  return `WIFI:T:${qrType};S:${escapeWifiString(wifi.ssid)};P:${escapeWifiString(wifi.password)};;`;
+}
+
+// Escape special characters in WiFi QR string
+function escapeWifiString(str: string): string {
+  return str.replace(/[\\"';:,]/g, (char) => `\\${char}`);
 }
 
 // Block type metadata for UI

@@ -253,6 +253,7 @@ function WifiBlockEditor({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="WPA3">WPA3 (Le plus sécurisé)</SelectItem>
             <SelectItem value="WPA2">WPA2 (Recommandé)</SelectItem>
             <SelectItem value="WPA">WPA</SelectItem>
             <SelectItem value="WEP">WEP (Ancien)</SelectItem>
@@ -262,13 +263,16 @@ function WifiBlockEditor({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">Label affiché</Label>
+        <Label className="text-xs text-muted-foreground">Titre affiché</Label>
         <Input
           value={block.data.label || ""}
           onChange={(e) => updateData("label", e.target.value)}
-          placeholder="WiFi Gratuit"
+          placeholder="Accès Wi-Fi"
           className="h-10"
         />
+        <p className="text-[10px] text-muted-foreground">
+          Laissez vide pour le titre par défaut "Accès Wi-Fi"
+        </p>
       </div>
     </div>
   );
