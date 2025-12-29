@@ -25,8 +25,18 @@ import {
 } from "@/lib/printTypes";
 
 // ============= IWASP ))) MARK - LOCKED DESIGN =============
-// This mark is NEVER customizable by users
+// Position: 6mm from top, 6mm from right - NEVER customizable
+// Max width: 14mm
 // Same size and position for ALL cards
+
+// Locked positioning constants
+const IWASP_MARK_POSITION = {
+  TOP_MM: 6,
+  RIGHT_MM: 6,
+  MAX_WIDTH_MM: 14,
+  ICON_SIZE_MM: 4,
+  FONT_SIZE_MM: 2,
+};
 
 interface IwaspMarkProps {
   scale: number; // mm to px conversion
@@ -37,10 +47,10 @@ interface IwaspMarkProps {
 function IwaspMark({ scale, textColor, forPrint = false }: IwaspMarkProps) {
   const mmToPx = (mm: number) => mm * scale;
   
-  // Fixed dimensions - LOCKED
-  const markWidth = mmToPx(12);
-  const iconSize = mmToPx(4);
-  const fontSize = forPrint ? mmToPx(1.8) : mmToPx(2);
+  // Fixed dimensions - LOCKED at max 14mm width
+  const markWidth = mmToPx(IWASP_MARK_POSITION.MAX_WIDTH_MM);
+  const iconSize = mmToPx(IWASP_MARK_POSITION.ICON_SIZE_MM);
+  const fontSize = mmToPx(IWASP_MARK_POSITION.FONT_SIZE_MM);
   
   return (
     <div 
@@ -55,7 +65,7 @@ function IwaspMark({ scale, textColor, forPrint = false }: IwaspMarkProps) {
         style={{ 
           fontSize,
           fontWeight: 600,
-          letterSpacing: "0.15em",
+          letterSpacing: "0.12em",
           color: textColor,
           fontFamily: "'SF Pro Display', 'Inter', -apple-system, sans-serif",
         }}
@@ -379,12 +389,12 @@ export const BrandHeader = forwardRef<HTMLDivElement, BrandHeaderProps>(
           </>
         )}
 
-        {/* IWASP ))) MARK - Top right corner - LOCKED POSITION */}
+        {/* IWASP ))) MARK - Top right corner - LOCKED at 6mm from edges */}
         <div
           className="absolute z-20"
           style={{
-            top: mmToPx(3),
-            right: mmToPx(3),
+            top: mmToPx(IWASP_MARK_POSITION.TOP_MM),
+            right: mmToPx(IWASP_MARK_POSITION.RIGHT_MM),
           }}
         >
           <IwaspMark 

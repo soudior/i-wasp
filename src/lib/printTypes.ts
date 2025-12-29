@@ -246,14 +246,14 @@ export interface LogoBackgroundConfig {
   blur?: number; // 0-20px
 }
 
-// Logo quality requirements
+// Logo quality requirements - BLOCKING if not met
 export const LOGO_REQUIREMENTS = {
-  MIN_WIDTH: 400, // pixels (increased for print quality)
-  MIN_HEIGHT: 200, // pixels
+  MIN_WIDTH: 1000, // pixels - REQUIRED for print quality
+  MIN_HEIGHT: 1000, // pixels - REQUIRED for print quality
   MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB for quality
-  RECOMMENDED_WIDTH: 800, // pixels
-  RECOMMENDED_HEIGHT: 400, // pixels
-  ALLOWED_FORMATS: ["image/png", "image/jpeg", "image/svg+xml", "image/webp"],
+  RECOMMENDED_WIDTH: 1500, // pixels
+  RECOMMENDED_HEIGHT: 1500, // pixels
+  ALLOWED_FORMATS: ["image/png", "image/svg+xml"], // SVG or PNG only
 };
 
 export interface TemplateConfig {
@@ -320,9 +320,9 @@ export const PRINT_TEMPLATES: Record<PrintTemplateType, TemplateConfig> = {
     namePosition: { x: 0, y: 0 },
     titlePosition: { x: 0, y: 0 },
     companyPosition: { x: 0, y: 0 },
-    // IWASP + NFC mark in top-right corner
-    nfcIconPosition: { x: 78, y: 5 },
-    brandPosition: { x: 78, y: 5 },
+    // IWASP + NFC mark in top-right corner - LOCKED at 6mm from edges
+    nfcIconPosition: { x: 73.6, y: 6 }, // 85.6 - 6 - 6 (mark width) = 73.6
+    brandPosition: { x: 73.6, y: 6 },
     centered: true,
     showNfcIcon: true,
     showBrand: true,
