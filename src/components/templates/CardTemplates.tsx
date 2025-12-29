@@ -1,4 +1,5 @@
-import { Phone, Mail, MapPin, Globe, Linkedin, Instagram, MessageCircle, Plus, Wallet, Twitter, Share2 } from "lucide-react";
+import { Phone, Mail, MapPin, Globe, Linkedin, Instagram, MessageCircle, Twitter } from "lucide-react";
+import { CardActionButtons } from "./CardActions";
 
 export interface CardData {
   firstName?: string;
@@ -144,34 +145,15 @@ export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true
             )}
           </div>
 
-          {/* CTA */}
-          <button className="w-full mt-6 py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-semibold rounded-2xl flex items-center justify-center gap-2 transition-all">
-            <Plus size={18} />
-            Ajouter aux contacts
-          </button>
-
-          {showWalletButtons && (
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              <button className="py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <Wallet size={16} className="text-slate-400" />
-                <span className="text-xs text-slate-300">Apple</span>
-              </button>
-              <button className="py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <Wallet size={16} className="text-slate-400" />
-                <span className="text-xs text-slate-300">Google</span>
-              </button>
-            </div>
-          )}
-
-          {onShareInfo && (
-            <button
-              onClick={onShareInfo}
-              className="w-full mt-4 py-3 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 rounded-xl flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 transition-all"
-            >
-              <Share2 size={16} />
-              <span className="text-sm">Partager mes coordonnées</span>
-            </button>
-          )}
+          {/* CTA Buttons */}
+          <div className="mt-6">
+            <CardActionButtons 
+              data={cardData} 
+              showWalletButtons={showWalletButtons} 
+              onShareInfo={onShareInfo}
+              variant="dark"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -263,34 +245,13 @@ export function MinimalTemplate({ data = defaultData, showWalletButtons = true, 
             )}
           </div>
 
-          {/* CTA */}
-          <button className="w-full py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-medium rounded-xl flex items-center justify-center gap-2 transition-colors">
-            <Plus size={18} />
-            Ajouter aux contacts
-          </button>
-
-          {showWalletButtons && (
-            <div className="grid grid-cols-2 gap-3 mt-3">
-              <button className="py-2.5 border border-neutral-200 hover:border-neutral-300 rounded-xl flex items-center justify-center gap-2 text-neutral-600 transition-colors">
-                <Wallet size={16} />
-                <span className="text-xs">Apple</span>
-              </button>
-              <button className="py-2.5 border border-neutral-200 hover:border-neutral-300 rounded-xl flex items-center justify-center gap-2 text-neutral-600 transition-colors">
-                <Wallet size={16} />
-                <span className="text-xs">Google</span>
-              </button>
-            </div>
-          )}
-
-          {onShareInfo && (
-            <button
-              onClick={onShareInfo}
-              className="w-full mt-3 py-3 border border-neutral-200 hover:border-neutral-300 rounded-xl flex items-center justify-center gap-2 text-neutral-500 hover:text-neutral-700 transition-all"
-            >
-              <Share2 size={16} />
-              <span className="text-sm">Partager mes coordonnées</span>
-            </button>
-          )}
+          {/* CTA Buttons */}
+          <CardActionButtons 
+            data={cardData} 
+            showWalletButtons={showWalletButtons} 
+            onShareInfo={onShareInfo}
+            variant="light"
+          />
         </div>
       </div>
     </div>
@@ -400,34 +361,15 @@ export function ModernTemplate({ data = defaultData, showWalletButtons = true, o
               )}
             </div>
 
-            {/* CTA */}
-            <button className="w-full mt-6 py-3.5 bg-white hover:bg-white/90 text-purple-600 font-semibold rounded-2xl flex items-center justify-center gap-2 transition-colors shadow-xl">
-              <Plus size={18} />
-              Ajouter aux contacts
-            </button>
-
-            {showWalletButtons && (
-              <div className="grid grid-cols-2 gap-3 mt-4">
-                <button className="py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                  <Wallet size={16} className="text-white" />
-                  <span className="text-xs text-white">Apple</span>
-                </button>
-                <button className="py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                  <Wallet size={16} className="text-white" />
-                  <span className="text-xs text-white">Google</span>
-                </button>
-              </div>
-            )}
-
-            {onShareInfo && (
-              <button
-                onClick={onShareInfo}
-                className="w-full mt-4 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl flex items-center justify-center gap-2 text-white/70 hover:text-white transition-all"
-              >
-                <Share2 size={16} />
-                <span className="text-sm">Partager mes coordonnées</span>
-              </button>
-            )}
+            {/* CTA Buttons */}
+            <div className="mt-6">
+              <CardActionButtons 
+                data={cardData} 
+                showWalletButtons={showWalletButtons} 
+                onShareInfo={onShareInfo}
+                variant="glass"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -516,34 +458,13 @@ export function CreativeTemplate({ data = defaultData, showWalletButtons = true,
             )}
           </div>
 
-          {/* CTA */}
-          <button className="w-full py-3.5 bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-400 hover:to-orange-400 text-white font-semibold rounded-2xl flex items-center justify-center gap-2 transition-all">
-            <Plus size={18} />
-            Ajouter aux contacts
-          </button>
-
-          {showWalletButtons && (
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              <button className="py-2.5 bg-stone-800 hover:bg-stone-700 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <Wallet size={16} className="text-stone-400" />
-                <span className="text-xs text-stone-300">Apple</span>
-              </button>
-              <button className="py-2.5 bg-stone-800 hover:bg-stone-700 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <Wallet size={16} className="text-stone-400" />
-                <span className="text-xs text-stone-300">Google</span>
-              </button>
-            </div>
-          )}
-
-          {onShareInfo && (
-            <button
-              onClick={onShareInfo}
-              className="w-full mt-4 py-3 bg-stone-800/50 hover:bg-stone-700/50 border border-stone-700/50 rounded-xl flex items-center justify-center gap-2 text-stone-400 hover:text-stone-200 transition-all"
-            >
-              <Share2 size={16} />
-              <span className="text-sm">Partager mes coordonnées</span>
-            </button>
-          )}
+          {/* CTA Buttons */}
+          <CardActionButtons 
+            data={cardData} 
+            showWalletButtons={showWalletButtons} 
+            onShareInfo={onShareInfo}
+            variant="rose"
+          />
         </div>
       </div>
     </div>
@@ -663,34 +584,13 @@ export function TechTemplate({ data = defaultData, showWalletButtons = true, onS
             )}
           </div>
 
-          {/* CTA */}
-          <button className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-mono font-bold rounded flex items-center justify-center gap-2 transition-colors">
-            <Plus size={16} />
-            CONNECT
-          </button>
-
-          {showWalletButtons && (
-            <div className="grid grid-cols-2 gap-2 mt-3">
-              <button className="py-2 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded flex items-center justify-center gap-2 transition-colors">
-                <Wallet size={14} className="text-gray-500" />
-                <span className="text-xs font-mono text-gray-400">Apple</span>
-              </button>
-              <button className="py-2 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded flex items-center justify-center gap-2 transition-colors">
-                <Wallet size={14} className="text-gray-500" />
-                <span className="text-xs font-mono text-gray-400">Google</span>
-              </button>
-            </div>
-          )}
-
-          {onShareInfo && (
-            <button
-              onClick={onShareInfo}
-              className="w-full mt-3 py-2.5 bg-gray-900/50 hover:bg-gray-800/50 border border-gray-800 rounded flex items-center justify-center gap-2 text-gray-500 hover:text-cyan-400 transition-all"
-            >
-              <Share2 size={14} />
-              <span className="text-xs font-mono">SHARE_INFO</span>
-            </button>
-          )}
+          {/* CTA Buttons */}
+          <CardActionButtons 
+            data={cardData} 
+            showWalletButtons={showWalletButtons} 
+            onShareInfo={onShareInfo}
+            variant="tech"
+          />
         </div>
       </div>
     </div>
@@ -796,34 +696,13 @@ export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onS
             )}
           </div>
 
-          {/* CTA */}
-          <button className="w-full py-4 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:via-amber-400 hover:to-amber-500 text-amber-950 font-semibold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-500/20">
-            <Plus size={18} />
-            Ajouter aux contacts
-          </button>
-
-          {showWalletButtons && (
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              <button className="py-2.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <Wallet size={16} className="text-amber-500/70" />
-                <span className="text-xs text-amber-100/60">Apple</span>
-              </button>
-              <button className="py-2.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                <Wallet size={16} className="text-amber-500/70" />
-                <span className="text-xs text-amber-100/60">Google</span>
-              </button>
-            </div>
-          )}
-
-          {onShareInfo && (
-            <button
-              onClick={onShareInfo}
-              className="w-full mt-4 py-3 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 rounded-xl flex items-center justify-center gap-2 text-amber-100/50 hover:text-amber-100/80 transition-all"
-            >
-              <Share2 size={16} />
-              <span className="text-sm">Partager mes coordonnées</span>
-            </button>
-          )}
+          {/* CTA Buttons */}
+          <CardActionButtons 
+            data={cardData} 
+            showWalletButtons={showWalletButtons} 
+            onShareInfo={onShareInfo}
+            variant="amber"
+          />
         </div>
       </div>
     </div>
