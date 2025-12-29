@@ -42,13 +42,13 @@ export interface IdentityBlock extends BaseBlock {
   };
 }
 
-// WiFi Block - SSID & password
+// WiFi Block - SSID & password (Universal Action)
 export interface WifiBlock extends BaseBlock {
   type: "wifi";
   data: {
     ssid: string;
     password: string;
-    networkType?: "WPA" | "WEP" | "open";
+    security: "WPA" | "WPA2" | "WEP" | "open";
     label?: string;
   };
 }
@@ -178,7 +178,7 @@ export function createWifiBlock(data: Partial<WifiBlock["data"]> = {}): WifiBloc
     data: {
       ssid: "",
       password: "",
-      networkType: "WPA",
+      security: "WPA2",
       label: "WiFi",
       ...data,
     },
@@ -449,11 +449,13 @@ export function getWazeUrl(location: LocationBlock["data"]): string {
 
 // Generate WiFi QR code data string
 export function getWifiQrString(wifi: WifiBlock["data"]): string {
-  const type = wifi.networkType || "WPA";
-  if (type === "open") {
+  const security = wifi.security || "WPA2";
+  if (security === "open") {
     return `WIFI:S:${wifi.ssid};;`;
   }
-  return `WIFI:T:${type};S:${wifi.ssid};P:${wifi.password};;`;
+  // WPA and WPA2 both use "WPA" in QR code spec
+  const qrType = security === "WEP" ? "WEP" : "WPA";
+  return `WIFI:T:${qrType};S:${wifi.ssid};P:${wifi.password};;`;
 }
 
 // Block type metadata for UI
