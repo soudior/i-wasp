@@ -151,3 +151,26 @@ export function useUpdateLeadStatus() {
     },
   });
 }
+
+// RGPD: Delete lead functionality
+export function useDeleteLead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string): Promise<void> => {
+      const { error } = await supabase
+        .from("leads" as any)
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+      toast.success("Lead supprimé (RGPD)");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+}
