@@ -528,9 +528,10 @@ export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onS
 
 // Import IWASP Signature templates
 import { IWASPSignatureTemplate, IWASPSignatureLightTemplate } from "./IWASPSignatureTemplate";
+import { HotelGuideTemplate, HotelGuideLightTemplate } from "./HotelGuideTemplate";
 
 // Template selector component
-export type TemplateType = "signature" | "signature-light" | "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "default";
+export type TemplateType = "signature" | "signature-light" | "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "hotel-guide" | "hotel-guide-light" | "default";
 
 export function getTemplateComponent(template: TemplateType) {
   switch (template) {
@@ -550,6 +551,10 @@ export function getTemplateComponent(template: TemplateType) {
       return TechTemplate;
     case "luxe":
       return LuxeTemplate;
+    case "hotel-guide":
+      return HotelGuideTemplate as any;
+    case "hotel-guide-light":
+      return HotelGuideLightTemplate as any;
     default:
       return IWASPSignatureTemplate; // IWASP Signature is the DEFAULT
   }
@@ -558,6 +563,8 @@ export function getTemplateComponent(template: TemplateType) {
 export const templateInfo = [
   { id: "signature", name: "IWASP Signature", description: "Template officielle IWASP - Recommandée" },
   { id: "signature-light", name: "IWASP Signature Light", description: "Variante claire de la Signature" },
+  { id: "hotel-guide", name: "Hotel & Tourist Guide", description: "Hôtels, riads, guides touristiques", category: "hospitality" },
+  { id: "hotel-guide-light", name: "Hotel Guide Light", description: "Variante claire pour hôtels", category: "hospitality" },
   { id: "executive", name: "Série Business", description: "Pour les dirigeants et cadres" },
   { id: "minimal", name: "Série Essential", description: "Élégance épurée" },
   { id: "modern", name: "Série Contemporary", description: "Design intemporel" },
