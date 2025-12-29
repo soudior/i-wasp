@@ -171,6 +171,99 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          background_color: string | null
+          background_image_url: string | null
+          background_type: string
+          card_color: string
+          created_at: string
+          currency: string
+          delivered_at: string | null
+          id: string
+          logo_url: string | null
+          order_number: string
+          order_type: Database["public"]["Enums"]["order_type"]
+          paid_at: string | null
+          print_file_url: string | null
+          production_started_at: string | null
+          quantity: number
+          shipped_at: string | null
+          shipping_address: string | null
+          shipping_city: string | null
+          shipping_country: string | null
+          shipping_name: string | null
+          shipping_postal_code: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          template: string
+          total_price_cents: number
+          tracking_number: string | null
+          unit_price_cents: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          background_color?: string | null
+          background_image_url?: string | null
+          background_type?: string
+          card_color?: string
+          created_at?: string
+          currency?: string
+          delivered_at?: string | null
+          id?: string
+          logo_url?: string | null
+          order_number: string
+          order_type?: Database["public"]["Enums"]["order_type"]
+          paid_at?: string | null
+          print_file_url?: string | null
+          production_started_at?: string | null
+          quantity?: number
+          shipped_at?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
+          shipping_country?: string | null
+          shipping_name?: string | null
+          shipping_postal_code?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          template?: string
+          total_price_cents: number
+          tracking_number?: string | null
+          unit_price_cents: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          background_color?: string | null
+          background_image_url?: string | null
+          background_type?: string
+          card_color?: string
+          created_at?: string
+          currency?: string
+          delivered_at?: string | null
+          id?: string
+          logo_url?: string | null
+          order_number?: string
+          order_type?: Database["public"]["Enums"]["order_type"]
+          paid_at?: string | null
+          print_file_url?: string | null
+          production_started_at?: string | null
+          quantity?: number
+          shipped_at?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
+          shipping_country?: string | null
+          shipping_name?: string | null
+          shipping_postal_code?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          template?: string
+          total_price_cents?: number
+          tracking_number?: string | null
+          unit_price_cents?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -209,7 +302,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      order_status:
+        | "pending"
+        | "paid"
+        | "in_production"
+        | "shipped"
+        | "delivered"
+      order_type: "standard" | "personalized"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -336,6 +435,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      order_status: [
+        "pending",
+        "paid",
+        "in_production",
+        "shipped",
+        "delivered",
+      ],
+      order_type: ["standard", "personalized"],
+    },
   },
 } as const
