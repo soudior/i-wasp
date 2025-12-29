@@ -3,11 +3,12 @@
  * Premium lead management interface with scoring
  * Apple-level design, full export capabilities
  * CRM automation ready (Zapier / Make / Webhooks)
+ * RGPD compliant with delete functionality
  */
 
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useLeads, useUpdateLeadStatus, type LeadWithCard } from "@/hooks/useLeads";
+import { useLeads, useUpdateLeadStatus, useDeleteLead, type LeadWithCard } from "@/hooks/useLeads";
 import { useCards } from "@/hooks/useCards";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -37,13 +38,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { 
   Users, Download, Search, Phone, Mail, Building2,
   Calendar, CreditCard, ArrowLeft, X, Flame, TrendingUp,
   Eye, MoreVertical, CheckCircle, MessageCircle, Clock,
-  Webhook, FileSpreadsheet, Send, Settings, Zap
+  Webhook, FileSpreadsheet, Send, Settings, Zap, Trash2, Shield
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -95,11 +106,13 @@ const Leads = () => {
   const { data: leads = [], isLoading } = useLeads();
   const { data: cards = [] } = useCards();
   const updateStatus = useUpdateLeadStatus();
+  const deleteLead = useDeleteLead();
   
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCardId, setSelectedCardId] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedLead, setSelectedLead] = useState<LeadWithCard | null>(null);
+  const [leadToDelete, setLeadToDelete] = useState<LeadWithCard | null>(null);
   
   // CRM Webhook state
   const [webhookModalOpen, setWebhookModalOpen] = useState(false);
@@ -256,6 +269,13 @@ const Leads = () => {
 
   const handleStatusChange = async (leadId: string, newStatus: string) => {
     await updateStatus.mutateAsync({ id: leadId, status: newStatus });
+  };
+
+  const handleDeleteLead = async () => {
+    if (!leadToDelete) return;
+    await deleteLead.mutateAsync(leadToDelete.id);
+    setLeadToDelete(null);
+    setSelectedLead(null);
   };
 
   const clearFilters = () => {
@@ -534,6 +554,14 @@ const Leads = () => {
                                   <DropdownMenuItem onClick={() => handleStatusChange(lead.id, "archived")}>
                                     Archiver
                                   </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem 
+                                    onClick={() => setLeadToDelete(lead)}
+                                    className="text-destructive focus:text-destructive"
+                                  >
+                                    <Trash2 size={14} className="mr-2" />
+                                    Supprimer (RGPD)
+                                  </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>
@@ -636,7 +664,7 @@ const Leads = () => {
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 mb-3">
               {selectedLead.phone && (
                 <Button 
                   variant="chrome" 
@@ -668,6 +696,18 @@ const Leads = () => {
                 </Button>
               )}
             </div>
+            
+            {/* RGPD Delete button */}
+            <Button
+              variant="ghost"
+              className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => {
+                setLeadToDelete(selectedLead);
+              }}
+            >
+              <Trash2 size={16} className="mr-2" />
+              Supprimer (RGPD)
+            </Button>
           </div>
         </div>
       )}
@@ -712,6 +752,35 @@ const Leads = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* RGPD Delete Confirmation Dialog */}
+      <AlertDialog open={!!leadToDelete} onOpenChange={() => setLeadToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Shield size={20} className="text-destructive" />
+              Supprimer ce lead (RGPD)
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action est irréversible. Le lead{" "}
+              <span className="font-medium text-foreground">
+                {leadToDelete?.name || leadToDelete?.email || "sans nom"}
+              </span>{" "}
+              sera définitivement supprimé conformément au RGPD.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteLead}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              <Trash2 size={16} className="mr-2" />
+              Supprimer définitivement
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

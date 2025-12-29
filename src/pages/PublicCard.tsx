@@ -1,53 +1,93 @@
+/**
+ * IWASP Public Card Page
+ * Premium NFC card viewing with lead capture flow
+ * Apple-level UX - Non-blocking consent
+ */
+
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useCard } from "@/hooks/useCards";
-import { useCreateLead } from "@/hooks/useLeads";
 import { useRecordScan } from "@/hooks/useScans";
 import { DigitalCard } from "@/components/DigitalCard";
 import { TemplateType, CardData } from "@/components/templates/CardTemplates";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import { 
-  Phone, Mail, User, Building2,
-  X, Sparkles
-} from "lucide-react";
+import { LeadConsentModal } from "@/components/LeadConsentModal";
+import { LeadCaptureSheet } from "@/components/LeadCaptureSheet";
+import { Sparkles } from "lucide-react";
+
+// Detect source from URL or referrer
+function detectSource(): "nfc" | "qr" | "link" {
+  const url = new URL(window.location.href);
+  const sourceParam = url.searchParams.get("source");
+  
+  if (sourceParam === "nfc") return "nfc";
+  if (sourceParam === "qr") return "qr";
+  
+  // Check referrer for common QR code scanners
+  const referrer = document.referrer.toLowerCase();
+  if (referrer.includes("qr") || referrer.includes("scan")) return "qr";
+  
+  // Default to link if accessed directly
+  return "link";
+}
 
 const PublicCard = () => {
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
   const { data: card, isLoading, error } = useCard(slug || "");
-  const createLead = useCreateLead();
   const recordScan = useRecordScan();
+  
+  // Lead capture flow state
+  const [showConsentModal, setShowConsentModal] = useState(false);
   const [showLeadForm, setShowLeadForm] = useState(false);
-  const [leadData, setLeadData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-  });
+  const [hasSeenConsent, setHasSeenConsent] = useState(false);
+  const [source] = useState<"nfc" | "qr" | "link">(detectSource);
 
-  // Record scan on first load
+  // Record scan and show consent on first load
   useEffect(() => {
-    if (card?.id) {
+    if (card?.id && !hasSeenConsent) {
+      // Record the scan
       recordScan.mutate(card.id);
+      
+      // Check if user has already seen consent for this card
+      const consentKey = `iwasp_consent_${card.id}`;
+      const hasConsented = sessionStorage.getItem(consentKey);
+      
+      if (!hasConsented) {
+        // Show consent modal after a brief delay for premium feel
+        const timer = setTimeout(() => {
+          setShowConsentModal(true);
+          setHasSeenConsent(true);
+        }, 1500);
+        
+        return () => clearTimeout(timer);
+      } else {
+        setHasSeenConsent(true);
+      }
     }
-  }, [card?.id]);
+  }, [card?.id, hasSeenConsent]);
 
-  const handleShareInfo = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!card?.id) return;
+  const handleConsent = () => {
+    setShowConsentModal(false);
+    setShowLeadForm(true);
+    
+    // Mark as seen for this session
+    if (card?.id) {
+      sessionStorage.setItem(`iwasp_consent_${card.id}`, "seen");
+    }
+  };
 
-    await createLead.mutateAsync({
-      card_id: card.id,
-      name: leadData.name || undefined,
-      email: leadData.email || undefined,
-      phone: leadData.phone || undefined,
-      company: leadData.company || undefined,
-    });
+  const handleDecline = () => {
+    setShowConsentModal(false);
+    
+    // Mark as seen for this session
+    if (card?.id) {
+      sessionStorage.setItem(`iwasp_consent_${card.id}`, "seen");
+    }
+  };
 
+  const handleLeadComplete = (shared: boolean) => {
     setShowLeadForm(false);
-    setLeadData({ name: "", email: "", phone: "", company: "" });
+    // Could track analytics here
   };
 
   // Transform card data to template format
@@ -71,10 +111,11 @@ const PublicCard = () => {
     socialLinks: card.social_links || undefined,
   } : undefined;
 
-  // Consistent structure - always render container, toggle visibility
+  const cardOwnerName = card ? `${card.first_name} ${card.last_name}` : "";
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background effects - always rendered */}
+      {/* Background effects */}
       <div className="absolute inset-0 bg-grid opacity-30" />
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] orb opacity-30" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] orb opacity-20" />
@@ -129,103 +170,39 @@ const PublicCard = () => {
             )}
           </div>
 
-          {/* IWASP branding */}
-          <div className="text-center mt-8">
+          {/* IWASP branding with RGPD notice */}
+          <div className="text-center mt-8 space-y-2">
             <p className="text-xs text-muted-foreground">
               Powered by <span className="font-semibold text-foreground">IWASP</span>
+            </p>
+            <p className="text-[10px] text-muted-foreground/60">
+              Conforme au RGPD – consentement explicite requis
             </p>
           </div>
         </div>
       </div>
 
-      {/* Lead capture modal - always in DOM, toggled via CSS */}
-      <div 
-        className={`fixed inset-0 z-50 flex items-center justify-center p-6 bg-background/80 backdrop-blur-xl transition-opacity duration-200 ${
-          showLeadForm ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="w-full max-w-sm card-glass p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-display text-lg font-semibold text-foreground">
-              Partager mes coordonnées
-            </h2>
-            <button
-              onClick={() => setShowLeadForm(false)}
-              className="w-8 h-8 rounded-full bg-surface-2 hover:bg-surface-3 flex items-center justify-center transition-colors"
-            >
-              <X size={16} />
-            </button>
-          </div>
+      {/* Lead Consent Modal - Apple-style */}
+      <LeadConsentModal
+        open={showConsentModal}
+        onConsent={handleConsent}
+        onDecline={handleDecline}
+        cardOwnerName={cardOwnerName}
+        cardOwnerPhoto={card?.photo_url}
+      />
 
-          <form onSubmit={handleShareInfo} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="lead-name" className="flex items-center gap-2 text-sm">
-                <User size={14} className="text-chrome" />
-                Nom complet
-              </Label>
-              <Input
-                id="lead-name"
-                value={leadData.name}
-                onChange={(e) => setLeadData({ ...leadData, name: e.target.value })}
-                placeholder="Jean Dupont"
-                className="bg-surface-2 border-border/50 h-11"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="lead-email" className="flex items-center gap-2 text-sm">
-                <Mail size={14} className="text-chrome" />
-                Email
-              </Label>
-              <Input
-                id="lead-email"
-                type="email"
-                value={leadData.email}
-                onChange={(e) => setLeadData({ ...leadData, email: e.target.value })}
-                placeholder="jean@exemple.com"
-                className="bg-surface-2 border-border/50 h-11"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="lead-phone" className="flex items-center gap-2 text-sm">
-                <Phone size={14} className="text-chrome" />
-                Téléphone
-              </Label>
-              <Input
-                id="lead-phone"
-                value={leadData.phone}
-                onChange={(e) => setLeadData({ ...leadData, phone: e.target.value })}
-                placeholder="+33 6 12 34 56 78"
-                className="bg-surface-2 border-border/50 h-11"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="lead-company" className="flex items-center gap-2 text-sm">
-                <Building2 size={14} className="text-chrome" />
-                Entreprise
-              </Label>
-              <Input
-                id="lead-company"
-                value={leadData.company}
-                onChange={(e) => setLeadData({ ...leadData, company: e.target.value })}
-                placeholder="Ma Société"
-                className="bg-surface-2 border-border/50 h-11"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              variant="chrome"
-              className="w-full h-11"
-              disabled={createLead.isPending}
-            >
-              {createLead.isPending ? "Envoi..." : "Envoyer"}
-            </Button>
-          </form>
-        </div>
-      </div>
+      {/* Lead Capture Form - Bottom Sheet */}
+      {card && (
+        <LeadCaptureSheet
+          open={showLeadForm}
+          onClose={() => setShowLeadForm(false)}
+          onComplete={handleLeadComplete}
+          cardOwnerName={cardOwnerName}
+          cardOwnerPhoto={card.photo_url}
+          cardOwnerCompany={card.company || undefined}
+          cardId={card.id}
+        />
+      )}
     </div>
   );
 };
