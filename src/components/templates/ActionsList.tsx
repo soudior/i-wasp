@@ -1,16 +1,21 @@
-import { Phone, Mail, MapPin, Globe, MessageCircle, Plus } from "lucide-react";
+import { useState, useCallback, useRef } from "react";
+import { Phone, Mail, MapPin, Globe, MessageCircle, MoreHorizontal } from "lucide-react";
 import { handlePhoneTap, handleEmailTap, handleWhatsAppTap, handleSmsTap, handleWebsiteTap, handleSocialTap } from "@/lib/smartActions";
 import { SocialLink, getNetworkById } from "@/lib/socialNetworks";
 import { SocialIcon } from "@/components/SocialIcon";
 import { LocationPicker } from "@/components/LocationPicker";
+import { ActionSheet, ActionSheetType } from "@/components/ActionSheet";
 import { cn } from "@/lib/utils";
+
+export type ActionType = "call" | "whatsapp" | "sms" | "email" | "maps" | "website" | "social";
 
 interface ActionItem {
   id: string;
+  type: ActionType;
   icon: React.ReactNode;
   label: string;
   subtitle: string;
-  sublabel?: string;
+  value: string;
   onClick: () => void;
   priority: number;
 }
@@ -136,6 +141,54 @@ export function ActionsList({
 }: ActionsListProps) {
   const s = variantStyles[variant];
   
+  // State for action sheet
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetType, setSheetType] = useState<ActionSheetType>("phone");
+  const [sheetValue, setSheetValue] = useState("");
+  const [sheetLabel, setSheetLabel] = useState("");
+  
+  // Long press timer ref
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const isLongPress = useRef(false);
+
+  const openActionSheet = (type: ActionSheetType, value: string, label: string) => {
+    setSheetType(type);
+    setSheetValue(value);
+    setSheetLabel(label);
+    setSheetOpen(true);
+  };
+
+  const handleLongPressStart = (type: ActionSheetType, value: string, label: string) => {
+    isLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+      openActionSheet(type, value, label);
+    }, 400);
+  };
+
+  const handleLongPressEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleClick = (action: ActionItem) => {
+    if (!isLongPress.current) {
+      action.onClick();
+    }
+    isLongPress.current = false;
+  };
+
+  // Map action ID to ActionSheetType
+  const getSheetType = (id: string): ActionSheetType => {
+    if (id === "phone" || id === "whatsapp" || id === "sms") return "phone";
+    if (id === "email") return "email";
+    if (id === "website") return "website";
+    if (id === "location") return "location";
+    return "social";
+  };
+
   // Build actions list with IWASP priority ordering
   const actions: ActionItem[] = [];
   
@@ -146,10 +199,11 @@ export function ActionsList({
     const config = getConfig("phone");
     actions.push({
       id: "phone",
+      type: "call",
       icon: <Phone size={18} className={s.icon} />,
       label: config.label,
       subtitle: config.subtitle,
-      sublabel: phone,
+      value: phone,
       onClick: () => handlePhoneTap(phone),
       priority: 1,
     });
@@ -160,10 +214,11 @@ export function ActionsList({
     const config = getConfig("whatsapp");
     actions.push({
       id: "whatsapp",
+      type: "whatsapp",
       icon: <SocialIcon networkId="whatsapp" size={18} className={s.icon} />,
       label: config.label,
       subtitle: config.subtitle,
-      sublabel: phone,
+      value: phone,
       onClick: () => handleWhatsAppTap(phone),
       priority: 2,
     });
@@ -174,9 +229,11 @@ export function ActionsList({
     const config = getConfig("sms");
     actions.push({
       id: "sms",
+      type: "sms",
       icon: <MessageCircle size={18} className={s.icon} />,
       label: config.label,
       subtitle: config.subtitle,
+      value: phone,
       onClick: () => handleSmsTap(phone),
       priority: 3,
     });
@@ -187,10 +244,11 @@ export function ActionsList({
     const config = getConfig("email");
     actions.push({
       id: "email",
+      type: "email",
       icon: <Mail size={18} className={s.icon} />,
       label: config.label,
       subtitle: config.subtitle,
-      sublabel: email,
+      value: email,
       onClick: () => handleEmailTap(email),
       priority: 4,
     });
@@ -201,10 +259,11 @@ export function ActionsList({
     const config = getConfig("website");
     actions.push({
       id: "website",
+      type: "website",
       icon: <Globe size={18} className={s.icon} />,
       label: config.label,
       subtitle: config.subtitle,
-      sublabel: website,
+      value: website,
       onClick: () => handleWebsiteTap(website),
       priority: 5,
     });
@@ -215,10 +274,11 @@ export function ActionsList({
     const config = getConfig("linkedin");
     actions.push({
       id: "linkedin",
+      type: "social",
       icon: <SocialIcon networkId="linkedin" size={18} className={s.icon} />,
       label: config.label,
       subtitle: config.subtitle,
-      sublabel: linkedin,
+      value: `https://linkedin.com/in/${linkedin}`,
       onClick: () => handleSocialTap("linkedin", linkedin),
       priority: 6,
     });
@@ -229,10 +289,11 @@ export function ActionsList({
     const config = getConfig("instagram");
     actions.push({
       id: "instagram",
+      type: "social",
       icon: <SocialIcon networkId="instagram" size={18} className={s.icon} />,
       label: config.label,
       subtitle: config.subtitle,
-      sublabel: instagram.replace("@", ""),
+      value: `https://instagram.com/${instagram.replace("@", "")}`,
       onClick: () => handleSocialTap("instagram", instagram),
       priority: 7,
     });
@@ -243,10 +304,11 @@ export function ActionsList({
     const config = getConfig("twitter");
     actions.push({
       id: "twitter",
+      type: "social",
       icon: <SocialIcon networkId="twitter" size={18} className={s.icon} />,
       label: config.label,
       subtitle: config.subtitle,
-      sublabel: twitter.replace("@", ""),
+      value: `https://x.com/${twitter.replace("@", "")}`,
       onClick: () => handleSocialTap("twitter", twitter),
       priority: 8,
     });
@@ -258,10 +320,11 @@ export function ActionsList({
     const config = getConfig(link.networkId);
     actions.push({
       id: `social-${link.id}`,
+      type: "social",
       icon: <SocialIcon networkId={link.networkId} size={18} className={s.icon} />,
       label: config.label || network?.label || link.networkId,
       subtitle: config.subtitle,
-      sublabel: link.value,
+      value: link.value,
       onClick: () => handleSocialTap(link.networkId, link.value),
       priority: 10 + index,
     });
@@ -275,53 +338,72 @@ export function ActionsList({
   }
 
   return (
-    <div className={cn("rounded-2xl border overflow-hidden", s.container, className)}>
-      {/* Location at top - Itinéraire */}
-      {location && (
-        <>
-          <LocationPicker
-            address={location}
-            variant="inline"
-            className={cn(
-              "w-full min-h-[56px] px-4 transition-all duration-150",
-              s.item
+    <>
+      <div className={cn("rounded-2xl border overflow-hidden", s.container, className)}>
+        {/* Location at top - Itinéraire */}
+        {location && (
+          <>
+            <LocationPicker
+              address={location}
+              variant="inline"
+              className={cn(
+                "w-full min-h-[56px] px-4 transition-all duration-150",
+                s.item
+              )}
+              iconClassName={s.icon}
+              textClassName={cn("text-sm", s.label)}
+            />
+            {actions.length > 0 && <div className={cn("border-t", s.divider)} />}
+          </>
+        )}
+        
+        {/* Action items with Apple-style layout + long press */}
+        {actions.map((action, index) => (
+          <div key={action.id}>
+            <button
+              onClick={() => handleClick(action)}
+              onMouseDown={() => handleLongPressStart(getSheetType(action.id), action.value, action.label)}
+              onMouseUp={handleLongPressEnd}
+              onMouseLeave={handleLongPressEnd}
+              onTouchStart={() => handleLongPressStart(getSheetType(action.id), action.value, action.label)}
+              onTouchEnd={handleLongPressEnd}
+              onTouchCancel={handleLongPressEnd}
+              className={cn(
+                "w-full flex items-center gap-4 px-4 py-3.5 min-h-[56px] transition-all duration-150 text-left select-none",
+                s.item
+              )}
+              aria-label={action.label}
+            >
+              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", s.iconBg)}>
+                {action.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className={cn("text-sm block", s.label)}>
+                  {action.label}
+                </span>
+                <span className={cn("text-xs block mt-0.5", s.subtitle)}>
+                  {action.subtitle}
+                </span>
+              </div>
+              {/* More options indicator */}
+              <MoreHorizontal size={16} className={cn("shrink-0 opacity-30", s.icon)} />
+            </button>
+            {index < actions.length - 1 && (
+              <div className={cn("border-t mx-4", s.divider)} />
             )}
-            iconClassName={s.icon}
-            textClassName={cn("text-sm", s.label)}
-          />
-          {actions.length > 0 && <div className={cn("border-t", s.divider)} />}
-        </>
-      )}
-      
-      {/* Action items with Apple-style layout */}
-      {actions.map((action, index) => (
-        <div key={action.id}>
-          <button
-            onClick={action.onClick}
-            className={cn(
-              "w-full flex items-center gap-4 px-4 py-3.5 min-h-[56px] transition-all duration-150 text-left",
-              s.item
-            )}
-            aria-label={action.label}
-          >
-            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", s.iconBg)}>
-              {action.icon}
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className={cn("text-sm block", s.label)}>
-                {action.label}
-              </span>
-              <span className={cn("text-xs block mt-0.5", s.subtitle)}>
-                {action.subtitle}
-              </span>
-            </div>
-          </button>
-          {index < actions.length - 1 && (
-            <div className={cn("border-t mx-4", s.divider)} />
-          )}
-        </div>
-      ))}
-    </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Action Sheet */}
+      <ActionSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        type={sheetType}
+        value={sheetValue}
+        label={sheetLabel}
+      />
+    </>
   );
 }
 
