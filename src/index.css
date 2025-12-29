@@ -101,9 +101,9 @@
       0 25px 50px -12px hsl(0 0% 0% / 0.7),
       0 0 0 1px hsl(0 0% 100% / 0.05);
 
-    /* Typography */
-    --font-display: 'SF Pro Display', 'Inter', system-ui, sans-serif;
-    --font-body: 'SF Pro Text', 'Inter', system-ui, sans-serif;
+    /* Typography - Luxury fonts */
+    --font-display: 'Playfair Display', 'SF Pro Display', Georgia, serif;
+    --font-body: 'Inter', 'SF Pro Text', system-ui, sans-serif;
 
     /* Sidebar */
     --sidebar-background: 0 0% 3%;
