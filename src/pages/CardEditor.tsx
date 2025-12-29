@@ -77,6 +77,7 @@ import { SocialLink } from "@/lib/socialNetworks";
 const blockIcons: Record<BlockType, React.ElementType> = {
   identity: User,
   wifi: Wifi,
+  hotelWifi: Wifi,
   location: MapPin,
   action: Zap,
   social: Share2,
