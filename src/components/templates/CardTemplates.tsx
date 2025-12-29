@@ -3,6 +3,8 @@ import { ActionsList } from "./ActionsList";
 import { SocialLink } from "@/lib/socialNetworks";
 
 export interface CardData {
+  id?: string;
+  slug?: string;
   firstName?: string;
   lastName?: string;
   title?: string;
