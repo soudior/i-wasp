@@ -22,6 +22,7 @@ import PublicCard from "./pages/PublicCard";
 import Checkout from "./pages/Checkout";
 import Cart from "./pages/Cart";
 import AdminOrders from "./pages/AdminOrders";
+import AdminAnalytics from "./pages/AdminAnalytics";
 import Demo from "./pages/Demo";
 import HotelDemo from "./pages/HotelDemo";
 import HotelDashboard from "./pages/HotelDashboard";
@@ -117,6 +118,14 @@ const App = () => (
                   element={
                     <ProtectedRoute>
                       <AdminOrders />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/analytics"
+                  element={
+                    <ProtectedRoute>
+                      <AdminAnalytics />
                     </ProtectedRoute>
                   }
                 />
