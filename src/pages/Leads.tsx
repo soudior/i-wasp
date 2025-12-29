@@ -2,6 +2,7 @@
  * IWASP Leads Dashboard
  * Premium lead management interface with scoring
  * Apple-level design, full export capabilities
+ * CRM automation ready (Zapier / Make / Webhooks)
  */
 
 import { useState, useMemo } from "react";
@@ -28,14 +29,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { 
   Users, Download, Search, Phone, Mail, Building2,
   Calendar, CreditCard, ArrowLeft, X, Flame, TrendingUp,
-  Eye, MoreVertical, CheckCircle, MessageCircle, Clock
+  Eye, MoreVertical, CheckCircle, MessageCircle, Clock,
+  Webhook, FileSpreadsheet, Send, Settings, Zap
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { testWebhookConnection, triggerLeadCreatedWebhook, buildLeadPayload, sendDirectWebhook } from "@/hooks/useCRMWebhook";
 
 // Score badge component
 function ScoreBadge({ score }: { score: number }) {
@@ -88,6 +100,11 @@ const Leads = () => {
   const [selectedCardId, setSelectedCardId] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedLead, setSelectedLead] = useState<LeadWithCard | null>(null);
+  
+  // CRM Webhook state
+  const [webhookModalOpen, setWebhookModalOpen] = useState(false);
+  const [webhookUrl, setWebhookUrl] = useState("");
+  const [webhookTesting, setWebhookTesting] = useState(false);
 
   // Filter leads
   const filteredLeads = useMemo(() => {
@@ -132,22 +149,26 @@ const Leads = () => {
       return;
     }
 
-    const headers = ["Nom", "Email", "Téléphone", "Société", "Score", "Statut", "Source", "Carte", "Date"];
+    // BOM for Excel UTF-8 compatibility
+    const BOM = "\uFEFF";
+    const headers = ["Nom", "Email", "Téléphone", "Société", "Message", "Score", "Statut", "Source", "Appareil", "Carte", "Date"];
     const rows = filteredLeads.map(lead => [
       lead.name || "",
       lead.email || "",
       lead.phone || "",
       lead.company || "",
+      lead.message || "",
       lead.lead_score.toString(),
       lead.status,
       lead.source || "nfc",
+      lead.device_type || "",
       `${lead.digital_cards?.first_name || ""} ${lead.digital_cards?.last_name || ""}`,
       format(new Date(lead.created_at), "dd/MM/yyyy HH:mm"),
     ]);
 
-    const csvContent = [
-      headers.join(","),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+    const csvContent = BOM + [
+      headers.join(";"), // Use semicolon for Excel FR compatibility
+      ...rows.map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(";"))
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -158,7 +179,79 @@ const Leads = () => {
     link.click();
     URL.revokeObjectURL(url);
     
-    toast.success(`${filteredLeads.length} leads exportés`);
+    toast.success(`${filteredLeads.length} leads exportés en CSV`);
+  };
+
+  // Export to Excel (XLSX-like TSV)
+  const handleExportExcel = () => {
+    if (filteredLeads.length === 0) {
+      toast.error("Aucun lead à exporter");
+      return;
+    }
+
+    const BOM = "\uFEFF";
+    const headers = ["Nom", "Email", "Téléphone", "Société", "Message", "Score", "Statut", "Source", "Appareil", "Carte", "Date", "Lead Chaud"];
+    const rows = filteredLeads.map(lead => [
+      lead.name || "",
+      lead.email || "",
+      lead.phone || "",
+      lead.company || "",
+      lead.message || "",
+      lead.lead_score.toString(),
+      lead.status === "new" ? "Nouveau" : lead.status === "contacted" ? "Contacté" : lead.status === "converted" ? "Converti" : "Archivé",
+      lead.source?.toUpperCase() || "NFC",
+      lead.device_type || "",
+      `${lead.digital_cards?.first_name || ""} ${lead.digital_cards?.last_name || ""}`,
+      format(new Date(lead.created_at), "dd/MM/yyyy HH:mm"),
+      lead.lead_score >= 50 ? "🔥 OUI" : "NON",
+    ]);
+
+    // Tab-separated for Excel
+    const tsvContent = BOM + [
+      headers.join("\t"),
+      ...rows.map(row => row.map(cell => `${cell.replace(/\t/g, ' ')}`).join("\t"))
+    ].join("\n");
+
+    const blob = new Blob([tsvContent], { type: "application/vnd.ms-excel;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `iwasp-leads-${format(new Date(), "yyyy-MM-dd")}.xls`;
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    toast.success(`${filteredLeads.length} leads exportés en Excel`);
+  };
+
+  // Test webhook connection
+  const handleTestWebhook = async () => {
+    if (!webhookUrl) {
+      toast.error("Entrez une URL webhook");
+      return;
+    }
+    
+    setWebhookTesting(true);
+    await testWebhookConnection(webhookUrl);
+    setWebhookTesting(false);
+  };
+
+  // Send lead to webhook (Zapier/Make)
+  const handleSendToWebhook = async (lead: LeadWithCard) => {
+    if (!webhookUrl) {
+      setWebhookModalOpen(true);
+      return;
+    }
+    
+    const payload = buildLeadPayload({
+      ...lead,
+      card_owner_name: `${lead.digital_cards?.first_name || ""} ${lead.digital_cards?.last_name || ""}`.trim(),
+      card_owner_company: "",
+    });
+    
+    const success = await sendDirectWebhook(webhookUrl, payload);
+    if (success) {
+      toast.success("Lead envoyé au CRM !");
+    }
   };
 
   const handleStatusChange = async (leadId: string, newStatus: string) => {
@@ -200,14 +293,35 @@ const Leads = () => {
                   Gérez vos contacts capturés
                 </p>
               </div>
-              <Button 
-                variant="chrome" 
-                onClick={handleExportCSV}
-                disabled={filteredLeads.length === 0}
-              >
-                <Download size={18} />
-                Exporter CSV
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => setWebhookModalOpen(true)}
+                  className="rounded-full"
+                  title="Configurer webhook CRM"
+                >
+                  <Zap size={18} />
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="chrome" disabled={filteredLeads.length === 0}>
+                      <Download size={18} />
+                      Exporter
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleExportCSV}>
+                      <FileSpreadsheet size={14} className="mr-2" />
+                      Export CSV
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleExportExcel}>
+                      <FileSpreadsheet size={14} className="mr-2" />
+                      Export Excel
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
 
@@ -557,6 +671,47 @@ const Leads = () => {
           </div>
         </div>
       )}
+
+      {/* Webhook Configuration Modal */}
+      <Dialog open={webhookModalOpen} onOpenChange={setWebhookModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Zap size={20} className="text-amber-500" />
+              Intégration CRM
+            </DialogTitle>
+            <DialogDescription>
+              Connectez IWASP à votre CRM via Zapier, Make ou tout autre webhook.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>URL du Webhook</Label>
+              <Input
+                value={webhookUrl}
+                onChange={(e) => setWebhookUrl(e.target.value)}
+                placeholder="https://hooks.zapier.com/..."
+                className="font-mono text-sm"
+              />
+              <p className="text-xs text-muted-foreground">
+                Collez l'URL de votre webhook Zapier, Make, ou n8n
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={handleTestWebhook}
+              disabled={webhookTesting || !webhookUrl}
+            >
+              {webhookTesting ? "Test..." : "Tester"}
+            </Button>
+            <Button onClick={() => setWebhookModalOpen(false)}>
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
