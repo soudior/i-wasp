@@ -82,9 +82,9 @@ export function HeroSection() {
                   <ArrowRight size={20} />
                 </Button>
               </Link>
-              <Link to="/templates">
+              <Link to="/demo">
                 <Button variant="heroOutline" size="xl">
-                  Voir les templates
+                  Voir une démo
                 </Button>
               </Link>
             </div>

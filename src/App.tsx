@@ -15,6 +15,7 @@ import Signup from "./pages/Signup";
 import PublicCard from "./pages/PublicCard";
 import Checkout from "./pages/Checkout";
 import AdminOrders from "./pages/AdminOrders";
+import Demo from "./pages/Demo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
                 }
               />
               <Route path="/c/:slug" element={<PublicCard />} />
+              <Route path="/demo" element={<Demo />} />
               <Route
                 path="/checkout"
                 element={

@@ -406,9 +406,18 @@ export default function Checkout() {
                     <span>Confirmation sous 24h</span>
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
-                    <Truck className="h-4 w-4" />
-                    <span>Livraison 5-7 jours ouvrés</span>
+                    <Package className="h-4 w-4" />
+                    <span>Production: 1-3 jours</span>
                   </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Truck className="h-4 w-4" />
+                    <span>Livraison: 2-5 jours ouvrés</span>
+                  </div>
+                </div>
+                
+                {/* Morocco only badge */}
+                <div className="bg-muted/50 rounded-lg p-3 text-center">
+                  <span className="text-sm font-medium">🇲🇦 Livraison Maroc uniquement</span>
                 </div>
                 
                 <Button 
