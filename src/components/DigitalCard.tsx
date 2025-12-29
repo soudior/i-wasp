@@ -9,6 +9,7 @@ interface DigitalCardProps {
   data?: CardData;
   template?: TemplateType;
   showWalletButtons?: boolean;
+  onShareInfo?: () => void;
 }
 
 const defaultData: CardData = {
@@ -28,7 +29,8 @@ const defaultData: CardData = {
 export function DigitalCard({ 
   data = defaultData, 
   template = "executive", 
-  showWalletButtons = true 
+  showWalletButtons = true,
+  onShareInfo
 }: DigitalCardProps) {
   const TemplateComponent = getTemplateComponent(template);
   const cardData = { ...defaultData, ...data };
@@ -36,7 +38,8 @@ export function DigitalCard({
   return (
     <TemplateComponent 
       data={cardData} 
-      showWalletButtons={showWalletButtons} 
+      showWalletButtons={showWalletButtons}
+      onShareInfo={onShareInfo}
     />
   );
 }

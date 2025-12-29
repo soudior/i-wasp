@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, Globe, Linkedin, Instagram, MessageCircle, Plus, Wallet, Twitter } from "lucide-react";
+import { Phone, Mail, MapPin, Globe, Linkedin, Instagram, MessageCircle, Plus, Wallet, Twitter, Share2 } from "lucide-react";
 
 export interface CardData {
   firstName?: string;
@@ -19,9 +19,10 @@ export interface CardData {
   logoUrl?: string | null;
 }
 
-interface TemplateProps {
+export interface TemplateProps {
   data: CardData;
   showWalletButtons?: boolean;
+  onShareInfo?: () => void;
 }
 
 const defaultData: CardData = {
@@ -39,7 +40,7 @@ const defaultData: CardData = {
 };
 
 // Executive Template - Premium dark with gold accents
-export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true }: TemplateProps) {
+export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -166,6 +167,16 @@ export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true
               </button>
             </div>
           )}
+
+          {onShareInfo && (
+            <button
+              onClick={onShareInfo}
+              className="w-full mt-4 py-3 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 rounded-xl flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 transition-all"
+            >
+              <Share2 size={16} />
+              <span className="text-sm">Partager mes coordonnées</span>
+            </button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -173,7 +184,7 @@ export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true
 }
 
 // Minimal Template - Clean white with subtle shadows
-export function MinimalTemplate({ data = defaultData, showWalletButtons = true }: TemplateProps) {
+export function MinimalTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -279,6 +290,16 @@ export function MinimalTemplate({ data = defaultData, showWalletButtons = true }
               </button>
             </div>
           )}
+
+          {onShareInfo && (
+            <button
+              onClick={onShareInfo}
+              className="w-full mt-3 py-3 border border-neutral-200 hover:border-neutral-300 rounded-xl flex items-center justify-center gap-2 text-neutral-500 hover:text-neutral-700 transition-all"
+            >
+              <Share2 size={16} />
+              <span className="text-sm">Partager mes coordonnées</span>
+            </button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -286,7 +307,7 @@ export function MinimalTemplate({ data = defaultData, showWalletButtons = true }
 }
 
 // Modern Template - Glass effect with gradients
-export function ModernTemplate({ data = defaultData, showWalletButtons = true }: TemplateProps) {
+export function ModernTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -410,6 +431,16 @@ export function ModernTemplate({ data = defaultData, showWalletButtons = true }:
                 </button>
               </div>
             )}
+
+            {onShareInfo && (
+              <button
+                onClick={onShareInfo}
+                className="w-full mt-4 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl flex items-center justify-center gap-2 text-white/70 hover:text-white transition-all"
+              >
+                <Share2 size={16} />
+                <span className="text-sm">Partager mes coordonnées</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -418,7 +449,7 @@ export function ModernTemplate({ data = defaultData, showWalletButtons = true }:
 }
 
 // Creative Template - Asymmetric layout with bold colors
-export function CreativeTemplate({ data = defaultData, showWalletButtons = true }: TemplateProps) {
+export function CreativeTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -520,6 +551,16 @@ export function CreativeTemplate({ data = defaultData, showWalletButtons = true 
               </button>
             </div>
           )}
+
+          {onShareInfo && (
+            <button
+              onClick={onShareInfo}
+              className="w-full mt-4 py-3 bg-stone-800/50 hover:bg-stone-700/50 border border-stone-700/50 rounded-xl flex items-center justify-center gap-2 text-stone-400 hover:text-stone-200 transition-all"
+            >
+              <Share2 size={16} />
+              <span className="text-sm">Partager mes coordonnées</span>
+            </button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -527,7 +568,7 @@ export function CreativeTemplate({ data = defaultData, showWalletButtons = true 
 }
 
 // Tech Template - Cyberpunk with neon accents
-export function TechTemplate({ data = defaultData, showWalletButtons = true }: TemplateProps) {
+export function TechTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -661,6 +702,16 @@ export function TechTemplate({ data = defaultData, showWalletButtons = true }: T
               </button>
             </div>
           )}
+
+          {onShareInfo && (
+            <button
+              onClick={onShareInfo}
+              className="w-full mt-3 py-2.5 bg-gray-900/50 hover:bg-gray-800/50 border border-gray-800 rounded flex items-center justify-center gap-2 text-gray-500 hover:text-cyan-400 transition-all"
+            >
+              <Share2 size={14} />
+              <span className="text-xs font-mono">SHARE_INFO</span>
+            </button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -668,7 +719,7 @@ export function TechTemplate({ data = defaultData, showWalletButtons = true }: T
 }
 
 // Luxe Template - Premium with rich textures
-export function LuxeTemplate({ data = defaultData, showWalletButtons = true }: TemplateProps) {
+export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -787,6 +838,16 @@ export function LuxeTemplate({ data = defaultData, showWalletButtons = true }: T
                 <span className="text-xs text-amber-100/60">Google</span>
               </button>
             </div>
+          )}
+
+          {onShareInfo && (
+            <button
+              onClick={onShareInfo}
+              className="w-full mt-4 py-3 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 rounded-xl flex items-center justify-center gap-2 text-amber-100/50 hover:text-amber-100/80 transition-all"
+            >
+              <Share2 size={16} />
+              <span className="text-sm">Partager mes coordonnées</span>
+            </button>
           )}
         </div>
       </div>
