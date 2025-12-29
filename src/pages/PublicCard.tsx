@@ -72,17 +72,9 @@ const PublicCard = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center gap-4"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground"
-          />
-        </motion.div>
+        <div className="flex flex-col items-center gap-4 animate-fade-in">
+          <div className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
+        </div>
       </div>
     );
   }
