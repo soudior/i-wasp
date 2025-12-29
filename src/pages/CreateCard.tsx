@@ -266,7 +266,7 @@ const CreateCard = () => {
                 </Tabs>
 
                 <div className="flex gap-4 mt-8">
-                  <Button variant="gold" className="flex-1">
+                  <Button variant="chrome" className="flex-1">
                     <Save size={18} />
                     Enregistrer
                   </Button>

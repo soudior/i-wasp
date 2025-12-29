@@ -26,26 +26,29 @@ export function Navbar() {
 
   return (
     <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled
-          ? "bg-background/80 backdrop-blur-xl border-b border-border/50"
+          ? "glass-strong"
           : "bg-transparent"
       }`}
     >
       <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl bg-gradient-gold flex items-center justify-center">
-                <span className="font-display font-bold text-primary-foreground text-lg">I</span>
+          <Link to="/" className="flex items-center gap-3 group">
+            <motion.div 
+              className="relative"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="w-10 h-10 rounded-xl bg-foreground flex items-center justify-center">
+                <span className="font-semibold text-background text-lg">I</span>
               </div>
-              <div className="absolute -inset-1 bg-primary/20 rounded-xl blur-lg -z-10" />
-            </div>
-            <span className="font-display text-xl font-semibold text-foreground tracking-tight">
+            </motion.div>
+            <span className="text-xl font-semibold text-foreground tracking-tight">
               IWASP
             </span>
           </Link>
@@ -58,7 +61,7 @@ export function Navbar() {
                 to={link.href}
                 className={`text-sm font-medium transition-colors duration-300 ${
                   location.pathname === link.href
-                    ? "text-primary"
+                    ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -68,14 +71,14 @@ export function Navbar() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
             <Link to="/login">
               <Button variant="ghost" size="sm">
                 Connexion
               </Button>
             </Link>
             <Link to="/signup">
-              <Button variant="gold" size="sm">
+              <Button variant="chrome" size="sm">
                 Commencer
               </Button>
             </Link>
@@ -118,7 +121,7 @@ export function Navbar() {
                     </Button>
                   </Link>
                   <Link to="/signup">
-                    <Button variant="gold" className="w-full">
+                    <Button variant="chrome" className="w-full">
                       Commencer
                     </Button>
                   </Link>

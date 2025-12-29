@@ -126,7 +126,7 @@ export function PricingSection() {
 
                 <Link to="/signup" className="block">
                   <Button 
-                    variant={plan.popular ? "gold" : "outline"} 
+                    variant={plan.popular ? "chrome" : "outline"} 
                     className="w-full"
                   >
                     {plan.cta}

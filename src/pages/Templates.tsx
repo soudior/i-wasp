@@ -143,7 +143,7 @@ const Templates = () => {
                     </ul>
 
                     <Link to="/create">
-                      <Button variant="gold" className="w-full">
+                      <Button variant="chrome" className="w-full">
                         Utiliser ce template
                       </Button>
                     </Link>

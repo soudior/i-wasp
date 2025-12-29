@@ -55,22 +55,23 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-24 bg-background relative overflow-hidden">
-      {/* Background accents */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-primary/3 rounded-full blur-3xl" />
+    <section className="py-32 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-surface-1" />
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-glow-subtle/10 blur-[150px] opacity-50" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-glow-subtle/10 blur-[120px] opacity-40" />
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center mb-20"
         >
-          <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">
-            Fonctionnalités <span className="text-gradient-gold">d'exception</span>
+          <h2 className="text-4xl md:text-5xl font-semibold mb-6">
+            Fonctionnalités <span className="text-chrome">d'exception</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Une solution complète pour gérer votre identité professionnelle digitale
@@ -78,24 +79,28 @@ export function FeaturesSection() {
         </motion.div>
 
         {/* Features grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.6, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               className="group"
             >
-              <div className="h-full p-6 rounded-2xl bg-card border border-border hover:border-primary/30 transition-all duration-500 hover:shadow-lg">
+              <div className="h-full p-6 rounded-2xl card-glass hover:bg-foreground/[0.03] transition-all duration-500">
                 {/* Icon */}
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <feature.icon size={24} className="text-primary" />
-                </div>
+                <motion.div 
+                  className="w-12 h-12 rounded-xl bg-surface-2 flex items-center justify-center mb-5 group-hover:bg-surface-3 transition-colors duration-300"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <feature.icon size={22} className="text-chrome" />
+                </motion.div>
                 
                 {/* Content */}
-                <h3 className="font-display text-lg font-semibold text-foreground mb-2">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
                   {feature.title}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">

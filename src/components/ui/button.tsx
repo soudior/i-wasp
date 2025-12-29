@@ -5,12 +5,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 font-body",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 font-body",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl",
+          "bg-foreground text-background hover:bg-foreground/90 shadow-lg hover:shadow-xl",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -18,20 +18,21 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-secondary hover:text-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        // Premium variants
-        gold: "bg-gradient-gold text-primary-foreground font-semibold shadow-lg hover:shadow-gold transition-all duration-500 hover:scale-[1.02]",
-        glass: "bg-gradient-glass border border-border/50 backdrop-blur-xl text-foreground hover:bg-secondary/30",
-        premium: "bg-card border border-border text-foreground hover:border-primary/50 hover:shadow-lg transition-all duration-500",
-        hero: "bg-gradient-gold text-primary-foreground font-semibold text-base px-8 py-4 shadow-lg hover:shadow-gold transition-all duration-500 hover:scale-[1.02] rounded-xl",
-        heroOutline: "border-2 border-primary/50 bg-transparent text-foreground hover:bg-primary/10 hover:border-primary font-semibold text-base px-8 py-4 rounded-xl transition-all duration-500",
+        link: "text-foreground underline-offset-4 hover:underline",
+        // Premium variants - visionOS inspired
+        glass: "btn-glass text-foreground hover:scale-[1.02]",
+        chrome: "btn-chrome font-semibold hover:scale-[1.02] transition-transform",
+        hero: "btn-chrome font-semibold text-base px-8 py-4 rounded-2xl hover:scale-[1.02] transition-transform shadow-lg",
+        heroOutline: "border border-foreground/20 bg-transparent text-foreground hover:bg-foreground/5 hover:border-foreground/40 font-medium text-base px-8 py-4 rounded-2xl transition-all duration-300",
+        wallet: "wallet-btn text-foreground flex items-center gap-3",
+        minimal: "text-muted-foreground hover:text-foreground transition-colors",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-12 rounded-lg px-8 text-base",
-        xl: "h-14 rounded-xl px-10 text-lg",
-        icon: "h-10 w-10",
+        default: "h-11 px-5 py-2.5",
+        sm: "h-9 rounded-lg px-4 text-xs",
+        lg: "h-12 rounded-xl px-8 text-base",
+        xl: "h-14 rounded-2xl px-10 text-lg",
+        icon: "h-11 w-11",
       },
     },
     defaultVariants: {
