@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -61,41 +60,33 @@ const Templates = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-6">
           {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
+          <div className="text-center mb-16 animate-fade-up">
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
               Templates <span className="text-gradient-gold">premium</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Choisissez parmi notre collection exclusive de templates conçus par des designers de renom
             </p>
-          </motion.div>
+          </div>
 
           {/* Templates grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {templates.map((template, index) => (
-              <motion.div
-                key={template.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative"
-              >
+              <div key={template.id} className="relative animate-fade-up" style={{ animationDelay: `${index * 0.1}s` }}>
                 {template.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-gold text-primary-foreground text-xs font-medium rounded-full z-10">
                     Populaire
                   </div>
                 )}
-                
-                <Card variant="premium" className="overflow-hidden group cursor-pointer hover:border-primary/50 transition-all duration-500">
+
+                <Card
+                  variant="premium"
+                  className="overflow-hidden group cursor-pointer hover:border-primary/50 transition-all duration-500"
+                >
                   {/* Preview */}
                   <div className={`aspect-[4/5] bg-gradient-to-br ${template.gradient} relative overflow-hidden`}>
                     {/* Card mockup */}
@@ -123,13 +114,9 @@ const Templates = () => {
 
                   {/* Info */}
                   <div className="p-6">
-                    <h3 className="font-display text-xl font-semibold text-foreground mb-2">
-                      {template.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {template.description}
-                    </p>
-                    
+                    <h3 className="font-display text-xl font-semibold text-foreground mb-2">{template.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-4">{template.description}</p>
+
                     {/* Features */}
                     <ul className="space-y-2 mb-6">
                       {template.features.map((feature) => (
@@ -149,7 +136,7 @@ const Templates = () => {
                     </Link>
                   </div>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

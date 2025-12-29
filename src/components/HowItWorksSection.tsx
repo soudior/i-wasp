@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Smartphone, Wallet, Share2, Nfc } from "lucide-react";
 
 const steps = [
@@ -33,36 +32,23 @@ export function HowItWorksSection() {
     <section className="py-24 bg-secondary/20 relative overflow-hidden">
       <div className="container mx-auto px-6">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
+        <div className="text-center mb-16 animate-fade-up">
           <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">
             Comment <span className="text-gradient-gold">ça marche</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Quatre étapes simples pour révolutionner votre networking
           </p>
-        </motion.div>
+        </div>
 
         {/* Steps */}
         <div className="relative">
           {/* Connection line */}
           <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, index) => (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.15 }}
-                className="relative"
-              >
+              <div key={step.number} className="relative animate-fade-up" style={{ animationDelay: `${index * 0.15}s` }}>
                 <div className="text-center">
                   {/* Number badge */}
                   <div className="relative inline-flex mb-6">
@@ -74,14 +60,10 @@ export function HowItWorksSection() {
                     </span>
                   </div>
 
-                  <h3 className="font-display text-xl font-semibold text-foreground mb-3">
-                    {step.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {step.description}
-                  </p>
+                  <h3 className="font-display text-xl font-semibold text-foreground mb-3">{step.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

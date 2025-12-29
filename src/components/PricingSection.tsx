@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,13 +8,7 @@ const plans = [
     name: "Starter",
     price: "0",
     description: "Pour découvrir IWASP",
-    features: [
-      "1 carte digitale",
-      "Templates basiques",
-      "Lien de partage",
-      "QR Code",
-      "Support email",
-    ],
+    features: ["1 carte digitale", "Templates basiques", "Lien de partage", "QR Code", "Support email"],
     cta: "Commencer gratuitement",
     popular: false,
   },
@@ -62,53 +55,34 @@ export function PricingSection() {
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
+        <div className="text-center mb-16 animate-fade-up">
           <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">
             Tarifs <span className="text-gradient-gold">transparents</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Choisissez le plan qui correspond à vos besoins. Annulez à tout moment.
           </p>
-        </motion.div>
+        </div>
 
         {/* Pricing cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
-            <motion.div
-              key={plan.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative"
-            >
+            <div key={plan.name} className="relative animate-fade-up" style={{ animationDelay: `${index * 0.1}s` }}>
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-gold text-primary-foreground text-sm font-medium rounded-full">
                   Populaire
                 </div>
               )}
-              
-              <Card 
-                variant={plan.popular ? "premium" : "default"} 
-                className={`h-full p-8 ${plan.popular ? 'ring-2 ring-primary/50' : ''}`}
+
+              <Card
+                variant={plan.popular ? "premium" : "default"}
+                className={`h-full p-8 ${plan.popular ? "ring-2 ring-primary/50" : ""}`}
               >
                 <div className="text-center mb-8">
-                  <h3 className="font-display text-2xl font-bold text-foreground mb-2">
-                    {plan.name}
-                  </h3>
-                  <p className="text-muted-foreground text-sm mb-4">
-                    {plan.description}
-                  </p>
+                  <h3 className="font-display text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
+                  <p className="text-muted-foreground text-sm mb-4">{plan.description}</p>
                   <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-4xl font-display font-bold text-foreground">
-                      {plan.price}€
-                    </span>
+                    <span className="text-4xl font-display font-bold text-foreground">{plan.price}€</span>
                     <span className="text-muted-foreground">/mois</span>
                   </div>
                 </div>
@@ -125,15 +99,12 @@ export function PricingSection() {
                 </ul>
 
                 <Link to="/signup" className="block">
-                  <Button 
-                    variant={plan.popular ? "chrome" : "outline"} 
-                    className="w-full"
-                  >
+                  <Button variant={plan.popular ? "chrome" : "outline"} className="w-full">
                     {plan.cta}
                   </Button>
                 </Link>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
