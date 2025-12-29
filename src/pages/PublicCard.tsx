@@ -66,6 +66,7 @@ const PublicCard = () => {
     tagline: card.tagline || undefined,
     photoUrl: card.photo_url || undefined,
     logoUrl: card.logo_url || undefined,
+    socialLinks: card.social_links || undefined,
   } : undefined;
 
   // Consistent structure - always render container, toggle visibility
