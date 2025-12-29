@@ -15,6 +15,8 @@ interface DigitalCardProps {
     instagram?: string;
     tagline?: string;
     photo?: string;
+    photoUrl?: string | null;
+    logoUrl?: string | null;
   };
   variant?: "default" | "minimal" | "executive";
   showWalletButtons?: boolean;
@@ -36,6 +38,7 @@ const defaultData = {
 
 export function DigitalCard({ data = defaultData, variant = "default", showWalletButtons = true }: DigitalCardProps) {
   const cardData = { ...defaultData, ...data };
+  const photoSrc = cardData.photoUrl || cardData.photo;
 
   return (
     <div className="perspective-2000">
@@ -74,9 +77,9 @@ export function DigitalCard({ data = defaultData, variant = "default", showWalle
                 transition={{ duration: 0.3 }}
               >
                 <div className="w-20 h-20 rounded-2xl overflow-hidden ring-2 ring-foreground/10 shadow-lg">
-                  {cardData.photo ? (
+                  {photoSrc ? (
                     <img 
-                      src={cardData.photo} 
+                      src={photoSrc} 
                       alt={cardData.firstName} 
                       className="w-full h-full object-cover" 
                     />
@@ -98,8 +101,15 @@ export function DigitalCard({ data = defaultData, variant = "default", showWalle
                 </motion.div>
               </motion.div>
               
-              {/* Name & title */}
+              {/* Name & title with optional logo */}
               <div className="flex-1 min-w-0">
+                {cardData.logoUrl && (
+                  <img 
+                    src={cardData.logoUrl} 
+                    alt={cardData.company || "Logo"} 
+                    className="h-6 w-auto object-contain mb-2 opacity-80"
+                  />
+                )}
                 <h2 className="text-xl font-semibold text-foreground truncate">
                   {cardData.firstName} {cardData.lastName}
                 </h2>
