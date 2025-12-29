@@ -1,20 +1,23 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { href: "/", label: "Accueil" },
   { href: "/templates", label: "Templates" },
-  { href: "/features", label: "Fonctionnalités" },
-  { href: "/pricing", label: "Tarifs" },
+  { href: "/#features", label: "Fonctionnalités" },
+  { href: "/#pricing", label: "Tarifs" },
 ];
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut, loading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,6 +26,11 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <motion.header
@@ -72,16 +80,35 @@ export function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/login">
-              <Button variant="ghost" size="sm">
-                Connexion
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button variant="chrome" size="sm">
-                Commencer
-              </Button>
-            </Link>
+            {!loading && (
+              user ? (
+                <>
+                  <Link to="/dashboard">
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <LayoutDashboard size={16} />
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
+                    <LogOut size={16} />
+                    Déconnexion
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <Button variant="ghost" size="sm">
+                      Connexion
+                    </Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button variant="chrome" size="sm">
+                      Commencer
+                    </Button>
+                  </Link>
+                </>
+              )
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -115,16 +142,40 @@ export function Navbar() {
                   </Link>
                 ))}
                 <div className="pt-4 flex flex-col gap-3">
-                  <Link to="/login">
-                    <Button variant="outline" className="w-full">
-                      Connexion
-                    </Button>
-                  </Link>
-                  <Link to="/signup">
-                    <Button variant="chrome" className="w-full">
-                      Commencer
-                    </Button>
-                  </Link>
+                  {user ? (
+                    <>
+                      <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button variant="chrome" className="w-full gap-2">
+                          <LayoutDashboard size={16} />
+                          Dashboard
+                        </Button>
+                      </Link>
+                      <Button 
+                        variant="outline" 
+                        className="w-full gap-2" 
+                        onClick={() => {
+                          handleLogout();
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <LogOut size={16} />
+                        Déconnexion
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button variant="outline" className="w-full">
+                          Connexion
+                        </Button>
+                      </Link>
+                      <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button variant="chrome" className="w-full">
+                          Commencer
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>
