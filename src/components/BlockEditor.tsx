@@ -10,7 +10,7 @@ import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { 
   Plus, Trash2, GripVertical, Eye, EyeOff, ChevronDown, ChevronUp,
   User, Wifi, MapPin, Zap, Share2, Gift, Info, Minus, Phone, Mail,
-  Globe, MessageCircle, Copy, Check
+  Globe, MessageCircle, Copy, Check, Building
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +39,7 @@ import {
   BlockType,
   IdentityBlock,
   WifiBlock,
+  HotelWifiBlock,
   LocationBlock,
   ActionBlock,
   SocialBlock,
@@ -48,6 +49,7 @@ import {
   ActionType,
   createIdentityBlock,
   createWifiBlock,
+  createHotelWifiBlock,
   createLocationBlock,
   createActionBlock,
   createSocialBlock,
@@ -76,6 +78,7 @@ interface BlockEditorProps {
 const blockIcons: Record<BlockType, React.ElementType> = {
   identity: User,
   wifi: Wifi,
+  hotelWifi: Wifi,
   location: MapPin,
   action: Zap,
   social: Share2,
@@ -278,7 +281,146 @@ function WifiBlockEditor({
   );
 }
 
-function LocationBlockEditor({ 
+function HotelWifiBlockEditor({ 
+  block, 
+  onChange 
+}: { 
+  block: HotelWifiBlock; 
+  onChange: (block: HotelWifiBlock) => void;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const updateData = (field: keyof HotelWifiBlock["data"], value: string) => {
+    onChange({
+      ...block,
+      data: { ...block.data, [field]: value },
+    });
+  };
+
+  const copyPassword = () => {
+    navigator.clipboard.writeText(block.data.password);
+    setCopied(true);
+    toast.success("Mot de passe copié !");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Hotel Info */}
+      <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
+        <p className="text-xs text-primary font-medium mb-1">🏨 Wi-Fi Hôtelier Premium</p>
+        <p className="text-[10px] text-muted-foreground">
+          Incluez le numéro de chambre et la date de départ pour une expérience client personnalisée.
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-xs text-muted-foreground">Nom de l'établissement</Label>
+        <Input
+          value={block.data.hotelName || ""}
+          onChange={(e) => updateData("hotelName", e.target.value)}
+          placeholder="Grand Hôtel Palace"
+          className="h-10"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground">Numéro de chambre</Label>
+          <Input
+            value={block.data.roomNumber || ""}
+            onChange={(e) => updateData("roomNumber", e.target.value)}
+            placeholder="Suite 201"
+            className="h-10"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground">Date de départ</Label>
+          <Input
+            value={block.data.checkOutDate || ""}
+            onChange={(e) => updateData("checkOutDate", e.target.value)}
+            placeholder="15/01/2025"
+            type="date"
+            className="h-10"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-xs text-muted-foreground">Nom du réseau (SSID)</Label>
+        <Input
+          value={block.data.ssid}
+          onChange={(e) => updateData("ssid", e.target.value)}
+          placeholder="Hotel_Guest_WiFi"
+          className="h-10"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-xs text-muted-foreground">Mot de passe</Label>
+        <div className="flex gap-2">
+          <Input
+            value={block.data.password}
+            onChange={(e) => updateData("password", e.target.value)}
+            placeholder="••••••••"
+            type="password"
+            className="h-10 flex-1"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={copyPassword}
+            className="h-10 w-10"
+          >
+            {copied ? <Check size={16} /> : <Copy size={16} />}
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-xs text-muted-foreground">Type de sécurité</Label>
+        <Select
+          value={block.data.security || "WPA2"}
+          onValueChange={(value) => updateData("security", value)}
+        >
+          <SelectTrigger className="h-10">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="WPA3">WPA3 (Le plus sécurisé)</SelectItem>
+            <SelectItem value="WPA2">WPA2 (Recommandé)</SelectItem>
+            <SelectItem value="WPA">WPA</SelectItem>
+            <SelectItem value="WEP">WEP (Ancien)</SelectItem>
+            <SelectItem value="open">Ouvert (pas de mot de passe)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-xs text-muted-foreground">Message d'accueil</Label>
+        <Textarea
+          value={block.data.welcomeMessage || ""}
+          onChange={(e) => updateData("welcomeMessage", e.target.value)}
+          placeholder="Bienvenue dans notre établissement. Profitez d'une connexion haut débit."
+          className="min-h-[60px]"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-xs text-muted-foreground">Titre affiché</Label>
+        <Input
+          value={block.data.label || ""}
+          onChange={(e) => updateData("label", e.target.value)}
+          placeholder="Wi-Fi de votre chambre"
+          className="h-10"
+        />
+      </div>
+    </div>
+  );
+}
+
+function LocationBlockEditor({
   block, 
   onChange 
 }: { 
@@ -624,6 +766,8 @@ function BlockItem({ block, onChange, onDelete }: BlockItemProps) {
         return <IdentityBlockEditor block={block as IdentityBlock} onChange={onChange as any} />;
       case "wifi":
         return <WifiBlockEditor block={block as WifiBlock} onChange={onChange as any} />;
+      case "hotelWifi":
+        return <HotelWifiBlockEditor block={block as HotelWifiBlock} onChange={onChange as any} />;
       case "location":
         return <LocationBlockEditor block={block as LocationBlock} onChange={onChange as any} />;
       case "action":
@@ -749,6 +893,7 @@ function AddBlockMenu({ onAdd, existingTypes }: AddBlockMenuProps) {
     { type: "action", actionType: "website", label: "Site web", icon: Globe },
     { type: "location", label: "Localisation", icon: MapPin },
     { type: "wifi", label: "WiFi", icon: Wifi },
+    { type: "hotelWifi", label: "WiFi Hôtel", icon: Building },
     { type: "social", label: "Réseaux sociaux", icon: Share2 },
     { type: "offer", label: "Offre spéciale", icon: Gift },
     { type: "info", label: "Information", icon: Info },
@@ -833,6 +978,9 @@ export function BlockEditor({ blocks, onChange, className }: BlockEditorProps) {
         break;
       case "wifi":
         newBlock = { ...createWifiBlock(), order };
+        break;
+      case "hotelWifi":
+        newBlock = { ...createHotelWifiBlock(), order };
         break;
       case "location":
         newBlock = { ...createLocationBlock(), order };

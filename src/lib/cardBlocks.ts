@@ -14,6 +14,7 @@ import { SocialLink } from "./socialNetworks";
 export type BlockType = 
   | "identity" 
   | "wifi" 
+  | "hotelWifi"
   | "location" 
   | "action" 
   | "social" 
@@ -50,6 +51,21 @@ export interface WifiBlock extends BaseBlock {
     password: string;
     security: "WPA" | "WPA2" | "WPA3" | "WEP" | "open";
     label?: string;
+  };
+}
+
+// Hotel WiFi Block - Premium hospitality WiFi with room info
+export interface HotelWifiBlock extends BaseBlock {
+  type: "hotelWifi";
+  data: {
+    ssid: string;
+    password: string;
+    security: "WPA" | "WPA2" | "WPA3" | "WEP" | "open";
+    label?: string;
+    roomNumber?: string;
+    checkOutDate?: string;
+    hotelName?: string;
+    welcomeMessage?: string;
   };
 }
 
@@ -128,6 +144,7 @@ export interface DividerBlock extends BaseBlock {
 export type CardBlock = 
   | IdentityBlock 
   | WifiBlock 
+  | HotelWifiBlock
   | LocationBlock 
   | ActionBlock 
   | SocialBlock 
@@ -180,6 +197,26 @@ export function createWifiBlock(data: Partial<WifiBlock["data"]> = {}): WifiBloc
       password: "",
       security: "WPA2",
       label: "Accès Wi-Fi",
+      ...data,
+    },
+  };
+}
+
+export function createHotelWifiBlock(data: Partial<HotelWifiBlock["data"]> = {}): HotelWifiBlock {
+  return {
+    id: generateBlockId(),
+    type: "hotelWifi",
+    visible: true,
+    order: 0,
+    data: {
+      ssid: "",
+      password: "",
+      security: "WPA2",
+      label: "Wi-Fi de votre chambre",
+      roomNumber: "",
+      checkOutDate: "",
+      hotelName: "",
+      welcomeMessage: "Bienvenue dans notre établissement. Profitez d'une connexion haut débit.",
       ...data,
     },
   };
@@ -470,6 +507,7 @@ function escapeWifiString(str: string): string {
 export const blockTypeInfo: Record<BlockType, { label: string; icon: string; description: string }> = {
   identity: { label: "Identité", icon: "User", description: "Photo, nom, fonction" },
   wifi: { label: "WiFi", icon: "Wifi", description: "SSID et mot de passe" },
+  hotelWifi: { label: "WiFi Hôtel", icon: "Wifi", description: "WiFi avec chambre et départ" },
   location: { label: "Localisation", icon: "MapPin", description: "Adresse et GPS" },
   action: { label: "Action", icon: "Zap", description: "Appeler, email, site web..." },
   social: { label: "Réseaux sociaux", icon: "Share2", description: "Instagram, LinkedIn..." },

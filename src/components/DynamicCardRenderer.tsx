@@ -33,6 +33,7 @@ import {
   CardBlock,
   IdentityBlock,
   WifiBlock,
+  HotelWifiBlock,
   LocationBlock,
   ActionBlock,
   SocialBlock,
@@ -570,6 +571,412 @@ function WifiRenderer({ block, theme }: { block: WifiBlock; theme: "dark" | "lig
   );
 }
 
+// Hotel WiFi Block Renderer - Premium Hospitality Design
+function HotelWifiRenderer({ block, theme }: { block: HotelWifiBlock; theme: "dark" | "light" }) {
+  const [copied, setCopied] = useState(false);
+  const [showQr, setShowQr] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const data = block.data;
+  const isDark = theme === "dark";
+
+  const copyPassword = () => {
+    if (!data.password) {
+      toast.info("Ce réseau est ouvert, pas de mot de passe");
+      return;
+    }
+    navigator.clipboard.writeText(data.password);
+    setCopied(true);
+    toast.success("Mot de passe copié !");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const qrValue = getWifiQrString(data);
+  const hasPassword = data.security !== "open" && data.password;
+
+  // Format date for display
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return null;
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('fr-FR', { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long' 
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  return (
+    <>
+      <motion.div
+        variants={itemVariants}
+        className={cn(
+          "rounded-2xl overflow-hidden transition-all",
+          isDark 
+            ? "bg-gradient-to-br from-amber-500/[0.08] to-amber-600/[0.03] border border-amber-500/20" 
+            : "bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 shadow-sm"
+        )}
+      >
+        {/* Premium Hotel Header */}
+        <div className={cn(
+          "px-5 pt-5 pb-4",
+          isDark 
+            ? "bg-gradient-to-r from-amber-500/10 to-transparent" 
+            : "bg-gradient-to-r from-amber-100/50 to-transparent"
+        )}>
+          <div className="flex items-start gap-4">
+            <div className={cn(
+              "w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0",
+              isDark 
+                ? "bg-gradient-to-br from-amber-400/30 to-amber-600/20 shadow-lg shadow-amber-500/20" 
+                : "bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-orange-200"
+            )}>
+              <Wifi size={26} className={isDark ? "text-amber-300" : "text-white"} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className={cn(
+                "text-[16px] font-semibold mb-1",
+                isDark ? "text-white" : "text-neutral-900"
+              )}>
+                {data.label || "Wi-Fi de votre chambre"}
+              </h3>
+              {data.hotelName && (
+                <p className={cn(
+                  "text-[12px] font-medium",
+                  isDark ? "text-amber-400/80" : "text-amber-700"
+                )}>
+                  {data.hotelName}
+                </p>
+              )}
+              {data.welcomeMessage && (
+                <p className={cn(
+                  "text-[11px] mt-1 leading-relaxed",
+                  isDark ? "text-white/40" : "text-neutral-500"
+                )}>
+                  {data.welcomeMessage}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Room & Check-out Info */}
+        {(data.roomNumber || data.checkOutDate) && (
+          <div className={cn(
+            "mx-5 mb-4 p-3 rounded-xl grid grid-cols-2 gap-3",
+            isDark 
+              ? "bg-white/[0.04] border border-white/[0.06]" 
+              : "bg-white/60 border border-amber-100"
+          )}>
+            {data.roomNumber && (
+              <div>
+                <p className={cn(
+                  "text-[10px] uppercase tracking-wider mb-0.5",
+                  isDark ? "text-white/30" : "text-neutral-400"
+                )}>
+                  Chambre
+                </p>
+                <p className={cn(
+                  "text-[15px] font-semibold",
+                  isDark ? "text-amber-400" : "text-amber-700"
+                )}>
+                  {data.roomNumber}
+                </p>
+              </div>
+            )}
+            {data.checkOutDate && (
+              <div>
+                <p className={cn(
+                  "text-[10px] uppercase tracking-wider mb-0.5",
+                  isDark ? "text-white/30" : "text-neutral-400"
+                )}>
+                  Départ
+                </p>
+                <p className={cn(
+                  "text-[13px] font-medium",
+                  isDark ? "text-white/80" : "text-neutral-700"
+                )}>
+                  {formatDate(data.checkOutDate)}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Network info */}
+        <div className={cn(
+          "mx-5 mb-4 p-3 rounded-xl",
+          isDark 
+            ? "bg-white/[0.03] border border-white/[0.04]" 
+            : "bg-white/60 border border-amber-100"
+        )}>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className={cn(
+                "text-[10px] uppercase tracking-wider mb-0.5",
+                isDark ? "text-white/30" : "text-neutral-400"
+              )}>
+                Réseau Wi-Fi
+              </p>
+              <p className={cn(
+                "text-[14px] font-medium",
+                isDark ? "text-white/90" : "text-neutral-800"
+              )}>
+                {data.ssid}
+              </p>
+            </div>
+            <span className={cn(
+              "text-[9px] font-medium px-2 py-1 rounded-full uppercase",
+              isDark 
+                ? "bg-amber-500/20 text-amber-400/70" 
+                : "bg-amber-100 text-amber-600"
+            )}>
+              {data.security === "open" ? "Ouvert" : data.security}
+            </span>
+          </div>
+        </div>
+
+        {/* Password display */}
+        {hasPassword && (
+          <div className={cn(
+            "mx-5 mb-4 p-3 rounded-xl",
+            isDark 
+              ? "bg-white/[0.03] border border-white/[0.04]" 
+              : "bg-white/60 border border-amber-100"
+          )}>
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className={cn(
+                  "text-[10px] uppercase tracking-wider mb-0.5",
+                  isDark ? "text-white/30" : "text-neutral-400"
+                )}>
+                  Mot de passe
+                </p>
+                <p className={cn(
+                  "text-[14px] font-mono",
+                  isDark ? "text-white/90" : "text-neutral-800"
+                )}>
+                  {showPassword ? data.password : "••••••••"}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowPassword(!showPassword)}
+                className={cn(
+                  "p-2 rounded-lg transition-colors",
+                  isDark 
+                    ? "hover:bg-white/[0.05] text-white/40" 
+                    : "hover:bg-amber-100 text-neutral-400"
+                )}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div className="px-5 pb-5 flex gap-2">
+          {hasPassword && (
+            <motion.button
+              onClick={copyPassword}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-[13px] font-medium transition-all",
+                isDark 
+                  ? "bg-white/[0.06] hover:bg-white/[0.10] text-white/80 border border-white/[0.06]" 
+                  : "bg-white hover:bg-amber-50 text-neutral-700 border border-amber-200"
+              )}
+            >
+              {copied ? <Check size={16} /> : <Copy size={16} />}
+              {copied ? "Copié !" : "Copier"}
+            </motion.button>
+          )}
+          
+          <motion.button
+            onClick={() => setShowQr(true)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={cn(
+              "flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-[13px] font-medium transition-all",
+              hasPassword ? "flex-1" : "flex-1",
+              isDark 
+                ? "bg-gradient-to-r from-amber-500/30 to-amber-600/20 hover:from-amber-500/40 hover:to-amber-600/30 text-amber-300 border border-amber-500/30" 
+                : "bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white shadow-lg shadow-orange-200"
+            )}
+          >
+            <QrCode size={16} />
+            Connexion QR Code
+          </motion.button>
+        </div>
+
+        {/* Security note */}
+        <div className={cn(
+          "px-5 pb-4 flex items-center gap-2",
+          isDark ? "text-amber-400/30" : "text-amber-600/50"
+        )}>
+          <Shield size={12} />
+          <p className="text-[10px]">
+            Connexion sécurisée. Aucune modification automatique.
+          </p>
+        </div>
+      </motion.div>
+
+      {/* QR Code Modal */}
+      <AnimatePresence>
+        {showQr && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowQr(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className={cn(
+                "w-full max-w-sm rounded-3xl overflow-hidden",
+                isDark 
+                  ? "bg-neutral-900 border border-amber-500/20" 
+                  : "bg-white shadow-2xl"
+              )}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal header */}
+              <div className={cn(
+                "p-6 pb-4 flex items-center justify-between",
+                isDark 
+                  ? "bg-gradient-to-r from-amber-500/10 to-transparent" 
+                  : "bg-gradient-to-r from-amber-50 to-transparent"
+              )}>
+                <div>
+                  <h3 className={cn(
+                    "text-lg font-semibold",
+                    isDark ? "text-white" : "text-neutral-900"
+                  )}>
+                    Connexion Wi-Fi
+                  </h3>
+                  <p className={cn(
+                    "text-sm mt-0.5",
+                    isDark ? "text-amber-400/60" : "text-amber-600"
+                  )}>
+                    {data.hotelName || "Scannez avec votre appareil photo"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowQr(false)}
+                  className={cn(
+                    "p-2 rounded-full transition-colors",
+                    isDark 
+                      ? "hover:bg-white/10 text-white/60" 
+                      : "hover:bg-neutral-100 text-neutral-400"
+                  )}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* QR Code */}
+              <div className="px-6 py-8 flex flex-col items-center">
+                <div className={cn(
+                  "p-6 rounded-2xl",
+                  isDark ? "bg-white" : "bg-amber-50"
+                )}>
+                  <QRCodeSVG
+                    value={qrValue}
+                    size={200}
+                    level="M"
+                    includeMargin={false}
+                    className="rounded-lg"
+                  />
+                </div>
+                
+                <div className={cn(
+                  "mt-6 px-4 py-3 rounded-xl text-center w-full",
+                  isDark 
+                    ? "bg-white/[0.03] border border-white/[0.06]" 
+                    : "bg-amber-50 border border-amber-100"
+                )}>
+                  <p className={cn(
+                    "text-[11px] uppercase tracking-wider mb-1",
+                    isDark ? "text-white/30" : "text-amber-500"
+                  )}>
+                    Réseau
+                  </p>
+                  <p className={cn(
+                    "text-[16px] font-semibold",
+                    isDark ? "text-white" : "text-neutral-900"
+                  )}>
+                    {data.ssid}
+                  </p>
+                  {data.roomNumber && (
+                    <p className={cn(
+                      "text-[12px] mt-1",
+                      isDark ? "text-amber-400/60" : "text-amber-600"
+                    )}>
+                      Chambre {data.roomNumber}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Instructions */}
+              <div className={cn(
+                "px-6 pb-6",
+                isDark ? "text-white/40" : "text-neutral-500"
+              )}>
+                <div className="flex items-start gap-3 text-[12px]">
+                  <div className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5",
+                    isDark ? "bg-amber-500/20 text-amber-400" : "bg-amber-100 text-amber-600"
+                  )}>
+                    1
+                  </div>
+                  <p>Ouvrez l'appareil photo de votre téléphone</p>
+                </div>
+                <div className="flex items-start gap-3 text-[12px] mt-2">
+                  <div className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5",
+                    isDark ? "bg-amber-500/20 text-amber-400" : "bg-amber-100 text-amber-600"
+                  )}>
+                    2
+                  </div>
+                  <p>Pointez vers le QR code</p>
+                </div>
+                <div className="flex items-start gap-3 text-[12px] mt-2">
+                  <div className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5",
+                    isDark ? "bg-amber-500/20 text-amber-400" : "bg-amber-100 text-amber-600"
+                  )}>
+                    3
+                  </div>
+                  <p>Confirmez la connexion au réseau</p>
+                </div>
+              </div>
+
+              {/* Security note */}
+              <div className={cn(
+                "px-6 pb-6 flex items-center justify-center gap-2",
+                isDark ? "text-amber-400/30" : "text-amber-500"
+              )}>
+                <Shield size={12} />
+                <p className="text-[10px]">
+                  Compatible iOS et Android
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
 // Location Block Renderer
 function LocationRenderer({ block, theme }: { block: LocationBlock; theme: "dark" | "light" }) {
   const data = block.data;
@@ -994,6 +1401,8 @@ export function DynamicCardRenderer({
     switch (block.type) {
       case "wifi":
         return <WifiRenderer key={block.id} block={block as WifiBlock} theme={theme} />;
+      case "hotelWifi":
+        return <HotelWifiRenderer key={block.id} block={block as HotelWifiBlock} theme={theme} />;
       case "location":
         return <LocationRenderer key={block.id} block={block as LocationBlock} theme={theme} />;
       case "action":
