@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useOrder, getOrderStatusLabel, getOrderStatusColor } from "@/hooks/useOrders";
 import { formatPrice } from "@/lib/pricing";
 import { Navbar } from "@/components/Navbar";
@@ -18,10 +19,13 @@ import {
   Clock,
   Factory,
   Loader2,
-  ExternalLink
+  FileText,
+  Download
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { generateInvoicePDF, downloadInvoice } from "@/lib/invoiceGenerator";
+import { toast } from "sonner";
 
 // Timeline step component
 function TimelineStep({ 
@@ -78,6 +82,23 @@ export default function OrderDetails() {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
   const { data: order, isLoading, error } = useOrder(orderId);
+  const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
+
+  const handleDownloadInvoice = async () => {
+    if (!order) return;
+    
+    setIsGeneratingInvoice(true);
+    try {
+      const blob = await generateInvoicePDF(order);
+      downloadInvoice(blob, order.order_number);
+      toast.success("Facture téléchargée");
+    } catch (error) {
+      console.error("Failed to generate invoice:", error);
+      toast.error("Erreur lors de la génération de la facture");
+    } finally {
+      setIsGeneratingInvoice(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -180,6 +201,20 @@ export default function OrderDetails() {
                 Passée le {format(new Date(order.created_at), "d MMMM yyyy à HH:mm", { locale: fr })}
               </p>
             </div>
+            
+            {/* Download Invoice Button */}
+            <Button 
+              onClick={handleDownloadInvoice}
+              disabled={isGeneratingInvoice}
+              className="gap-2"
+            >
+              {isGeneratingInvoice ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              Télécharger la facture
+            </Button>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
