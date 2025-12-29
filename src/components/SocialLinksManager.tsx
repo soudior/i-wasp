@@ -1,19 +1,11 @@
 import { useState } from "react";
 import { Plus, X, GripVertical } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { socialNetworks, SocialLink, getNetworkById } from "@/lib/socialNetworks";
+import { SocialLink, getNetworkById } from "@/lib/socialNetworks";
 import { SocialIcon } from "@/components/SocialIcon";
+import { SocialBottomSheet } from "@/components/SocialBottomSheet";
 
 interface SocialLinksManagerProps {
   value: SocialLink[];
@@ -21,19 +13,15 @@ interface SocialLinksManagerProps {
 }
 
 export function SocialLinksManager({ value, onChange }: SocialLinksManagerProps) {
-  const [selectedNetwork, setSelectedNetwork] = useState<string>("");
+  const [sheetOpen, setSheetOpen] = useState(false);
 
-  const handleAddLink = () => {
-    if (!selectedNetwork) return;
-    
+  const handleAddNetwork = (network: { id: string }) => {
     const newLink: SocialLink = {
-      id: `${selectedNetwork}-${Date.now()}`,
-      networkId: selectedNetwork,
+      id: `${network.id}-${Date.now()}`,
+      networkId: network.id,
       value: "",
     };
-    
     onChange([...value, newLink]);
-    setSelectedNetwork("");
   };
 
   const handleRemoveLink = (linkId: string) => {
@@ -44,138 +32,91 @@ export function SocialLinksManager({ value, onChange }: SocialLinksManagerProps)
     onChange(value.map(l => l.id === linkId ? { ...l, value: newValue } : l));
   };
 
-  const groupedNetworks = {
-    classic: socialNetworks.filter(n => n.category === "classic"),
-    professional: socialNetworks.filter(n => n.category === "professional"),
-    creators: socialNetworks.filter(n => n.category === "creators"),
-    business: socialNetworks.filter(n => n.category === "business"),
-  };
-
-  // Filter out already added networks
   const addedNetworkIds = value.map(l => l.networkId);
-  const availableNetworks = socialNetworks.filter(n => !addedNetworkIds.includes(n.id));
 
   return (
     <div className="space-y-4">
       <Label className="flex items-center gap-2 text-sm font-medium text-foreground">
-        <Plus size={14} className="text-chrome" />
         Réseaux sociaux
       </Label>
 
-      {/* Added links */}
-      <div className="space-y-3">
-        {value.map((link) => {
-          const network = getNetworkById(link.networkId);
-          if (!network) return null;
+      {/* Added links with reorder */}
+      <Reorder.Group 
+        axis="y" 
+        values={value} 
+        onReorder={onChange}
+        className="space-y-2"
+      >
+        <AnimatePresence mode="popLayout">
+          {value.map((link) => {
+            const network = getNetworkById(link.networkId);
+            if (!network) return null;
 
-          return (
-            <div
-              key={link.id}
-              className="flex items-center gap-3 p-3 rounded-xl bg-surface-2 border border-border/50 animate-fade-in"
-            >
-              <div className="cursor-move text-muted-foreground hover:text-foreground transition-colors">
-                <GripVertical size={16} />
-              </div>
-              
-              <div className="w-9 h-9 rounded-lg bg-surface-3 flex items-center justify-center shrink-0">
-                <SocialIcon networkId={link.networkId} size={18} className="text-chrome" />
-              </div>
-              
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground mb-1">{network.label}</p>
-                <Input
-                  value={link.value}
-                  onChange={(e) => handleUpdateLink(link.id, e.target.value)}
-                  placeholder={network.placeholder}
-                  className="h-9 bg-background border-border/30 text-sm"
-                />
-              </div>
-              
-              <button
-                type="button"
-                onClick={() => handleRemoveLink(link.id)}
-                className="w-8 h-8 rounded-lg hover:bg-destructive/10 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
+            return (
+              <Reorder.Item
+                key={link.id}
+                value={link}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.15 }}
               >
-                <X size={16} />
-              </button>
-            </div>
-          );
-        })}
-      </div>
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/30 group">
+                  <div className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                    <GripVertical size={16} />
+                  </div>
+                  
+                  <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center shrink-0 border border-border/50">
+                    <SocialIcon networkId={link.networkId} size={18} className="text-muted-foreground" />
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground mb-1 font-medium">{network.label}</p>
+                    <Input
+                      value={link.value}
+                      onChange={(e) => handleUpdateLink(link.id, e.target.value)}
+                      placeholder={network.placeholder}
+                      className="h-9 bg-background border-border/30 text-sm"
+                    />
+                  </div>
+                  
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleRemoveLink(link.id)}
+                    className="w-8 h-8 rounded-lg hover:bg-destructive/10 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    <X size={16} />
+                  </motion.button>
+                </div>
+              </Reorder.Item>
+            );
+          })}
+        </AnimatePresence>
+      </Reorder.Group>
 
-      {/* Add new link */}
-      {availableNetworks.length > 0 && (
-        <div className="flex gap-2">
-          <Select value={selectedNetwork} onValueChange={setSelectedNetwork}>
-            <SelectTrigger className="flex-1 h-11 bg-surface-2 border-border/50">
-              <SelectValue placeholder="Choisir un réseau" />
-            </SelectTrigger>
-            <SelectContent className="bg-background border-border z-50">
-              <SelectGroup>
-                <SelectLabel className="text-muted-foreground">Classiques</SelectLabel>
-                {groupedNetworks.classic.filter(n => !addedNetworkIds.includes(n.id)).map(n => (
-                  <SelectItem key={n.id} value={n.id} className="cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <SocialIcon networkId={n.id} size={16} />
-                      <span>{n.label}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-              <SelectGroup>
-                <SelectLabel className="text-muted-foreground">Professionnels</SelectLabel>
-                {groupedNetworks.professional.filter(n => !addedNetworkIds.includes(n.id)).map(n => (
-                  <SelectItem key={n.id} value={n.id} className="cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <SocialIcon networkId={n.id} size={16} />
-                      <span>{n.label}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-              <SelectGroup>
-                <SelectLabel className="text-muted-foreground">Créateurs / Tech</SelectLabel>
-                {groupedNetworks.creators.filter(n => !addedNetworkIds.includes(n.id)).map(n => (
-                  <SelectItem key={n.id} value={n.id} className="cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <SocialIcon networkId={n.id} size={16} />
-                      <span>{n.label}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-              <SelectGroup>
-                <SelectLabel className="text-muted-foreground">Business</SelectLabel>
-                {groupedNetworks.business.filter(n => !addedNetworkIds.includes(n.id)).map(n => (
-                  <SelectItem key={n.id} value={n.id} className="cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <SocialIcon networkId={n.id} size={16} />
-                      <span>{n.label}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          
-          <Button
-            type="button"
-            variant="chrome"
-            size="icon"
-            onClick={handleAddLink}
-            disabled={!selectedNetwork}
-            className="h-11 w-11 shrink-0"
-          >
-            <Plus size={18} />
-          </Button>
-        </div>
-      )}
+      {/* Add button - Apple style */}
+      <motion.button
+        whileTap={{ scale: 0.98 }}
+        onClick={() => setSheetOpen(true)}
+        className="w-full flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all text-muted-foreground hover:text-primary"
+      >
+        <Plus size={18} />
+        <span className="text-sm font-medium">Ajouter un réseau</span>
+      </motion.button>
 
       {value.length === 0 && (
-        <p className="text-xs text-muted-foreground text-center py-4">
+        <p className="text-xs text-muted-foreground text-center">
           Ajoutez vos réseaux sociaux pour les afficher sur votre carte
         </p>
       )}
+
+      {/* Bottom Sheet */}
+      <SocialBottomSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        onSelect={handleAddNetwork}
+        excludedIds={addedNetworkIds}
+      />
     </div>
   );
 }
