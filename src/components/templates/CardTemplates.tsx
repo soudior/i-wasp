@@ -1,6 +1,7 @@
 import { CardActionButtons } from "./CardActions";
 import { ActionsList } from "./ActionsList";
 import { SocialLink } from "@/lib/socialNetworks";
+import { IWASPProductionTemplate, IWASPProductionLightTemplate } from "./IWASPProductionTemplate";
 
 export interface CardData {
   id?: string;
@@ -528,15 +529,19 @@ export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onS
   );
 }
 
-// Import IWASP Signature templates
+// Import IWASP templates
 import { IWASPSignatureTemplate, IWASPSignatureLightTemplate } from "./IWASPSignatureTemplate";
 import { HotelGuideTemplate, HotelGuideLightTemplate } from "./HotelGuideTemplate";
 
 // Template selector component
-export type TemplateType = "signature" | "signature-light" | "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "hotel-guide" | "hotel-guide-light" | "default";
+export type TemplateType = "production" | "production-light" | "signature" | "signature-light" | "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "hotel-guide" | "hotel-guide-light" | "default";
 
 export function getTemplateComponent(template: TemplateType) {
   switch (template) {
+    case "production":
+      return IWASPProductionTemplate;
+    case "production-light":
+      return IWASPProductionLightTemplate;
     case "signature":
       return IWASPSignatureTemplate;
     case "signature-light":
@@ -558,12 +563,14 @@ export function getTemplateComponent(template: TemplateType) {
     case "hotel-guide-light":
       return HotelGuideLightTemplate as any;
     default:
-      return IWASPSignatureTemplate; // IWASP Signature is the DEFAULT
+      return IWASPProductionTemplate; // IWASP Production is the DEFAULT
   }
 }
 
 export const templateInfo = [
-  { id: "signature", name: "IWASP Signature", description: "Template officielle IWASP - Recommandée" },
+  { id: "production", name: "IWASP Production", description: "Template définitive - Production-ready" },
+  { id: "production-light", name: "IWASP Production Light", description: "Variante claire Production" },
+  { id: "signature", name: "IWASP Signature", description: "Template classique IWASP" },
   { id: "signature-light", name: "IWASP Signature Light", description: "Variante claire de la Signature" },
   { id: "hotel-guide", name: "Hotel & Tourist Guide", description: "Hôtels, riads, guides touristiques", category: "hospitality" },
   { id: "hotel-guide-light", name: "Hotel Guide Light", description: "Variante claire pour hôtels", category: "hospitality" },
