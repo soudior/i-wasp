@@ -7,13 +7,14 @@
  */
 
 import { useState, useRef } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 import { IWASPLogoSimple } from "@/components/IWASPLogo";
 import { CardActionButtons } from "@/components/templates/CardActions";
 import { 
   Phone, Mail, MapPin, Globe, MessageCircle, 
-  MoreHorizontal, Wifi, Gift, Info, Copy, Check
+  MoreHorizontal, Wifi, Gift, Info, Copy, Check, QrCode, Eye, EyeOff, X, Shield
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { SocialIcon } from "@/components/SocialIcon";
 import { 
   handlePhoneTap, 
@@ -41,6 +42,7 @@ import {
   getVisibleBlocks,
   getGoogleMapsUrl,
   getWazeUrl,
+  getWifiQrString,
   convertBlocksToLegacy,
 } from "@/lib/cardBlocks";
 
@@ -248,65 +250,323 @@ function IdentityRenderer({ block, theme }: { block: IdentityBlock; theme: "dark
   );
 }
 
-// WiFi Block Renderer
+// WiFi Block Renderer - Premium UX with QR Code
 function WifiRenderer({ block, theme }: { block: WifiBlock; theme: "dark" | "light" }) {
   const [copied, setCopied] = useState(false);
+  const [showQr, setShowQr] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const data = block.data;
   const isDark = theme === "dark";
 
   const copyPassword = () => {
+    if (!data.password) {
+      toast.info("Ce réseau est ouvert, pas de mot de passe");
+      return;
+    }
     navigator.clipboard.writeText(data.password);
     setCopied(true);
-    toast.success("Mot de passe WiFi copié !");
+    toast.success("Mot de passe copié !");
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const qrValue = getWifiQrString(data);
+  const hasPassword = data.security !== "open" && data.password;
+
   return (
-    <motion.div
-      variants={itemVariants}
-      className={cn(
-        "p-4 rounded-2xl transition-all",
-        isDark 
-          ? "bg-white/[0.02] border border-white/[0.04]" 
-          : "bg-neutral-50 border border-neutral-100"
-      )}
-    >
-      <div className="flex items-center gap-4">
-        <div className={cn(
-          "w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner",
+    <>
+      <motion.div
+        variants={itemVariants}
+        className={cn(
+          "rounded-2xl overflow-hidden transition-all",
           isDark 
-            ? "bg-gradient-to-br from-white/[0.06] to-white/[0.02]" 
-            : "bg-white border border-neutral-200"
+            ? "bg-gradient-to-br from-white/[0.04] to-white/[0.02] border border-white/[0.06]" 
+            : "bg-gradient-to-br from-white to-neutral-50 border border-neutral-100 shadow-sm"
+        )}
+      >
+        {/* Header */}
+        <div className="p-5">
+          <div className="flex items-start gap-4">
+            <div className={cn(
+              "w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0",
+              isDark 
+                ? "bg-gradient-to-br from-amber-500/20 to-amber-600/10 shadow-inner" 
+                : "bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-100"
+            )}>
+              <Wifi size={22} className={isDark ? "text-amber-400" : "text-blue-600"} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className={cn(
+                "text-[15px] font-semibold mb-1",
+                isDark ? "text-white" : "text-neutral-900"
+              )}>
+                {data.label || "Accès Wi-Fi"}
+              </h3>
+              <p className={cn(
+                "text-[12px] leading-relaxed",
+                isDark ? "text-white/50" : "text-neutral-500"
+              )}>
+                Connectez-vous en un instant. Scannez le QR code ou copiez le mot de passe.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Network info */}
+        <div className={cn(
+          "mx-5 mb-4 p-3 rounded-xl",
+          isDark 
+            ? "bg-white/[0.03] border border-white/[0.04]" 
+            : "bg-neutral-50 border border-neutral-100"
         )}>
-          <Wifi size={18} className={isDark ? "text-amber-400/70" : "text-neutral-600"} />
+          <div className="flex items-center justify-between">
+            <div>
+              <p className={cn(
+                "text-[11px] uppercase tracking-wider mb-0.5",
+                isDark ? "text-white/30" : "text-neutral-400"
+              )}>
+                Réseau
+              </p>
+              <p className={cn(
+                "text-[14px] font-medium",
+                isDark ? "text-white/90" : "text-neutral-800"
+              )}>
+                {data.ssid}
+              </p>
+            </div>
+            <span className={cn(
+              "text-[10px] font-medium px-2 py-1 rounded-full uppercase",
+              isDark 
+                ? "bg-white/[0.06] text-white/40" 
+                : "bg-neutral-100 text-neutral-500"
+            )}>
+              {data.security === "open" ? "Ouvert" : data.security}
+            </span>
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <span className={cn(
-            "text-[13px] font-medium block",
-            isDark ? "text-white/80" : "text-neutral-800"
-          )}>
-            {data.label || "WiFi"}
-          </span>
-          <span className={cn(
-            "text-[11px] block mt-0.5",
-            isDark ? "text-white/35" : "text-neutral-400"
-          )}>
-            {data.ssid}
-          </span>
-        </div>
-        <button
-          onClick={copyPassword}
-          className={cn(
-            "p-2 rounded-lg transition-colors",
+
+        {/* Password display (if not open) */}
+        {hasPassword && (
+          <div className={cn(
+            "mx-5 mb-4 p-3 rounded-xl",
             isDark 
-              ? "hover:bg-white/[0.05] text-white/50" 
-              : "hover:bg-neutral-100 text-neutral-400"
+              ? "bg-white/[0.03] border border-white/[0.04]" 
+              : "bg-neutral-50 border border-neutral-100"
+          )}>
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className={cn(
+                  "text-[11px] uppercase tracking-wider mb-0.5",
+                  isDark ? "text-white/30" : "text-neutral-400"
+                )}>
+                  Mot de passe
+                </p>
+                <p className={cn(
+                  "text-[14px] font-mono",
+                  isDark ? "text-white/90" : "text-neutral-800"
+                )}>
+                  {showPassword ? data.password : "••••••••"}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowPassword(!showPassword)}
+                className={cn(
+                  "p-2 rounded-lg transition-colors",
+                  isDark 
+                    ? "hover:bg-white/[0.05] text-white/40" 
+                    : "hover:bg-neutral-100 text-neutral-400"
+                )}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div className="px-5 pb-5 flex gap-2">
+          {hasPassword && (
+            <motion.button
+              onClick={copyPassword}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-[13px] font-medium transition-all",
+                isDark 
+                  ? "bg-white/[0.06] hover:bg-white/[0.10] text-white/80 border border-white/[0.06]" 
+                  : "bg-neutral-100 hover:bg-neutral-200 text-neutral-700"
+              )}
+            >
+              {copied ? <Check size={16} /> : <Copy size={16} />}
+              {copied ? "Copié !" : "Copier le mot de passe"}
+            </motion.button>
           )}
-        >
-          {copied ? <Check size={16} /> : <Copy size={16} />}
-        </button>
-      </div>
-    </motion.div>
+          
+          <motion.button
+            onClick={() => setShowQr(true)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={cn(
+              "flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-[13px] font-medium transition-all",
+              hasPassword ? "" : "flex-1",
+              isDark 
+                ? "bg-gradient-to-r from-amber-500/20 to-amber-600/10 hover:from-amber-500/30 hover:to-amber-600/20 text-amber-400 border border-amber-500/20" 
+                : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md"
+            )}
+          >
+            <QrCode size={16} />
+            Se connecter via QR Code
+          </motion.button>
+        </div>
+
+        {/* Security note */}
+        <div className={cn(
+          "px-5 pb-4 flex items-center gap-2",
+          isDark ? "text-white/25" : "text-neutral-400"
+        )}>
+          <Shield size={12} />
+          <p className="text-[10px]">
+            Vos paramètres Wi-Fi ne sont jamais modifiés sans votre action.
+          </p>
+        </div>
+      </motion.div>
+
+      {/* QR Code Modal */}
+      <AnimatePresence>
+        {showQr && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowQr(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className={cn(
+                "w-full max-w-sm rounded-3xl overflow-hidden",
+                isDark 
+                  ? "bg-neutral-900 border border-white/10" 
+                  : "bg-white shadow-2xl"
+              )}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal header */}
+              <div className="p-6 pb-4 flex items-center justify-between">
+                <div>
+                  <h3 className={cn(
+                    "text-lg font-semibold",
+                    isDark ? "text-white" : "text-neutral-900"
+                  )}>
+                    Connexion Wi-Fi
+                  </h3>
+                  <p className={cn(
+                    "text-sm mt-0.5",
+                    isDark ? "text-white/50" : "text-neutral-500"
+                  )}>
+                    Scannez avec votre appareil photo
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowQr(false)}
+                  className={cn(
+                    "p-2 rounded-full transition-colors",
+                    isDark 
+                      ? "hover:bg-white/10 text-white/60" 
+                      : "hover:bg-neutral-100 text-neutral-400"
+                  )}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* QR Code */}
+              <div className="px-6 py-8 flex flex-col items-center">
+                <div className={cn(
+                  "p-6 rounded-2xl",
+                  isDark ? "bg-white" : "bg-neutral-50"
+                )}>
+                  <QRCodeSVG
+                    value={qrValue}
+                    size={200}
+                    level="M"
+                    includeMargin={false}
+                    className="rounded-lg"
+                  />
+                </div>
+                
+                <div className={cn(
+                  "mt-6 px-4 py-3 rounded-xl text-center w-full",
+                  isDark 
+                    ? "bg-white/[0.03] border border-white/[0.06]" 
+                    : "bg-neutral-50 border border-neutral-100"
+                )}>
+                  <p className={cn(
+                    "text-[11px] uppercase tracking-wider mb-1",
+                    isDark ? "text-white/30" : "text-neutral-400"
+                  )}>
+                    Réseau
+                  </p>
+                  <p className={cn(
+                    "text-[16px] font-semibold",
+                    isDark ? "text-white" : "text-neutral-900"
+                  )}>
+                    {data.ssid}
+                  </p>
+                </div>
+              </div>
+
+              {/* Instructions */}
+              <div className={cn(
+                "px-6 pb-6",
+                isDark ? "text-white/40" : "text-neutral-500"
+              )}>
+                <div className="flex items-start gap-3 text-[12px]">
+                  <div className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5",
+                    isDark ? "bg-white/10" : "bg-neutral-100"
+                  )}>
+                    1
+                  </div>
+                  <p>Ouvrez l'appareil photo de votre téléphone</p>
+                </div>
+                <div className="flex items-start gap-3 text-[12px] mt-2">
+                  <div className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5",
+                    isDark ? "bg-white/10" : "bg-neutral-100"
+                  )}>
+                    2
+                  </div>
+                  <p>Pointez vers le QR code</p>
+                </div>
+                <div className="flex items-start gap-3 text-[12px] mt-2">
+                  <div className={cn(
+                    "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5",
+                    isDark ? "bg-white/10" : "bg-neutral-100"
+                  )}>
+                    3
+                  </div>
+                  <p>Confirmez la connexion au réseau</p>
+                </div>
+              </div>
+
+              {/* Security note */}
+              <div className={cn(
+                "px-6 pb-6 flex items-center justify-center gap-2",
+                isDark ? "text-white/25" : "text-neutral-400"
+              )}>
+                <Shield size={12} />
+                <p className="text-[10px]">
+                  Compatible iOS et Android
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
