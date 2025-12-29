@@ -1,15 +1,17 @@
 /**
  * IWASP Lead Capture Sheet
  * Apple-level premium consent flow
- * RGPD compliant - Explicit consent
+ * RGPD compliant - Explicit consent with checkbox
  * Zero friction, mobile-first
  */
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Mail, Phone, Building2, Check, ArrowRight, Shield } from "lucide-react";
+import { User, Mail, Phone, Building2, Check, ArrowRight, Shield, MessageSquare } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -18,7 +20,30 @@ interface LeadCaptureSheetProps {
   onClose: () => void;
   onComplete: (shared: boolean) => void;
   cardOwnerName: string;
+  cardOwnerPhoto?: string | null;
+  cardOwnerCompany?: string;
   cardId: string;
+}
+
+// Calculate lead score
+function calculateLeadScore(data: { name?: string; email?: string; phone?: string; company?: string; message?: string }): number {
+  let score = 0;
+  if (data.email) score += 10;
+  if (data.phone) score += 15;
+  if (data.message) score += 10;
+  if (data.company) score += 5;
+  if (data.name) score += 5;
+  return score;
+}
+
+// Detect device type
+function getDeviceType(): string {
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod/i.test(ua)) return "iOS";
+  if (/Android/i.test(ua)) return "Android";
+  if (/Mac/i.test(ua)) return "Mac";
+  if (/Windows/i.test(ua)) return "Windows";
+  return "Other";
 }
 
 export function LeadCaptureSheet({ 
@@ -26,6 +51,8 @@ export function LeadCaptureSheet({
   onClose, 
   onComplete, 
   cardOwnerName,
+  cardOwnerPhoto,
+  cardOwnerCompany,
   cardId 
 }: LeadCaptureSheetProps) {
   const [formData, setFormData] = useState({
@@ -33,31 +60,47 @@ export function LeadCaptureSheet({
     email: "",
     phone: "",
     company: "",
+    message: "",
   });
+  const [consentGiven, setConsentGiven] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [step, setStep] = useState<"consent" | "form">("consent");
 
   const handleShare = async () => {
+    if (!consentGiven) {
+      toast.error("Veuillez accepter le traitement de vos données");
+      return;
+    }
+    
     if (!formData.name && !formData.email && !formData.phone) {
-      toast.error("Veuillez remplir au moins un champ");
+      toast.error("Veuillez remplir au moins un champ de contact");
       return;
     }
 
     setIsSubmitting(true);
     try {
+      const leadScore = calculateLeadScore(formData);
+      const deviceType = getDeviceType();
+      
       const { error } = await supabase.from("leads").insert({
         card_id: cardId,
         name: formData.name || null,
         email: formData.email || null,
         phone: formData.phone || null,
         company: formData.company || null,
-        notes: `Source: NFC/Card scan | Device: ${navigator.userAgent.includes("iPhone") ? "iOS" : navigator.userAgent.includes("Android") ? "Android" : "Desktop"}`,
+        message: formData.message || null,
+        consent_given: true,
+        consent_timestamp: new Date().toISOString(),
+        source: "nfc",
+        device_type: deviceType,
+        lead_score: leadScore,
+        status: "new",
       });
 
       if (error) throw error;
       
       toast.success("Coordonnées partagées avec succès !");
       onComplete(true);
+      resetForm();
     } catch (error) {
       console.error("Error saving lead:", error);
       toast.error("Erreur lors du partage");
@@ -68,22 +111,20 @@ export function LeadCaptureSheet({
   };
 
   const handleSkip = () => {
+    resetForm();
     onComplete(false);
   };
 
-  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const resetForm = () => {
+    setFormData({ name: "", email: "", phone: "", company: "", message: "" });
+    setConsentGiven(false);
+  };
+
+  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
-  const handleAcceptConsent = () => {
-    setStep("form");
-  };
-
-  const resetAndClose = () => {
-    setStep("consent");
-    setFormData({ name: "", email: "", phone: "", company: "" });
-    onClose();
-  };
+  const isFormValid = consentGiven && (formData.name || formData.email || formData.phone);
 
   return (
     <AnimatePresence>
@@ -105,173 +146,148 @@ export function LeadCaptureSheet({
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 32, stiffness: 400 }}
-            className="fixed bottom-0 left-0 right-0 z-50 overflow-hidden"
+            className="fixed bottom-0 left-0 right-0 z-50 max-h-[90vh] overflow-y-auto"
           >
             <div className="bg-background border-t border-border/30 rounded-t-[28px] shadow-2xl">
               {/* Handle - Subtle */}
-              <div className="flex justify-center pt-3 pb-1">
+              <div className="flex justify-center pt-3 pb-1 sticky top-0 bg-background rounded-t-[28px]">
                 <div className="w-9 h-1 rounded-full bg-foreground/15" />
               </div>
               
-              <AnimatePresence mode="wait">
-                {step === "consent" ? (
-                  <motion.div
-                    key="consent"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.2 }}
-                    className="px-6 pb-10"
-                  >
-                    {/* Icon - Premium handshake/exchange vibe */}
-                    <div className="flex justify-center mb-6 mt-4">
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-foreground/5 to-foreground/10 flex items-center justify-center">
-                        <div className="w-14 h-14 rounded-full bg-foreground/10 flex items-center justify-center">
-                          <User size={28} className="text-foreground/70" />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Title - Clear, direct */}
-                    <h2 className="font-display text-xl font-semibold text-foreground text-center mb-3 tracking-tight">
-                      Échanger vos coordonnées ?
-                    </h2>
-                    
-                    {/* Description - RGPD compliant */}
-                    <p className="text-muted-foreground text-center text-sm leading-relaxed mb-8 max-w-xs mx-auto">
-                      Souhaitez-vous partager vos informations avec{" "}
-                      <span className="font-medium text-foreground">{cardOwnerName}</span>{" "}
-                      afin qu'il puisse vous recontacter ?
-                    </p>
-                    
-                    {/* Actions - Large touch targets */}
-                    <div className="space-y-3">
-                      <Button
-                        onClick={handleAcceptConsent}
-                        className="w-full h-14 rounded-2xl bg-foreground text-background hover:bg-foreground/90 font-medium text-base"
-                      >
-                        <span className="flex items-center gap-2">
-                          Partager mes coordonnées
-                          <ArrowRight size={18} />
+              <div className="px-6 pb-10">
+                {/* Header with card owner info */}
+                <div className="text-center mb-6 mt-2">
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <div className="w-14 h-14 rounded-full overflow-hidden bg-foreground/10 flex items-center justify-center ring-2 ring-foreground/10">
+                      {cardOwnerPhoto ? (
+                        <img src={cardOwnerPhoto} alt={cardOwnerName} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-lg font-semibold text-foreground/60">
+                          {cardOwnerName.split(" ").map(n => n[0]).join("")}
                         </span>
-                      </Button>
-                      
-                      <Button
-                        onClick={handleSkip}
-                        variant="ghost"
-                        className="w-full h-12 rounded-2xl text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-                      >
-                        Continuer sans partager
-                      </Button>
+                      )}
                     </div>
-                    
-                    {/* RGPD Badge - Subtle trust signal */}
-                    <div className="flex items-center justify-center gap-2 mt-6 text-xs text-muted-foreground/60">
-                      <Shield size={12} />
-                      <span>Conforme RGPD · Vous gardez le contrôle</span>
+                    <div className="text-left">
+                      <p className="font-semibold text-foreground">{cardOwnerName}</p>
+                      {cardOwnerCompany && (
+                        <p className="text-sm text-muted-foreground">{cardOwnerCompany}</p>
+                      )}
                     </div>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="form"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.2 }}
-                    className="px-6 pb-10"
+                  </div>
+                  
+                  <h2 className="font-display text-xl font-semibold text-foreground tracking-tight">
+                    Partager mes coordonnées
+                  </h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Vos informations seront partagées avec {cardOwnerName.split(" ")[0]}
+                  </p>
+                </div>
+                
+                {/* Form - Premium inputs */}
+                <div className="space-y-3 mb-5">
+                  <div className="relative">
+                    <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                    <Input
+                      value={formData.name}
+                      onChange={handleChange("name")}
+                      placeholder="Nom & prénom"
+                      className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
+                      autoFocus
+                    />
+                  </div>
+                  
+                  <div className="relative">
+                    <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange("email")}
+                      placeholder="Email"
+                      className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
+                    />
+                  </div>
+                  
+                  <div className="relative">
+                    <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                    <Input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleChange("phone")}
+                      placeholder="Téléphone (optionnel)"
+                      className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
+                    />
+                  </div>
+                  
+                  <div className="relative">
+                    <Building2 size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                    <Input
+                      value={formData.company}
+                      onChange={handleChange("company")}
+                      placeholder="Société (optionnel)"
+                      className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
+                    />
+                  </div>
+                  
+                  <div className="relative">
+                    <MessageSquare size={18} className="absolute left-4 top-4 text-muted-foreground/50" />
+                    <Textarea
+                      value={formData.message}
+                      onChange={handleChange("message")}
+                      placeholder="Message (facultatif)"
+                      className="pl-12 min-h-[80px] bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20 resize-none"
+                    />
+                  </div>
+                </div>
+                
+                {/* RGPD Consent Checkbox - Required */}
+                <div className="flex items-start gap-3 p-4 bg-foreground/5 rounded-2xl mb-5">
+                  <Checkbox 
+                    id="consent" 
+                    checked={consentGiven}
+                    onCheckedChange={(checked) => setConsentGiven(checked === true)}
+                    className="mt-0.5 data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
+                  />
+                  <label htmlFor="consent" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+                    J'accepte le traitement de mes données personnelles conformément au RGPD. 
+                    Mes informations seront uniquement utilisées pour être recontacté.
+                  </label>
+                </div>
+                
+                {/* Submit */}
+                <div className="space-y-3">
+                  <Button
+                    onClick={handleShare}
+                    disabled={isSubmitting || !isFormValid}
+                    className="w-full h-14 rounded-2xl bg-foreground text-background hover:bg-foreground/90 font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {/* Header - Minimal */}
-                    <div className="text-center mb-6 mt-2">
-                      <h2 className="font-display text-lg font-semibold text-foreground tracking-tight">
-                        Vos coordonnées
-                      </h2>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Pour {cardOwnerName}
-                      </p>
-                    </div>
-                    
-                    {/* Form - Premium inputs */}
-                    <div className="space-y-3 mb-6">
-                      <div className="relative">
-                        <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-                        <Input
-                          value={formData.name}
-                          onChange={handleChange("name")}
-                          placeholder="Votre nom"
-                          className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
-                          autoFocus
-                        />
-                      </div>
-                      
-                      <div className="relative">
-                        <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-                        <Input
-                          type="email"
-                          value={formData.email}
-                          onChange={handleChange("email")}
-                          placeholder="Votre email"
-                          className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
-                        />
-                      </div>
-                      
-                      <div className="relative">
-                        <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-                        <Input
-                          type="tel"
-                          value={formData.phone}
-                          onChange={handleChange("phone")}
-                          placeholder="Votre téléphone"
-                          className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
-                        />
-                      </div>
-                      
-                      <div className="relative">
-                        <Building2 size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-                        <Input
-                          value={formData.company}
-                          onChange={handleChange("company")}
-                          placeholder="Votre société (optionnel)"
-                          className="pl-12 h-14 bg-foreground/5 border-0 rounded-2xl text-base placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-foreground/20"
-                        />
-                      </div>
-                    </div>
-                    
-                    {/* Submit */}
-                    <div className="space-y-3">
-                      <Button
-                        onClick={handleShare}
-                        disabled={isSubmitting}
-                        className="w-full h-14 rounded-2xl bg-foreground text-background hover:bg-foreground/90 font-medium text-base disabled:opacity-50"
-                      >
-                        {isSubmitting ? (
-                          <span className="flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full border-2 border-background/30 border-t-background animate-spin" />
-                            Envoi...
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-2">
-                            <Check size={18} />
-                            Confirmer le partage
-                          </span>
-                        )}
-                      </Button>
-                      
-                      <Button
-                        onClick={() => setStep("consent")}
-                        variant="ghost"
-                        className="w-full h-10 rounded-xl text-sm text-muted-foreground hover:text-foreground"
-                      >
-                        Retour
-                      </Button>
-                    </div>
-                    
-                    {/* Legal notice */}
-                    <p className="text-[11px] text-muted-foreground/50 text-center mt-4 leading-relaxed">
-                      Vos données seront uniquement utilisées pour être recontacté par {cardOwnerName}.
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    {isSubmitting ? (
+                      <span className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full border-2 border-background/30 border-t-background animate-spin" />
+                        Envoi...
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <Check size={18} />
+                        Partager mes coordonnées
+                      </span>
+                    )}
+                  </Button>
+                  
+                  <Button
+                    onClick={handleSkip}
+                    variant="ghost"
+                    className="w-full h-10 rounded-xl text-sm text-muted-foreground hover:text-foreground"
+                  >
+                    Annuler
+                  </Button>
+                </div>
+                
+                {/* RGPD Badge - Trust signal */}
+                <div className="flex items-center justify-center gap-2 mt-4 text-xs text-muted-foreground/60">
+                  <Shield size={12} />
+                  <span>Conforme RGPD · Données sécurisées</span>
+                </div>
+              </div>
             </div>
           </motion.div>
         </>

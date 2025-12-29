@@ -18,6 +18,7 @@ export interface CardActionsData {
   instagram?: string;
   twitter?: string;
   tagline?: string;
+  photoUrl?: string | null;
 }
 
 interface CardActionsProps {
@@ -206,6 +207,8 @@ export function CardActionButtons({
           onClose={() => setShowLeadSheet(false)}
           onComplete={handleLeadComplete}
           cardOwnerName={cardOwnerName}
+          cardOwnerPhoto={data.photoUrl}
+          cardOwnerCompany={data.company}
           cardId={cardId}
         />
       )}
