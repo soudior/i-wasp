@@ -54,15 +54,12 @@ const Signup = () => {
     navigate("/dashboard");
   };
 
-  // Show loading while checking auth
+  // Don't render content while checking auth - but keep consistent structure
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground"
-        />
+      <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center py-12">
+        <div className="absolute inset-0 bg-grid opacity-30" />
+        <div className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
       </div>
     );
   }
