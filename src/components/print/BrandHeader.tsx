@@ -1,14 +1,12 @@
 /**
- * BrandHeader Component
+ * BrandHeader Component - IWASP Signature Front Side
  * 
- * Core visual element for IWASP NFC cards.
+ * Locked luxury template following Dior-style minimal branding:
+ * - IWASP ))) mark fixed in top-right (never customizable)
+ * - Client logo centered as dominant visual
+ * - No additional text on card
+ * 
  * Single source of truth for all card visuals - used for both UI preview and print PDF.
- * 
- * Features:
- * - Centered logo as dominant visual (36-52mm locked size)
- * - Premium solid or image backgrounds
- * - Fixed IWASP + NFC mark in top-right corner
- * - 1:1 screen-to-print rendering
  */
 
 import { forwardRef, useMemo } from "react";
@@ -26,49 +24,214 @@ import {
   BACKGROUND_IMAGE_REQUIREMENTS,
 } from "@/lib/printTypes";
 
-// NFC + IWASP combined mark
-function IwaspNfcMark({ 
-  color = "currentColor", 
-  size = 24,
-  opacity = 0.4,
-}: { 
-  color?: string; 
-  size?: number;
-  opacity?: number;
-}) {
+// ============= IWASP ))) MARK - LOCKED DESIGN =============
+// This mark is NEVER customizable by users
+// Same size and position for ALL cards
+
+interface IwaspMarkProps {
+  scale: number; // mm to px conversion
+  textColor: string;
+  forPrint?: boolean;
+}
+
+function IwaspMark({ scale, textColor, forPrint = false }: IwaspMarkProps) {
+  const mmToPx = (mm: number) => mm * scale;
+  
+  // Fixed dimensions - LOCKED
+  const markWidth = mmToPx(12);
+  const iconSize = mmToPx(4);
+  const fontSize = forPrint ? mmToPx(1.8) : mmToPx(2);
+  
   return (
     <div 
-      className="flex flex-col items-end gap-0.5"
-      style={{ opacity }}
+      className="flex items-center gap-1"
+      style={{ 
+        opacity: 0.5,
+        width: markWidth,
+      }}
     >
-      {/* NFC waves icon */}
-      <svg 
-        width={size * 0.6} 
-        height={size * 0.6} 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke={color} 
-        strokeWidth="1.5" 
-        strokeLinecap="round"
-      >
-        <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36" />
-        <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58" />
-        <path d="M12.91 4.1a16.07 16.07 0 0 1 0 15.8" />
-      </svg>
       {/* IWASP text */}
       <span 
         style={{ 
-          fontSize: size * 0.35,
-          fontWeight: 500,
-          letterSpacing: "0.12em",
-          color,
+          fontSize,
+          fontWeight: 600,
+          letterSpacing: "0.15em",
+          color: textColor,
+          fontFamily: "'SF Pro Display', 'Inter', -apple-system, sans-serif",
         }}
       >
         IWASP
       </span>
+      
+      {/* NFC waves ))) */}
+      <svg 
+        width={iconSize} 
+        height={iconSize} 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke={textColor} 
+        strokeWidth="2" 
+        strokeLinecap="round"
+        style={{ flexShrink: 0 }}
+      >
+        <path d="M2 12a5 5 0 0 1 5-5" />
+        <path d="M2 12a9 9 0 0 1 9-9" />
+        <path d="M2 12a13 13 0 0 1 13-13" />
+        <circle cx="2" cy="12" r="1" fill={textColor} />
+      </svg>
     </div>
   );
 }
+
+// ============= CARD BACK COMPONENT =============
+
+export interface CardBackProps {
+  background: BrandBackgroundConfig;
+  cardColor?: PrintColor | PremiumBackgroundId;
+  forPrint?: boolean;
+  className?: string;
+}
+
+export const CardBack = forwardRef<HTMLDivElement, CardBackProps>(
+  ({ background, cardColor, forPrint = false, className = "" }, ref) => {
+    const scale = forPrint ? MM_TO_PX_300DPI : PREVIEW_SCALE;
+    const width = forPrint
+      ? CARD_DIMENSIONS.WIDTH_MM * MM_TO_PX_300DPI
+      : CARD_PREVIEW_PX.WIDTH;
+    const height = forPrint
+      ? CARD_DIMENSIONS.HEIGHT_MM * MM_TO_PX_300DPI
+      : CARD_PREVIEW_PX.HEIGHT;
+
+    const mmToPx = (mm: number) => mm * scale;
+
+    // Get background color (same as front)
+    const bgConfig = useMemo(() => {
+      if (background.type === "solid" && background.solidColorId) {
+        const premiumBg = PREMIUM_BACKGROUNDS[background.solidColorId];
+        return {
+          hex: premiumBg.hex,
+          textColor: premiumBg.textColor,
+          accentColor: premiumBg.accentColor,
+        };
+      }
+      if (cardColor && PRINT_COLORS[cardColor as PrintColor]) {
+        const colorConfig = PRINT_COLORS[cardColor as PrintColor];
+        return {
+          hex: colorConfig.hex,
+          textColor: colorConfig.textColor,
+          accentColor: colorConfig.accentColor,
+        };
+      }
+      return {
+        hex: "#ffffff",
+        textColor: "#0a0a0a",
+        accentColor: "#6b7280",
+      };
+    }, [background, cardColor]);
+
+    const iconSize = mmToPx(14);
+    const nfcIconSize = mmToPx(8);
+
+    return (
+      <div
+        ref={ref}
+        className={`relative overflow-hidden ${className}`}
+        style={{
+          width: `${width}px`,
+          height: `${height}px`,
+          backgroundColor: bgConfig.hex,
+          borderRadius: forPrint ? 0 : `${mmToPx(CARD_DIMENSIONS.CORNER_RADIUS_MM)}px`,
+          fontFamily: "'SF Pro Display', 'Inter', -apple-system, sans-serif",
+        }}
+      >
+        {/* Image Background (same as front) */}
+        {background.type === "image" && background.imageUrl && (
+          <>
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `url(${background.imageUrl})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                filter: `blur(${background.imageBlur ?? BACKGROUND_IMAGE_REQUIREMENTS.DEFAULT_BLUR}px)`,
+              }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundColor: `rgba(0, 0, 0, ${(background.imageOverlay ?? BACKGROUND_IMAGE_REQUIREMENTS.DEFAULT_OVERLAY) / 100})`,
+              }}
+            />
+          </>
+        )}
+
+        {/* Centered NFC + Tap gesture */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+          {/* NFC waves icon */}
+          <svg 
+            width={nfcIconSize} 
+            height={nfcIconSize} 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke={background.type === "image" ? "#ffffff" : bgConfig.accentColor}
+            strokeWidth="1.5" 
+            strokeLinecap="round"
+            style={{ opacity: 0.6, marginBottom: mmToPx(2) }}
+          >
+            <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36" />
+            <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58" />
+            <path d="M12.91 4.1a16.07 16.07 0 0 1 0 15.8" />
+            <circle cx="2" cy="12" r="2" fill={background.type === "image" ? "#ffffff" : bgConfig.accentColor} />
+          </svg>
+          
+          {/* Tap gesture icon (phone + hand) */}
+          <svg
+            width={iconSize}
+            height={iconSize}
+            viewBox="0 0 48 48"
+            fill="none"
+            stroke={background.type === "image" ? "#ffffff" : bgConfig.accentColor}
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ opacity: 0.4 }}
+          >
+            {/* Phone outline */}
+            <rect x="14" y="4" width="20" height="40" rx="3" />
+            <line x1="14" y1="10" x2="34" y2="10" />
+            <line x1="14" y1="38" x2="34" y2="38" />
+            {/* Tap indicator */}
+            <path d="M24 24 L24 28" />
+            <circle cx="24" cy="20" r="2" fill={background.type === "image" ? "#ffffff" : bgConfig.accentColor} />
+          </svg>
+        </div>
+
+        {/* Powered by IWASP - bottom center, subtle */}
+        <div
+          className="absolute bottom-0 left-0 right-0 flex justify-center z-10"
+          style={{ paddingBottom: mmToPx(4) }}
+        >
+          <span
+            style={{
+              fontSize: mmToPx(1.6),
+              fontWeight: 400,
+              letterSpacing: "0.1em",
+              color: background.type === "image" ? "#ffffff" : bgConfig.accentColor,
+              opacity: 0.4,
+              textTransform: "uppercase",
+            }}
+          >
+            Powered by IWASP
+          </span>
+        </div>
+      </div>
+    );
+  }
+);
+
+CardBack.displayName = "CardBack";
+
+// ============= BRAND HEADER (FRONT) =============
 
 export interface BrandHeaderProps {
   // Logo
@@ -85,7 +248,6 @@ export interface BrandHeaderProps {
   forPrint?: boolean; // High-res 300 DPI for PDF
   
   // Optional
-  showMark?: boolean; // Show IWASP + NFC mark
   showGuides?: boolean; // Show safe zones
   className?: string;
 }
@@ -98,7 +260,6 @@ export const BrandHeader = forwardRef<HTMLDivElement, BrandHeaderProps>(
       background,
       cardColor,
       forPrint = false,
-      showMark = true,
       showGuides = false,
       className = "",
     },
@@ -133,7 +294,6 @@ export const BrandHeader = forwardRef<HTMLDivElement, BrandHeaderProps>(
           accentColor: premiumBg.accentColor,
         };
       }
-      // Fallback to cardColor or white
       if (cardColor && PRINT_COLORS[cardColor as PrintColor]) {
         const colorConfig = PRINT_COLORS[cardColor as PrintColor];
         return {
@@ -172,7 +332,6 @@ export const BrandHeader = forwardRef<HTMLDivElement, BrandHeaderProps>(
         {/* Image Background (optional) */}
         {background.type === "image" && background.imageUrl && (
           <>
-            {/* Background image with blur */}
             <div
               className="absolute inset-0"
               style={{
@@ -180,13 +339,11 @@ export const BrandHeader = forwardRef<HTMLDivElement, BrandHeaderProps>(
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 filter: imageBlur > 0 ? `blur(${imageBlur}px)` : undefined,
-                // Extend slightly to cover blur edges
                 margin: imageBlur > 0 ? -imageBlur : 0,
                 width: imageBlur > 0 ? `calc(100% + ${imageBlur * 2}px)` : "100%",
                 height: imageBlur > 0 ? `calc(100% + ${imageBlur * 2}px)` : "100%",
               }}
             />
-            {/* Overlay for logo readability */}
             <div
               className="absolute inset-0"
               style={{
@@ -199,7 +356,6 @@ export const BrandHeader = forwardRef<HTMLDivElement, BrandHeaderProps>(
         {/* Safe zone guide (only in preview mode) */}
         {showGuides && (
           <>
-            {/* Safe margin */}
             <div
               className="absolute border border-dashed border-blue-400/40 pointer-events-none z-20"
               style={{
@@ -209,7 +365,6 @@ export const BrandHeader = forwardRef<HTMLDivElement, BrandHeaderProps>(
                 bottom: mmToPx(CARD_DIMENSIONS.SAFE_MARGIN_MM),
               }}
             />
-            {/* NFC zone */}
             <div
               className="absolute border border-dashed border-red-400/50 pointer-events-none flex items-center justify-center z-20"
               style={{
@@ -224,19 +379,31 @@ export const BrandHeader = forwardRef<HTMLDivElement, BrandHeaderProps>(
           </>
         )}
 
-        {/* LOGO - Centered, dominant visual element */}
+        {/* IWASP ))) MARK - Top right corner - LOCKED POSITION */}
+        <div
+          className="absolute z-20"
+          style={{
+            top: mmToPx(3),
+            right: mmToPx(3),
+          }}
+        >
+          <IwaspMark 
+            scale={scale}
+            textColor={background.type === "image" ? "#ffffff" : bgConfig.accentColor}
+            forPrint={forPrint}
+          />
+        </div>
+
+        {/* CLIENT LOGO - Centered, dominant visual - NO TEXT */}
         {logoUrl && (
-          <div
-            className="absolute inset-0 flex items-center justify-center z-10"
-          >
+          <div className="absolute inset-0 flex items-center justify-center z-10">
             <img
               src={logoUrl}
               alt="Brand Logo"
               style={{
                 width: logoWidthPx,
-                maxHeight: mmToPx(32), // Max height for aspect ratio
+                maxHeight: mmToPx(32),
                 objectFit: "contain",
-                // No cropping, no stretching
                 imageRendering: forPrint ? "auto" : undefined,
               }}
             />
@@ -245,16 +412,14 @@ export const BrandHeader = forwardRef<HTMLDivElement, BrandHeaderProps>(
 
         {/* Placeholder when no logo */}
         {!logoUrl && (
-          <div
-            className="absolute inset-0 flex items-center justify-center z-10"
-          >
+          <div className="absolute inset-0 flex items-center justify-center z-10">
             <div 
               className="border-2 border-dashed rounded-xl flex items-center justify-center"
               style={{
                 width: logoWidthPx,
-                height: mmToPx(20),
+                height: mmToPx(22),
                 borderColor: bgConfig.accentColor,
-                opacity: 0.3,
+                opacity: 0.25,
               }}
             >
               <span 
@@ -262,28 +427,12 @@ export const BrandHeader = forwardRef<HTMLDivElement, BrandHeaderProps>(
                   color: bgConfig.accentColor,
                   fontSize: mmToPx(3),
                   fontWeight: 500,
+                  letterSpacing: "0.05em",
                 }}
               >
-                VOTRE LOGO
+                YOUR LOGO
               </span>
             </div>
-          </div>
-        )}
-
-        {/* IWASP + NFC Mark - Top right corner */}
-        {showMark && (
-          <div
-            className="absolute z-20"
-            style={{
-              top: mmToPx(4),
-              right: mmToPx(4),
-            }}
-          >
-            <IwaspNfcMark 
-              color={background.type === "image" ? "#ffffff" : bgConfig.accentColor}
-              size={mmToPx(6)}
-              opacity={background.type === "image" ? 0.7 : 0.35}
-            />
           </div>
         )}
       </div>
@@ -295,9 +444,6 @@ BrandHeader.displayName = "BrandHeader";
 
 // ============= HELPER FUNCTIONS =============
 
-/**
- * Validate background image quality
- */
 export function validateBackgroundImage(
   width: number,
   height: number
@@ -314,9 +460,6 @@ export function validateBackgroundImage(
   return { valid: true };
 }
 
-/**
- * Check if background is valid for print
- */
 export function isBackgroundPrintReady(background: BrandBackgroundConfig): boolean {
   if (background.type === "solid") {
     return !!background.solidColorId;
