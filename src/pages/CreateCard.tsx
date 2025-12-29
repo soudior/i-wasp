@@ -434,16 +434,14 @@ const CreateCard = () => {
                     disabled={createCard.isPending || updateCard.isPending}
                   >
                     {createCard.isPending || updateCard.isPending ? (
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-5 h-5 rounded-full border-2 border-background/30 border-t-background"
-                      />
+                      <span className="flex items-center justify-center gap-2">
+                        <span className="w-5 h-5 rounded-full border-2 border-background/30 border-t-background animate-spin" />
+                      </span>
                     ) : (
-                      <>
+                      <span className="flex items-center justify-center gap-2">
                         <Save size={18} />
                         {editId ? "Enregistrer" : "Créer la carte"}
-                      </>
+                      </span>
                     )}
                   </Button>
                 </div>
