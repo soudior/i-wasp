@@ -77,9 +77,10 @@ export function useCreateOrder() {
       if (error) throw error;
       return data as Order;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       toast.success("Commande créée avec succès");
+      return data;
     },
     onError: (error) => {
       console.error("Error creating order:", error);

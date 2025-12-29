@@ -50,8 +50,9 @@ export default function Checkout() {
   const [backgroundColor, setBackgroundColor] = useState<PremiumBackgroundId>("white");
   const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | null>(null);
   
-  // Shipping info
+  // Customer & shipping info
   const [shippingName, setShippingName] = useState("");
+  const [shippingPhone, setShippingPhone] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
   const [shippingCity, setShippingCity] = useState("");
   const [shippingPostalCode, setShippingPostalCode] = useState("");
@@ -81,13 +82,20 @@ export default function Checkout() {
       return;
     }
     
-    if (!shippingName || !shippingAddress || !shippingCity || !shippingPostalCode) {
-      toast.error("Veuillez remplir tous les champs de livraison");
+    if (!shippingName || !shippingPhone || !shippingAddress || !shippingCity || !shippingPostalCode) {
+      toast.error("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
+    
+    // Validate phone number (basic Moroccan format)
+    const phoneRegex = /^(\+212|0)[5-7]\d{8}$/;
+    if (!phoneRegex.test(shippingPhone.replace(/\s/g, ""))) {
+      toast.error("Veuillez entrer un numéro de téléphone valide");
       return;
     }
     
     try {
-      await createOrder.mutateAsync({
+      const result = await createOrder.mutateAsync({
         quantity,
         order_type: orderType,
         template: "iwasp-signature",
@@ -101,14 +109,15 @@ export default function Checkout() {
         currency: PRICING.currency,
         status: "pending",
         shipping_name: shippingName,
+        shipping_phone: shippingPhone,
         shipping_address: shippingAddress,
         shipping_city: shippingCity,
         shipping_postal_code: shippingPostalCode,
         shipping_country: "MA", // Morocco
       });
       
-      toast.success("Commande enregistrée ! Vous recevrez une confirmation sous 24h.");
-      navigate("/dashboard");
+      // Navigate to confirmation page with order number
+      navigate(`/order-confirmation?order=${result.order_number}`);
     } catch (error) {
       console.error("Order creation failed:", error);
     }
@@ -297,7 +306,7 @@ export default function Checkout() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="shippingName">Nom complet</Label>
+                  <Label htmlFor="shippingName">Nom complet *</Label>
                   <Input
                     id="shippingName"
                     value={shippingName}
@@ -307,7 +316,21 @@ export default function Checkout() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="shippingAddress">Adresse</Label>
+                  <Label htmlFor="shippingPhone">Téléphone * (pour la livraison)</Label>
+                  <Input
+                    id="shippingPhone"
+                    type="tel"
+                    value={shippingPhone}
+                    onChange={(e) => setShippingPhone(e.target.value)}
+                    placeholder="06 XX XX XX XX"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Requis pour vous contacter lors de la livraison
+                  </p>
+                </div>
+                <div>
+                  <Label htmlFor="shippingAddress">Adresse *</Label>
                   <Textarea
                     id="shippingAddress"
                     value={shippingAddress}
@@ -318,7 +341,7 @@ export default function Checkout() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="shippingCity">Ville</Label>
+                    <Label htmlFor="shippingCity">Ville *</Label>
                     <Input
                       id="shippingCity"
                       value={shippingCity}
@@ -328,7 +351,7 @@ export default function Checkout() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="shippingPostalCode">Code postal</Label>
+                    <Label htmlFor="shippingPostalCode">Code postal *</Label>
                     <Input
                       id="shippingPostalCode"
                       value={shippingPostalCode}

@@ -20,7 +20,7 @@ import {
   Plus, CreditCard, Users, Eye, TrendingUp, 
   MoreVertical, Wallet, QrCode,
   Wifi, WifiOff, Pencil, Trash2, ExternalLink, Copy,
-  LogOut, X, Apple, Smartphone
+  LogOut, X, Apple, Smartphone, ShoppingBag
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -137,6 +137,12 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              <Link to="/orders">
+                <Button variant="outline">
+                  <ShoppingBag size={18} />
+                  Mes commandes
+                </Button>
+              </Link>
               <Link to="/create">
                 <Button variant="chrome">
                   <Plus size={18} />

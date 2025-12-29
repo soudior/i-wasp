@@ -12,6 +12,9 @@ import CreateCard from "./pages/CreateCard";
 import CardEditor from "./pages/CardEditor";
 import Dashboard from "./pages/Dashboard";
 import Leads from "./pages/Leads";
+import Orders from "./pages/Orders";
+import OrderDetails from "./pages/OrderDetails";
+import OrderConfirmation from "./pages/OrderConfirmation";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import PublicCard from "./pages/PublicCard";
@@ -66,6 +69,30 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Leads />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/orders"
+                element={
+                  <ProtectedRoute>
+                    <Orders />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/orders/:orderId"
+                element={
+                  <ProtectedRoute>
+                    <OrderDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/order-confirmation"
+                element={
+                  <ProtectedRoute>
+                    <OrderConfirmation />
                   </ProtectedRoute>
                 }
               />
