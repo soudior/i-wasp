@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CardData } from "@/components/templates/CardTemplates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { downloadVCard } from "@/lib/vcard";
 import { addToAppleWallet, addToGoogleWallet, WalletCardData } from "@/lib/walletService";
 import { toast } from "sonner";
 import { IWASPLogoSimple } from "@/components/IWASPLogo";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import demoProfileImage from "@/assets/demo-profile.jpg";
 
 // Demo card data - IWASP showcase
@@ -32,12 +33,52 @@ const demoCardData: CardData = {
   photoUrl: demoProfileImage,
 };
 
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 40, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 80,
+      damping: 20,
+      duration: 0.8,
+    },
+  },
+};
+
 // Action item component with enhanced tap area
 function ActionItem({ 
   icon: Icon, 
   label, 
   value, 
-  href 
+  href,
 }: { 
   icon: React.ElementType; 
   label: string; 
@@ -45,7 +86,12 @@ function ActionItem({
   href?: string;
 }) {
   const content = (
-    <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] transition-all duration-200 active:scale-[0.98] group cursor-pointer">
+    <motion.div 
+      variants={itemVariants}
+      whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.06)" }}
+      whileTap={{ scale: 0.98 }}
+      className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.04] transition-colors duration-200 group cursor-pointer"
+    >
       <div className="w-11 h-11 rounded-xl bg-white/[0.05] flex items-center justify-center flex-shrink-0 group-hover:bg-white/[0.08] transition-colors">
         <Icon size={20} className="text-white/50 group-hover:text-white/70 transition-colors" />
       </div>
@@ -53,7 +99,7 @@ function ActionItem({
         <p className="text-[11px] uppercase tracking-wider text-white/30 mb-0.5">{label}</p>
         <p className="text-sm text-white/80 truncate">{value}</p>
       </div>
-    </div>
+    </motion.div>
   );
 
   if (href) {
@@ -78,6 +124,13 @@ export default function Demo() {
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [loadingApple, setLoadingApple] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
+  
+  // Parallax scroll effect
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
+  const parallaxY = useTransform(scrollY, [0, 300], [0, -30]);
+  const parallaxOpacity = useTransform(scrollY, [0, 200], [1, 0.8]);
+  const smoothY = useSpring(parallaxY, { stiffness: 100, damping: 30 });
 
   // Handle vCard download
   const handleDownloadVCard = () => {
@@ -187,64 +240,111 @@ export default function Demo() {
       </header>
 
       {/* Main content */}
-      <main className="relative z-10 flex items-start justify-center px-5 py-6 pb-12">
-        <div className="w-full max-w-[380px]">
+      <main ref={containerRef} className="relative z-10 flex items-start justify-center px-5 py-6 pb-12">
+        <motion.div 
+          className="w-full max-w-[380px]"
+          style={{ y: smoothY, opacity: parallaxOpacity }}
+        >
           
-          {/* Premium Card Container */}
-          <div className="relative rounded-[28px] overflow-hidden bg-[hsl(0,0%,6%)] border border-white/[0.06] shadow-2xl shadow-black/50">
+          {/* Premium Card Container with entry animation */}
+          <motion.div 
+            className="relative rounded-[28px] overflow-hidden bg-[hsl(0,0%,6%)] border border-white/[0.06] shadow-2xl shadow-black/50"
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {/* Subtle top gradient line */}
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             
             {/* IWASP Logo - Top Right */}
-            <div className="absolute top-5 right-5 z-10">
-              <IWASPLogoSimple variant="dark" size="sm" className="opacity-30" />
-            </div>
+            <motion.div 
+              className="absolute top-5 right-5 z-10"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 0.3, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+            >
+              <IWASPLogoSimple variant="dark" size="sm" />
+            </motion.div>
 
             {/* Card Content */}
             <div className="p-7 pt-6">
               
-              {/* Profile Section */}
-              <div className="flex flex-col items-center text-center mb-8">
+              {/* Profile Section with staggered animations */}
+              <motion.div 
+                className="flex flex-col items-center text-center mb-8"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
                 {/* Avatar with premium shadow */}
-                <div className="relative mb-5">
-                  <div className="w-28 h-28 rounded-full overflow-hidden ring-2 ring-white/[0.08] shadow-xl shadow-black/40">
+                <motion.div 
+                  className="relative mb-5"
+                  variants={itemVariants}
+                >
+                  <motion.div 
+                    className="w-28 h-28 rounded-full overflow-hidden ring-2 ring-white/[0.08] shadow-xl shadow-black/40"
+                    whileHover={{ scale: 1.05, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.6)" }}
+                    transition={{ type: "spring" as const, stiffness: 300, damping: 20 }}
+                  >
                     <img 
                       src={demoCardData.photoUrl || ""} 
                       alt={`${demoCardData.firstName} ${demoCardData.lastName}`}
                       className="w-full h-full object-cover"
                     />
-                  </div>
+                  </motion.div>
                   {/* Status indicator */}
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-[3px] border-[hsl(0,0%,6%)] flex items-center justify-center">
+                  <motion.div 
+                    className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-[3px] border-[hsl(0,0%,6%)] flex items-center justify-center"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.6, type: "spring" as const, stiffness: 500, damping: 15 }}
+                  >
                     <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 {/* Name - Dominant */}
-                <h1 className="font-display text-[26px] font-semibold text-white tracking-tight mb-1">
+                <motion.h1 
+                  className="font-display text-[26px] font-semibold text-white tracking-tight mb-1"
+                  variants={itemVariants}
+                >
                   {demoCardData.firstName} {demoCardData.lastName}
-                </h1>
+                </motion.h1>
                 
                 {/* Title - Secondary */}
-                <p className="text-[15px] text-white/50 font-light mb-0.5">
+                <motion.p 
+                  className="text-[15px] text-white/50 font-light mb-0.5"
+                  variants={itemVariants}
+                >
                   {demoCardData.title}
-                </p>
+                </motion.p>
                 
                 {/* Company */}
-                <p className="text-[13px] text-white/30 font-light">
+                <motion.p 
+                  className="text-[13px] text-white/30 font-light"
+                  variants={itemVariants}
+                >
                   {demoCardData.company}
-                </p>
+                </motion.p>
 
                 {/* Tagline - Subtle italic */}
                 {demoCardData.tagline && (
-                  <p className="mt-4 text-[13px] text-white/25 italic font-light max-w-[280px] leading-relaxed">
+                  <motion.p 
+                    className="mt-4 text-[13px] text-white/25 italic font-light max-w-[280px] leading-relaxed"
+                    variants={itemVariants}
+                  >
                     "{demoCardData.tagline}"
-                  </p>
+                  </motion.p>
                 )}
-              </div>
+              </motion.div>
 
-              {/* Action List - Enhanced */}
-              <div className="space-y-2.5 mb-7">
+              {/* Action List - Enhanced with stagger */}
+              <motion.div 
+                className="space-y-2.5 mb-7"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
                 {demoCardData.phone && (
                   <ActionItem 
                     icon={Phone} 
@@ -293,7 +393,7 @@ export default function Demo() {
                     href={`https://instagram.com/${demoCardData.instagram.replace('@', '')}`}
                   />
                 )}
-              </div>
+              </motion.div>
 
               {/* CTA Buttons */}
               <div className="space-y-3">
@@ -346,10 +446,15 @@ export default function Demo() {
                 Powered by IWASP
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* CTA to order */}
-          <div className="mt-6 p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+          <motion.div 
+            className="mt-6 p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+          >
             <div className="flex items-center gap-4 mb-4">
               <div className="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center">
                 <CreditCard className="h-5 w-5 text-amber-400" />
@@ -364,15 +469,20 @@ export default function Demo() {
                 Commander ma carte
               </Button>
             </Link>
-          </div>
+          </motion.div>
 
           {/* IWASP branding */}
-          <div className="text-center mt-6 space-y-1">
+          <motion.div 
+            className="text-center mt-6 space-y-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 0.5 }}
+          >
             <p className="text-[11px] text-white/25">
               🇲🇦 Livraison Maroc • Paiement à la livraison
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </main>
 
       {/* Lead capture modal */}
