@@ -455,49 +455,127 @@ export default function Demo() {
                 )}
               </motion.div>
 
-              {/* CTA Buttons */}
-              <div className="space-y-3">
+              {/* CTA Buttons with micro-animations */}
+              <motion.div 
+                className="space-y-3"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
                 {/* Primary - Add to contacts */}
-                <button
+                <motion.button
                   onClick={handleDownloadVCard}
-                  className="w-full py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-[hsl(0,0%,5%)] font-semibold rounded-2xl flex items-center justify-center gap-2.5 transition-all active:scale-[0.98] shadow-lg shadow-amber-500/20"
+                  className="w-full py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-[hsl(0,0%,5%)] font-semibold rounded-2xl flex items-center justify-center gap-2.5 shadow-lg shadow-amber-500/20 overflow-hidden relative group"
+                  variants={itemVariants}
+                  whileHover={{ 
+                    scale: 1.02,
+                    boxShadow: "0 20px 40px -10px rgba(245,158,11,0.4)",
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 >
-                  <Plus size={20} strokeWidth={2.5} />
-                  Ajouter aux contacts
-                </button>
+                  {/* Shimmer effect on hover */}
+                  <motion.div 
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
+                  />
+                  <motion.span
+                    className="relative z-10 flex items-center gap-2.5"
+                  >
+                    <motion.span
+                      whileHover={{ rotate: 90 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                    >
+                      <Plus size={20} strokeWidth={2.5} />
+                    </motion.span>
+                    Ajouter aux contacts
+                  </motion.span>
+                </motion.button>
 
                 {/* Wallet buttons */}
                 <div className="grid grid-cols-2 gap-2.5">
-                  <button
+                  <motion.button
                     onClick={handleAppleWallet}
                     disabled={loadingApple}
-                    className="py-3.5 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.06] rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
+                    className="py-3.5 bg-white/[0.04] border border-white/[0.06] rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 overflow-hidden relative group"
+                    variants={itemVariants}
+                    whileHover={{ 
+                      scale: 1.03,
+                      backgroundColor: "rgba(255,255,255,0.08)",
+                      borderColor: "rgba(255,255,255,0.12)",
+                    }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   >
-                    <Wallet size={17} className="text-white/40" />
-                    <span className="text-[13px] text-white/60">Apple Wallet</span>
-                  </button>
-                  <button
+                    <motion.span
+                      className="flex items-center gap-2"
+                      whileHover={{ y: -1 }}
+                    >
+                      <motion.span
+                        whileHover={{ scale: 1.15, rotate: -5 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                      >
+                        <Wallet size={17} className="text-white/40 group-hover:text-white/60 transition-colors" />
+                      </motion.span>
+                      <span className="text-[13px] text-white/60 group-hover:text-white/80 transition-colors">Apple Wallet</span>
+                    </motion.span>
+                  </motion.button>
+                  <motion.button
                     onClick={handleGoogleWallet}
                     disabled={loadingGoogle}
-                    className="py-3.5 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.06] rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
+                    className="py-3.5 bg-white/[0.04] border border-white/[0.06] rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 overflow-hidden relative group"
+                    variants={itemVariants}
+                    whileHover={{ 
+                      scale: 1.03,
+                      backgroundColor: "rgba(255,255,255,0.08)",
+                      borderColor: "rgba(255,255,255,0.12)",
+                    }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   >
-                    <Wallet size={17} className="text-white/40" />
-                    <span className="text-[13px] text-white/60">Google Wallet</span>
-                  </button>
+                    <motion.span
+                      className="flex items-center gap-2"
+                      whileHover={{ y: -1 }}
+                    >
+                      <motion.span
+                        whileHover={{ scale: 1.15, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                      >
+                        <Wallet size={17} className="text-white/40 group-hover:text-white/60 transition-colors" />
+                      </motion.span>
+                      <span className="text-[13px] text-white/60 group-hover:text-white/80 transition-colors">Google Wallet</span>
+                    </motion.span>
+                  </motion.button>
                 </div>
 
                 {/* Share info button */}
-                <button
+                <motion.button
                   onClick={() => setShowLeadForm(true)}
                   disabled={leadSubmitted}
-                  className="w-full py-3.5 bg-transparent hover:bg-white/[0.03] border border-white/[0.08] rounded-xl flex items-center justify-center gap-2 text-white/40 hover:text-white/60 transition-all active:scale-[0.98] disabled:opacity-50"
+                  className="w-full py-3.5 bg-transparent border border-white/[0.08] rounded-xl flex items-center justify-center gap-2 text-white/40 disabled:opacity-50 overflow-hidden relative group"
+                  variants={itemVariants}
+                  whileHover={{ 
+                    scale: 1.02,
+                    backgroundColor: "rgba(255,255,255,0.04)",
+                    borderColor: "rgba(255,255,255,0.15)",
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 >
-                  <Share2 size={17} />
-                  <span className="text-[13px]">
-                    {leadSubmitted ? "Coordonnées partagées ✓" : "Partager mes coordonnées"}
-                  </span>
-                </button>
-              </div>
+                  <motion.span
+                    className="flex items-center gap-2"
+                  >
+                    <motion.span
+                      whileHover={{ rotate: 15, scale: 1.1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                    >
+                      <Share2 size={17} className="group-hover:text-white/60 transition-colors" />
+                    </motion.span>
+                    <span className="text-[13px] group-hover:text-white/70 transition-colors">
+                      {leadSubmitted ? "Coordonnées partagées ✓" : "Partager mes coordonnées"}
+                    </span>
+                  </motion.span>
+                </motion.button>
+              </motion.div>
             </div>
 
             {/* Footer */}
