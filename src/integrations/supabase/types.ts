@@ -227,6 +227,7 @@ export type Database = {
           shipping_city: string | null
           shipping_country: string | null
           shipping_name: string | null
+          shipping_phone: string | null
           shipping_postal_code: string | null
           status: Database["public"]["Enums"]["order_status"]
           template: string
@@ -258,6 +259,7 @@ export type Database = {
           shipping_city?: string | null
           shipping_country?: string | null
           shipping_name?: string | null
+          shipping_phone?: string | null
           shipping_postal_code?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           template?: string
@@ -289,6 +291,7 @@ export type Database = {
           shipping_city?: string | null
           shipping_country?: string | null
           shipping_name?: string | null
+          shipping_phone?: string | null
           shipping_postal_code?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           template?: string
