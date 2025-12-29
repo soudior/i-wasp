@@ -11,11 +11,13 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DigitalCard as DigitalCardPreview } from "@/components/DigitalCard";
 import { PhotoUpload } from "@/components/PhotoUpload";
+import { SocialLinksManager } from "@/components/SocialLinksManager";
 import { templateInfo, TemplateType } from "@/components/templates/CardTemplates";
+import { SocialLink } from "@/lib/socialNetworks";
 import { toast } from "sonner";
 import { 
   User, Mail, Phone, MapPin, Globe, Briefcase, Building2, 
-  MessageSquare, Linkedin, Instagram, Twitter, Save, ArrowLeft,
+  MessageSquare, Save, ArrowLeft,
   Sparkles, Camera, Image, Palette, Check
 } from "lucide-react";
 
@@ -29,6 +31,7 @@ const CreateCard = () => {
   const updateCard = useUpdateCard();
   
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>("executive");
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -354,10 +357,11 @@ const CreateCard = () => {
                   </TabsContent>
 
                   <TabsContent value="social" className="space-y-5">
+                    {/* Website - kept separate as main business link */}
                     <div className="space-y-2">
                       <Label htmlFor="website" className="flex items-center gap-2">
                         <Globe size={14} className="text-chrome" />
-                        Site web
+                        Site web principal
                       </Label>
                       <Input
                         id="website"
@@ -369,48 +373,11 @@ const CreateCard = () => {
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="linkedin" className="flex items-center gap-2">
-                        <Linkedin size={14} className="text-chrome" />
-                        LinkedIn
-                      </Label>
-                      <Input
-                        id="linkedin"
-                        name="linkedin"
-                        placeholder="votre-profil"
-                        value={formData.linkedin}
-                        onChange={handleChange}
-                        className="bg-surface-2 border-border/50 h-11"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="instagram" className="flex items-center gap-2">
-                        <Instagram size={14} className="text-chrome" />
-                        Instagram
-                      </Label>
-                      <Input
-                        id="instagram"
-                        name="instagram"
-                        placeholder="@votre_compte"
-                        value={formData.instagram}
-                        onChange={handleChange}
-                        className="bg-surface-2 border-border/50 h-11"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="twitter" className="flex items-center gap-2">
-                        <Twitter size={14} className="text-chrome" />
-                        Twitter / X
-                      </Label>
-                      <Input
-                        id="twitter"
-                        name="twitter"
-                        placeholder="@votre_compte"
-                        value={formData.twitter}
-                        onChange={handleChange}
-                        className="bg-surface-2 border-border/50 h-11"
+                    {/* Dynamic Social Links Manager */}
+                    <div className="pt-4 border-t border-border/30">
+                      <SocialLinksManager
+                        value={socialLinks}
+                        onChange={setSocialLinks}
                       />
                     </div>
                   </TabsContent>

@@ -1,6 +1,9 @@
 import { Phone, Mail, MapPin, Globe, Linkedin, Instagram, MessageCircle, Twitter } from "lucide-react";
 import { CardActionButtons } from "./CardActions";
-
+import { LocationPicker } from "@/components/LocationPicker";
+import { handlePhoneTap, handleEmailTap, handleWhatsAppTap, handleSmsTap, handleWebsiteTap, handleSocialTap } from "@/lib/smartActions";
+import { SocialLink } from "@/lib/socialNetworks";
+import { SocialIcon } from "@/components/SocialIcon";
 export interface CardData {
   firstName?: string;
   lastName?: string;
@@ -17,6 +20,7 @@ export interface CardData {
   photo?: string;
   photoUrl?: string | null;
   logoUrl?: string | null;
+  socialLinks?: SocialLink[];
 }
 
 export interface TemplateProps {
@@ -88,61 +92,115 @@ export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true
             </div>
           )}
 
-          {/* Contact info */}
+          {/* Contact info with smart actions */}
           <div className="space-y-2 mb-6">
             {cardData.phone && (
-              <a href={`tel:${cardData.phone}`} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-800/50 transition-colors">
+              <button 
+                onClick={() => handlePhoneTap(cardData.phone!)} 
+                className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-800/50 transition-colors text-left"
+              >
                 <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center">
                   <Phone size={16} className="text-amber-400" />
                 </div>
                 <span className="text-sm text-slate-300">{cardData.phone}</span>
-              </a>
+              </button>
             )}
             {cardData.email && (
-              <a href={`mailto:${cardData.email}`} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-800/50 transition-colors">
+              <button 
+                onClick={() => handleEmailTap(cardData.email!)} 
+                className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-800/50 transition-colors text-left"
+              >
                 <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center">
                   <Mail size={16} className="text-amber-400" />
                 </div>
                 <span className="text-sm text-slate-300 truncate">{cardData.email}</span>
-              </a>
+              </button>
             )}
             {cardData.location && (
-              <div className="flex items-center gap-3 p-2.5">
-                <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center">
-                  <MapPin size={16} className="text-slate-500" />
-                </div>
-                <span className="text-sm text-slate-400">{cardData.location}</span>
-              </div>
+              <LocationPicker 
+                address={cardData.location}
+                iconClassName="text-amber-400"
+                textClassName="text-sm text-slate-400"
+              />
             )}
           </div>
 
-          {/* Action buttons */}
+          {/* Action buttons with smart handlers */}
           <div className="grid grid-cols-4 gap-2 mb-6">
-            {[
-              { icon: Phone, label: "Appeler" },
-              { icon: Mail, label: "Email" },
-              { icon: MessageCircle, label: "Message" },
-              { icon: Globe, label: "Site" },
-            ].map((action) => (
-              <button key={action.label} className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-amber-500/30 transition-all">
-                <action.icon size={18} className="text-amber-400" />
-                <span className="text-xs text-slate-400">{action.label}</span>
+            {cardData.phone && (
+              <button 
+                onClick={() => handlePhoneTap(cardData.phone!)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-amber-500/30 transition-all"
+              >
+                <Phone size={18} className="text-amber-400" />
+                <span className="text-xs text-slate-400">Appeler</span>
               </button>
-            ))}
+            )}
+            {cardData.email && (
+              <button 
+                onClick={() => handleEmailTap(cardData.email!)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-amber-500/30 transition-all"
+              >
+                <Mail size={18} className="text-amber-400" />
+                <span className="text-xs text-slate-400">Email</span>
+              </button>
+            )}
+            {cardData.phone && (
+              <button 
+                onClick={() => handleSmsTap(cardData.phone!)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-amber-500/30 transition-all"
+              >
+                <MessageCircle size={18} className="text-amber-400" />
+                <span className="text-xs text-slate-400">Message</span>
+              </button>
+            )}
+            {cardData.website && (
+              <button 
+                onClick={() => handleWebsiteTap(cardData.website!)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-amber-500/30 transition-all"
+              >
+                <Globe size={18} className="text-amber-400" />
+                <span className="text-xs text-slate-400">Site</span>
+              </button>
+            )}
           </div>
 
-          {/* Social */}
+          {/* Social with smart tap handlers */}
           <div className="flex justify-center gap-4 pb-6 border-b border-slate-700/50">
             {cardData.linkedin && (
-              <a href={`https://linkedin.com/in/${cardData.linkedin}`} className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors">
+              <button 
+                onClick={() => handleSocialTap('linkedin', cardData.linkedin!)}
+                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
+              >
                 <Linkedin size={18} className="text-slate-400" />
-              </a>
+              </button>
             )}
             {cardData.instagram && (
-              <a href={`https://instagram.com/${cardData.instagram?.replace('@', '')}`} className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors">
+              <button 
+                onClick={() => handleSocialTap('instagram', cardData.instagram!)}
+                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
+              >
                 <Instagram size={18} className="text-slate-400" />
-              </a>
+              </button>
             )}
+            {cardData.twitter && (
+              <button 
+                onClick={() => handleSocialTap('twitter', cardData.twitter!)}
+                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
+              >
+                <Twitter size={18} className="text-slate-400" />
+              </button>
+            )}
+            {/* Dynamic social links */}
+            {cardData.socialLinks?.map((link) => (
+              <button 
+                key={link.id}
+                onClick={() => handleSocialTap(link.networkId, link.value)}
+                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
+              >
+                <SocialIcon networkId={link.networkId} size={18} className="text-slate-400" />
+              </button>
+            ))}
           </div>
 
           {/* CTA Buttons */}
@@ -198,51 +256,58 @@ export function MinimalTemplate({ data = defaultData, showWalletButtons = true, 
             </p>
           )}
 
-          {/* Simple contact list */}
+          {/* Simple contact list with smart actions */}
           <div className="space-y-3 mb-8">
             {cardData.phone && (
-              <a href={`tel:${cardData.phone}`} className="flex items-center gap-3 text-neutral-600 hover:text-neutral-900 transition-colors">
+              <button onClick={() => handlePhoneTap(cardData.phone!)} className="w-full flex items-center gap-3 text-neutral-600 hover:text-neutral-900 transition-colors text-left">
                 <Phone size={16} />
                 <span className="text-sm">{cardData.phone}</span>
-              </a>
+              </button>
             )}
             {cardData.email && (
-              <a href={`mailto:${cardData.email}`} className="flex items-center gap-3 text-neutral-600 hover:text-neutral-900 transition-colors">
+              <button onClick={() => handleEmailTap(cardData.email!)} className="w-full flex items-center gap-3 text-neutral-600 hover:text-neutral-900 transition-colors text-left">
                 <Mail size={16} />
                 <span className="text-sm truncate">{cardData.email}</span>
-              </a>
+              </button>
             )}
             {cardData.location && (
-              <div className="flex items-center gap-3 text-neutral-400">
-                <MapPin size={16} />
-                <span className="text-sm">{cardData.location}</span>
-              </div>
+              <LocationPicker 
+                address={cardData.location}
+                variant="minimal"
+                iconClassName="text-neutral-400"
+                textClassName="text-sm text-neutral-400"
+              />
             )}
             {cardData.website && (
-              <a href={`https://${cardData.website}`} className="flex items-center gap-3 text-neutral-600 hover:text-neutral-900 transition-colors">
+              <button onClick={() => handleWebsiteTap(cardData.website!)} className="w-full flex items-center gap-3 text-neutral-600 hover:text-neutral-900 transition-colors text-left">
                 <Globe size={16} />
                 <span className="text-sm">{cardData.website}</span>
-              </a>
+              </button>
             )}
           </div>
 
-          {/* Social row */}
+          {/* Social row with smart tap */}
           <div className="flex justify-center gap-4 mb-8">
             {cardData.linkedin && (
-              <a href={`https://linkedin.com/in/${cardData.linkedin}`} className="text-neutral-400 hover:text-neutral-600 transition-colors">
+              <button onClick={() => handleSocialTap('linkedin', cardData.linkedin!)} className="text-neutral-400 hover:text-neutral-600 transition-colors">
                 <Linkedin size={20} />
-              </a>
+              </button>
             )}
             {cardData.instagram && (
-              <a href={`https://instagram.com/${cardData.instagram?.replace('@', '')}`} className="text-neutral-400 hover:text-neutral-600 transition-colors">
+              <button onClick={() => handleSocialTap('instagram', cardData.instagram!)} className="text-neutral-400 hover:text-neutral-600 transition-colors">
                 <Instagram size={20} />
-              </a>
+              </button>
             )}
             {cardData.twitter && (
-              <a href={`https://twitter.com/${cardData.twitter}`} className="text-neutral-400 hover:text-neutral-600 transition-colors">
+              <button onClick={() => handleSocialTap('twitter', cardData.twitter!)} className="text-neutral-400 hover:text-neutral-600 transition-colors">
                 <Twitter size={20} />
-              </a>
+              </button>
             )}
+            {cardData.socialLinks?.map((link) => (
+              <button key={link.id} onClick={() => handleSocialTap(link.networkId, link.value)} className="text-neutral-400 hover:text-neutral-600 transition-colors">
+                <SocialIcon networkId={link.networkId} size={20} />
+              </button>
+            ))}
           </div>
 
           {/* CTA Buttons */}
@@ -310,55 +375,75 @@ export function ModernTemplate({ data = defaultData, showWalletButtons = true, o
               </div>
             )}
 
-            {/* Contact */}
+            {/* Contact with smart actions */}
             <div className="space-y-2 mb-6">
               {cardData.phone && (
-                <a href={`tel:${cardData.phone}`} className="flex items-center gap-3 p-2.5 rounded-xl bg-white/10 hover:bg-white/20 transition-colors">
+                <button onClick={() => handlePhoneTap(cardData.phone!)} className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-left">
                   <Phone size={16} className="text-white" />
                   <span className="text-sm text-white/90">{cardData.phone}</span>
-                </a>
+                </button>
               )}
               {cardData.email && (
-                <a href={`mailto:${cardData.email}`} className="flex items-center gap-3 p-2.5 rounded-xl bg-white/10 hover:bg-white/20 transition-colors">
+                <button onClick={() => handleEmailTap(cardData.email!)} className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-left">
                   <Mail size={16} className="text-white" />
                   <span className="text-sm text-white/90 truncate">{cardData.email}</span>
-                </a>
+                </button>
               )}
               {cardData.location && (
-                <div className="flex items-center gap-3 p-2.5">
-                  <MapPin size={16} className="text-white/60" />
-                  <span className="text-sm text-white/60">{cardData.location}</span>
-                </div>
+                <LocationPicker 
+                  address={cardData.location}
+                  className="bg-white/10 hover:bg-white/20 rounded-xl"
+                  iconClassName="text-white/60"
+                  textClassName="text-sm text-white/60"
+                />
               )}
             </div>
 
-            {/* Actions */}
+            {/* Actions with smart handlers */}
             <div className="grid grid-cols-4 gap-2 mb-6">
-              {[
-                { icon: Phone, label: "Appeler" },
-                { icon: Mail, label: "Email" },
-                { icon: MessageCircle, label: "Message" },
-                { icon: Globe, label: "Site" },
-              ].map((action) => (
-                <button key={action.label} className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all">
-                  <action.icon size={18} className="text-white" />
-                  <span className="text-xs text-white/70">{action.label}</span>
+              {cardData.phone && (
+                <button onClick={() => handlePhoneTap(cardData.phone!)} className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all">
+                  <Phone size={18} className="text-white" />
+                  <span className="text-xs text-white/70">Appeler</span>
                 </button>
-              ))}
+              )}
+              {cardData.email && (
+                <button onClick={() => handleEmailTap(cardData.email!)} className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all">
+                  <Mail size={18} className="text-white" />
+                  <span className="text-xs text-white/70">Email</span>
+                </button>
+              )}
+              {cardData.phone && (
+                <button onClick={() => handleSmsTap(cardData.phone!)} className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all">
+                  <MessageCircle size={18} className="text-white" />
+                  <span className="text-xs text-white/70">Message</span>
+                </button>
+              )}
+              {cardData.website && (
+                <button onClick={() => handleWebsiteTap(cardData.website!)} className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all">
+                  <Globe size={18} className="text-white" />
+                  <span className="text-xs text-white/70">Site</span>
+                </button>
+              )}
             </div>
 
-            {/* Social */}
+            {/* Social with smart tap */}
             <div className="flex justify-center gap-4 pb-6 border-b border-white/10">
               {cardData.linkedin && (
-                <a href={`https://linkedin.com/in/${cardData.linkedin}`} className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                <button onClick={() => handleSocialTap('linkedin', cardData.linkedin!)} className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
                   <Linkedin size={18} className="text-white" />
-                </a>
+                </button>
               )}
               {cardData.instagram && (
-                <a href={`https://instagram.com/${cardData.instagram?.replace('@', '')}`} className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                <button onClick={() => handleSocialTap('instagram', cardData.instagram!)} className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
                   <Instagram size={18} className="text-white" />
-                </a>
+                </button>
               )}
+              {cardData.socialLinks?.map((link) => (
+                <button key={link.id} onClick={() => handleSocialTap(link.networkId, link.value)} className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                  <SocialIcon networkId={link.networkId} size={18} className="text-white" />
+                </button>
+              ))}
             </div>
 
             {/* CTA Buttons */}
