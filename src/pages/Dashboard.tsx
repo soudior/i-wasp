@@ -299,9 +299,17 @@ const Dashboard = () => {
           {/* Recent leads */}
           {leads.length > 0 && (
             <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.3s' }}>
-              <h2 className="font-display text-xl font-semibold text-foreground mb-4">
-                Leads récents
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-display text-xl font-semibold text-foreground">
+                  Leads récents
+                </h2>
+                <Link to="/leads">
+                  <Button variant="outline" size="sm" className="gap-2">
+                    Voir tout
+                    <ExternalLink size={14} />
+                  </Button>
+                </Link>
+              </div>
               
               <Card variant="premium">
                 <div className="overflow-x-auto">
@@ -315,7 +323,7 @@ const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {leads.slice(0, 10).map((lead) => (
+                      {leads.slice(0, 5).map((lead) => (
                         <tr key={lead.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
                           <td className="p-4">
                             <div className="flex items-center gap-3">
