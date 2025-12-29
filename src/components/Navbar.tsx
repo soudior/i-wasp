@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,29 +32,20 @@ export function Navbar() {
   };
 
   return (
-    <motion.header
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled
-          ? "glass-strong"
-          : "bg-transparent"
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 animate-fade-down ${
+        isScrolled ? "glass-strong" : "bg-transparent"
       }`}
     >
       <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <motion.div 
-              className="relative"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-            >
+            <div className="relative transition-transform duration-200 hover:scale-105">
               <div className="w-10 h-10 rounded-xl bg-foreground flex items-center justify-center">
                 <span className="font-semibold text-background text-lg">I</span>
               </div>
-            </motion.div>
+            </div>
             <span className="text-xl font-semibold text-foreground tracking-tight">
               IWASP
             </span>
@@ -120,68 +110,65 @@ export function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden"
-            >
-              <div className="py-6 space-y-4">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    to={link.href}
-                    className="block text-lg font-medium text-muted-foreground hover:text-foreground transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {link.label}
+        {/* Mobile Menu (CSS-only, kept mounted to avoid DOM reconciliation edge-cases) */}
+        <div
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-out transform-gpu ${
+            isMobileMenuOpen
+              ? "max-h-[520px] opacity-100 translate-y-0"
+              : "max-h-0 opacity-0 -translate-y-2 pointer-events-none"
+          }`}
+          aria-hidden={!isMobileMenuOpen}
+        >
+          <div className="py-6 space-y-4">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className="block text-lg font-medium text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="pt-4 flex flex-col gap-3">
+              {user ? (
+                <>
+                  <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button variant="chrome" className="w-full gap-2">
+                      <LayoutDashboard size={16} />
+                      Dashboard
+                    </Button>
                   </Link>
-                ))}
-                <div className="pt-4 flex flex-col gap-3">
-                  {user ? (
-                    <>
-                      <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Button variant="chrome" className="w-full gap-2">
-                          <LayoutDashboard size={16} />
-                          Dashboard
-                        </Button>
-                      </Link>
-                      <Button 
-                        variant="outline" 
-                        className="w-full gap-2" 
-                        onClick={() => {
-                          handleLogout();
-                          setIsMobileMenuOpen(false);
-                        }}
-                      >
-                        <LogOut size={16} />
-                        Déconnexion
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Button variant="outline" className="w-full">
-                          Connexion
-                        </Button>
-                      </Link>
-                      <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Button variant="chrome" className="w-full">
-                          Commencer
-                        </Button>
-                      </Link>
-                    </>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2"
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <LogOut size={16} />
+                    Déconnexion
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button variant="outline" className="w-full">
+                      Connexion
+                    </Button>
+                  </Link>
+                  <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button variant="chrome" className="w-full">
+                      Commencer
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       </nav>
-    </motion.header>
+    </header>
   );
 }

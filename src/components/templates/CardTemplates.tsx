@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Globe, Linkedin, Instagram, MessageCircle, Plus, Wallet, Twitter, Share2 } from "lucide-react";
 
 export interface CardData {
@@ -45,11 +44,7 @@ export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true
   const photoSrc = cardData.photoUrl || cardData.photo;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-sm mx-auto"
-    >
+    <div className="w-full max-w-sm mx-auto animate-card-enter">
       <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-amber-500/20 shadow-2xl shadow-amber-500/5">
         {/* Gold accent line */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
@@ -179,7 +174,7 @@ export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -189,11 +184,7 @@ export function MinimalTemplate({ data = defaultData, showWalletButtons = true, 
   const photoSrc = cardData.photoUrl || cardData.photo;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-sm mx-auto"
-    >
+    <div className="w-full max-w-sm mx-auto animate-card-enter">
       <div className="relative rounded-3xl overflow-hidden bg-white border border-neutral-200 shadow-xl shadow-neutral-200/50">
         <div className="p-8">
           {/* Centered header */}
@@ -302,7 +293,7 @@ export function MinimalTemplate({ data = defaultData, showWalletButtons = true, 
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -312,11 +303,7 @@ export function ModernTemplate({ data = defaultData, showWalletButtons = true, o
   const photoSrc = cardData.photoUrl || cardData.photo;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-sm mx-auto"
-    >
+    <div className="w-full max-w-sm mx-auto animate-card-enter">
       <div className="relative rounded-3xl overflow-hidden">
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600" />
@@ -444,7 +431,7 @@ export function ModernTemplate({ data = defaultData, showWalletButtons = true, o
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -454,11 +441,7 @@ export function CreativeTemplate({ data = defaultData, showWalletButtons = true,
   const photoSrc = cardData.photoUrl || cardData.photo;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-sm mx-auto"
-    >
+    <div className="w-full max-w-sm mx-auto animate-card-enter">
       <div className="relative rounded-3xl overflow-hidden bg-stone-950 border border-rose-500/20">
         {/* Decorative shapes */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/20 rounded-full blur-3xl" />
@@ -563,7 +546,7 @@ export function CreativeTemplate({ data = defaultData, showWalletButtons = true,
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -573,11 +556,7 @@ export function TechTemplate({ data = defaultData, showWalletButtons = true, onS
   const photoSrc = cardData.photoUrl || cardData.photo;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-sm mx-auto"
-    >
+    <div className="w-full max-w-sm mx-auto animate-card-enter">
       <div className="relative rounded-2xl overflow-hidden bg-gray-950 border border-cyan-500/30 shadow-lg shadow-cyan-500/10">
         {/* Scan lines effect */}
         <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,255,255,0.03)_2px,rgba(0,255,255,0.03)_4px)]" />
@@ -714,7 +693,7 @@ export function TechTemplate({ data = defaultData, showWalletButtons = true, onS
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -724,11 +703,7 @@ export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onS
   const photoSrc = cardData.photoUrl || cardData.photo;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-sm mx-auto"
-    >
+    <div className="w-full max-w-sm mx-auto animate-card-enter">
       <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-amber-950 via-stone-950 to-amber-950">
         {/* Gold pattern overlay */}
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_50%_50%,rgba(251,191,36,0.3),transparent_70%)]" />
@@ -851,7 +826,7 @@ export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onS
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
