@@ -173,6 +173,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          admin_notes: string | null
           background_color: string | null
           background_image_url: string | null
           background_type: string
@@ -203,6 +204,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          admin_notes?: string | null
           background_color?: string | null
           background_image_url?: string | null
           background_type?: string
@@ -233,6 +235,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          admin_notes?: string | null
           background_color?: string | null
           background_image_url?: string | null
           background_type?: string
