@@ -103,9 +103,25 @@ export default {
           from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "fade-down": {
+          from: { opacity: "0", transform: "translateY(-20px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-left": {
+          from: { opacity: "0", transform: "translateX(20px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
+        "fade-right": {
+          from: { opacity: "0", transform: "translateX(-20px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
         "scale-in": {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
+        },
+        "scale-up": {
+          from: { opacity: "0", transform: "scale(0.95) translateY(20px)" },
+          to: { opacity: "1", transform: "scale(1) translateY(0)" },
         },
         "float-3d": {
           "0%, 100%": { 
@@ -120,6 +136,10 @@ export default {
           "75%": {
             transform: "translateY(-6px) rotateX(-1deg) rotateY(0deg)"
           },
+        },
+        "float-subtle": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
         },
         "pulse-glow": {
           "0%, 100%": { 
@@ -139,17 +159,27 @@ export default {
           from: { transform: "rotate(0deg)" },
           to: { transform: "rotate(360deg)" },
         },
+        "card-enter": {
+          from: { opacity: "0", transform: "translateY(30px) rotateX(10deg)" },
+          to: { opacity: "1", transform: "translateY(0) rotateX(0deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.6s ease-out forwards",
         "fade-up": "fade-up 0.6s ease-out forwards",
+        "fade-down": "fade-down 0.6s ease-out forwards",
+        "fade-left": "fade-left 0.6s ease-out forwards",
+        "fade-right": "fade-right 0.6s ease-out forwards",
         "scale-in": "scale-in 0.5s ease-out forwards",
+        "scale-up": "scale-up 0.6s ease-out forwards",
         "float-3d": "float-3d 8s ease-in-out infinite",
+        "float-subtle": "float-subtle 3s ease-in-out infinite",
         "pulse-glow": "pulse-glow 4s ease-in-out infinite",
         "shimmer": "shimmer 3s ease-in-out infinite",
         "spin-slow": "spin-slow 20s linear infinite",
+        "card-enter": "card-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
