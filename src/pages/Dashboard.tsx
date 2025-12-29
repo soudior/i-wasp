@@ -209,11 +209,7 @@ const Dashboard = () => {
             
             {cardsLoading ? (
               <div className="flex justify-center py-12">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground"
-                />
+                <div className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
               </div>
             ) : cards.length === 0 ? (
               <motion.div
