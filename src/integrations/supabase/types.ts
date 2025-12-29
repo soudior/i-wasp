@@ -51,6 +51,7 @@ export type Database = {
       }
       digital_cards: {
         Row: {
+          blocks: Json | null
           company: string | null
           created_at: string
           email: string | null
@@ -78,6 +79,7 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          blocks?: Json | null
           company?: string | null
           created_at?: string
           email?: string | null
@@ -105,6 +107,7 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          blocks?: Json | null
           company?: string | null
           created_at?: string
           email?: string | null

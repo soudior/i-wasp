@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { SocialLink } from "@/lib/socialNetworks";
+import { CardBlock } from "@/lib/cardBlocks";
 
 export interface DigitalCard {
   id: string;
@@ -30,6 +31,7 @@ export interface DigitalCard {
   created_at: string;
   updated_at: string;
   social_links: SocialLink[] | null;
+  blocks: CardBlock[] | null;
 }
 
 export interface CreateCardData {
@@ -49,6 +51,7 @@ export interface CreateCardData {
   logo_url?: string;
   template?: string;
   social_links?: SocialLink[];
+  blocks?: CardBlock[];
 }
 
 export function useCards() {
