@@ -1,20 +1,20 @@
-import { motion } from "framer-motion";
-import { 
-  Smartphone, 
-  Wallet, 
-  RefreshCw, 
-  Users, 
-  Shield, 
+import {
+  Smartphone,
+  Wallet,
+  RefreshCw,
+  Users,
+  Shield,
   Palette,
   Nfc,
-  QrCode
+  QrCode,
 } from "lucide-react";
 
 const features = [
   {
     icon: Nfc,
     title: "Technologie NFC",
-    description: "Un simple toucher pour partager votre carte. Compatible avec toutes les puces NFC et ongles connectés.",
+    description:
+      "Un simple toucher pour partager votre carte. Compatible avec toutes les puces NFC et ongles connectés.",
   },
   {
     icon: Wallet,
@@ -63,51 +63,30 @@ export function FeaturesSection() {
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-20"
-        >
+        <div className="text-center mb-20 animate-fade-up">
           <h2 className="text-4xl md:text-5xl font-semibold mb-6">
             Fonctionnalités <span className="text-chrome">d'exception</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Une solution complète pour gérer votre identité professionnelle digitale
           </p>
-        </motion.div>
+        </div>
 
         {/* Features grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className="group"
-            >
+            <div key={feature.title} className="group animate-fade-up" style={{ animationDelay: `${index * 0.08}s` }}>
               <div className="h-full p-6 rounded-2xl card-glass hover:bg-foreground/[0.03] transition-all duration-500">
                 {/* Icon */}
-                <motion.div 
-                  className="w-12 h-12 rounded-xl bg-surface-2 flex items-center justify-center mb-5 group-hover:bg-surface-3 transition-colors duration-300"
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ duration: 0.2 }}
-                >
+                <div className="w-12 h-12 rounded-xl bg-surface-2 flex items-center justify-center mb-5 group-hover:bg-surface-3 transition-colors duration-300 transition-transform group-hover:scale-110 group-hover:rotate-3">
                   <feature.icon size={22} className="text-chrome" />
-                </motion.div>
-                
+                </div>
+
                 {/* Content */}
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
+                <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

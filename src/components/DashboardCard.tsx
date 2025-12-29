@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Wifi, Eye, Users } from "lucide-react";
 import { DigitalCard } from "@/hooks/useCards";
 
@@ -11,21 +10,10 @@ interface DashboardCardProps {
 
 export function DashboardCard({ card, index, leadsCount, onClick }: DashboardCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30, rotateX: 15 }}
-      animate={{ opacity: 1, y: 0, rotateX: 0 }}
-      transition={{ 
-        duration: 0.6, 
-        delay: index * 0.1,
-        ease: [0.16, 1, 0.3, 1]
-      }}
-      whileHover={{ 
-        scale: 1.02, 
-        rotateY: 3,
-        z: 20,
-      }}
+    <div
       onClick={onClick}
-      className="perspective-2000 cursor-pointer group"
+      className="perspective-2000 cursor-pointer group animate-card-enter transition-transform duration-300 hover:scale-[1.02]"
+      style={{ animationDelay: `${index * 0.1}s` }}
     >
       <div className="relative preserve-3d">
         {/* Ambient glow */}
@@ -37,32 +25,24 @@ export function DashboardCard({ card, index, leadsCount, onClick }: DashboardCar
         <div className="card-glass p-6 relative overflow-hidden">
           {/* Shimmer effect */}
           <div className="shimmer" />
-          
+
           {/* NFC Status indicator */}
-          <div className={`absolute top-4 right-4 flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
-            card.nfc_enabled 
-              ? 'bg-emerald-500/20 text-emerald-400' 
-              : 'bg-muted text-muted-foreground'
-          }`}>
+          <div
+            className={`absolute top-4 right-4 flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
+              card.nfc_enabled ? "bg-emerald-500/20 text-emerald-400" : "bg-muted text-muted-foreground"
+            }`}
+          >
             <Wifi size={12} />
-            {card.nfc_enabled ? 'NFC' : 'Off'}
+            {card.nfc_enabled ? "NFC" : "Off"}
           </div>
 
           {/* Header */}
           <div className="flex items-start gap-4 mb-4">
             {/* Avatar */}
-            <motion.div 
-              className="relative"
-              whileHover={{ scale: 1.1, rotateZ: 2 }}
-              transition={{ duration: 0.2 }}
-            >
+            <div className="relative transition-transform duration-200 hover:scale-110 hover:rotate-2">
               <div className="w-16 h-16 rounded-2xl overflow-hidden ring-2 ring-foreground/10 shadow-lg bg-gradient-to-br from-surface-2 to-surface-3">
                 {card.photo_url ? (
-                  <img 
-                    src={card.photo_url} 
-                    alt={card.first_name} 
-                    className="w-full h-full object-cover" 
-                  />
+                  <img src={card.photo_url} alt={card.first_name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <span className="text-xl font-semibold text-chrome">
@@ -71,26 +51,19 @@ export function DashboardCard({ card, index, leadsCount, onClick }: DashboardCar
                   </div>
                 )}
               </div>
+
               {/* Active pulse */}
               {card.is_active && (
-                <motion.div 
-                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
                   <div className="w-2 h-2 rounded-full bg-white" />
-                </motion.div>
+                </div>
               )}
-            </motion.div>
+            </div>
 
             {/* Info */}
             <div className="flex-1 min-w-0">
               {card.logo_url && (
-                <img 
-                  src={card.logo_url} 
-                  alt="" 
-                  className="h-4 w-auto object-contain opacity-60 mb-1" 
-                />
+                <img src={card.logo_url} alt="" className="h-4 w-auto object-contain opacity-60 mb-1" />
               )}
               <h3 className="font-display text-lg font-semibold text-foreground truncate">
                 {card.first_name} {card.last_name}
@@ -145,6 +118,6 @@ export function DashboardCard({ card, index, leadsCount, onClick }: DashboardCar
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

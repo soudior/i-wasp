@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AppShell } from "@/components/AppShell";
 import Index from "./pages/Index";
 import Templates from "./pages/Templates";
 import CreateCard from "./pages/CreateCard";
@@ -23,30 +24,32 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/templates" element={<Templates />} />
-            <Route 
-              path="/create" 
-              element={
-                <ProtectedRoute>
-                  <CreateCard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route path="/c/:slug" element={<PublicCard />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AppShell>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/templates" element={<Templates />} />
+              <Route
+                path="/create"
+                element={
+                  <ProtectedRoute>
+                    <CreateCard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/c/:slug" element={<PublicCard />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AppShell>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
