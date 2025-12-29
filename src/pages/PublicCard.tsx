@@ -120,6 +120,8 @@ const PublicCard = () => {
                 template={(card?.template as TemplateType) || "executive"}
                 showWalletButtons={true}
                 onShareInfo={() => setShowLeadForm(true)}
+                cardId={card?.id}
+                enableLeadCapture={true}
               />
             )}
           </div>

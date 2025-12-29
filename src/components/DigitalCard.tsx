@@ -10,6 +10,8 @@ interface DigitalCardProps {
   template?: TemplateType;
   showWalletButtons?: boolean;
   onShareInfo?: () => void;
+  cardId?: string;
+  enableLeadCapture?: boolean;
 }
 
 const defaultData: CardData = {
@@ -30,7 +32,9 @@ export function DigitalCard({
   data = defaultData, 
   template = "executive", 
   showWalletButtons = true,
-  onShareInfo
+  onShareInfo,
+  cardId,
+  enableLeadCapture = false
 }: DigitalCardProps) {
   const TemplateComponent = getTemplateComponent(template);
   const cardData = { ...defaultData, ...data };
@@ -40,6 +44,8 @@ export function DigitalCard({
       data={cardData} 
       showWalletButtons={showWalletButtons}
       onShareInfo={onShareInfo}
+      cardId={cardId}
+      enableLeadCapture={enableLeadCapture}
     />
   );
 }

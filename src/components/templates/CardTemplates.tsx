@@ -27,6 +27,8 @@ export interface TemplateProps {
   data: CardData;
   showWalletButtons?: boolean;
   onShareInfo?: () => void;
+  cardId?: string; // For lead capture on public cards
+  enableLeadCapture?: boolean;
 }
 
 const defaultData: CardData = {
@@ -44,7 +46,7 @@ const defaultData: CardData = {
 };
 
 // Executive Template - Premium dark with gold accents
-export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
+export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true, onShareInfo, cardId, enableLeadCapture }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -210,6 +212,8 @@ export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true
               showWalletButtons={showWalletButtons} 
               onShareInfo={onShareInfo}
               variant="dark"
+              cardId={cardId}
+              enableLeadCapture={enableLeadCapture}
             />
           </div>
         </div>
@@ -219,7 +223,7 @@ export function ExecutiveTemplate({ data = defaultData, showWalletButtons = true
 }
 
 // Minimal Template - Clean white with subtle shadows
-export function MinimalTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
+export function MinimalTemplate({ data = defaultData, showWalletButtons = true, onShareInfo, cardId, enableLeadCapture }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -316,6 +320,8 @@ export function MinimalTemplate({ data = defaultData, showWalletButtons = true, 
             showWalletButtons={showWalletButtons} 
             onShareInfo={onShareInfo}
             variant="light"
+            cardId={cardId}
+            enableLeadCapture={enableLeadCapture}
           />
         </div>
       </div>
@@ -324,7 +330,7 @@ export function MinimalTemplate({ data = defaultData, showWalletButtons = true, 
 }
 
 // Modern Template - Glass effect with gradients
-export function ModernTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
+export function ModernTemplate({ data = defaultData, showWalletButtons = true, onShareInfo, cardId, enableLeadCapture }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -453,6 +459,8 @@ export function ModernTemplate({ data = defaultData, showWalletButtons = true, o
                 showWalletButtons={showWalletButtons} 
                 onShareInfo={onShareInfo}
                 variant="glass"
+                cardId={cardId}
+                enableLeadCapture={enableLeadCapture}
               />
             </div>
           </div>
@@ -463,7 +471,7 @@ export function ModernTemplate({ data = defaultData, showWalletButtons = true, o
 }
 
 // Creative Template - Asymmetric layout with bold colors
-export function CreativeTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
+export function CreativeTemplate({ data = defaultData, showWalletButtons = true, onShareInfo, cardId, enableLeadCapture }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -549,6 +557,8 @@ export function CreativeTemplate({ data = defaultData, showWalletButtons = true,
             showWalletButtons={showWalletButtons} 
             onShareInfo={onShareInfo}
             variant="rose"
+            cardId={cardId}
+            enableLeadCapture={enableLeadCapture}
           />
         </div>
       </div>
@@ -557,7 +567,7 @@ export function CreativeTemplate({ data = defaultData, showWalletButtons = true,
 }
 
 // Tech Template - Cyberpunk with neon accents
-export function TechTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
+export function TechTemplate({ data = defaultData, showWalletButtons = true, onShareInfo, cardId, enableLeadCapture }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -675,6 +685,8 @@ export function TechTemplate({ data = defaultData, showWalletButtons = true, onS
             showWalletButtons={showWalletButtons} 
             onShareInfo={onShareInfo}
             variant="tech"
+            cardId={cardId}
+            enableLeadCapture={enableLeadCapture}
           />
         </div>
       </div>
@@ -683,7 +695,7 @@ export function TechTemplate({ data = defaultData, showWalletButtons = true, onS
 }
 
 // Luxe Template - Premium with rich textures
-export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onShareInfo }: TemplateProps) {
+export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onShareInfo, cardId, enableLeadCapture }: TemplateProps) {
   const cardData = { ...defaultData, ...data };
   const photoSrc = cardData.photoUrl || cardData.photo;
 
@@ -787,6 +799,8 @@ export function LuxeTemplate({ data = defaultData, showWalletButtons = true, onS
             showWalletButtons={showWalletButtons} 
             onShareInfo={onShareInfo}
             variant="amber"
+            cardId={cardId}
+            enableLeadCapture={enableLeadCapture}
           />
         </div>
       </div>
