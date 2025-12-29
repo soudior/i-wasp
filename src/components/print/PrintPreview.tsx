@@ -6,8 +6,9 @@ import { Switch } from "@/components/ui/switch";
 import { 
   CARD_DIMENSIONS, 
   CARD_PREVIEW_PX,
+  PRINT_TEMPLATES,
   PrintColor, 
-  PrintTemplateType 
+  PrintTemplateType,
 } from "@/lib/printTypes";
 import { Eye, Ruler, ZoomIn, ZoomOut, Check, AlertTriangle } from "lucide-react";
 
@@ -47,10 +48,10 @@ export function PrintPreview({
         <div>
           <h3 className="font-semibold text-foreground flex items-center gap-2">
             <Eye size={18} className="text-muted-foreground" />
-            Aperçu à l'échelle 1:1
+            {PRINT_TEMPLATES[template].name}
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {CARD_DIMENSIONS.WIDTH_MM} × {CARD_DIMENSIONS.HEIGHT_MM} mm — Ce que vous voyez sera imprimé
+            {CARD_DIMENSIONS.WIDTH_MM} × {CARD_DIMENSIONS.HEIGHT_MM} mm — Aperçu 1:1
           </p>
         </div>
         

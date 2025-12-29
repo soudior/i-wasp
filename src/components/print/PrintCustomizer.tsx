@@ -47,8 +47,8 @@ export function PrintCustomizer({
   const [printedCompany, setPrintedCompany] = useState(initialData?.printedCompany || "");
   const [logoUrl, setLogoUrl] = useState<string | undefined>(initialData?.logoUrl);
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [color, setColor] = useState<PrintColor>(initialData?.cardColor || "black");
-  const [template, setTemplate] = useState<PrintTemplateType>(initialData?.templateId || "classic");
+  const [template, setTemplate] = useState<PrintTemplateType>(initialData?.templateId || "iwasp-black");
+  const [color, setColor] = useState<PrintColor>(initialData?.cardColor || PRINT_TEMPLATES["iwasp-black"].defaultColor);
   const [isValidated, setIsValidated] = useState(false);
   const [isLocked, setIsLocked] = useState(initialData?.isLocked || false);
   const [isExporting, setIsExporting] = useState(false);
@@ -152,7 +152,7 @@ export function PrintCustomizer({
   return (
     <div className="grid lg:grid-cols-2 gap-6">
       {/* Left: Customization form */}
-      <Card variant="glass" className="p-6">
+      <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50">
         <Tabs defaultValue="info" className="space-y-6">
           <TabsList className="grid grid-cols-2 w-full">
             <TabsTrigger value="info" disabled={isLocked}>Informations</TabsTrigger>
@@ -172,7 +172,7 @@ export function PrintCustomizer({
                 onChange={(e) => setPrintedName(e.target.value)}
                 placeholder="Jean Dupont"
                 disabled={isLocked}
-                className="bg-surface-2 border-border/50"
+                className="bg-background/50 border-border/50"
                 maxLength={30}
               />
               <p className="text-xs text-muted-foreground mt-1">
@@ -192,7 +192,7 @@ export function PrintCustomizer({
                 onChange={(e) => setPrintedTitle(e.target.value)}
                 placeholder="Directeur Commercial"
                 disabled={isLocked}
-                className="bg-surface-2 border-border/50"
+                className="bg-background/50 border-border/50"
                 maxLength={40}
               />
             </div>
@@ -209,7 +209,7 @@ export function PrintCustomizer({
                 onChange={(e) => setPrintedCompany(e.target.value)}
                 placeholder="Ma Société"
                 disabled={isLocked}
-                className="bg-surface-2 border-border/50"
+                className="bg-background/50 border-border/50"
                 maxLength={40}
               />
             </div>
@@ -230,7 +230,7 @@ export function PrintCustomizer({
               />
               {logoUrl ? (
                 <div className="flex items-center gap-4">
-                  <div className="w-20 h-20 rounded-xl bg-surface-2 border border-border/50 overflow-hidden">
+                  <div className="w-20 h-20 rounded-xl bg-background/50 border border-border/50 overflow-hidden">
                     <img
                       src={logoUrl}
                       alt="Logo preview"
