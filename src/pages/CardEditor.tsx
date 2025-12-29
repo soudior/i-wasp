@@ -941,16 +941,21 @@ export default function CardEditor() {
         initial={{ y: 100 }}
         animate={{ y: 0 }}
       >
-        <Button variant="chrome" className="w-full h-12" onClick={() => handleSave(false)} disabled={createCard.isPending || updateCard.isPending}>
+        <Button 
+          variant="chrome" 
+          className="w-full h-12" 
+          onClick={() => handleSave(!editId)} 
+          disabled={createCard.isPending || updateCard.isPending}
+        >
           {createCard.isPending || updateCard.isPending ? (
             <span className="flex items-center gap-2">
               <span className="w-5 h-5 rounded-full border-2 border-background/30 border-t-background animate-spin" />
-              Enregistrement...
+              {editId ? "Enregistrement..." : "Ajout au panier..."}
             </span>
           ) : (
             <span className="flex items-center gap-2">
               <Save size={18} />
-              {editId ? "Enregistrer" : "Créer la carte"}
+              {editId ? "Enregistrer" : "Créer et ajouter au panier"}
             </span>
           )}
         </Button>
@@ -962,7 +967,7 @@ export default function CardEditor() {
           variant="chrome"
           size="lg"
           className="shadow-2xl shadow-primary/20"
-          onClick={() => handleSave(false)}
+          onClick={() => handleSave(!editId)}
           disabled={createCard.isPending || updateCard.isPending}
         >
           {createCard.isPending || updateCard.isPending ? (
@@ -972,7 +977,7 @@ export default function CardEditor() {
           ) : (
             <span className="flex items-center gap-2">
               <Save size={18} />
-              {editId ? "Enregistrer" : "Créer la carte"}
+              {editId ? "Enregistrer" : "Créer et ajouter au panier"}
             </span>
           )}
         </Button>
