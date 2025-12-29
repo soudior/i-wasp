@@ -21,10 +21,10 @@ interface PrintCardTemplateProps {
   className?: string;
 }
 
-// NFC icon SVG component
+// NFC icon SVG component - minimal elegant design
 function NfcIcon({ color = "currentColor", size = 16 }: { color?: string; size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
       <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36" />
       <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58" />
       <path d="M12.91 4.1a16.07 16.07 0 0 1 0 15.8" />
@@ -50,9 +50,9 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
   ) => {
     const colorConfig = PRINT_COLORS[color];
     const templateConfig = PRINT_TEMPLATES[template];
-    const isLight = color === "white" || color === "silver" || color === "gold";
-    const textColor = isLight ? "#0a0a0a" : "#fafafa";
-    const mutedTextColor = isLight ? "#4a4a4a" : "#a0a0a0";
+    
+    const textColor = colorConfig.textColor;
+    const accentColor = colorConfig.accentColor;
 
     // Dimensions based on mode
     const scale = forPrint ? MM_TO_PX_300DPI : CARD_PREVIEW_PX.WIDTH / CARD_DIMENSIONS.WIDTH_MM;
@@ -66,12 +66,22 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
     // Convert mm to current scale pixels
     const mmToPx = (mm: number) => mm * scale;
 
-    // Font sizes (in mm, converted to px)
-    const nameFontSize = templateConfig.largeName ? 5 : 4; // mm
-    const titleFontSize = 2.5; // mm
-    const companyFontSize = 2.2; // mm
-
+    const { typography } = templateConfig;
     const isCentered = templateConfig.centered;
+
+    // Font family based on template
+    const getFontFamily = () => {
+      switch (template) {
+        case "iwasp-black":
+          return "'SF Pro Display', 'Inter', -apple-system, sans-serif";
+        case "iwasp-pure":
+          return "'SF Pro Text', 'Inter', -apple-system, sans-serif";
+        case "iwasp-corporate":
+          return "'SF Pro Display', 'Inter', -apple-system, sans-serif";
+        default:
+          return "'Inter', -apple-system, sans-serif";
+      }
+    };
 
     return (
       <div
@@ -82,7 +92,7 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
           height: `${height}px`,
           backgroundColor: colorConfig.hex,
           borderRadius: forPrint ? 0 : `${mmToPx(CARD_DIMENSIONS.CORNER_RADIUS_MM)}px`,
-          fontFamily: "'SF Pro Display', 'Inter', system-ui, sans-serif",
+          fontFamily: getFontFamily(),
         }}
       >
         {/* Safe zone guide (only in preview mode) */}
@@ -108,8 +118,49 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
                 height: mmToPx(CARD_DIMENSIONS.NFC_ZONE.HEIGHT_MM),
               }}
             >
-              <span className="text-[8px] text-red-400/70">NFC</span>
+              <span className="text-[8px] text-red-400/70 font-medium">NFC</span>
             </div>
+          </>
+        )}
+
+        {/* Template-specific decorative elements */}
+        {template === "iwasp-black" && (
+          <>
+            {/* Subtle top gradient line */}
+            <div
+              className="absolute top-0 left-0 right-0"
+              style={{
+                height: mmToPx(0.3),
+                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)",
+              }}
+            />
+          </>
+        )}
+
+        {template === "iwasp-pure" && (
+          <>
+            {/* Subtle bottom border accent */}
+            <div
+              className="absolute bottom-0 left-0"
+              style={{
+                width: mmToPx(25),
+                height: mmToPx(0.5),
+                backgroundColor: "#e5e5e5",
+              }}
+            />
+          </>
+        )}
+
+        {template === "iwasp-corporate" && (
+          <>
+            {/* Corporate accent stripe */}
+            <div
+              className="absolute left-0 top-0 bottom-0"
+              style={{
+                width: mmToPx(1.5),
+                backgroundColor: "rgba(255,255,255,0.12)",
+              }}
+            />
           </>
         )}
 
@@ -139,14 +190,15 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
 
         {/* Name */}
         <div
-          className="absolute font-semibold"
+          className="absolute"
           style={{
             top: mmToPx(templateConfig.namePosition.y),
             left: isCentered ? "50%" : mmToPx(templateConfig.namePosition.x),
             transform: isCentered ? "translateX(-50%)" : undefined,
-            fontSize: `${mmToPx(nameFontSize)}px`,
+            fontSize: `${mmToPx(typography.nameSize)}px`,
+            fontWeight: typography.nameFontWeight,
             color: textColor,
-            letterSpacing: templateConfig.largeName ? "0.05em" : "0.02em",
+            letterSpacing: `${typography.nameLetterSpacing}em`,
             textAlign: isCentered ? "center" : "left",
             whiteSpace: "nowrap",
           }}
@@ -157,13 +209,14 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
         {/* Title */}
         {(printedTitle || !printedName) && (
           <div
-            className="absolute font-normal"
+            className="absolute"
             style={{
               top: mmToPx(templateConfig.titlePosition.y),
               left: isCentered ? "50%" : mmToPx(templateConfig.titlePosition.x),
               transform: isCentered ? "translateX(-50%)" : undefined,
-              fontSize: `${mmToPx(titleFontSize)}px`,
-              color: mutedTextColor,
+              fontSize: `${mmToPx(typography.titleSize)}px`,
+              fontWeight: 400,
+              color: accentColor,
               textAlign: isCentered ? "center" : "left",
               whiteSpace: "nowrap",
             }}
@@ -175,15 +228,17 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
         {/* Company */}
         {(printedCompany || !printedName) && (
           <div
-            className="absolute font-normal"
+            className="absolute"
             style={{
               top: mmToPx(templateConfig.companyPosition.y),
               left: isCentered ? "50%" : mmToPx(templateConfig.companyPosition.x),
               transform: isCentered ? "translateX(-50%)" : undefined,
-              fontSize: `${mmToPx(companyFontSize)}px`,
-              color: mutedTextColor,
+              fontSize: `${mmToPx(typography.companySize)}px`,
+              fontWeight: template === "iwasp-corporate" ? 500 : 400,
+              color: template === "iwasp-corporate" ? textColor : accentColor,
               textAlign: isCentered ? "center" : "left",
               whiteSpace: "nowrap",
+              opacity: template === "iwasp-corporate" ? 0.9 : 1,
             }}
           >
             {printedCompany || "Votre Entreprise"}
@@ -191,29 +246,37 @@ export const PrintCardTemplate = forwardRef<HTMLDivElement, PrintCardTemplatePro
         )}
 
         {/* NFC Icon */}
-        <div
-          className="absolute opacity-40"
-          style={{
-            top: mmToPx(templateConfig.nfcIconPosition.y),
-            left: isCentered ? "50%" : mmToPx(templateConfig.nfcIconPosition.x),
-            transform: isCentered ? "translateX(-50%)" : undefined,
-          }}
-        >
-          <NfcIcon color={mutedTextColor} size={mmToPx(5)} />
-        </div>
+        {templateConfig.showNfcIcon && (
+          <div
+            className="absolute"
+            style={{
+              top: mmToPx(templateConfig.nfcIconPosition.y),
+              left: isCentered ? "50%" : mmToPx(templateConfig.nfcIconPosition.x),
+              transform: isCentered ? "translateX(-50%)" : undefined,
+              opacity: 0.35,
+            }}
+          >
+            <NfcIcon color={accentColor} size={mmToPx(4.5)} />
+          </div>
+        )}
 
-        {/* Subtle branding watermark */}
-        <div
-          className="absolute font-light tracking-widest uppercase opacity-20"
-          style={{
-            bottom: mmToPx(2),
-            right: mmToPx(3),
-            fontSize: `${mmToPx(1.5)}px`,
-            color: mutedTextColor,
-          }}
-        >
-          IWASP
-        </div>
+        {/* IWASP Brand Watermark */}
+        {templateConfig.showBrand && (
+          <div
+            className="absolute tracking-widest uppercase"
+            style={{
+              bottom: mmToPx(2),
+              right: mmToPx(3),
+              fontSize: `${mmToPx(1.4)}px`,
+              fontWeight: 300,
+              color: accentColor,
+              opacity: 0.25,
+              letterSpacing: "0.15em",
+            }}
+          >
+            IWASP
+          </div>
+        )}
       </div>
     );
   }

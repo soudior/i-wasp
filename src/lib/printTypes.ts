@@ -1,4 +1,4 @@
-// Print template types and constants
+// Print template types and constants for IWASP NFC Cards
 
 // Real card dimensions in millimeters (ISO CR80)
 export const CARD_DIMENSIONS = {
@@ -40,17 +40,209 @@ export const CARD_PREVIEW_PX = {
   HEIGHT: Math.round(CARD_DIMENSIONS.HEIGHT_MM * PREVIEW_SCALE), // ~189px
 };
 
-// Predefined print colors (CMYK-safe)
+// ============= OFFICIAL IWASP COLOR PALETTES =============
+
+// IWASP Black - Premium dark luxury
+export const IWASP_BLACK_PALETTE = {
+  background: "#0a0a0a",
+  text: "#fafafa",
+  accent: "#a0a0a0",
+  subtle: "#404040",
+};
+
+// IWASP Pure - Clean Apple-like aesthetic
+export const IWASP_PURE_PALETTE = {
+  background: "#fafafa",
+  text: "#1a1a1a",
+  accent: "#6b7280",
+  subtle: "#e5e5e5",
+};
+
+// IWASP Corporate - Business professional
+export const IWASP_CORPORATE_PALETTE = {
+  background: "#1e3a5f", // Navy blue
+  text: "#ffffff",
+  accent: "#94a3b8",
+  subtle: "#2d4a73",
+};
+
+// Predefined print colors (CMYK-safe) - limited palette for print accuracy
 export const PRINT_COLORS = {
-  black: { name: "Noir", hex: "#0a0a0a", cmyk: "0,0,0,100" },
-  white: { name: "Blanc", hex: "#fafafa", cmyk: "0,0,0,0" },
-  gold: { name: "Or", hex: "#d4af37", cmyk: "0,17,75,17" },
-  silver: { name: "Argent", hex: "#c0c0c0", cmyk: "0,0,0,25" },
-  navy: { name: "Bleu Navy", hex: "#1e3a5f", cmyk: "68,40,0,63" },
-  burgundy: { name: "Bordeaux", hex: "#722f37", cmyk: "0,58,52,55" },
+  // IWASP Black Template Colors
+  black: { 
+    name: "Noir Premium", 
+    hex: "#0a0a0a", 
+    cmyk: "0,0,0,100",
+    textColor: "#fafafa",
+    accentColor: "#707070",
+  },
+  charcoal: { 
+    name: "Anthracite", 
+    hex: "#1c1c1e", 
+    cmyk: "0,0,0,95",
+    textColor: "#fafafa",
+    accentColor: "#808080",
+  },
+  // IWASP Pure Template Colors
+  white: { 
+    name: "Blanc Pur", 
+    hex: "#fafafa", 
+    cmyk: "0,0,0,0",
+    textColor: "#1a1a1a",
+    accentColor: "#6b7280",
+  },
+  silver: { 
+    name: "Argent", 
+    hex: "#e8e8ed", 
+    cmyk: "0,0,0,8",
+    textColor: "#1a1a1a",
+    accentColor: "#6b7280",
+  },
+  // IWASP Corporate Template Colors
+  navy: { 
+    name: "Bleu Navy", 
+    hex: "#1e3a5f", 
+    cmyk: "68,40,0,63",
+    textColor: "#ffffff",
+    accentColor: "#94a3b8",
+  },
+  slate: { 
+    name: "Slate", 
+    hex: "#334155", 
+    cmyk: "50,30,0,67",
+    textColor: "#ffffff",
+    accentColor: "#94a3b8",
+  },
+  burgundy: { 
+    name: "Bordeaux", 
+    hex: "#722f37", 
+    cmyk: "0,58,52,55",
+    textColor: "#ffffff",
+    accentColor: "#e8d5d7",
+  },
+  forest: { 
+    name: "Forêt", 
+    hex: "#1e3a2f", 
+    cmyk: "48,0,19,77",
+    textColor: "#ffffff",
+    accentColor: "#a8d5c5",
+  },
 } as const;
 
 export type PrintColor = keyof typeof PRINT_COLORS;
+
+// ============= OFFICIAL IWASP TEMPLATES =============
+
+export type PrintTemplateType = "iwasp-black" | "iwasp-pure" | "iwasp-corporate";
+
+export interface TemplateConfig {
+  id: PrintTemplateType;
+  name: string;
+  tagline: string;
+  description: string;
+  // Allowed colors for this template
+  allowedColors: PrintColor[];
+  defaultColor: PrintColor;
+  // Typography settings
+  typography: {
+    nameSize: number; // mm
+    nameFontWeight: number;
+    nameLetterSpacing: number; // em
+    titleSize: number;
+    companySize: number;
+  };
+  // Fixed positions (mm from top-left)
+  logoPosition: { x: number; y: number; maxWidth: number; maxHeight: number };
+  namePosition: { x: number; y: number };
+  titlePosition: { x: number; y: number };
+  companyPosition: { x: number; y: number };
+  nfcIconPosition: { x: number; y: number };
+  brandPosition: { x: number; y: number };
+  // Layout options
+  centered?: boolean;
+  showNfcIcon?: boolean;
+  showBrand?: boolean;
+}
+
+export const PRINT_TEMPLATES: Record<PrintTemplateType, TemplateConfig> = {
+  // 1️⃣ IWASP Black - Minimal Luxury
+  "iwasp-black": {
+    id: "iwasp-black",
+    name: "IWASP Black",
+    tagline: "Luxury Premium",
+    description: "Design minimaliste haut de gamme",
+    allowedColors: ["black", "charcoal"],
+    defaultColor: "black",
+    typography: {
+      nameSize: 4.5,
+      nameFontWeight: 500,
+      nameLetterSpacing: 0.08,
+      titleSize: 2.4,
+      companySize: 2.2,
+    },
+    logoPosition: { x: 42.8, y: 10, maxWidth: 22, maxHeight: 10 },
+    namePosition: { x: 42.8, y: 26 },
+    titlePosition: { x: 42.8, y: 33 },
+    companyPosition: { x: 42.8, y: 39 },
+    nfcIconPosition: { x: 42.8, y: 46 },
+    brandPosition: { x: 78, y: 49 },
+    centered: true,
+    showNfcIcon: true,
+    showBrand: true,
+  },
+
+  // 2️⃣ IWASP Pure - Apple-like Clean Tech
+  "iwasp-pure": {
+    id: "iwasp-pure",
+    name: "IWASP Pure",
+    tagline: "Clean Tech",
+    description: "Esthétique épurée style Apple",
+    allowedColors: ["white", "silver"],
+    defaultColor: "white",
+    typography: {
+      nameSize: 5,
+      nameFontWeight: 600,
+      nameLetterSpacing: 0.02,
+      titleSize: 2.5,
+      companySize: 2.3,
+    },
+    logoPosition: { x: 10, y: 10, maxWidth: 18, maxHeight: 10 },
+    namePosition: { x: 10, y: 28 },
+    titlePosition: { x: 10, y: 35 },
+    companyPosition: { x: 10, y: 41 },
+    nfcIconPosition: { x: 72, y: 38 },
+    brandPosition: { x: 78, y: 49 },
+    centered: false,
+    showNfcIcon: true,
+    showBrand: true,
+  },
+
+  // 3️⃣ IWASP Corporate - B2B Professional
+  "iwasp-corporate": {
+    id: "iwasp-corporate",
+    name: "IWASP Corporate",
+    tagline: "Business Pro",
+    description: "Design B2B optimisé entreprise",
+    allowedColors: ["navy", "slate", "burgundy", "forest"],
+    defaultColor: "navy",
+    typography: {
+      nameSize: 4.2,
+      nameFontWeight: 600,
+      nameLetterSpacing: 0.03,
+      titleSize: 2.4,
+      companySize: 2.5,
+    },
+    logoPosition: { x: 65, y: 8, maxWidth: 16, maxHeight: 14 },
+    namePosition: { x: 10, y: 30 },
+    titlePosition: { x: 10, y: 37 },
+    companyPosition: { x: 10, y: 44 },
+    nfcIconPosition: { x: 75, y: 42 },
+    brandPosition: { x: 78, y: 49 },
+    centered: false,
+    showNfcIcon: true,
+    showBrand: true,
+  },
+};
 
 // Print template data structure
 export interface PrintTemplateData {
@@ -63,54 +255,6 @@ export interface PrintTemplateData {
   color: PrintColor;
   template: PrintTemplateType;
 }
-
-// Available print templates
-export type PrintTemplateType = "classic" | "minimal" | "corporate" | "bold";
-
-export const PRINT_TEMPLATES = {
-  classic: {
-    id: "classic",
-    name: "Classique",
-    description: "Design professionnel équilibré",
-    logoPosition: { x: 12, y: 10, maxWidth: 25, maxHeight: 12 }, // mm
-    namePosition: { x: 12, y: 28 },
-    titlePosition: { x: 12, y: 35 },
-    companyPosition: { x: 12, y: 42 },
-    nfcIconPosition: { x: 70, y: 40 },
-  },
-  minimal: {
-    id: "minimal",
-    name: "Minimal",
-    description: "Ultra épuré et moderne",
-    logoPosition: { x: 42.8, y: 8, maxWidth: 20, maxHeight: 10 }, // Centered
-    namePosition: { x: 42.8, y: 27 }, // Centered
-    titlePosition: { x: 42.8, y: 34 },
-    companyPosition: { x: 42.8, y: 41 },
-    nfcIconPosition: { x: 42.8, y: 48 },
-    centered: true,
-  },
-  corporate: {
-    id: "corporate",
-    name: "Corporate",
-    description: "Idéal pour les entreprises",
-    logoPosition: { x: 60, y: 8, maxWidth: 20, maxHeight: 15 },
-    namePosition: { x: 8, y: 32 },
-    titlePosition: { x: 8, y: 39 },
-    companyPosition: { x: 8, y: 46 },
-    nfcIconPosition: { x: 75, y: 44 },
-  },
-  bold: {
-    id: "bold",
-    name: "Audacieux",
-    description: "Impact visuel fort",
-    logoPosition: { x: 8, y: 8, maxWidth: 30, maxHeight: 14 },
-    namePosition: { x: 8, y: 30 },
-    titlePosition: { x: 8, y: 40 },
-    companyPosition: { x: 8, y: 48 },
-    nfcIconPosition: { x: 70, y: 8 },
-    largeName: true,
-  },
-} as const;
 
 // Order customization data (locked after validation)
 export interface PrintOrderData {
@@ -143,4 +287,20 @@ export interface PrintSheetData {
   logoUrl?: string;
   createdAt: string;
   status: "pending" | "in_production" | "shipped" | "delivered";
+}
+
+// Helper to get template by ID
+export function getTemplateConfig(templateId: PrintTemplateType): TemplateConfig {
+  return PRINT_TEMPLATES[templateId];
+}
+
+// Helper to get color config
+export function getColorConfig(colorId: PrintColor) {
+  return PRINT_COLORS[colorId];
+}
+
+// Validate that a color is allowed for a template
+export function isColorAllowedForTemplate(colorId: PrintColor, templateId: PrintTemplateType): boolean {
+  const template = PRINT_TEMPLATES[templateId];
+  return template.allowedColors.includes(colorId);
 }
