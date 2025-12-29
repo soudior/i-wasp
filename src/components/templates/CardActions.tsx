@@ -146,6 +146,10 @@ export function CardActionButtons({
         location: data.location,
         slug: data.slug,
         photoUrl: data.photoUrl || undefined,
+        linkedin: data.linkedin,
+        instagram: data.instagram,
+        twitter: data.twitter,
+        tagline: data.tagline,
       };
       
       await addToAppleWallet(walletData);
@@ -174,6 +178,10 @@ export function CardActionButtons({
         location: data.location,
         slug: data.slug,
         photoUrl: data.photoUrl || undefined,
+        linkedin: data.linkedin,
+        instagram: data.instagram,
+        twitter: data.twitter,
+        tagline: data.tagline,
       };
       
       await addToGoogleWallet(walletData);
