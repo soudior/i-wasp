@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { downloadVCard, VCardData } from "@/lib/vcard";
 
 export interface WalletCardData {
   id: string;
@@ -13,6 +14,10 @@ export interface WalletCardData {
   location?: string;
   slug: string;
   photoUrl?: string;
+  linkedin?: string;
+  instagram?: string;
+  twitter?: string;
+  tagline?: string;
 }
 
 interface WalletResponse {
@@ -25,8 +30,37 @@ interface WalletResponse {
 }
 
 /**
+ * Download vCard as fallback when wallet fails
+ */
+function downloadVCardFallback(cardData: WalletCardData, walletType: 'apple' | 'google'): void {
+  const vcardData: VCardData = {
+    firstName: cardData.firstName,
+    lastName: cardData.lastName,
+    title: cardData.title,
+    company: cardData.company,
+    email: cardData.email,
+    phone: cardData.phone,
+    website: cardData.website,
+    location: cardData.location,
+    linkedin: cardData.linkedin,
+    instagram: cardData.instagram,
+    twitter: cardData.twitter,
+    tagline: cardData.tagline,
+  };
+
+  downloadVCard(vcardData);
+  
+  const walletName = walletType === 'apple' ? 'Apple Wallet' : 'Google Wallet';
+  toast.info(
+    `${walletName} temporairement indisponible. Le contact a été téléchargé en format vCard.`,
+    { duration: 5000 }
+  );
+}
+
+/**
  * Generate and open Apple Wallet pass
  * Calls the backend edge function which uses PassKit.io
+ * Falls back to vCard download if the service is unavailable
  */
 export async function addToAppleWallet(cardData: WalletCardData): Promise<boolean> {
   try {
@@ -38,19 +72,19 @@ export async function addToAppleWallet(cardData: WalletCardData): Promise<boolea
 
     if (error) {
       console.error('Apple Wallet edge function error:', error);
-      toast.error("Erreur lors de la génération du pass Apple Wallet");
+      downloadVCardFallback(cardData, 'apple');
       return false;
     }
 
     if (!data) {
       console.error('No data returned from Apple Wallet function');
-      toast.error("Réponse vide du serveur");
+      downloadVCardFallback(cardData, 'apple');
       return false;
     }
 
     if (data.fallback || data.error) {
       console.warn('Apple Wallet fallback:', data.message);
-      toast.error(data.message || "Service Apple Wallet temporairement indisponible");
+      downloadVCardFallback(cardData, 'apple');
       return false;
     }
 
@@ -62,12 +96,12 @@ export async function addToAppleWallet(cardData: WalletCardData): Promise<boolea
     }
 
     console.error('Unexpected response format:', data);
-    toast.error("Format de réponse inattendu");
+    downloadVCardFallback(cardData, 'apple');
     return false;
 
   } catch (error) {
     console.error('Error adding to Apple Wallet:', error);
-    toast.error("Erreur de connexion au service Wallet");
+    downloadVCardFallback(cardData, 'apple');
     return false;
   }
 }
@@ -75,6 +109,7 @@ export async function addToAppleWallet(cardData: WalletCardData): Promise<boolea
 /**
  * Generate and open Google Wallet pass
  * Calls the backend edge function which generates a signed JWT
+ * Falls back to vCard download if the service is unavailable
  */
 export async function addToGoogleWallet(cardData: WalletCardData): Promise<boolean> {
   try {
@@ -86,19 +121,19 @@ export async function addToGoogleWallet(cardData: WalletCardData): Promise<boole
 
     if (error) {
       console.error('Google Wallet edge function error:', error);
-      toast.error("Erreur lors de la génération du pass Google Wallet");
+      downloadVCardFallback(cardData, 'google');
       return false;
     }
 
     if (!data) {
       console.error('No data returned from Google Wallet function');
-      toast.error("Réponse vide du serveur");
+      downloadVCardFallback(cardData, 'google');
       return false;
     }
 
     if (data.fallback || data.error) {
       console.warn('Google Wallet fallback:', data.message);
-      toast.error(data.message || "Service Google Wallet temporairement indisponible");
+      downloadVCardFallback(cardData, 'google');
       return false;
     }
 
@@ -110,12 +145,12 @@ export async function addToGoogleWallet(cardData: WalletCardData): Promise<boole
     }
 
     console.error('Unexpected response format:', data);
-    toast.error("Format de réponse inattendu");
+    downloadVCardFallback(cardData, 'google');
     return false;
 
   } catch (error) {
     console.error('Error adding to Google Wallet:', error);
-    toast.error("Erreur de connexion au service Wallet");
+    downloadVCardFallback(cardData, 'google');
     return false;
   }
 }
