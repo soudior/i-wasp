@@ -30,7 +30,7 @@ const defaultData: CardData = {
 
 export function DigitalCard({ 
   data = defaultData, 
-  template = "executive", 
+  template = "signature", // IWASP Signature is now the default
   showWalletButtons = true,
   onShareInfo,
   cardId,
