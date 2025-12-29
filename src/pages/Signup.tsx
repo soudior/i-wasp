@@ -187,16 +187,14 @@ const Signup = () => {
               disabled={isLoading}
             >
               {isLoading ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="w-5 h-5 rounded-full border-2 border-background/30 border-t-background"
-                />
+                <span className="flex items-center justify-center">
+                  <span className="w-5 h-5 rounded-full border-2 border-background/30 border-t-background animate-spin" />
+                </span>
               ) : (
-                <>
+                <span className="flex items-center justify-center">
                   Créer mon compte
                   <ArrowRight size={18} className="ml-2" />
-                </>
+                </span>
               )}
             </Button>
           </form>
