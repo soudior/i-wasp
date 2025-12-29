@@ -11,7 +11,6 @@ const signatureTemplate = {
   id: "iwasp-signature",
   name: "IWASP Signature",
   description: "The iconic IWASP design.\nIdentical screen-to-print. Zero compromise.",
-  gradient: "from-background via-secondary to-background",
   features: [
     "Official NFC card identity",
     "1:1 screen-to-print rendering",
@@ -21,49 +20,55 @@ const signatureTemplate = {
   badges: ["Signature", "Recommended", "Print-ready"],
 };
 
-// Secondary templates - Alternative styles
+// Secondary templates - Alternative styles with solid matte colors
 const alternativeTemplates = [
   {
     id: "executive",
     name: "Executive",
     description: "Design sobre et professionnel pour dirigeants et cadres",
-    gradient: "from-slate-900 via-slate-800 to-slate-900",
-    features: ["Style premium", "Bordures dorées", "Typographie élégante"],
+    bgColor: "bg-slate-900",
+    cardColor: "bg-slate-800",
+    features: ["Style premium", "Bordures dorées"],
   },
   {
     id: "minimal",
     name: "Minimal",
     description: "Élégance épurée et design minimaliste moderne",
-    gradient: "from-neutral-900 via-neutral-800 to-neutral-900",
-    features: ["Ultra épuré", "Focus sur l'essentiel", "Lignes fines"],
+    bgColor: "bg-neutral-900",
+    cardColor: "bg-neutral-800",
+    features: ["Ultra épuré", "Focus sur l'essentiel"],
   },
   {
     id: "modern",
     name: "Modern",
     description: "Design contemporain avec touches futuristes",
-    gradient: "from-zinc-900 via-zinc-800 to-zinc-900",
-    features: ["Effets de verre", "Dégradés subtils", "Animations fluides"],
+    bgColor: "bg-zinc-900",
+    cardColor: "bg-zinc-800",
+    features: ["Effets de verre", "Animations fluides"],
   },
   {
     id: "creative",
     name: "Creative",
     description: "Pour les professionnels créatifs et artistes",
-    gradient: "from-stone-900 via-stone-800 to-stone-900",
-    features: ["Layout unique", "Touches artistiques", "Personnalisable"],
+    bgColor: "bg-stone-900",
+    cardColor: "bg-stone-800",
+    features: ["Layout unique", "Touches artistiques"],
   },
   {
     id: "tech",
     name: "Tech",
     description: "Design high-tech pour l'industrie technologique",
-    gradient: "from-gray-900 via-gray-800 to-gray-900",
-    features: ["Style cyberpunk", "Effets néon", "Typographie moderne"],
+    bgColor: "bg-gray-900",
+    cardColor: "bg-gray-800",
+    features: ["Style cyberpunk", "Typographie moderne"],
   },
   {
     id: "luxe",
     name: "Luxe",
     description: "L'expression ultime du raffinement",
-    gradient: "from-amber-950 via-stone-900 to-amber-950",
-    features: ["Accents or", "Textures riches", "Ultra premium"],
+    bgColor: "bg-amber-950",
+    cardColor: "bg-stone-900",
+    features: ["Accents or", "Ultra premium"],
   },
 ];
 
@@ -77,88 +82,117 @@ const Templates = () => {
           {/* Header */}
           <div className="text-center mb-16 animate-fade-up">
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
-              Templates <span className="text-gradient-gold">premium</span>
+              NFC Cards <span className="text-gradient-gold">Collection</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Choisissez parmi notre collection exclusive de templates conçus par des designers de renom
+              Choose your physical NFC card design
             </p>
           </div>
 
-          {/* PRIMARY TEMPLATE - IWASP Signature */}
-          <div className="mb-16 animate-fade-up">
-            <div className="flex items-center gap-3 mb-6">
-              <Crown className="w-6 h-6 text-primary" />
+          {/* PRIMARY TEMPLATE - IWASP Signature - Large showcase */}
+          <div className="mb-20 animate-fade-up">
+            <div className="flex items-center gap-3 mb-8">
+              <Crown className="w-7 h-7 text-primary" />
               <h2 className="font-display text-2xl font-bold text-foreground">
-                Template Officiel
+                Official Card
               </h2>
             </div>
 
             <Card
               variant="premium"
-              className="overflow-hidden group cursor-pointer border-primary/30 hover:border-primary/60 transition-all duration-500 relative"
+              className="overflow-hidden border-primary/40 relative"
             >
-              {/* Badges */}
-              <div className="absolute top-4 left-4 z-10 flex flex-wrap gap-2">
-                {signatureTemplate.badges.map((badge) => (
-                  <Badge
-                    key={badge}
-                    variant="default"
-                    className="bg-gradient-gold text-primary-foreground border-0 shadow-lg"
-                  >
-                    {badge === "Signature" && <Star className="w-3 h-3 mr-1" />}
-                    {badge === "Print-ready" && <Printer className="w-3 h-3 mr-1" />}
-                    {badge}
-                  </Badge>
-                ))}
-              </div>
-
               <div className="grid lg:grid-cols-2 gap-0">
-                {/* Preview */}
-                <div className={`aspect-[4/3] lg:aspect-auto bg-gradient-to-br ${signatureTemplate.gradient} relative overflow-hidden min-h-[300px] lg:min-h-[400px]`}>
-                  {/* NFC Card mockup - Signature style */}
-                  <div className="absolute inset-0 flex items-center justify-center p-8">
-                    <div className="w-full max-w-[320px] aspect-[85.6/54] rounded-xl border-2 border-primary/30 bg-card/80 backdrop-blur-sm p-6 transform group-hover:scale-105 transition-transform duration-500 shadow-2xl relative overflow-hidden">
+                {/* Physical Card Preview - "Card on table" feeling */}
+                <div className="bg-secondary relative overflow-hidden min-h-[420px] lg:min-h-[500px] flex items-center justify-center p-10">
+                  {/* Subtle surface texture */}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--secondary))_0%,hsl(var(--background))_100%)]" />
+                  
+                  {/* Badges - positioned above the card */}
+                  <div className="absolute top-6 left-6 z-10 flex flex-wrap gap-2">
+                    {signatureTemplate.badges.map((badge) => (
+                      <Badge
+                        key={badge}
+                        className="bg-primary text-primary-foreground border-0 shadow-lg px-3 py-1 text-sm font-semibold"
+                      >
+                        {badge === "Signature" && <Star className="w-3.5 h-3.5 mr-1.5" />}
+                        {badge === "Print-ready" && <Printer className="w-3.5 h-3.5 mr-1.5" />}
+                        {badge}
+                      </Badge>
+                    ))}
+                  </div>
+
+                  {/* Physical NFC Card - realistic depth and shadows */}
+                  <div 
+                    className="relative w-full max-w-[380px] aspect-[85.6/54] transform perspective-1000"
+                    style={{ 
+                      transform: "rotateX(5deg) rotateY(-2deg)",
+                      transformStyle: "preserve-3d"
+                    }}
+                  >
+                    {/* Card shadow - soft, wide, "on table" feeling */}
+                    <div 
+                      className="absolute inset-0 rounded-2xl bg-black/30 blur-2xl"
+                      style={{ 
+                        transform: "translateY(20px) translateZ(-30px) scale(0.95)",
+                      }}
+                    />
+                    
+                    {/* Physical card body */}
+                    <div 
+                      className="relative w-full h-full rounded-2xl bg-card border border-border/50 overflow-hidden"
+                      style={{
+                        boxShadow: `
+                          0 25px 50px -12px rgba(0,0,0,0.4),
+                          0 12px 24px -8px rgba(0,0,0,0.3),
+                          0 4px 8px -2px rgba(0,0,0,0.2),
+                          inset 0 1px 0 rgba(255,255,255,0.1)
+                        `
+                      }}
+                    >
+                      {/* Matte surface finish */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent" />
+                      
                       {/* IWASP + NFC mark */}
-                      <div className="absolute top-3 right-3 flex items-center gap-1.5 text-[10px] text-muted-foreground/60 font-medium tracking-wider">
+                      <div className="absolute top-4 right-4 flex items-center gap-2 text-xs text-muted-foreground/50 font-medium tracking-widest">
                         <span>IWASP</span>
-                        <div className="w-4 h-4 rounded border border-muted-foreground/30 flex items-center justify-center">
-                          <div className="w-2 h-2 rounded-sm bg-primary/40" />
+                        <div className="w-5 h-5 rounded border border-muted-foreground/20 flex items-center justify-center">
+                          <div className="w-2.5 h-2.5 rounded-sm bg-primary/30" />
                         </div>
                       </div>
                       
-                      {/* Centered logo placeholder */}
+                      {/* LARGE centered logo placeholder - dominant element */}
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-32 h-20 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20 flex items-center justify-center">
-                          <span className="text-sm text-muted-foreground/60 font-medium">YOUR LOGO</span>
+                        <div 
+                          className="w-44 h-28 rounded-xl bg-muted/50 border-2 border-dashed border-muted-foreground/20 flex items-center justify-center"
+                        >
+                          <span className="text-base text-muted-foreground/70 font-semibold tracking-wide">YOUR LOGO</span>
                         </div>
                       </div>
                       
-                      {/* NFC zone indicator */}
-                      <div className="absolute bottom-3 right-3 w-10 h-10 rounded-full border border-dashed border-primary/30 flex items-center justify-center">
-                        <div className="w-5 h-5 rounded-full bg-primary/10" />
+                      {/* NFC chip indicator */}
+                      <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full border border-primary/20 flex items-center justify-center">
+                        <div className="w-4 h-4 rounded-full bg-primary/15" />
                       </div>
                     </div>
                   </div>
-
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
 
                 {/* Info */}
-                <div className="p-8 lg:p-10 flex flex-col justify-center">
-                  <h3 className="font-display text-3xl font-bold text-foreground mb-4">
+                <div className="p-10 lg:p-12 flex flex-col justify-center bg-card">
+                  <h3 className="font-display text-4xl font-bold text-foreground mb-5">
                     {signatureTemplate.name}
                   </h3>
-                  <p className="text-lg text-muted-foreground mb-6 whitespace-pre-line">
+                  <p className="text-lg text-muted-foreground mb-8 whitespace-pre-line leading-relaxed">
                     {signatureTemplate.description}
                   </p>
 
                   {/* Features */}
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-4 mb-10">
                     {signatureTemplate.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-3 text-secondary-foreground">
-                        <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                          <Check size={12} className="text-primary" />
+                      <li key={feature} className="flex items-center gap-4 text-secondary-foreground text-lg">
+                        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                          <Check size={14} className="text-primary" />
                         </div>
                         {feature}
                       </li>
@@ -166,9 +200,9 @@ const Templates = () => {
                   </ul>
 
                   <Link to="/create">
-                    <Button variant="default" size="lg" className="w-full sm:w-auto bg-gradient-gold hover:opacity-90 text-primary-foreground">
-                      <Crown className="w-4 h-4 mr-2" />
-                      Créer ma carte Signature
+                    <Button variant="default" size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg">
+                      <Crown className="w-5 h-5 mr-2" />
+                      Create Signature Card
                     </Button>
                   </Link>
                 </div>
@@ -178,57 +212,74 @@ const Templates = () => {
 
           {/* SECONDARY TEMPLATES - Alternative styles */}
           <div className="animate-fade-up" style={{ animationDelay: "0.2s" }}>
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 mb-8">
               <h2 className="font-display text-xl font-semibold text-muted-foreground">
-                Styles alternatifs
+                Alternative Styles
               </h2>
-              <Badge variant="outline" className="text-xs">
-                Variantes optionnelles
+              <Badge variant="outline" className="text-xs text-muted-foreground">
+                Optional variants
               </Badge>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {alternativeTemplates.map((template, index) => (
-                <div key={template.id} className="relative animate-fade-up" style={{ animationDelay: `${(index + 1) * 0.1}s` }}>
+                <div key={template.id} className="animate-fade-up" style={{ animationDelay: `${(index + 1) * 0.1}s` }}>
                   <Card
-                    variant="premium"
-                    className="overflow-hidden group cursor-pointer hover:border-border/60 transition-all duration-500 opacity-90 hover:opacity-100"
+                    variant="elevated"
+                    className="overflow-hidden group cursor-pointer opacity-85 hover:opacity-100 transition-all duration-300"
                   >
-                    {/* Preview */}
-                    <div className={`aspect-[4/5] bg-gradient-to-br ${template.gradient} relative overflow-hidden`}>
-                      {/* Card mockup */}
-                      <div className="absolute inset-0 flex items-center justify-center p-6">
-                        <div className="w-full max-w-[180px] rounded-xl border border-border/20 bg-background/5 backdrop-blur-sm p-5 transform group-hover:scale-105 transition-transform duration-500">
-                          <div className="w-10 h-10 rounded-lg bg-primary/20 mb-3" />
-                          <div className="space-y-2">
-                            <div className="w-3/4 h-2.5 rounded bg-foreground/30" />
-                            <div className="w-1/2 h-2 rounded bg-foreground/20" />
+                    {/* Physical card preview - solid matte background */}
+                    <div className={`aspect-[4/3] ${template.bgColor} relative overflow-hidden flex items-center justify-center p-8`}>
+                      
+                      {/* Physical card with depth */}
+                      <div 
+                        className="relative w-full max-w-[200px] aspect-[85.6/54]"
+                        style={{ 
+                          transform: "rotateX(3deg)",
+                          transformStyle: "preserve-3d"
+                        }}
+                      >
+                        {/* Soft shadow */}
+                        <div 
+                          className="absolute inset-0 rounded-xl bg-black/40 blur-xl"
+                          style={{ transform: "translateY(12px) scale(0.92)" }}
+                        />
+                        
+                        {/* Card body - simplified */}
+                        <div 
+                          className={`relative w-full h-full rounded-xl ${template.cardColor} border border-white/10 p-4 flex flex-col justify-between`}
+                          style={{
+                            boxShadow: `
+                              0 15px 35px -10px rgba(0,0,0,0.5),
+                              0 8px 16px -6px rgba(0,0,0,0.3),
+                              inset 0 1px 0 rgba(255,255,255,0.05)
+                            `
+                          }}
+                        >
+                          {/* Logo placeholder - larger, cleaner */}
+                          <div className="w-14 h-9 rounded bg-white/10 border border-white/10 flex items-center justify-center">
+                            <span className="text-[8px] text-white/40 font-medium">LOGO</span>
                           </div>
-                          <div className="mt-5 space-y-1.5">
-                            <div className="w-full h-1.5 rounded bg-foreground/10" />
-                            <div className="w-full h-1.5 rounded bg-foreground/10" />
-                          </div>
-                          <div className="mt-5 flex gap-2">
-                            <div className="flex-1 h-7 rounded-lg bg-primary/30" />
-                            <div className="flex-1 h-7 rounded-lg bg-foreground/10" />
+                          
+                          {/* Minimal content indicator */}
+                          <div className="space-y-1">
+                            <div className="w-16 h-1.5 rounded bg-white/20" />
+                            <div className="w-10 h-1 rounded bg-white/10" />
                           </div>
                         </div>
                       </div>
-
-                      {/* Hover overlay */}
-                      <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
 
-                    {/* Info */}
+                    {/* Info - simplified */}
                     <div className="p-5">
                       <h3 className="font-display text-lg font-semibold text-foreground mb-1.5">{template.name}</h3>
-                      <p className="text-sm text-muted-foreground mb-3">{template.description}</p>
+                      <p className="text-sm text-muted-foreground mb-4">{template.description}</p>
 
-                      {/* Features */}
-                      <ul className="space-y-1.5 mb-4">
+                      {/* Features - reduced */}
+                      <ul className="space-y-1.5 mb-5">
                         {template.features.map((feature) => (
-                          <li key={feature} className="flex items-center gap-2 text-xs text-secondary-foreground">
-                            <div className="w-3.5 h-3.5 rounded-full bg-muted flex items-center justify-center">
+                          <li key={feature} className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div className="w-3 h-3 rounded-full bg-muted flex items-center justify-center">
                               <Check size={8} className="text-muted-foreground" />
                             </div>
                             {feature}
@@ -238,7 +289,7 @@ const Templates = () => {
 
                       <Link to="/create">
                         <Button variant="outline" className="w-full" size="sm">
-                          Utiliser ce style
+                          Use this style
                         </Button>
                       </Link>
                     </div>
