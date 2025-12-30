@@ -24,6 +24,7 @@ import OrderFunnel from "./pages/OrderFunnel";
 import Contact from "./pages/Contact";
 import AdminOrders from "./pages/AdminOrders";
 import AdminAnalytics from "./pages/AdminAnalytics";
+import AdminClients from "./pages/AdminClients";
 import Demo from "./pages/Demo";
 import CardShowcase from "./pages/CardShowcase";
 import About from "./pages/About";
@@ -133,6 +134,22 @@ const App = () => (
                 />
                 
                 {/* Admin */}
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute>
+                      <AdminClients />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/clients"
+                  element={
+                    <ProtectedRoute>
+                      <AdminClients />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route
                   path="/admin/orders"
                   element={
