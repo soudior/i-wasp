@@ -373,7 +373,7 @@ export function ActionsList({
           </>
         )}
         
-        {/* Action items with Apple-style layout + long press */}
+        {/* Action items - Clean, minimal: 1 action = 1 button */}
         {actions.map((action, index) => (
           <div key={action.id}>
             <button
@@ -385,24 +385,17 @@ export function ActionsList({
               onTouchEnd={handleLongPressEnd}
               onTouchCancel={handleLongPressEnd}
               className={cn(
-                "w-full flex items-center gap-4 px-4 py-3.5 min-h-[56px] transition-all duration-150 text-left select-none",
+                "w-full flex items-center gap-4 px-4 py-3 min-h-[52px] transition-all duration-150 text-left select-none",
                 s.item
               )}
               aria-label={action.label}
             >
-              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", s.iconBg)}>
+              <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", s.iconBg)}>
                 {action.icon}
               </div>
-              <div className="flex-1 min-w-0">
-                <span className={cn("text-sm block", s.label)}>
-                  {action.label}
-                </span>
-                <span className={cn("text-xs block mt-0.5", s.subtitle)}>
-                  {action.subtitle}
-                </span>
-              </div>
-              {/* More options indicator */}
-              <MoreHorizontal size={16} className={cn("shrink-0 opacity-30", s.icon)} />
+              <span className={cn("text-sm", s.label)}>
+                {action.label}
+              </span>
             </button>
             {index < actions.length - 1 && (
               <div className={cn("border-t mx-4", s.divider)} />
