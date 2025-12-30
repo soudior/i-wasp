@@ -7,7 +7,7 @@ import {
 import { SmartContext } from "@/hooks/useSmartContext";
 
 interface DigitalCardProps {
-  data?: CardData;
+  data: CardData; // REQUIRED - no default fallback
   template?: TemplateType;
   showWalletButtons?: boolean;
   onShareInfo?: () => void;
@@ -16,35 +16,25 @@ interface DigitalCardProps {
   smartContext?: SmartContext;
 }
 
-const defaultData: CardData = {
-  firstName: "Alexandre",
-  lastName: "Dubois",
-  title: "Directeur Général",
-  company: "Prestige Corp",
-  email: "a.dubois@prestige.com",
-  phone: "+33 6 12 34 56 78",
-  location: "Paris, France",
-  website: "prestige-corp.com",
-  linkedin: "alexandre-dubois",
-  instagram: "@adubois",
-  tagline: "L'excellence en toute simplicité",
-};
-
 export function DigitalCard({ 
-  data = defaultData, 
-  template = "signature", // IWASP Signature is now the default
+  data, 
+  template = "signature",
   showWalletButtons = true,
   onShareInfo,
   cardId,
   enableLeadCapture = false,
   smartContext
 }: DigitalCardProps) {
+  // CRITICAL: No default data - card requires explicit data
+  if (!data || !data.firstName || !data.lastName) {
+    return null;
+  }
+
   const TemplateComponent = getTemplateComponent(template);
-  const cardData = { ...defaultData, ...data };
 
   return (
     <TemplateComponent 
-      data={cardData} 
+      data={data} 
       showWalletButtons={showWalletButtons}
       onShareInfo={onShareInfo}
       cardId={cardId}
