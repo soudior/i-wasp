@@ -180,17 +180,34 @@ export default function Cart() {
 
                           {/* Quantity & Price */}
                           <div className="flex items-center justify-between mt-3">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                               <motion.button
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
                                 className="w-10 h-10 md:w-8 md:h-8 rounded-full bg-surface-2 flex items-center justify-center text-muted-foreground active:bg-surface-3 transition-colors touch-manipulation"
+                                disabled={item.quantity <= 1}
                               >
                                 <Minus size={16} />
                               </motion.button>
-                              <span className="text-base md:text-lg font-semibold w-8 text-center">
-                                {item.quantity}
-                              </span>
+                              <input
+                                type="number"
+                                min="1"
+                                max="999"
+                                value={item.quantity}
+                                onChange={(e) => {
+                                  const newQty = parseInt(e.target.value, 10);
+                                  if (!isNaN(newQty) && newQty >= 1 && newQty <= 999) {
+                                    updateItemQuantity(item.id, newQty);
+                                  }
+                                }}
+                                onBlur={(e) => {
+                                  const newQty = parseInt(e.target.value, 10);
+                                  if (isNaN(newQty) || newQty < 1) {
+                                    updateItemQuantity(item.id, 1);
+                                  }
+                                }}
+                                className="w-14 h-10 md:h-8 text-center text-base md:text-lg font-semibold bg-surface-2 border border-border/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              />
                               <motion.button
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
@@ -203,6 +220,11 @@ export default function Cart() {
                               <p className="text-base md:text-lg font-bold text-foreground">
                                 {formatPrice(item.unitPriceCents * item.quantity)}
                               </p>
+                              {item.quantity > 1 && (
+                                <p className="text-xs text-muted-foreground">
+                                  {formatPrice(item.unitPriceCents)} / unité
+                                </p>
+                              )}
                             </div>
                           </div>
                         </div>
