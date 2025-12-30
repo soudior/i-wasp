@@ -21,16 +21,10 @@ export default function NotFound() {
           404
         </p>
         <p 
-          className="text-lg font-medium mb-2"
-          style={{ color: "#1D1D1F" }}
-        >
-          Page introuvable
-        </p>
-        <p 
-          className="text-sm mb-8"
+          className="text-lg font-medium mb-8"
           style={{ color: "#8E8E93" }}
         >
-          Cette page n'existe pas.
+          Page introuvable
         </p>
         <button
           onClick={() => navigate("/admin")}
@@ -40,7 +34,7 @@ export default function NotFound() {
             color: "#FFFFFF",
           }}
         >
-          Retour à l'administration
+          Retour
         </button>
       </div>
     </div>

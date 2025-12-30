@@ -226,15 +226,10 @@ const PublicCard = () => {
             style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
           >
             <UserPlus size={18} />
-            Ajouter aux contacts
+            Ajouter au contact
           </button>
         </div>
       </div>
-
-      {/* Minimal Footer */}
-      <p className="text-xs mt-6" style={{ color: "#8E8E93" }}>
-        Powered by IWASP
-      </p>
     </div>
   );
 };
