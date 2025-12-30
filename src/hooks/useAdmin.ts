@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { Order, OrderStatus, OrderUpdate } from "./useOrders";
+import { sendOrderEmail } from "./useOrderEmails";
 
 // Check if current user has admin role
 export function useIsAdmin() {
@@ -99,9 +100,15 @@ export function useConfirmCODOrder() {
       if (error) throw error;
       return data as Order;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
       toast.success("Commande confirmée - prête pour production");
+      
+      // Send payment confirmed email
+      sendOrderEmail({ orderId: data.id, emailType: "payment_confirmed" })
+        .then(success => {
+          if (success) console.log("Payment confirmed email sent");
+        });
     },
     onError: (error) => {
       console.error("Error confirming order:", error);
@@ -129,9 +136,15 @@ export function useStartProduction() {
       if (error) throw error;
       return data as Order;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
       toast.success("Production démarrée");
+      
+      // Send in production email
+      sendOrderEmail({ orderId: data.id, emailType: "in_production" })
+        .then(success => {
+          if (success) console.log("In production email sent");
+        });
     },
     onError: (error) => {
       console.error("Error starting production:", error);
@@ -160,9 +173,18 @@ export function useMarkShipped() {
       if (error) throw error;
       return data as Order;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
       toast.success("Commande expédiée");
+      
+      // Send shipped email with tracking number
+      sendOrderEmail({ 
+        orderId: data.id, 
+        emailType: "shipped", 
+        trackingNumber: data.tracking_number || undefined 
+      }).then(success => {
+        if (success) console.log("Shipped email sent");
+      });
     },
     onError: (error) => {
       console.error("Error marking shipped:", error);
