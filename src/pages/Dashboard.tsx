@@ -22,7 +22,7 @@ import {
   supportsAppleWallet,
   supportsGoogleWallet 
 } from "@/lib/wallet";
-import { PhysicalCardGenerator } from "@/components/print/PhysicalCardGenerator";
+import { PhysicalCardStudio } from "@/components/print/PhysicalCardStudio";
 import { 
   Plus, CreditCard, Users, Eye, TrendingUp, 
   MoreVertical, Wallet, QrCode,
@@ -697,9 +697,10 @@ const Dashboard = () => {
       </Dialog>
 
       {/* Physical Card Generator Modal */}
-      <PhysicalCardGenerator
+      <PhysicalCardStudio
         open={!!physicalCardId}
         onOpenChange={(open) => !open && setPhysicalCardId(null)}
+        cardId={physicalCardId || undefined}
         logoUrl={physicalCard?.logo_url}
         cardName={physicalCard ? `${physicalCard.first_name}-${physicalCard.last_name}` : "carte"}
       />
