@@ -50,6 +50,7 @@ import {
   ActionType,
   createIdentityBlock,
   createWifiBlock,
+  createHotelWifiBlock,
   createLocationBlock,
   createActionBlock,
   createSocialBlock,
@@ -652,71 +653,318 @@ export default function CardEditor() {
   const [showPreview, setShowPreview] = useState(false);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
 
-  // Handle AI generated template
+  // Handle AI generated template - Maps all AI fields to editor blocks
   const handleAITemplateGenerated = useCallback((result: { type: string; template: Record<string, any> }) => {
     const templateData = result.template;
+    const templateType = result.type;
     const newBlocks: CardBlock[] = [];
     let order = 0;
 
-    // Create identity block from template
-    if (templateData.identity) {
+    // ========== HOTEL TEMPLATE ==========
+    if (templateType === "hotel") {
+      // Identity block with hotel info
       newBlocks.push({
-        ...createIdentityBlock(templateData.identity),
+        ...createIdentityBlock({
+          firstName: templateData.hotelName || "",
+          lastName: "",
+          title: templateData.conciergeRole || "Concierge",
+          company: templateData.hotelCategory || "",
+          tagline: templateData.hotelTagline || "",
+        }),
         order: order++,
       });
-    } else {
-      newBlocks.push({
-        ...createIdentityBlock(),
-        order: order++,
-      });
-    }
 
-    // Create action blocks
-    if (templateData.actions && Array.isArray(templateData.actions)) {
-      for (const action of templateData.actions) {
+      // Concierge name as info block
+      if (templateData.conciergeName) {
         newBlocks.push({
-          ...createActionBlock(action.type || "custom", {
-            label: action.label || "",
-            subtitle: action.subtitle || "",
-            value: action.value || "",
+          ...createInfoBlock({
+            title: "Votre Concierge",
+            content: `${templateData.conciergeName} - ${templateData.conciergeRole || "Concierge"}`,
+            icon: "user",
           }),
           order: order++,
         });
       }
-    }
 
-    // Create wifi block if present
-    if (templateData.wifi) {
-      newBlocks.push({
-        ...createWifiBlock(templateData.wifi),
-        order: order++,
-      });
-    }
-
-    // Create location block if present
-    if (templateData.location) {
-      newBlocks.push({
-        ...createLocationBlock(templateData.location),
-        order: order++,
-      });
-    }
-
-    // Create social block if present
-    if (templateData.socialLinks && Array.isArray(templateData.socialLinks) && templateData.socialLinks.length > 0) {
-      newBlocks.push({
-        ...createSocialBlock(templateData.socialLinks),
-        order: order++,
-      });
-    }
-
-    // Create info blocks
-    if (templateData.infoBlocks && Array.isArray(templateData.infoBlocks)) {
-      for (const info of templateData.infoBlocks) {
+      // Reception phone
+      if (templateData.receptionPhone) {
         newBlocks.push({
-          ...createInfoBlock(info),
+          ...createActionBlock("call", {
+            label: "Réception",
+            subtitle: "Appeler la réception",
+            value: templateData.receptionPhone,
+          }),
+          order: order++,
+        });
+        newBlocks.push({
+          ...createActionBlock("whatsapp", {
+            label: "WhatsApp",
+            subtitle: "Message instantané",
+            value: templateData.receptionPhone,
+          }),
           order: order++,
         });
       }
+
+      // WiFi block
+      if (templateData.wifiSsid) {
+        newBlocks.push({
+          ...createHotelWifiBlock({
+            ssid: templateData.wifiSsid,
+            password: templateData.wifiPassword || "",
+            security: "WPA2",
+            hotelName: templateData.hotelName,
+            welcomeMessage: `Bienvenue au ${templateData.hotelName}`,
+          }),
+          order: order++,
+        });
+      }
+
+      // Location
+      if (templateData.address) {
+        newBlocks.push({
+          ...createLocationBlock({
+            label: "Notre adresse",
+            address: templateData.address,
+          }),
+          order: order++,
+        });
+      }
+
+      // Daily offer
+      if (templateData.dailyOffer) {
+        newBlocks.push({
+          ...createOfferBlock({
+            title: templateData.dailyOffer.title || "Offre du jour",
+            description: templateData.dailyOffer.description || "",
+            validUntil: templateData.dailyOffer.validUntil,
+          }),
+          order: order++,
+        });
+      }
+
+      // Places to visit
+      if (templateData.placesToVisit && Array.isArray(templateData.placesToVisit)) {
+        for (const place of templateData.placesToVisit) {
+          newBlocks.push({
+            ...createInfoBlock({
+              title: place.name,
+              content: `À ${place.distance}`,
+              icon: "map-pin",
+            }),
+            order: order++,
+          });
+        }
+      }
+    }
+    // ========== BUSINESS TEMPLATE ==========
+    else if (templateType === "business") {
+      // Identity block
+      newBlocks.push({
+        ...createIdentityBlock({
+          firstName: templateData.firstName || "",
+          lastName: templateData.lastName || "",
+          title: templateData.title || "",
+          company: templateData.company || "",
+          tagline: templateData.tagline || "",
+        }),
+        order: order++,
+      });
+
+      // Phone actions
+      if (templateData.phone) {
+        newBlocks.push({
+          ...createActionBlock("call", {
+            label: "Appeler",
+            subtitle: "Appel direct",
+            value: templateData.phone,
+          }),
+          order: order++,
+        });
+        newBlocks.push({
+          ...createActionBlock("whatsapp", {
+            label: "WhatsApp",
+            subtitle: "Message instantané",
+            value: templateData.phone,
+          }),
+          order: order++,
+        });
+      }
+
+      // Email
+      if (templateData.email) {
+        newBlocks.push({
+          ...createActionBlock("email", {
+            label: "Email",
+            subtitle: "Contact professionnel",
+            value: templateData.email,
+          }),
+          order: order++,
+        });
+      }
+
+      // Website
+      if (templateData.website) {
+        newBlocks.push({
+          ...createActionBlock("website", {
+            label: "Site web",
+            subtitle: "Visiter le site",
+            value: templateData.website,
+          }),
+          order: order++,
+        });
+      }
+
+      // Location
+      if (templateData.location) {
+        newBlocks.push({
+          ...createLocationBlock({
+            label: "Localisation",
+            address: templateData.location,
+          }),
+          order: order++,
+        });
+      }
+
+      // Social links
+      const socialLinks: SocialLink[] = [];
+      if (templateData.linkedin) {
+        socialLinks.push({ id: `linkedin-${Date.now()}`, networkId: "linkedin", value: templateData.linkedin });
+      }
+      if (socialLinks.length > 0) {
+        newBlocks.push({
+          ...createSocialBlock(socialLinks),
+          order: order++,
+        });
+      }
+    }
+    // ========== TOURISM TEMPLATE ==========
+    else if (templateType === "tourism") {
+      // Identity block
+      newBlocks.push({
+        ...createIdentityBlock({
+          firstName: templateData.businessName || "",
+          lastName: "",
+          title: templateData.guideName || "",
+          company: templateData.category || "",
+          tagline: templateData.tagline || "",
+        }),
+        order: order++,
+      });
+
+      // Phone
+      if (templateData.phone) {
+        newBlocks.push({
+          ...createActionBlock("call", {
+            label: "Appeler",
+            subtitle: "Réservation directe",
+            value: templateData.phone,
+          }),
+          order: order++,
+        });
+      }
+
+      // WhatsApp (separate if provided)
+      if (templateData.whatsapp) {
+        newBlocks.push({
+          ...createActionBlock("whatsapp", {
+            label: "WhatsApp",
+            subtitle: "Message instantané",
+            value: templateData.whatsapp,
+          }),
+          order: order++,
+        });
+      }
+
+      // Email
+      if (templateData.email) {
+        newBlocks.push({
+          ...createActionBlock("email", {
+            label: "Email",
+            subtitle: "Contact",
+            value: templateData.email,
+          }),
+          order: order++,
+        });
+      }
+
+      // Website
+      if (templateData.website) {
+        newBlocks.push({
+          ...createActionBlock("website", {
+            label: "Site web",
+            subtitle: "Réserver en ligne",
+            value: templateData.website,
+          }),
+          order: order++,
+        });
+      }
+
+      // Location
+      if (templateData.location) {
+        newBlocks.push({
+          ...createLocationBlock({
+            label: "Point de départ",
+            address: templateData.location,
+          }),
+          order: order++,
+        });
+      }
+
+      // Tours as info blocks
+      if (templateData.tours && Array.isArray(templateData.tours)) {
+        for (const tour of templateData.tours) {
+          newBlocks.push({
+            ...createInfoBlock({
+              title: tour.name,
+              content: `${tour.duration} • ${tour.price}`,
+              icon: "compass",
+            }),
+            order: order++,
+          });
+        }
+      }
+
+      // Languages
+      if (templateData.languages && Array.isArray(templateData.languages)) {
+        newBlocks.push({
+          ...createInfoBlock({
+            title: "Langues parlées",
+            content: templateData.languages.join(", "),
+            icon: "globe",
+          }),
+          order: order++,
+        });
+      }
+
+      // Review links
+      const socialLinks: SocialLink[] = [];
+      if (templateData.googleReviewsUrl) {
+        socialLinks.push({ id: `google-${Date.now()}`, networkId: "google", value: templateData.googleReviewsUrl });
+      }
+      if (templateData.tripAdvisorUrl) {
+        socialLinks.push({ id: `tripadvisor-${Date.now()}`, networkId: "tripadvisor", value: templateData.tripAdvisorUrl });
+      }
+      if (socialLinks.length > 0) {
+        newBlocks.push({
+          ...createSocialBlock(socialLinks),
+          order: order++,
+        });
+      }
+    }
+    // ========== FALLBACK ==========
+    else {
+      // Generic fallback for unknown template types
+      newBlocks.push({
+        ...createIdentityBlock({
+          firstName: templateData.firstName || templateData.name || "",
+          lastName: templateData.lastName || "",
+          title: templateData.title || "",
+          company: templateData.company || "",
+          tagline: templateData.tagline || "",
+        }),
+        order: order++,
+      });
     }
 
     setBlocks(newBlocks.length > 0 ? newBlocks : [createIdentityBlock()]);
