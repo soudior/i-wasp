@@ -1,67 +1,58 @@
 /**
- * App Shell - Mobile-first layout wrapper
+ * App Shell - Route-based Layout System
  * 
- * Provides:
- * - iOS-style navigation on mobile
- * - Desktop navbar on larger screens
- * - Safe area handling
- * - Smooth page transitions
+ * Strict separation of layouts:
+ * - /card/[slug] → CardLayout (isolated, no nav)
+ * - /c/[slug] → CardLayout (isolated, no nav) 
+ * - /dashboard, /leads, /orders, /create, /edit → DashboardLayout
+ * - /checkout, /order-confirmation, /cart → CheckoutLayout
+ * - / → InstitutionalLayout
+ * - /login, /signup → Minimal (no layout)
  */
 
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import { Navbar } from "@/components/Navbar";
-import { MobileTabBar } from "@/components/MobileTabBar";
-import { MobileHeader } from "@/components/MobileHeader";
+import { CardLayout } from "@/layouts/CardLayout";
+import { DashboardLayout } from "@/layouts/DashboardLayout";
+import { CheckoutLayout } from "@/layouts/CheckoutLayout";
+import { InstitutionalLayout } from "@/layouts/InstitutionalLayout";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const location = useLocation();
-  
-  // Routes where we hide standard navigation
-  const isPublicCard = location.pathname.startsWith("/c/");
-  const isIWASPCard = location.pathname === "/";
-  const isAuthPage = ["/login", "/signup"].includes(location.pathname);
-  const isCheckout = location.pathname === "/checkout";
-  const isOrderConfirmation = location.pathname === "/order-confirmation";
-  
-  // Full-screen pages (no nav at all)
-  const isFullScreen = isPublicCard || isIWASPCard;
-  
-  // Show desktop navbar except on full-screen pages
-  const showDesktopNav = !isFullScreen;
-  
-  // Show mobile navigation (tab bar + header)
-  const showMobileNav = !isFullScreen && !isAuthPage && !isCheckout && !isOrderConfirmation;
+  const path = location.pathname;
 
-  return (
-    <div className="min-h-mobile-screen bg-background">
-      {/* Desktop Navigation */}
-      {showDesktopNav && (
-        <div className="hidden md:block">
-          <Navbar />
-        </div>
-      )}
-      
-      {/* Mobile Header */}
-      {showMobileNav && <MobileHeader />}
-      
-      {/* Main Content */}
-      <AnimatePresence mode="wait">
-        <motion.main
-          key={location.pathname}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
-          className={showMobileNav ? "mobile-content md:pt-0 md:pb-0" : ""}
-        >
-          {children}
-        </motion.main>
-      </AnimatePresence>
-      
-      {/* Mobile Tab Bar */}
-      {showMobileNav && <MobileTabBar />}
-    </div>
-  );
+  // Card view - Completely isolated
+  if (path.startsWith("/c/") || path.startsWith("/card/")) {
+    return <CardLayout>{children}</CardLayout>;
+  }
+
+  // Dashboard routes
+  if (
+    path === "/dashboard" ||
+    path === "/leads" ||
+    path === "/orders" ||
+    path.startsWith("/orders/") ||
+    path === "/create" ||
+    path === "/edit" ||
+    path.startsWith("/admin")
+  ) {
+    return <DashboardLayout>{children}</DashboardLayout>;
+  }
+
+  // Checkout flow
+  if (
+    path === "/checkout" ||
+    path === "/cart" ||
+    path === "/order-confirmation"
+  ) {
+    return <CheckoutLayout>{children}</CheckoutLayout>;
+  }
+
+  // Auth pages - Minimal, no layout wrapper
+  if (path === "/login" || path === "/signup") {
+    return <div className="min-h-dvh bg-background">{children}</div>;
+  }
+
+  // Default: Institutional layout for / and other public pages
+  return <InstitutionalLayout>{children}</InstitutionalLayout>;
 }
