@@ -13,14 +13,11 @@ import { useState } from "react";
 import iwaspLogoWhite from "@/assets/iwasp-logo-white.png";
 import iwaspLogoDark from "@/assets/iwasp-logo.png";
 
-// Palette de couleurs disponibles pour la carte
+// Palette de couleurs disponibles pour la carte (3 palettes verrouillées)
 export const cardColors = [
   { id: "black", name: "Noir", bg: "#0a0a0a", logoVariant: "white" as const },
   { id: "white", name: "Blanc", bg: "#fafafa", logoVariant: "dark" as const },
   { id: "gold", name: "Or", bg: "#c9a962", logoVariant: "dark" as const },
-  { id: "silver", name: "Argent", bg: "#b8b8b8", logoVariant: "dark" as const },
-  { id: "navy", name: "Navy", bg: "#1a2744", logoVariant: "white" as const },
-  { id: "burgundy", name: "Bordeaux", bg: "#5c1a28", logoVariant: "white" as const },
 ] as const;
 
 export type CardColorId = typeof cardColors[number]["id"];
