@@ -15,6 +15,7 @@ import { templateInfo } from "@/components/templates/CardTemplates";
 import { PRICING } from "@/lib/pricing";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { AITemplateGenerator } from "@/components/AITemplateGenerator";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,7 +32,8 @@ import { toast } from "sonner";
 import { 
   ArrowLeft, Save, Plus, Eye, EyeOff, GripVertical, Trash2,
   User, Wifi, MapPin, Zap, Share2, Gift, Info, Minus,
-  Phone, Mail, Globe, MessageCircle, ChevronDown, ChevronUp, Copy, Check
+  Phone, Mail, Globe, MessageCircle, ChevronDown, ChevronUp, Copy, Check,
+  Wand2, Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -648,6 +650,79 @@ export default function CardEditor() {
   const [blocks, setBlocks] = useState<CardBlock[]>([]);
   const [template, setTemplate] = useState<string>(templateParam || "production");
   const [showPreview, setShowPreview] = useState(false);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
+
+  // Handle AI generated template
+  const handleAITemplateGenerated = useCallback((result: { type: string; template: Record<string, any> }) => {
+    const templateData = result.template;
+    const newBlocks: CardBlock[] = [];
+    let order = 0;
+
+    // Create identity block from template
+    if (templateData.identity) {
+      newBlocks.push({
+        ...createIdentityBlock(templateData.identity),
+        order: order++,
+      });
+    } else {
+      newBlocks.push({
+        ...createIdentityBlock(),
+        order: order++,
+      });
+    }
+
+    // Create action blocks
+    if (templateData.actions && Array.isArray(templateData.actions)) {
+      for (const action of templateData.actions) {
+        newBlocks.push({
+          ...createActionBlock(action.type || "custom", {
+            label: action.label || "",
+            subtitle: action.subtitle || "",
+            value: action.value || "",
+          }),
+          order: order++,
+        });
+      }
+    }
+
+    // Create wifi block if present
+    if (templateData.wifi) {
+      newBlocks.push({
+        ...createWifiBlock(templateData.wifi),
+        order: order++,
+      });
+    }
+
+    // Create location block if present
+    if (templateData.location) {
+      newBlocks.push({
+        ...createLocationBlock(templateData.location),
+        order: order++,
+      });
+    }
+
+    // Create social block if present
+    if (templateData.socialLinks && Array.isArray(templateData.socialLinks) && templateData.socialLinks.length > 0) {
+      newBlocks.push({
+        ...createSocialBlock(templateData.socialLinks),
+        order: order++,
+      });
+    }
+
+    // Create info blocks
+    if (templateData.infoBlocks && Array.isArray(templateData.infoBlocks)) {
+      for (const info of templateData.infoBlocks) {
+        newBlocks.push({
+          ...createInfoBlock(info),
+          order: order++,
+        });
+      }
+    }
+
+    setBlocks(newBlocks.length > 0 ? newBlocks : [createIdentityBlock()]);
+    setShowAIGenerator(false);
+    toast.success("Template IA appliqué ! Personnalisez les champs.");
+  }, []);
 
   // Get template name for display
   const getTemplateName = (templateId: string) => {
@@ -875,6 +950,17 @@ export default function CardEditor() {
                   </Button>
                 </div>
 
+                {/* AI Generator Button */}
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAIGenerator(true)}
+                  className="w-full mb-4 h-14 border-dashed border-2 border-purple-500/30 bg-purple-500/5 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all"
+                >
+                  <Wand2 className="w-5 h-5 mr-3 text-purple-500" />
+                  <span className="font-medium text-purple-400">Générer avec l'IA</span>
+                  <Sparkles className="w-4 h-4 ml-2 text-purple-400" />
+                </Button>
+
                 <Reorder.Group axis="y" values={blocks} onReorder={handleReorder} className="space-y-3">
                   <AnimatePresence initial={false}>
                     {blocks.map((block) => (
@@ -982,6 +1068,21 @@ export default function CardEditor() {
           )}
         </Button>
       </div>
+
+      {/* AI Generator Sheet */}
+      <Sheet open={showAIGenerator} onOpenChange={setShowAIGenerator}>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
+          <SheetHeader>
+            <SheetTitle>Générateur IA</SheetTitle>
+          </SheetHeader>
+          <div className="pt-4 overflow-y-auto max-h-[calc(85vh-4rem)]">
+            <AITemplateGenerator
+              onTemplateGenerated={handleAITemplateGenerated}
+              onClose={() => setShowAIGenerator(false)}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <Footer />
     </div>
