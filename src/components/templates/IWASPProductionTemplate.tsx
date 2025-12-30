@@ -14,7 +14,7 @@
 
 import { useState, useRef, useMemo } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { IWASPLogoSimple } from "@/components/IWASPLogo";
+import { IWASPBrandBadge } from "./IWASPBrandBadge";
 import { CardActionButtons } from "./CardActions";
 import { CardData, TemplateProps } from "./CardTemplates";
 import { 
@@ -380,14 +380,14 @@ export function IWASPProductionTemplate({
           {/* Vignette effect */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 pointer-events-none" />
           
-          {/* IWASP Logo - ALWAYS TOP RIGHT - MANDATORY */}
+          {/* IWASP "IWasp )))" Brand Badge - ALWAYS TOP RIGHT - MANDATORY */}
           <motion.div 
             className="absolute top-6 right-6 z-10"
             initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 0.35, x: 0 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
-            <IWASPLogoSimple variant="dark" size="sm" />
+            <IWASPBrandBadge variant="dark" />
           </motion.div>
 
           {/* Card Content */}

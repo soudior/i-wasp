@@ -11,7 +11,7 @@
  */
 
 import { useState } from "react";
-import { IWASPLogoSimple } from "@/components/IWASPLogo";
+import { IWASPBrandBadge } from "./IWASPBrandBadge";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -264,11 +264,8 @@ export function HotelConciergeTemplate({
               )}
             </div>
 
-            <IWASPLogoSimple 
-              variant="dark" 
-              size="sm" 
-              className="opacity-40"
-            />
+            {/* IWASP "IWasp )))" Brand Badge - ALWAYS TOP RIGHT - FIXED */}
+            <IWASPBrandBadge variant="dark" />
           </div>
 
           {/* HOTEL IDENTITY */}

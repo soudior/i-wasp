@@ -13,7 +13,7 @@
  */
 
 import { useState } from "react";
-import { IWASPLogoSimple } from "@/components/IWASPLogo";
+import { IWASPBrandBadge } from "./IWASPBrandBadge";
 import { CardActionButtons } from "./CardActions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -254,14 +254,8 @@ export function HotelGuideTemplate({
               )}
             </div>
 
-            {/* IWASP + NFC Logo - ALWAYS TOP RIGHT - FIXED */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <IWASPLogoSimple 
-                variant="dark" 
-                size="sm" 
-                className="opacity-50"
-              />
-            </div>
+            {/* IWASP "IWasp )))" Brand Badge - ALWAYS TOP RIGHT - FIXED */}
+            <IWASPBrandBadge variant="dark" />
           </div>
 
           {/* HOTEL IDENTITY */}
