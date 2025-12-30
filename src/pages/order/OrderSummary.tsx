@@ -57,7 +57,6 @@ function OrderSummaryContent() {
 
     // Add to cart and proceed to checkout
     addItem({
-      id: `order-${Date.now()}`,
       templateId: state.cardSelection.modelId,
       templateName: state.cardSelection.modelName,
       cardName: `Carte ${state.cardSelection.modelName}`,
