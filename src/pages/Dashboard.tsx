@@ -22,13 +22,14 @@ import {
   supportsAppleWallet,
   supportsGoogleWallet 
 } from "@/lib/wallet";
+import { PhysicalCardGenerator } from "@/components/print/PhysicalCardGenerator";
 import { 
   Plus, CreditCard, Users, Eye, TrendingUp, 
   MoreVertical, Wallet, QrCode,
   Wifi, WifiOff, Pencil, Trash2, ExternalLink, Copy,
   LogOut, X, Apple, Smartphone, ShoppingBag,
   Clock, CheckCircle2, Factory, Truck, Package,
-  Download, MapPin, ChevronRight, FileText, Loader2
+  Download, MapPin, ChevronRight, FileText, Loader2, Image
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -123,9 +124,11 @@ const Dashboard = () => {
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [walletCardId, setWalletCardId] = useState<string | null>(null);
   const [downloadingInvoice, setDownloadingInvoice] = useState<string | null>(null);
+  const [physicalCardId, setPhysicalCardId] = useState<string | null>(null);
 
   const selectedCard = cards.find(c => c.id === selectedCardId);
   const walletCard = cards.find(c => c.id === walletCardId);
+  const physicalCard = cards.find(c => c.id === physicalCardId);
 
   const handleDownloadInvoice = async (order: any) => {
     setDownloadingInvoice(order.id);
@@ -496,6 +499,10 @@ const Dashboard = () => {
                             Voir la carte
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setPhysicalCardId(card.id)}>
+                            <Image size={14} className="mr-2" />
+                            Générer visuel
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleAddToWallet(card.id)}>
                             <Wallet size={14} className="mr-2" />
                             Ajouter au Wallet
@@ -688,6 +695,14 @@ const Dashboard = () => {
           </p>
         </DialogContent>
       </Dialog>
+
+      {/* Physical Card Generator Modal */}
+      <PhysicalCardGenerator
+        open={!!physicalCardId}
+        onOpenChange={(open) => !open && setPhysicalCardId(null)}
+        logoUrl={physicalCard?.logo_url}
+        cardName={physicalCard ? `${physicalCard.first_name}-${physicalCard.last_name}` : "carte"}
+      />
     </div>
   );
 };
