@@ -11,7 +11,7 @@
 import { useRef, useState, useEffect } from "react";
 import { 
   FileImage, FileText, Loader2, ShoppingCart, 
-  Sparkles, Palette, Check, Upload, ImagePlus
+  Sparkles, Palette, Check, Upload, ImagePlus, Printer
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -401,27 +401,43 @@ export function PhysicalCardStudio({
             
             {/* Palettes générées ou presets */}
             <div className="flex flex-wrap gap-2">
-              {palettes.map((palette) => (
-                <button
-                  key={palette.name}
-                  onClick={() => applyPalette(palette)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs transition-colors ${
-                    selectedPalette === palette.name 
-                      ? 'border-foreground bg-foreground/10' 
-                      : 'border-border/50 hover:border-border'
-                  }`}
-                >
-                  <div 
-                    className="w-4 h-4 rounded-full border border-border/30"
-                    style={{ background: palette.backgroundColor }}
-                  />
-                  <span className="text-muted-foreground">{palette.name}</span>
-                  {selectedPalette === palette.name && (
-                    <Check className="w-3 h-3 text-foreground" />
-                  )}
-                </button>
-              ))}
+              {palettes.map((palette) => {
+                const isCarteMatiere = palette.name === "Carte Matière" || palette.name === "Carte Chaud";
+                const isSelected = selectedPalette === palette.name;
+                
+                return (
+                  <button
+                    key={palette.name}
+                    onClick={() => applyPalette(palette)}
+                    className={`relative flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs transition-colors ${
+                      isSelected 
+                        ? 'border-foreground bg-foreground/10' 
+                        : 'border-border/50 hover:border-border'
+                    } ${isCarteMatiere ? 'pr-4' : ''}`}
+                  >
+                    <div 
+                      className="w-4 h-4 rounded-full border border-border/30"
+                      style={{ background: palette.backgroundColor }}
+                    />
+                    <span className="text-muted-foreground">{palette.name}</span>
+                    {isCarteMatiere && (
+                      <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground/70 ml-1">
+                        <Printer className="w-3 h-3" />
+                      </span>
+                    )}
+                    {isSelected && (
+                      <Check className="w-3 h-3 text-foreground" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
+            
+            {/* Légende */}
+            <p className="text-[10px] text-muted-foreground/60 flex items-center gap-1">
+              <Printer className="w-3 h-3" />
+              <span>Recommandé pour l'impression</span>
+            </p>
 
             {/* Génération IA */}
             <Button
