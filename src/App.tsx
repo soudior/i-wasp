@@ -41,8 +41,9 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <AppShell>
-              <Routes>
-                <Route path="/" element={<IWASPCard />} />
+            <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/card" element={<IWASPCard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/templates" element={<Templates />} />
