@@ -8,7 +8,7 @@ import {
   Hotel, DoorOpen, Lightbulb, Thermometer, BedDouble, Utensils,
   Sparkles, Waves, Dumbbell, Coffee, Bell, Key, Settings,
   Wine, Croissant, ChevronDown, Eye, BellRing, Gift, PartyPopper,
-  Percent, Music, Volume2, VolumeX
+  Percent, Music, Volume2, VolumeX, Send, User, Bot, MessagesSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,6 +65,14 @@ interface HotelNotification {
   isNew: boolean;
   actionLabel?: string;
   actionUrl?: string;
+}
+
+// Chat message interface
+interface ChatMessage {
+  id: string;
+  sender: "user" | "concierge";
+  message: string;
+  timestamp: Date;
 }
 
 interface BrandConfig {
@@ -470,6 +478,68 @@ export default function CardShowcase() {
     setHotelNotifications(prev => prev.map(n => ({ ...n, isNew: false })));
     toast.success("Toutes les notifications marquées comme lues");
   };
+  
+  // Chat state
+  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    {
+      id: "1",
+      sender: "concierge",
+      message: "Bonjour et bienvenue au Palace Marrakech ! Je suis Farid, votre concierge dédié. Comment puis-je vous aider ?",
+      timestamp: new Date(Date.now() - 3600000),
+    },
+  ]);
+  const [chatInput, setChatInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  
+  // Concierge auto-responses
+  const conciergeResponses = [
+    "Je m'en occupe immédiatement pour vous.",
+    "Bien sûr, je peux organiser cela. Avez-vous une préférence horaire ?",
+    "Excellent choix ! Je vous confirme la réservation dans quelques instants.",
+    "Je vérifie la disponibilité et je vous tiens informé.",
+    "C'est noté. Y a-t-il autre chose que je puisse faire pour vous ?",
+    "Notre équipe sera ravie de vous accueillir. Je prépare tout.",
+  ];
+  
+  const sendChatMessage = () => {
+    if (!chatInput.trim()) return;
+    
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      sender: "user",
+      message: chatInput.trim(),
+      timestamp: new Date(),
+    };
+    
+    setChatMessages(prev => [...prev, userMessage]);
+    setChatInput("");
+    setIsTyping(true);
+    
+    // Simulate concierge response
+    setTimeout(() => {
+      const responseMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        sender: "concierge",
+        message: conciergeResponses[Math.floor(Math.random() * conciergeResponses.length)],
+        timestamp: new Date(),
+      };
+      setChatMessages(prev => [...prev, responseMessage]);
+      setIsTyping(false);
+    }, 1500 + Math.random() * 1000);
+  };
+  
+  const openWhatsApp = () => {
+    const phone = industries.hotellerie.profile.phone.replace(/\s/g, '');
+    const message = encodeURIComponent("Bonjour, je suis client de l'hôtel et j'aurais besoin d'assistance.");
+    window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+  };
+  
+  // Scroll to bottom of chat
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
   
   // Brand configuration
   const [brand, setBrand] = useState<BrandConfig>({
@@ -1008,6 +1078,192 @@ export default function CardShowcase() {
                           <p className="text-[10px] opacity-40" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
                             {industries.hotellerie.roomFeatures.checkIn} → {industries.hotellerie.roomFeatures.checkOut}
                           </p>
+                        </div>
+                      )}
+
+                      {/* Hotel-specific: Chat with Concierge */}
+                      {selectedIndustry === "hotellerie" && (
+                        <div className="mb-6">
+                          {/* Chat Toggle & WhatsApp Buttons */}
+                          <div className="flex gap-2 mb-3">
+                            <button
+                              onClick={() => setShowChat(!showChat)}
+                              className="flex-1 py-3 px-3 rounded-xl flex items-center justify-center gap-2 transition-all"
+                              style={{
+                                backgroundColor: showChat ? palette.primary : (palette.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)"),
+                                color: showChat ? palette.textOnPrimary : (palette.isDark ? "#fff" : "#1a1a1a"),
+                              }}
+                            >
+                              <MessagesSquare className="h-4 w-4" />
+                              <span className="text-sm font-medium">Chat Concierge</span>
+                            </button>
+                            <button
+                              onClick={openWhatsApp}
+                              className="py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all"
+                              style={{
+                                backgroundColor: "#25D366",
+                                color: "#fff",
+                              }}
+                            >
+                              <MessageCircle className="h-4 w-4" />
+                              <span className="text-sm font-medium">WhatsApp</span>
+                            </button>
+                          </div>
+                          
+                          {/* Chat Panel */}
+                          <AnimatePresence>
+                            {showChat && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div 
+                                  className="rounded-xl overflow-hidden"
+                                  style={{ 
+                                    backgroundColor: palette.isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
+                                    border: `1px solid ${palette.primary}20`,
+                                  }}
+                                >
+                                  {/* Chat Header */}
+                                  <div 
+                                    className="p-3 flex items-center gap-3 border-b"
+                                    style={{ 
+                                      backgroundColor: palette.primary + "10",
+                                      borderColor: palette.primary + "20",
+                                    }}
+                                  >
+                                    <div 
+                                      className="w-10 h-10 rounded-full flex items-center justify-center"
+                                      style={{ backgroundColor: palette.primary }}
+                                    >
+                                      <User className="h-5 w-5" style={{ color: palette.textOnPrimary }} />
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className="text-sm font-medium" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                        Farid - Concierge
+                                      </p>
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                        <span className="text-[10px] opacity-60" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                          En ligne • Répond en ~2 min
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Messages */}
+                                  <div className="h-48 overflow-y-auto p-3 space-y-3">
+                                    {chatMessages.map((msg) => (
+                                      <div 
+                                        key={msg.id}
+                                        className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                                      >
+                                        <div 
+                                          className={`max-w-[80%] p-3 rounded-2xl ${
+                                            msg.sender === "user" 
+                                              ? "rounded-br-md" 
+                                              : "rounded-bl-md"
+                                          }`}
+                                          style={{
+                                            backgroundColor: msg.sender === "user" 
+                                              ? palette.primary 
+                                              : (palette.isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)"),
+                                            color: msg.sender === "user" 
+                                              ? palette.textOnPrimary 
+                                              : (palette.isDark ? "#fff" : "#1a1a1a"),
+                                          }}
+                                        >
+                                          <p className="text-sm leading-relaxed">{msg.message}</p>
+                                          <p 
+                                            className="text-[10px] mt-1 opacity-50"
+                                            style={{ color: msg.sender === "user" ? palette.textOnPrimary : (palette.isDark ? "#fff" : "#1a1a1a") }}
+                                          >
+                                            {msg.timestamp.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    ))}
+                                    
+                                    {/* Typing indicator */}
+                                    {isTyping && (
+                                      <div className="flex justify-start">
+                                        <div 
+                                          className="p-3 rounded-2xl rounded-bl-md flex items-center gap-1"
+                                          style={{ backgroundColor: palette.isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)" }}
+                                        >
+                                          <span 
+                                            className="w-2 h-2 rounded-full animate-bounce" 
+                                            style={{ backgroundColor: palette.primary, animationDelay: "0ms" }}
+                                          />
+                                          <span 
+                                            className="w-2 h-2 rounded-full animate-bounce" 
+                                            style={{ backgroundColor: palette.primary, animationDelay: "150ms" }}
+                                          />
+                                          <span 
+                                            className="w-2 h-2 rounded-full animate-bounce" 
+                                            style={{ backgroundColor: palette.primary, animationDelay: "300ms" }}
+                                          />
+                                        </div>
+                                      </div>
+                                    )}
+                                    <div ref={chatEndRef} />
+                                  </div>
+                                  
+                                  {/* Input */}
+                                  <div 
+                                    className="p-3 border-t flex gap-2"
+                                    style={{ borderColor: palette.primary + "20" }}
+                                  >
+                                    <input
+                                      type="text"
+                                      value={chatInput}
+                                      onChange={(e) => setChatInput(e.target.value)}
+                                      onKeyDown={(e) => e.key === "Enter" && sendChatMessage()}
+                                      placeholder="Écrivez votre message..."
+                                      className="flex-1 px-3 py-2 rounded-lg text-sm border-none outline-none"
+                                      style={{
+                                        backgroundColor: palette.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                                        color: palette.isDark ? "#fff" : "#1a1a1a",
+                                      }}
+                                    />
+                                    <button
+                                      onClick={sendChatMessage}
+                                      disabled={!chatInput.trim()}
+                                      className="w-10 h-10 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
+                                      style={{ 
+                                        backgroundColor: palette.primary,
+                                        color: palette.textOnPrimary,
+                                      }}
+                                    >
+                                      <Send className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                  
+                                  {/* Quick Actions */}
+                                  <div className="px-3 pb-3 flex gap-2 flex-wrap">
+                                    {["Réservation spa", "Room service", "Taxi aéroport", "Info WiFi"].map((action) => (
+                                      <button
+                                        key={action}
+                                        onClick={() => {
+                                          setChatInput(action);
+                                          setTimeout(sendChatMessage, 100);
+                                        }}
+                                        className="text-[10px] px-2 py-1 rounded-full transition-all"
+                                        style={{ 
+                                          backgroundColor: palette.primary + "15",
+                                          color: palette.primary,
+                                        }}
+                                      >
+                                        {action}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
                       )}
 
