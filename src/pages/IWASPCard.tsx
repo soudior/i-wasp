@@ -18,13 +18,13 @@ const Spline = lazy(() => import('@splinetool/react-spline'));
 
 // Contact data
 const contact = {
-  firstName: "Alexandre",
-  lastName: "Dubois",
-  role: "Founder & CEO",
+  firstName: "John",
+  lastName: "Doe",
+  role: "Founder · IWASP",
   company: "IWASP",
   phone: "+33 6 12 34 56 78",
   email: "contact@iwasp.com",
-  linkedin: "alexandre-dubois-iwasp",
+  linkedin: "john-doe-iwasp",
   whatsapp: "+33612345678",
   photoUrl: "",
 };
@@ -90,17 +90,23 @@ export default function IWASPCard() {
       className="min-h-screen flex items-center justify-center px-5 py-10 relative overflow-hidden"
       style={{ backgroundColor: '#0E0E11' }}
     >
-      {/* 3D Robot Background */}
-      <div className="absolute inset-0 pointer-events-none">
+      {/* 3D Robot Background - positioned bottom-left */}
+      <div className="absolute bottom-0 left-0 w-[400px] h-[500px] pointer-events-none opacity-25">
         <Suspense fallback={null}>
           <Spline 
             scene="https://prod.spline.design/c7ea7d61-b5c3-46cf-87e6-76f0be0349bf/scene.splinecode"
-            className="w-full h-full opacity-20"
+            className="w-full h-full"
           />
         </Suspense>
-        {/* Overlay to keep robot subtle */}
-        <div className="absolute inset-0 bg-[#0E0E11]/50" />
       </div>
+      
+      {/* Overlay gradient to keep robot subtle */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at bottom left, transparent 0%, #0E0E11 60%)'
+        }}
+      />
 
       {/* Subtle grid pattern overlay */}
       <div 
@@ -162,25 +168,27 @@ export default function IWASPCard() {
           </div>
 
           {/* Name & Role */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <h1 className="text-[22px] font-semibold text-white tracking-tight mb-1">
               {fullName}
             </h1>
-            <p className="text-white/50 text-[14px] mb-1">
+            <p className="text-white/50 text-[14px]">
               {contact.role}
-            </p>
-            <p className="text-[#FFD400]/60 text-[11px] font-medium tracking-[0.15em] uppercase">
-              {contact.company}
             </p>
           </div>
 
+          {/* Tagline */}
+          <p className="text-center text-[#FFD400]/70 text-[12px] font-medium tracking-[0.1em] uppercase mb-8">
+            Tap. Connect. Empower.
+          </p>
+
           {/* Action Buttons - Stacked */}
           <div className="space-y-3">
-            <ActionButton icon={Phone} label="Appeler" onClick={handleCall} />
+            <ActionButton icon={Phone} label="Call" onClick={handleCall} />
             <ActionButton icon={Mail} label="Email" onClick={handleEmail} />
             <ActionButton icon={Linkedin} label="LinkedIn" onClick={handleLinkedIn} />
             <ActionButton icon={MessageCircle} label="WhatsApp" onClick={handleWhatsApp} />
-            <ActionButton icon={Download} label="Ajouter aux contacts" onClick={handleAddContact} isPrimary />
+            <ActionButton icon={Download} label="Add to contact" onClick={handleAddContact} isPrimary />
           </div>
         </div>
 
