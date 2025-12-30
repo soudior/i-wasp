@@ -26,6 +26,7 @@ import AdminAnalytics from "./pages/AdminAnalytics";
 import Demo from "./pages/Demo";
 import HotelDemo from "./pages/HotelDemo";
 import HotelDashboard from "./pages/HotelDashboard";
+import LianaLanding from "./pages/LianaLanding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -103,6 +104,7 @@ const App = () => (
                 />
                 <Route path="/c/:slug" element={<PublicCard />} />
                 <Route path="/demo" element={<Demo />} />
+                <Route path="/liana" element={<LianaLanding />} />
                 <Route path="/hotel-demo" element={<HotelDemo />} />
                 <Route path="/hotel-dashboard" element={<HotelDashboard />} />
                 <Route

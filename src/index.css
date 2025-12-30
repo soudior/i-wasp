@@ -115,6 +115,14 @@
     --sidebar-border: 0 0% 12%;
     --sidebar-ring: 0 0% 100%;
     
+    /* Liana x I-Wasp Brand Colors */
+    --carbon: 240 7% 6%; /* #0E0E11 */
+    --carbon-dark: 240 7% 4%;
+    --gold: 48 96% 53%; /* #FACC15 - Electric Gold */
+    --gold-muted: 48 70% 40%;
+    --iwasp-green: 142 69% 58%; /* #4ade80 - I-Wasp Green */
+    --iwasp-green-muted: 142 50% 40%;
+    
     /* Mobile-first: Safe area insets */
     --safe-area-top: env(safe-area-inset-top, 0px);
     --safe-area-right: env(safe-area-inset-right, 0px);
