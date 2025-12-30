@@ -29,6 +29,8 @@ export function useIsAdmin() {
       return !!data;
     },
     enabled: !!user,
+    staleTime: 0, // Always check fresh
+    refetchOnMount: true,
   });
 }
 
