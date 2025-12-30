@@ -131,14 +131,7 @@ export function IWASPSignatureTemplate({
           />
         </div>
 
-        {/* Footer - Powered by IWASP */}
-        <div className="border-t border-foreground/5 py-4 text-center">
-          <p className="text-[10px] text-foreground/20 tracking-widest uppercase">
-            Powered by IWASP
-          </p>
-        </div>
-
-        {/* Subtle bottom gradient line */}
+        {/* Subtle bottom line */}
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-foreground/5 to-transparent" />
       </div>
     </div>
@@ -249,12 +242,8 @@ export function IWASPSignatureLightTemplate({
           />
         </div>
 
-        {/* Footer */}
-        <div className="border-t border-neutral-100 py-4 text-center">
-          <p className="text-[10px] text-neutral-300 tracking-widest uppercase">
-            Powered by IWASP
-          </p>
-        </div>
+        {/* Subtle bottom line */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
       </div>
     </div>
   );
