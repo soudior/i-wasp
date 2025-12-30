@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Wifi, CreditCard, Building2, Hotel, Store, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NFCPhysicalCardSection } from "@/components/print/NFCPhysicalCardSection";
+import iwaspLogo from "@/assets/iwasp-logo-white.png";
 
 /**
  * Index - Page institutionnelle i-wasp
@@ -84,7 +85,7 @@ const Index = () => {
       </section>
 
       {/* Section Template carte physique NFC */}
-      <NFCPhysicalCardSection />
+      <NFCPhysicalCardSection logoUrl={iwaspLogo} />
 
       {/* Footer minimal */}
       <footer className="py-6 px-4 border-t border-border/20">
