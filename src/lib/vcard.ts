@@ -11,6 +11,20 @@ export interface VCardData {
   instagram?: string;
   twitter?: string;
   tagline?: string;
+  photoUrl?: string;
+  photoBase64?: string;
+  includeNfcNote?: boolean;
+}
+
+function formatDateFrench(): string {
+  const now = new Date();
+  return now.toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 }
 
 export function generateVCard(data: VCardData): string {
@@ -47,7 +61,10 @@ export function generateVCard(data: VCardData): string {
   }
 
   if (data.linkedin) {
-    lines.push(`X-SOCIALPROFILE;TYPE=linkedin:https://linkedin.com/in/${data.linkedin}`);
+    const linkedinUrl = data.linkedin.startsWith("http") 
+      ? data.linkedin 
+      : `https://linkedin.com/in/${data.linkedin}`;
+    lines.push(`X-SOCIALPROFILE;TYPE=linkedin:${linkedinUrl}`);
   }
 
   if (data.instagram) {
@@ -60,8 +77,21 @@ export function generateVCard(data: VCardData): string {
     lines.push(`X-SOCIALPROFILE;TYPE=twitter:https://twitter.com/${handle}`);
   }
 
+  // Photo en base64 (compatible iOS & Android)
+  if (data.photoBase64) {
+    lines.push(`PHOTO;ENCODING=b;TYPE=JPEG:${data.photoBase64}`);
+  }
+
+  // Note avec tagline et/ou mention NFC
+  const noteParts: string[] = [];
   if (data.tagline) {
-    lines.push(`NOTE:${data.tagline}`);
+    noteParts.push(data.tagline);
+  }
+  if (data.includeNfcNote !== false) {
+    noteParts.push(`Carte de visite NFC – scannée le ${formatDateFrench()}`);
+  }
+  if (noteParts.length > 0) {
+    lines.push(`NOTE:${noteParts.join(' | ')}`);
   }
 
   lines.push("END:VCARD");
