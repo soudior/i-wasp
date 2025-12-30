@@ -47,6 +47,67 @@ const CARD_WIDTH_MM = 85.6;
 const CARD_HEIGHT_MM = 54;
 const CARD_RATIO = CARD_WIDTH_MM / CARD_HEIGHT_MM;
 
+/**
+ * Simulation de conversion RGB vers CMJN pour aperçu impression
+ * Note: C'est une approximation visuelle, pas une vraie conversion ICC
+ */
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : { r: 0, g: 0, b: 0 };
+}
+
+function rgbToCmyk(r: number, g: number, b: number): { c: number; m: number; y: number; k: number } {
+  const rPrime = r / 255;
+  const gPrime = g / 255;
+  const bPrime = b / 255;
+  
+  const k = 1 - Math.max(rPrime, gPrime, bPrime);
+  if (k === 1) return { c: 0, m: 0, y: 0, k: 100 };
+  
+  const c = (1 - rPrime - k) / (1 - k);
+  const m = (1 - gPrime - k) / (1 - k);
+  const y = (1 - bPrime - k) / (1 - k);
+  
+  return {
+    c: Math.round(c * 100),
+    m: Math.round(m * 100),
+    y: Math.round(y * 100),
+    k: Math.round(k * 100)
+  };
+}
+
+/**
+ * Simule le rendu CMJN en appliquant une légère désaturation
+ * et un décalage de teinte typique de l'impression offset
+ */
+function simulateCmykRender(hex: string): string {
+  const { r, g, b } = hexToRgb(hex);
+  
+  // Légère désaturation (les couleurs imprimées sont moins vives)
+  const saturationFactor = 0.92;
+  const avg = (r + g + b) / 3;
+  
+  const newR = Math.round(avg + (r - avg) * saturationFactor);
+  const newG = Math.round(avg + (g - avg) * saturationFactor);
+  const newB = Math.round(avg + (b - avg) * saturationFactor);
+  
+  // Légère teinte chaude (typique du papier)
+  const warmR = Math.min(255, newR + 2);
+  const warmG = Math.min(255, newG + 1);
+  const warmB = Math.max(0, newB - 3);
+  
+  return `rgb(${warmR}, ${warmG}, ${warmB})`;
+}
+
+function getCmykValues(hex: string): { c: number; m: number; y: number; k: number } {
+  const { r, g, b } = hexToRgb(hex);
+  return rgbToCmyk(r, g, b);
+}
+
 // Palettes officielles i-wasp (basées sur le design system)
 // PALETTE 3 — "Carte matière" est la palette par défaut pour les cartes physiques
 const CARTE_MATIERE_COLORS = {
@@ -338,6 +399,95 @@ export function PhysicalCardStudio({
               }}
             />
           </div>
+
+          {/* Aperçu rendu impression CMJN */}
+          {(selectedPalette === "Carte Matière" || selectedPalette === "Carte Chaud") && (
+            <div className="space-y-2">
+              <Label className="text-sm font-medium flex items-center gap-2">
+                <Printer className="w-4 h-4" />
+                Aperçu impression (CMJN simulé)
+              </Label>
+              
+              <div className="flex gap-4 items-start">
+                {/* Mini aperçu CMJN */}
+                <div 
+                  className="relative rounded-lg overflow-hidden shadow-md flex-shrink-0"
+                  style={{
+                    aspectRatio: CARD_RATIO,
+                    width: "120px",
+                    background: simulateCmykRender(backgroundColor),
+                    filter: "contrast(0.98) brightness(0.99)",
+                  }}
+                >
+                  {/* Simulation texture papier */}
+                  <div 
+                    className="absolute inset-0 pointer-events-none opacity-[0.03]"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+                    }}
+                  />
+                  {/* Logo simulé */}
+                  {effectiveLogoUrl && (
+                    <div className="absolute inset-0 flex items-center justify-center p-2">
+                      <img 
+                        src={effectiveLogoUrl} 
+                        alt="" 
+                        className="max-w-[50%] max-h-[40%] object-contain"
+                        style={{ filter: "contrast(0.95) saturate(0.9)" }}
+                      />
+                    </div>
+                  )}
+                  <div 
+                    className="absolute bottom-1 right-1 text-[6px] font-medium opacity-50"
+                    style={{ color: simulateCmykRender(accentColor) }}
+                  >
+                    CMJN
+                  </div>
+                </div>
+                
+                {/* Valeurs CMJN */}
+                <div className="flex-1 space-y-2">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                    <div>
+                      <span className="text-muted-foreground">Fond:</span>
+                      <div className="flex gap-1 mt-0.5 font-mono text-[10px]">
+                        {(() => {
+                          const cmyk = getCmykValues(backgroundColor);
+                          return (
+                            <>
+                              <span className="text-cyan-400">C{cmyk.c}</span>
+                              <span className="text-pink-400">M{cmyk.m}</span>
+                              <span className="text-yellow-400">Y{cmyk.y}</span>
+                              <span className="text-foreground/70">K{cmyk.k}</span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Texte:</span>
+                      <div className="flex gap-1 mt-0.5 font-mono text-[10px]">
+                        {(() => {
+                          const cmyk = getCmykValues(accentColor);
+                          return (
+                            <>
+                              <span className="text-cyan-400">C{cmyk.c}</span>
+                              <span className="text-pink-400">M{cmyk.m}</span>
+                              <span className="text-yellow-400">Y{cmyk.y}</span>
+                              <span className="text-foreground/70">K{cmyk.k}</span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/60">
+                    Simulation du rendu papier mat · Les couleurs réelles peuvent varier
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Infos format */}
           <p className="text-center text-xs text-muted-foreground">
