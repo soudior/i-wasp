@@ -603,9 +603,9 @@ export default function Demo() {
               <p className="text-sm text-white/40">Un tap suffit pour partager votre profil</p>
             </div>
             
-            {/* Physical Card Component - White variant */}
-            <div className="max-w-[280px] mx-auto">
-              <NFCPhysicalCard colorId="white" showBack={false} interactive={false} />
+            {/* Physical Card Component - Interactive color selector */}
+            <div className="max-w-[300px] mx-auto">
+              <NFCPhysicalCard colorId="white" showBack={false} interactive={true} />
             </div>
             
             {/* Card specs */}
