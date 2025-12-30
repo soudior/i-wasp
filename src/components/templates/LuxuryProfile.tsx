@@ -20,6 +20,7 @@ import { downloadVCard, VCardData } from '@/lib/vcard';
 import { CardData, TemplateProps } from './CardTemplates';
 import { motion } from 'framer-motion';
 import iwaspLogo from '@/assets/iwasp-logo.png';
+import iwaspLogoWhite from '@/assets/iwasp-logo-white.png';
 
 interface SocialItemProps {
   icon: React.ReactNode;
@@ -118,11 +119,19 @@ export function LuxuryProfile({
           {/* Forest gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/40 via-[#0a0a0a] to-[#050505]" />
           
+          {/* I-WASP Logo - Floating Badge Top Right */}
+          <div className="absolute top-4 right-4 z-10">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-2 border border-white/20 shadow-lg">
+              <img 
+                src={iwaspLogoWhite} 
+                alt="I-WASP" 
+                className="h-6 w-auto object-contain invert"
+              />
+            </div>
+          </div>
+          
           {/* Subtle leaf pattern overlay */}
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-4 right-8 text-emerald-500/30">
-              <Leaf size={40} />
-            </div>
             <div className="absolute top-12 left-10 text-emerald-600/20 rotate-45">
               <Leaf size={24} />
             </div>
