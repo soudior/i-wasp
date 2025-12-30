@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
+import { sendOrderEmail } from "./useOrderEmails";
 
 export type Order = Tables<"orders"> & {
   order_items?: OrderItem[];
@@ -137,9 +138,20 @@ export function useCreateOrder() {
       if (error) throw error;
       return data as Order;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       toast.success("Commande créée avec succès");
+      
+      // Send confirmation email (async, don't block)
+      sendOrderEmail({ orderId: data.id, emailType: "order_confirmation" })
+        .then(success => {
+          if (success) {
+            console.log("Order confirmation email sent");
+          } else {
+            console.warn("Failed to send order confirmation email");
+          }
+        });
+      
       return data;
     },
     onError: (error) => {
