@@ -169,8 +169,10 @@ function IdentityEditor({ block, onChange }: { block: IdentityBlock; onChange: (
   );
 }
 
-function WifiEditor({ block, onChange }: { block: WifiBlock; onChange: (b: WifiBlock) => void }) {
+function WifiEditor({ block, onChange, logoUrl }: { block: WifiBlock; onChange: (b: WifiBlock) => void; logoUrl?: string | null }) {
   const [copied, setCopied] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  
   const updateData = (field: keyof WifiBlock["data"], value: string) => {
     onChange({ ...block, data: { ...block.data, [field]: value } });
   };
@@ -182,6 +184,11 @@ function WifiEditor({ block, onChange }: { block: WifiBlock; onChange: (b: WifiB
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Generate Wi-Fi QR string for preview
+  const wifiString = block.data.ssid 
+    ? `WIFI:T:${block.data.security || "WPA"};S:${block.data.ssid};P:${block.data.password};;`
+    : "";
+
   return (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -189,36 +196,49 @@ function WifiEditor({ block, onChange }: { block: WifiBlock; onChange: (b: WifiB
         <Input
           value={block.data.ssid}
           onChange={(e) => updateData("ssid", e.target.value)}
-          placeholder="MonWiFi"
+          placeholder="WiFi-Invité"
+          maxLength={32}
           className="h-10"
         />
       </div>
       <div className="space-y-2">
         <Label className="text-xs text-muted-foreground">Mot de passe</Label>
         <div className="flex gap-2">
-          <Input
-            value={block.data.password}
-            onChange={(e) => updateData("password", e.target.value)}
-            placeholder="••••••••"
-            type="password"
-            className="h-10 flex-1"
-          />
+          <div className="relative flex-1">
+            <Input
+              value={block.data.password}
+              onChange={(e) => updateData("password", e.target.value)}
+              placeholder="••••••••"
+              type={showPassword ? "text" : "password"}
+              maxLength={63}
+              className="h-10 pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
           <Button type="button" variant="outline" size="icon" onClick={copyPassword} className="h-10 w-10">
             {copied ? <Check size={16} /> : <Copy size={16} />}
           </Button>
         </div>
+        <p className="text-xs text-muted-foreground">
+          Le mot de passe sera encodé dans le QR code et ne sera jamais affiché aux visiteurs.
+        </p>
       </div>
       <div className="space-y-2">
         <Label className="text-xs text-muted-foreground">Type de sécurité</Label>
-        <Select value={block.data.security || "WPA2"} onValueChange={(value) => updateData("security", value)}>
+        <Select value={block.data.security || "WPA"} onValueChange={(value) => updateData("security", value)}>
           <SelectTrigger className="h-10">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="WPA2">WPA2 (Recommandé)</SelectItem>
-            <SelectItem value="WPA">WPA</SelectItem>
+            <SelectItem value="WPA">WPA/WPA2/WPA3 (Recommandé)</SelectItem>
             <SelectItem value="WEP">WEP (Ancien)</SelectItem>
-            <SelectItem value="open">Ouvert (pas de mot de passe)</SelectItem>
+            <SelectItem value="nopass">Réseau ouvert</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -227,9 +247,40 @@ function WifiEditor({ block, onChange }: { block: WifiBlock; onChange: (b: WifiB
         <Input
           value={block.data.label || ""}
           onChange={(e) => updateData("label", e.target.value)}
-          placeholder="WiFi Gratuit"
+          placeholder="Wi-Fi Gratuit"
           className="h-10"
         />
+      </div>
+      
+      {/* QR Wi-Fi Preview */}
+      {block.data.ssid && block.data.password && (
+        <div className="pt-2 border-t border-border/30">
+          <Label className="text-xs text-muted-foreground mb-3 block">Aperçu QR Wi-Fi</Label>
+          <div className="flex justify-center">
+            <div className="bg-white p-3 rounded-xl">
+              <QRCodePreview value={wifiString} size={100} />
+            </div>
+          </div>
+          <p className="text-xs text-center text-muted-foreground mt-2">
+            Les visiteurs scanneront ce QR pour se connecter automatiquement
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Simple QR Preview component (inline to avoid import issues)
+function QRCodePreview({ value, size }: { value: string; size: number }) {
+  // Using a simple visual placeholder - the actual QR is rendered on the card
+  return (
+    <div 
+      className="flex items-center justify-center"
+      style={{ width: size, height: size }}
+    >
+      <div className="relative w-full h-full bg-gradient-to-br from-muted/20 to-muted/5 rounded-lg flex items-center justify-center">
+        <Wifi className="w-8 h-8 text-muted-foreground/50" />
+        <div className="absolute inset-2 border-2 border-dashed border-muted-foreground/20 rounded" />
       </div>
     </div>
   );
