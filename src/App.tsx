@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -30,6 +30,11 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+function LegacyCardRedirect() {
+  const { slug } = useParams<{ slug: string }>();
+  return <Navigate to={`/card/${slug ?? ""}`} replace />;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -51,8 +56,9 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 
-                {/* NFC Card - Isolated (both /c/ and /card/) */}
-                <Route path="/c/:slug" element={<PublicCard />} />
+                {/* NFC Card - Isolated */}
+                {/* Legacy alias: keep working but always redirects to /card/[id] */}
+                <Route path="/c/:slug" element={<LegacyCardRedirect />} />
                 <Route path="/card/:slug" element={<PublicCard />} />
                 {/* Dashboard - Protected */}
                 <Route
