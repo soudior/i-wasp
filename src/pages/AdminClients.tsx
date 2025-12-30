@@ -3,7 +3,7 @@
  * Apple Cupertino style, minimal and professional
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,7 +23,8 @@ import {
   Check,
   Loader2,
   Download,
-  Trash2
+  Trash2,
+  Lock
 } from "lucide-react";
 import { Navigate } from "react-router-dom";
 import { downloadVCard } from "@/lib/vcard";
@@ -60,6 +61,9 @@ const initialFormData: ClientFormData = {
   linkedin: "",
 };
 
+// Simple password protection - change this password as needed
+const ADMIN_PASSWORD = "iwasp2024";
+
 export default function AdminClients() {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
@@ -69,6 +73,31 @@ export default function AdminClients() {
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [formData, setFormData] = useState<ClientFormData>(initialFormData);
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
+  
+  // Password protection state
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+
+  // Check if already unlocked in session
+  useEffect(() => {
+    const unlocked = sessionStorage.getItem("iwasp_admin_unlocked");
+    if (unlocked === "true") {
+      setIsUnlocked(true);
+    }
+  }, []);
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordInput === ADMIN_PASSWORD) {
+      setIsUnlocked(true);
+      sessionStorage.setItem("iwasp_admin_unlocked", "true");
+      setPasswordError(false);
+    } else {
+      setPasswordError(true);
+      setPasswordInput("");
+    }
+  };
 
   // Fetch all clients (admin sees all cards)
   const { data: clients, isLoading } = useQuery({
@@ -212,6 +241,59 @@ export default function AdminClients() {
         <div className="text-center p-8">
           <p style={{ color: "#1D1D1F" }} className="text-lg font-medium">Accès refusé</p>
           <p style={{ color: "#8E8E93" }} className="text-sm mt-2">Vous n'avez pas les droits d'administration.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Password gate
+  if (!isUnlocked) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center p-4" style={{ backgroundColor: "#F5F5F7" }}>
+        <div className="w-full max-w-sm rounded-2xl p-8 shadow-sm" style={{ backgroundColor: "#FFFFFF" }}>
+          <div className="text-center mb-6">
+            <div 
+              className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center"
+              style={{ backgroundColor: "#F5F5F7" }}
+            >
+              <Lock className="h-5 w-5" style={{ color: "#8E8E93" }} />
+            </div>
+            <h1 className="text-xl font-semibold" style={{ color: "#1D1D1F" }}>
+              IWASP Admin
+            </h1>
+            <p className="text-sm mt-1" style={{ color: "#8E8E93" }}>
+              Entrez le mot de passe
+            </p>
+          </div>
+
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <Input
+              type="password"
+              value={passwordInput}
+              onChange={(e) => {
+                setPasswordInput(e.target.value);
+                setPasswordError(false);
+              }}
+              placeholder="Mot de passe"
+              className="rounded-xl border-gray-200 text-center"
+              style={{ backgroundColor: "#F5F5F7" }}
+              autoFocus
+            />
+            
+            {passwordError && (
+              <p className="text-sm text-center" style={{ color: "#FF3B30" }}>
+                Mot de passe incorrect
+              </p>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full rounded-xl font-medium"
+              style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
+            >
+              Accéder
+            </Button>
+          </form>
         </div>
       </div>
     );
