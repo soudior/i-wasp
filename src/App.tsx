@@ -27,6 +27,7 @@ import Demo from "./pages/Demo";
 import HotelDemo from "./pages/HotelDemo";
 import HotelDashboard from "./pages/HotelDashboard";
 import LianaLanding from "./pages/LianaLanding";
+import IWASPCard from "./pages/IWASPCard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,7 +42,7 @@ const App = () => (
           <BrowserRouter>
             <AppShell>
               <Routes>
-                <Route path="/" element={<LianaLanding />} />
+                <Route path="/" element={<IWASPCard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/templates" element={<Templates />} />
