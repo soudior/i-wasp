@@ -108,44 +108,124 @@ const CARD_PRODUCTS: CardProduct[] = [
   },
 ];
 
-// Step indicator
+// Step indicator with animations
 function StepIndicator({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) {
   const steps = [
-    { number: 1, label: "Type" },
-    { number: 2, label: "Carte" },
-    { number: 3, label: "Personnalisation" },
-    { number: 4, label: "Récapitulatif" },
+    { number: 1, label: "Type", icon: User },
+    { number: 2, label: "Carte", icon: CreditCard },
+    { number: 3, label: "Personnalisation", icon: Palette },
+    { number: 4, label: "Récapitulatif", icon: ShoppingBag },
   ];
 
   return (
-    <div className="flex items-center justify-center gap-2 mb-8">
-      {steps.map((step, index) => (
-        <div key={step.number} className="flex items-center">
-          <div
-            className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-all ${
-              currentStep >= step.number
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground"
-            }`}
-          >
-            {currentStep > step.number ? <Check size={16} /> : step.number}
+    <div className="flex items-center justify-center mb-10">
+      {steps.map((step, index) => {
+        const isCompleted = currentStep > step.number;
+        const isCurrent = currentStep === step.number;
+        const isPending = currentStep < step.number;
+        const StepIcon = step.icon;
+
+        return (
+          <div key={step.number} className="flex items-center">
+            {/* Step Circle */}
+            <div className="relative flex flex-col items-center">
+              <motion.div
+                initial={false}
+                animate={{
+                  scale: isCurrent ? 1.1 : 1,
+                  backgroundColor: isCompleted || isCurrent 
+                    ? "hsl(var(--primary))" 
+                    : "hsl(var(--muted))",
+                }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className={`relative flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full text-sm font-medium z-10 ${
+                  isCompleted || isCurrent
+                    ? "text-primary-foreground shadow-lg shadow-primary/30"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {/* Pulse ring for current step */}
+                {isCurrent && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-primary/30"
+                    initial={{ scale: 1, opacity: 0.5 }}
+                    animate={{ scale: 1.5, opacity: 0 }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                  />
+                )}
+                
+                {/* Icon or checkmark */}
+                <AnimatePresence mode="wait">
+                  {isCompleted ? (
+                    <motion.div
+                      key="check"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, rotate: 180 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                    >
+                      <Check size={18} strokeWidth={3} />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="icon"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <StepIcon size={18} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+
+              {/* Label */}
+              <motion.span
+                initial={false}
+                animate={{
+                  color: isCompleted || isCurrent 
+                    ? "hsl(var(--foreground))" 
+                    : "hsl(var(--muted-foreground))",
+                  fontWeight: isCurrent ? 600 : 400,
+                }}
+                transition={{ duration: 0.3 }}
+                className="hidden sm:block mt-2 text-xs sm:text-sm whitespace-nowrap"
+              >
+                {step.label}
+              </motion.span>
+            </div>
+
+            {/* Progress Line */}
+            {index < steps.length - 1 && (
+              <div className="relative w-12 sm:w-20 md:w-28 h-1 mx-1 sm:mx-2 bg-muted rounded-full overflow-hidden">
+                <motion.div
+                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-amber-400 rounded-full"
+                  initial={false}
+                  animate={{
+                    width: isCompleted ? "100%" : isCurrent ? "50%" : "0%",
+                  }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                />
+                {/* Shimmer effect on active line */}
+                {(isCompleted || isCurrent) && (
+                  <motion.div
+                    className="absolute inset-y-0 w-8 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                    initial={{ x: "-100%" }}
+                    animate={{ x: "400%" }}
+                    transition={{ 
+                      duration: 2, 
+                      repeat: Infinity, 
+                      repeatDelay: 1,
+                      ease: "easeInOut" 
+                    }}
+                  />
+                )}
+              </div>
+            )}
           </div>
-          <span
-            className={`hidden sm:block ml-2 text-sm ${
-              currentStep >= step.number ? "text-foreground" : "text-muted-foreground"
-            }`}
-          >
-            {step.label}
-          </span>
-          {index < steps.length - 1 && (
-            <div
-              className={`w-8 sm:w-12 h-0.5 mx-2 ${
-                currentStep > step.number ? "bg-primary" : "bg-muted"
-              }`}
-            />
-          )}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
