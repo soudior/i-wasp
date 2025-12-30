@@ -7,7 +7,8 @@ import {
   Instagram, ExternalLink, ArrowLeft, Upload, Palette, X,
   Hotel, DoorOpen, Lightbulb, Thermometer, BedDouble, Utensils,
   Sparkles, Waves, Dumbbell, Coffee, Bell, Key, Settings,
-  Wine, Croissant, ChevronDown, Eye
+  Wine, Croissant, ChevronDown, Eye, BellRing, Gift, PartyPopper,
+  Percent, Music, Volume2, VolumeX
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,19 @@ interface HotelMenus {
       items: MenuItem[];
     }[];
   };
+}
+
+// Hotel notification interface
+interface HotelNotification {
+  id: string;
+  type: "promotion" | "event" | "info" | "alert";
+  title: string;
+  message: string;
+  icon: typeof Bell;
+  timestamp: string;
+  isNew: boolean;
+  actionLabel?: string;
+  actionUrl?: string;
 }
 
 interface BrandConfig {
@@ -360,6 +374,56 @@ const industries = {
       { icon: Dumbbell, label: "Fitness", desc: "Accès libre", hours: "6h-22h" },
       { icon: Bell, label: "Conciergerie", desc: "Services VIP", hours: "24h/24" },
     ],
+    notifications: [
+      {
+        id: "1",
+        type: "promotion",
+        title: "Offre Spa -30%",
+        message: "Profitez de 30% de réduction sur tous nos soins hammam jusqu'au 5 janvier !",
+        icon: Percent,
+        timestamp: "Il y a 2h",
+        isNew: true,
+        actionLabel: "Réserver",
+      },
+      {
+        id: "2",
+        type: "event",
+        title: "Soirée du Nouvel An",
+        message: "Rejoignez-nous sur le rooftop pour une soirée exceptionnelle avec DJ et feu d'artifice.",
+        icon: PartyPopper,
+        timestamp: "Il y a 5h",
+        isNew: true,
+        actionLabel: "Plus d'infos",
+      },
+      {
+        id: "3",
+        type: "event",
+        title: "Concert Live ce soir",
+        message: "Musique traditionnelle marocaine au restaurant Le Jardin d'Orient dès 20h.",
+        icon: Music,
+        timestamp: "Hier",
+        isNew: false,
+        actionLabel: "Voir le programme",
+      },
+      {
+        id: "4",
+        type: "info",
+        title: "Petit-déjeuner inclus",
+        message: "Rappel : votre petit-déjeuner buffet est servi de 7h à 10h30 au rez-de-chaussée.",
+        icon: Coffee,
+        timestamp: "Hier",
+        isNew: false,
+      },
+      {
+        id: "5",
+        type: "promotion",
+        title: "Late Check-out offert",
+        message: "En tant que client privilégié, bénéficiez d'un départ tardif jusqu'à 14h gratuitement.",
+        icon: Gift,
+        timestamp: "Il y a 2 jours",
+        isNew: false,
+      },
+    ] as HotelNotification[],
   },
 };
 
@@ -386,6 +450,26 @@ export default function CardShowcase() {
   const [showRoomControl, setShowRoomControl] = useState(false);
   const [activeMenu, setActiveMenu] = useState<"restaurant" | "roomService" | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  
+  // Notification state
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [hotelNotifications, setHotelNotifications] = useState<HotelNotification[]>(
+    industries.hotellerie.notifications as HotelNotification[]
+  );
+  
+  const unreadCount = hotelNotifications.filter(n => n.isNew).length;
+  
+  const markAsRead = (notificationId: string) => {
+    setHotelNotifications(prev => 
+      prev.map(n => n.id === notificationId ? { ...n, isNew: false } : n)
+    );
+  };
+  
+  const markAllAsRead = () => {
+    setHotelNotifications(prev => prev.map(n => ({ ...n, isNew: false })));
+    toast.success("Toutes les notifications marquées comme lues");
+  };
   
   // Brand configuration
   const [brand, setBrand] = useState<BrandConfig>({
@@ -924,6 +1008,191 @@ export default function CardShowcase() {
                           <p className="text-[10px] opacity-40" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
                             {industries.hotellerie.roomFeatures.checkIn} → {industries.hotellerie.roomFeatures.checkOut}
                           </p>
+                        </div>
+                      )}
+
+                      {/* Hotel-specific: Notifications Panel */}
+                      {selectedIndustry === "hotellerie" && (
+                        <div className="mb-6">
+                          {/* Notification Toggle Button */}
+                          <button
+                            onClick={() => setShowNotifications(!showNotifications)}
+                            className="w-full py-3 px-4 rounded-xl flex items-center justify-between relative"
+                            style={{ 
+                              backgroundColor: palette.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                              border: showNotifications ? `1px solid ${palette.primary}40` : "1px solid transparent",
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="relative">
+                                <BellRing className="h-5 w-5" style={{ color: palette.primary }} />
+                                {unreadCount > 0 && (
+                                  <span 
+                                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
+                                    style={{ backgroundColor: "#ef4444" }}
+                                  >
+                                    {unreadCount}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-left">
+                                <span className="text-sm font-medium block" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                  Notifications de l'hôtel
+                                </span>
+                                <span className="text-[10px] opacity-50" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                  {unreadCount > 0 ? `${unreadCount} non lue${unreadCount > 1 ? 's' : ''}` : 'Tout est lu'}
+                                </span>
+                              </div>
+                            </div>
+                            <ChevronRight 
+                              className={`h-4 w-4 transition-transform ${showNotifications ? "rotate-90" : ""}`}
+                              style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}
+                            />
+                          </button>
+                          
+                          {/* Notifications Panel */}
+                          <AnimatePresence>
+                            {showNotifications && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="pt-3 space-y-3">
+                                  {/* Notification Settings */}
+                                  <div 
+                                    className="p-3 rounded-xl flex items-center justify-between"
+                                    style={{ backgroundColor: palette.isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)" }}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      {notificationsEnabled ? (
+                                        <Volume2 className="h-4 w-4" style={{ color: palette.primary }} />
+                                      ) : (
+                                        <VolumeX className="h-4 w-4" style={{ color: "#9ca3af" }} />
+                                      )}
+                                      <span className="text-sm" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                        Notifications push
+                                      </span>
+                                    </div>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setNotificationsEnabled(!notificationsEnabled);
+                                        toast.success(notificationsEnabled ? "Notifications désactivées" : "Notifications activées");
+                                      }}
+                                      className={`w-10 h-5 rounded-full transition-colors ${notificationsEnabled ? "" : "bg-gray-300"}`}
+                                      style={{ backgroundColor: notificationsEnabled ? palette.primary : undefined }}
+                                    >
+                                      <div 
+                                        className={`w-4 h-4 rounded-full bg-white shadow transition-transform mt-0.5 ${notificationsEnabled ? "translate-x-5 ml-0.5" : "translate-x-0.5"}`}
+                                      />
+                                    </button>
+                                  </div>
+                                  
+                                  {/* Mark all as read */}
+                                  {unreadCount > 0 && (
+                                    <button
+                                      onClick={markAllAsRead}
+                                      className="w-full py-2 text-sm text-center rounded-lg transition-colors"
+                                      style={{ 
+                                        color: palette.primary,
+                                        backgroundColor: palette.primary + "10",
+                                      }}
+                                    >
+                                      Tout marquer comme lu
+                                    </button>
+                                  )}
+                                  
+                                  {/* Notifications List */}
+                                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                                    {hotelNotifications.map((notification) => {
+                                      const NotifIcon = notification.icon;
+                                      return (
+                                        <motion.div
+                                          key={notification.id}
+                                          initial={{ opacity: 0, x: -10 }}
+                                          animate={{ opacity: 1, x: 0 }}
+                                          className="p-3 rounded-xl relative"
+                                          style={{ 
+                                            backgroundColor: notification.isNew 
+                                              ? (palette.isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.04)")
+                                              : (palette.isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)"),
+                                            borderLeft: notification.isNew ? `3px solid ${palette.primary}` : "3px solid transparent",
+                                          }}
+                                          onClick={() => markAsRead(notification.id)}
+                                        >
+                                          <div className="flex gap-3">
+                                            <div 
+                                              className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                                              style={{ 
+                                                backgroundColor: notification.type === "promotion" 
+                                                  ? "#22c55e20" 
+                                                  : notification.type === "event" 
+                                                    ? palette.primary + "20"
+                                                    : notification.type === "alert"
+                                                      ? "#ef444420"
+                                                      : (palette.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"),
+                                              }}
+                                            >
+                                              <NotifIcon 
+                                                className="h-4 w-4" 
+                                                style={{ 
+                                                  color: notification.type === "promotion" 
+                                                    ? "#22c55e" 
+                                                    : notification.type === "event" 
+                                                      ? palette.primary
+                                                      : notification.type === "alert"
+                                                        ? "#ef4444"
+                                                        : (palette.isDark ? "#fff" : "#1a1a1a"),
+                                                }}
+                                              />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                              <div className="flex items-start justify-between gap-2 mb-1">
+                                                <h5 className="text-sm font-medium leading-tight" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                                  {notification.title}
+                                                </h5>
+                                                {notification.isNew && (
+                                                  <span 
+                                                    className="w-2 h-2 rounded-full shrink-0 mt-1.5"
+                                                    style={{ backgroundColor: palette.primary }}
+                                                  />
+                                                )}
+                                              </div>
+                                              <p className="text-[11px] opacity-60 leading-relaxed mb-2" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                                {notification.message}
+                                              </p>
+                                              <div className="flex items-center justify-between">
+                                                <span className="text-[10px] opacity-40" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                                  {notification.timestamp}
+                                                </span>
+                                                {notification.actionLabel && (
+                                                  <button
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      toast.success(`Action: ${notification.actionLabel}`);
+                                                    }}
+                                                    className="text-[10px] font-medium px-2 py-1 rounded-md"
+                                                    style={{ 
+                                                      backgroundColor: palette.primary + "15",
+                                                      color: palette.primary,
+                                                    }}
+                                                  >
+                                                    {notification.actionLabel}
+                                                  </button>
+                                                )}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </motion.div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
                       )}
 
