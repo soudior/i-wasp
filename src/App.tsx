@@ -25,6 +25,7 @@ import Contact from "./pages/Contact";
 import AdminOrders from "./pages/AdminOrders";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import Demo from "./pages/Demo";
+import CardShowcase from "./pages/CardShowcase";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
                 <Route path="/templates" element={<Templates />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/demo" element={<Demo />} />
+                <Route path="/showcase" element={<CardShowcase />} />
                 
                 {/* Auth */}
                 <Route path="/login" element={<Login />} />
