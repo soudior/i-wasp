@@ -21,9 +21,11 @@ import {
   Globe,
   X,
   Check,
-  Loader2
+  Loader2,
+  Download
 } from "lucide-react";
 import { Navigate } from "react-router-dom";
+import { downloadVCard } from "@/lib/vcard";
 
 interface Client {
   id: string;
@@ -149,6 +151,20 @@ export default function AdminClients() {
     const url = `${window.location.origin}/c/${slug}`;
     navigator.clipboard.writeText(url);
     toast.success("Lien copié");
+  };
+
+  const handleDownloadVCard = (client: Client) => {
+    downloadVCard({
+      firstName: client.first_name,
+      lastName: client.last_name,
+      title: client.title || undefined,
+      company: client.company || undefined,
+      email: client.email || undefined,
+      phone: client.phone || undefined,
+      linkedin: client.linkedin || undefined,
+      includeNfcNote: true,
+    });
+    toast.success("vCard téléchargée");
   };
 
   // Loading states
@@ -384,6 +400,13 @@ export default function AdminClients() {
                       title="Modifier"
                     >
                       <Pencil className="h-4 w-4" style={{ color: "#007AFF" }} />
+                    </button>
+                    <button
+                      onClick={() => handleDownloadVCard(client)}
+                      className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+                      title="Télécharger vCard"
+                    >
+                      <Download className="h-4 w-4" style={{ color: "#34C759" }} />
                     </button>
                     <button
                       onClick={() => copyNfcLink(client.slug)}
