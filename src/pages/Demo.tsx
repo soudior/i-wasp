@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
   Phone, Mail, User, Building2, MapPin, Globe, Linkedin, Instagram,
-  X, Plus, Wallet, Share2, CreditCard, Sparkles, ArrowLeft
+  X, Plus, Wallet, Share2, CreditCard, Sparkles, ArrowLeft, Smartphone
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { downloadVCard } from "@/lib/vcard";
@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { IWASPLogoSimple } from "@/components/IWASPLogo";
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
 import demoProfileImage from "@/assets/demo-profile.jpg";
+import { NFCPhysicalCard } from "@/components/print/NFCPhysicalCard";
 
 // 3D Tilt hook for premium hover effect
 function useTilt3D(intensity: number = 15) {
@@ -586,6 +587,44 @@ export default function Demo() {
             </div>
           </motion.div>
 
+          {/* Physical NFC Card Preview */}
+          <motion.div 
+            className="mt-8 p-6 rounded-3xl bg-white/[0.02] border border-white/[0.05]"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+          >
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-4">
+                <Smartphone className="h-3.5 w-3.5 text-white/40" />
+                <span className="text-[11px] text-white/50 uppercase tracking-wider">Carte physique NFC</span>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-1">Votre carte premium</h3>
+              <p className="text-sm text-white/40">Un tap suffit pour partager votre profil</p>
+            </div>
+            
+            {/* Physical Card Component - White variant */}
+            <div className="max-w-[280px] mx-auto">
+              <NFCPhysicalCard colorId="white" showBack={false} interactive={false} />
+            </div>
+            
+            {/* Card specs */}
+            <div className="mt-6 flex justify-center gap-6 text-center">
+              <div>
+                <p className="text-[11px] text-white/30 uppercase tracking-wider mb-1">Format</p>
+                <p className="text-sm text-white/60">CR80</p>
+              </div>
+              <div>
+                <p className="text-[11px] text-white/30 uppercase tracking-wider mb-1">Dimensions</p>
+                <p className="text-sm text-white/60">85.6 × 54 mm</p>
+              </div>
+              <div>
+                <p className="text-[11px] text-white/30 uppercase tracking-wider mb-1">Technologie</p>
+                <p className="text-sm text-white/60">NFC</p>
+              </div>
+            </div>
+          </motion.div>
+
           {/* CTA to order */}
           <motion.div 
             className="mt-6 p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]"
@@ -602,7 +641,7 @@ export default function Demo() {
                 <p className="text-sm text-white/40">À partir de 29€</p>
               </div>
             </div>
-            <Link to="/templates">
+            <Link to="/order/type">
               <Button className="w-full h-12 bg-white text-[hsl(0,0%,5%)] hover:bg-white/90 font-medium">
                 Commander ma carte
               </Button>
