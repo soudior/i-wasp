@@ -27,7 +27,6 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { extractColorsFromLogo, type ColorPalette } from "@/lib/adaptiveTemplateEngine";
 
 interface PhysicalCardStudioProps {
   cardId?: string;
@@ -48,11 +47,31 @@ const CARD_WIDTH_MM = 85.6;
 const CARD_HEIGHT_MM = 54;
 const CARD_RATIO = CARD_WIDTH_MM / CARD_HEIGHT_MM;
 
-// Presets de palettes par défaut
+// Palettes officielles i-wasp (basées sur le design system)
+// PALETTE 3 — "Carte matière" est la palette par défaut pour les cartes physiques
+const CARTE_MATIERE_COLORS = {
+  blanc: "#F7F7F5",      // --carte-blanc
+  chaud: "#EFEDEA",      // --carte-chaud  
+  grisLeger: "#E2E2E0",  // --carte-gris-leger
+  grisStruct: "#8E8E93", // --carte-gris-struct
+  noirDoux: "#1C1C1E",   // --carte-noir-doux
+};
+
+const NUIT_COLORS = {
+  noir: "#0B0B0C",       // --nuit-noir
+  grisProfond: "#1C1C1E", // --nuit-gris-profond
+  grisStruct: "#8E8E93", // --nuit-gris-struct
+  blanc: "#F4F2EF",      // --nuit-blanc
+  accent: "#8B1E1E",     // --nuit-accent
+};
+
 const DEFAULT_PRESETS: GeneratedPalette[] = [
-  { name: "Noir Élégant", backgroundColor: "#0B0B0C", accentColor: "#F4F2EF" },
-  { name: "Ivoire Premium", backgroundColor: "#F4F2EF", accentColor: "#0B0B0C" },
-  { name: "Gris Profond", backgroundColor: "#1C1C1E", accentColor: "#F4F2EF" },
+  // Palette "Carte matière" (obligatoire pour carte physique - par défaut)
+  { name: "Carte Matière", backgroundColor: CARTE_MATIERE_COLORS.blanc, accentColor: CARTE_MATIERE_COLORS.noirDoux },
+  { name: "Carte Chaud", backgroundColor: CARTE_MATIERE_COLORS.chaud, accentColor: CARTE_MATIERE_COLORS.noirDoux },
+  // Palette "Nuit" 
+  { name: "Nuit Élégante", backgroundColor: NUIT_COLORS.noir, accentColor: NUIT_COLORS.blanc },
+  { name: "Gris Profond", backgroundColor: NUIT_COLORS.grisProfond, accentColor: NUIT_COLORS.blanc },
 ];
 
 export function PhysicalCardStudio({ 
@@ -69,27 +88,19 @@ export function PhysicalCardStudio({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   
-  // État du design
-  const [backgroundColor, setBackgroundColor] = useState("#0B0B0C");
-  const [accentColor, setAccentColor] = useState("#F4F2EF");
+  // État du design - Palette "Carte matière" par défaut (obligatoire pour carte physique)
+  const [backgroundColor, setBackgroundColor] = useState(CARTE_MATIERE_COLORS.blanc);
+  const [accentColor, setAccentColor] = useState(CARTE_MATIERE_COLORS.noirDoux);
   const [palettes, setPalettes] = useState<GeneratedPalette[]>(DEFAULT_PRESETS);
-  const [selectedPalette, setSelectedPalette] = useState<string | null>(null);
+  const [selectedPalette, setSelectedPalette] = useState<string | null>("Carte Matière");
   const [customLogoUrl, setCustomLogoUrl] = useState<string | null>(null);
   
   // Logo effectif (custom ou original)
   const effectiveLogoUrl = customLogoUrl || logoUrl;
 
-  // Extraction des couleurs du logo au chargement
-  useEffect(() => {
-    if (effectiveLogoUrl && open) {
-      extractColorsFromLogo(effectiveLogoUrl)
-        .then((palette) => {
-          setBackgroundColor(`hsl(${palette.background})`);
-          setAccentColor(`hsl(${palette.foreground})`);
-        })
-        .catch(console.error);
-    }
-  }, [effectiveLogoUrl, open]);
+  // Note: On n'extrait plus automatiquement les couleurs du logo
+  // La palette "Carte matière" reste par défaut (obligatoire pour carte physique)
+  // L'utilisateur peut changer manuellement ou via génération IA
   
   // Upload de logo
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,16 +127,8 @@ export function PhysicalCardStudio({
         const dataUrl = e.target?.result as string;
         setCustomLogoUrl(dataUrl);
         toast.success("Logo uploadé");
-        
-        // Extraire les couleurs du nouveau logo
-        try {
-          const palette = await extractColorsFromLogo(dataUrl);
-          setBackgroundColor(`hsl(${palette.background})`);
-          setAccentColor(`hsl(${palette.foreground})`);
-        } catch (err) {
-          console.error('Color extraction error:', err);
-        }
-        
+        // Note: On garde la palette "Carte matière" par défaut
+        // L'utilisateur peut générer des palettes IA si souhaité
         setIsUploading(false);
       };
       reader.onerror = () => {
