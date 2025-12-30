@@ -26,6 +26,7 @@ import AdminOrders from "./pages/AdminOrders";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import Demo from "./pages/Demo";
 import CardShowcase from "./pages/CardShowcase";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
                 <Route path="/templates" element={<Templates />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/demo" element={<Demo />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/showcase" element={<CardShowcase />} />
                 
                 {/* Auth */}
