@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 interface AuthContextType {
   user: User | null;
@@ -25,6 +26,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Handle session expiry
         if (event === 'TOKEN_REFRESHED') {
           console.log('Session refreshed');
+          toast({
+            title: "Session actualisée",
+            description: "Votre session a été automatiquement prolongée.",
+          });
         }
         if (event === 'SIGNED_OUT') {
           console.log('User signed out');
