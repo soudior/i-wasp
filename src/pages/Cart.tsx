@@ -5,14 +5,16 @@
  * - Single column layout on mobile
  * - 48px+ touch targets
  * - Sticky bottom CTA
- * - Haptic-style feedback
+ * - Promo code support
  */
 
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { StickyBottomCTA } from "@/components/StickyBottomCTA";
 import { 
   ShoppingCart, 
@@ -22,9 +24,13 @@ import {
   ArrowRight, 
   CreditCard,
   Shield,
-  Package
+  Package,
+  Tag,
+  X,
+  Check
 } from "lucide-react";
 import { formatPrice } from "@/lib/pricing";
+import { toast } from "sonner";
 
 // Template images mapping
 import cardBlackMatte from "@/assets/cards/card-black-matte.png";
@@ -54,10 +60,36 @@ const templateImages: Record<string, string> = {
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { items, totalItems, totalPriceCents, updateItemQuantity, removeItem, clearCart } = useCart();
+  const { 
+    items, 
+    totalItems, 
+    subtotalCents,
+    discountCents,
+    totalPriceCents, 
+    appliedPromoCode,
+    updateItemQuantity, 
+    removeItem, 
+    clearCart,
+    applyPromoCode,
+    removePromoCode,
+  } = useCart();
+
+  const [promoInput, setPromoInput] = useState("");
+  const [promoError, setPromoError] = useState("");
 
   const getTemplateImage = (templateId: string) => {
     return templateImages[templateId] || cardBlackMatte;
+  };
+
+  const handleApplyPromo = () => {
+    setPromoError("");
+    const result = applyPromoCode(promoInput);
+    if (result.success) {
+      toast.success(result.message);
+      setPromoInput("");
+    } else {
+      setPromoError(result.message);
+    }
   };
 
   // Empty cart state
@@ -234,6 +266,56 @@ export default function Cart() {
                 ))}
               </AnimatePresence>
 
+              {/* Promo Code Section - Mobile */}
+              <Card variant="premium" className="p-4 lg:hidden">
+                <div className="flex items-center gap-2 mb-3">
+                  <Tag className="w-4 h-4 text-amber-500" />
+                  <span className="text-sm font-medium text-foreground">Code promo</span>
+                </div>
+                
+                {appliedPromoCode ? (
+                  <div className="flex items-center justify-between p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-green-500" />
+                      <span className="text-sm font-medium text-green-500">
+                        {appliedPromoCode.code} (-{appliedPromoCode.discountPercent}%)
+                      </span>
+                    </div>
+                    <button 
+                      onClick={removePromoCode}
+                      className="p-1 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Entrez votre code"
+                        value={promoInput}
+                        onChange={(e) => {
+                          setPromoInput(e.target.value.toUpperCase());
+                          setPromoError("");
+                        }}
+                        onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
+                        className="h-11 uppercase"
+                      />
+                      <Button 
+                        onClick={handleApplyPromo}
+                        variant="outline"
+                        className="h-11 px-4"
+                      >
+                        Appliquer
+                      </Button>
+                    </div>
+                    {promoError && (
+                      <p className="text-xs text-destructive">{promoError}</p>
+                    )}
+                  </div>
+                )}
+              </Card>
+
               {/* Clear Cart */}
               <div className="pt-2 md:pt-4">
                 <button
@@ -272,6 +354,71 @@ export default function Cart() {
                       <span className="text-muted-foreground">Livraison</span>
                       <span className="text-green-500 font-medium">Gratuite</span>
                     </div>
+                  </div>
+
+                  {/* Promo Code Section - Desktop */}
+                  <div className="mb-6 pb-6 border-b border-border/50">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Tag className="w-4 h-4 text-amber-500" />
+                      <span className="text-sm font-medium text-foreground">Code promo</span>
+                    </div>
+                    
+                    {appliedPromoCode ? (
+                      <div className="flex items-center justify-between p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-green-500" />
+                          <span className="text-sm font-medium text-green-500">
+                            {appliedPromoCode.code} (-{appliedPromoCode.discountPercent}%)
+                          </span>
+                        </div>
+                        <button 
+                          onClick={removePromoCode}
+                          className="p-1 text-muted-foreground hover:text-foreground"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Code promo"
+                            value={promoInput}
+                            onChange={(e) => {
+                              setPromoInput(e.target.value.toUpperCase());
+                              setPromoError("");
+                            }}
+                            onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
+                            className="h-10 uppercase"
+                          />
+                          <Button 
+                            onClick={handleApplyPromo}
+                            variant="outline"
+                            size="sm"
+                            className="h-10"
+                          >
+                            OK
+                          </Button>
+                        </div>
+                        {promoError && (
+                          <p className="text-xs text-destructive">{promoError}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Totals */}
+                  <div className="space-y-2 mb-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Sous-total</span>
+                      <span className="text-foreground">{formatPrice(subtotalCents)}</span>
+                    </div>
+                    {discountCents > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-green-500">Réduction ({appliedPromoCode?.code})</span>
+                        <span className="text-green-500 font-medium">-{formatPrice(discountCents)}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex justify-between items-center py-4 border-t border-b border-border/50 mb-6">
@@ -314,6 +461,9 @@ export default function Cart() {
       >
         <CreditCard className="mr-2 h-5 w-5" />
         Passer commande • {formatPrice(totalPriceCents)}
+        {discountCents > 0 && (
+          <span className="ml-1 text-green-400 text-sm">(-{formatPrice(discountCents)})</span>
+        )}
       </StickyBottomCTA>
     </div>
   );
