@@ -22,7 +22,8 @@ import {
   X,
   Check,
   Loader2,
-  Download
+  Download,
+  Trash2
 } from "lucide-react";
 import { Navigate } from "react-router-dom";
 import { downloadVCard } from "@/lib/vcard";
@@ -67,6 +68,7 @@ export default function AdminClients() {
   const [showForm, setShowForm] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [formData, setFormData] = useState<ClientFormData>(initialFormData);
+  const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
 
   // Fetch all clients (admin sees all cards)
   const { data: clients, isLoading } = useQuery({
@@ -116,6 +118,26 @@ export default function AdminClients() {
       resetForm();
     },
     onError: () => toast.error("Erreur lors de la mise à jour"),
+  });
+
+  // Delete client mutation
+  const deleteClient = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("digital_cards")
+        .delete()
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminClients"] });
+      toast.success("Client supprimé");
+      setDeletingClientId(null);
+    },
+    onError: () => {
+      toast.error("Erreur lors de la suppression");
+      setDeletingClientId(null);
+    },
   });
 
   const resetForm = () => {
@@ -415,6 +437,37 @@ export default function AdminClients() {
                     >
                       <Copy className="h-4 w-4" style={{ color: "#8E8E93" }} />
                     </button>
+                    {deletingClientId === client.id ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => deleteClient.mutate(client.id)}
+                          className="p-2 rounded-xl bg-red-50 hover:bg-red-100 transition-colors"
+                          title="Confirmer suppression"
+                          disabled={deleteClient.isPending}
+                        >
+                          {deleteClient.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" style={{ color: "#FF3B30" }} />
+                          ) : (
+                            <Check className="h-4 w-4" style={{ color: "#FF3B30" }} />
+                          )}
+                        </button>
+                        <button
+                          onClick={() => setDeletingClientId(null)}
+                          className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+                          title="Annuler"
+                        >
+                          <X className="h-4 w-4" style={{ color: "#8E8E93" }} />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setDeletingClientId(client.id)}
+                        className="p-2 rounded-xl hover:bg-red-50 transition-colors"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="h-4 w-4" style={{ color: "#FF3B30" }} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
