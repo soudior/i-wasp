@@ -9,8 +9,8 @@
 
 @layer base {
   :root {
-    /* Core palette - visionOS / Apple-inspired dark theme */
-    --background: 0 0% 0%;
+    /* Core palette - I-WASP Luxury dark theme */
+    --background: 0 0% 2%; /* #050505 */
     --foreground: 0 0% 98%;
 
     --card: 0 0% 6%;
