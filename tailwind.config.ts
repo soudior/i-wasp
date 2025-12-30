@@ -77,6 +77,19 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Liana x I-Wasp Brand Colors
+        carbon: {
+          DEFAULT: "hsl(var(--carbon))",
+          dark: "hsl(var(--carbon-dark))",
+        },
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          muted: "hsl(var(--gold-muted))",
+        },
+        iwasp: {
+          DEFAULT: "hsl(var(--iwasp-green))",
+          muted: "hsl(var(--iwasp-green-muted))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
