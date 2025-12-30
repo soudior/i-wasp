@@ -236,9 +236,33 @@ export default function AdminClients() {
     );
   }
 
-  // Auth check
+  // Auth check - redirect with clear message
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return (
+      <div className="min-h-dvh flex items-center justify-center p-4" style={{ backgroundColor: "#F5F5F7" }}>
+        <div className="w-full max-w-sm rounded-2xl p-8 shadow-sm text-center" style={{ backgroundColor: "#FFFFFF" }}>
+          <div 
+            className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center"
+            style={{ backgroundColor: "#FEF3C7" }}
+          >
+            <Lock className="h-5 w-5" style={{ color: "#D97706" }} />
+          </div>
+          <h1 className="text-lg font-semibold mb-2" style={{ color: "#1D1D1F" }}>
+            Non authentifié
+          </h1>
+          <p className="text-sm mb-6" style={{ color: "#8E8E93" }}>
+            Veuillez vous connecter pour accéder à cette page.
+          </p>
+          <button
+            onClick={() => window.location.href = "/login"}
+            className="w-full py-3 rounded-xl font-medium text-sm transition-all active:scale-[0.98]"
+            style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
+          >
+            Se connecter
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Password gate
