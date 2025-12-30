@@ -58,8 +58,10 @@ export function Navbar() {
               <Link
                 key={link.href}
                 to={link.href}
-                className={`text-sm font-medium transition-colors duration-300 ${
-                  location.pathname === link.href
+                className={`text-sm font-medium transition-all duration-300 ${
+                  link.href === "/order"
+                    ? "px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-background hover:from-amber-600 hover:to-amber-700 shadow-sm hover:shadow-md hover:scale-105"
+                    : location.pathname === link.href
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
@@ -135,7 +137,11 @@ export function Navbar() {
               <Link
                 key={link.href}
                 to={link.href}
-                className="block text-lg font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className={`block text-lg font-medium transition-colors ${
+                  link.href === "/order"
+                    ? "inline-flex px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-background font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.label}
