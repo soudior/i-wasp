@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.generate-template]
 verify_jwt = false
+
+[functions.adaptive-template]
+verify_jwt = false
