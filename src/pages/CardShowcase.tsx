@@ -70,9 +70,19 @@ interface HotelNotification {
 // Chat message interface
 interface ChatMessage {
   id: string;
-  sender: "user" | "concierge";
+  sender: "user" | "concierge" | "system";
   message: string;
   timestamp: Date;
+  orderInfo?: RoomServiceOrder;
+}
+
+// Room service order interface
+interface RoomServiceOrder {
+  id: string;
+  items: { name: string; quantity: number; price: string }[];
+  status: "pending" | "confirmed" | "preparing" | "delivering" | "delivered";
+  estimatedTime?: string;
+  totalPrice: string;
 }
 
 interface BrandConfig {
@@ -493,6 +503,21 @@ export default function CardShowcase() {
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   
+  // Room service order state
+  const [activeOrder, setActiveOrder] = useState<RoomServiceOrder | null>(null);
+  const [showOrderMenu, setShowOrderMenu] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<{ name: string; quantity: number; price: string }[]>([]);
+  
+  // Room service menu items for quick ordering
+  const roomServiceQuickMenu = [
+    { name: "Club Sandwich Palace", price: "165 MAD", category: "Snacks" },
+    { name: "Burger Wagyu", price: "295 MAD", category: "Snacks" },
+    { name: "Salade César", price: "145 MAD", category: "Snacks" },
+    { name: "Continental Breakfast", price: "180 MAD", category: "Petit-déjeuner" },
+    { name: "Jus Frais Pressé", price: "65 MAD", category: "Boissons" },
+    { name: "Eau Minérale (1L)", price: "45 MAD", category: "Boissons" },
+  ];
+  
   // Concierge auto-responses
   const conciergeResponses = [
     "Je m'en occupe immédiatement pour vous.",
@@ -502,6 +527,113 @@ export default function CardShowcase() {
     "C'est noté. Y a-t-il autre chose que je puisse faire pour vous ?",
     "Notre équipe sera ravie de vous accueillir. Je prépare tout.",
   ];
+  
+  const addItemToOrder = (item: { name: string; price: string }) => {
+    setSelectedItems(prev => {
+      const existing = prev.find(i => i.name === item.name);
+      if (existing) {
+        return prev.map(i => i.name === item.name ? { ...i, quantity: i.quantity + 1 } : i);
+      }
+      return [...prev, { ...item, quantity: 1 }];
+    });
+  };
+  
+  const removeItemFromOrder = (itemName: string) => {
+    setSelectedItems(prev => {
+      const existing = prev.find(i => i.name === itemName);
+      if (existing && existing.quantity > 1) {
+        return prev.map(i => i.name === itemName ? { ...i, quantity: i.quantity - 1 } : i);
+      }
+      return prev.filter(i => i.name !== itemName);
+    });
+  };
+  
+  const calculateTotal = () => {
+    return selectedItems.reduce((total, item) => {
+      const price = parseInt(item.price.replace(/[^\d]/g, ''));
+      return total + (price * item.quantity);
+    }, 0);
+  };
+  
+  const placeOrder = () => {
+    if (selectedItems.length === 0) return;
+    
+    const orderId = `RS-${Date.now().toString().slice(-6)}`;
+    const newOrder: RoomServiceOrder = {
+      id: orderId,
+      items: selectedItems,
+      status: "pending",
+      estimatedTime: "25-35 min",
+      totalPrice: `${calculateTotal()} MAD`,
+    };
+    
+    setActiveOrder(newOrder);
+    setShowOrderMenu(false);
+    setSelectedItems([]);
+    
+    // Add order message to chat
+    const orderMessage: ChatMessage = {
+      id: Date.now().toString(),
+      sender: "system",
+      message: `Commande #${orderId} passée`,
+      timestamp: new Date(),
+      orderInfo: newOrder,
+    };
+    setChatMessages(prev => [...prev, orderMessage]);
+    
+    // Simulate order status updates
+    setTimeout(() => {
+      setActiveOrder(prev => prev ? { ...prev, status: "confirmed" } : null);
+      setChatMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        sender: "concierge",
+        message: `Votre commande #${orderId} est confirmée ! Notre chef la prépare avec soin. Temps estimé : 25-35 minutes.`,
+        timestamp: new Date(),
+      }]);
+    }, 3000);
+    
+    setTimeout(() => {
+      setActiveOrder(prev => prev ? { ...prev, status: "preparing" } : null);
+      setChatMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        sender: "concierge",
+        message: `🍳 Votre commande est en cours de préparation en cuisine...`,
+        timestamp: new Date(),
+      }]);
+    }, 8000);
+    
+    setTimeout(() => {
+      setActiveOrder(prev => prev ? { ...prev, status: "delivering" } : null);
+      setChatMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        sender: "concierge",
+        message: `🛎️ Notre équipe est en route vers votre chambre avec votre commande !`,
+        timestamp: new Date(),
+      }]);
+    }, 15000);
+    
+    setTimeout(() => {
+      setActiveOrder(prev => prev ? { ...prev, status: "delivered" } : null);
+      setChatMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        sender: "concierge",
+        message: `✅ Votre commande a été livrée. Bon appétit ! N'hésitez pas si vous avez besoin d'autre chose.`,
+        timestamp: new Date(),
+      }]);
+      toast.success("Commande livrée !");
+    }, 22000);
+  };
+  
+  const getStatusInfo = (status: RoomServiceOrder["status"]) => {
+    const statusMap = {
+      pending: { label: "En attente", color: "#f59e0b", progress: 10 },
+      confirmed: { label: "Confirmée", color: "#3b82f6", progress: 30 },
+      preparing: { label: "En préparation", color: "#8b5cf6", progress: 60 },
+      delivering: { label: "En livraison", color: "#06b6d4", progress: 85 },
+      delivered: { label: "Livrée", color: "#22c55e", progress: 100 },
+    };
+    return statusMap[status];
+  };
   
   const sendChatMessage = () => {
     if (!chatInput.trim()) return;
@@ -517,16 +649,27 @@ export default function CardShowcase() {
     setChatInput("");
     setIsTyping(true);
     
+    // Check if message is about room service
+    const isRoomServiceRequest = chatInput.toLowerCase().includes("room service") || 
+                                  chatInput.toLowerCase().includes("commander") ||
+                                  chatInput.toLowerCase().includes("manger");
+    
     // Simulate concierge response
     setTimeout(() => {
       const responseMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: "concierge",
-        message: conciergeResponses[Math.floor(Math.random() * conciergeResponses.length)],
+        message: isRoomServiceRequest 
+          ? "Bien sûr ! Je vous ouvre notre menu Room Service. Vous pouvez sélectionner vos plats directement ci-dessous."
+          : conciergeResponses[Math.floor(Math.random() * conciergeResponses.length)],
         timestamp: new Date(),
       };
       setChatMessages(prev => [...prev, responseMessage]);
       setIsTyping(false);
+      
+      if (isRoomServiceRequest) {
+        setTimeout(() => setShowOrderMenu(true), 500);
+      }
     }, 1500 + Math.random() * 1000);
   };
   
@@ -1154,35 +1297,95 @@ export default function CardShowcase() {
                                   </div>
                                   
                                   {/* Messages */}
-                                  <div className="h-48 overflow-y-auto p-3 space-y-3">
+                                  <div className="h-64 overflow-y-auto p-3 space-y-3">
                                     {chatMessages.map((msg) => (
                                       <div 
                                         key={msg.id}
-                                        className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                                        className={`flex ${msg.sender === "user" ? "justify-end" : msg.sender === "system" ? "justify-center" : "justify-start"}`}
                                       >
-                                        <div 
-                                          className={`max-w-[80%] p-3 rounded-2xl ${
-                                            msg.sender === "user" 
-                                              ? "rounded-br-md" 
-                                              : "rounded-bl-md"
-                                          }`}
-                                          style={{
-                                            backgroundColor: msg.sender === "user" 
-                                              ? palette.primary 
-                                              : (palette.isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)"),
-                                            color: msg.sender === "user" 
-                                              ? palette.textOnPrimary 
-                                              : (palette.isDark ? "#fff" : "#1a1a1a"),
-                                          }}
-                                        >
-                                          <p className="text-sm leading-relaxed">{msg.message}</p>
-                                          <p 
-                                            className="text-[10px] mt-1 opacity-50"
-                                            style={{ color: msg.sender === "user" ? palette.textOnPrimary : (palette.isDark ? "#fff" : "#1a1a1a") }}
+                                        {msg.sender === "system" && msg.orderInfo ? (
+                                          /* Order Card */
+                                          <div 
+                                            className="w-full max-w-[90%] p-3 rounded-xl"
+                                            style={{ 
+                                              backgroundColor: palette.primary + "10",
+                                              border: `1px solid ${palette.primary}30`,
+                                            }}
                                           >
-                                            {msg.timestamp.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                                          </p>
-                                        </div>
+                                            <div className="flex items-center justify-between mb-2">
+                                              <div className="flex items-center gap-2">
+                                                <Utensils className="h-4 w-4" style={{ color: palette.primary }} />
+                                                <span className="text-xs font-semibold" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                                  Commande #{msg.orderInfo.id}
+                                                </span>
+                                              </div>
+                                              <span 
+                                                className="text-[10px] font-medium px-2 py-0.5 rounded-full"
+                                                style={{ 
+                                                  backgroundColor: getStatusInfo(msg.orderInfo.status).color + "20",
+                                                  color: getStatusInfo(msg.orderInfo.status).color,
+                                                }}
+                                              >
+                                                {getStatusInfo(msg.orderInfo.status).label}
+                                              </span>
+                                            </div>
+                                            
+                                            {/* Order Items */}
+                                            <div className="space-y-1 mb-2">
+                                              {msg.orderInfo.items.map((item, idx) => (
+                                                <div key={idx} className="flex justify-between text-[11px]" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                                  <span className="opacity-70">{item.quantity}x {item.name}</span>
+                                                  <span className="font-medium">{item.price}</span>
+                                                </div>
+                                              ))}
+                                            </div>
+                                            
+                                            {/* Total & ETA */}
+                                            <div className="flex justify-between items-center pt-2 border-t" style={{ borderColor: palette.primary + "20" }}>
+                                              <span className="text-[11px] opacity-60" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                                ⏱ {msg.orderInfo.estimatedTime}
+                                              </span>
+                                              <span className="text-sm font-bold" style={{ color: palette.primary }}>
+                                                {msg.orderInfo.totalPrice}
+                                              </span>
+                                            </div>
+                                            
+                                            {/* Progress Bar */}
+                                            <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: palette.isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)" }}>
+                                              <motion.div 
+                                                className="h-full rounded-full"
+                                                style={{ backgroundColor: getStatusInfo(activeOrder?.status || msg.orderInfo.status).color }}
+                                                initial={{ width: "0%" }}
+                                                animate={{ width: `${getStatusInfo(activeOrder?.status || msg.orderInfo.status).progress}%` }}
+                                                transition={{ duration: 0.5 }}
+                                              />
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <div 
+                                            className={`max-w-[80%] p-3 rounded-2xl ${
+                                              msg.sender === "user" 
+                                                ? "rounded-br-md" 
+                                                : "rounded-bl-md"
+                                            }`}
+                                            style={{
+                                              backgroundColor: msg.sender === "user" 
+                                                ? palette.primary 
+                                                : (palette.isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)"),
+                                              color: msg.sender === "user" 
+                                                ? palette.textOnPrimary 
+                                                : (palette.isDark ? "#fff" : "#1a1a1a"),
+                                            }}
+                                          >
+                                            <p className="text-sm leading-relaxed">{msg.message}</p>
+                                            <p 
+                                              className="text-[10px] mt-1 opacity-50"
+                                              style={{ color: msg.sender === "user" ? palette.textOnPrimary : (palette.isDark ? "#fff" : "#1a1a1a") }}
+                                            >
+                                              {msg.timestamp.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                            </p>
+                                          </div>
+                                        )}
                                       </div>
                                     ))}
                                     
@@ -1210,6 +1413,115 @@ export default function CardShowcase() {
                                     )}
                                     <div ref={chatEndRef} />
                                   </div>
+                                  
+                                  {/* Room Service Order Menu */}
+                                  <AnimatePresence>
+                                    {showOrderMenu && (
+                                      <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        className="overflow-hidden border-t"
+                                        style={{ borderColor: palette.primary + "20" }}
+                                      >
+                                        <div className="p-3">
+                                          <div className="flex items-center justify-between mb-3">
+                                            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: palette.primary }}>
+                                              🍽️ Menu Room Service
+                                            </span>
+                                            <button 
+                                              onClick={() => setShowOrderMenu(false)}
+                                              className="text-xs opacity-50 hover:opacity-100"
+                                              style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}
+                                            >
+                                              Fermer
+                                            </button>
+                                          </div>
+                                          
+                                          {/* Menu Items Grid */}
+                                          <div className="grid grid-cols-2 gap-2 mb-3 max-h-32 overflow-y-auto">
+                                            {roomServiceQuickMenu.map((item) => {
+                                              const inCart = selectedItems.find(i => i.name === item.name);
+                                              return (
+                                                <button
+                                                  key={item.name}
+                                                  onClick={() => addItemToOrder(item)}
+                                                  className="p-2 rounded-lg text-left transition-all relative"
+                                                  style={{ 
+                                                    backgroundColor: inCart 
+                                                      ? palette.primary + "20" 
+                                                      : (palette.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)"),
+                                                    border: inCart ? `1px solid ${palette.primary}` : "1px solid transparent",
+                                                  }}
+                                                >
+                                                  <p className="text-[11px] font-medium truncate" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                                    {item.name}
+                                                  </p>
+                                                  <p className="text-[10px]" style={{ color: palette.primary }}>
+                                                    {item.price}
+                                                  </p>
+                                                  {inCart && (
+                                                    <span 
+                                                      className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center"
+                                                      style={{ backgroundColor: palette.primary, color: palette.textOnPrimary }}
+                                                    >
+                                                      {inCart.quantity}
+                                                    </span>
+                                                  )}
+                                                </button>
+                                              );
+                                            })}
+                                          </div>
+                                          
+                                          {/* Cart Summary */}
+                                          {selectedItems.length > 0 && (
+                                            <div 
+                                              className="p-2 rounded-lg mb-2"
+                                              style={{ backgroundColor: palette.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)" }}
+                                            >
+                                              <div className="flex flex-wrap gap-1 mb-2">
+                                                {selectedItems.map((item) => (
+                                                  <span 
+                                                    key={item.name}
+                                                    className="text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1"
+                                                    style={{ backgroundColor: palette.primary + "20", color: palette.primary }}
+                                                  >
+                                                    {item.quantity}x {item.name.split(' ')[0]}
+                                                    <button onClick={() => removeItemFromOrder(item.name)} className="hover:opacity-70">×</button>
+                                                  </span>
+                                                ))}
+                                              </div>
+                                              <div className="flex items-center justify-between">
+                                                <span className="text-[11px] opacity-60" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                                  Total
+                                                </span>
+                                                <span className="text-sm font-bold" style={{ color: palette.primary }}>
+                                                  {calculateTotal()} MAD
+                                                </span>
+                                              </div>
+                                            </div>
+                                          )}
+                                          
+                                          {/* Place Order Button */}
+                                          <button
+                                            onClick={placeOrder}
+                                            disabled={selectedItems.length === 0}
+                                            className="w-full py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                                            style={{ 
+                                              backgroundColor: palette.primary,
+                                              color: palette.textOnPrimary,
+                                            }}
+                                          >
+                                            <Bell className="h-4 w-4" />
+                                            {selectedItems.length > 0 
+                                              ? `Commander (${calculateTotal()} MAD)`
+                                              : "Sélectionnez des articles"
+                                            }
+                                          </button>
+                                        </div>
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
                                   
                                   {/* Input */}
                                   <div 
@@ -1243,7 +1555,17 @@ export default function CardShowcase() {
                                   
                                   {/* Quick Actions */}
                                   <div className="px-3 pb-3 flex gap-2 flex-wrap">
-                                    {["Réservation spa", "Room service", "Taxi aéroport", "Info WiFi"].map((action) => (
+                                    <button
+                                      onClick={() => setShowOrderMenu(!showOrderMenu)}
+                                      className="text-[10px] px-2 py-1 rounded-full transition-all flex items-center gap-1"
+                                      style={{ 
+                                        backgroundColor: showOrderMenu ? palette.primary : palette.primary + "15",
+                                        color: showOrderMenu ? palette.textOnPrimary : palette.primary,
+                                      }}
+                                    >
+                                      🍽️ Commander
+                                    </button>
+                                    {["Réservation spa", "Taxi aéroport", "Info WiFi"].map((action) => (
                                       <button
                                         key={action}
                                         onClick={() => {
