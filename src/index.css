@@ -9,58 +9,86 @@
 
 @layer base {
   :root {
-    /* ═══════════════════════════════════════════════════════════
-       i-wasp OFFICIAL PALETTE - STRICT
+    /* ═══════════════════════════════════════════════════════════════════
+       i-wasp DESIGN SYSTEM — 3 PALETTES OFFICIELLES (STRICT)
        
-       #0B0B0C - Noir principal (background global)
-       #F4F2EF - Blanc ivoire (background secondaire)
-       #1C1C1E - Gris profond (cards, surfaces)
-       #8E8E93 - Gris structurel (texte secondaire, icônes)
-       #8B1E1E - Rouge accent rare (actions importantes)
+       PALETTE 1 — "Nuit" (défaut) : site, dashboard, expérience premium
+       PALETTE 2 — "Blanc pur" : interface claire, cartes digitales
+       PALETTE 3 — "Carte matière" : template carte physique NFC
        
        AUCUNE AUTRE COULEUR AUTORISÉE
-       ═══════════════════════════════════════════════════════════ */
+       ═══════════════════════════════════════════════════════════════════ */
     
-    /* Core palette - i-wasp strict */
-    --background: 240 4% 3%; /* #0B0B0C */
-    --foreground: 30 14% 95%; /* #F4F2EF */
-
-    --card: 240 5% 11%; /* #1C1C1E */
-    --card-foreground: 30 14% 95%; /* #F4F2EF */
-
-    --popover: 240 5% 11%; /* #1C1C1E */
-    --popover-foreground: 30 14% 95%; /* #F4F2EF */
-
-    /* Primary = Blanc ivoire */
-    --primary: 30 14% 95%; /* #F4F2EF */
-    --primary-foreground: 240 4% 3%; /* #0B0B0C */
-
-    /* Secondary = Gris profond */
-    --secondary: 240 5% 11%; /* #1C1C1E */
-    --secondary-foreground: 240 2% 57%; /* #8E8E93 */
-
-    /* Muted = Gris structurel */
+    /* ══════════════════════════════════════════════════════════════════
+       PALETTE 1 — "Nuit" (DÉFAUT)
+       Usage : site, dashboard, expérience premium
+       ══════════════════════════════════════════════════════════════════ */
+    
+    /* Couleurs de base */
+    --nuit-noir: 240 4% 3%;        /* #0B0B0C - Noir nuit */
+    --nuit-gris-profond: 240 4% 12%; /* #1C1C1E - Gris profond */
+    --nuit-gris-struct: 240 2% 57%; /* #8E8E93 - Gris structurel */
+    --nuit-blanc: 30 14% 95%;      /* #F4F2EF - Blanc texte */
+    --nuit-accent: 0 64% 33%;      /* #8B1E1E - Accent rare */
+    
+    /* Tokens sémantiques - Palette Nuit */
+    --background: var(--nuit-noir);
+    --foreground: var(--nuit-blanc);
+    
+    --card: var(--nuit-gris-profond);
+    --card-foreground: var(--nuit-blanc);
+    
+    --popover: var(--nuit-gris-profond);
+    --popover-foreground: var(--nuit-blanc);
+    
+    --primary: var(--nuit-blanc);
+    --primary-foreground: var(--nuit-noir);
+    
+    --secondary: var(--nuit-gris-profond);
+    --secondary-foreground: var(--nuit-gris-struct);
+    
     --muted: 240 5% 15%;
-    --muted-foreground: 240 2% 57%; /* #8E8E93 */
-
-    /* Accent = Gris profond */
+    --muted-foreground: var(--nuit-gris-struct);
+    
     --accent: 240 5% 14%;
-    --accent-foreground: 30 14% 95%; /* #F4F2EF */
-
-    /* Destructive = Rouge accent rare */
-    --destructive: 0 64% 33%; /* #8B1E1E */
-    --destructive-foreground: 30 14% 95%; /* #F4F2EF */
-
+    --accent-foreground: var(--nuit-blanc);
+    
+    --destructive: var(--nuit-accent);
+    --destructive-foreground: var(--nuit-blanc);
+    
     --border: 240 5% 18%;
     --input: 240 5% 15%;
-    --ring: 30 14% 95%; /* #F4F2EF */
-
+    --ring: var(--nuit-blanc);
+    
     --radius: 0.75rem;
+    
+    /* ══════════════════════════════════════════════════════════════════
+       PALETTE 2 — "Blanc pur"
+       Usage : interface claire, confort visuel, cartes digitales
+       ══════════════════════════════════════════════════════════════════ */
+    --blanc-pur: 0 0% 100%;        /* #FFFFFF - Blanc pur */
+    --blanc-ivoire: 30 14% 95%;    /* #F4F2EF - Blanc ivoire */
+    --blanc-gris-clair: 240 5% 83%; /* #D1D1D6 - Gris clair */
+    --blanc-gris-struct: 240 2% 57%; /* #8E8E93 - Gris structurel */
+    --blanc-noir: 240 4% 3%;       /* #0B0B0C - Noir texte */
+    --blanc-accent: 0 64% 33%;     /* #8B1E1E - Accent rare */
+    
+    /* ══════════════════════════════════════════════════════════════════
+       PALETTE 3 — "Carte matière" (blanc carte physique)
+       Usage : template carte physique NFC de base
+       Inspirée du plastique mat / papier premium
+       Aucun accent couleur sur cette palette
+       ══════════════════════════════════════════════════════════════════ */
+    --carte-blanc: 60 7% 96%;      /* #F7F7F5 - Blanc carte */
+    --carte-chaud: 36 14% 93%;     /* #EFEDEA - Blanc chaud */
+    --carte-gris-leger: 60 4% 88%; /* #E2E2E0 - Gris très léger */
+    --carte-gris-struct: 240 2% 57%; /* #8E8E93 - Gris structurel */
+    --carte-noir-doux: 240 4% 12%; /* #1C1C1E - Noir doux */
 
-    /* Surface tokens - i-wasp only */
-    --surface-0: 240 4% 3%; /* #0B0B0C */
+    /* Surface tokens */
+    --surface-0: var(--nuit-noir);
     --surface-1: 240 5% 8%;
-    --surface-2: 240 5% 11%; /* #1C1C1E */
+    --surface-2: var(--nuit-gris-profond);
     --surface-3: 240 5% 15%;
     
     /* Glass effects - monochrome */
@@ -92,15 +120,15 @@
     --font-display: 'Inter', system-ui, sans-serif;
     --font-body: 'Inter', system-ui, sans-serif;
 
-    /* Sidebar - i-wasp palette */
-    --sidebar-background: 240 4% 3%; /* #0B0B0C */
-    --sidebar-foreground: 30 14% 95%; /* #F4F2EF */
-    --sidebar-primary: 30 14% 95%; /* #F4F2EF */
-    --sidebar-primary-foreground: 240 4% 3%; /* #0B0B0C */
-    --sidebar-accent: 240 5% 11%; /* #1C1C1E */
-    --sidebar-accent-foreground: 30 14% 95%; /* #F4F2EF */
+    /* Sidebar - Palette Nuit */
+    --sidebar-background: var(--nuit-noir);
+    --sidebar-foreground: var(--nuit-blanc);
+    --sidebar-primary: var(--nuit-blanc);
+    --sidebar-primary-foreground: var(--nuit-noir);
+    --sidebar-accent: var(--nuit-gris-profond);
+    --sidebar-accent-foreground: var(--nuit-blanc);
     --sidebar-border: 240 5% 18%;
-    --sidebar-ring: 30 14% 95%; /* #F4F2EF */
+    --sidebar-ring: var(--nuit-blanc);
     
     /* Mobile-first: Safe area insets */
     --safe-area-top: env(safe-area-inset-top, 0px);
@@ -112,8 +140,101 @@
     --mobile-header-height: 48px;
     --mobile-tab-bar-height: 64px;
 
-    /* Ivoire background for card pages */
-    --background-ivoire: 30 14% 95%; /* #F4F2EF */
+    /* Background aliases */
+    --background-ivoire: var(--blanc-ivoire);
+  }
+  
+  /* ══════════════════════════════════════════════════════════════════
+     THÈME: Blanc pur
+     Appliquer avec data-theme="blanc" sur le html ou un conteneur
+     ══════════════════════════════════════════════════════════════════ */
+  [data-theme="blanc"] {
+    --background: var(--blanc-pur);
+    --foreground: var(--blanc-noir);
+    
+    --card: var(--blanc-ivoire);
+    --card-foreground: var(--blanc-noir);
+    
+    --popover: var(--blanc-pur);
+    --popover-foreground: var(--blanc-noir);
+    
+    --primary: var(--blanc-noir);
+    --primary-foreground: var(--blanc-pur);
+    
+    --secondary: var(--blanc-ivoire);
+    --secondary-foreground: var(--blanc-gris-struct);
+    
+    --muted: var(--blanc-gris-clair);
+    --muted-foreground: var(--blanc-gris-struct);
+    
+    --accent: var(--blanc-ivoire);
+    --accent-foreground: var(--blanc-noir);
+    
+    --destructive: var(--blanc-accent);
+    --destructive-foreground: var(--blanc-pur);
+    
+    --border: var(--blanc-gris-clair);
+    --input: var(--blanc-ivoire);
+    --ring: var(--blanc-noir);
+    
+    --surface-0: var(--blanc-pur);
+    --surface-1: var(--blanc-ivoire);
+    --surface-2: var(--blanc-gris-clair);
+    --surface-3: var(--blanc-gris-struct);
+    
+    --glass: 0 0% 0%;
+    --glass-opacity: 0.03;
+    --glass-border: 0 0% 0%;
+    
+    --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.08);
+    --shadow-md: 0 8px 24px hsl(0 0% 0% / 0.1);
+    --shadow-lg: 0 16px 48px hsl(0 0% 0% / 0.15);
+    
+    --sidebar-background: var(--blanc-pur);
+    --sidebar-foreground: var(--blanc-noir);
+    --sidebar-primary: var(--blanc-noir);
+    --sidebar-primary-foreground: var(--blanc-pur);
+    --sidebar-accent: var(--blanc-ivoire);
+    --sidebar-accent-foreground: var(--blanc-noir);
+    --sidebar-border: var(--blanc-gris-clair);
+    --sidebar-ring: var(--blanc-noir);
+  }
+  
+  /* ══════════════════════════════════════════════════════════════════
+     THÈME: Carte matière (carte physique NFC)
+     Appliquer avec data-theme="carte" sur le conteneur de la carte
+     ══════════════════════════════════════════════════════════════════ */
+  [data-theme="carte"] {
+    --background: var(--carte-blanc);
+    --foreground: var(--carte-noir-doux);
+    
+    --card: var(--carte-chaud);
+    --card-foreground: var(--carte-noir-doux);
+    
+    --primary: var(--carte-noir-doux);
+    --primary-foreground: var(--carte-blanc);
+    
+    --secondary: var(--carte-gris-leger);
+    --secondary-foreground: var(--carte-gris-struct);
+    
+    --muted: var(--carte-gris-leger);
+    --muted-foreground: var(--carte-gris-struct);
+    
+    --accent: var(--carte-chaud);
+    --accent-foreground: var(--carte-noir-doux);
+    
+    --border: var(--carte-gris-leger);
+    --input: var(--carte-chaud);
+    --ring: var(--carte-noir-doux);
+    
+    --surface-0: var(--carte-blanc);
+    --surface-1: var(--carte-chaud);
+    --surface-2: var(--carte-gris-leger);
+    --surface-3: var(--carte-gris-struct);
+    
+    --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.05);
+    --shadow-md: 0 8px 24px hsl(0 0% 0% / 0.08);
+    --shadow-lg: 0 16px 48px hsl(0 0% 0% / 0.1);
   }
 }
 

@@ -18,11 +18,17 @@ export default {
         body: ['SF Pro Text', 'Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
-        /* ═══════════════════════════════════════════════════════
-           i-wasp OFFICIAL PALETTE - STRICT
+        /* ═══════════════════════════════════════════════════════════════
+           i-wasp DESIGN SYSTEM — 3 PALETTES OFFICIELLES (STRICT)
            
-           Aucune autre couleur autorisée
-           ═══════════════════════════════════════════════════════ */
+           PALETTE 1 — "Nuit" : site, dashboard, expérience premium
+           PALETTE 2 — "Blanc pur" : interface claire, cartes digitales
+           PALETTE 3 — "Carte matière" : template carte physique NFC
+           
+           AUCUNE AUTRE COULEUR AUTORISÉE
+           ═══════════════════════════════════════════════════════════════ */
+        
+        /* Semantic tokens */
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -73,13 +79,39 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        /* i-wasp explicit colors for direct use */
-        iwasp: {
-          black: "#0B0B0C",
-          ivoire: "#F4F2EF",
-          gray: "#1C1C1E",
-          muted: "#8E8E93",
-          red: "#8B1E1E",
+        
+        /* ══════════════════════════════════════════════════════════════
+           PALETTE 1 — "Nuit" (défaut)
+           ══════════════════════════════════════════════════════════════ */
+        nuit: {
+          noir: "hsl(var(--nuit-noir))",           /* #0B0B0C */
+          "gris-profond": "hsl(var(--nuit-gris-profond))", /* #1C1C1E */
+          "gris-struct": "hsl(var(--nuit-gris-struct))",   /* #8E8E93 */
+          blanc: "hsl(var(--nuit-blanc))",         /* #F4F2EF */
+          accent: "hsl(var(--nuit-accent))",       /* #8B1E1E */
+        },
+        
+        /* ══════════════════════════════════════════════════════════════
+           PALETTE 2 — "Blanc pur"
+           ══════════════════════════════════════════════════════════════ */
+        blanc: {
+          pur: "hsl(var(--blanc-pur))",            /* #FFFFFF */
+          ivoire: "hsl(var(--blanc-ivoire))",      /* #F4F2EF */
+          "gris-clair": "hsl(var(--blanc-gris-clair))",   /* #D1D1D6 */
+          "gris-struct": "hsl(var(--blanc-gris-struct))", /* #8E8E93 */
+          noir: "hsl(var(--blanc-noir))",          /* #0B0B0C */
+          accent: "hsl(var(--blanc-accent))",      /* #8B1E1E */
+        },
+        
+        /* ══════════════════════════════════════════════════════════════
+           PALETTE 3 — "Carte matière" (carte physique NFC)
+           ══════════════════════════════════════════════════════════════ */
+        carte: {
+          blanc: "hsl(var(--carte-blanc))",        /* #F7F7F5 */
+          chaud: "hsl(var(--carte-chaud))",        /* #EFEDEA */
+          "gris-leger": "hsl(var(--carte-gris-leger))",   /* #E2E2E0 */
+          "gris-struct": "hsl(var(--carte-gris-struct))", /* #8E8E93 */
+          "noir-doux": "hsl(var(--carte-noir-doux))",     /* #1C1C1E */
         },
       },
       borderRadius: {
