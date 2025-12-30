@@ -8,6 +8,7 @@
  */
 
 import { Suspense, lazy } from 'react';
+import { motion } from 'framer-motion';
 import { Phone, Mail, Linkedin, MessageCircle, Download } from 'lucide-react';
 import { downloadVCard, VCardData } from '@/lib/vcard';
 import iwaspLogo from '@/assets/iwasp-logo.png';
@@ -114,8 +115,15 @@ export default function IWASPCard() {
         }}
       />
 
-      {/* Card */}
-      <div 
+      {/* Card with entry animation */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ 
+          duration: 0.6, 
+          delay: 0.2,
+          ease: [0.25, 0.46, 0.45, 0.94]
+        }}
         className="relative w-full max-w-[360px] rounded-[28px] overflow-hidden z-10"
         style={{ 
           backgroundColor: '#16161D',
@@ -182,7 +190,7 @@ export default function IWASPCard() {
             Powered by IWASP
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Bottom ambient glow */}
       <div 
