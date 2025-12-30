@@ -41,7 +41,7 @@ const App = () => (
           <BrowserRouter>
             <AppShell>
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<LianaLanding />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/templates" element={<Templates />} />
