@@ -48,7 +48,7 @@ serve(async (req) => {
     console.log('Generating Apple Wallet pass for:', cardData.firstName, cardData.lastName);
 
     // Construct the public URL for the card
-    const publicUrl = `https://fyxiyevbbvidckzaequx.lovableproject.com/c/${cardData.slug}`;
+    const publicUrl = `https://i-wasp.com/c/${cardData.slug}`;
 
     // PassKit.io API call to create a pass
     // Using their Generic Pass template
