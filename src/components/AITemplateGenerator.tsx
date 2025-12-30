@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { 
@@ -19,7 +21,18 @@ import {
   Loader2, 
   Check,
   ArrowRight,
-  Wand2
+  Wand2,
+  User,
+  Phone,
+  Mail,
+  Globe,
+  Wifi,
+  Gift,
+  MapPinned,
+  MessageCircle,
+  Star,
+  Languages,
+  Calendar
 } from "lucide-react";
 
 type TemplateType = "hotel" | "business" | "tourism";
@@ -69,6 +82,239 @@ const placeholders = {
   business: "Ex: Marie Dupont, architecte d'intérieur spécialisée en design éco-responsable à Paris. 10 ans d'expérience, projets résidentiels et commerciaux.",
   tourism: "Ex: Atlas Adventures, excursions dans le Haut Atlas au départ de Marrakech. Randonnées, cascades d'Ouzoud, villages berbères. Guide francophone et anglophone.",
 };
+
+// Visual Preview Component for generated templates
+function TemplatePreviewContent({ type, template }: { type: TemplateType; template: Record<string, any> }) {
+  if (type === "hotel") {
+    return (
+      <div className="space-y-4">
+        {/* Hotel Header */}
+        <div className="text-center space-y-2">
+          <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+            <Building2 className="w-8 h-8 text-white" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground">{template.hotelName || "Nom de l'hôtel"}</h3>
+          {template.conciergeRole && (
+            <p className="text-sm text-muted-foreground">{template.conciergeRole}</p>
+          )}
+        </div>
+
+        <Separator />
+
+        {/* Contact Info */}
+        <div className="space-y-3">
+          {template.receptionPhone && (
+            <PreviewItem icon={Phone} label="Réception" value={template.receptionPhone} />
+          )}
+          {template.email && (
+            <PreviewItem icon={Mail} label="Email" value={template.email} />
+          )}
+          {template.website && (
+            <PreviewItem icon={Globe} label="Site web" value={template.website} />
+          )}
+        </div>
+
+        {/* WiFi */}
+        {template.wifiSsid && (
+          <>
+            <Separator />
+            <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+              <div className="flex items-center gap-2 mb-2">
+                <Wifi className="w-4 h-4 text-blue-400" />
+                <span className="text-sm font-medium text-blue-400">WiFi Gratuit</span>
+              </div>
+              <p className="text-xs text-muted-foreground">Réseau: {template.wifiSsid}</p>
+              {template.wifiPassword && (
+                <p className="text-xs text-muted-foreground">Mot de passe: {template.wifiPassword}</p>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Daily Offer */}
+        {template.dailyOffer && (
+          <>
+            <Separator />
+            <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+              <div className="flex items-center gap-2 mb-2">
+                <Gift className="w-4 h-4 text-amber-400" />
+                <span className="text-sm font-medium text-amber-400">Offre du jour</span>
+              </div>
+              <p className="text-sm text-foreground">{template.dailyOffer.title}</p>
+              <p className="text-xs text-muted-foreground">{template.dailyOffer.description}</p>
+            </div>
+          </>
+        )}
+
+        {/* Places to Visit */}
+        {template.placesToVisit && template.placesToVisit.length > 0 && (
+          <>
+            <Separator />
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <MapPinned className="w-4 h-4 text-emerald-400" />
+                <span className="text-sm font-medium text-foreground">À découvrir</span>
+              </div>
+              {template.placesToVisit.slice(0, 3).map((place: any, i: number) => (
+                <div key={i} className="p-2 rounded bg-surface-2 text-xs">
+                  <p className="font-medium text-foreground">{place.name}</p>
+                  <p className="text-muted-foreground">{place.description}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  if (type === "business") {
+    return (
+      <div className="space-y-4">
+        {/* Business Header */}
+        <div className="text-center space-y-2">
+          <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
+            <User className="w-8 h-8 text-white" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground">
+            {template.firstName} {template.lastName}
+          </h3>
+          {template.title && (
+            <p className="text-sm text-muted-foreground">{template.title}</p>
+          )}
+          {template.company && (
+            <Badge variant="secondary" className="text-xs">{template.company}</Badge>
+          )}
+        </div>
+
+        <Separator />
+
+        {/* Contact Info */}
+        <div className="space-y-3">
+          {template.phone && (
+            <PreviewItem icon={Phone} label="Téléphone" value={template.phone} />
+          )}
+          {template.email && (
+            <PreviewItem icon={Mail} label="Email" value={template.email} />
+          )}
+          {template.website && (
+            <PreviewItem icon={Globe} label="Site web" value={template.website} />
+          )}
+          {template.location && (
+            <PreviewItem icon={MapPin} label="Localisation" value={template.location} />
+          )}
+        </div>
+
+        {/* Social Links */}
+        {template.linkedin && (
+          <>
+            <Separator />
+            <div className="flex gap-2">
+              <Badge variant="outline" className="text-xs">LinkedIn</Badge>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  if (type === "tourism") {
+    return (
+      <div className="space-y-4">
+        {/* Tourism Header */}
+        <div className="text-center space-y-2">
+          <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+            <MapPin className="w-8 h-8 text-white" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground">
+            {template.businessName || template.guideName || "Guide touristique"}
+          </h3>
+          {template.guideName && template.businessName && (
+            <p className="text-sm text-muted-foreground">Guide: {template.guideName}</p>
+          )}
+        </div>
+
+        <Separator />
+
+        {/* Contact Info */}
+        <div className="space-y-3">
+          {template.phone && (
+            <PreviewItem icon={Phone} label="Téléphone" value={template.phone} />
+          )}
+          {template.whatsapp && (
+            <PreviewItem icon={MessageCircle} label="WhatsApp" value={template.whatsapp} />
+          )}
+          {template.email && (
+            <PreviewItem icon={Mail} label="Email" value={template.email} />
+          )}
+          {template.location && (
+            <PreviewItem icon={MapPin} label="Localisation" value={template.location} />
+          )}
+        </div>
+
+        {/* Languages */}
+        {template.languages && template.languages.length > 0 && (
+          <>
+            <Separator />
+            <div className="flex items-center gap-2 flex-wrap">
+              <Languages className="w-4 h-4 text-muted-foreground" />
+              {template.languages.map((lang: string, i: number) => (
+                <Badge key={i} variant="secondary" className="text-xs">{lang}</Badge>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Tours */}
+        {template.tours && template.tours.length > 0 && (
+          <>
+            <Separator />
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-emerald-400" />
+                <span className="text-sm font-medium text-foreground">Excursions</span>
+              </div>
+              {template.tours.slice(0, 3).map((tour: any, i: number) => (
+                <div key={i} className="p-2 rounded bg-surface-2 text-xs">
+                  <p className="font-medium text-foreground">{tour.name}</p>
+                  {tour.duration && <p className="text-muted-foreground">{tour.duration}</p>}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Reviews */}
+        {(template.googleReviewsUrl || template.tripAdvisorUrl) && (
+          <>
+            <Separator />
+            <div className="flex items-center gap-2">
+              <Star className="w-4 h-4 text-yellow-400" />
+              <span className="text-xs text-muted-foreground">Avis clients disponibles</span>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  return null;
+}
+
+// Helper component for preview items
+function PreviewItem({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
+  return (
+    <div className="flex items-center gap-3 p-2 rounded-lg bg-surface-2">
+      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+        <Icon className="w-4 h-4 text-primary" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-sm text-foreground truncate">{value}</p>
+      </div>
+    </div>
+  );
+}
 
 export function AITemplateGenerator({ onTemplateGenerated, onClose }: AITemplateGeneratorProps) {
   const [selectedType, setSelectedType] = useState<TemplateType | null>(null);
@@ -217,53 +463,73 @@ export function AITemplateGenerator({ onTemplateGenerated, onClose }: AITemplate
         </motion.div>
       )}
 
-      {/* Generated Template Preview */}
+      {/* Generated Template Visual Preview */}
       <AnimatePresence>
         {generatedTemplate && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
+            className="space-y-4"
           >
-            <Card className="border-green-500/30 bg-green-500/5">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                    <Check className="w-4 h-4 text-green-500" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base text-green-400">Template généré !</CardTitle>
-                    <CardDescription>Vérifiez et personnalisez votre carte</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Preview of generated data */}
-                <div className="p-4 rounded-lg bg-background/50 border border-border/50 space-y-2">
-                  {Object.entries(generatedTemplate.template).slice(0, 5).map(([key, value]) => (
-                    <div key={key} className="flex items-start gap-2 text-sm">
-                      <Badge variant="outline" className="text-xs shrink-0">{key}</Badge>
-                      <span className="text-muted-foreground truncate">
-                        {typeof value === "object" ? JSON.stringify(value).slice(0, 50) + "..." : String(value)}
-                      </span>
-                    </div>
-                  ))}
-                  {Object.keys(generatedTemplate.template).length > 5 && (
-                    <p className="text-xs text-muted-foreground">
-                      + {Object.keys(generatedTemplate.template).length - 5} autres champs...
-                    </p>
-                  )}
-                </div>
+            {/* Success Header */}
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-green-500/10 border border-green-500/20">
+              <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                <Check className="w-5 h-5 text-green-500" />
+              </div>
+              <div>
+                <p className="font-medium text-green-400">Template généré avec succès !</p>
+                <p className="text-xs text-muted-foreground">Aperçu de votre carte ci-dessous</p>
+              </div>
+            </div>
 
-                <Button
-                  onClick={handleUseTemplate}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
-                >
-                  Utiliser ce template
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </CardContent>
+            {/* Visual Card Preview */}
+            <Card className="overflow-hidden border-border/50 bg-gradient-to-b from-surface-2 to-background">
+              <div className="p-6">
+                {/* Mock Phone Frame */}
+                <div className="max-w-[280px] mx-auto">
+                  <div className="bg-background rounded-[2rem] border-4 border-foreground/10 shadow-2xl overflow-hidden">
+                    {/* Phone Notch */}
+                    <div className="h-8 bg-foreground/5 flex items-center justify-center">
+                      <div className="w-20 h-5 bg-foreground/10 rounded-full" />
+                    </div>
+                    
+                    {/* Card Content Preview */}
+                    <ScrollArea className="h-[400px]">
+                      <div className="p-4 space-y-4">
+                        <TemplatePreviewContent 
+                          type={generatedTemplate.type} 
+                          template={generatedTemplate.template} 
+                        />
+                      </div>
+                    </ScrollArea>
+                    
+                    {/* Phone Bottom Bar */}
+                    <div className="h-6 bg-foreground/5 flex items-center justify-center">
+                      <div className="w-24 h-1 bg-foreground/20 rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </Card>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setGeneratedTemplate(null)}
+                className="flex-1"
+              >
+                Régénérer
+              </Button>
+              <Button
+                onClick={handleUseTemplate}
+                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
+              >
+                Utiliser ce template
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
