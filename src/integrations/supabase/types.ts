@@ -49,6 +49,51 @@ export type Database = {
           },
         ]
       }
+      contact_requests: {
+        Row: {
+          admin_notes: string | null
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          quantity: number | null
+          request_type: string
+          responded_at: string | null
+          status: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          quantity?: number | null
+          request_type?: string
+          responded_at?: string | null
+          status?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          quantity?: number | null
+          request_type?: string
+          responded_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       digital_cards: {
         Row: {
           blocks: Json | null
