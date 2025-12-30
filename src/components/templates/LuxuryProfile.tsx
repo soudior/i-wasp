@@ -185,24 +185,46 @@ export function LuxuryProfile({
               }}
             />
             
-            {/* I-WASP Logo - Floating Badge Top Right */}
-            <div className="absolute z-10" style={{ top: '1rem', right: '1rem' }}>
+            {/* I-WASP Logo - Floating Badge Top Right "IWasp )))" */}
+            <div className="absolute z-10" style={{ top: '20px', right: '20px' }}>
               <div 
+                className="flex items-center gap-2"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.08)',
+                  background: 'rgba(255, 255, 255, 0.06)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
-                  borderRadius: '0.875rem',
-                  padding: '0.5rem 0.75rem',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                  borderRadius: '1rem',
+                  padding: '0.625rem 1rem',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
                 }}
               >
-                <img 
-                  src={iwaspLogoWhite} 
-                  alt="I-WASP" 
-                  style={{ height: '24px', width: 'auto', filter: 'invert(1)' }}
-                />
+                <span 
+                  style={{ 
+                    fontSize: '11px', 
+                    fontWeight: 600, 
+                    letterSpacing: '0.12em', 
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  IWasp
+                </span>
+                {/* NFC Waves Icon "))) */}
+                <svg 
+                  width="18" 
+                  height="18" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="rgba(255, 255, 255, 0.7)" 
+                  strokeWidth="2" 
+                  strokeLinecap="round"
+                >
+                  <path d="M2 12a5 5 0 0 1 5-5" />
+                  <path d="M2 12a9 9 0 0 1 9-9" />
+                  <path d="M2 12a13 13 0 0 1 13-13" />
+                  <circle cx="2" cy="12" r="2" fill="rgba(255, 255, 255, 0.7)" />
+                </svg>
               </div>
             </div>
             
