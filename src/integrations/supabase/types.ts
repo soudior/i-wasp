@@ -122,6 +122,7 @@ export type Database = {
           view_count: number
           wallet_enabled: boolean
           website: string | null
+          whatsapp: string | null
         }
         Insert: {
           blocks?: Json | null
@@ -150,6 +151,7 @@ export type Database = {
           view_count?: number
           wallet_enabled?: boolean
           website?: string | null
+          whatsapp?: string | null
         }
         Update: {
           blocks?: Json | null
@@ -178,6 +180,7 @@ export type Database = {
           view_count?: number
           wallet_enabled?: boolean
           website?: string | null
+          whatsapp?: string | null
         }
         Relationships: []
       }

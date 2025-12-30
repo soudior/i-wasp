@@ -39,6 +39,7 @@ interface Client {
   phone: string | null;
   email: string | null;
   linkedin: string | null;
+  whatsapp: string | null;
   slug: string;
 }
 
@@ -50,6 +51,7 @@ interface ClientFormData {
   phone: string;
   email: string;
   linkedin: string;
+  whatsapp: string;
 }
 
 const initialFormData: ClientFormData = {
@@ -60,6 +62,7 @@ const initialFormData: ClientFormData = {
   phone: "",
   email: "",
   linkedin: "",
+  whatsapp: "",
 };
 
 // Simple password protection - change this password as needed
@@ -112,7 +115,7 @@ export default function AdminClients() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("digital_cards")
-        .select("id, first_name, last_name, title, company, phone, email, linkedin, slug")
+        .select("id, first_name, last_name, title, company, phone, email, linkedin, whatsapp, slug")
         .order("created_at", { ascending: false });
       
       if (error) throw error;
@@ -192,6 +195,7 @@ export default function AdminClients() {
       phone: client.phone || "",
       email: client.email || "",
       linkedin: client.linkedin || "",
+      whatsapp: client.whatsapp || "",
     });
     setShowForm(true);
   };
@@ -422,15 +426,28 @@ export default function AdminClients() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label style={{ color: "#1D1D1F" }}>LinkedIn (optionnel)</Label>
-                <Input
-                  value={formData.linkedin}
-                  onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-                  placeholder="https://linkedin.com/in/..."
-                  className="rounded-xl border-gray-200"
-                  style={{ backgroundColor: "#F5F5F7" }}
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label style={{ color: "#1D1D1F" }}>LinkedIn (optionnel)</Label>
+                  <Input
+                    value={formData.linkedin}
+                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    placeholder="https://linkedin.com/in/..."
+                    className="rounded-xl border-gray-200"
+                    style={{ backgroundColor: "#F5F5F7" }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label style={{ color: "#1D1D1F" }}>WhatsApp (optionnel)</Label>
+                  <Input
+                    type="tel"
+                    value={formData.whatsapp}
+                    onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                    placeholder="+33 6 12 34 56 78"
+                    className="rounded-xl border-gray-200"
+                    style={{ backgroundColor: "#F5F5F7" }}
+                  />
+                </div>
               </div>
 
               <div className="flex gap-3 pt-4">
