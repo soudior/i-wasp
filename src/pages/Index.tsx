@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Wifi, CreditCard, Building2, Hotel, Store, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NFCPhysicalCardSection } from "@/components/print/NFCPhysicalCardSection";
-import { SplineNFCAnimation } from "@/components/SplineNFCAnimation";
+import { NFCAnimation3D } from "@/components/NFCAnimation3D";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 
 /**
@@ -97,16 +97,16 @@ const Index = () => {
             </p>
           </div>
           
-          {/* Animation Spline - Desktop visible, Mobile hidden for performance */}
+          {/* Animation 3D - Desktop visible, Mobile hidden for performance */}
           <div className="hidden md:block">
             <div 
-              className="relative mx-auto rounded-2xl overflow-hidden bg-[#F7F7F5]"
+              className="relative mx-auto rounded-2xl overflow-hidden"
               style={{ 
                 height: "400px",
                 maxWidth: "600px",
               }}
             >
-              <SplineNFCAnimation className="w-full h-full" />
+              <NFCAnimation3D className="w-full h-full" />
             </div>
           </div>
           
