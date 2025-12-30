@@ -159,12 +159,14 @@ const Index = () => {
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <a href="#pricing">
-              <Button size="lg" className="bg-foreground text-background hover:bg-foreground/90 gap-2">
-                Commander maintenant
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </a>
+            <Button 
+              size="lg" 
+              className="bg-foreground text-background hover:bg-foreground/90 gap-2"
+              onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              Commander maintenant
+              <ArrowRight className="w-4 h-4" />
+            </Button>
             <Link to="/demo">
               <Button variant="outline" size="lg">
                 Voir une démonstration
