@@ -34,19 +34,35 @@ const SocialItem = ({ icon, label, value, href }: SocialItemProps) => (
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 group cursor-pointer"
+    className="flex items-center justify-between p-4 group cursor-pointer transition-all duration-300"
+    style={{
+      borderRadius: '1.25rem',
+      background: 'rgba(255, 255, 255, 0.03)',
+      border: '1px solid rgba(255, 255, 255, 0.08)',
+      backdropFilter: 'blur(10px)',
+    }}
+    whileHover={{ 
+      background: 'rgba(255, 255, 255, 0.06)',
+      borderColor: 'rgba(16, 185, 129, 0.3)',
+    }}
     whileTap={{ scale: 0.98 }}
   >
     <div className="flex items-center gap-4">
-      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 flex items-center justify-center text-emerald-400">
+      <div 
+        className="w-12 h-12 flex items-center justify-center text-emerald-400"
+        style={{
+          borderRadius: '0.875rem',
+          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.08) 100%)',
+        }}
+      >
         {icon}
       </div>
       <div>
-        <p className="text-xs text-white/50 uppercase tracking-wider">{label}</p>
-        <p className="text-sm text-white/90 font-medium">{value}</p>
+        <p className="text-[10px] uppercase tracking-[0.15em]" style={{ color: 'rgba(255, 255, 255, 0.45)' }}>{label}</p>
+        <p className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>{value}</p>
       </div>
     </div>
-    <div className="text-white/30 group-hover:text-emerald-400 transition-colors">
+    <div className="group-hover:text-emerald-400 transition-colors" style={{ color: 'rgba(255, 255, 255, 0.25)' }}>
       <ExternalLink size={16} />
     </div>
   </motion.a>
@@ -100,119 +116,266 @@ export function LuxuryProfile({
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center justify-center p-4 pb-safe">
-      {/* Background Effects */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-emerald-600/5 rounded-full blur-[80px]" />
+    <div 
+      className="min-h-screen flex flex-col items-center justify-center p-4 pb-safe"
+      style={{ 
+        backgroundColor: '#050505',
+        color: '#ffffff',
+      }}
+    >
+      {/* Background Effects - Subtle Emerald Glow */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
+        <div 
+          className="absolute"
+          style={{
+            top: '-10%',
+            left: '20%',
+            width: '500px',
+            height: '500px',
+            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%)',
+            filter: 'blur(80px)',
+          }}
+        />
+        <div 
+          className="absolute"
+          style={{
+            bottom: '-5%',
+            right: '15%',
+            width: '400px',
+            height: '400px',
+            background: 'radial-gradient(circle, rgba(5, 150, 105, 0.05) 0%, transparent 70%)',
+            filter: 'blur(60px)',
+          }}
+        />
       </div>
 
-      {/* Container Principal */}
+      {/* Container Principal - iPhone Pro Style */}
       <motion.div 
-        className="w-full max-w-md mx-auto relative z-10"
+        className="w-full max-w-md mx-auto relative"
+        style={{ zIndex: 10 }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Header Visual - Ambiance Forêt Noire (Eco-Luxe) */}
-        <div className="relative h-40 rounded-t-3xl overflow-hidden">
-          {/* Forest gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/40 via-[#0a0a0a] to-[#050505]" />
-          
-          {/* I-WASP Logo - Floating Badge Top Right */}
-          <div className="absolute top-4 right-4 z-10">
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-2 border border-white/20 shadow-lg">
-              <img 
-                src={iwaspLogoWhite} 
-                alt="I-WASP" 
-                className="h-6 w-auto object-contain invert"
-              />
+        {/* Outer Border Glow - Pro Device Feel */}
+        <div 
+          className="absolute -inset-px pointer-events-none"
+          style={{
+            borderRadius: '2rem',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 50%, rgba(16, 185, 129, 0.1) 100%)',
+          }}
+        />
+        
+        {/* Main Card Container */}
+        <div
+          style={{
+            borderRadius: '2rem',
+            overflow: 'hidden',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+          }}
+        >
+          {/* Header Visual - Ambiance Forêt Noire (Eco-Luxe) */}
+          <div className="relative" style={{ height: '160px' }}>
+            {/* Forest gradient background */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(135deg, rgba(6, 78, 59, 0.4) 0%, #0a0a0a 60%, #050505 100%)',
+              }}
+            />
+            
+            {/* I-WASP Logo - Floating Badge Top Right */}
+            <div className="absolute z-10" style={{ top: '1rem', right: '1rem' }}>
+              <div 
+                style={{
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  borderRadius: '0.875rem',
+                  padding: '0.5rem 0.75rem',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                }}
+              >
+                <img 
+                  src={iwaspLogoWhite} 
+                  alt="I-WASP" 
+                  style={{ height: '24px', width: 'auto', filter: 'invert(1)' }}
+                />
+              </div>
             </div>
-          </div>
-          
-          {/* Subtle leaf pattern overlay */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-12 left-10 text-emerald-600/20 rotate-45">
-              <Leaf size={24} />
+            
+            {/* Subtle leaf pattern overlay */}
+            <div className="absolute inset-0" style={{ opacity: 0.08 }}>
+              <div className="absolute" style={{ top: '48px', left: '40px', transform: 'rotate(45deg)', color: 'rgba(16, 185, 129, 0.3)' }}>
+                <Leaf size={24} />
+              </div>
             </div>
+            
+            {/* Mesh gradient */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: 'radial-gradient(ellipse at top right, rgba(16, 185, 129, 0.12) 0%, transparent 50%)',
+              }}
+            />
           </div>
-          
-          {/* Mesh gradient */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.1)_0%,_transparent_50%)]" />
-        </div>
 
-        {/* Profile Content */}
-        <div className="relative bg-gradient-to-b from-[#0a0a0a] to-[#050505] rounded-b-3xl px-6 pb-8 border border-white/5 border-t-0">
+          {/* Profile Content */}
+          <div 
+            className="relative px-6 pb-8"
+            style={{
+              background: 'linear-gradient(180deg, #0a0a0a 0%, #050505 100%)',
+            }}
+          >
           
-          {/* Avatar avec bague de progression/luxe */}
-          <div className="relative -mt-16 flex justify-center mb-6">
-            <div className="relative">
-              {/* Outer glow ring */}
-              <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-emerald-400/30 via-emerald-500/20 to-transparent blur-md" />
-              
-              {/* Avatar container */}
-              <div className="relative w-28 h-28 rounded-full p-1 bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600">
-                {data.photoUrl ? (
-                  <img 
-                    src={data.photoUrl} 
-                    alt={fullName}
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full rounded-full bg-[#0a0a0a] flex items-center justify-center">
-                    <span className="text-3xl font-bold text-emerald-400">{initials}</span>
-                  </div>
+            {/* Avatar avec bague de progression/luxe */}
+            <div className="relative flex justify-center mb-6" style={{ marginTop: '-64px' }}>
+              <div className="relative">
+                {/* Outer glow ring */}
+                <div 
+                  className="absolute rounded-full"
+                  style={{
+                    inset: '-8px',
+                    background: 'linear-gradient(135deg, rgba(52, 211, 153, 0.3) 0%, rgba(16, 185, 129, 0.15) 50%, transparent 100%)',
+                    filter: 'blur(12px)',
+                  }}
+                />
+                
+                {/* Avatar container */}
+                <div 
+                  className="relative flex items-center justify-center"
+                  style={{
+                    width: '112px',
+                    height: '112px',
+                    borderRadius: '50%',
+                    padding: '3px',
+                    background: 'linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%)',
+                  }}
+                >
+                  {data.photoUrl ? (
+                    <img 
+                      src={data.photoUrl} 
+                      alt={fullName}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  ) : (
+                    <div 
+                      className="flex items-center justify-center"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '50%',
+                        backgroundColor: '#0a0a0a',
+                      }}
+                    >
+                      <span style={{ fontSize: '1.875rem', fontWeight: 700, color: '#34d399' }}>{initials}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Verified badge */}
+                <div 
+                  className="absolute flex items-center justify-center"
+                  style={{
+                    bottom: '-4px',
+                    right: '-4px',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    backgroundColor: '#10b981',
+                    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)',
+                  }}
+                >
+                  <ShieldCheck size={16} style={{ color: '#ffffff' }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Name & Title */}
+            <div className="text-center mb-6">
+              <h1 
+                style={{ 
+                  fontSize: '1.5rem', 
+                  fontWeight: 700, 
+                  color: '#ffffff',
+                  marginBottom: '0.5rem',
+                  letterSpacing: '-0.025em',
+                }}
+              >
+                {fullName}
+              </h1>
+              <div className="flex flex-col items-center gap-1">
+                {data.title && (
+                  <p style={{ color: '#34d399', fontWeight: 500 }}>{data.title}</p>
+                )}
+                {data.company && (
+                  <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.875rem' }}>{data.company}</p>
                 )}
               </div>
+            </div>
 
-              {/* Verified badge */}
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                <ShieldCheck size={16} className="text-white" />
+            {/* Bio */}
+            {data.tagline && (
+              <p 
+                className="text-center max-w-xs mx-auto"
+                style={{ 
+                  color: 'rgba(255, 255, 255, 0.7)', 
+                  fontSize: '0.875rem', 
+                  lineHeight: 1.6,
+                  marginBottom: '1.5rem',
+                }}
+              >
+                {data.tagline}
+              </p>
+            )}
+
+            {/* Location Badge */}
+            {data.location && (
+              <div 
+                className="flex items-center justify-center gap-2"
+                style={{ 
+                  color: 'rgba(255, 255, 255, 0.5)', 
+                  fontSize: '0.75rem',
+                  marginBottom: '2rem',
+                }}
+              >
+                <MapPin size={12} />
+                <span>Basé à {data.location} • Opère mondialement</span>
               </div>
+            )}
+
+            {/* Primary Action Button - Apple Style */}
+            <div style={{ marginBottom: '2rem' }}>
+              <motion.button
+                onClick={handleDownloadVCard}
+                className="w-full flex items-center justify-center gap-3"
+                style={{
+                  padding: '1rem 1.5rem',
+                  borderRadius: '1rem',
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: '#ffffff',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 10px 40px -10px rgba(16, 185, 129, 0.5)',
+                }}
+                whileHover={{ 
+                  boxShadow: '0 15px 50px -10px rgba(16, 185, 129, 0.6)',
+                }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Download size={20} />
+                Ajouter aux Contacts
+              </motion.button>
             </div>
-          </div>
-
-          {/* Name & Title */}
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-white mb-2 tracking-tight">
-              {fullName}
-            </h1>
-            <div className="flex flex-col items-center gap-1">
-              {data.title && (
-                <p className="text-emerald-400 font-medium">{data.title}</p>
-              )}
-              {data.company && (
-                <p className="text-white/60 text-sm">{data.company}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Bio */}
-          {data.tagline && (
-            <p className="text-center text-white/70 text-sm leading-relaxed mb-6 max-w-xs mx-auto">
-              {data.tagline}
-            </p>
-          )}
-
-          {/* Location Badge */}
-          {data.location && (
-            <div className="flex items-center justify-center gap-2 text-white/50 text-xs mb-8">
-              <MapPin size={12} />
-              <span>Basé à {data.location} • Opère mondialement</span>
-            </div>
-          )}
-
-          {/* Primary Action Button */}
-          <div className="mb-8">
-            <motion.button
-              onClick={handleDownloadVCard}
-              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-semibold flex items-center justify-center gap-3 shadow-lg shadow-emerald-500/25 transition-all duration-300"
-              whileTap={{ scale: 0.98 }}
-            >
-              <Download size={20} />
-              Ajouter aux Contacts
-            </motion.button>
-          </div>
 
           {/* Links Grid */}
           <div className="space-y-3">
@@ -258,26 +421,56 @@ export function LuxuryProfile({
             )}
           </div>
 
-          {/* Brand Signature with I-WASP Logo */}
-          <div className="mt-10 pt-6 border-t border-white/10 text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <img 
-                src={iwaspLogo} 
-                alt="I-WASP" 
-                className="h-8 w-auto object-contain"
-              />
+            {/* Brand Signature with I-WASP Logo */}
+            <div 
+              className="text-center"
+              style={{
+                marginTop: '2.5rem',
+                paddingTop: '1.5rem',
+                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              }}
+            >
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <img 
+                  src={iwaspLogo} 
+                  alt="I-WASP" 
+                  style={{ height: '32px', width: 'auto' }}
+                />
+              </div>
+              <p 
+                style={{ 
+                  color: 'rgba(255, 255, 255, 0.4)', 
+                  fontSize: '0.625rem',
+                  letterSpacing: '0.2em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Digital Identity • Sustainable Tech
+              </p>
             </div>
-            <p className="text-white/40 text-xs tracking-widest uppercase">
-              Digital Identity • Sustainable Tech
-            </p>
           </div>
         </div>
       </motion.div>
 
       {/* Footer Info */}
-      <div className="flex items-center justify-center gap-4 mt-8 text-white/30 text-xs">
+      <div 
+        className="flex items-center justify-center gap-4"
+        style={{ 
+          marginTop: '2rem',
+          color: 'rgba(255, 255, 255, 0.3)',
+          fontSize: '0.75rem',
+        }}
+      >
         <span className="flex items-center gap-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span 
+            style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              backgroundColor: '#10b981',
+              animation: 'pulse 2s infinite',
+            }}
+          />
           NFC Active
         </span>
         <span>•</span>
