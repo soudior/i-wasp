@@ -2,7 +2,7 @@
  * PhysicalCardStudio - Studio complet pour carte physique NFC
  * 
  * - Lié à la carte digitale
- * - Modifiable par IA
+ * - Modifiable par IA (Lovable AI)
  * - Visualisable
  * - Exportable (PDF/Image)
  * - Commandable
@@ -11,7 +11,7 @@
 import { useRef, useState, useEffect } from "react";
 import { 
   FileImage, FileText, Loader2, ShoppingCart, 
-  Sparkles, RefreshCw, Palette
+  Sparkles, Palette, Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { extractColorsFromLogo, type ColorPalette } from "@/lib/adaptiveTemplateEngine";
 
 interface PhysicalCardStudioProps {
@@ -36,18 +37,22 @@ interface PhysicalCardStudioProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface GeneratedPalette {
+  name: string;
+  backgroundColor: string;
+  accentColor: string;
+}
+
 // Dimensions carte CR80 en mm
 const CARD_WIDTH_MM = 85.6;
 const CARD_HEIGHT_MM = 54;
 const CARD_RATIO = CARD_WIDTH_MM / CARD_HEIGHT_MM;
 
-// Presets de palettes
-const COLOR_PRESETS = [
-  { name: "Noir Élégant", bg: "#0B0B0C", accent: "#F4F2EF" },
-  { name: "Ivoire Premium", bg: "#F4F2EF", accent: "#0B0B0C" },
-  { name: "Gris Profond", bg: "#1C1C1E", accent: "#F4F2EF" },
-  { name: "Marine", bg: "#1a1f3c", accent: "#c9a962" },
-  { name: "Bordeaux", bg: "#4a1c1c", accent: "#d4a373" },
+// Presets de palettes par défaut
+const DEFAULT_PRESETS: GeneratedPalette[] = [
+  { name: "Noir Élégant", backgroundColor: "#0B0B0C", accentColor: "#F4F2EF" },
+  { name: "Ivoire Premium", backgroundColor: "#F4F2EF", accentColor: "#0B0B0C" },
+  { name: "Gris Profond", backgroundColor: "#1C1C1E", accentColor: "#F4F2EF" },
 ];
 
 export function PhysicalCardStudio({ 
@@ -65,15 +70,14 @@ export function PhysicalCardStudio({
   // État du design
   const [backgroundColor, setBackgroundColor] = useState("#0B0B0C");
   const [accentColor, setAccentColor] = useState("#F4F2EF");
-  const [extractedPalette, setExtractedPalette] = useState<ColorPalette | null>(null);
+  const [palettes, setPalettes] = useState<GeneratedPalette[]>(DEFAULT_PRESETS);
+  const [selectedPalette, setSelectedPalette] = useState<string | null>(null);
 
   // Extraction des couleurs du logo au chargement
   useEffect(() => {
     if (logoUrl && open) {
       extractColorsFromLogo(logoUrl)
         .then((palette) => {
-          setExtractedPalette(palette);
-          // Appliquer les couleurs extraites
           setBackgroundColor(`hsl(${palette.background})`);
           setAccentColor(`hsl(${palette.foreground})`);
         })
@@ -81,35 +85,43 @@ export function PhysicalCardStudio({
     }
   }, [logoUrl, open]);
 
-  // Appliquer un preset
-  const applyPreset = (preset: typeof COLOR_PRESETS[0]) => {
-    setBackgroundColor(preset.bg);
-    setAccentColor(preset.accent);
-    toast.success(`Palette "${preset.name}" appliquée`);
+  // Appliquer une palette
+  const applyPalette = (palette: GeneratedPalette) => {
+    setBackgroundColor(palette.backgroundColor);
+    setAccentColor(palette.accentColor);
+    setSelectedPalette(palette.name);
+    toast.success(`Palette "${palette.name}" appliquée`);
   };
 
-  // Génération IA de palette
-  const generateAIPalette = async () => {
+  // Génération IA de palettes via Edge Function
+  const generateAIPalettes = async () => {
     setIsGenerating(true);
     try {
-      // Simuler génération IA (en production, appeler un edge function)
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Générer une palette aléatoire sophistiquée
-      const hue = Math.floor(Math.random() * 360);
-      const bgLight = Math.random() > 0.5;
-      
-      if (bgLight) {
-        setBackgroundColor(`hsl(${hue}, 15%, 95%)`);
-        setAccentColor(`hsl(${hue}, 30%, 15%)`);
-      } else {
-        setBackgroundColor(`hsl(${hue}, 20%, 8%)`);
-        setAccentColor(`hsl(${hue}, 30%, 90%)`);
+      const { data, error } = await supabase.functions.invoke('generate-palette', {
+        body: { 
+          logoUrl: logoUrl || null,
+          style: 'premium élégant minimal'
+        }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
       }
-      
-      toast.success("Nouvelle palette générée");
+
+      if (data?.palettes && Array.isArray(data.palettes)) {
+        setPalettes(data.palettes);
+        // Appliquer la première palette générée
+        if (data.palettes.length > 0) {
+          applyPalette(data.palettes[0]);
+        }
+        toast.success("Palettes IA générées");
+      } else if (data?.error) {
+        toast.error(data.error);
+      }
     } catch (error) {
-      toast.error("Erreur de génération");
+      console.error('AI palette generation error:', error);
+      toast.error("Erreur de génération IA");
     } finally {
       setIsGenerating(false);
     }
@@ -272,29 +284,36 @@ export function PhysicalCardStudio({
           <div className="space-y-3">
             <Label className="text-sm font-medium flex items-center gap-2">
               <Palette className="w-4 h-4" />
-              Modifier la palette
+              Palettes disponibles
             </Label>
             
-            {/* Presets */}
+            {/* Palettes générées ou presets */}
             <div className="flex flex-wrap gap-2">
-              {COLOR_PRESETS.map((preset) => (
+              {palettes.map((palette) => (
                 <button
-                  key={preset.name}
-                  onClick={() => applyPreset(preset)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 hover:border-border text-xs transition-colors"
+                  key={palette.name}
+                  onClick={() => applyPalette(palette)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs transition-colors ${
+                    selectedPalette === palette.name 
+                      ? 'border-foreground bg-foreground/10' 
+                      : 'border-border/50 hover:border-border'
+                  }`}
                 >
                   <div 
                     className="w-4 h-4 rounded-full border border-border/30"
-                    style={{ background: preset.bg }}
+                    style={{ background: palette.backgroundColor }}
                   />
-                  <span className="text-muted-foreground">{preset.name}</span>
+                  <span className="text-muted-foreground">{palette.name}</span>
+                  {selectedPalette === palette.name && (
+                    <Check className="w-3 h-3 text-foreground" />
+                  )}
                 </button>
               ))}
             </div>
 
             {/* Génération IA */}
             <Button
-              onClick={generateAIPalette}
+              onClick={generateAIPalettes}
               disabled={isGenerating}
               variant="outline"
               size="sm"
@@ -305,7 +324,7 @@ export function PhysicalCardStudio({
               ) : (
                 <Sparkles className="w-4 h-4" />
               )}
-              Générer palette IA
+              {logoUrl ? "Analyser logo & générer palettes IA" : "Générer palettes IA"}
             </Button>
 
             {/* Couleurs manuelles */}
