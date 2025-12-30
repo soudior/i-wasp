@@ -4,6 +4,7 @@ import { Menu, X, LayoutDashboard, LogOut, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
+import iwaspLogo from "@/assets/iwasp-logo.png";
 
 const navLinks = [
   { href: "/", label: "Accueil" },
@@ -41,16 +42,13 @@ export function Navbar() {
     >
       <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo I-WASP */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="relative transition-transform duration-200 hover:scale-105">
-              <div className="w-10 h-10 rounded-xl bg-foreground flex items-center justify-center">
-                <span className="font-semibold text-background text-lg">I</span>
-              </div>
-            </div>
-            <span className="text-xl font-semibold text-foreground tracking-tight">
-              IWASP
-            </span>
+            <img 
+              src={iwaspLogo} 
+              alt="I-WASP" 
+              className="h-8 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+            />
           </Link>
 
           {/* Desktop Navigation */}
