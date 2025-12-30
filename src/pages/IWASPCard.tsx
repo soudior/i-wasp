@@ -7,13 +7,9 @@
  * Accent: #FFD400 (electric yellow)
  */
 
-import { Suspense, lazy } from 'react';
 import { Phone, Mail, Linkedin, MessageCircle, Download } from 'lucide-react';
 import { downloadVCard, VCardData } from '@/lib/vcard';
 import iwaspLogo from '@/assets/iwasp-logo.png';
-
-// Lazy load Spline for performance
-const Spline = lazy(() => import('@splinetool/react-spline'));
 
 // Contact data
 const contact = {
@@ -89,16 +85,44 @@ export default function IWASPCard() {
       className="min-h-screen flex items-center justify-center px-5 py-10 relative overflow-hidden"
       style={{ backgroundColor: '#0E0E11' }}
     >
-      {/* 3D Robot Background */}
-      <div className="absolute inset-0 pointer-events-none opacity-20">
-        <Suspense fallback={null}>
-          <Spline 
-            scene="https://prod.spline.design/c7ea7d61-b5c3-46cf-87e6-76f0be0349bf/scene.splinecode"
-            className="w-full h-full"
-          />
-        </Suspense>
-        {/* Overlay to keep robot subtle */}
-        <div className="absolute inset-0 bg-[#0E0E11]/60" />
+      {/* Futuristic Background Effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Top glow */}
+        <div 
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px]"
+          style={{ 
+            background: 'radial-gradient(ellipse, rgba(255,212,0,0.04) 0%, transparent 70%)',
+            filter: 'blur(60px)'
+          }}
+        />
+        {/* Grid pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255,212,0,0.3) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,212,0,0.3) 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px',
+            maskImage: 'radial-gradient(ellipse at center, black 0%, transparent 70%)'
+          }}
+        />
+        {/* Floating orbs */}
+        <div 
+          className="absolute top-1/4 right-10 w-32 h-32 rounded-full animate-pulse"
+          style={{ 
+            background: 'radial-gradient(circle, rgba(255,212,0,0.08) 0%, transparent 70%)',
+            filter: 'blur(30px)'
+          }}
+        />
+        <div 
+          className="absolute bottom-1/3 left-10 w-24 h-24 rounded-full animate-pulse"
+          style={{ 
+            background: 'radial-gradient(circle, rgba(255,212,0,0.06) 0%, transparent 70%)',
+            filter: 'blur(20px)',
+            animationDelay: '1s'
+          }}
+        />
       </div>
 
       {/* Card */}
@@ -106,7 +130,7 @@ export default function IWASPCard() {
         className="relative w-full max-w-[360px] rounded-[28px] overflow-hidden z-10"
         style={{ 
           backgroundColor: '#16161D',
-          boxShadow: '0 30px 60px -15px rgba(0,0,0,0.7)'
+          boxShadow: '0 30px 60px -15px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03)'
         }}
       >
         {/* Yellow accent line */}
@@ -131,7 +155,7 @@ export default function IWASPCard() {
                 backgroundImage: contact.photoUrl ? `url(${contact.photoUrl})` : 'none',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                boxShadow: '0 0 0 3px #FFD400'
+                boxShadow: '0 0 0 3px #FFD400, 0 0 30px rgba(255,212,0,0.15)'
               }}
             >
               {!contact.photoUrl && (
@@ -171,11 +195,11 @@ export default function IWASPCard() {
         </div>
       </div>
 
-      {/* Ambient glow */}
+      {/* Bottom ambient glow */}
       <div 
         className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 h-40 pointer-events-none"
         style={{ 
-          background: 'radial-gradient(ellipse, rgba(255,212,0,0.06) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse, rgba(255,212,0,0.08) 0%, transparent 70%)',
           filter: 'blur(40px)'
         }}
       />

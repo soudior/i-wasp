@@ -20,15 +20,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   
   // Routes where we hide standard navigation
   const isPublicCard = location.pathname.startsWith("/c/");
+  const isIWASPCard = location.pathname === "/";
   const isAuthPage = ["/login", "/signup"].includes(location.pathname);
   const isCheckout = location.pathname === "/checkout";
   const isOrderConfirmation = location.pathname === "/order-confirmation";
   
-  // Show desktop navbar except on public card pages
-  const showDesktopNav = !isPublicCard;
+  // Full-screen pages (no nav at all)
+  const isFullScreen = isPublicCard || isIWASPCard;
+  
+  // Show desktop navbar except on full-screen pages
+  const showDesktopNav = !isFullScreen;
   
   // Show mobile navigation (tab bar + header)
-  const showMobileNav = !isPublicCard && !isAuthPage && !isCheckout && !isOrderConfirmation;
+  const showMobileNav = !isFullScreen && !isAuthPage && !isCheckout && !isOrderConfirmation;
 
   return (
     <div className="min-h-mobile-screen bg-background">
