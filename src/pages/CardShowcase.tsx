@@ -6,7 +6,8 @@ import {
   Wifi, Copy, Check, ChevronRight, Mail, Globe, Linkedin,
   Instagram, ExternalLink, ArrowLeft, Upload, Palette, X,
   Hotel, DoorOpen, Lightbulb, Thermometer, BedDouble, Utensils,
-  Sparkles, Waves, Dumbbell, Coffee, Bell, Key, Settings
+  Sparkles, Waves, Dumbbell, Coffee, Bell, Key, Settings,
+  Wine, Croissant, ChevronDown, Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,33 @@ interface RoomState {
   lightLevel: number;
   temperature: number;
   doNotDisturb: boolean;
+}
+
+// Menu item interface
+interface MenuItem {
+  name: string;
+  description: string;
+  price: string;
+  category?: string;
+}
+
+// Hotel menu data
+interface HotelMenus {
+  restaurant: {
+    name: string;
+    categories: {
+      name: string;
+      items: MenuItem[];
+    }[];
+  };
+  roomService: {
+    name: string;
+    available: string;
+    categories: {
+      name: string;
+      items: MenuItem[];
+    }[];
+  };
 }
 
 interface BrandConfig {
@@ -262,6 +290,68 @@ const industries = {
       checkIn: "30 Dec 2024",
       checkOut: "03 Jan 2025",
     },
+    menus: {
+      restaurant: {
+        name: "Le Jardin d'Orient",
+        categories: [
+          {
+            name: "Entrées",
+            items: [
+              { name: "Briouates aux Amandes", description: "Feuilles de brick croustillantes, amandes torréfiées, miel d'oranger", price: "95 MAD" },
+              { name: "Salade Marocaine Royale", description: "Légumes frais, olives noires, huile d'argan", price: "75 MAD" },
+              { name: "Zaalouk Traditionnel", description: "Caviar d'aubergines fumées, tomates confites, épices douces", price: "65 MAD" },
+            ],
+          },
+          {
+            name: "Plats Principaux",
+            items: [
+              { name: "Tagine d'Agneau aux Pruneaux", description: "Agneau mijoté 6h, pruneaux, amandes, sésame", price: "280 MAD" },
+              { name: "Pastilla au Pigeon", description: "Pastilla traditionnelle, cannelle, sucre glace", price: "320 MAD" },
+              { name: "Couscous Royal 7 Légumes", description: "Semoule fine, légumes de saison, bouillon parfumé", price: "240 MAD" },
+              { name: "Filet de Loup de Mer", description: "Poisson grillé, chermoula, légumes du marché", price: "295 MAD" },
+            ],
+          },
+          {
+            name: "Desserts",
+            items: [
+              { name: "Cornes de Gazelle", description: "Pâte d'amande parfumée à la fleur d'oranger", price: "85 MAD" },
+              { name: "Thé à la Menthe & Pâtisseries", description: "Sélection de pâtisseries marocaines", price: "95 MAD" },
+              { name: "Crème Brûlée au Safran", description: "Safran de Taliouine, zeste d'orange", price: "110 MAD" },
+            ],
+          },
+        ],
+      },
+      roomService: {
+        name: "Room Service",
+        available: "24h/24",
+        categories: [
+          {
+            name: "Petit-Déjeuner",
+            items: [
+              { name: "Continental", description: "Viennoiseries, fruits frais, jus, café ou thé", price: "180 MAD" },
+              { name: "Américain", description: "Œufs, bacon, pancakes, fruits, boisson chaude", price: "220 MAD" },
+              { name: "Marocain", description: "Msemen, baghrir, miel, huile d'olive, thé à la menthe", price: "160 MAD" },
+            ],
+          },
+          {
+            name: "Encas & Snacks",
+            items: [
+              { name: "Club Sandwich Palace", description: "Poulet, bacon, œuf, crudités, frites", price: "165 MAD" },
+              { name: "Burger Wagyu", description: "Viande Wagyu, cheddar, truffe, oignons caramélisés", price: "295 MAD" },
+              { name: "Salade César", description: "Poulet grillé, parmesan, croûtons, sauce César", price: "145 MAD" },
+            ],
+          },
+          {
+            name: "Boissons",
+            items: [
+              { name: "Eau Minérale (1L)", description: "Plate ou gazeuse", price: "45 MAD" },
+              { name: "Jus Frais Pressé", description: "Orange, pamplemousse, ou mix fruits", price: "65 MAD" },
+              { name: "Champagne (Bouteille)", description: "Moët & Chandon Impérial", price: "1200 MAD" },
+            ],
+          },
+        ],
+      },
+    } as HotelMenus,
     hotelServices: [
       { icon: Utensils, label: "Restaurant", desc: "Le Jardin d'Orient", hours: "12h-15h / 19h-23h" },
       { icon: Coffee, label: "Room Service", desc: "24h/24", hours: "Disponible" },
@@ -294,6 +384,8 @@ export default function CardShowcase() {
     doNotDisturb: false,
   });
   const [showRoomControl, setShowRoomControl] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<"restaurant" | "roomService" | null>(null);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   
   // Brand configuration
   const [brand, setBrand] = useState<BrandConfig>({
@@ -1046,6 +1138,174 @@ export default function CardShowcase() {
                               </button>
                             ))}
                           </div>
+                        </div>
+                      )}
+
+                      {/* Hotel-specific: Menus Section */}
+                      {selectedIndustry === "hotellerie" && industries.hotellerie.menus && (
+                        <div className="mb-6">
+                          <p className="text-xs font-medium uppercase tracking-wider mb-3 opacity-50" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                            Menus & Restauration
+                          </p>
+                          
+                          {/* Menu Toggle Buttons */}
+                          <div className="flex gap-2 mb-3">
+                            <button
+                              onClick={() => {
+                                setActiveMenu(activeMenu === "restaurant" ? null : "restaurant");
+                                setExpandedCategory(null);
+                              }}
+                              className="flex-1 py-3 px-3 rounded-xl flex items-center justify-center gap-2 transition-all"
+                              style={{
+                                backgroundColor: activeMenu === "restaurant" ? palette.primary : (palette.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)"),
+                                color: activeMenu === "restaurant" ? palette.textOnPrimary : (palette.isDark ? "#fff" : "#1a1a1a"),
+                              }}
+                            >
+                              <Wine className="h-4 w-4" />
+                              <span className="text-sm font-medium">Restaurant</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveMenu(activeMenu === "roomService" ? null : "roomService");
+                                setExpandedCategory(null);
+                              }}
+                              className="flex-1 py-3 px-3 rounded-xl flex items-center justify-center gap-2 transition-all"
+                              style={{
+                                backgroundColor: activeMenu === "roomService" ? palette.primary : (palette.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)"),
+                                color: activeMenu === "roomService" ? palette.textOnPrimary : (palette.isDark ? "#fff" : "#1a1a1a"),
+                              }}
+                            >
+                              <Croissant className="h-4 w-4" />
+                              <span className="text-sm font-medium">Room Service</span>
+                            </button>
+                          </div>
+                          
+                          {/* Menu Preview */}
+                          <AnimatePresence>
+                            {activeMenu && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="overflow-hidden"
+                              >
+                                <div 
+                                  className="rounded-xl p-4"
+                                  style={{ 
+                                    backgroundColor: palette.isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
+                                    border: `1px solid ${palette.primary}20`,
+                                  }}
+                                >
+                                  {/* Menu Header */}
+                                  <div className="flex items-center justify-between mb-4">
+                                    <div>
+                                      <h4 className="text-sm font-semibold" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                        {activeMenu === "restaurant" 
+                                          ? industries.hotellerie.menus.restaurant.name 
+                                          : industries.hotellerie.menus.roomService.name}
+                                      </h4>
+                                      {activeMenu === "roomService" && (
+                                        <p className="text-[10px] mt-0.5" style={{ color: palette.primary }}>
+                                          {industries.hotellerie.menus.roomService.available}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ backgroundColor: palette.primary + "15" }}>
+                                      <Eye className="h-3 w-3" style={{ color: palette.primary }} />
+                                      <span className="text-[10px] font-medium" style={{ color: palette.primary }}>Aperçu</span>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Menu Categories */}
+                                  <div className="space-y-2">
+                                    {(activeMenu === "restaurant" 
+                                      ? industries.hotellerie.menus.restaurant.categories 
+                                      : industries.hotellerie.menus.roomService.categories
+                                    ).map((category, catIdx) => (
+                                      <div key={catIdx}>
+                                        <button
+                                          onClick={() => setExpandedCategory(expandedCategory === category.name ? null : category.name)}
+                                          className="w-full py-2.5 px-3 rounded-lg flex items-center justify-between transition-all"
+                                          style={{
+                                            backgroundColor: expandedCategory === category.name 
+                                              ? palette.primary + "20" 
+                                              : (palette.isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)"),
+                                          }}
+                                        >
+                                          <span className="text-sm font-medium" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                            {category.name}
+                                          </span>
+                                          <ChevronDown 
+                                            className={`h-4 w-4 transition-transform ${expandedCategory === category.name ? "rotate-180" : ""}`}
+                                            style={{ color: palette.primary }}
+                                          />
+                                        </button>
+                                        
+                                        {/* Category Items */}
+                                        <AnimatePresence>
+                                          {expandedCategory === category.name && (
+                                            <motion.div
+                                              initial={{ height: 0, opacity: 0 }}
+                                              animate={{ height: "auto", opacity: 1 }}
+                                              exit={{ height: 0, opacity: 0 }}
+                                              className="overflow-hidden"
+                                            >
+                                              <div className="pt-2 pb-1 px-1 space-y-2">
+                                                {category.items.map((item, itemIdx) => (
+                                                  <div 
+                                                    key={itemIdx}
+                                                    className="p-3 rounded-lg"
+                                                    style={{ backgroundColor: palette.isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.01)" }}
+                                                  >
+                                                    <div className="flex items-start justify-between mb-1">
+                                                      <h5 className="text-sm font-medium flex-1 pr-2" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                                        {item.name}
+                                                      </h5>
+                                                      <span className="text-sm font-semibold whitespace-nowrap" style={{ color: palette.primary }}>
+                                                        {item.price}
+                                                      </span>
+                                                    </div>
+                                                    <p className="text-[11px] opacity-60 leading-relaxed" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                                      {item.description}
+                                                    </p>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            </motion.div>
+                                          )}
+                                        </AnimatePresence>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  
+                                  {/* Quick Order Button */}
+                                  <motion.button
+                                    className="w-full mt-4 py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2"
+                                    style={{ 
+                                      backgroundColor: palette.primary,
+                                      color: palette.textOnPrimary,
+                                    }}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => toast.success(activeMenu === "restaurant" ? "Réservation restaurant initiée" : "Commande room service ouverte")}
+                                  >
+                                    {activeMenu === "restaurant" ? (
+                                      <>
+                                        <Calendar className="h-4 w-4" />
+                                        Réserver une table
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Bell className="h-4 w-4" />
+                                        Commander au Room Service
+                                      </>
+                                    )}
+                                  </motion.button>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
                       )}
 
