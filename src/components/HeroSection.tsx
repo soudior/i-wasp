@@ -63,12 +63,12 @@ export function HeroSection() {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="flex flex-wrap gap-4 pt-2"
             >
-              <Link to="/signup">
+              <Link to="/order">
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-background font-semibold px-8 py-6 rounded-full shadow-lg shadow-amber-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105"
                 >
-                  Créer ma carte
+                  Commander une carte
                   <ArrowRight size={18} className="ml-2" />
                 </Button>
               </Link>
