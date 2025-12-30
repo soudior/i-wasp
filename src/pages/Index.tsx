@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Wifi, CreditCard, Building2, Hotel, Store, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NFCPhysicalCardSection } from "@/components/print/NFCPhysicalCardSection";
+import { SplineNFCAnimation } from "@/components/SplineNFCAnimation";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 
 /**
@@ -80,6 +81,51 @@ const Index = () => {
                 Voir une démonstration
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Section Animation NFC Spline */}
+      <section className="py-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-xl md:text-2xl font-medium text-foreground">
+              Technologie NFC intégrée
+            </h2>
+            <p className="text-muted-foreground mt-2">
+              Un simple geste pour partager vos informations
+            </p>
+          </div>
+          
+          {/* Animation Spline - Desktop visible, Mobile hidden for performance */}
+          <div className="hidden md:block">
+            <div 
+              className="relative mx-auto rounded-2xl overflow-hidden bg-[#F7F7F5]"
+              style={{ 
+                height: "400px",
+                maxWidth: "600px",
+              }}
+            >
+              <SplineNFCAnimation className="w-full h-full" />
+            </div>
+          </div>
+          
+          {/* Mobile fallback - Static visual */}
+          <div className="md:hidden">
+            <div 
+              className="relative mx-auto rounded-2xl overflow-hidden bg-[#F7F7F5] flex items-center justify-center p-8"
+              style={{ 
+                height: "200px",
+                maxWidth: "300px",
+              }}
+            >
+              <div className="text-center">
+                <CreditCard className="w-12 h-12 mx-auto text-muted-foreground/60 mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  Approchez votre téléphone
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
