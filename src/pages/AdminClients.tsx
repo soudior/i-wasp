@@ -267,11 +267,8 @@ export default function AdminClients() {
               <Lock className="h-5 w-5" style={{ color: "#8E8E93" }} />
             </div>
             <h1 className="text-xl font-semibold" style={{ color: "#1D1D1F" }}>
-              IWASP Admin
+              Gestion des clients
             </h1>
-            <p className="text-sm mt-1" style={{ color: "#8E8E93" }}>
-              Entrez le mot de passe
-            </p>
           </div>
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
@@ -312,14 +309,9 @@ export default function AdminClients() {
       {/* Header */}
       <header className="sticky top-0 z-10 backdrop-blur-xl border-b" style={{ backgroundColor: "rgba(245, 245, 247, 0.8)", borderColor: "rgba(0,0,0,0.08)" }}>
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight" style={{ color: "#1D1D1F" }}>
-              IWASP Admin
-            </h1>
-            <p className="text-sm" style={{ color: "#8E8E93" }}>
-              Gestion des clients
-            </p>
-          </div>
+          <h1 className="text-xl font-semibold tracking-tight" style={{ color: "#1D1D1F" }}>
+            Gestion des clients
+          </h1>
           <button
             onClick={handleLockAdmin}
             className="p-2 rounded-xl hover:bg-gray-100 transition-colors"

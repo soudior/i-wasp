@@ -73,14 +73,8 @@ export default function Login() {
             className="text-2xl font-semibold tracking-tight"
             style={{ color: "#1D1D1F" }}
           >
-            IWASP
+            Connexion
           </h1>
-          <p 
-            className="text-sm mt-1"
-            style={{ color: "#8E8E93" }}
-          >
-            Connexion à l'administration
-          </p>
         </div>
 
         {/* Form */}
@@ -152,14 +146,6 @@ export default function Login() {
           </button>
         </form>
       </div>
-
-      {/* Footer */}
-      <p 
-        className="mt-6 text-xs"
-        style={{ color: "#8E8E93" }}
-      >
-        Powered by IWASP
-      </p>
     </div>
   );
 }
