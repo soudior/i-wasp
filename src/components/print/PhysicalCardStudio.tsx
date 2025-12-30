@@ -11,7 +11,7 @@
 import { useRef, useState, useEffect } from "react";
 import { 
   FileImage, FileText, Loader2, ShoppingCart, 
-  Sparkles, Palette, Check
+  Sparkles, Palette, Check, Upload, ImagePlus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,27 +63,88 @@ export function PhysicalCardStudio({
   onOpenChange,
 }: PhysicalCardStudioProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [isExporting, setIsExporting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   
   // État du design
   const [backgroundColor, setBackgroundColor] = useState("#0B0B0C");
   const [accentColor, setAccentColor] = useState("#F4F2EF");
   const [palettes, setPalettes] = useState<GeneratedPalette[]>(DEFAULT_PRESETS);
   const [selectedPalette, setSelectedPalette] = useState<string | null>(null);
+  const [customLogoUrl, setCustomLogoUrl] = useState<string | null>(null);
+  
+  // Logo effectif (custom ou original)
+  const effectiveLogoUrl = customLogoUrl || logoUrl;
 
   // Extraction des couleurs du logo au chargement
   useEffect(() => {
-    if (logoUrl && open) {
-      extractColorsFromLogo(logoUrl)
+    if (effectiveLogoUrl && open) {
+      extractColorsFromLogo(effectiveLogoUrl)
         .then((palette) => {
           setBackgroundColor(`hsl(${palette.background})`);
           setAccentColor(`hsl(${palette.foreground})`);
         })
         .catch(console.error);
     }
-  }, [logoUrl, open]);
+  }, [effectiveLogoUrl, open]);
+  
+  // Upload de logo
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    // Validation du type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Veuillez sélectionner une image");
+      return;
+    }
+    
+    // Validation de la taille (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'image ne doit pas dépasser 5 Mo");
+      return;
+    }
+    
+    setIsUploading(true);
+    try {
+      // Convertir en base64 pour prévisualisation locale
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const dataUrl = e.target?.result as string;
+        setCustomLogoUrl(dataUrl);
+        toast.success("Logo uploadé");
+        
+        // Extraire les couleurs du nouveau logo
+        try {
+          const palette = await extractColorsFromLogo(dataUrl);
+          setBackgroundColor(`hsl(${palette.background})`);
+          setAccentColor(`hsl(${palette.foreground})`);
+        } catch (err) {
+          console.error('Color extraction error:', err);
+        }
+        
+        setIsUploading(false);
+      };
+      reader.onerror = () => {
+        toast.error("Erreur lors de la lecture du fichier");
+        setIsUploading(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error("Erreur lors de l'upload");
+      setIsUploading(false);
+    }
+  };
+  
+  // Réinitialiser au logo original
+  const resetToOriginalLogo = () => {
+    setCustomLogoUrl(null);
+    toast.success("Logo original restauré");
+  };
 
   // Appliquer une palette
   const applyPalette = (palette: GeneratedPalette) => {
@@ -99,7 +160,7 @@ export function PhysicalCardStudio({
     try {
       const { data, error } = await supabase.functions.invoke('generate-palette', {
         body: { 
-          logoUrl: logoUrl || null,
+          logoUrl: effectiveLogoUrl || null,
           style: 'premium élégant minimal'
         }
       });
@@ -238,9 +299,9 @@ export function PhysicalCardStudio({
 
             {/* Logo client - Centré */}
             <div className="absolute inset-0 flex items-center justify-center p-8">
-              {logoUrl ? (
+              {effectiveLogoUrl ? (
                 <img 
-                  src={logoUrl} 
+                  src={effectiveLogoUrl} 
                   alt="" 
                   className="max-w-[60%] max-h-[50%] object-contain opacity-95"
                   crossOrigin="anonymous"
@@ -279,6 +340,54 @@ export function PhysicalCardStudio({
           <p className="text-center text-xs text-muted-foreground">
             Format CR80 · 85.6 × 54 mm · Prêt impression
           </p>
+
+          {/* Upload de logo */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <ImagePlus className="w-4 h-4" />
+              Logo personnalisé
+            </Label>
+            
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleLogoUpload}
+              className="hidden"
+            />
+            
+            <div className="flex gap-2">
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                variant="outline"
+                size="sm"
+                className="gap-2 flex-1"
+              >
+                {isUploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+                Uploader un logo
+              </Button>
+              
+              {customLogoUrl && (
+                <Button
+                  onClick={resetToOriginalLogo}
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground"
+                >
+                  Restaurer original
+                </Button>
+              )}
+            </div>
+            
+            <p className="text-xs text-muted-foreground">
+              PNG, JPG ou SVG · Max 5 Mo
+            </p>
+          </div>
 
           {/* Modification par IA */}
           <div className="space-y-3">
@@ -324,7 +433,7 @@ export function PhysicalCardStudio({
               ) : (
                 <Sparkles className="w-4 h-4" />
               )}
-              {logoUrl ? "Analyser logo & générer palettes IA" : "Générer palettes IA"}
+              {effectiveLogoUrl ? "Analyser logo & générer palettes IA" : "Générer palettes IA"}
             </Button>
 
             {/* Couleurs manuelles */}
