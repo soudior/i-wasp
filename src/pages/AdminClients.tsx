@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useIsAdmin } from "@/hooks/useAdmin";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -70,7 +70,6 @@ const ADMIN_PASSWORD = "iwasp2024";
 
 export default function AdminClients() {
   const { user, loading: authLoading } = useAuth();
-  const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
   const queryClient = useQueryClient();
   
   const [showForm, setShowForm] = useState(false);
@@ -121,7 +120,7 @@ export default function AdminClients() {
       if (error) throw error;
       return data as Client[];
     },
-    enabled: !!isAdmin,
+    enabled: !!user,
   });
 
   // Create client mutation
@@ -228,8 +227,8 @@ export default function AdminClients() {
     toast.success("vCard téléchargée");
   };
 
-  // Loading states
-  if (authLoading || adminLoading) {
+  // Loading state
+  if (authLoading) {
     return (
       <div className="min-h-dvh flex items-center justify-center" style={{ backgroundColor: "#F5F5F7" }}>
         <Loader2 className="h-8 w-8 animate-spin" style={{ color: "#007AFF" }} />
@@ -240,18 +239,6 @@ export default function AdminClients() {
   // Auth check
   if (!user) {
     return <Navigate to="/login" replace />;
-  }
-
-  // Admin check
-  if (!isAdmin) {
-    return (
-      <div className="min-h-dvh flex items-center justify-center" style={{ backgroundColor: "#F5F5F7" }}>
-        <div className="text-center p-8">
-          <p style={{ color: "#1D1D1F" }} className="text-lg font-medium">Accès refusé</p>
-          <p style={{ color: "#8E8E93" }} className="text-sm mt-2">Vous n'avez pas les droits d'administration.</p>
-        </div>
-      </div>
-    );
   }
 
   // Password gate
