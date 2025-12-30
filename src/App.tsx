@@ -20,6 +20,7 @@ import Signup from "./pages/Signup";
 import PublicCard from "./pages/PublicCard";
 import Checkout from "./pages/Checkout";
 import Cart from "./pages/Cart";
+import OrderFunnel from "./pages/OrderFunnel";
 import AdminOrders from "./pages/AdminOrders";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import NotFound from "./pages/NotFound";
@@ -97,7 +98,8 @@ const App = () => (
                   }
                 />
                 
-                {/* Checkout Flow */}
+                {/* Order & Checkout Flow */}
+                <Route path="/order" element={<OrderFunnel />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route
                   path="/checkout"
