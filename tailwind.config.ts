@@ -18,6 +18,11 @@ export default {
         body: ['SF Pro Text', 'Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
+        /* ═══════════════════════════════════════════════════════
+           i-wasp OFFICIAL PALETTE - STRICT
+           
+           Aucune autre couleur autorisée
+           ═══════════════════════════════════════════════════════ */
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -51,21 +56,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        chrome: {
-          DEFAULT: "hsl(var(--chrome))",
-          light: "hsl(var(--chrome-light))",
-          dark: "hsl(var(--chrome-dark))",
-        },
         glass: "hsl(var(--glass) / var(--glass-opacity))",
         surface: {
           0: "hsl(var(--surface-0))",
           1: "hsl(var(--surface-1))",
           2: "hsl(var(--surface-2))",
           3: "hsl(var(--surface-3))",
-        },
-        glow: {
-          primary: "hsl(var(--glow-primary))",
-          subtle: "hsl(var(--glow-subtle))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -77,18 +73,13 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Liana x I-Wasp Brand Colors
-        carbon: {
-          DEFAULT: "hsl(var(--carbon))",
-          dark: "hsl(var(--carbon-dark))",
-        },
-        gold: {
-          DEFAULT: "hsl(var(--gold))",
-          muted: "hsl(var(--gold-muted))",
-        },
+        /* i-wasp explicit colors for direct use */
         iwasp: {
-          DEFAULT: "hsl(var(--iwasp-green))",
-          muted: "hsl(var(--iwasp-green-muted))",
+          black: "#0B0B0C",
+          ivoire: "#F4F2EF",
+          gray: "#1C1C1E",
+          muted: "#8E8E93",
+          red: "#8B1E1E",
         },
       },
       borderRadius: {
@@ -200,8 +191,6 @@ export default {
       },
       boxShadow: {
         'glass': '0 25px 50px -12px hsl(0 0% 0% / 0.6), 0 0 0 1px hsl(0 0% 100% / 0.05)',
-        'glow': '0 0 60px hsl(220 100% 70% / 0.2)',
-        'glow-lg': '0 0 100px hsl(220 100% 70% / 0.3)',
       },
     },
   },
