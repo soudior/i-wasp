@@ -176,6 +176,7 @@ export default function AdminClients() {
   };
 
   const handleDownloadVCard = (client: Client) => {
+    const nfcPageUrl = `${window.location.origin}/card/${client.slug}`;
     downloadVCard({
       firstName: client.first_name,
       lastName: client.last_name,
@@ -184,6 +185,7 @@ export default function AdminClients() {
       email: client.email || undefined,
       phone: client.phone || undefined,
       linkedin: client.linkedin || undefined,
+      nfcPageUrl: nfcPageUrl,
       includeNfcNote: true,
     });
     toast.success("vCard téléchargée");

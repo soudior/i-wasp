@@ -6,6 +6,7 @@ export interface VCardData {
   email?: string;
   phone?: string;
   website?: string;
+  nfcPageUrl?: string; // URL to the client's NFC page
   location?: string;
   linkedin?: string;
   instagram?: string;
@@ -51,7 +52,10 @@ export function generateVCard(data: VCardData): string {
     lines.push(`TEL;TYPE=CELL:${data.phone}`);
   }
 
-  if (data.website) {
+  // Primary URL - NFC page or website
+  if (data.nfcPageUrl) {
+    lines.push(`URL:${data.nfcPageUrl}`);
+  } else if (data.website) {
     const url = data.website.startsWith("http") ? data.website : `https://${data.website}`;
     lines.push(`URL:${url}`);
   }
