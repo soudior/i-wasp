@@ -162,30 +162,9 @@ const translations = {
   },
 };
 
-// Default hotel data
-const defaultHotelData: HotelCardData = {
-  hotelName: "Riad Maison Bleue",
-  hotelCategory: "5★ Riad",
-  hotelTagline: "L'art de vivre marocain",
-  conciergeName: "Mohammed",
-  conciergeRole: "Chef Concierge",
-  receptionPhone: "+212 5 24 38 90 00",
-  wifiSsid: "MaisonBleue_Guest",
-  wifiPassword: "Welcome2024",
-  address: "2 Place Batha, Fès 30110, Maroc",
-  dailyOffer: {
-    title: "Spa & Hammam -20%",
-    description: "Découvrez notre hammam traditionnel",
-    validUntil: "31 Déc 2025",
-  },
-  placesToVisit: [
-    { name: "Médina de Fès", distance: "5 min" },
-    { name: "Palais Royal", distance: "10 min" },
-    { name: "Tanneries Chouara", distance: "15 min" },
-  ],
-  googleRating: 4.8,
-  googleReviewsUrl: "https://g.page/riad-maison-bleue",
-  language: "fr",
+// Empty data for empty preview state - NO HARDCODED VALUES
+const emptyHotelData: HotelCardData = {
+  hotelName: "",
 };
 
 export function HotelGuideTemplate({ 
@@ -195,10 +174,20 @@ export function HotelGuideTemplate({
   enableLeadCapture,
   onShareInfo,
 }: HotelTemplateProps) {
-  const hotelData = { ...defaultHotelData, ...data };
+  // Use only user-provided data, no defaults
+  const hotelData = data;
   const t = translations[hotelData.language || "fr"];
   const [wifiCopied, setWifiCopied] = useState(false);
   const [showPlaces, setShowPlaces] = useState(false);
+
+  // Don't render anything if no hotel name
+  if (!hotelData.hotelName) {
+    return (
+      <div className="w-full max-w-sm mx-auto p-8 text-center">
+        <p className="text-muted-foreground">Configurez votre carte hôtel dans l'éditeur</p>
+      </div>
+    );
+  }
 
   const handleCopyWifi = async () => {
     if (hotelData.wifiPassword) {
@@ -509,9 +498,19 @@ export function HotelGuideTemplate({
  * Light variant - For hotels with white/bright branding
  */
 export function HotelGuideLightTemplate(props: HotelTemplateProps) {
-  const hotelData = { ...defaultHotelData, ...props.data };
+  // Use only user-provided data
+  const hotelData = props.data;
   const t = translations[hotelData.language || "fr"];
   const [wifiCopied, setWifiCopied] = useState(false);
+
+  // Don't render if no hotel name
+  if (!hotelData.hotelName) {
+    return (
+      <div className="w-full max-w-sm mx-auto p-8 text-center">
+        <p className="text-muted-foreground">Configurez votre carte hôtel dans l'éditeur</p>
+      </div>
+    );
+  }
 
   const handleCopyWifi = async () => {
     if (hotelData.wifiPassword) {
@@ -561,7 +560,7 @@ export function HotelGuideLightTemplate(props: HotelTemplateProps) {
             )}
           </div>
 
-          {/* Quick Actions */}
+          {/* Quick Actions - Only show if data exists */}
           <div className="space-y-3">
             {/* Call */}
             {hotelData.receptionPhone && (
@@ -578,8 +577,8 @@ export function HotelGuideLightTemplate(props: HotelTemplateProps) {
               </button>
             )}
 
-            {/* WiFi */}
-            {hotelData.wifiSsid && (
+            {/* WiFi - Only show if both SSID and password exist */}
+            {hotelData.wifiSsid && hotelData.wifiPassword && (
               <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                 <div className="flex items-center gap-4 mb-2">
                   <Wifi size={18} className="text-blue-600" />

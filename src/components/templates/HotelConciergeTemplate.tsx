@@ -172,39 +172,7 @@ const translations = {
   },
 };
 
-// Default data for preview
-const defaultConciergeData: ConciergeCardData = {
-  hotelName: "Le Grand Palace",
-  hotelCategory: "5★ Luxury Hotel",
-  hotelTagline: "L'art de l'hospitalité",
-  conciergeName: "Sophie Martin",
-  conciergeRole: "Chef Concierge",
-  conciergePhone: "+33 1 42 86 82 00",
-  restaurant: {
-    name: "L'Étoile",
-    cuisine: "Gastronomie française",
-    hours: "12h00 - 14h30 | 19h00 - 22h30",
-    phone: "+33 1 42 86 82 10",
-  },
-  spa: {
-    name: "Spa Évasion",
-    description: "Un havre de paix au cœur de Paris",
-    hours: "10h00 - 21h00",
-    phone: "+33 1 42 86 82 20",
-    treatments: [
-      { name: "Massage Signature", duration: "60 min", price: "180€" },
-      { name: "Soin Visage Luxe", duration: "75 min", price: "220€" },
-      { name: "Rituel Oriental", duration: "90 min", price: "280€" },
-    ],
-  },
-  roomService: {
-    phone: "+33 1 42 86 82 30",
-    hours: "24h/24",
-    whatsappNumber: "+33142868230",
-  },
-  language: "fr",
-};
-
+// No default data - all fields come from user input
 export function HotelConciergeTemplate({ 
   data, 
   showWalletButtons = true, 
@@ -212,9 +180,19 @@ export function HotelConciergeTemplate({
   enableLeadCapture,
   onShareInfo,
 }: ConciergeTemplateProps) {
-  const conciergeData = { ...defaultConciergeData, ...data };
+  // Use only user-provided data, no defaults
+  const conciergeData = data;
   const t = translations[conciergeData.language || "fr"];
   const [spaModalOpen, setSpaModalOpen] = useState(false);
+
+  // Don't render anything if no hotel name
+  if (!conciergeData.hotelName) {
+    return (
+      <div className="w-full max-w-sm mx-auto p-8 text-center">
+        <p className="text-muted-foreground">Configurez votre carte concierge dans l'éditeur</p>
+      </div>
+    );
+  }
 
   const handleCall = (phone?: string) => {
     if (phone) {
