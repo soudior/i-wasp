@@ -191,10 +191,6 @@ export default function Demo() {
       company: demoCardData.company,
       email: demoCardData.email,
       phone: demoCardData.phone,
-      website: demoCardData.website,
-      location: demoCardData.location,
-      linkedin: demoCardData.linkedin,
-      instagram: demoCardData.instagram,
     });
     toast.success("Contact ajouté à votre répertoire !");
   };

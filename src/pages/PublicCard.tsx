@@ -58,8 +58,6 @@ const PublicCard = () => {
   const handleAddContact = () => {
     if (!card) return;
     
-    const nfcPageUrl = `${window.location.origin}/card/${card.slug}`;
-    
     downloadVCard({
       firstName: card.first_name,
       lastName: card.last_name,
@@ -67,9 +65,7 @@ const PublicCard = () => {
       company: card.company || undefined,
       email: card.email || undefined,
       phone: card.phone || undefined,
-      linkedin: card.linkedin || undefined,
-      nfcPageUrl: nfcPageUrl,
-      includeNfcNote: true,
+      nfcPageUrl: `${window.location.origin}/card/${card.slug}`,
     });
   };
 
