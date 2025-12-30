@@ -21,6 +21,7 @@ import PublicCard from "./pages/PublicCard";
 import Checkout from "./pages/Checkout";
 import Cart from "./pages/Cart";
 import OrderFunnel from "./pages/OrderFunnel";
+import Contact from "./pages/Contact";
 import AdminOrders from "./pages/AdminOrders";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import NotFound from "./pages/NotFound";
@@ -40,6 +41,7 @@ const App = () => (
                 {/* Institutional */}
                 <Route path="/" element={<Index />} />
                 <Route path="/templates" element={<Templates />} />
+                <Route path="/contact" element={<Contact />} />
                 
                 {/* Auth */}
                 <Route path="/login" element={<Login />} />
