@@ -1,110 +1,132 @@
 /**
- * NFCPhysicalCard - Template carte physique NFC automatique
+ * NFCPhysicalCard - Template carte physique NFC premium
  * 
- * Génération automatique basée sur:
- * - Logo client (couleurs extraites)
- * - Badge i-wasp fixe en haut à droite
- * - Aucun texte, nom, icône ou mention marketing
- * 
- * La carte est un objet fonctionnel, pas un support de communication.
+ * EXIGENCES:
+ * - Couleur unie unique (palette au choix)
+ * - Logo i-wasp CENTRÉ et bien visible
+ * - Aucun texte (ni nom, ni titre, ni entreprise)
+ * - Aspect objet réel / premium
+ * - Rendu fidèle à une vraie carte imprimée
  */
 
-import { useEffect, useState } from "react";
-import { extractColorsFromLogo, type ColorPalette } from "@/lib/adaptiveTemplateEngine";
+import { useState } from "react";
+import iwaspLogoWhite from "@/assets/iwasp-logo-white.png";
+import iwaspLogoDark from "@/assets/iwasp-logo.png";
+
+// Palette de couleurs disponibles pour la carte
+export const cardColors = [
+  { id: "black", name: "Noir", bg: "#0a0a0a", logoVariant: "white" as const },
+  { id: "white", name: "Blanc", bg: "#fafafa", logoVariant: "dark" as const },
+  { id: "gold", name: "Or", bg: "#c9a962", logoVariant: "dark" as const },
+  { id: "silver", name: "Argent", bg: "#b8b8b8", logoVariant: "dark" as const },
+  { id: "navy", name: "Navy", bg: "#1a2744", logoVariant: "white" as const },
+  { id: "burgundy", name: "Bordeaux", bg: "#5c1a28", logoVariant: "white" as const },
+] as const;
+
+export type CardColorId = typeof cardColors[number]["id"];
 
 interface NFCPhysicalCardProps {
-  logoUrl?: string;
+  colorId?: CardColorId;
   className?: string;
   showBack?: boolean;
+  interactive?: boolean;
+  onColorChange?: (colorId: CardColorId) => void;
 }
 
 // Dimensions carte CR80 (85.6mm x 53.98mm) - ratio 1.585
 const CARD_RATIO = 1.585;
 
 export function NFCPhysicalCard({ 
-  logoUrl, 
+  colorId = "black",
   className = "",
-  showBack = false 
+  showBack = false,
+  interactive = false,
+  onColorChange,
 }: NFCPhysicalCardProps) {
-  const [palette, setPalette] = useState<ColorPalette | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<CardColorId>(colorId);
+  
+  const color = cardColors.find(c => c.id === selectedColor) || cardColors[0];
+  const logoSrc = color.logoVariant === "white" ? iwaspLogoWhite : iwaspLogoDark;
 
-  // Extraction des couleurs du logo client
-  useEffect(() => {
-    if (!logoUrl) {
-      // Palette par défaut si pas de logo
-      setPalette({
-        primary: "0 0% 15%",
-        secondary: "0 0% 25%",
-        accent: "0 0% 95%",
-        background: "0 0% 8%",
-        foreground: "0 0% 98%",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    extractColorsFromLogo(logoUrl)
-      .then(setPalette)
-      .catch(() => {
-        // Fallback palette
-        setPalette({
-          primary: "0 0% 15%",
-          secondary: "0 0% 25%",
-          accent: "0 0% 95%",
-          background: "0 0% 8%",
-          foreground: "0 0% 98%",
-        });
-      })
-      .finally(() => setIsLoading(false));
-  }, [logoUrl]);
-
-  const primaryColor = palette ? `hsl(${palette.primary})` : "hsl(0, 0%, 15%)";
-  const backgroundColor = palette ? `hsl(${palette.background})` : "hsl(0, 0%, 8%)";
-  const foregroundColor = palette ? `hsl(${palette.foreground})` : "hsl(0, 0%, 98%)";
+  const handleColorSelect = (id: CardColorId) => {
+    setSelectedColor(id);
+    onColorChange?.(id);
+  };
 
   return (
-    <div className={`flex flex-col gap-4 ${className}`}>
-      {/* Face avant */}
+    <div className={`flex flex-col gap-6 ${className}`}>
+      {/* Sélecteur de couleur (si interactif) */}
+      {interactive && (
+        <div className="flex justify-center gap-3">
+          {cardColors.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => handleColorSelect(c.id)}
+              className={`w-10 h-10 rounded-full transition-all shadow-md ${
+                selectedColor === c.id 
+                  ? "ring-2 ring-foreground ring-offset-2 ring-offset-background scale-110" 
+                  : "hover:scale-105"
+              }`}
+              style={{ backgroundColor: c.bg }}
+              title={c.name}
+              aria-label={`Couleur ${c.name}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Face avant - Carte premium */}
       <div 
-        className="relative rounded-xl overflow-hidden shadow-2xl"
+        className="relative rounded-2xl overflow-hidden shadow-2xl transition-transform hover:scale-[1.02]"
         style={{
           aspectRatio: CARD_RATIO,
-          background: `linear-gradient(135deg, ${backgroundColor} 0%, ${primaryColor} 100%)`,
+          backgroundColor: color.bg,
         }}
       >
-        {/* Badge i-wasp - Position fixe haut droite */}
-        <div className="absolute top-3 right-3 z-10">
-          <IWASPCardBadge color={foregroundColor} />
-        </div>
-
-        {/* Logo client - Centré */}
-        <div className="absolute inset-0 flex items-center justify-center p-8">
-          {logoUrl ? (
-            <img 
-              src={logoUrl} 
-              alt="" 
-              className="max-w-[60%] max-h-[50%] object-contain opacity-95"
-              crossOrigin="anonymous"
-            />
-          ) : (
-            <div 
-              className="w-16 h-16 rounded-full border-2 opacity-30"
-              style={{ borderColor: foregroundColor }}
-            />
-          )}
-        </div>
-
-        {/* Indicateur NFC - Discret, bas droite */}
-        <div className="absolute bottom-3 right-3">
-          <NFCIndicator color={foregroundColor} />
-        </div>
-
-        {/* Effet de surface premium */}
+        {/* Reflet premium en haut */}
         <div 
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-x-0 top-0 h-1/3 pointer-events-none"
           style={{
-            background: "linear-gradient(145deg, rgba(255,255,255,0.08) 0%, transparent 50%, rgba(0,0,0,0.15) 100%)",
+            background: color.logoVariant === "white" 
+              ? "linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, transparent 100%)"
+              : "linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, transparent 100%)",
+          }}
+        />
+
+        {/* Logo i-wasp CENTRÉ - Grande taille, bien visible */}
+        <div className="absolute inset-0 flex items-center justify-center p-6">
+          <img 
+            src={logoSrc} 
+            alt="i-wasp" 
+            className="w-[55%] max-w-[180px] object-contain drop-shadow-lg"
+            style={{
+              filter: color.logoVariant === "white" 
+                ? "drop-shadow(0 4px 12px rgba(0,0,0,0.4))" 
+                : "drop-shadow(0 4px 12px rgba(0,0,0,0.15))",
+            }}
+          />
+        </div>
+
+        {/* Indicateur NFC discret - Bas droite */}
+        <div className="absolute bottom-4 right-4">
+          <NFCIndicator light={color.logoVariant === "white"} />
+        </div>
+
+        {/* Ombre de profondeur en bas */}
+        <div 
+          className="absolute inset-x-0 bottom-0 h-1/4 pointer-events-none"
+          style={{
+            background: "linear-gradient(to top, rgba(0,0,0,0.15) 0%, transparent 100%)",
+          }}
+        />
+
+        {/* Bordure subtile */}
+        <div 
+          className="absolute inset-0 rounded-2xl pointer-events-none"
+          style={{
+            boxShadow: color.logoVariant === "white" 
+              ? "inset 0 0 0 1px rgba(255,255,255,0.08)"
+              : "inset 0 0 0 1px rgba(0,0,0,0.08)",
           }}
         />
       </div>
@@ -112,30 +134,41 @@ export function NFCPhysicalCard({
       {/* Face arrière (optionnel) */}
       {showBack && (
         <div 
-          className="relative rounded-xl overflow-hidden shadow-2xl"
+          className="relative rounded-2xl overflow-hidden shadow-2xl"
           style={{
             aspectRatio: CARD_RATIO,
-            background: primaryColor,
+            backgroundColor: color.bg,
           }}
         >
-          {/* Zone NFC */}
+          {/* Zone NFC centrale */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div 
-              className="w-12 h-12 rounded-full border opacity-20"
-              style={{ borderColor: foregroundColor }}
-            />
+              className="w-14 h-14 rounded-full flex items-center justify-center"
+              style={{
+                border: `2px solid ${color.logoVariant === "white" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)"}`,
+              }}
+            >
+              <NFCIndicator light={color.logoVariant === "white"} size="lg" />
+            </div>
           </div>
 
-          {/* Badge i-wasp dos */}
+          {/* Badge i-wasp petit - Haut droite */}
           <div className="absolute top-3 right-3">
-            <IWASPCardBadge color={foregroundColor} small />
+            <span 
+              className="text-[10px] font-medium tracking-wider"
+              style={{ 
+                color: color.logoVariant === "white" ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.4)" 
+              }}
+            >
+              i-wasp
+            </span>
           </div>
 
           {/* Effet surface */}
           <div 
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: "linear-gradient(145deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)",
+              background: "linear-gradient(145deg, rgba(255,255,255,0.06) 0%, transparent 50%, rgba(0,0,0,0.08) 100%)",
             }}
           />
         </div>
@@ -144,39 +177,16 @@ export function NFCPhysicalCard({
   );
 }
 
-// Badge i-wasp pour carte physique
-function IWASPCardBadge({ color, small = false }: { color: string; small?: boolean }) {
-  const size = small ? "text-[8px]" : "text-[10px]";
+// Indicateur NFC
+function NFCIndicator({ light = false, size = "sm" }: { light?: boolean; size?: "sm" | "lg" }) {
+  const iconSize = size === "lg" ? "w-6 h-6" : "w-4 h-4";
+  const color = light ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.35)";
   
-  return (
-    <div 
-      className={`flex items-center gap-1 ${size} font-medium tracking-wide opacity-70`}
-      style={{ color }}
-    >
-      <span>i-wasp</span>
-      <svg 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        className={small ? "w-2.5 h-2.5" : "w-3 h-3"}
-        stroke="currentColor" 
-        strokeWidth="2"
-      >
-        <path d="M8.5 12.5a4 4 0 0 1 0-5.5" strokeLinecap="round" />
-        <path d="M5.5 15a7 7 0 0 1 0-10" strokeLinecap="round" />
-        <path d="M15.5 12.5a4 4 0 0 0 0-5.5" strokeLinecap="round" />
-        <path d="M18.5 15a7 7 0 0 0 0-10" strokeLinecap="round" />
-      </svg>
-    </div>
-  );
-}
-
-// Indicateur NFC discret
-function NFCIndicator({ color }: { color: string }) {
   return (
     <svg 
       viewBox="0 0 24 24" 
       fill="none" 
-      className="w-4 h-4 opacity-40"
+      className={`${iconSize}`}
       stroke={color}
       strokeWidth="1.5"
     >
@@ -189,17 +199,19 @@ function NFCIndicator({ color }: { color: string }) {
   );
 }
 
-// Export de prévisualisation avec dimensions réelles
+// Export de prévisualisation avec dimensions
 export function NFCPhysicalCardPreview({ 
-  logoUrl,
-  width = 340, // ~4x taille réelle pour preview
+  colorId = "black",
+  width = 340,
+  interactive = true,
 }: { 
-  logoUrl?: string;
+  colorId?: CardColorId;
   width?: number;
+  interactive?: boolean;
 }) {
   return (
     <div style={{ width }} className="mx-auto">
-      <NFCPhysicalCard logoUrl={logoUrl} showBack />
+      <NFCPhysicalCard colorId={colorId} showBack interactive={interactive} />
       
       {/* Dimensions réelles */}
       <p className="text-center text-xs text-muted-foreground mt-4">
