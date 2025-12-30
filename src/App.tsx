@@ -44,9 +44,9 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 
-                {/* NFC Card - Isolated */}
+                {/* NFC Card - Isolated (both /c/ and /card/) */}
                 <Route path="/c/:slug" element={<PublicCard />} />
-                
+                <Route path="/card/:slug" element={<PublicCard />} />
                 {/* Dashboard - Protected */}
                 <Route
                   path="/dashboard"

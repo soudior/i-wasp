@@ -21,7 +21,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const path = location.pathname;
 
-  // Card view - Completely isolated
+  // Card view - Completely isolated (both /c/ and /card/)
   if (path.startsWith("/c/") || path.startsWith("/card/")) {
     return <CardLayout>{children}</CardLayout>;
   }

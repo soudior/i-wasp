@@ -9,39 +9,48 @@
 
 @layer base {
   :root {
-    /* Core palette - I-WASP Luxury dark theme */
-    --background: 0 0% 2%; /* #050505 */
-    --foreground: 0 0% 98%;
+    /* ═══════════════════════════════════════════════════════════
+       i-wasp OFFICIAL PALETTE
+       - #0B0B0C (background principal)
+       - #F4F2EF (foreground/texte clair)
+       - #8E8E93 (muted/secondaire)
+       - #1C1C1E (surfaces élevées)
+       - #8B1E1E (accent rare - erreur/destructif)
+       ═══════════════════════════════════════════════════════════ */
+    
+    /* Core palette - i-wasp système */
+    --background: 240 8% 4%; /* #0B0B0C */
+    --foreground: 40 14% 95%; /* #F4F2EF */
 
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 98%;
+    --card: 240 5% 11%; /* #1C1C1E */
+    --card-foreground: 40 14% 95%;
 
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 240 5% 11%;
+    --popover-foreground: 40 14% 95%;
 
-    /* Primary - Pure white/silver accent */
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
+    /* Primary - Foreground as accent */
+    --primary: 40 14% 95%; /* #F4F2EF */
+    --primary-foreground: 240 8% 4%;
 
     /* Muted surfaces */
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 85%;
+    --secondary: 240 5% 11%; /* #1C1C1E */
+    --secondary-foreground: 240 4% 56%; /* #8E8E93 */
 
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 55%;
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 4% 56%; /* #8E8E93 */
 
-    /* Chrome/Silver accent */
-    --accent: 0 0% 80%;
-    --accent-foreground: 0 0% 0%;
+    /* Accent rare */
+    --accent: 240 5% 18%;
+    --accent-foreground: 40 14% 95%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 68% 33%; /* #8B1E1E */
+    --destructive-foreground: 40 14% 95%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 12%;
-    --ring: 0 0% 100%;
+    --border: 240 5% 18%;
+    --input: 240 5% 15%;
+    --ring: 40 14% 95%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
     /* Custom tokens - visionOS inspired */
     --chrome: 0 0% 85%;
