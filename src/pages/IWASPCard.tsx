@@ -1,10 +1,10 @@
 /**
  * IWASP Digital Business Card
- * Clean Apple Cupertino Style
+ * Apple Human Interface Guidelines
  */
 
 import { motion } from 'framer-motion';
-import { Phone, Mail, Linkedin, MessageCircle, UserPlus } from 'lucide-react';
+import { Phone, Mail, Linkedin, MessageCircle, UserPlus, ChevronRight } from 'lucide-react';
 import { downloadVCard, VCardData } from '@/lib/vcard';
 
 // Contact data
@@ -20,8 +20,8 @@ const contact = {
   photoUrl: "",
 };
 
-// iOS-style action row
-function ActionRow({ 
+// iOS-style list row
+function ListRow({ 
   icon: Icon, 
   label, 
   onClick,
@@ -33,12 +33,15 @@ function ActionRow({
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-4 px-4 py-3.5 bg-white active:bg-gray-50 transition-colors"
+      className="w-full flex items-center justify-between px-5 py-4 active:bg-[#F5F5F7] transition-colors"
     >
-      <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-        <Icon size={16} className="text-white" strokeWidth={2} />
+      <div className="flex items-center gap-4">
+        <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ backgroundColor: '#007AFF' }}>
+          <Icon size={18} className="text-white" strokeWidth={2} />
+        </div>
+        <span className="text-[17px]" style={{ color: '#1D1D1F' }}>{label}</span>
       </div>
-      <span className="text-[17px] text-gray-900">{label}</span>
+      <ChevronRight size={20} style={{ color: '#8E8E93' }} />
     </button>
   );
 }
@@ -68,75 +71,81 @@ export default function IWASPCard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      {/* Header with profile */}
+    <div className="min-h-screen flex flex-col px-5 pt-16 pb-10" style={{ backgroundColor: '#F5F5F7' }}>
+      {/* Profile Card */}
       <motion.div 
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="bg-white pt-12 pb-6 px-6"
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="rounded-2xl py-8 px-6"
+        style={{ 
+          backgroundColor: '#FFFFFF',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+        }}
       >
         {/* Profile Photo */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-5">
           <div 
-            className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center"
+            className="w-[100px] h-[100px] rounded-full flex items-center justify-center"
             style={{ 
+              backgroundColor: contact.photoUrl ? 'transparent' : '#F5F5F7',
               backgroundImage: contact.photoUrl ? `url(${contact.photoUrl})` : 'none',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
           >
             {!contact.photoUrl && (
-              <span className="text-2xl font-semibold text-gray-500">{initials}</span>
+              <span className="text-[32px] font-medium" style={{ color: '#8E8E93' }}>{initials}</span>
             )}
           </div>
         </div>
 
         {/* Name & Role */}
         <div className="text-center">
-          <h1 className="text-[28px] font-semibold text-gray-900 tracking-tight">
+          <h1 className="text-[28px] font-semibold tracking-tight" style={{ color: '#1D1D1F' }}>
             {fullName}
           </h1>
-          <p className="text-[17px] text-gray-500 mt-0.5">
+          <p className="text-[17px] mt-1" style={{ color: '#8E8E93' }}>
             {contact.role} · {contact.company}
           </p>
         </div>
       </motion.div>
 
-      {/* Action List */}
+      {/* Actions Card */}
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
-        className="mt-6 mx-4"
+        transition={{ duration: 0.35, delay: 0.08, ease: "easeOut" }}
+        className="mt-5 rounded-2xl overflow-hidden"
+        style={{ 
+          backgroundColor: '#FFFFFF',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+        }}
       >
-        <div className="rounded-xl overflow-hidden divide-y divide-gray-200">
-          <ActionRow icon={Phone} label="Call" onClick={handleCall} />
-          <ActionRow icon={Mail} label="Email" onClick={handleEmail} />
-          <ActionRow icon={Linkedin} label="LinkedIn" onClick={handleLinkedIn} />
-          <ActionRow icon={MessageCircle} label="WhatsApp" onClick={handleWhatsApp} />
+        <div className="divide-y" style={{ borderColor: 'rgba(0,0,0,0.06)' }}>
+          <ListRow icon={Phone} label="Call" onClick={handleCall} />
+          <ListRow icon={Mail} label="Email" onClick={handleEmail} />
+          <ListRow icon={Linkedin} label="LinkedIn" onClick={handleLinkedIn} />
+          <ListRow icon={MessageCircle} label="WhatsApp" onClick={handleWhatsApp} />
         </div>
       </motion.div>
 
       {/* Add Contact Button */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+      <motion.button
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-        className="mt-4 mx-4"
+        transition={{ duration: 0.35, delay: 0.16, ease: "easeOut" }}
+        onClick={handleAddContact}
+        className="mt-5 w-full flex items-center justify-center gap-2 py-4 rounded-2xl active:opacity-80 transition-opacity"
+        style={{ backgroundColor: '#007AFF' }}
       >
-        <button
-          onClick={handleAddContact}
-          className="w-full flex items-center justify-center gap-2 py-3.5 bg-blue-500 active:bg-blue-600 rounded-xl transition-colors"
-        >
-          <UserPlus size={18} className="text-white" strokeWidth={2} />
-          <span className="text-[17px] font-medium text-white">Add to Contacts</span>
-        </button>
-      </motion.div>
+        <UserPlus size={20} className="text-white" strokeWidth={2} />
+        <span className="text-[17px] font-semibold text-white">Add to Contacts</span>
+      </motion.button>
 
       {/* Footer */}
-      <div className="mt-auto py-6">
-        <p className="text-center text-[13px] text-gray-400">
+      <div className="mt-auto pt-10">
+        <p className="text-center text-[13px]" style={{ color: '#8E8E93' }}>
           Powered by IWASP
         </p>
       </div>
