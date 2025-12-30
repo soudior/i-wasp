@@ -8,14 +8,66 @@
  * INTERDIT sur /card/*, checkout, dashboard.
  */
 
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { RoundedBox, Float } from "@react-three/drei";
 import * as THREE from "three";
 
-// Carte NFC - Style minimaliste blanc matière
+// Créer une texture du logo i-wasp via Canvas
+function createLogoTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  
+  if (ctx) {
+    // Fond transparent
+    ctx.clearRect(0, 0, 256, 128);
+    
+    // Texte "IWasp"
+    ctx.font = 'bold 36px system-ui, -apple-system, sans-serif';
+    ctx.fillStyle = '#8E8E93';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('IWasp', 20, 64);
+    
+    // Ondes NFC stylisées à droite
+    ctx.strokeStyle = '#8E8E93';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    
+    const centerX = 190;
+    const centerY = 64;
+    
+    // Onde 1 (la plus petite)
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 12, -Math.PI * 0.4, Math.PI * 0.4);
+    ctx.stroke();
+    
+    // Onde 2
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 22, -Math.PI * 0.4, Math.PI * 0.4);
+    ctx.stroke();
+    
+    // Onde 3 (la plus grande)
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 32, -Math.PI * 0.4, Math.PI * 0.4);
+    ctx.stroke();
+  }
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  
+  return texture;
+}
+
+// Carte NFC - Style minimaliste blanc matière avec logo i-wasp
 function NFCCard() {
   const meshRef = useRef<THREE.Mesh>(null);
+  
+  // Créer la texture du logo avec useMemo pour éviter les re-créations
+  const logoTexture = useMemo(() => createLogoTexture(), []);
 
   return (
     <group position={[0, -0.3, 0]} rotation={[0.1, 0.15, 0]}>
@@ -47,13 +99,14 @@ function NFCCard() {
         />
       </RoundedBox>
 
-      {/* Logo i-wasp (représenté par un cercle subtil) */}
-      <mesh position={[1.2, 0.7, 0.05]} rotation={[0, 0, 0]}>
-        <circleGeometry args={[0.15, 32]} />
-        <meshStandardMaterial 
-          color="#8E8E93" 
+      {/* Logo i-wasp avec texture canvas */}
+      <mesh position={[0.8, 0.65, 0.05]} rotation={[0, 0, 0]}>
+        <planeGeometry args={[1.2, 0.5]} />
+        <meshBasicMaterial 
+          map={logoTexture}
           transparent
-          opacity={0.4}
+          opacity={0.7}
+          depthWrite={false}
         />
       </mesh>
     </group>
