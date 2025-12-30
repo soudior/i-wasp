@@ -1,7 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ArrowRight, Wifi, CreditCard, Building2, Hotel, Store, CalendarDays, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NFCPhysicalCardSection } from "@/components/print/NFCPhysicalCardSection";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "sonner";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 
 /**
@@ -9,7 +12,7 @@ import iwaspLogo from "@/assets/iwasp-logo-white.png";
  * 
  * Interface minimaliste orientée système.
  * Contenu prioritaire : produit, prix, achat.
- * Animation 3D supprimée pour lisibilité maximale.
+ * Boutons pricing reliés au checkout via CartContext.
  */
 
 const sectors = [
@@ -19,11 +22,13 @@ const sectors = [
   { icon: CalendarDays, label: "Événementiel" },
 ];
 
-// Grille tarifaire
+// Grille tarifaire avec paramètres de commande
 const pricingPlans = [
   {
+    id: "particulier",
     name: "Particulier",
     price: "29",
+    priceCents: 2900,
     description: "Carte NFC personnelle",
     features: [
       "1 carte NFC premium",
@@ -33,10 +38,15 @@ const pricingPlans = [
     ],
     cta: "Commander",
     popular: false,
+    templateId: "signature",
+    templateName: "Carte Standard",
+    quantity: 1,
   },
   {
+    id: "professionnel",
     name: "Professionnel",
     price: "49",
+    priceCents: 4900,
     description: "Carte personnalisée entreprise",
     features: [
       "Carte couleur au choix",
@@ -47,10 +57,15 @@ const pricingPlans = [
     ],
     cta: "Commander",
     popular: true,
+    templateId: "signature",
+    templateName: "Carte Personnalisée",
+    quantity: 1,
   },
   {
+    id: "equipe",
     name: "Équipe",
     price: "39",
+    priceCents: 3900,
     priceNote: "/ carte dès 10",
     description: "Tarif dégressif entreprise",
     features: [
@@ -63,10 +78,38 @@ const pricingPlans = [
     ],
     cta: "Demander un devis",
     popular: false,
+    templateId: "signature",
+    templateName: "Carte Équipe",
+    quantity: 10,
+    isQuote: true,
   },
 ];
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { addItem, clearCart } = useCart();
+
+  const handleOrder = (plan: typeof pricingPlans[0]) => {
+    // Pour les demandes de devis, rediriger vers le formulaire de contact
+    if (plan.isQuote) {
+      window.location.href = `mailto:contact@iwasp.ma?subject=Demande de devis - ${plan.quantity}+ cartes NFC&body=Bonjour,%0A%0AJe souhaite commander ${plan.quantity} cartes NFC ou plus.%0A%0AMerci de me contacter pour un devis personnalisé.`;
+      return;
+    }
+
+    // Vider le panier et ajouter le produit sélectionné
+    clearCart();
+    addItem({
+      templateId: plan.templateId,
+      templateName: plan.templateName,
+      cardName: plan.name,
+      quantity: plan.quantity,
+      unitPriceCents: plan.priceCents,
+    });
+
+    toast.success(`${plan.name} ajouté au panier`);
+    navigate("/cart");
+  };
+
   return (
     <div className="min-h-[calc(100dvh-3.5rem)] flex flex-col">
       {/* Hero Section - Contenu prioritaire */}
@@ -116,12 +159,12 @@ const Index = () => {
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Link to="/signup">
+            <a href="#pricing">
               <Button size="lg" className="bg-foreground text-background hover:bg-foreground/90 gap-2">
                 Commander maintenant
                 <ArrowRight className="w-4 h-4" />
               </Button>
-            </Link>
+            </a>
             <Link to="/demo">
               <Button variant="outline" size="lg">
                 Voir une démonstration
@@ -146,7 +189,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {pricingPlans.map((plan) => (
               <div 
-                key={plan.name}
+                key={plan.id}
                 className={`relative p-6 rounded-2xl border transition-all ${
                   plan.popular 
                     ? "border-foreground bg-foreground/5 shadow-lg" 
@@ -179,14 +222,13 @@ const Index = () => {
                   ))}
                 </ul>
 
-                <Link to={plan.name === "Équipe" ? "/contact" : "/checkout"}>
-                  <Button 
-                    className="w-full" 
-                    variant={plan.popular ? "default" : "outline"}
-                  >
-                    {plan.cta}
-                  </Button>
-                </Link>
+                <Button 
+                  className="w-full" 
+                  variant={plan.popular ? "default" : "outline"}
+                  onClick={() => handleOrder(plan)}
+                >
+                  {plan.cta}
+                </Button>
               </div>
             ))}
           </div>
