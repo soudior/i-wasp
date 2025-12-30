@@ -44,7 +44,7 @@ async function createGoogleWalletJWT(
   const claims = {
     iss: serviceAccount.client_email,
     aud: 'google',
-    origins: ['https://fyxiyevbbvidckzaequx.lovableproject.com'],
+    origins: ['https://i-wasp.com'],
     typ: 'savetowallet',
     iat: now,
     payload: payload
@@ -116,7 +116,7 @@ serve(async (req) => {
     const issuerId = serviceAccount.issuer_id || '3388000000022319245';
 
     // Construct the public URL for the card
-    const publicUrl = `https://fyxiyevbbvidckzaequx.lovableproject.com/c/${cardData.slug}`;
+    const publicUrl = `https://i-wasp.com/c/${cardData.slug}`;
 
     // Create unique IDs for class and object
     const classId = `${issuerId}.iwasp_business_card`;
