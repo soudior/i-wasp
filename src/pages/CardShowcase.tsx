@@ -4,7 +4,9 @@ import {
   CreditCard, Smartphone, Building2, UtensilsCrossed, Hammer, Heart,
   Calendar, FileText, MessageCircle, MapPin, Star, Phone, Clock,
   Wifi, Copy, Check, ChevronRight, Mail, Globe, Linkedin,
-  Instagram, ExternalLink, ArrowLeft, Upload, Palette, X
+  Instagram, ExternalLink, ArrowLeft, Upload, Palette, X,
+  Hotel, DoorOpen, Lightbulb, Thermometer, BedDouble, Utensils,
+  Sparkles, Waves, Dumbbell, Coffee, Bell, Key, Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +14,16 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
 // Types
-type Industry = "immobilier" | "restauration" | "btp" | "sante";
+type Industry = "immobilier" | "restauration" | "btp" | "sante" | "hotellerie";
 type ViewMode = "physical" | "digital";
+
+// Hotel room state
+interface RoomState {
+  isUnlocked: boolean;
+  lightLevel: number;
+  temperature: number;
+  doNotDisturb: boolean;
+}
 
 interface BrandConfig {
   primaryColor: string;
@@ -227,6 +237,40 @@ const industries = {
       { icon: MapPin, label: "Localisation GPS" },
     ],
   },
+  hotellerie: {
+    id: "hotellerie",
+    name: "Hôtellerie",
+    icon: Hotel,
+    defaultColor: "#7c3aed",
+    profile: {
+      name: "Suite Royale 401",
+      title: "Concierge Digital",
+      company: "Le Palace Marrakech",
+      photo: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200&h=200&fit=crop",
+      phone: "+212 5 24 00 00 00",
+      email: "concierge@lepalace.ma",
+      website: "lepalace.ma",
+    },
+    actions: [
+      { icon: DoorOpen, label: "Ouvrir ma chambre", isRoomControl: true },
+      { icon: Utensils, label: "Menu Restaurant" },
+      { icon: Sparkles, label: "Réserver Spa" },
+    ],
+    roomFeatures: {
+      roomNumber: "401",
+      guestName: "M. & Mme Laurent",
+      checkIn: "30 Dec 2024",
+      checkOut: "03 Jan 2025",
+    },
+    hotelServices: [
+      { icon: Utensils, label: "Restaurant", desc: "Le Jardin d'Orient", hours: "12h-15h / 19h-23h" },
+      { icon: Coffee, label: "Room Service", desc: "24h/24", hours: "Disponible" },
+      { icon: Waves, label: "Piscine", desc: "Rooftop", hours: "7h-21h" },
+      { icon: Sparkles, label: "Spa & Hammam", desc: "Réservation conseillée", hours: "9h-21h" },
+      { icon: Dumbbell, label: "Fitness", desc: "Accès libre", hours: "6h-22h" },
+      { icon: Bell, label: "Conciergerie", desc: "Services VIP", hours: "24h/24" },
+    ],
+  },
 };
 
 // WiFi config
@@ -241,6 +285,15 @@ export default function CardShowcase() {
   const [copied, setCopied] = useState(false);
   const [showBack, setShowBack] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Hotel room state
+  const [roomState, setRoomState] = useState<RoomState>({
+    isUnlocked: false,
+    lightLevel: 70,
+    temperature: 22,
+    doNotDisturb: false,
+  });
+  const [showRoomControl, setShowRoomControl] = useState(false);
   
   // Brand configuration
   const [brand, setBrand] = useState<BrandConfig>({
@@ -751,35 +804,250 @@ export default function CardShowcase() {
                         </p>
                       </div>
 
-                      {/* Action buttons - Branded */}
-                      <div className="space-y-2.5 mb-6">
-                        {industry.actions.map((action, idx) => (
-                          <motion.button
-                            key={idx}
-                            className="w-full py-3.5 px-4 rounded-xl text-white flex items-center justify-between group shadow-lg"
-                            style={{ 
-                              backgroundColor: palette.primary,
-                              boxShadow: `0 4px 15px ${palette.primary}40`,
-                            }}
-                            whileHover={{ scale: 1.02, x: 4 }}
-                            whileTap={{ scale: 0.98 }}
-                          >
-                            <div className="flex items-center gap-3">
-                              <action.icon className="h-5 w-5" style={{ color: palette.textOnPrimary }} />
-                              <span 
-                                className="font-medium text-sm"
-                                style={{ color: palette.textOnPrimary }}
-                              >
-                                {action.label}
+                      {/* Hotel-specific: Room Info Card */}
+                      {selectedIndustry === "hotellerie" && industries.hotellerie.roomFeatures && (
+                        <div 
+                          className="rounded-xl p-4 mb-4"
+                          style={{ 
+                            backgroundColor: palette.primary + "15",
+                            border: `1px solid ${palette.primary}30`,
+                          }}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <Key className="h-4 w-4" style={{ color: palette.primary }} />
+                              <span className="text-sm font-semibold" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                Chambre {industries.hotellerie.roomFeatures.roomNumber}
                               </span>
                             </div>
-                            <ExternalLink 
-                              className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity" 
-                              style={{ color: palette.textOnPrimary }}
-                            />
-                          </motion.button>
-                        ))}
+                            <span 
+                              className={`text-[10px] px-2 py-0.5 rounded-full ${roomState.isUnlocked ? "bg-green-500" : "bg-gray-500"} text-white`}
+                            >
+                              {roomState.isUnlocked ? "Déverrouillée" : "Verrouillée"}
+                            </span>
+                          </div>
+                          <p className="text-xs opacity-60 mb-1" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                            {industries.hotellerie.roomFeatures.guestName}
+                          </p>
+                          <p className="text-[10px] opacity-40" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                            {industries.hotellerie.roomFeatures.checkIn} → {industries.hotellerie.roomFeatures.checkOut}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Action buttons - Branded */}
+                      <div className="space-y-2.5 mb-6">
+                        {industry.actions.map((action, idx) => {
+                          const isRoomControl = 'isRoomControl' in action && action.isRoomControl;
+                          
+                          if (isRoomControl && selectedIndustry === "hotellerie") {
+                            return (
+                              <motion.button
+                                key={idx}
+                                onClick={() => {
+                                  setRoomState({ ...roomState, isUnlocked: !roomState.isUnlocked });
+                                  toast.success(roomState.isUnlocked ? "Chambre verrouillée" : "Chambre déverrouillée !");
+                                }}
+                                className="w-full py-3.5 px-4 rounded-xl text-white flex items-center justify-between group shadow-lg"
+                                style={{ 
+                                  backgroundColor: roomState.isUnlocked ? "#22c55e" : palette.primary,
+                                  boxShadow: `0 4px 15px ${roomState.isUnlocked ? "#22c55e40" : palette.primary + "40"}`,
+                                }}
+                                whileHover={{ scale: 1.02, x: 4 }}
+                                whileTap={{ scale: 0.98 }}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <DoorOpen className="h-5 w-5 text-white" />
+                                  <span className="font-medium text-sm text-white">
+                                    {roomState.isUnlocked ? "Verrouiller" : "Ouvrir ma chambre"}
+                                  </span>
+                                </div>
+                                <Key className="h-4 w-4 text-white opacity-70" />
+                              </motion.button>
+                            );
+                          }
+                          
+                          return (
+                            <motion.button
+                              key={idx}
+                              className="w-full py-3.5 px-4 rounded-xl text-white flex items-center justify-between group shadow-lg"
+                              style={{ 
+                                backgroundColor: palette.primary,
+                                boxShadow: `0 4px 15px ${palette.primary}40`,
+                              }}
+                              whileHover={{ scale: 1.02, x: 4 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <div className="flex items-center gap-3">
+                                <action.icon className="h-5 w-5" style={{ color: palette.textOnPrimary }} />
+                                <span 
+                                  className="font-medium text-sm"
+                                  style={{ color: palette.textOnPrimary }}
+                                >
+                                  {action.label}
+                                </span>
+                              </div>
+                              <ExternalLink 
+                                className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity" 
+                                style={{ color: palette.textOnPrimary }}
+                              />
+                            </motion.button>
+                          );
+                        })}
                       </div>
+
+                      {/* Hotel-specific: Room Controls */}
+                      {selectedIndustry === "hotellerie" && (
+                        <div className="mb-6">
+                          <button
+                            onClick={() => setShowRoomControl(!showRoomControl)}
+                            className="w-full py-3 px-4 rounded-xl flex items-center justify-between"
+                            style={{ 
+                              backgroundColor: palette.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Settings className="h-4 w-4" style={{ color: palette.primary }} />
+                              <span className="text-sm font-medium" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                Contrôles de la chambre
+                              </span>
+                            </div>
+                            <ChevronRight 
+                              className={`h-4 w-4 transition-transform ${showRoomControl ? "rotate-90" : ""}`}
+                              style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}
+                            />
+                          </button>
+                          
+                          <AnimatePresence>
+                            {showRoomControl && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="pt-3 space-y-3">
+                                  {/* Lighting */}
+                                  <div 
+                                    className="p-3 rounded-xl"
+                                    style={{ backgroundColor: palette.isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)" }}
+                                  >
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="flex items-center gap-2">
+                                        <Lightbulb className="h-4 w-4" style={{ color: palette.primary }} />
+                                        <span className="text-sm" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>Éclairage</span>
+                                      </div>
+                                      <span className="text-xs font-medium" style={{ color: palette.primary }}>{roomState.lightLevel}%</span>
+                                    </div>
+                                    <input
+                                      type="range"
+                                      min="0"
+                                      max="100"
+                                      value={roomState.lightLevel}
+                                      onChange={(e) => setRoomState({ ...roomState, lightLevel: parseInt(e.target.value) })}
+                                      className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                                      style={{ 
+                                        background: `linear-gradient(to right, ${palette.primary} 0%, ${palette.primary} ${roomState.lightLevel}%, ${palette.isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} ${roomState.lightLevel}%, ${palette.isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} 100%)` 
+                                      }}
+                                    />
+                                  </div>
+                                  
+                                  {/* Temperature */}
+                                  <div 
+                                    className="p-3 rounded-xl"
+                                    style={{ backgroundColor: palette.isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)" }}
+                                  >
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="flex items-center gap-2">
+                                        <Thermometer className="h-4 w-4" style={{ color: palette.primary }} />
+                                        <span className="text-sm" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>Température</span>
+                                      </div>
+                                      <span className="text-xs font-medium" style={{ color: palette.primary }}>{roomState.temperature}°C</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        onClick={() => setRoomState({ ...roomState, temperature: Math.max(16, roomState.temperature - 1) })}
+                                        className="w-8 h-8 rounded-lg flex items-center justify-center text-lg font-bold"
+                                        style={{ 
+                                          backgroundColor: palette.primary + "20",
+                                          color: palette.primary,
+                                        }}
+                                      >
+                                        −
+                                      </button>
+                                      <div className="flex-1 text-center">
+                                        <span className="text-2xl font-bold" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                                          {roomState.temperature}°
+                                        </span>
+                                      </div>
+                                      <button
+                                        onClick={() => setRoomState({ ...roomState, temperature: Math.min(28, roomState.temperature + 1) })}
+                                        className="w-8 h-8 rounded-lg flex items-center justify-center text-lg font-bold"
+                                        style={{ 
+                                          backgroundColor: palette.primary + "20",
+                                          color: palette.primary,
+                                        }}
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Do Not Disturb */}
+                                  <button
+                                    onClick={() => {
+                                      setRoomState({ ...roomState, doNotDisturb: !roomState.doNotDisturb });
+                                      toast.success(roomState.doNotDisturb ? "Mode 'Ne pas déranger' désactivé" : "Mode 'Ne pas déranger' activé");
+                                    }}
+                                    className="w-full p-3 rounded-xl flex items-center justify-between"
+                                    style={{ 
+                                      backgroundColor: roomState.doNotDisturb ? "#ef444420" : (palette.isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)"),
+                                      border: roomState.doNotDisturb ? "1px solid #ef4444" : "none",
+                                    }}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <BedDouble className="h-4 w-4" style={{ color: roomState.doNotDisturb ? "#ef4444" : palette.primary }} />
+                                      <span className="text-sm" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>Ne pas déranger</span>
+                                    </div>
+                                    <div 
+                                      className={`w-10 h-5 rounded-full transition-colors ${roomState.doNotDisturb ? "bg-red-500" : "bg-gray-300"}`}
+                                    >
+                                      <div 
+                                        className={`w-4 h-4 rounded-full bg-white shadow transition-transform mt-0.5 ${roomState.doNotDisturb ? "translate-x-5 ml-0.5" : "translate-x-0.5"}`}
+                                      />
+                                    </div>
+                                  </button>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      )}
+
+                      {/* Hotel-specific: Services Grid */}
+                      {selectedIndustry === "hotellerie" && industries.hotellerie.hotelServices && (
+                        <div className="mb-6">
+                          <p className="text-xs font-medium uppercase tracking-wider mb-3 opacity-50" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>
+                            Services de l'hôtel
+                          </p>
+                          <div className="grid grid-cols-2 gap-2">
+                            {industries.hotellerie.hotelServices.map((service, idx) => (
+                              <button
+                                key={idx}
+                                className="p-3 rounded-xl text-left transition-all hover:scale-[1.02]"
+                                style={{ 
+                                  backgroundColor: palette.isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                                }}
+                              >
+                                <service.icon className="h-5 w-5 mb-2" style={{ color: palette.primary }} />
+                                <p className="text-sm font-medium" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>{service.label}</p>
+                                <p className="text-[10px] opacity-50" style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}>{service.desc}</p>
+                                <p className="text-[10px] mt-1" style={{ color: palette.primary }}>{service.hours}</p>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Contact info */}
                       <div className="space-y-2 mb-6">
