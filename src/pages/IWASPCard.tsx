@@ -7,14 +7,10 @@
  * Accent: #FFD400 (electric yellow)
  */
 
-import { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, Linkedin, MessageCircle, Download } from 'lucide-react';
 import { downloadVCard, VCardData } from '@/lib/vcard';
 import iwaspLogo from '@/assets/iwasp-logo.png';
-
-// Lazy load Spline for performance
-const Spline = lazy(() => import('@splinetool/react-spline'));
 
 // Contact data
 const contact = {
@@ -90,23 +86,46 @@ export default function IWASPCard() {
       className="min-h-screen flex items-center justify-center px-5 py-10 relative overflow-hidden"
       style={{ backgroundColor: '#0E0E11' }}
     >
-      {/* 3D Robot Background - positioned bottom-left */}
-      <div className="absolute bottom-0 left-0 w-[400px] h-[500px] pointer-events-none opacity-25">
-        <Suspense fallback={null}>
-          <Spline 
-            scene="https://prod.spline.design/c7ea7d61-b5c3-46cf-87e6-76f0be0349bf/scene.splinecode"
-            className="w-full h-full"
-          />
-        </Suspense>
+      {/* Futuristic Background Effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Top glow */}
+        <div 
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px]"
+          style={{ 
+            background: 'radial-gradient(ellipse, rgba(255,212,0,0.04) 0%, transparent 70%)',
+            filter: 'blur(60px)'
+          }}
+        />
+        
+        {/* Bottom-left ambient orb (representing the robot presence) */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          className="absolute bottom-0 left-0 w-[350px] h-[400px]"
+          style={{ 
+            background: 'radial-gradient(ellipse at center, rgba(255,212,0,0.08) 0%, rgba(255,212,0,0.02) 40%, transparent 70%)',
+            filter: 'blur(50px)'
+          }}
+        />
+        
+        {/* Floating orbs */}
+        <div 
+          className="absolute top-1/4 right-10 w-32 h-32 rounded-full animate-pulse"
+          style={{ 
+            background: 'radial-gradient(circle, rgba(255,212,0,0.06) 0%, transparent 70%)',
+            filter: 'blur(30px)'
+          }}
+        />
+        <div 
+          className="absolute bottom-1/3 left-20 w-20 h-20 rounded-full animate-pulse"
+          style={{ 
+            background: 'radial-gradient(circle, rgba(255,212,0,0.05) 0%, transparent 70%)',
+            filter: 'blur(20px)',
+            animationDelay: '1s'
+          }}
+        />
       </div>
-      
-      {/* Overlay gradient to keep robot subtle */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at bottom left, transparent 0%, #0E0E11 60%)'
-        }}
-      />
 
       {/* Subtle grid pattern overlay */}
       <div 
