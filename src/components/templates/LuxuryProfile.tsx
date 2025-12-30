@@ -19,6 +19,7 @@ import {
 import { downloadVCard, VCardData } from '@/lib/vcard';
 import { CardData, TemplateProps } from './CardTemplates';
 import { motion } from 'framer-motion';
+import iwaspLogo from '@/assets/iwasp-logo.png';
 
 interface SocialItemProps {
   icon: React.ReactNode;
@@ -248,15 +249,14 @@ export function LuxuryProfile({
             )}
           </div>
 
-          {/* Brand Signature */}
+          {/* Brand Signature with I-WASP Logo */}
           <div className="mt-10 pt-6 border-t border-white/10 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
-                <Leaf size={12} className="text-white" />
-              </div>
-              <span className="text-white/80 font-semibold tracking-wide text-sm">
-                I-WASP
-              </span>
+              <img 
+                src={iwaspLogo} 
+                alt="I-WASP" 
+                className="h-8 w-auto object-contain"
+              />
             </div>
             <p className="text-white/40 text-xs tracking-widest uppercase">
               Digital Identity • Sustainable Tech
