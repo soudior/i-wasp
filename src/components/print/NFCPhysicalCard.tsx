@@ -54,20 +54,59 @@ export function NFCPhysicalCard({
     <div className={`flex flex-col gap-6 ${className}`}>
       {/* Sélecteur de couleur (si interactif) */}
       {interactive && (
-        <div className="flex justify-center gap-3">
+        <div className="flex justify-center gap-4">
           {cardColors.map((c) => (
             <button
               key={c.id}
               onClick={() => handleColorSelect(c.id)}
-              className={`w-10 h-10 rounded-full transition-all shadow-md ${
-                selectedColor === c.id 
-                  ? "ring-2 ring-foreground ring-offset-2 ring-offset-background scale-110" 
-                  : "hover:scale-105"
-              }`}
-              style={{ backgroundColor: c.bg }}
+              className={`
+                relative w-12 h-12 rounded-full transition-all duration-300 ease-out
+                shadow-lg hover:shadow-xl
+                before:absolute before:inset-0 before:rounded-full before:transition-all before:duration-300
+                before:bg-gradient-to-br before:from-white/30 before:to-transparent before:opacity-0
+                hover:before:opacity-100
+                after:absolute after:-inset-1 after:rounded-full after:transition-all after:duration-300
+                after:bg-gradient-to-br after:from-white/20 after:to-transparent after:opacity-0 after:-z-10 after:blur-sm
+                hover:after:opacity-60
+                ${selectedColor === c.id 
+                  ? "ring-2 ring-amber-400 ring-offset-2 ring-offset-background scale-110 shadow-amber-500/30" 
+                  : "hover:scale-110 hover:-translate-y-1"
+                }
+              `}
+              style={{ 
+                backgroundColor: c.bg,
+                boxShadow: selectedColor === c.id 
+                  ? `0 8px 24px -4px ${c.bg}60, 0 4px 12px -2px rgba(0,0,0,0.3)`
+                  : `0 4px 12px -2px ${c.bg}40, 0 2px 6px -1px rgba(0,0,0,0.2)`
+              }}
               title={c.name}
               aria-label={`Couleur ${c.name}`}
-            />
+            >
+              {/* Inner glow effect */}
+              <span 
+                className={`
+                  absolute inset-1 rounded-full transition-opacity duration-300
+                  ${selectedColor === c.id ? 'opacity-100' : 'opacity-0'}
+                `}
+                style={{
+                  background: `radial-gradient(circle at 30% 30%, ${c.logoVariant === 'white' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.5)'}, transparent 60%)`,
+                }}
+              />
+              {/* Check mark for selected */}
+              {selectedColor === c.id && (
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <svg 
+                    className={`w-5 h-5 ${c.logoVariant === 'white' ? 'text-white' : 'text-gray-800'} drop-shadow-sm`}
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor" 
+                    strokeWidth={2.5}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </span>
+              )}
+            </button>
           ))}
         </div>
       )}
