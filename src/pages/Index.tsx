@@ -1,16 +1,15 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Wifi, CreditCard, Building2, Hotel, Store, CalendarDays } from "lucide-react";
+import { ArrowRight, Wifi, CreditCard, Building2, Hotel, Store, CalendarDays, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NFCPhysicalCardSection } from "@/components/print/NFCPhysicalCardSection";
-import { NFCAnimation3D } from "@/components/NFCAnimation3D";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 
 /**
  * Index - Page institutionnelle i-wasp
  * 
  * Interface minimaliste orientée système.
- * Aucun contenu marketing, aucune animation décorative.
- * Présentation fonctionnelle du système NFC métier.
+ * Contenu prioritaire : produit, prix, achat.
+ * Animation 3D supprimée pour lisibilité maximale.
  */
 
 const sectors = [
@@ -20,28 +19,75 @@ const sectors = [
   { icon: CalendarDays, label: "Événementiel" },
 ];
 
+// Grille tarifaire
+const pricingPlans = [
+  {
+    name: "Particulier",
+    price: "29",
+    description: "Carte NFC personnelle",
+    features: [
+      "1 carte NFC premium",
+      "Profil digital illimité",
+      "Apple & Google Wallet",
+      "QR Code de secours",
+    ],
+    cta: "Commander",
+    popular: false,
+  },
+  {
+    name: "Professionnel",
+    price: "49",
+    description: "Carte personnalisée entreprise",
+    features: [
+      "Carte couleur au choix",
+      "Logo imprimé",
+      "Nom, titre & entreprise",
+      "Analytics détaillées",
+      "Capture de leads",
+    ],
+    cta: "Commander",
+    popular: true,
+  },
+  {
+    name: "Équipe",
+    price: "39",
+    priceNote: "/ carte dès 10",
+    description: "Tarif dégressif entreprise",
+    features: [
+      "Design unifié équipe",
+      "Personnalisation corporate",
+      "Paiement à la livraison",
+      "Support prioritaire",
+      "-15% dès 10 cartes",
+      "-20% dès 25 cartes",
+    ],
+    cta: "Demander un devis",
+    popular: false,
+  },
+];
+
 const Index = () => {
   return (
     <div className="min-h-[calc(100dvh-3.5rem)] flex flex-col">
-      {/* Section principale */}
-      <section className="flex-1 flex items-center justify-center px-4 py-16">
-        <div className="max-w-2xl mx-auto text-center space-y-8">
-          {/* Titre système */}
+      {/* Hero Section - Contenu prioritaire */}
+      <section className="flex-1 flex items-center justify-center px-4 py-12 md:py-16">
+        <div className="max-w-3xl mx-auto text-center space-y-6">
+          {/* Titre principal */}
           <div className="space-y-3">
-            <h1 className="text-3xl md:text-4xl font-medium tracking-tight text-foreground">
-              Infrastructure NFC métier
+            <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-foreground">
+              Cartes NFC professionnelles
             </h1>
-            <p className="text-muted-foreground text-lg">
-              Cartes connectées automatisées pour professionnels
+            <p className="text-muted-foreground text-lg md:text-xl max-w-xl mx-auto">
+              Partagez vos coordonnées d'un geste. Un achat unique, service digital inclus à vie.
             </p>
           </div>
 
           {/* Secteurs supportés */}
-          <div className="flex flex-wrap justify-center gap-4 py-6">
+          <div className="flex flex-wrap justify-center gap-3 py-4">
             {sectors.map(({ icon: Icon, label }) => (
               <div 
                 key={label}
-                className="flex items-center gap-2 px-4 py-2 rounded-full border border-border/50 bg-muted/30"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 bg-muted/30"
               >
                 <Icon className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">{label}</span>
@@ -50,7 +96,7 @@ const Index = () => {
           </div>
 
           {/* Fonctionnalités clés */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 py-4">
             <div className="p-4 rounded-lg border border-border/30 bg-card/50">
               <CreditCard className="w-5 h-5 text-foreground mb-2" />
               <p className="text-sm font-medium">Carte NFC</p>
@@ -69,10 +115,10 @@ const Index = () => {
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Link to="/signup">
               <Button size="lg" className="bg-foreground text-background hover:bg-foreground/90 gap-2">
-                Accéder au système
+                Commander maintenant
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
@@ -85,47 +131,71 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Section Animation NFC Spline */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-xl md:text-2xl font-medium text-foreground">
-              Technologie NFC intégrée
+      {/* Section Pricing - OBLIGATOIRE ET VISIBLE */}
+      <section id="pricing" className="py-16 px-4 bg-muted/20 border-t border-border/20">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-2">
+              Tarifs clairs et transparents
             </h2>
-            <p className="text-muted-foreground mt-2">
-              Un simple geste pour partager vos informations
+            <p className="text-muted-foreground">
+              Un achat unique. Pas d'abonnement. Service digital inclus à vie.
             </p>
           </div>
-          
-          {/* Animation 3D - Desktop visible, Mobile hidden for performance */}
-          <div className="hidden md:block">
-            <div 
-              className="relative mx-auto rounded-2xl overflow-hidden"
-              style={{ 
-                height: "400px",
-                maxWidth: "600px",
-              }}
-            >
-              <NFCAnimation3D className="w-full h-full" />
-            </div>
-          </div>
-          
-          {/* Mobile fallback - Static visual */}
-          <div className="md:hidden">
-            <div 
-              className="relative mx-auto rounded-2xl overflow-hidden bg-[#F7F7F5] flex items-center justify-center p-8"
-              style={{ 
-                height: "200px",
-                maxWidth: "300px",
-              }}
-            >
-              <div className="text-center">
-                <CreditCard className="w-12 h-12 mx-auto text-muted-foreground/60 mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  Approchez votre téléphone
-                </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {pricingPlans.map((plan) => (
+              <div 
+                key={plan.name}
+                className={`relative p-6 rounded-2xl border transition-all ${
+                  plan.popular 
+                    ? "border-foreground bg-foreground/5 shadow-lg" 
+                    : "border-border/50 bg-card/50"
+                }`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-foreground text-background text-xs font-medium rounded-full">
+                    Populaire
+                  </div>
+                )}
+                
+                <div className="text-center mb-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-1">{plan.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-3">{plan.description}</p>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-4xl font-bold text-foreground">{plan.price}€</span>
+                    {plan.priceNote && (
+                      <span className="text-sm text-muted-foreground">{plan.priceNote}</span>
+                    )}
+                  </div>
+                </div>
+
+                <ul className="space-y-3 mb-6">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2 text-sm">
+                      <Check className="w-4 h-4 text-foreground mt-0.5 flex-shrink-0" />
+                      <span className="text-muted-foreground">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link to={plan.name === "Équipe" ? "/contact" : "/checkout"}>
+                  <Button 
+                    className="w-full" 
+                    variant={plan.popular ? "default" : "outline"}
+                  >
+                    {plan.cta}
+                  </Button>
+                </Link>
               </div>
-            </div>
+            ))}
+          </div>
+
+          {/* Promotion */}
+          <div className="mt-8 p-4 rounded-xl bg-primary/10 border border-primary/20 text-center">
+            <p className="text-sm font-medium text-foreground">
+              🎁 Offre de lancement : -10% avec le code <span className="font-mono bg-foreground/10 px-2 py-0.5 rounded">IWASP10</span>
+            </p>
           </div>
         </div>
       </section>

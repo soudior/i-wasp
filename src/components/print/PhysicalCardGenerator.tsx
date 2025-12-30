@@ -13,13 +13,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { NFCPhysicalCard } from "./NFCPhysicalCard";
+import { NFCPhysicalCard, CardColorId } from "./NFCPhysicalCard";
 import { toast } from "sonner";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 interface PhysicalCardGeneratorProps {
-  logoUrl?: string | null;
+  logoUrl?: string | null; // Kept for API compatibility
   cardName?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -37,6 +37,7 @@ export function PhysicalCardGenerator({
 }: PhysicalCardGeneratorProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<CardColorId>("black");
 
   // Export HD Image (PNG)
   const exportHDImage = async () => {
@@ -120,7 +121,11 @@ export function PhysicalCardGenerator({
             ref={cardRef}
             className="w-full max-w-sm mx-auto"
           >
-            <NFCPhysicalCard logoUrl={logoUrl || undefined} />
+            <NFCPhysicalCard 
+              colorId={selectedColor} 
+              interactive 
+              onColorChange={setSelectedColor}
+            />
           </div>
 
           {/* Dimensions */}

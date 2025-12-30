@@ -8,20 +8,19 @@
 import { useRef, useState } from "react";
 import { Download, FileImage, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { NFCPhysicalCard } from "./NFCPhysicalCard";
+import { NFCPhysicalCard, CardColorId } from "./NFCPhysicalCard";
 import { toast } from "sonner";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 interface NFCPhysicalCardSectionProps {
-  logoUrl?: string;
+  logoUrl?: string; // Kept for API compatibility but not used in new design
   className?: string;
 }
 
 // Dimensions carte CR80 en mm
 const CARD_WIDTH_MM = 85.6;
 const CARD_HEIGHT_MM = 54;
-const MM_TO_PX_300DPI = 11.811; // 300 DPI
 
 export function NFCPhysicalCardSection({ 
   logoUrl,
@@ -29,6 +28,7 @@ export function NFCPhysicalCardSection({
 }: NFCPhysicalCardSectionProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<CardColorId>("black");
 
   // Export HD Image (PNG 300 DPI)
   const exportHDImage = async () => {
@@ -106,7 +106,7 @@ export function NFCPhysicalCardSection({
       <div className="max-w-xl mx-auto">
         {/* Titre section */}
         <h2 className="text-xl font-medium text-center mb-8 text-foreground">
-          Template carte physique NFC
+          Carte physique NFC
         </h2>
 
         {/* Carte physique - rendu visuel */}
@@ -114,7 +114,11 @@ export function NFCPhysicalCardSection({
           ref={cardRef}
           className="w-full max-w-md mx-auto"
         >
-          <NFCPhysicalCard logoUrl={logoUrl} />
+          <NFCPhysicalCard 
+            colorId={selectedColor} 
+            interactive 
+            onColorChange={setSelectedColor}
+          />
         </div>
 
         {/* Dimensions */}
