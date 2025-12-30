@@ -40,12 +40,6 @@ function downloadVCardFallback(cardData: WalletCardData, walletType: 'apple' | '
     company: cardData.company,
     email: cardData.email,
     phone: cardData.phone,
-    website: cardData.website,
-    location: cardData.location,
-    linkedin: cardData.linkedin,
-    instagram: cardData.instagram,
-    twitter: cardData.twitter,
-    tagline: cardData.tagline,
   };
 
   downloadVCard(vcardData);

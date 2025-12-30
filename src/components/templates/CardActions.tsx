@@ -41,12 +41,6 @@ export function handleAddToContacts(data: CardActionsData): void {
     company: data.company,
     email: data.email,
     phone: data.phone,
-    website: data.website,
-    location: data.location,
-    linkedin: data.linkedin,
-    instagram: data.instagram,
-    twitter: data.twitter,
-    tagline: data.tagline,
   };
 
   downloadVCard(vcardData);
