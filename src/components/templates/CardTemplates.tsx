@@ -4,6 +4,7 @@ import { SocialLink } from "@/lib/socialNetworks";
 import { IWASPProductionTemplate, IWASPProductionLightTemplate } from "./IWASPProductionTemplate";
 import { LuxuryProfile } from "./LuxuryProfile";
 import { RestaurantTemplate } from "./RestaurantTemplate";
+import BoutiqueTemplate from "./BoutiqueTemplate";
 import { SmartContext } from "@/hooks/useSmartContext";
 
 export interface CardData {
@@ -539,7 +540,7 @@ import { HotelGuideTemplate, HotelGuideLightTemplate } from "./HotelGuideTemplat
 import { HotelConciergeTemplate } from "./HotelConciergeTemplate";
 
 // Template selector component
-export type TemplateType = "production" | "production-light" | "signature" | "signature-light" | "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "luxury" | "hotel-guide" | "hotel-guide-light" | "hotel-concierge" | "restaurant" | "default";
+export type TemplateType = "production" | "production-light" | "signature" | "signature-light" | "executive" | "minimal" | "modern" | "creative" | "tech" | "luxe" | "luxury" | "hotel-guide" | "hotel-guide-light" | "hotel-concierge" | "restaurant" | "boutique" | "default";
 
 export function getTemplateComponent(template: TemplateType) {
   switch (template) {
@@ -573,6 +574,8 @@ export function getTemplateComponent(template: TemplateType) {
       return HotelConciergeTemplate as any;
     case "restaurant":
       return RestaurantTemplate;
+    case "boutique":
+      return BoutiqueTemplate;
     default:
       return IWASPProductionTemplate; // IWASP Production is the DEFAULT
   }
@@ -588,6 +591,7 @@ export const templateInfo = [
   { id: "hotel-guide-light", name: "Hotel Guide Light", description: "Variante claire pour hôtels", category: "hospitality" },
   { id: "hotel-concierge", name: "Hotel Concierge", description: "Services de conciergerie premium", category: "hospitality" },
   { id: "restaurant", name: "Restaurant", description: "Menu, Wi-Fi, Réservation, Avis", category: "hospitality" },
+  { id: "boutique", name: "Boutique", description: "Catalogue, Promotions, Contact, Avis", category: "commerce" },
   { id: "executive", name: "Série Business", description: "Pour les dirigeants et cadres" },
   { id: "minimal", name: "Série Essential", description: "Élégance épurée" },
   { id: "modern", name: "Série Contemporary", description: "Design intemporel" },
