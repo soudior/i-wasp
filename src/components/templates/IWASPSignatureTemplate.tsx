@@ -6,7 +6,7 @@
  * The IWASP logo is ALWAYS positioned top-right and CANNOT be modified by clients.
  */
 
-import { IWASPLogoSimple } from "@/components/IWASPLogo";
+import { IWASPBrandBadgeMinimal } from "./IWASPBrandBadge";
 import { CardActionButtons } from "./CardActions";
 import { ActionsList } from "./ActionsList";
 import { CardData, TemplateProps } from "./CardTemplates";
@@ -62,12 +62,8 @@ export function IWASPSignatureTemplate({
               )}
             </div>
 
-            {/* IWASP Logo - ALWAYS TOP RIGHT - FIXED POSITION */}
-            <IWASPLogoSimple 
-              variant="dark" 
-              size="sm" 
-              className="opacity-40 flex-shrink-0"
-            />
+            {/* IWASP "IWasp )))" Brand Badge - ALWAYS TOP RIGHT - FIXED POSITION */}
+            <IWASPBrandBadgeMinimal variant="dark" />
           </div>
 
           {/* IDENTITY SECTION - Clean, luxe typography */}
@@ -189,24 +185,8 @@ export function IWASPSignatureLightTemplate({
               )}
             </div>
 
-            {/* IWASP Logo - ALWAYS TOP RIGHT - FIXED POSITION */}
-            <div className="flex items-center gap-1.5 text-neutral-400 opacity-50 flex-shrink-0">
-              <span className="text-[8px] font-semibold tracking-[0.15em] uppercase">IWasp</span>
-              <svg 
-                width="12" 
-                height="12" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="1.5" 
-                strokeLinecap="round"
-              >
-                <path d="M2 12a5 5 0 0 1 5-5" />
-                <path d="M2 12a9 9 0 0 1 9-9" />
-                <path d="M2 12a13 13 0 0 1 13-13" />
-                <circle cx="2" cy="12" r="1.5" fill="currentColor" />
-              </svg>
-            </div>
+            {/* IWASP "IWasp )))" Brand Badge - ALWAYS TOP RIGHT - FIXED POSITION */}
+            <IWASPBrandBadgeMinimal variant="light" />
           </div>
 
           {/* IDENTITY SECTION */}
