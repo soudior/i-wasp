@@ -2,71 +2,96 @@
  * IWASP Public NFC Card Page
  * Ultra-minimal Apple Cupertino style
  * Mobile-first, single screen, no scroll
+ * 
+ * SECURITY: Uses secure RPC functions - never exposes raw contact data
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { useCard } from "@/hooks/useCards";
+import { usePublicCard, useCardActionUrl, useIncrementCardView } from "@/hooks/usePublicCard";
 import { useRecordScan } from "@/hooks/useScans";
-import { downloadVCard } from "@/lib/vcard";
+import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Phone, Mail, Linkedin, MessageCircle, UserPlus } from "lucide-react";
 
 const PublicCard = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { data: card, isLoading, error } = useCard(slug || "");
+  const { data: card, isLoading, error } = usePublicCard(slug || "");
   const recordScan = useRecordScan();
+  const getActionUrl = useCardActionUrl();
+  const incrementView = useIncrementCardView();
   const [scanRecorded, setScanRecorded] = useState(false);
 
   // Record scan on first load
   useEffect(() => {
     if (card?.id && !scanRecorded) {
       recordScan.mutate(card.id);
+      incrementView(slug || "");
       setScanRecorded(true);
     }
-  }, [card?.id, scanRecorded]);
+  }, [card?.id, scanRecorded, slug]);
 
-  // Action handlers - all functional
-  const handleCall = () => {
-    if (card?.phone) {
-      window.location.href = `tel:${card.phone}`;
-    }
-  };
-
-  const handleEmail = () => {
-    if (card?.email) {
-      window.location.href = `mailto:${card.email}`;
-    }
-  };
-
-  const handleLinkedIn = () => {
-    if (card?.linkedin) {
-      const url = card.linkedin.startsWith("http") 
-        ? card.linkedin 
-        : `https://linkedin.com/in/${card.linkedin}`;
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-  };
-
-  const handleWhatsApp = () => {
-    const whatsappNumber = (card as any)?.whatsapp || card?.phone;
-    if (whatsappNumber) {
-      const cleanNumber = whatsappNumber.replace(/\D/g, "");
-      window.open(`https://wa.me/${cleanNumber}`, "_blank", "noopener,noreferrer");
-    }
-  };
-
-  const handleAddContact = () => {
-    if (!card) return;
+  // Secure action handlers - get URLs from server, never expose raw data
+  const handleAction = useCallback(async (action: "email" | "phone" | "whatsapp" | "linkedin") => {
+    if (!slug) return;
     
-    downloadVCard({
-      firstName: card.first_name,
-      lastName: card.last_name,
-      title: card.title || undefined,
-      company: card.company || undefined,
-      email: card.email || undefined,
-      phone: card.phone || undefined,
-      nfcPageUrl: `${window.location.origin}/card/${card.slug}`,
-    });
+    const url = await getActionUrl(slug, action);
+    if (url) {
+      if (action === "linkedin" || action === "whatsapp") {
+        window.open(url, "_blank", "noopener,noreferrer");
+      } else {
+        window.location.href = url;
+      }
+    }
+  }, [slug, getActionUrl]);
+
+  const handleCall = () => handleAction("phone");
+  const handleEmail = () => handleAction("email");
+  const handleLinkedIn = () => handleAction("linkedin");
+  const handleWhatsApp = () => handleAction("whatsapp");
+
+  // Secure vCard download - get data from server function
+  const handleAddContact = async () => {
+    if (!card || !slug) return;
+    
+    try {
+      // Get vCard data securely from server
+      const { data, error } = await supabase.rpc("get_vcard_data", {
+        p_slug: slug,
+      });
+      
+      if (error || !data) {
+        console.error("Error getting vCard data:", error);
+        return;
+      }
+
+      // Generate vCard content
+      const vCardContent = [
+        "BEGIN:VCARD",
+        "VERSION:3.0",
+        `N:${data.last_name || ""};${data.first_name || ""};;;`,
+        `FN:${data.first_name || ""} ${data.last_name || ""}`,
+        data.title ? `TITLE:${data.title}` : null,
+        data.company ? `ORG:${data.company}` : null,
+        data.email ? `EMAIL:${data.email}` : null,
+        data.phone ? `TEL:${data.phone}` : null,
+        `URL:${window.location.origin}/card/${data.slug}`,
+        "END:VCARD",
+      ]
+        .filter(Boolean)
+        .join("\r\n");
+
+      const blob = new Blob([vCardContent], { type: "text/vcard" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${data.first_name || "contact"}_${data.last_name || ""}.vcf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Error downloading vCard:", err);
+    }
   };
 
   // Loading state
@@ -102,7 +127,6 @@ const PublicCard = () => {
 
   const fullName = `${card.first_name} ${card.last_name}`;
   const subtitle = [card.title, card.company].filter(Boolean).join(" · ");
-  const whatsappNumber = (card as any)?.whatsapp || card?.phone;
 
   return (
     <div 
@@ -155,12 +179,12 @@ const PublicCard = () => {
           )}
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons - Only show if contact method exists */}
         <div className="space-y-3">
           {/* Primary Actions Row */}
           <div className="grid grid-cols-2 gap-3">
             {/* Call */}
-            {card.phone && (
+            {card.has_phone && (
               <button
                 onClick={handleCall}
                 className="flex items-center justify-center gap-2 py-3.5 rounded-xl transition-all active:scale-[0.98]"
@@ -174,7 +198,7 @@ const PublicCard = () => {
             )}
 
             {/* Email */}
-            {card.email && (
+            {card.has_email && (
               <button
                 onClick={handleEmail}
                 className="flex items-center justify-center gap-2 py-3.5 rounded-xl transition-all active:scale-[0.98]"
@@ -191,7 +215,7 @@ const PublicCard = () => {
           {/* Secondary Actions Row */}
           <div className="grid grid-cols-2 gap-3">
             {/* LinkedIn */}
-            {card.linkedin && (
+            {card.has_linkedin && (
               <button
                 onClick={handleLinkedIn}
                 className="flex items-center justify-center gap-2 py-3.5 rounded-xl transition-all active:scale-[0.98]"
@@ -205,7 +229,7 @@ const PublicCard = () => {
             )}
 
             {/* WhatsApp */}
-            {whatsappNumber && (
+            {card.has_whatsapp && (
               <button
                 onClick={handleWhatsApp}
                 className="flex items-center justify-center gap-2 py-3.5 rounded-xl transition-all active:scale-[0.98]"
