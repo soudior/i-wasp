@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { StickyBottomCTA } from "@/components/StickyBottomCTA";
+import { OrderTrustBadges, LinkedCardPreview } from "@/components/order";
 import { 
   CreditCard, 
   Truck, 
@@ -62,9 +63,14 @@ const templateImages: Record<string, string> = {
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const { items, totalItems, totalPriceCents, clearCart } = useCart();
   const createOrder = useCreateOrder();
+  
+  // Linked card from onboarding flow
+  const linkedCardSlug = searchParams.get("linkedCard");
+  const linkedCardName = searchParams.get("linkedName");
   
   // Customer & shipping info
   const [shippingName, setShippingName] = useState("");
@@ -236,7 +242,19 @@ export default function Checkout() {
                   ))}
                 </CardContent>
               </Card>
+
+              {/* Linked Card Preview (from onboarding) */}
+              {linkedCardSlug && linkedCardName && (
+                <LinkedCardPreview
+                  cardName={linkedCardName}
+                  cardSlug={linkedCardSlug}
+                />
+              )}
               
+              {/* Trust Badges - Mobile */}
+              <div className="lg:hidden">
+                <OrderTrustBadges />
+              </div>
               {/* Shipping Address */}
               <Card>
                 <CardHeader>
@@ -425,8 +443,13 @@ export default function Checkout() {
                     )}
                   </Button>
                   
-                  {/* Trust badges */}
-                  <div className="space-y-2 pt-2 text-sm">
+                  {/* NFC Trust badges */}
+                  <div className="pt-2">
+                    <OrderTrustBadges compact />
+                  </div>
+                  
+                  {/* Standard trust badges */}
+                  <div className="space-y-2 pt-3 text-sm">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Shield className="h-4 w-4 text-amber-500" />
                       <span>Commande sécurisée</span>

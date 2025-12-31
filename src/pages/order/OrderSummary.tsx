@@ -17,6 +17,7 @@ import { formatPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { OrderTrustBadges } from "@/components/order";
 import { 
   ArrowLeft, 
   Check, 
@@ -304,8 +305,13 @@ function OrderSummaryContent() {
                     Payer maintenant
                   </Button>
 
-                  {/* Trust badges */}
-                  <div className="space-y-2 pt-4 text-sm">
+                  {/* NFC Trust badges */}
+                  <div className="pt-2">
+                    <OrderTrustBadges />
+                  </div>
+
+                  {/* Standard trust badges */}
+                  <div className="space-y-2 pt-3 text-sm">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Shield className="h-4 w-4 text-primary" />
                       <span>Paiement 100% sécurisé</span>
