@@ -63,17 +63,24 @@ export default function FirstCardSetup() {
         .replace(/\s+/g, "-")
         .replace(/[^a-z0-9-]/g, "");
 
-      const { error } = await supabase.from("digital_cards").insert({
-        ...data,
-        user_id: user?.id,
-        slug,
-      });
+      const { data: insertedCard, error } = await supabase
+        .from("digital_cards")
+        .insert({
+          ...data,
+          user_id: user?.id,
+          slug,
+        })
+        .select("slug")
+        .single();
+
       if (error) throw error;
+      return insertedCard;
     },
-    onSuccess: () => {
+    onSuccess: (card) => {
       queryClient.invalidateQueries({ queryKey: ["adminClients"] });
       toast.success("Carte créée avec succès");
-      navigate("/admin");
+      // Redirect to the generated public NFC card page
+      navigate(`/card/${card.slug}`);
     },
     onError: () => toast.error("Erreur lors de la création"),
   });
