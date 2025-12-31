@@ -15,6 +15,7 @@ type EmailType =
   | "payment_confirmed" 
   | "in_production" 
   | "shipped" 
+  | "delivered"
   | "invoice"
   | "admin_notification";
 
@@ -65,6 +66,8 @@ const getEmailSubject = (emailType: EmailType, orderNumber: string): string => {
       return `🏭 Votre commande #${orderNumber} est en fabrication - IWASP`;
     case "shipped":
       return `📦 Votre commande #${orderNumber} a été expédiée - IWASP`;
+    case "delivered":
+      return `🎉 Votre commande #${orderNumber} a été livrée - IWASP`;
     case "invoice":
       return `🧾 Facture - Commande #${orderNumber} - IWASP`;
     case "admin_notification":
@@ -266,6 +269,41 @@ const generateEmailHtml = (emailType: EmailType, order: OrderData): string => {
               ${shippingDetails}
               <p class="message">
                 Livraison estimée : 2-4 jours ouvrés selon votre localisation.
+              </p>
+            </div>
+            ${footer}
+          </div>
+        </body>
+        </html>
+      `;
+
+    case "delivered":
+      return `
+        <!DOCTYPE html>
+        <html>
+        <head>${baseStyles}</head>
+        <body>
+          <div class="container">
+            ${header}
+            <div class="content">
+              <p class="greeting">Bonjour ${order.shipping_name},</p>
+              <p class="message">
+                <span class="status-badge" style="background: #c6f6d5; color: #22543d; display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500;">🎉 Livrée</span>
+                <br><br>
+                Excellente nouvelle ! Votre commande a été livrée avec succès !
+                <br><br>
+                Nous espérons que vous êtes satisfait(e) de vos nouvelles cartes NFC. 
+                N'hésitez pas à nous contacter si vous avez des questions sur leur utilisation.
+              </p>
+              ${orderDetails}
+              <p class="message">
+                <strong>Prochaines étapes :</strong><br>
+                1. Activez vos cartes en vous connectant sur i-wasp.com<br>
+                2. Personnalisez votre profil digital<br>
+                3. Partagez votre carte avec vos contacts !
+              </p>
+              <p class="message" style="font-size: 13px; color: #718096;">
+                Merci de votre confiance. À bientôt !
               </p>
             </div>
             ${footer}

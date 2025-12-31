@@ -14,6 +14,7 @@ import AdminClients from "./pages/AdminClients";
 import FirstCardSetup from "./pages/FirstCardSetup";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import AdminOrders from "./pages/AdminOrders";
 import Onboarding from "./pages/Onboarding";
 import OnboardingSuccess from "./pages/OnboardingSuccess";
 import Dashboard from "./pages/Dashboard";
@@ -90,8 +91,9 @@ const App = () => (
                       <Route path="/order/summary" element={<OrderSummaryNew />} />
                       <Route path="/order/payment" element={<OrderPayment />} />
                       
-                      {/* Admin - Client management */}
-                      <Route path="/admin" element={<AdminClients />} />
+                      {/* Admin */}
+                      <Route path="/admin" element={<AdminOrders />} />
+                      <Route path="/admin/orders" element={<AdminOrders />} />
                       <Route path="/admin/clients" element={<AdminClients />} />
                       
                       {/* 404 - FALLBACK TO HOME */}

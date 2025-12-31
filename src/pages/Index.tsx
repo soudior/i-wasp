@@ -1,20 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { ArrowRight, Wifi, CreditCard, Building2, Hotel, Store, CalendarDays, Check } from "lucide-react";
+import { ArrowRight, Building2, Hotel, Store, CalendarDays, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NFCPhysicalCardSection } from "@/components/print/NFCPhysicalCardSection";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCards } from "@/hooks/useCards";
-import { useCart } from "@/contexts/CartContext";
-import { toast } from "sonner";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 
 /**
  * Index - Page institutionnelle i-wasp
  * 
  * Interface minimaliste orientée système.
- * Contenu prioritaire : produit, prix, achat.
- * Boutons pricing reliés au checkout via CartContext.
+ * PARCOURS OBLIGATOIRE : Toujours /order, jamais d'achat direct.
  */
 
 const sectors = [
@@ -24,13 +18,12 @@ const sectors = [
   { icon: CalendarDays, label: "Événementiel" },
 ];
 
-// Grille tarifaire avec paramètres de commande
+// Grille tarifaire - CONFIGURATION OBLIGATOIRE (pas d'achat direct)
 const pricingPlans = [
   {
     id: "particulier",
     name: "Particulier",
     price: "29",
-    priceCents: 2900,
     description: "Carte NFC personnelle",
     features: [
       "1 carte NFC premium",
@@ -38,17 +31,13 @@ const pricingPlans = [
       "Apple & Google Wallet",
       "QR Code de secours",
     ],
-    cta: "Commander",
+    cta: "Configurer ma carte",
     popular: false,
-    templateId: "signature",
-    templateName: "Carte Standard",
-    quantity: 1,
   },
   {
     id: "professionnel",
     name: "Professionnel",
     price: "49",
-    priceCents: 4900,
     description: "Carte personnalisée entreprise",
     features: [
       "Carte couleur au choix",
@@ -57,17 +46,13 @@ const pricingPlans = [
       "Analytics détaillées",
       "Capture de leads",
     ],
-    cta: "Commander",
+    cta: "Configurer ma carte",
     popular: true,
-    templateId: "signature",
-    templateName: "Carte Personnalisée",
-    quantity: 1,
   },
   {
     id: "equipe",
     name: "Équipe",
     price: "39",
-    priceCents: 3900,
     priceNote: "/ carte dès 10",
     description: "Tarif dégressif entreprise",
     features: [
@@ -78,51 +63,20 @@ const pricingPlans = [
       "-15% dès 10 cartes",
       "-20% dès 25 cartes",
     ],
-    cta: "Demander un devis",
+    cta: "Configurer ma carte",
     popular: false,
-    templateId: "signature",
-    templateName: "Carte Équipe",
-    quantity: 10,
-    isQuote: true,
   },
 ];
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { data: cards = [] } = useCards();
-  const { addItem, clearCart } = useCart();
 
   /**
-   * Handles order flow:
-   * - For quotes, redirect to email
-   * - For non-authenticated users, go to /create
-   * - For authenticated users without cards, go to /create
-   * - For authenticated users with cards, proceed with cart
+   * PARCOURS OBLIGATOIRE : Toujours rediriger vers /order
+   * JAMAIS d'achat direct, configuration obligatoire
    */
-  const handleOrder = (plan: typeof pricingPlans[0]) => {
-    // Pour les demandes de devis, rediriger vers le formulaire de contact
-    if (plan.isQuote) {
-      window.location.href = `mailto:contact@iwasp.ma?subject=Demande de devis - ${plan.quantity}+ cartes NFC&body=Bonjour,%0A%0AJe souhaite commander ${plan.quantity} cartes NFC ou plus.%0A%0AMerci de me contacter pour un devis personnalisé.`;
-      return;
-    }
-
-    // Redirect to order funnel
+  const handleConfigureCard = () => {
     navigate("/order");
-  };
-
-  /**
-   * Main CTA handler - Try before signup
-   * Always goes to /create for guest card creation
-   */
-  const handleMainCTA = () => {
-    // If user has cards, scroll to pricing
-    if (user && cards.length > 0) {
-      document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
-      return;
-    }
-    // Otherwise, go to card creation
-    navigate("/create");
   };
 
   return (
@@ -154,65 +108,59 @@ const Index = () => {
             ))}
           </div>
 
-          {/* Actions - CTA principal */}
+          {/* Actions - CTA principal vers configuration */}
           <div className="flex flex-col items-center gap-2 pt-4">
             <Button 
               size="lg" 
               className="bg-foreground text-background hover:bg-foreground/90 gap-2 px-8 py-6 text-base"
-              onClick={handleMainCTA}
+              onClick={handleConfigureCard}
             >
-              Essayer gratuitement
+              Configurer ma carte
               <ArrowRight className="w-4 h-4" />
             </Button>
-            <span className="text-sm text-muted-foreground">Sans inscription</span>
+            <span className="text-sm text-muted-foreground">Configuration guidée en 5 étapes</span>
           </div>
         </div>
       </section>
 
-      {/* Demo Section - Visible et accessible */}
+      {/* Demo Section - Étapes du parcours */}
       <section className="py-12 px-4 bg-muted/30 border-y border-border/20">
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <div className="space-y-2">
             <h2 className="text-xl md:text-2xl font-semibold text-foreground">
-              Créez votre carte en 2 minutes
+              Créez votre carte en 5 étapes
             </h2>
             <p className="text-muted-foreground">
-              Testez l'outil gratuitement. Aucun compte requis.
+              Parcours guidé, simple et sécurisé.
             </p>
           </div>
 
-          {/* Étapes simples */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4">
-            <div className="p-4 rounded-xl border border-border/30 bg-card/50">
-              <div className="w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center mx-auto mb-3">
-                <span className="text-sm font-semibold text-foreground">1</span>
+          {/* Étapes du parcours */}
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 py-4">
+            {[
+              { step: 1, title: "Type de client", desc: "Particulier, Pro, Équipe" },
+              { step: 2, title: "Vos infos", desc: "Nom, email, téléphone" },
+              { step: 3, title: "Design carte", desc: "Logo & couleur" },
+              { step: 4, title: "Quantité", desc: "Prix dégressifs" },
+              { step: 5, title: "Récapitulatif", desc: "Validation finale" },
+            ].map(({ step, title, desc }) => (
+              <div key={step} className="p-4 rounded-xl border border-border/30 bg-card/50">
+                <div className="w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center mx-auto mb-3">
+                  <span className="text-sm font-semibold text-foreground">{step}</span>
+                </div>
+                <p className="text-sm font-medium">{title}</p>
+                <p className="text-xs text-muted-foreground mt-1">{desc}</p>
               </div>
-              <p className="text-sm font-medium">Ajoutez vos infos</p>
-              <p className="text-xs text-muted-foreground mt-1">Nom, titre, coordonnées</p>
-            </div>
-            <div className="p-4 rounded-xl border border-border/30 bg-card/50">
-              <div className="w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center mx-auto mb-3">
-                <span className="text-sm font-semibold text-foreground">2</span>
-              </div>
-              <p className="text-sm font-medium">Prévisualisez</p>
-              <p className="text-xs text-muted-foreground mt-1">Votre carte en temps réel</p>
-            </div>
-            <div className="p-4 rounded-xl border border-border/30 bg-card/50">
-              <div className="w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center mx-auto mb-3">
-                <span className="text-sm font-semibold text-foreground">3</span>
-              </div>
-              <p className="text-sm font-medium">Commandez</p>
-              <p className="text-xs text-muted-foreground mt-1">Recevez votre carte NFC</p>
-            </div>
+            ))}
           </div>
 
           <Button 
             variant="outline" 
             size="lg"
             className="gap-2"
-            onClick={() => navigate("/create")}
+            onClick={handleConfigureCard}
           >
-            Créer ma carte maintenant
+            Commencer la configuration
             <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
@@ -269,7 +217,7 @@ const Index = () => {
                 <Button 
                   className="w-full" 
                   variant={plan.popular ? "default" : "outline"}
-                  onClick={() => handleOrder(plan)}
+                  onClick={handleConfigureCard}
                 >
                   {plan.cta}
                 </Button>

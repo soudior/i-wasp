@@ -20,7 +20,7 @@ const customerTypes = [
     icon: User,
     title: "Particulier",
     description: "Commande individuelle pour usage personnel ou professionnel",
-    priceHint: "À partir de 49€",
+    priceHint: "À partir de 29€",
     features: ["1-2 cartes", "Design personnalisé", "Livraison standard"],
   },
   {
@@ -29,15 +29,15 @@ const customerTypes = [
     title: "Professionnel",
     description: "Indépendant, freelance ou petite équipe",
     priceHint: "À partir de 44€/carte",
-    features: ["3-9 cartes", "Prix dégressifs", "Support prioritaire"],
+    features: ["3-9 cartes", "Prix dégressifs", "Logo entreprise"],
   },
   {
     id: "entreprise" as CustomerType,
     icon: Building2,
-    title: "Entreprise",
-    description: "Équipe, PME ou grande entreprise",
+    title: "Entreprise / Équipe",
+    description: "PME, grande entreprise ou équipe",
     priceHint: "À partir de 29€/carte",
-    features: ["10+ cartes", "Account manager dédié", "Facturation entreprise"],
+    features: ["10+ cartes", "-15% dès 10 cartes", "-20% dès 25 cartes"],
   },
 ];
 
