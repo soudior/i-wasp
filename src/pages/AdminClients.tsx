@@ -333,13 +333,18 @@ export default function AdminClients() {
     );
   }
 
+  const hasNoClients = !isLoading && (!clients || clients.length === 0);
+
+  // Auto-show form when no clients exist (first card experience)
+  const shouldShowForm = showForm || hasNoClients;
+
   return (
     <div className="min-h-dvh" style={{ backgroundColor: "#F5F5F7" }}>
       {/* Header */}
       <header className="sticky top-0 z-10 backdrop-blur-xl border-b" style={{ backgroundColor: "rgba(245, 245, 247, 0.8)", borderColor: "rgba(0,0,0,0.08)" }}>
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-xl font-semibold tracking-tight" style={{ color: "#1D1D1F" }}>
-            Gestion des clients
+            {hasNoClients ? "Créez votre première carte" : "Gestion des clients"}
           </h1>
           <button
             onClick={handleLockAdmin}
@@ -352,8 +357,8 @@ export default function AdminClients() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        {/* Add Client Button */}
-        {!showForm && (
+        {/* Add Client Button - only show when clients exist and form is not shown */}
+        {!shouldShowForm && clients && clients.length > 0 && (
           <Button
             onClick={() => setShowForm(true)}
             className="w-full sm:w-auto rounded-xl font-medium"
@@ -365,15 +370,18 @@ export default function AdminClients() {
         )}
 
         {/* Client Form */}
-        {showForm && (
+        {shouldShowForm && (
           <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: "#FFFFFF" }}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-medium" style={{ color: "#1D1D1F" }}>
-                {editingClient ? "Modifier le client" : "Nouveau client"}
+                {editingClient ? "Modifier le client" : hasNoClients ? "Nouvelle carte NFC" : "Nouveau client"}
               </h2>
-              <button onClick={resetForm} className="p-2 rounded-full hover:bg-gray-100">
-                <X className="h-5 w-5" style={{ color: "#8E8E93" }} />
-              </button>
+              {/* Only show close button if there are existing clients */}
+              {!hasNoClients && (
+                <button onClick={resetForm} className="p-2 rounded-full hover:bg-gray-100">
+                  <X className="h-5 w-5" style={{ color: "#8E8E93" }} />
+                </button>
+              )}
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -497,15 +505,12 @@ export default function AdminClients() {
           </div>
         )}
 
-        {/* Client List */}
+        {/* Client List - only show when there are clients */}
+        {!hasNoClients && (
         <div className="space-y-3">
           {isLoading ? (
             <div className="flex justify-center py-12">
               <Loader2 className="h-6 w-6 animate-spin" style={{ color: "#007AFF" }} />
-            </div>
-          ) : clients?.length === 0 ? (
-            <div className="text-center py-12 rounded-2xl" style={{ backgroundColor: "#FFFFFF" }}>
-              <p style={{ color: "#8E8E93" }}>Aucun client pour le moment</p>
             </div>
           ) : (
             clients?.map((client) => (
@@ -639,6 +644,7 @@ export default function AdminClients() {
             ))
           )}
         </div>
+        )}
       </main>
     </div>
   );
