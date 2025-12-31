@@ -201,6 +201,17 @@ export default function AdminClients() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.first_name.trim()) {
+      toast.error("Le prénom est obligatoire");
+      return;
+    }
+    if (!formData.last_name.trim()) {
+      toast.error("Le nom est obligatoire");
+      return;
+    }
+    
     if (editingClient) {
       updateClient.mutate({ id: editingClient.id, data: formData });
     } else {
@@ -208,10 +219,17 @@ export default function AdminClients() {
     }
   };
 
+  // Generate NFC URL - use production domain
+  const getNfcUrl = (slug: string) => `https://i-wasp.com/card/${slug}`;
+
   const copyNfcLink = (slug: string) => {
-    const url = `${window.location.origin}/c/${slug}`;
+    const url = getNfcUrl(slug);
     navigator.clipboard.writeText(url);
-    toast.success("Lien copié");
+    toast.success("Lien NFC copié");
+  };
+
+  const openNfcPage = (slug: string) => {
+    window.open(getNfcUrl(slug), "_blank", "noopener,noreferrer");
   };
 
   const handleDownloadVCard = (client: Client) => {
@@ -222,7 +240,7 @@ export default function AdminClients() {
       company: client.company || undefined,
       email: client.email || undefined,
       phone: client.phone || undefined,
-      nfcPageUrl: `${window.location.origin}/card/${client.slug}`,
+      nfcPageUrl: getNfcUrl(client.slug),
     });
     toast.success("vCard téléchargée");
   };
@@ -496,7 +514,8 @@ export default function AdminClients() {
                 className="rounded-2xl p-4 shadow-sm"
                 style={{ backgroundColor: "#FFFFFF" }}
               >
-                <div className="flex items-start justify-between gap-4">
+                {/* Client Info */}
+                <div className="flex items-start justify-between gap-4 mb-4">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold truncate" style={{ color: "#1D1D1F" }}>
                       {client.first_name} {client.last_name}
@@ -507,31 +526,23 @@ export default function AdminClients() {
                       </p>
                     )}
                     
-                    <div className="flex flex-wrap gap-3 mt-3 text-sm" style={{ color: "#8E8E93" }}>
+                    <div className="flex flex-wrap gap-3 mt-2 text-sm" style={{ color: "#8E8E93" }}>
                       {client.phone && (
                         <a href={`tel:${client.phone}`} className="flex items-center gap-1.5 hover:opacity-70">
                           <Phone className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline">{client.phone}</span>
+                          <span>{client.phone}</span>
                         </a>
                       )}
                       {client.email && (
                         <a href={`mailto:${client.email}`} className="flex items-center gap-1.5 hover:opacity-70">
                           <Mail className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline truncate max-w-[150px]">{client.email}</span>
+                          <span className="truncate max-w-[180px]">{client.email}</span>
                         </a>
                       )}
-                      <a 
-                        href={`/c/${client.slug}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 hover:opacity-70"
-                      >
-                        <Globe className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">Page NFC</span>
-                      </a>
                     </div>
                   </div>
 
+                  {/* Action Buttons */}
                   <div className="flex gap-2 shrink-0">
                     <button
                       onClick={() => handleEdit(client)}
@@ -546,13 +557,6 @@ export default function AdminClients() {
                       title="Télécharger vCard"
                     >
                       <Download className="h-4 w-4" style={{ color: "#34C759" }} />
-                    </button>
-                    <button
-                      onClick={() => copyNfcLink(client.slug)}
-                      className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
-                      title="Copier le lien NFC"
-                    >
-                      <Copy className="h-4 w-4" style={{ color: "#8E8E93" }} />
                     </button>
                     {deletingClientId === client.id ? (
                       <div className="flex items-center gap-1">
@@ -585,6 +589,50 @@ export default function AdminClients() {
                         <Trash2 className="h-4 w-4" style={{ color: "#FF3B30" }} />
                       </button>
                     )}
+                  </div>
+                </div>
+
+                {/* NFC Link Section */}
+                <div 
+                  className="rounded-xl p-3 border"
+                  style={{ backgroundColor: "#F5F5F7", borderColor: "rgba(0,0,0,0.06)" }}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium mb-1" style={{ color: "#8E8E93" }}>
+                        Lien NFC
+                      </p>
+                      <p 
+                        className="text-sm font-mono truncate" 
+                        style={{ color: "#1D1D1F" }}
+                        title={getNfcUrl(client.slug)}
+                      >
+                        {getNfcUrl(client.slug)}
+                      </p>
+                      <p className="text-xs mt-1" style={{ color: "#8E8E93" }}>
+                        Slug: <span className="font-mono">{client.slug}</span>
+                      </p>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        onClick={() => copyNfcLink(client.slug)}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors hover:bg-white"
+                        style={{ color: "#007AFF" }}
+                        title="Copier le lien NFC"
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Copier</span>
+                      </button>
+                      <button
+                        onClick={() => openNfcPage(client.slug)}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors hover:bg-white"
+                        style={{ color: "#34C759" }}
+                        title="Ouvrir la page NFC"
+                      >
+                        <Globe className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Ouvrir</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
