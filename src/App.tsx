@@ -10,6 +10,9 @@ import FirstCardSetup from "./pages/FirstCardSetup";
 import OrderPreview from "./pages/OrderPreview";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import Onboarding from "./pages/Onboarding";
+import OnboardingSuccess from "./pages/OnboardingSuccess";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -27,14 +30,21 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             {/* Public NFC Card - Main feature */}
-            <Route path="/" element={<Navigate to="/admin" replace />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/c/:slug" element={<LegacyCardRedirect />} />
             <Route path="/card/:slug" element={<PublicCard />} />
             
             {/* Auth */}
             <Route path="/login" element={<Login />} />
             
-            {/* First card setup */}
+            {/* Dashboard - Main user hub */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            
+            {/* Onboarding flow */}
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/onboarding/success" element={<OnboardingSuccess />} />
+            
+            {/* First card setup (legacy) */}
             <Route path="/setup" element={<FirstCardSetup />} />
             
             {/* Order flow */}
