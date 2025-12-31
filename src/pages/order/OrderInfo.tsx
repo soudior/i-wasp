@@ -9,11 +9,12 @@ import { useOrderFunnel, OrderFunnelGuard, ProfileInfo } from "@/contexts/OrderF
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { OrderProgressBar } from "@/components/order/OrderProgressBar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Check, User, MapPin, Building } from "lucide-react";
+import { ArrowLeft, ArrowRight, User, MapPin, Building } from "lucide-react";
 import { toast } from "sonner";
 
 function OrderInfoContent() {
@@ -96,20 +97,7 @@ function OrderInfoContent() {
       <main className="pt-24 pb-32 px-4">
         <div className="max-w-2xl mx-auto">
           {/* Step Indicator */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            {[1, 2, 3, 4, 5, 6].map((step) => (
-              <div key={step} className="flex items-center gap-2 text-sm">
-                {step > 1 && <div className={`w-8 h-1 rounded-full ${step <= 2 ? "bg-primary" : "bg-muted"}`} />}
-                <span className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                  step < 2 ? "bg-primary/20 text-primary" : 
-                  step === 2 ? "bg-primary text-primary-foreground" : 
-                  "bg-muted text-muted-foreground"
-                }`}>
-                  {step < 2 ? <Check size={16} /> : step}
-                </span>
-              </div>
-            ))}
-          </div>
+          <OrderProgressBar currentStep={2} />
 
           {/* Header */}
           <motion.div 

@@ -13,13 +13,13 @@ import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext"
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { OrderProgressBar } from "@/components/order/OrderProgressBar";
 import { formatPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { 
   ArrowLeft, 
-  Check, 
   CreditCard,
   Lock,
   Shield,
@@ -73,18 +73,7 @@ function OrderPaymentContent() {
       <main className="pt-24 pb-32 px-4">
         <div className="max-w-2xl mx-auto">
           {/* Step Indicator */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            {[1, 2, 3, 4, 5, 6].map((step) => (
-              <div key={step} className="flex items-center gap-2 text-sm">
-                {step > 1 && <div className="w-8 h-1 rounded-full bg-primary" />}
-                <span className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                  step < 6 ? "bg-primary/20 text-primary" : "bg-primary text-primary-foreground"
-                }`}>
-                  {step < 6 ? <Check size={16} /> : step}
-                </span>
-              </div>
-            ))}
-          </div>
+          <OrderProgressBar currentStep={6} />
 
           {/* Header */}
           <motion.div 

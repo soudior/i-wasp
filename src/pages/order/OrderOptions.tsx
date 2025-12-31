@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { OrderProgressBar } from "@/components/order/OrderProgressBar";
 import { formatPrice, calculateB2BPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { 
   ArrowLeft, 
   ArrowRight, 
-  Check, 
   Minus, 
   Plus,
   Tag
@@ -130,20 +130,7 @@ function OrderOptionsContent() {
       <main className="pt-24 pb-32 px-4">
         <div className="max-w-2xl mx-auto">
           {/* Step Indicator */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            {[1, 2, 3, 4, 5, 6].map((step) => (
-              <div key={step} className="flex items-center gap-2 text-sm">
-                {step > 1 && <div className={`w-8 h-1 rounded-full ${step <= 4 ? "bg-primary" : "bg-muted"}`} />}
-                <span className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                  step < 4 ? "bg-primary/20 text-primary" : 
-                  step === 4 ? "bg-primary text-primary-foreground" : 
-                  "bg-muted text-muted-foreground"
-                }`}>
-                  {step < 4 ? <Check size={16} /> : step}
-                </span>
-              </div>
-            ))}
-          </div>
+          <OrderProgressBar currentStep={4} />
 
           {/* Header */}
           <motion.div 
