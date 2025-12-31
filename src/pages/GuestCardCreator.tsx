@@ -3,12 +3,14 @@
  * 
  * Allows users to create a card without signing up.
  * Auth is required only when saving/sharing/ordering.
+ * Clear guest mode indicators for conversion-focused UX.
  */
 
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { useGuestCard, GuestCardData } from "@/contexts/GuestCardContext";
+import { useGuestCard } from "@/contexts/GuestCardContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +18,8 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { 
   ArrowLeft, ArrowRight, User, Briefcase, 
-  Phone, Link2, Check, Eye, EyeOff, Save, ShoppingBag
+  Phone, Link2, Check, Eye, EyeOff, Save, ShoppingBag,
+  FlaskConical, Lock, Share2, Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OnboardingPhotoUpload } from "@/components/onboarding/OnboardingPhotoUpload";
@@ -55,8 +58,10 @@ export default function GuestCardCreator() {
   const { guestCard, updateGuestCard, hasGuestCard } = useGuestCard();
   const [step, setStep] = useState(1);
   const [showPreview, setShowPreview] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   const progress = useMemo(() => (step / formSteps.length) * 100, [step]);
+  const isGuestMode = !user;
 
   const handleNext = () => {
     if (step === 1) {
@@ -83,34 +88,31 @@ export default function GuestCardCreator() {
     }
   };
 
-  // Action that requires auth: Save card
-  const handleSave = () => {
+  // Soft auth gate - shows prompt before redirecting
+  const requireAuth = (action: "save" | "order" | "share") => {
     if (!hasGuestCard) {
       toast.error("Veuillez d'abord remplir les informations de votre carte");
       return;
     }
     
     if (user) {
-      // User is logged in, go to finalize
-      navigate("/onboarding/finalize");
+      // User is logged in
+      if (action === "save") {
+        navigate("/onboarding/finalize");
+      } else if (action === "order") {
+        navigate("/onboarding/finalize?order=true");
+      } else if (action === "share") {
+        navigate("/onboarding/finalize?share=true");
+      }
     } else {
-      // Redirect to login with return path
-      navigate("/login?returnTo=/onboarding/finalize&action=save");
+      // Show soft prompt before auth
+      setShowAuthPrompt(true);
     }
   };
 
-  // Action that requires auth: Order physical card
-  const handleOrder = () => {
-    if (!hasGuestCard) {
-      toast.error("Veuillez d'abord remplir les informations de votre carte");
-      return;
-    }
-    
-    if (user) {
-      navigate("/onboarding/finalize?order=true");
-    } else {
-      navigate("/login?returnTo=/onboarding/finalize&action=order&order=true");
-    }
+  const handleAuthRedirect = (action: "save" | "order") => {
+    const params = action === "order" ? "&order=true" : "";
+    navigate(`/login?returnTo=/onboarding/finalize${params}&action=${action}`);
   };
 
   const currentStep = formSteps[step - 1];
@@ -125,18 +127,17 @@ export default function GuestCardCreator() {
             <ArrowLeft size={20} />
           </Button>
           
-          <div className="flex items-center gap-2">
-            {formSteps.map((s) => (
-              <div
-                key={s.id}
-                className={cn(
-                  "w-2 h-2 rounded-full transition-all",
-                  s.id === step ? "bg-primary w-6" : 
-                  s.id < step ? "bg-primary" : "bg-border"
-                )}
-              />
-            ))}
-          </div>
+          {/* Guest Mode Badge - visible in header */}
+          {isGuestMode && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20"
+            >
+              <FlaskConical size={12} className="text-amber-500" />
+              <span className="text-xs font-medium text-amber-500">Mode essai</span>
+            </motion.div>
+          )}
           
           <Button 
             variant="ghost" 
@@ -150,6 +151,20 @@ export default function GuestCardCreator() {
         
         <Progress value={progress} className="h-1 rounded-none" />
       </header>
+
+      {/* Guest Mode Banner */}
+      {isGuestMode && hasGuestCard && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-amber-500/10 border-b border-amber-500/10 px-4 py-2.5"
+        >
+          <p className="text-center text-xs text-amber-600 dark:text-amber-400">
+            <FlaskConical size={12} className="inline mr-1.5 -mt-0.5" />
+            Votre carte est en mode essai – <button onClick={() => navigate("/login?returnTo=/onboarding/finalize")} className="underline font-medium hover:no-underline">créez un compte</button> pour la sauvegarder
+          </p>
+        </motion.div>
+      )}
 
       {/* Content */}
       <div className="flex-1 flex flex-col md:flex-row">
@@ -316,35 +331,55 @@ export default function GuestCardCreator() {
                 <div className="space-y-3">
                   {/* Complete message */}
                   <div className="text-center mb-6 p-4 bg-primary/5 rounded-xl border border-primary/10">
-                    <Check className="w-8 h-8 text-primary mx-auto mb-2" />
+                    <Sparkles className="w-8 h-8 text-primary mx-auto mb-2" />
                     <p className="font-medium text-foreground">Votre carte est prête !</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Créez un compte pour la sauvegarder
-                    </p>
+                    {isGuestMode && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Créez un compte gratuit pour continuer
+                      </p>
+                    )}
                   </div>
 
-                  {/* Action buttons */}
+                  {/* Primary CTA - Save */}
                   <Button 
-                    onClick={handleSave}
+                    onClick={() => requireAuth("save")}
                     className="w-full h-12 gap-2"
                   >
+                    {isGuestMode && <Lock size={16} />}
                     <Save size={18} />
                     Sauvegarder ma carte
                   </Button>
                   
+                  {/* Secondary CTA - Order */}
                   <Button 
                     variant="outline"
-                    onClick={handleOrder}
+                    onClick={() => requireAuth("order")}
                     className="w-full h-12 gap-2"
                   >
+                    {isGuestMode && <Lock size={16} />}
                     <ShoppingBag size={18} />
                     Commander une carte NFC
+                  </Button>
+
+                  {/* Tertiary - Share (disabled for guests) */}
+                  <Button 
+                    variant="ghost"
+                    onClick={() => isGuestMode ? requireAuth("share") : null}
+                    className={cn(
+                      "w-full h-12 gap-2",
+                      isGuestMode && "opacity-60"
+                    )}
+                  >
+                    {isGuestMode && <Lock size={14} />}
+                    <Share2 size={16} />
+                    Partager
+                    {isGuestMode && <span className="text-xs text-muted-foreground ml-1">(compte requis)</span>}
                   </Button>
 
                   <Button 
                     variant="ghost"
                     onClick={() => setStep(1)}
-                    className="w-full h-12"
+                    className="w-full h-10 text-sm"
                   >
                     Modifier ma carte
                   </Button>
@@ -359,11 +394,19 @@ export default function GuestCardCreator() {
               </p>
             )}
 
-            {/* Guest notice */}
-            {!user && step === 1 && (
-              <p className="text-center text-xs text-muted-foreground mt-6">
-                Pas de compte requis pour créer votre carte
-              </p>
+            {/* Guest notice - only on first step */}
+            {isGuestMode && step === 1 && !hasGuestCard && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="mt-6 p-3 rounded-xl bg-muted/50 border border-border/50"
+              >
+                <p className="text-center text-xs text-muted-foreground">
+                  <FlaskConical size={12} className="inline mr-1 -mt-0.5" />
+                  Testez gratuitement · Pas de compte requis
+                </p>
+              </motion.div>
             )}
           </div>
         </div>
@@ -371,11 +414,26 @@ export default function GuestCardCreator() {
         {/* Live preview section */}
         <div 
           className={cn(
-            "md:w-[400px] bg-secondary/30 border-l border-border/50 p-6 flex items-center justify-center",
+            "md:w-[400px] bg-secondary/30 border-l border-border/50 p-6 flex flex-col items-center justify-center relative",
             !showPreview && "hidden md:flex"
           )}
         >
-          <Card className="w-full max-w-[320px] p-6 shadow-lg">
+          {/* Demo badge on preview */}
+          {isGuestMode && hasGuestCard && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/30"
+            >
+              <FlaskConical size={12} className="text-amber-500" />
+              <span className="text-xs font-medium text-amber-500">Démo</span>
+            </motion.div>
+          )}
+
+          <Card className={cn(
+            "w-full max-w-[320px] p-6 shadow-lg relative",
+            isGuestMode && hasGuestCard && "ring-2 ring-amber-500/20 ring-offset-2 ring-offset-background"
+          )}>
             <div className="text-center">
               {/* Avatar */}
               <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
@@ -438,6 +496,70 @@ export default function GuestCardCreator() {
           </Card>
         </div>
       </div>
+
+      {/* Soft Auth Prompt Modal */}
+      <AnimatePresence>
+        {showAuthPrompt && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-6"
+            onClick={() => setShowAuthPrompt(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm bg-card rounded-2xl p-6 shadow-xl border border-border/50"
+            >
+              <div className="text-center mb-6">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <Lock className="w-7 h-7 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  Créez un compte gratuit
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Pour sauvegarder votre carte et accéder à toutes les fonctionnalités
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <Button 
+                  onClick={() => handleAuthRedirect("save")}
+                  className="w-full h-12 gap-2"
+                >
+                  <Save size={18} />
+                  Créer un compte et sauvegarder
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  onClick={() => handleAuthRedirect("order")}
+                  className="w-full h-12 gap-2"
+                >
+                  <ShoppingBag size={18} />
+                  Créer un compte et commander
+                </Button>
+
+                <Button 
+                  variant="ghost"
+                  onClick={() => setShowAuthPrompt(false)}
+                  className="w-full h-10 text-sm"
+                >
+                  Continuer en mode essai
+                </Button>
+              </div>
+
+              <p className="text-[11px] text-center text-muted-foreground mt-4">
+                Votre carte sera automatiquement sauvegardée après inscription
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
