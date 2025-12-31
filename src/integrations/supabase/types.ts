@@ -47,6 +47,13 @@ export type Database = {
             referencedRelation: "digital_cards"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "card_scans_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "public_cards"
+            referencedColumns: ["id"]
+          },
         ]
       }
       contact_requests: {
@@ -248,6 +255,13 @@ export type Database = {
             columns: ["card_id"]
             isOneToOne: false
             referencedRelation: "digital_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "public_cards"
             referencedColumns: ["id"]
           },
         ]
@@ -515,9 +529,81 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_cards: {
+        Row: {
+          blocks: Json | null
+          company: string | null
+          first_name: string | null
+          has_email: boolean | null
+          has_instagram: boolean | null
+          has_linkedin: boolean | null
+          has_phone: boolean | null
+          has_twitter: boolean | null
+          has_whatsapp: boolean | null
+          id: string | null
+          last_name: string | null
+          location: string | null
+          logo_url: string | null
+          photo_url: string | null
+          slug: string | null
+          social_links: Json | null
+          tagline: string | null
+          template: string | null
+          title: string | null
+          website: string | null
+        }
+        Insert: {
+          blocks?: Json | null
+          company?: string | null
+          first_name?: string | null
+          has_email?: never
+          has_instagram?: never
+          has_linkedin?: never
+          has_phone?: never
+          has_twitter?: never
+          has_whatsapp?: never
+          id?: string | null
+          last_name?: string | null
+          location?: string | null
+          logo_url?: string | null
+          photo_url?: string | null
+          slug?: string | null
+          social_links?: Json | null
+          tagline?: string | null
+          template?: string | null
+          title?: string | null
+          website?: string | null
+        }
+        Update: {
+          blocks?: Json | null
+          company?: string | null
+          first_name?: string | null
+          has_email?: never
+          has_instagram?: never
+          has_linkedin?: never
+          has_phone?: never
+          has_twitter?: never
+          has_whatsapp?: never
+          id?: string | null
+          last_name?: string | null
+          location?: string | null
+          logo_url?: string | null
+          photo_url?: string | null
+          slug?: string | null
+          social_links?: Json | null
+          tagline?: string | null
+          template?: string | null
+          title?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      get_card_action_url: {
+        Args: { p_action: string; p_slug: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
