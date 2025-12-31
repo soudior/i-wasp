@@ -7,12 +7,15 @@
  * - Price calculation
  */
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { OrderProgressBar } from "@/components/order/OrderProgressBar";
+import { AutoSaveIndicator } from "@/components/order/AutoSaveIndicator";
+import { RestoreDraftBanner } from "@/components/order/RestoreDraftBanner";
 import { formatPrice, calculateB2BPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +29,13 @@ import {
   Tag
 } from "lucide-react";
 import { toast } from "sonner";
+
+// Options form data for auto-save
+interface OptionsFormData {
+  quantity: number;
+  promoCode: string;
+  appliedPromo: { code: string; discount: number } | null;
+}
 
 // Base prices per customer type (in cents)
 const BASE_PRICES = {
@@ -51,11 +61,55 @@ function OrderOptionsContent() {
       ? { code: state.orderOptions.promoCode, discount: state.orderOptions.promoDiscount }
       : null
   );
+  const [showRestoreBanner, setShowRestoreBanner] = useState(false);
 
   // Get min/max quantity based on customer type
   const minQuantity = state.customerType === "entreprise" ? 10 : 1;
   const maxQuantity = state.customerType === "entreprise" ? 1000 : 
                       state.customerType === "professionnel" ? 9 : 2;
+
+  // Memoize form data for auto-save
+  const formData = useMemo<OptionsFormData>(() => ({
+    quantity,
+    promoCode,
+    appliedPromo,
+  }), [quantity, promoCode, appliedPromo]);
+
+  // Auto-save hook
+  const { 
+    status: saveStatus, 
+    lastSaved, 
+    hasSavedData, 
+    getSavedData, 
+    clearSaved 
+  } = useAutoSave<OptionsFormData>({
+    key: "order_options",
+    data: formData,
+    enabled: true,
+  });
+
+  // Check for saved draft on mount
+  useEffect(() => {
+    if (!state.orderOptions && hasSavedData()) {
+      setShowRestoreBanner(true);
+    }
+  }, [state.orderOptions, hasSavedData]);
+
+  const handleRestoreDraft = () => {
+    const savedData = getSavedData();
+    if (savedData) {
+      setQuantity(savedData.quantity);
+      setPromoCode(savedData.promoCode);
+      setAppliedPromo(savedData.appliedPromo);
+      toast.success("Brouillon restauré");
+    }
+    setShowRestoreBanner(false);
+  };
+
+  const handleDismissDraft = () => {
+    clearSaved();
+    setShowRestoreBanner(false);
+  };
 
   useEffect(() => {
     if (quantity < minQuantity) {
@@ -120,6 +174,7 @@ function OrderOptionsContent() {
       promoDiscount: appliedPromo?.discount,
     });
 
+    clearSaved(); // Clear draft on successful submit
     nextStep();
   };
 
@@ -131,6 +186,17 @@ function OrderOptionsContent() {
         <div className="max-w-2xl mx-auto">
           {/* Step Indicator */}
           <OrderProgressBar currentStep={4} />
+
+          {/* Restore Draft Banner */}
+          <AnimatePresence>
+            {showRestoreBanner && (
+              <RestoreDraftBanner
+                lastSaved={lastSaved}
+                onRestore={handleRestoreDraft}
+                onDismiss={handleDismissDraft}
+              />
+            )}
+          </AnimatePresence>
 
           {/* Header */}
           <motion.div 
@@ -144,6 +210,10 @@ function OrderOptionsContent() {
             <p className="text-muted-foreground text-lg">
               Choisissez la quantité et appliquez un code promo
             </p>
+            {/* Auto-save indicator */}
+            <div className="flex justify-center mt-2">
+              <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
+            </div>
           </motion.div>
 
           {/* Options */}
