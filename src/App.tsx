@@ -5,10 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
+import { CardRequiredGuard } from "@/components/CardRequiredGuard";
 import PublicCard from "./pages/PublicCard";
 import AdminClients from "./pages/AdminClients";
 import FirstCardSetup from "./pages/FirstCardSetup";
 import OrderPreview from "./pages/OrderPreview";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
@@ -48,8 +51,10 @@ const App = () => (
             {/* First card setup (legacy) */}
             <Route path="/setup" element={<FirstCardSetup />} />
             
-            {/* Order flow */}
-            <Route path="/order" element={<OrderPreview />} />
+            {/* Order flow - All require at least 1 card */}
+            <Route path="/order" element={<CardRequiredGuard><OrderPreview /></CardRequiredGuard>} />
+            <Route path="/cart" element={<CardRequiredGuard><Cart /></CardRequiredGuard>} />
+            <Route path="/checkout" element={<CardRequiredGuard><Checkout /></CardRequiredGuard>} />
             
             {/* Admin - Client management */}
             <Route path="/admin" element={<AdminClients />} />
