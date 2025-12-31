@@ -107,30 +107,8 @@ const Index = () => {
       return;
     }
 
-    // Non-authenticated: go to card creation
-    if (!user) {
-      navigate("/create");
-      return;
-    }
-
-    // Authenticated but no cards: go to card creation
-    if (cards.length === 0) {
-      navigate("/create");
-      return;
-    }
-
-    // User has cards - proceed with cart
-    clearCart();
-    addItem({
-      templateId: plan.templateId,
-      templateName: plan.templateName,
-      cardName: plan.name,
-      quantity: plan.quantity,
-      unitPriceCents: plan.priceCents,
-    });
-
-    toast.success(`${plan.name} ajouté au panier`);
-    navigate("/cart");
+    // Redirect to order funnel
+    navigate("/order");
   };
 
   /**

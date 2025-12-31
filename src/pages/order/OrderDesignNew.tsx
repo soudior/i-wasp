@@ -1,12 +1,10 @@
 /**
- * Step 4: Design Configuration
+ * Step 3: Design Configuration
  * /order/design
  * 
  * - Upload logo client
  * - Choix couleur carte (3 palettes verrouillées)
  * - Aperçu carte physique en temps réel
- * - Logo i-wasp fixe en haut à droite
- * - Mode caméléon (opacity + blend)
  */
 
 import { useState, useRef } from "react";
@@ -139,15 +137,15 @@ function OrderDesignContent() {
         <div className="max-w-5xl mx-auto">
           {/* Step Indicator */}
           <div className="flex items-center justify-center gap-2 mb-8">
-            {[1, 2, 3, 4, 5].map((step) => (
+            {[1, 2, 3, 4, 5, 6].map((step) => (
               <div key={step} className="flex items-center gap-2 text-sm">
-                {step > 1 && <div className={`w-8 h-1 rounded-full ${step <= 4 ? "bg-primary" : "bg-muted"}`} />}
+                {step > 1 && <div className={`w-8 h-1 rounded-full ${step <= 3 ? "bg-primary" : "bg-muted"}`} />}
                 <span className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                  step < 4 ? "bg-primary/20 text-primary" : 
-                  step === 4 ? "bg-primary text-primary-foreground" : 
+                  step < 3 ? "bg-primary/20 text-primary" : 
+                  step === 3 ? "bg-primary text-primary-foreground" : 
                   "bg-muted text-muted-foreground"
                 }`}>
-                  {step < 4 ? <Check size={16} /> : step}
+                  {step < 3 ? <Check size={16} /> : step}
                 </span>
               </div>
             ))}
@@ -302,7 +300,7 @@ function OrderDesignContent() {
                           ].map((mode) => (
                             <button
                               key={mode.id}
-                              onClick={() => setLogoBlendMode(mode.id as any)}
+                              onClick={() => setLogoBlendMode(mode.id as "normal" | "multiply" | "screen")}
                               className={`px-3 py-2 text-sm rounded-lg border transition-all ${
                                 logoBlendMode === mode.id
                                   ? "border-primary bg-primary/10 text-primary"
@@ -414,9 +412,9 @@ function OrderDesignContent() {
   );
 }
 
-export default function OrderDesign() {
+export default function OrderDesignNew() {
   return (
-    <OrderFunnelGuard step={4}>
+    <OrderFunnelGuard step={3}>
       <OrderDesignContent />
     </OrderFunnelGuard>
   );
