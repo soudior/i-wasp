@@ -214,9 +214,15 @@ export function useMarkDelivered() {
       if (error) throw error;
       return data as Order;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
-      toast.success("Commande livrée");
+      toast.success("Commande livrée et payée ✓");
+      
+      // Send delivered email
+      sendOrderEmail({ orderId: data.id, emailType: "delivered" })
+        .then(success => {
+          if (success) console.log("Delivered email sent");
+        });
     },
     onError: (error) => {
       console.error("Error marking delivered:", error);

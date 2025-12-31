@@ -5,6 +5,7 @@ export type EmailType =
   | "payment_confirmed" 
   | "in_production" 
   | "shipped" 
+  | "delivered"
   | "invoice";
 
 interface SendEmailParams {

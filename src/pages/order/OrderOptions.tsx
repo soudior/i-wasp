@@ -44,9 +44,16 @@ interface OptionsFormData {
 
 // Base prices per customer type (in cents)
 const BASE_PRICES = {
-  particulier: 4900,
-  professionnel: 4400,
-  entreprise: 2900,
+  particulier: 2900,  // 29€
+  professionnel: 4400, // 44€
+  entreprise: 2900,   // 29€ (prix dégressif)
+};
+
+// Quantity options par type de client
+const QUANTITY_OPTIONS = {
+  particulier: [1, 2],
+  professionnel: [1, 2, 5],
+  entreprise: [10, 20, 50, 100],
 };
 
 // Promo codes
@@ -68,10 +75,10 @@ function OrderOptionsContent() {
   );
   const [showRestoreBanner, setShowRestoreBanner] = useState(false);
 
-  // Get min/max quantity based on customer type
-  const minQuantity = state.customerType === "entreprise" ? 10 : 1;
-  const maxQuantity = state.customerType === "entreprise" ? 1000 : 
-                      state.customerType === "professionnel" ? 9 : 2;
+  // Get quantity options based on customer type
+  const quantityOptions = QUANTITY_OPTIONS[state.customerType || "particulier"];
+  const minQuantity = quantityOptions[0];
+  const maxQuantity = quantityOptions[quantityOptions.length - 1];
 
   // Memoize form data for auto-save
   const formData = useMemo<OptionsFormData>(() => ({
@@ -242,48 +249,52 @@ function OrderOptionsContent() {
             <Card>
               <CardContent className="p-6">
                 <Label className="text-lg font-medium mb-4 block">Quantité de cartes</Label>
-                <div className="flex items-center justify-center gap-6">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-12 w-12"
-                    onClick={() => setQuantity(Math.max(minQuantity, quantity - 1))}
-                    disabled={quantity <= minQuantity}
-                  >
-                    <Minus size={20} />
-                  </Button>
-                  <span className="text-4xl font-bold w-20 text-center">{quantity}</span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-12 w-12"
-                    onClick={() => setQuantity(Math.min(maxQuantity, quantity + 1))}
-                    disabled={quantity >= maxQuantity}
-                  >
-                    <Plus size={20} />
-                  </Button>
-                </div>
-                <p className="text-sm text-muted-foreground text-center mt-4">
-                  {state.customerType === "entreprise" && "Minimum 10 cartes pour les commandes entreprise"}
-                  {state.customerType === "professionnel" && "3 à 9 cartes pour les professionnels"}
-                  {state.customerType === "particulier" && "1 à 2 cartes pour les particuliers"}
-                </p>
                 
-                {/* Quick quantity buttons for enterprise */}
+                {/* Quick quantity buttons */}
+                <div className="flex flex-wrap justify-center gap-3 mb-4">
+                  {quantityOptions.map((q) => (
+                    <Button
+                      key={q}
+                      variant={quantity === q ? "default" : "outline"}
+                      size="lg"
+                      className="min-w-[60px]"
+                      onClick={() => setQuantity(q)}
+                    >
+                      {q}
+                    </Button>
+                  ))}
+                </div>
+
+                {/* Custom quantity input for enterprise */}
                 {state.customerType === "entreprise" && (
-                  <div className="flex justify-center gap-2 mt-4">
-                    {[10, 25, 50, 100].map((q) => (
+                  <div className="flex items-center justify-center gap-4 mt-4">
+                    <Label className="text-sm text-muted-foreground">Quantité personnalisée :</Label>
+                    <div className="flex items-center gap-2">
                       <Button
-                        key={q}
-                        variant={quantity === q ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setQuantity(q)}
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setQuantity(Math.max(minQuantity, quantity - 10))}
+                        disabled={quantity <= minQuantity}
                       >
-                        {q}
+                        <Minus size={16} />
                       </Button>
-                    ))}
+                      <span className="text-2xl font-bold w-16 text-center">{quantity}</span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setQuantity(quantity + 10)}
+                      >
+                        <Plus size={16} />
+                      </Button>
+                    </div>
                   </div>
                 )}
+
+                <p className="text-sm text-muted-foreground text-center mt-4">
+                  {state.customerType === "entreprise" && "Minimum 10 cartes • Prix dégressifs automatiques"}
+                  {state.customerType === "professionnel" && "1 à 5 cartes pour les professionnels"}
+                  {state.customerType === "particulier" && "1 à 2 cartes pour les particuliers"}
+                </p>
               </CardContent>
             </Card>
 

@@ -287,19 +287,83 @@ export default function AdminOrders() {
   const confirmedCount = orders?.filter(o => o.status === "paid").length || 0;
   const productionCount = orders?.filter(o => o.status === "in_production").length || 0;
   const shippedCount = orders?.filter(o => o.status === "shipped").length || 0;
+  const deliveredCount = orders?.filter(o => o.status === "delivered").length || 0;
+
+  // Export CSV function
+  const handleExportCSV = () => {
+    if (!orders || orders.length === 0) {
+      toast.error("Aucune commande à exporter");
+      return;
+    }
+
+    const headers = [
+      "N° Commande",
+      "Date",
+      "Client",
+      "Email",
+      "Téléphone",
+      "Adresse",
+      "Ville",
+      "Code Postal",
+      "Quantité",
+      "Total (€)",
+      "Statut",
+      "Template",
+      "Type"
+    ];
+
+    const rows = orders.map(order => [
+      order.order_number,
+      format(new Date(order.created_at), "dd/MM/yyyy HH:mm", { locale: fr }),
+      order.shipping_name || "",
+      order.customer_email || "",
+      order.shipping_phone || "",
+      order.shipping_address || "",
+      order.shipping_city || "",
+      order.shipping_postal_code || "",
+      order.quantity.toString(),
+      (order.total_price_cents / 100).toFixed(2),
+      getOrderStatusLabel(order.status),
+      order.template,
+      order.order_type
+    ]);
+
+    const csvContent = [
+      headers.join(";"),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(";"))
+    ].join("\n");
+
+    const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `iwasp-commandes-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast.success(`${orders.length} commandes exportées`);
+  };
   
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container max-w-7xl mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Shield className="h-8 w-8" />
-            Administration des commandes
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Gestion des commandes COD - Maroc
-          </p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+              <Shield className="h-8 w-8" />
+              Administration des commandes
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Gestion des commandes COD - Maroc
+            </p>
+          </div>
+          <Button onClick={handleExportCSV} variant="outline" className="gap-2">
+            <Download className="h-4 w-4" />
+            Exporter CSV
+          </Button>
         </div>
         
         {/* Workflow reminder */}
