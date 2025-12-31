@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-
 import { AuthProvider } from "@/contexts/AuthContext";
 import { GuestCardProvider } from "@/contexts/GuestCardContext";
 import { CartProvider } from "@/contexts/CartContext";
-import { OrderFunnelProvider } from "@/contexts/OrderFunnelContext";
+import { OrderFunnelProvider, CartGuard } from "@/contexts/OrderFunnelContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PublicCard from "./pages/PublicCard";
@@ -21,13 +21,15 @@ import Dashboard from "./pages/Dashboard";
 import GuestCardCreator from "./pages/GuestCardCreator";
 import FinalizeCard from "./pages/FinalizeCard";
 import Index from "./pages/Index";
+import Demo from "./pages/Demo";
+import Cart from "./pages/Cart";
 
-// Order funnel pages
-import OrderOffer from "./pages/order/OrderOffer";
-import OrderInfo from "./pages/order/OrderInfo";
-import OrderDesignNew from "./pages/order/OrderDesignNew";
-import OrderOptions from "./pages/order/OrderOptions";
-import OrderSummaryNew from "./pages/order/OrderSummaryNew";
+// Order funnel pages - 6 steps strict flow
+import OrderType from "./pages/order/OrderType";
+import OrderQuantity from "./pages/order/OrderQuantity";
+import OrderProfile from "./pages/order/OrderProfile";
+import OrderDesign from "./pages/order/OrderDesign";
+import OrderSummary from "./pages/order/OrderSummary";
 import OrderPayment from "./pages/order/OrderPayment";
 
 const queryClient = new QueryClient({
@@ -42,6 +44,11 @@ const queryClient = new QueryClient({
 function LegacyCardRedirect() {
   const { slug } = useParams<{ slug: string }>();
   return <Navigate to={`/card/${slug ?? ""}`} replace />;
+}
+
+// Redirect /order to /order/type
+function OrderRedirect() {
+  return <Navigate to="/order/type" replace />;
 }
 
 const App = () => (
@@ -59,6 +66,9 @@ const App = () => (
                     <Routes>
                       {/* HOME - ALWAYS VALID */}
                       <Route path="/" element={<Index />} />
+                      
+                      {/* Demo - ALWAYS VALID */}
+                      <Route path="/demo" element={<Demo />} />
                       
                       {/* Public NFC Card */}
                       <Route path="/c/:slug" element={<LegacyCardRedirect />} />
@@ -83,13 +93,17 @@ const App = () => (
                       {/* First card setup (legacy) */}
                       <Route path="/setup" element={<FirstCardSetup />} />
                       
-                      {/* ORDER FUNNEL - 6 steps */}
-                      <Route path="/order" element={<OrderOffer />} />
-                      <Route path="/order/info" element={<OrderInfo />} />
-                      <Route path="/order/design" element={<OrderDesignNew />} />
-                      <Route path="/order/options" element={<OrderOptions />} />
-                      <Route path="/order/summary" element={<OrderSummaryNew />} />
+                      {/* ORDER FUNNEL - 6 steps STRICT */}
+                      <Route path="/order" element={<OrderRedirect />} />
+                      <Route path="/order/type" element={<OrderType />} />
+                      <Route path="/order/quantity" element={<OrderQuantity />} />
+                      <Route path="/order/profile" element={<OrderProfile />} />
+                      <Route path="/order/design" element={<OrderDesign />} />
+                      <Route path="/order/summary" element={<OrderSummary />} />
                       <Route path="/order/payment" element={<OrderPayment />} />
+                      
+                      {/* Cart - Protected, only after full configuration */}
+                      <Route path="/cart" element={<CartGuard><Cart /></CartGuard>} />
                       
                       {/* Admin */}
                       <Route path="/admin" element={<AdminOrders />} />

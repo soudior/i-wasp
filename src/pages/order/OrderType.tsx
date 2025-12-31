@@ -41,7 +41,7 @@ const customerTypes = [
   },
 ];
 
-export default function OrderOffer() {
+export default function OrderType() {
   const navigate = useNavigate();
   const { state, setCustomerType, nextStep, resetFunnel } = useOrderFunnel();
 

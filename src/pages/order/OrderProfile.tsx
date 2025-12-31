@@ -1,6 +1,6 @@
 /**
- * Step 2: Personal Information
- * /order/info
+ * Step 3: Personal Information
+ * /order/profile
  */
 
 import { useState, useEffect } from "react";
@@ -25,7 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, User, MapPin, Building } from "lucide-react";
 import { toast } from "sonner";
 
-function OrderInfoContent() {
+function OrderProfileContent() {
   const { state, setProfileInfo, nextStep, prevStep } = useOrderFunnel();
   const { user } = useAuth();
 
@@ -146,7 +146,7 @@ function OrderInfoContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-2xl mx-auto">
             {/* Step Indicator */}
-            <OrderProgressBar currentStep={2} />
+            <OrderProgressBar currentStep={3} />
 
             {/* Restore Draft Banner */}
             <AnimatePresence>
@@ -389,10 +389,10 @@ function OrderInfoContent() {
   );
 }
 
-export default function OrderInfo() {
+export default function OrderProfile() {
   return (
-    <OrderFunnelGuard step={2}>
-      <OrderInfoContent />
+    <OrderFunnelGuard step={3}>
+      <OrderProfileContent />
     </OrderFunnelGuard>
   );
 }

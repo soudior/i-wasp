@@ -261,7 +261,7 @@ function OrderDesignContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-6xl mx-auto">
             {/* Step Indicator */}
-            <OrderProgressBar currentStep={3} />
+            <OrderProgressBar currentStep={4} />
 
             {/* Restore Draft Banner */}
             <AnimatePresence>
@@ -588,9 +588,9 @@ function OrderDesignContent() {
   );
 }
 
-export default function OrderDesignNew() {
+export default function OrderDesign() {
   return (
-    <OrderFunnelGuard step={3}>
+    <OrderFunnelGuard step={4}>
       <OrderDesignContent />
     </OrderFunnelGuard>
   );

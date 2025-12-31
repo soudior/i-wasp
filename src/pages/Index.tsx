@@ -76,7 +76,7 @@ const Index = () => {
    * JAMAIS d'achat direct, configuration obligatoire
    */
   const handleConfigureCard = () => {
-    navigate("/order");
+    navigate("/order/type");
   };
 
   return (
