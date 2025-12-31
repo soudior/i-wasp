@@ -604,6 +604,7 @@ export type Database = {
         Args: { p_action: string; p_slug: string }
         Returns: string
       }
+      get_public_card: { Args: { p_slug: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -611,6 +612,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_card_view: { Args: { p_slug: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
