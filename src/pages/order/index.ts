@@ -1,5 +1,6 @@
-export { default as OrderType } from "./OrderType";
-export { default as OrderCard } from "./OrderCard";
-export { default as OrderProfile } from "./OrderProfile";
-export { default as OrderDesign } from "./OrderDesign";
-export { default as OrderSummary } from "./OrderSummary";
+export { default as OrderOffer } from "./OrderOffer";
+export { default as OrderInfo } from "./OrderInfo";
+export { default as OrderDesignNew } from "./OrderDesignNew";
+export { default as OrderOptions } from "./OrderOptions";
+export { default as OrderSummaryNew } from "./OrderSummaryNew";
+export { default as OrderPayment } from "./OrderPayment";
