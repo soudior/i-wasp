@@ -11,12 +11,17 @@ import { useNavigate } from "react-router-dom";
 import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { OrderProgressBar } from "@/components/order/OrderProgressBar";
+import { 
+  OrderProgressBar, 
+  OrderTrustBadges,
+  PageTransition,
+  contentVariants,
+  itemVariants 
+} from "@/components/order";
 import { formatPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { OrderTrustBadges } from "@/components/order";
 import { 
   ArrowLeft, 
   ArrowRight,
@@ -55,24 +60,32 @@ function OrderSummaryContent() {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="pt-24 pb-32 px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Step Indicator */}
-          <OrderProgressBar currentStep={5} />
+      <PageTransition>
+        <main className="pt-24 pb-32 px-4">
+          <div className="max-w-4xl mx-auto">
+            {/* Step Indicator */}
+            <OrderProgressBar currentStep={5} />
 
-          {/* Header */}
-          <motion.div 
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">
-              Récapitulatif de commande
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Vérifiez les détails avant de procéder au paiement
-            </p>
-          </motion.div>
+            {/* Header */}
+            <motion.div 
+              className="text-center mb-10"
+              variants={contentVariants}
+              initial="initial"
+              animate="animate"
+            >
+              <motion.h1 
+                className="text-3xl md:text-4xl font-display font-bold mb-3"
+                variants={itemVariants}
+              >
+                Récapitulatif de commande
+              </motion.h1>
+              <motion.p 
+                className="text-muted-foreground text-lg"
+                variants={itemVariants}
+              >
+                Vérifiez les détails avant de procéder au paiement
+              </motion.p>
+            </motion.div>
 
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Left Column - Details */}
@@ -298,14 +311,20 @@ function OrderSummaryContent() {
           </div>
 
           {/* Navigation */}
-          <div className="flex justify-start mt-10">
+          <motion.div 
+            className="flex justify-start mt-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
             <Button variant="ghost" onClick={prevStep} className="gap-2">
               <ArrowLeft size={18} />
               Retour
             </Button>
+          </motion.div>
           </div>
-        </div>
-      </main>
+        </main>
+      </PageTransition>
 
       <Footer />
     </div>

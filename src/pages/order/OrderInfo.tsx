@@ -10,9 +10,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { OrderProgressBar } from "@/components/order/OrderProgressBar";
-import { AutoSaveIndicator } from "@/components/order/AutoSaveIndicator";
-import { RestoreDraftBanner } from "@/components/order/RestoreDraftBanner";
+import { 
+  OrderProgressBar, 
+  AutoSaveIndicator, 
+  RestoreDraftBanner,
+  PageTransition,
+  contentVariants,
+  itemVariants 
+} from "@/components/order";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -137,41 +142,52 @@ function OrderInfoContent() {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="pt-24 pb-32 px-4">
-        <div className="max-w-2xl mx-auto">
-          {/* Step Indicator */}
-          <OrderProgressBar currentStep={2} />
+      <PageTransition>
+        <main className="pt-24 pb-32 px-4">
+          <div className="max-w-2xl mx-auto">
+            {/* Step Indicator */}
+            <OrderProgressBar currentStep={2} />
 
-          {/* Restore Draft Banner */}
-          <AnimatePresence>
-            {showRestoreBanner && (
-              <RestoreDraftBanner
-                lastSaved={lastSaved}
-                onRestore={handleRestoreDraft}
-                onDismiss={handleDismissDraft}
-              />
-            )}
-          </AnimatePresence>
+            {/* Restore Draft Banner */}
+            <AnimatePresence>
+              {showRestoreBanner && (
+                <RestoreDraftBanner
+                  lastSaved={lastSaved}
+                  onRestore={handleRestoreDraft}
+                  onDismiss={handleDismissDraft}
+                />
+              )}
+            </AnimatePresence>
 
-          {/* Header */}
-          <motion.div 
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <h1 className="text-3xl md:text-4xl font-display font-bold">
-                Vos informations
-              </h1>
-            </div>
-            <p className="text-muted-foreground text-lg">
-              Renseignez vos coordonnées pour la livraison
-            </p>
-            {/* Auto-save indicator */}
-            <div className="flex justify-center mt-2">
-              <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
-            </div>
-          </motion.div>
+            {/* Header */}
+            <motion.div 
+              className="text-center mb-10"
+              variants={contentVariants}
+              initial="initial"
+              animate="animate"
+            >
+              <motion.div 
+                className="flex items-center justify-center gap-3 mb-3"
+                variants={itemVariants}
+              >
+                <h1 className="text-3xl md:text-4xl font-display font-bold">
+                  Vos informations
+                </h1>
+              </motion.div>
+              <motion.p 
+                className="text-muted-foreground text-lg"
+                variants={itemVariants}
+              >
+                Renseignez vos coordonnées pour la livraison
+              </motion.p>
+              {/* Auto-save indicator */}
+              <motion.div 
+                className="flex justify-center mt-2"
+                variants={itemVariants}
+              >
+                <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
+              </motion.div>
+            </motion.div>
 
           {/* Form */}
           <motion.div
@@ -345,7 +361,12 @@ function OrderInfoContent() {
           </motion.div>
 
           {/* Navigation */}
-          <div className="flex justify-between items-center mt-10">
+          <motion.div 
+            className="flex justify-between items-center mt-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
             <Button variant="ghost" onClick={prevStep} className="gap-2">
               <ArrowLeft size={18} />
               Retour
@@ -358,9 +379,10 @@ function OrderInfoContent() {
               Continuer
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
+          </motion.div>
           </div>
-        </div>
-      </main>
+        </main>
+      </PageTransition>
 
       <Footer />
     </div>
