@@ -23,7 +23,7 @@ import {
   supportsGoogleWallet 
 } from "@/lib/wallet";
 import { PhysicalCardStudio } from "@/components/print/PhysicalCardStudio";
-import { EmptyDashboard } from "@/components/onboarding";
+
 import { 
   Plus, CreditCard, Users, Eye, TrendingUp, 
   MoreVertical, Wallet, QrCode,
@@ -196,33 +196,7 @@ const Dashboard = () => {
   const totalLeads = leads.length;
   const conversionRate = totalViews > 0 ? ((totalLeads / totalViews) * 100).toFixed(1) : "0";
 
-  // Redirect to login if not authenticated
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // Show empty state if no cards
-  if (!cardsLoading && cards.length === 0) {
-    return (
-      <div className="min-h-screen bg-background relative overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 bg-grid opacity-20" />
-        <div className="absolute top-20 left-1/4 w-[600px] h-[600px] orb opacity-20 animate-pulse-glow" />
-        <div className="absolute bottom-40 right-1/4 w-[400px] h-[400px] orb opacity-15" />
-        <div className="noise" />
-        
-        <Navbar />
-        
-        <main className="relative z-10 pt-24 pb-16">
-          <div className="container mx-auto px-6">
-            <EmptyDashboard userName={user?.email} />
-          </div>
-        </main>
-        
-        <Footer />
-      </div>
-    );
-  }
+  // Note: Auth and empty state checks are handled by DashboardGuard at route level
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
