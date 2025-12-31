@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { DashboardGuard } from "@/components/DashboardGuard";
 import PublicCard from "./pages/PublicCard";
 import AdminClients from "./pages/AdminClients";
 import FirstCardSetup from "./pages/FirstCardSetup";
@@ -37,8 +38,8 @@ const App = () => (
             {/* Auth */}
             <Route path="/login" element={<Login />} />
             
-            {/* Dashboard - Main user hub */}
-            <Route path="/dashboard" element={<Dashboard />} />
+            {/* Dashboard - Main user hub (guarded) */}
+            <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
             
             {/* Onboarding flow */}
             <Route path="/onboarding" element={<Onboarding />} />
