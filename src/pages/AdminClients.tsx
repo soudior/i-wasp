@@ -27,7 +27,7 @@ import {
   Lock,
   LogOut
 } from "lucide-react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { downloadVCard } from "@/lib/vcard";
 
 interface Client {
@@ -70,6 +70,7 @@ const ADMIN_PASSWORD = "iwasp2024";
 
 export default function AdminClients() {
   const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   
   const [showForm, setShowForm] = useState(false);
@@ -246,12 +247,17 @@ export default function AdminClients() {
   };
 
   // Loading state
-  if (authLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-dvh flex items-center justify-center" style={{ backgroundColor: "#F5F5F7" }}>
         <Loader2 className="h-8 w-8 animate-spin" style={{ color: "#007AFF" }} />
       </div>
     );
+  }
+
+  // Redirect to setup if no cards exist
+  if (!isLoading && clients && clients.length === 0) {
+    return <Navigate to="/setup" replace />;
   }
 
   // Auth check - redirect with clear message
