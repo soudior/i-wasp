@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
+import { motion, AnimatePresence, Reorder, useDragControls } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { useCreateCard, useUpdateCard, useCards, DigitalCard } from "@/hooks/useCards";
@@ -33,7 +33,7 @@ import {
   ArrowLeft, Save, Plus, Eye, EyeOff, GripVertical, Trash2,
   User, Wifi, MapPin, Zap, Share2, Gift, Info, Minus,
   Phone, Mail, Globe, MessageCircle, ChevronDown, ChevronUp, Copy, Check,
-  Wand2, Sparkles
+  Wand2, Sparkles, Move
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -520,11 +520,15 @@ function BlockItemCard({
   onUpdate,
   onDelete,
   onToggleVisibility,
+  isReorderMode,
+  dragControls,
 }: {
   block: CardBlock;
   onUpdate: (block: CardBlock) => void;
   onDelete: (id: string) => void;
   onToggleVisibility: (id: string) => void;
+  isReorderMode: boolean;
+  dragControls: ReturnType<typeof useDragControls>;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const Icon = blockIcons[block.type];
@@ -570,7 +574,13 @@ function BlockItemCard({
   };
 
   return (
-    <Reorder.Item value={block} id={block.id} className="touch-none">
+    <Reorder.Item 
+      value={block} 
+      id={block.id} 
+      dragListener={false}
+      dragControls={dragControls}
+      className={isReorderMode ? "" : ""}
+    >
       <motion.div
         layout
         className={cn(
@@ -580,8 +590,21 @@ function BlockItemCard({
       >
         <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
           <div className="flex items-center gap-3 p-4">
-            <div className="cursor-grab active:cursor-grabbing touch-none">
-              <GripVertical size={18} className="text-muted-foreground" />
+            {/* Drag Handle - only active in reorder mode */}
+            <div 
+              className={cn(
+                "p-1 rounded-lg transition-colors",
+                isReorderMode 
+                  ? "cursor-grab active:cursor-grabbing touch-none bg-primary/10" 
+                  : "cursor-default opacity-40"
+              )}
+              onPointerDown={(e) => {
+                if (isReorderMode) {
+                  dragControls.start(e);
+                }
+              }}
+            >
+              <GripVertical size={18} className={isReorderMode ? "text-primary" : "text-muted-foreground"} />
             </div>
             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", "bg-primary/10")}>
               <Icon size={18} className="text-primary" />
@@ -618,6 +641,34 @@ function BlockItemCard({
         </Collapsible>
       </motion.div>
     </Reorder.Item>
+  );
+}
+
+// Wrapper component that creates dragControls for each block
+function DraggableBlockItem({
+  block,
+  onUpdate,
+  onDelete,
+  onToggleVisibility,
+  isReorderMode,
+}: {
+  block: CardBlock;
+  onUpdate: (block: CardBlock) => void;
+  onDelete: (id: string) => void;
+  onToggleVisibility: (id: string) => void;
+  isReorderMode: boolean;
+}) {
+  const dragControls = useDragControls();
+  
+  return (
+    <BlockItemCard
+      block={block}
+      onUpdate={onUpdate}
+      onDelete={onDelete}
+      onToggleVisibility={onToggleVisibility}
+      isReorderMode={isReorderMode}
+      dragControls={dragControls}
+    />
   );
 }
 
@@ -703,6 +754,7 @@ export default function CardEditor() {
   const [template, setTemplate] = useState<string>(templateParam || "production");
   const [showPreview, setShowPreview] = useState(false);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
+  const [isReorderMode, setIsReorderMode] = useState(false);
 
   // Handle AI generated template - Maps all AI fields to editor blocks
   const handleAITemplateGenerated = useCallback((result: { type: string; template: Record<string, any> }) => {
@@ -1243,11 +1295,39 @@ export default function CardEditor() {
               <Card variant="premium" className="p-4 md:p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="font-semibold text-lg">Éléments de la carte</h2>
-                  <Button variant="ghost" size="sm" onClick={() => setShowPreview(!showPreview)} className="lg:hidden">
-                    <Eye size={18} className="mr-2" />
-                    {showPreview ? "Masquer" : "Aperçu"}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    {/* Reorder Mode Toggle */}
+                    <Button 
+                      variant={isReorderMode ? "default" : "ghost"} 
+                      size="sm" 
+                      onClick={() => setIsReorderMode(!isReorderMode)}
+                      className={cn(
+                        "transition-all",
+                        isReorderMode && "bg-primary text-primary-foreground"
+                      )}
+                    >
+                      <Move size={16} className="mr-1.5" />
+                      {isReorderMode ? "Terminer" : "Réorganiser"}
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setShowPreview(!showPreview)} className="lg:hidden">
+                      <Eye size={18} className="mr-2" />
+                      {showPreview ? "Masquer" : "Aperçu"}
+                    </Button>
+                  </div>
                 </div>
+
+                {/* Reorder Mode Indicator */}
+                {isReorderMode && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-4 p-3 bg-primary/10 border border-primary/20 rounded-xl"
+                  >
+                    <p className="text-sm text-primary text-center">
+                      Maintenez l'icône <GripVertical size={14} className="inline mx-1" /> pour réorganiser
+                    </p>
+                  </motion.div>
+                )}
 
                 {/* AI Generator Button */}
                 <Button
@@ -1263,12 +1343,13 @@ export default function CardEditor() {
                 <Reorder.Group axis="y" values={blocks} onReorder={handleReorder} className="space-y-3">
                   <AnimatePresence initial={false}>
                     {blocks.map((block) => (
-                      <BlockItemCard
+                      <DraggableBlockItem
                         key={block.id}
                         block={block}
                         onUpdate={handleUpdateBlock}
                         onDelete={handleDeleteBlock}
                         onToggleVisibility={handleToggleVisibility}
+                        isReorderMode={isReorderMode}
                       />
                     ))}
                   </AnimatePresence>
