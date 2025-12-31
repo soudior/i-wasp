@@ -2,9 +2,11 @@
  * Step 3: Design Configuration
  * /order/design
  * 
- * - Upload logo client
+ * - Upload logo client (PNG/JPG/SVG, max 15Mo)
  * - Choix couleur carte (3 palettes verrouillées)
- * - Aperçu carte physique en temps réel
+ * - Placement logo: Centré, Coin, Auto, PLEIN FORMAT
+ * - Aperçu carte physique temps réel avec guides
+ * - Validation obligatoire avant ajout panier
  */
 
 import { useState, useRef, useEffect, useMemo } from "react";
@@ -21,9 +23,11 @@ import {
   contentVariants,
   itemVariants 
 } from "@/components/order";
+import { LogoPlacementEditor, LogoPlacementConfig, LogoPlacement, BlendMode } from "@/components/order/LogoPlacementEditor";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   ArrowLeft, 
@@ -33,16 +37,19 @@ import {
   Palette,
   Image,
   X,
-  Loader2
+  Loader2,
+  AlertCircle,
+  CheckCircle2
 } from "lucide-react";
 import { toast } from "sonner";
 
-// i-wasp logo
-import iwaspLogo from "@/assets/iwasp-logo-white.png";
-
 // Extended design state for auto-save
 interface DesignFormData extends DesignConfig {
-  logoBlendMode: "normal" | "multiply" | "screen";
+  logoPlacement: LogoPlacement;
+  logoOpacity: number;
+  logoBlendMode: BlendMode;
+  logoScale: number;
+  isValidated: boolean;
 }
 
 // Locked color palettes
@@ -70,6 +77,10 @@ const COLOR_PALETTES = [
   },
 ];
 
+// Max file size: 15MB
+const MAX_FILE_SIZE = 15 * 1024 * 1024;
+const ACCEPTED_FORMATS = ["image/png", "image/jpeg", "image/jpg", "image/svg+xml"];
+
 function OrderDesignContent() {
   const { state, setDesignConfig, nextStep, prevStep } = useOrderFunnel();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,15 +92,27 @@ function OrderDesignContent() {
     state.designConfig?.logoUrl || null
   );
   const [isUploading, setIsUploading] = useState(false);
-  const [logoBlendMode, setLogoBlendMode] = useState<"normal" | "multiply" | "screen">("normal");
   const [showRestoreBanner, setShowRestoreBanner] = useState(false);
+  const [isValidated, setIsValidated] = useState(false);
+
+  // Logo placement configuration
+  const [logoConfig, setLogoConfig] = useState<LogoPlacementConfig>({
+    placement: "center",
+    opacity: 100,
+    blendMode: "normal",
+    scale: 1,
+  });
 
   // Memoize form data for auto-save
   const formData = useMemo<DesignFormData>(() => ({
     logoUrl,
     cardColor: selectedColor,
-    logoBlendMode,
-  }), [logoUrl, selectedColor, logoBlendMode]);
+    logoPlacement: logoConfig.placement,
+    logoOpacity: logoConfig.opacity,
+    logoBlendMode: logoConfig.blendMode,
+    logoScale: logoConfig.scale,
+    isValidated,
+  }), [logoUrl, selectedColor, logoConfig, isValidated]);
 
   // Auto-save hook
   const { 
@@ -111,12 +134,23 @@ function OrderDesignContent() {
     }
   }, [state.designConfig, hasSavedData]);
 
+  // Reset validation when design changes
+  useEffect(() => {
+    setIsValidated(false);
+  }, [logoUrl, selectedColor, logoConfig]);
+
   const handleRestoreDraft = () => {
     const savedData = getSavedData();
     if (savedData) {
       setLogoUrl(savedData.logoUrl);
       setSelectedColor(savedData.cardColor);
-      setLogoBlendMode(savedData.logoBlendMode || "normal");
+      setLogoConfig({
+        placement: savedData.logoPlacement || "center",
+        opacity: savedData.logoOpacity || 100,
+        blendMode: savedData.logoBlendMode || "normal",
+        scale: savedData.logoScale || 1,
+      });
+      setIsValidated(savedData.isValidated || false);
       toast.success("Brouillon restauré");
     }
     setShowRestoreBanner(false);
@@ -134,14 +168,14 @@ function OrderDesignContent() {
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith("image/")) {
-      toast.error("Veuillez sélectionner une image");
+    if (!ACCEPTED_FORMATS.includes(file.type)) {
+      toast.error("Format non supporté. Utilisez PNG, JPG ou SVG");
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("L'image ne doit pas dépasser 5 Mo");
+    // Validate file size (max 15MB)
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("L'image ne doit pas dépasser 15 Mo");
       return;
     }
 
@@ -163,6 +197,7 @@ function OrderDesignContent() {
         .getPublicUrl(filePath);
 
       setLogoUrl(publicUrl);
+      setIsValidated(false);
       toast.success("Logo téléchargé avec succès");
     } catch (error) {
       console.error("Upload error:", error);
@@ -174,12 +209,27 @@ function OrderDesignContent() {
 
   const handleRemoveLogo = () => {
     setLogoUrl(null);
+    setIsValidated(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
+  const handleValidateDesign = () => {
+    if (!logoUrl) {
+      toast.error("Veuillez d'abord télécharger votre logo");
+      return;
+    }
+    setIsValidated(true);
+    toast.success("Design validé !");
+  };
+
   const handleContinue = () => {
+    if (!isValidated) {
+      toast.error("Veuillez valider votre design avant de continuer");
+      return;
+    }
+
     setDesignConfig({
       logoUrl,
       cardColor: selectedColor,
@@ -188,13 +238,15 @@ function OrderDesignContent() {
     nextStep();
   };
 
+  const canContinue = logoUrl && isValidated;
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       
       <PageTransition>
         <main className="pt-24 pb-32 px-4">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             {/* Step Indicator */}
             <OrderProgressBar currentStep={3} />
 
@@ -226,7 +278,7 @@ function OrderDesignContent() {
                 className="text-muted-foreground text-lg"
                 variants={itemVariants}
               >
-                Ajoutez votre logo et choisissez la couleur
+                Positionnez votre logo et choisissez la couleur
               </motion.p>
               {/* Auto-save indicator */}
               <motion.div 
@@ -238,51 +290,36 @@ function OrderDesignContent() {
             </motion.div>
 
           <div className="grid gap-8 lg:grid-cols-2">
-            {/* Live Preview */}
+            {/* Live Preview with Placement Editor */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="order-2 lg:order-1"
             >
-              <Card className="overflow-hidden">
-                <CardHeader>
-                  <CardTitle className="text-center">Aperçu en temps réel</CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  {/* Card Preview */}
-                  <div
-                    className="relative aspect-[1.6/1] rounded-2xl shadow-2xl overflow-hidden mx-auto max-w-md transition-all duration-500"
-                    style={{ 
-                      backgroundColor: selectedColor,
-                      boxShadow: `0 25px 50px -12px ${selectedColor}40`
-                    }}
-                  >
-                    {/* i-wasp logo - fixed top right */}
-                    <div className="absolute top-4 right-4 w-16 h-8 flex items-center justify-end">
-                      <img
-                        src={iwaspLogo}
-                        alt="i-wasp"
-                        className="h-5 object-contain"
-                        style={{ 
-                          filter: selectedColor === "#FFFFFF" ? "invert(1)" : "none",
-                          opacity: 0.8
-                        }}
-                      />
-                    </div>
-
-                    {/* Client logo - center */}
-                    <div className="absolute inset-0 flex items-center justify-center p-8">
-                      {logoUrl ? (
-                        <img
-                          src={logoUrl}
-                          alt="Votre logo"
-                          className="max-w-[60%] max-h-[50%] object-contain transition-all duration-300"
-                          style={{ 
-                            mixBlendMode: logoBlendMode,
-                            opacity: logoBlendMode === "normal" ? 1 : 0.9
-                          }}
-                        />
-                      ) : (
+              {logoUrl ? (
+                <LogoPlacementEditor
+                  logoUrl={logoUrl}
+                  cardColor={selectedColor}
+                  textColor={selectedPalette.textColor}
+                  config={logoConfig}
+                  onChange={setLogoConfig}
+                />
+              ) : (
+                <Card className="overflow-hidden">
+                  <CardHeader>
+                    <CardTitle className="text-center">Aperçu en temps réel</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    {/* Empty Card Preview */}
+                    <div
+                      className="relative aspect-[1.6/1] rounded-2xl shadow-2xl overflow-hidden mx-auto max-w-md transition-all duration-500"
+                      style={{ 
+                        backgroundColor: selectedColor,
+                        boxShadow: `0 25px 50px -12px ${selectedColor}40`
+                      }}
+                    >
+                      {/* Placeholder */}
+                      <div className="absolute inset-0 flex items-center justify-center p-8">
                         <div className="text-center">
                           <Image
                             size={48}
@@ -293,32 +330,60 @@ function OrderDesignContent() {
                             className="text-sm opacity-50"
                             style={{ color: selectedPalette.textColor }}
                           >
-                            Votre logo ici
+                            Téléchargez votre logo
                           </p>
                         </div>
-                      )}
-                    </div>
+                      </div>
 
-                    {/* NFC indicator */}
-                    <div className="absolute bottom-4 left-4">
-                      <div 
-                        className="w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm"
-                        style={{ backgroundColor: `${selectedPalette.textColor}20` }}
-                      >
+                      {/* NFC indicator */}
+                      <div className="absolute bottom-4 left-4">
                         <div 
-                          className="w-5 h-5 rounded-full"
-                          style={{ backgroundColor: `${selectedPalette.textColor}60` }}
-                        />
+                          className="w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm"
+                          style={{ backgroundColor: `${selectedPalette.textColor}20` }}
+                        >
+                          <div 
+                            className="w-5 h-5 rounded-full"
+                            style={{ backgroundColor: `${selectedPalette.textColor}60` }}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Color name */}
-                  <p className="text-center mt-4 text-sm text-muted-foreground">
-                    {selectedPalette.name} • {selectedPalette.description}
-                  </p>
-                </CardContent>
-              </Card>
+                    {/* Color name */}
+                    <p className="text-center mt-4 text-sm text-muted-foreground">
+                      {selectedPalette.name} • {selectedPalette.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Validation Status */}
+              <AnimatePresence mode="wait">
+                {logoUrl && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mt-4"
+                  >
+                    {isValidated ? (
+                      <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20">
+                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                        <AlertDescription className="text-green-700 dark:text-green-400">
+                          Design validé ! Vous pouvez continuer.
+                        </AlertDescription>
+                      </Alert>
+                    ) : (
+                      <Alert className="border-amber-500 bg-amber-50 dark:bg-amber-950/20">
+                        <AlertCircle className="h-4 w-4 text-amber-600" />
+                        <AlertDescription className="text-amber-700 dark:text-amber-400">
+                          Ajustez le placement et validez votre design avant de continuer.
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
 
             {/* Configuration */}
@@ -339,7 +404,7 @@ function OrderDesignContent() {
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                    accept=".png,.jpg,.jpeg,.svg,image/png,image/jpeg,image/svg+xml"
                     onChange={handleFileUpload}
                     className="hidden"
                     id="logo-upload"
@@ -361,30 +426,6 @@ function OrderDesignContent() {
                         </button>
                       </div>
 
-                      {/* Blend mode options */}
-                      <div>
-                        <Label className="text-sm mb-2 block">Mode d'affichage</Label>
-                        <div className="flex gap-2">
-                          {[
-                            { id: "normal", label: "Normal" },
-                            { id: "multiply", label: "Fondu" },
-                            { id: "screen", label: "Lumineux" },
-                          ].map((mode) => (
-                            <button
-                              key={mode.id}
-                              onClick={() => setLogoBlendMode(mode.id as "normal" | "multiply" | "screen")}
-                              className={`px-3 py-2 text-sm rounded-lg border transition-all ${
-                                logoBlendMode === mode.id
-                                  ? "border-primary bg-primary/10 text-primary"
-                                  : "border-border hover:border-primary/50"
-                              }`}
-                            >
-                              {mode.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
                       <Button
                         variant="outline"
                         onClick={() => fileInputRef.current?.click()}
@@ -404,7 +445,7 @@ function OrderDesignContent() {
                         <>
                           <Upload className="h-10 w-10 text-muted-foreground mb-3" />
                           <p className="text-sm font-medium mb-1">Cliquez pour télécharger</p>
-                          <p className="text-xs text-muted-foreground">PNG, JPG, SVG (max 5 Mo)</p>
+                          <p className="text-xs text-muted-foreground">PNG, JPG, SVG (max 15 Mo)</p>
                         </>
                       )}
                     </label>
@@ -429,7 +470,10 @@ function OrderDesignContent() {
                     {COLOR_PALETTES.map((palette) => (
                       <button
                         key={palette.id}
-                        onClick={() => setSelectedColor(palette.color)}
+                        onClick={() => {
+                          setSelectedColor(palette.color);
+                          setIsValidated(false);
+                        }}
                         className={`relative p-4 rounded-xl border-2 transition-all hover:scale-105 ${
                           selectedColor === palette.color
                             ? "border-primary shadow-lg"
@@ -458,6 +502,23 @@ function OrderDesignContent() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Validate Design Button */}
+              {logoUrl && !isValidated && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <Button
+                    size="lg"
+                    onClick={handleValidateDesign}
+                    className="w-full h-14 text-lg rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+                  >
+                    <CheckCircle2 className="mr-2 h-5 w-5" />
+                    Valider mon design
+                  </Button>
+                </motion.div>
+              )}
             </motion.div>
           </div>
 
@@ -475,7 +536,12 @@ function OrderDesignContent() {
             <Button
               size="lg"
               onClick={handleContinue}
-              className="px-8 h-14 text-lg rounded-full bg-gradient-to-r from-primary to-amber-500"
+              disabled={!canContinue}
+              className={`px-8 h-14 text-lg rounded-full ${
+                canContinue 
+                  ? "bg-gradient-to-r from-primary to-amber-500"
+                  : "bg-muted text-muted-foreground cursor-not-allowed"
+              }`}
             >
               Continuer
               <ArrowRight className="ml-2 h-5 w-5" />
