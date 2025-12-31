@@ -19,6 +19,7 @@ import {
   Phone, Link2, Check, Eye, EyeOff
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { OnboardingPhotoUpload } from "@/components/onboarding/OnboardingPhotoUpload";
 
 interface FormData {
   first_name: string;
@@ -30,6 +31,7 @@ interface FormData {
   linkedin: string;
   whatsapp: string;
   website: string;
+  photo_url: string | null;
 }
 
 const initialFormData: FormData = {
@@ -42,6 +44,7 @@ const initialFormData: FormData = {
   linkedin: "",
   whatsapp: "",
   website: "",
+  photo_url: null,
 };
 
 const formSteps = [
@@ -49,7 +52,7 @@ const formSteps = [
     id: 1, 
     title: "Identité", 
     icon: User,
-    fields: ["first_name", "last_name"] as const
+    fields: ["first_name", "last_name", "photo_url"] as const
   },
   { 
     id: 2, 
@@ -101,6 +104,7 @@ export default function Onboarding() {
           linkedin: data.linkedin || null,
           whatsapp: data.whatsapp || null,
           website: data.website || null,
+          photo_url: data.photo_url || null,
           user_id: user?.id,
           slug,
         })
@@ -227,6 +231,15 @@ export default function Onboarding() {
             <div className="space-y-4">
               {step === 1 && (
                 <>
+                  {/* Photo Upload */}
+                  <div className="flex justify-center mb-6">
+                    <OnboardingPhotoUpload
+                      value={formData.photo_url}
+                      onChange={(url) => setFormData(prev => ({ ...prev, photo_url: url }))}
+                      initials={`${formData.first_name.charAt(0)}${formData.last_name.charAt(0)}`}
+                    />
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label>Prénom *</Label>
                     <Input
@@ -385,14 +398,21 @@ export default function Onboarding() {
           <Card className="w-full max-w-[320px] p-6 shadow-lg">
             {/* Preview card */}
             <div className="text-center">
-              {/* Avatar placeholder */}
-              <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center">
-                <span className="text-2xl font-semibold text-primary">
-                  {formData.first_name.charAt(0) || "?"}
-                  {formData.last_name.charAt(0) || ""}
-                </span>
+              {/* Avatar with photo */}
+              <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                {formData.photo_url ? (
+                  <img 
+                    src={formData.photo_url} 
+                    alt="Photo" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-2xl font-semibold text-primary">
+                    {formData.first_name.charAt(0) || "?"}
+                    {formData.last_name.charAt(0) || ""}
+                  </span>
+                )}
               </div>
-              
               {/* Name */}
               <h2 className="text-lg font-semibold text-foreground">
                 {formData.first_name || "Prénom"} {formData.last_name || "Nom"}
