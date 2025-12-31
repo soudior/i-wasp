@@ -24,6 +24,7 @@ import {
   itemVariants 
 } from "@/components/order";
 import { LogoPlacementEditor, LogoPlacementConfig, LogoPlacement, BlendMode } from "@/components/order/LogoPlacementEditor";
+import { LogoCropper } from "@/components/order/LogoCropper";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,7 +40,8 @@ import {
   X,
   Loader2,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  Crop
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -94,6 +96,8 @@ function OrderDesignContent() {
   const [isUploading, setIsUploading] = useState(false);
   const [showRestoreBanner, setShowRestoreBanner] = useState(false);
   const [isValidated, setIsValidated] = useState(false);
+  const [showCropper, setShowCropper] = useState(false);
+  const [originalLogoUrl, setOriginalLogoUrl] = useState<string | null>(null);
 
   // Logo placement configuration
   const [logoConfig, setLogoConfig] = useState<LogoPlacementConfig>({
@@ -197,6 +201,7 @@ function OrderDesignContent() {
         .getPublicUrl(filePath);
 
       setLogoUrl(publicUrl);
+      setOriginalLogoUrl(publicUrl);
       setIsValidated(false);
       toast.success("Logo téléchargé avec succès");
     } catch (error) {
@@ -209,10 +214,18 @@ function OrderDesignContent() {
 
   const handleRemoveLogo = () => {
     setLogoUrl(null);
+    setOriginalLogoUrl(null);
     setIsValidated(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+
+  const handleCropComplete = (croppedUrl: string) => {
+    setLogoUrl(croppedUrl);
+    setShowCropper(false);
+    setIsValidated(false);
+    toast.success("Logo recadré avec succès");
   };
 
   const handleValidateDesign = () => {
@@ -426,13 +439,22 @@ function OrderDesignContent() {
                         </button>
                       </div>
 
-                      <Button
-                        variant="outline"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="w-full"
-                      >
-                        Changer le logo
-                      </Button>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowCropper(true)}
+                          className="gap-2"
+                        >
+                          <Crop size={16} />
+                          Recadrer
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          Changer
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <label
@@ -550,6 +572,16 @@ function OrderDesignContent() {
           </div>
         </main>
       </PageTransition>
+
+      {/* Logo Cropper Modal */}
+      {originalLogoUrl && (
+        <LogoCropper
+          imageUrl={originalLogoUrl}
+          isOpen={showCropper}
+          onClose={() => setShowCropper(false)}
+          onCropComplete={handleCropComplete}
+        />
+      )}
 
       <Footer />
     </div>

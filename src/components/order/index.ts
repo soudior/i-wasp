@@ -10,3 +10,4 @@ export {
   type LogoPlacement,
   type BlendMode
 } from './LogoPlacementEditor';
+export { LogoCropper } from './LogoCropper';
