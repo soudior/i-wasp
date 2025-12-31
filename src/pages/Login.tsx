@@ -19,7 +19,7 @@ export default function Login() {
   // Redirect if already authenticated
   useEffect(() => {
     if (!loading && user) {
-      navigate("/admin", { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [user, loading, navigate]);
 
@@ -45,7 +45,7 @@ export default function Login() {
     }
 
     toast.success("Connexion réussie");
-    navigate("/admin");
+    navigate("/dashboard");
   };
 
   // Loading state
