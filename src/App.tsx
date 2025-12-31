@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import PublicCard from "./pages/PublicCard";
 import AdminClients from "./pages/AdminClients";
 import FirstCardSetup from "./pages/FirstCardSetup";
+import OrderPreview from "./pages/OrderPreview";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,9 @@ const App = () => (
             
             {/* First card setup */}
             <Route path="/setup" element={<FirstCardSetup />} />
+            
+            {/* Order flow */}
+            <Route path="/order" element={<OrderPreview />} />
             
             {/* Admin - Client management */}
             <Route path="/admin" element={<AdminClients />} />

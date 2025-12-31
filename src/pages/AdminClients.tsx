@@ -614,16 +614,14 @@ export default function AdminClients() {
 
                 {/* Order NFC Card Button */}
                 <div className="px-4 pb-4">
-                  <a
-                    href="https://i-wasp.com/checkout"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => navigate("/order")}
                     className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-medium text-sm transition-all active:scale-[0.98]"
                     style={{ backgroundColor: "#1D1D1F", color: "#FFFFFF" }}
                   >
                     <CreditCard className="h-4 w-4" />
                     Commander ma carte NFC
-                  </a>
+                  </button>
                 </div>
 
                 {/* Delete - Small, secondary */}
