@@ -25,7 +25,10 @@ import {
   Download,
   Trash2,
   Lock,
-  LogOut
+  LogOut,
+  ExternalLink,
+  CreditCard,
+  ShoppingBag
 } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { downloadVCard } from "@/lib/vcard";
@@ -511,9 +514,9 @@ export default function AdminClients() {
           </div>
         )}
 
-        {/* Client List - only show when there are clients */}
+        {/* Client Cards - Clean preview */}
         {!hasNoClients && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {isLoading ? (
             <div className="flex justify-center py-12">
               <Loader2 className="h-6 w-6 animate-spin" style={{ color: "#007AFF" }} />
@@ -522,129 +525,136 @@ export default function AdminClients() {
             clients?.map((client) => (
               <div
                 key={client.id}
-                className="rounded-2xl p-4 shadow-sm"
+                className="rounded-2xl shadow-sm overflow-hidden"
                 style={{ backgroundColor: "#FFFFFF" }}
               >
-                {/* Client Info */}
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold truncate" style={{ color: "#1D1D1F" }}>
-                      {client.first_name} {client.last_name}
-                    </h3>
-                    {(client.title || client.company) && (
-                      <p className="text-sm truncate" style={{ color: "#8E8E93" }}>
-                        {[client.title, client.company].filter(Boolean).join(" · ")}
-                      </p>
-                    )}
+                {/* Card Preview Header */}
+                <div className="p-5 border-b" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
+                  <div className="flex items-center gap-4">
+                    {/* Avatar */}
+                    <div 
+                      className="w-14 h-14 rounded-xl flex items-center justify-center text-xl font-semibold"
+                      style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
+                    >
+                      {client.first_name.charAt(0)}{client.last_name.charAt(0)}
+                    </div>
                     
-                    <div className="flex flex-wrap gap-3 mt-2 text-sm" style={{ color: "#8E8E93" }}>
-                      {client.phone && (
-                        <a href={`tel:${client.phone}`} className="flex items-center gap-1.5 hover:opacity-70">
-                          <Phone className="h-3.5 w-3.5" />
-                          <span>{client.phone}</span>
-                        </a>
-                      )}
-                      {client.email && (
-                        <a href={`mailto:${client.email}`} className="flex items-center gap-1.5 hover:opacity-70">
-                          <Mail className="h-3.5 w-3.5" />
-                          <span className="truncate max-w-[180px]">{client.email}</span>
-                        </a>
+                    {/* Name & Role */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold truncate" style={{ color: "#1D1D1F" }}>
+                        {client.first_name} {client.last_name}
+                      </h3>
+                      {(client.title || client.company) && (
+                        <p className="text-sm truncate" style={{ color: "#8E8E93" }}>
+                          {[client.title, client.company].filter(Boolean).join(" · ")}
+                        </p>
                       )}
                     </div>
-                  </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-2 shrink-0">
+                    {/* Edit Button */}
                     <button
                       onClick={() => handleEdit(client)}
-                      className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+                      className="p-2.5 rounded-xl hover:bg-gray-100 transition-colors"
                       title="Modifier"
                     >
-                      <Pencil className="h-4 w-4" style={{ color: "#007AFF" }} />
+                      <Pencil className="h-5 w-5" style={{ color: "#007AFF" }} />
                     </button>
-                    <button
-                      onClick={() => handleDownloadVCard(client)}
-                      className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
-                      title="Télécharger vCard"
-                    >
-                      <Download className="h-4 w-4" style={{ color: "#34C759" }} />
-                    </button>
-                    {deletingClientId === client.id ? (
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => deleteClient.mutate(client.id)}
-                          className="p-2 rounded-xl bg-red-50 hover:bg-red-100 transition-colors"
-                          title="Confirmer suppression"
-                          disabled={deleteClient.isPending}
-                        >
-                          {deleteClient.isPending ? (
-                            <Loader2 className="h-4 w-4 animate-spin" style={{ color: "#FF3B30" }} />
-                          ) : (
-                            <Check className="h-4 w-4" style={{ color: "#FF3B30" }} />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => setDeletingClientId(null)}
-                          className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
-                          title="Annuler"
-                        >
-                          <X className="h-4 w-4" style={{ color: "#8E8E93" }} />
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setDeletingClientId(client.id)}
-                        className="p-2 rounded-xl hover:bg-red-50 transition-colors"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="h-4 w-4" style={{ color: "#FF3B30" }} />
-                      </button>
-                    )}
                   </div>
                 </div>
 
-                {/* NFC Link Section */}
-                <div 
-                  className="rounded-xl p-3 border"
-                  style={{ backgroundColor: "#F5F5F7", borderColor: "rgba(0,0,0,0.06)" }}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium mb-1" style={{ color: "#8E8E93" }}>
-                        Lien NFC
-                      </p>
-                      <p 
-                        className="text-sm font-mono truncate" 
-                        style={{ color: "#1D1D1F" }}
-                        title={getNfcUrl(client.slug)}
-                      >
-                        {getNfcUrl(client.slug)}
-                      </p>
-                      <p className="text-xs mt-1" style={{ color: "#8E8E93" }}>
-                        Slug: <span className="font-mono">{client.slug}</span>
-                      </p>
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                      <button
-                        onClick={() => copyNfcLink(client.slug)}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors hover:bg-white"
-                        style={{ color: "#007AFF" }}
-                        title="Copier le lien NFC"
-                      >
-                        <Copy className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">Copier</span>
-                      </button>
-                      <button
-                        onClick={() => openNfcPage(client.slug)}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors hover:bg-white"
-                        style={{ color: "#34C759" }}
-                        title="Ouvrir la page NFC"
-                      >
-                        <Globe className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">Ouvrir</span>
-                      </button>
-                    </div>
+                {/* NFC Link - Prominent */}
+                <div className="p-4" style={{ backgroundColor: "#F5F5F7" }}>
+                  <p className="text-xs font-medium mb-2" style={{ color: "#8E8E93" }}>
+                    Lien NFC
+                  </p>
+                  <div 
+                    className="rounded-xl p-3 font-mono text-sm truncate"
+                    style={{ backgroundColor: "#FFFFFF", color: "#1D1D1F" }}
+                    title={getNfcUrl(client.slug)}
+                  >
+                    {getNfcUrl(client.slug)}
                   </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="p-4 grid grid-cols-3 gap-3">
+                  <button
+                    onClick={() => openNfcPage(client.slug)}
+                    className="flex flex-col items-center gap-2 p-3 rounded-xl transition-colors hover:bg-gray-50"
+                    style={{ backgroundColor: "#F5F5F7" }}
+                  >
+                    <ExternalLink className="h-5 w-5" style={{ color: "#007AFF" }} />
+                    <span className="text-xs font-medium" style={{ color: "#1D1D1F" }}>
+                      Ouvrir
+                    </span>
+                  </button>
+                  
+                  <button
+                    onClick={() => copyNfcLink(client.slug)}
+                    className="flex flex-col items-center gap-2 p-3 rounded-xl transition-colors hover:bg-gray-50"
+                    style={{ backgroundColor: "#F5F5F7" }}
+                  >
+                    <Copy className="h-5 w-5" style={{ color: "#34C759" }} />
+                    <span className="text-xs font-medium" style={{ color: "#1D1D1F" }}>
+                      Copier
+                    </span>
+                  </button>
+                  
+                  <button
+                    onClick={() => handleDownloadVCard(client)}
+                    className="flex flex-col items-center gap-2 p-3 rounded-xl transition-colors hover:bg-gray-50"
+                    style={{ backgroundColor: "#F5F5F7" }}
+                  >
+                    <Download className="h-5 w-5" style={{ color: "#FF9500" }} />
+                    <span className="text-xs font-medium" style={{ color: "#1D1D1F" }}>
+                      vCard
+                    </span>
+                  </button>
+                </div>
+
+                {/* Order NFC Card Button */}
+                <div className="px-4 pb-4">
+                  <a
+                    href="https://i-wasp.com/checkout"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-medium text-sm transition-all active:scale-[0.98]"
+                    style={{ backgroundColor: "#1D1D1F", color: "#FFFFFF" }}
+                  >
+                    <CreditCard className="h-4 w-4" />
+                    Commander ma carte NFC
+                  </a>
+                </div>
+
+                {/* Delete - Small, secondary */}
+                <div className="px-4 pb-4 flex justify-end">
+                  {deletingClientId === client.id ? (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => deleteClient.mutate(client.id)}
+                        className="text-xs px-3 py-1.5 rounded-lg transition-colors"
+                        style={{ backgroundColor: "#FEE2E2", color: "#DC2626" }}
+                        disabled={deleteClient.isPending}
+                      >
+                        {deleteClient.isPending ? "..." : "Confirmer"}
+                      </button>
+                      <button
+                        onClick={() => setDeletingClientId(null)}
+                        className="text-xs px-3 py-1.5 rounded-lg transition-colors"
+                        style={{ color: "#8E8E93" }}
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setDeletingClientId(client.id)}
+                      className="text-xs px-3 py-1.5 rounded-lg transition-colors hover:bg-red-50"
+                      style={{ color: "#8E8E93" }}
+                    >
+                      Supprimer
+                    </button>
+                  )}
                 </div>
               </div>
             ))
