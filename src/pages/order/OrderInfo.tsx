@@ -3,13 +3,16 @@
  * /order/info
  */
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useOrderFunnel, OrderFunnelGuard, ProfileInfo } from "@/contexts/OrderFunnelContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { OrderProgressBar } from "@/components/order/OrderProgressBar";
+import { AutoSaveIndicator } from "@/components/order/AutoSaveIndicator";
+import { RestoreDraftBanner } from "@/components/order/RestoreDraftBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +39,45 @@ function OrderInfoContent() {
   );
 
   const [errors, setErrors] = useState<Partial<Record<keyof ProfileInfo, string>>>({});
+  const [showRestoreBanner, setShowRestoreBanner] = useState(false);
+
+  // Auto-save hook
+  const { 
+    status: saveStatus, 
+    lastSaved, 
+    hasSavedData, 
+    getSavedData, 
+    clearSaved 
+  } = useAutoSave<ProfileInfo>({
+    key: "order_info",
+    data: formData,
+    enabled: true,
+    onRestore: (data) => {
+      setFormData(data);
+      toast.success("Brouillon restauré");
+    },
+  });
+
+  // Check for saved draft on mount
+  useEffect(() => {
+    if (!state.profileInfo && hasSavedData()) {
+      setShowRestoreBanner(true);
+    }
+  }, [state.profileInfo, hasSavedData]);
+
+  const handleRestoreDraft = () => {
+    const savedData = getSavedData();
+    if (savedData) {
+      setFormData(savedData);
+      toast.success("Brouillon restauré");
+    }
+    setShowRestoreBanner(false);
+  };
+
+  const handleDismissDraft = () => {
+    clearSaved();
+    setShowRestoreBanner(false);
+  };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof ProfileInfo, string>> = {};
@@ -87,6 +129,7 @@ function OrderInfoContent() {
     }
 
     setProfileInfo(formData);
+    clearSaved(); // Clear draft on successful submit
     nextStep();
   };
 
@@ -99,18 +142,35 @@ function OrderInfoContent() {
           {/* Step Indicator */}
           <OrderProgressBar currentStep={2} />
 
+          {/* Restore Draft Banner */}
+          <AnimatePresence>
+            {showRestoreBanner && (
+              <RestoreDraftBanner
+                lastSaved={lastSaved}
+                onRestore={handleRestoreDraft}
+                onDismiss={handleDismissDraft}
+              />
+            )}
+          </AnimatePresence>
+
           {/* Header */}
           <motion.div 
             className="text-center mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">
-              Vos informations
-            </h1>
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <h1 className="text-3xl md:text-4xl font-display font-bold">
+                Vos informations
+              </h1>
+            </div>
             <p className="text-muted-foreground text-lg">
               Renseignez vos coordonnées pour la livraison
             </p>
+            {/* Auto-save indicator */}
+            <div className="flex justify-center mt-2">
+              <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
+            </div>
           </motion.div>
 
           {/* Form */}
