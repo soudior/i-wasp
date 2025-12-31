@@ -52,9 +52,15 @@ export function downloadVCard(data: VCardData): void {
   const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   
+  // Generate filename from name
+  const filename = `${data.firstName}_${data.lastName}.vcf`
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_.-]/g, "");
+  
   const link = document.createElement("a");
   link.href = url;
-  link.download = "contact.vcf";
+  link.download = filename || "contact.vcf";
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
