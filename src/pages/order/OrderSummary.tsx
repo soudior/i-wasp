@@ -331,7 +331,7 @@ function OrderSummaryContent() {
   );
 }
 
-export default function OrderSummaryNew() {
+export default function OrderSummary() {
   return (
     <OrderFunnelGuard step={5}>
       <OrderSummaryContent />
