@@ -13,9 +13,14 @@ import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext"
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { OrderProgressBar } from "@/components/order/OrderProgressBar";
-import { AutoSaveIndicator } from "@/components/order/AutoSaveIndicator";
-import { RestoreDraftBanner } from "@/components/order/RestoreDraftBanner";
+import { 
+  OrderProgressBar, 
+  AutoSaveIndicator, 
+  RestoreDraftBanner,
+  PageTransition,
+  contentVariants,
+  itemVariants 
+} from "@/components/order";
 import { formatPrice, calculateB2BPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -182,39 +187,50 @@ function OrderOptionsContent() {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="pt-24 pb-32 px-4">
-        <div className="max-w-2xl mx-auto">
-          {/* Step Indicator */}
-          <OrderProgressBar currentStep={4} />
+      <PageTransition>
+        <main className="pt-24 pb-32 px-4">
+          <div className="max-w-2xl mx-auto">
+            {/* Step Indicator */}
+            <OrderProgressBar currentStep={4} />
 
-          {/* Restore Draft Banner */}
-          <AnimatePresence>
-            {showRestoreBanner && (
-              <RestoreDraftBanner
-                lastSaved={lastSaved}
-                onRestore={handleRestoreDraft}
-                onDismiss={handleDismissDraft}
-              />
-            )}
-          </AnimatePresence>
+            {/* Restore Draft Banner */}
+            <AnimatePresence>
+              {showRestoreBanner && (
+                <RestoreDraftBanner
+                  lastSaved={lastSaved}
+                  onRestore={handleRestoreDraft}
+                  onDismiss={handleDismissDraft}
+                />
+              )}
+            </AnimatePresence>
 
-          {/* Header */}
-          <motion.div 
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">
-              Options de commande
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Choisissez la quantité et appliquez un code promo
-            </p>
-            {/* Auto-save indicator */}
-            <div className="flex justify-center mt-2">
-              <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
-            </div>
-          </motion.div>
+            {/* Header */}
+            <motion.div 
+              className="text-center mb-10"
+              variants={contentVariants}
+              initial="initial"
+              animate="animate"
+            >
+              <motion.h1 
+                className="text-3xl md:text-4xl font-display font-bold mb-3"
+                variants={itemVariants}
+              >
+                Options de commande
+              </motion.h1>
+              <motion.p 
+                className="text-muted-foreground text-lg"
+                variants={itemVariants}
+              >
+                Choisissez la quantité et appliquez un code promo
+              </motion.p>
+              {/* Auto-save indicator */}
+              <motion.div 
+                className="flex justify-center mt-2"
+                variants={itemVariants}
+              >
+                <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
+              </motion.div>
+            </motion.div>
 
           {/* Options */}
           <motion.div
@@ -354,7 +370,12 @@ function OrderOptionsContent() {
           </motion.div>
 
           {/* Navigation */}
-          <div className="flex justify-between items-center mt-10">
+          <motion.div 
+            className="flex justify-between items-center mt-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
             <Button variant="ghost" onClick={prevStep} className="gap-2">
               <ArrowLeft size={18} />
               Retour
@@ -367,9 +388,10 @@ function OrderOptionsContent() {
               Voir le récapitulatif
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
+          </motion.div>
           </div>
-        </div>
-      </main>
+        </main>
+      </PageTransition>
 
       <Footer />
     </div>

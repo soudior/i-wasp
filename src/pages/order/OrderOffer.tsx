@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useOrderFunnel, CustomerType } from "@/contexts/OrderFunnelContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { OrderProgressBar } from "@/components/order/OrderProgressBar";
+import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from "@/components/order";
 import { User, Briefcase, Building2, Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -60,24 +60,32 @@ export default function OrderOffer() {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="pt-24 pb-32 px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Step Indicator */}
-          <OrderProgressBar currentStep={1} />
+      <PageTransition>
+        <main className="pt-24 pb-32 px-4">
+          <div className="max-w-4xl mx-auto">
+            {/* Step Indicator */}
+            <OrderProgressBar currentStep={1} />
 
-          {/* Header */}
-          <motion.div 
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">
-              Choisissez votre offre
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Sélectionnez le profil qui correspond à vos besoins
-            </p>
-          </motion.div>
+            {/* Header */}
+            <motion.div 
+              className="text-center mb-10"
+              variants={contentVariants}
+              initial="initial"
+              animate="animate"
+            >
+              <motion.h1 
+                className="text-3xl md:text-4xl font-display font-bold mb-3"
+                variants={itemVariants}
+              >
+                Choisissez votre offre
+              </motion.h1>
+              <motion.p 
+                className="text-muted-foreground text-lg"
+                variants={itemVariants}
+              >
+                Sélectionnez le profil qui correspond à vos besoins
+              </motion.p>
+            </motion.div>
 
           {/* Options Grid */}
           <div className="grid gap-6 md:grid-cols-3 mb-10">
@@ -130,7 +138,7 @@ export default function OrderOffer() {
             className="flex justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.4 }}
           >
             <Button
               size="lg"
@@ -142,8 +150,9 @@ export default function OrderOffer() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </motion.div>
-        </div>
-      </main>
+          </div>
+        </main>
+      </PageTransition>
 
       <Footer />
     </div>

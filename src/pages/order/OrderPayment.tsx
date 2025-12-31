@@ -13,7 +13,12 @@ import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext"
 import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { OrderProgressBar } from "@/components/order/OrderProgressBar";
+import { 
+  OrderProgressBar,
+  PageTransition,
+  contentVariants,
+  itemVariants 
+} from "@/components/order";
 import { formatPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -70,24 +75,32 @@ function OrderPaymentContent() {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="pt-24 pb-32 px-4">
-        <div className="max-w-2xl mx-auto">
-          {/* Step Indicator */}
-          <OrderProgressBar currentStep={6} />
+      <PageTransition>
+        <main className="pt-24 pb-32 px-4">
+          <div className="max-w-2xl mx-auto">
+            {/* Step Indicator */}
+            <OrderProgressBar currentStep={6} />
 
-          {/* Header */}
-          <motion.div 
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">
-              Paiement sécurisé
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Finalisez votre commande
-            </p>
-          </motion.div>
+            {/* Header */}
+            <motion.div 
+              className="text-center mb-10"
+              variants={contentVariants}
+              initial="initial"
+              animate="animate"
+            >
+              <motion.h1 
+                className="text-3xl md:text-4xl font-display font-bold mb-3"
+                variants={itemVariants}
+              >
+                Paiement sécurisé
+              </motion.h1>
+              <motion.p 
+                className="text-muted-foreground text-lg"
+                variants={itemVariants}
+              >
+                Finalisez votre commande
+              </motion.p>
+            </motion.div>
 
           {/* Order Summary */}
           <motion.div
@@ -198,14 +211,20 @@ function OrderPaymentContent() {
           </motion.div>
 
           {/* Navigation */}
-          <div className="flex justify-start mt-10">
+          <motion.div 
+            className="flex justify-start mt-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
             <Button variant="ghost" onClick={goBack} className="gap-2">
               <ArrowLeft size={18} />
               Retour au récapitulatif
             </Button>
+          </motion.div>
           </div>
-        </div>
-      </main>
+        </main>
+      </PageTransition>
 
       <Footer />
     </div>
