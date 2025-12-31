@@ -7,12 +7,15 @@
  * - Aperçu carte physique en temps réel
  */
 
-import { useState, useRef } from "react";
-import { motion } from "framer-motion";
-import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useOrderFunnel, OrderFunnelGuard, DesignConfig } from "@/contexts/OrderFunnelContext";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { OrderProgressBar } from "@/components/order/OrderProgressBar";
+import { AutoSaveIndicator } from "@/components/order/AutoSaveIndicator";
+import { RestoreDraftBanner } from "@/components/order/RestoreDraftBanner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,6 +34,11 @@ import { toast } from "sonner";
 
 // i-wasp logo
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
+
+// Extended design state for auto-save
+interface DesignFormData extends DesignConfig {
+  logoBlendMode: "normal" | "multiply" | "screen";
+}
 
 // Locked color palettes
 const COLOR_PALETTES = [
@@ -69,6 +77,50 @@ function OrderDesignContent() {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [logoBlendMode, setLogoBlendMode] = useState<"normal" | "multiply" | "screen">("normal");
+  const [showRestoreBanner, setShowRestoreBanner] = useState(false);
+
+  // Memoize form data for auto-save
+  const formData = useMemo<DesignFormData>(() => ({
+    logoUrl,
+    cardColor: selectedColor,
+    logoBlendMode,
+  }), [logoUrl, selectedColor, logoBlendMode]);
+
+  // Auto-save hook
+  const { 
+    status: saveStatus, 
+    lastSaved, 
+    hasSavedData, 
+    getSavedData, 
+    clearSaved 
+  } = useAutoSave<DesignFormData>({
+    key: "order_design",
+    data: formData,
+    enabled: true,
+  });
+
+  // Check for saved draft on mount
+  useEffect(() => {
+    if (!state.designConfig && hasSavedData()) {
+      setShowRestoreBanner(true);
+    }
+  }, [state.designConfig, hasSavedData]);
+
+  const handleRestoreDraft = () => {
+    const savedData = getSavedData();
+    if (savedData) {
+      setLogoUrl(savedData.logoUrl);
+      setSelectedColor(savedData.cardColor);
+      setLogoBlendMode(savedData.logoBlendMode || "normal");
+      toast.success("Brouillon restauré");
+    }
+    setShowRestoreBanner(false);
+  };
+
+  const handleDismissDraft = () => {
+    clearSaved();
+    setShowRestoreBanner(false);
+  };
 
   const selectedPalette = COLOR_PALETTES.find(p => p.color === selectedColor) || COLOR_PALETTES[0];
 
@@ -127,6 +179,7 @@ function OrderDesignContent() {
       logoUrl,
       cardColor: selectedColor,
     });
+    clearSaved(); // Clear draft on successful submit
     nextStep();
   };
 
@@ -138,6 +191,17 @@ function OrderDesignContent() {
         <div className="max-w-5xl mx-auto">
           {/* Step Indicator */}
           <OrderProgressBar currentStep={3} />
+
+          {/* Restore Draft Banner */}
+          <AnimatePresence>
+            {showRestoreBanner && (
+              <RestoreDraftBanner
+                lastSaved={lastSaved}
+                onRestore={handleRestoreDraft}
+                onDismiss={handleDismissDraft}
+              />
+            )}
+          </AnimatePresence>
 
           {/* Header */}
           <motion.div 
@@ -151,6 +215,10 @@ function OrderDesignContent() {
             <p className="text-muted-foreground text-lg">
               Ajoutez votre logo et choisissez la couleur
             </p>
+            {/* Auto-save indicator */}
+            <div className="flex justify-center mt-2">
+              <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
+            </div>
           </motion.div>
 
           <div className="grid gap-8 lg:grid-cols-2">
