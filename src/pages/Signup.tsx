@@ -16,9 +16,11 @@ const Signup = () => {
   const { signUp, user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated - check for existing cards
   useEffect(() => {
     if (!loading && user) {
+      // For existing users, go to dashboard (which handles empty state)
+      // New signups will be redirected via handleSubmit to /onboarding
       navigate("/dashboard", { replace: true });
     }
   }, [user, loading, navigate]);
@@ -50,7 +52,7 @@ const Signup = () => {
     }
 
     toast.success("Compte créé avec succès !");
-    navigate("/dashboard");
+    navigate("/onboarding");
   };
 
   // Render consistent structure - use visibility for loading state
