@@ -1,9 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCards } from "@/hooks/useCards";
 import nfcCardWaxSeal from "@/assets/nfc-card-wax-seal.png";
 import nfcEnvelopesLuxury from "@/assets/nfc-envelopes-luxury.png";
 
@@ -15,25 +13,13 @@ const stats = [
 
 export function HeroSection() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { data: cards = [] } = useCards();
 
   /**
-   * CTA handler - Card-first flow
-   * 1. Not logged in → login
-   * 2. No cards → onboarding
-   * 3. Has cards → order preview
+   * CTA handler - Try before signup flow
+   * Always goes to /create first (guest card creation)
    */
   const handleOrderCTA = () => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    if (cards.length === 0) {
-      navigate("/onboarding");
-      return;
-    }
-    navigate("/order");
+    navigate("/create");
   };
 
   return (

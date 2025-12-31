@@ -94,10 +94,11 @@ const Index = () => {
   const { addItem, clearCart } = useCart();
 
   /**
-   * Handles order flow with card-first logic:
-   * 1. If not logged in → redirect to login
-   * 2. If no cards → redirect to onboarding
-   * 3. If has cards → proceed with cart
+   * Handles order flow:
+   * - For quotes, redirect to email
+   * - For non-authenticated users, go to /create
+   * - For authenticated users without cards, go to /create
+   * - For authenticated users with cards, proceed with cart
    */
   const handleOrder = (plan: typeof pricingPlans[0]) => {
     // Pour les demandes de devis, rediriger vers le formulaire de contact
@@ -106,21 +107,19 @@ const Index = () => {
       return;
     }
 
-    // Step 1: Require authentication
+    // Non-authenticated: go to card creation
     if (!user) {
-      toast.info("Connectez-vous pour commander");
-      navigate("/login");
+      navigate("/create");
       return;
     }
 
-    // Step 2: Require at least 1 digital card
+    // Authenticated but no cards: go to card creation
     if (cards.length === 0) {
-      toast.info("Créez d'abord votre carte digitale");
-      navigate("/onboarding");
+      navigate("/create");
       return;
     }
 
-    // Step 3: User has cards - proceed with cart
+    // User has cards - proceed with cart
     clearCart();
     addItem({
       templateId: plan.templateId,
@@ -135,20 +134,17 @@ const Index = () => {
   };
 
   /**
-   * CTA handler for "Commander maintenant" button
-   * Always requires card creation first
+   * Main CTA handler - Try before signup
+   * Always goes to /create for guest card creation
    */
   const handleMainCTA = () => {
-    if (!user) {
-      navigate("/login");
+    // If user has cards, scroll to pricing
+    if (user && cards.length > 0) {
+      document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
-    if (cards.length === 0) {
-      navigate("/onboarding");
-      return;
-    }
-    // User has cards - scroll to pricing
-    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+    // Otherwise, go to card creation
+    navigate("/create");
   };
 
   return (
