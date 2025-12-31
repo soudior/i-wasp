@@ -107,7 +107,10 @@ export function CardCreationSuccess({ cardSlug, cardName }: CardCreationSuccessP
 
       {/* Main CTA - Order Physical Card */}
       <div className="w-full max-w-md space-y-3 animate-fade-up" style={{ animationDelay: '0.5s' }}>
-        <Link to="/checkout" className="block">
+        <Link 
+          to={`/checkout?linkedCard=${encodeURIComponent(cardSlug)}&linkedName=${encodeURIComponent(cardName)}`} 
+          className="block"
+        >
           <Button className="w-full h-14 gap-2 text-base font-semibold shadow-lg">
             <ShoppingBag size={20} />
             Commander ma carte NFC
