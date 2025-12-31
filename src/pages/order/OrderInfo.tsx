@@ -1,6 +1,6 @@
 /**
- * Step 3: Profile Information
- * /order/profile
+ * Step 2: Personal Information
+ * /order/info
  */
 
 import { useState } from "react";
@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Check, User, MapPin, Building } from "lucide-react";
 import { toast } from "sonner";
 
-function OrderProfileContent() {
+function OrderInfoContent() {
   const { state, setProfileInfo, nextStep, prevStep } = useOrderFunnel();
   const { user } = useAuth();
 
@@ -97,15 +97,15 @@ function OrderProfileContent() {
         <div className="max-w-2xl mx-auto">
           {/* Step Indicator */}
           <div className="flex items-center justify-center gap-2 mb-8">
-            {[1, 2, 3, 4, 5].map((step) => (
+            {[1, 2, 3, 4, 5, 6].map((step) => (
               <div key={step} className="flex items-center gap-2 text-sm">
-                {step > 1 && <div className={`w-8 h-1 rounded-full ${step <= 3 ? "bg-primary" : "bg-muted"}`} />}
+                {step > 1 && <div className={`w-8 h-1 rounded-full ${step <= 2 ? "bg-primary" : "bg-muted"}`} />}
                 <span className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                  step < 3 ? "bg-primary/20 text-primary" : 
-                  step === 3 ? "bg-primary text-primary-foreground" : 
+                  step < 2 ? "bg-primary/20 text-primary" : 
+                  step === 2 ? "bg-primary text-primary-foreground" : 
                   "bg-muted text-muted-foreground"
                 }`}>
-                  {step < 3 ? <Check size={16} /> : step}
+                  {step < 2 ? <Check size={16} /> : step}
                 </span>
               </div>
             ))}
@@ -319,10 +319,10 @@ function OrderProfileContent() {
   );
 }
 
-export default function OrderProfile() {
+export default function OrderInfo() {
   return (
-    <OrderFunnelGuard step={3}>
-      <OrderProfileContent />
+    <OrderFunnelGuard step={2}>
+      <OrderInfoContent />
     </OrderFunnelGuard>
   );
 }

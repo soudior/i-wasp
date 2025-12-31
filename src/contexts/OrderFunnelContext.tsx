@@ -1,12 +1,13 @@
 /**
  * OrderFunnelContext - Manages multi-step order flow state
  * 
- * STEPS:
- * 1. /order/type - Customer type selection
- * 2. /order/card - Card model, quantity, promo
- * 3. /order/profile - Personal information
- * 4. /order/design - Logo upload, color selection
- * 5. /order/summary - Final review before payment
+ * NEW FLOW:
+ * 1. /order - Customer type selection (particulier / pro / équipe)
+ * 2. /order/info - Personal information
+ * 3. /order/design - Physical card customization
+ * 4. /order/options - Quantity, promo, options
+ * 5. /order/summary - Final review
+ * 6. /order/payment - Payment only
  */
 
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from "react";
@@ -14,17 +15,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 // Customer types
 export type CustomerType = "particulier" | "professionnel" | "entreprise";
-
-// Card model selection
-export interface CardSelection {
-  modelId: string;
-  modelName: string;
-  quantity: number;
-  unitPriceCents: number;
-  totalPriceCents: number;
-  promoCode?: string;
-  promoDiscount?: number;
-}
 
 // Profile information
 export interface ProfileInfo {
@@ -46,32 +36,42 @@ export interface DesignConfig {
   designPreviewUrl?: string;
 }
 
+// Order options
+export interface OrderOptions {
+  quantity: number;
+  promoCode?: string;
+  promoDiscount?: number;
+  unitPriceCents: number;
+  totalPriceCents: number;
+}
+
 // Complete funnel state
 export interface OrderFunnelState {
   currentStep: number;
   customerType: CustomerType | null;
-  cardSelection: CardSelection | null;
   profileInfo: ProfileInfo | null;
   designConfig: DesignConfig | null;
+  orderOptions: OrderOptions | null;
   isComplete: boolean;
 }
 
-// Step paths mapping
+// Step paths mapping (6 steps)
 const STEP_PATHS = [
-  "/order/type",
-  "/order/card",
-  "/order/profile",
-  "/order/design",
-  "/order/summary",
+  "/order",           // Step 1: Choose offer
+  "/order/info",      // Step 2: Personal info
+  "/order/design",    // Step 3: Card customization
+  "/order/options",   // Step 4: Quantity, promo
+  "/order/summary",   // Step 5: Review
+  "/order/payment",   // Step 6: Payment
 ];
 
 // Context interface
 interface OrderFunnelContextType {
   state: OrderFunnelState;
   setCustomerType: (type: CustomerType) => void;
-  setCardSelection: (selection: CardSelection) => void;
   setProfileInfo: (info: ProfileInfo) => void;
   setDesignConfig: (config: DesignConfig) => void;
+  setOrderOptions: (options: OrderOptions) => void;
   goToStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
@@ -84,9 +84,9 @@ interface OrderFunnelContextType {
 const initialState: OrderFunnelState = {
   currentStep: 1,
   customerType: null,
-  cardSelection: null,
   profileInfo: null,
   designConfig: null,
+  orderOptions: null,
   isComplete: false,
 };
 
@@ -114,23 +114,25 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     sessionStorage.setItem("orderFunnelState", JSON.stringify(state));
   }, [state]);
 
-  // Check if a step can be accessed
+  // Check if a step can be accessed (6 steps now)
   const canAccessStep = useCallback((step: number): boolean => {
     if (step === 1) return true;
     if (step === 2) return state.customerType !== null;
-    if (step === 3) return state.customerType !== null && state.cardSelection !== null;
-    if (step === 4) return state.customerType !== null && state.cardSelection !== null && state.profileInfo !== null;
-    if (step === 5) return state.customerType !== null && state.cardSelection !== null && state.profileInfo !== null && state.designConfig !== null;
+    if (step === 3) return state.customerType !== null && state.profileInfo !== null;
+    if (step === 4) return state.customerType !== null && state.profileInfo !== null && state.designConfig !== null;
+    if (step === 5) return state.customerType !== null && state.profileInfo !== null && state.designConfig !== null && state.orderOptions !== null;
+    if (step === 6) return state.isComplete;
     return false;
   }, [state]);
 
   // Get first incomplete step
   const getFirstIncompleteStep = useCallback((): number => {
     if (!state.customerType) return 1;
-    if (!state.cardSelection) return 2;
-    if (!state.profileInfo) return 3;
-    if (!state.designConfig) return 4;
-    return 5;
+    if (!state.profileInfo) return 2;
+    if (!state.designConfig) return 3;
+    if (!state.orderOptions) return 4;
+    if (!state.isComplete) return 5;
+    return 6;
   }, [state]);
 
   // Set customer type (step 1)
@@ -142,31 +144,39 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  // Set card selection (step 2)
-  const setCardSelection = useCallback((selection: CardSelection) => {
-    setState(prev => ({
-      ...prev,
-      cardSelection: selection,
-      currentStep: Math.max(prev.currentStep, 2),
-    }));
-  }, []);
-
-  // Set profile info (step 3)
+  // Set profile info (step 2)
   const setProfileInfo = useCallback((info: ProfileInfo) => {
     setState(prev => ({
       ...prev,
       profileInfo: info,
-      currentStep: Math.max(prev.currentStep, 3),
+      currentStep: Math.max(prev.currentStep, 2),
     }));
   }, []);
 
-  // Set design config (step 4)
+  // Set design config (step 3)
   const setDesignConfig = useCallback((config: DesignConfig) => {
     setState(prev => ({
       ...prev,
       designConfig: config,
+      currentStep: Math.max(prev.currentStep, 3),
+    }));
+  }, []);
+
+  // Set order options (step 4)
+  const setOrderOptions = useCallback((options: OrderOptions) => {
+    setState(prev => ({
+      ...prev,
+      orderOptions: options,
       currentStep: Math.max(prev.currentStep, 4),
+    }));
+  }, []);
+
+  // Mark as complete (step 5 -> ready for payment)
+  const markComplete = useCallback(() => {
+    setState(prev => ({
+      ...prev,
       isComplete: true,
+      currentStep: 5,
     }));
   }, []);
 
@@ -204,12 +214,14 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
       case 1:
         return state.customerType !== null;
       case 2:
-        return state.cardSelection !== null;
-      case 3:
         return state.profileInfo !== null;
-      case 4:
+      case 3:
         return state.designConfig !== null;
+      case 4:
+        return state.orderOptions !== null;
       case 5:
+        return state.isComplete;
+      case 6:
         return state.isComplete;
       default:
         return false;
@@ -227,9 +239,9 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
       value={{
         state,
         setCustomerType,
-        setCardSelection,
         setProfileInfo,
         setDesignConfig,
+        setOrderOptions,
         goToStep,
         nextStep,
         prevStep,

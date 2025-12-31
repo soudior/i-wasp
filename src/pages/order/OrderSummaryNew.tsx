@@ -3,14 +3,12 @@
  * /order/summary
  * 
  * - Récapitulatif complet de la commande
- * - Bouton "Payer" uniquement ici
+ * - Bouton "Procéder au paiement" uniquement ici
  */
 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCart } from "@/contexts/CartContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { formatPrice } from "@/lib/pricing";
@@ -21,57 +19,37 @@ import { OrderTrustBadges } from "@/components/order";
 import { 
   ArrowLeft, 
   Check, 
-  CreditCard,
+  ArrowRight,
   Package,
   User,
-  Palette,
   MapPin,
   Edit2,
   Shield,
   Truck,
   Clock
 } from "lucide-react";
-import { toast } from "sonner";
 
 // i-wasp logo
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 
 function OrderSummaryContent() {
   const navigate = useNavigate();
-  const { state, prevStep, goToStep, resetFunnel } = useOrderFunnel();
-  const { user } = useAuth();
-  const { addItem } = useCart();
+  const { state, prevStep, goToStep } = useOrderFunnel();
 
-  const handleProceedToCheckout = () => {
-    if (!user) {
-      toast.error("Veuillez vous connecter pour continuer");
-      // Store funnel state before redirecting
-      navigate("/login?redirect=/order/summary");
-      return;
-    }
-
-    // Verify all steps are complete
-    if (!state.customerType || !state.cardSelection || !state.profileInfo || !state.designConfig) {
-      toast.error("Configuration incomplète");
-      return;
-    }
-
-    // Add to cart and proceed to checkout
-    addItem({
-      templateId: state.cardSelection.modelId,
-      templateName: state.cardSelection.modelName,
-      cardName: `Carte ${state.cardSelection.modelName}`,
-      quantity: state.cardSelection.quantity,
-      unitPriceCents: Math.round(state.cardSelection.totalPriceCents / state.cardSelection.quantity),
-      logoUrl: state.designConfig.logoUrl || undefined,
-    });
-
-    // Navigate to checkout
-    navigate("/checkout");
+  const handleProceedToPayment = () => {
+    // Navigate to payment step
+    navigate("/order/payment");
   };
 
   const selectedPalette = state.designConfig?.cardColor || "#1A1A1A";
   const isLightColor = selectedPalette === "#FFFFFF";
+
+  // Get customer type label
+  const customerTypeLabel = {
+    particulier: "Particulier",
+    professionnel: "Professionnel",
+    entreprise: "Entreprise"
+  }[state.customerType || "particulier"];
 
   return (
     <div className="min-h-screen bg-background">
@@ -81,11 +59,13 @@ function OrderSummaryContent() {
         <div className="max-w-4xl mx-auto">
           {/* Step Indicator */}
           <div className="flex items-center justify-center gap-2 mb-8">
-            {[1, 2, 3, 4, 5].map((step) => (
+            {[1, 2, 3, 4, 5, 6].map((step) => (
               <div key={step} className="flex items-center gap-2 text-sm">
-                {step > 1 && <div className="w-8 h-1 rounded-full bg-primary" />}
+                {step > 1 && <div className={`w-8 h-1 rounded-full ${step <= 5 ? "bg-primary" : "bg-muted"}`} />}
                 <span className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                  step < 5 ? "bg-primary/20 text-primary" : "bg-primary text-primary-foreground"
+                  step < 5 ? "bg-primary/20 text-primary" : 
+                  step === 5 ? "bg-primary text-primary-foreground" : 
+                  "bg-muted text-muted-foreground"
                 }`}>
                   {step < 5 ? <Check size={16} /> : step}
                 </span>
@@ -103,7 +83,7 @@ function OrderSummaryContent() {
               Récapitulatif de commande
             </h1>
             <p className="text-muted-foreground text-lg">
-              Vérifiez les détails avant de payer
+              Vérifiez les détails avant de procéder au paiement
             </p>
           </motion.div>
 
@@ -119,9 +99,9 @@ function OrderSummaryContent() {
                   <CardHeader className="flex-row items-center justify-between">
                     <CardTitle className="flex items-center gap-2 text-lg">
                       <Package size={20} className="text-primary" />
-                      Votre carte
+                      Votre carte NFC
                     </CardTitle>
-                    <Button variant="ghost" size="sm" onClick={() => goToStep(4)}>
+                    <Button variant="ghost" size="sm" onClick={() => goToStep(3)}>
                       <Edit2 size={14} className="mr-1" />
                       Modifier
                     </Button>
@@ -161,9 +141,9 @@ function OrderSummaryContent() {
                       </div>
 
                       <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{state.cardSelection?.modelName}</h3>
+                        <h3 className="font-semibold text-lg">Carte NFC {customerTypeLabel}</h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          Quantité : {state.cardSelection?.quantity} carte{(state.cardSelection?.quantity || 0) > 1 ? "s" : ""}
+                          Quantité : {state.orderOptions?.quantity} carte{(state.orderOptions?.quantity || 0) > 1 ? "s" : ""}
                         </p>
                         <div className="flex items-center gap-2">
                           <div
@@ -197,7 +177,7 @@ function OrderSummaryContent() {
                       <User size={20} className="text-primary" />
                       Vos coordonnées
                     </CardTitle>
-                    <Button variant="ghost" size="sm" onClick={() => goToStep(3)}>
+                    <Button variant="ghost" size="sm" onClick={() => goToStep(2)}>
                       <Edit2 size={14} className="mr-1" />
                       Modifier
                     </Button>
@@ -241,7 +221,7 @@ function OrderSummaryContent() {
                       <MapPin size={20} className="text-primary" />
                       Adresse de livraison
                     </CardTitle>
-                    <Button variant="ghost" size="sm" onClick={() => goToStep(3)}>
+                    <Button variant="ghost" size="sm" onClick={() => goToStep(2)}>
                       <Edit2 size={14} className="mr-1" />
                       Modifier
                     </Button>
@@ -272,14 +252,14 @@ function OrderSummaryContent() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">
-                        {state.cardSelection?.modelName} × {state.cardSelection?.quantity}
+                        Carte NFC × {state.orderOptions?.quantity}
                       </span>
-                      <span>{formatPrice(state.cardSelection?.totalPriceCents || 0)}</span>
+                      <span>{formatPrice(state.orderOptions?.totalPriceCents || 0)}</span>
                     </div>
-                    {state.cardSelection?.promoDiscount && (
+                    {state.orderOptions?.promoDiscount && (
                       <div className="flex justify-between text-green-600">
-                        <span>Réduction ({state.cardSelection.promoCode})</span>
-                        <span>-{state.cardSelection.promoDiscount}%</span>
+                        <span>Réduction ({state.orderOptions.promoCode})</span>
+                        <span>-{state.orderOptions.promoDiscount}%</span>
                       </div>
                     )}
                     <div className="flex justify-between">
@@ -292,17 +272,17 @@ function OrderSummaryContent() {
 
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total TTC</span>
-                    <span>{formatPrice(state.cardSelection?.totalPriceCents || 0)}</span>
+                    <span>{formatPrice(state.orderOptions?.totalPriceCents || 0)}</span>
                   </div>
 
                   {/* CTA */}
                   <Button
                     size="lg"
-                    onClick={handleProceedToCheckout}
+                    onClick={handleProceedToPayment}
                     className="w-full h-14 text-lg rounded-full bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90"
                   >
-                    <CreditCard className="mr-2 h-5 w-5" />
-                    Payer maintenant
+                    Procéder au paiement
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
 
                   {/* NFC Trust badges */}
@@ -345,7 +325,7 @@ function OrderSummaryContent() {
   );
 }
 
-export default function OrderSummary() {
+export default function OrderSummaryNew() {
   return (
     <OrderFunnelGuard step={5}>
       <OrderSummaryContent />

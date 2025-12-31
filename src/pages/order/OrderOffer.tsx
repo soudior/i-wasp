@@ -1,9 +1,12 @@
 /**
- * Step 1: Customer Type Selection
- * /order/type
+ * Step 1: Offer Selection
+ * /order
+ * 
+ * Choix de l'offre : particulier / pro / équipe
  */
 
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useOrderFunnel, CustomerType } from "@/contexts/OrderFunnelContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -37,9 +40,11 @@ const customerTypes = [
   },
 ];
 
-export default function OrderType() {
-  const { state, setCustomerType, nextStep } = useOrderFunnel();
+export default function OrderOffer() {
+  const navigate = useNavigate();
+  const { state, setCustomerType, nextStep, resetFunnel } = useOrderFunnel();
 
+  // Reset funnel when landing on this page (start fresh)
   const handleSelect = (type: CustomerType) => {
     setCustomerType(type);
   };
@@ -58,11 +63,11 @@ export default function OrderType() {
         <div className="max-w-4xl mx-auto">
           {/* Step Indicator */}
           <div className="flex items-center justify-center gap-2 mb-8">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm">
               <span className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">1</span>
-              <span className="hidden sm:inline">Type</span>
+              <span className="hidden sm:inline text-muted-foreground">Offre</span>
             </div>
-            {[2, 3, 4, 5].map((step) => (
+            {[2, 3, 4, 5, 6].map((step) => (
               <div key={step} className="flex items-center gap-2 text-sm text-muted-foreground opacity-50">
                 <div className="w-8 h-1 bg-muted rounded-full" />
                 <span className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-semibold">{step}</span>
@@ -77,10 +82,10 @@ export default function OrderType() {
             animate={{ opacity: 1, y: 0 }}
           >
             <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">
-              Quel type de client êtes-vous ?
+              Choisissez votre offre
             </h1>
             <p className="text-muted-foreground text-lg">
-              Sélectionnez votre profil pour voir les options adaptées
+              Sélectionnez le profil qui correspond à vos besoins
             </p>
           </motion.div>
 

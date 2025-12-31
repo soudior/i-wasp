@@ -6,14 +6,11 @@ import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-
 import { AuthProvider } from "@/contexts/AuthContext";
 import { GuestCardProvider } from "@/contexts/GuestCardContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { OrderFunnelProvider } from "@/contexts/OrderFunnelContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
-import { CardRequiredGuard } from "@/components/CardRequiredGuard";
 import PublicCard from "./pages/PublicCard";
 import AdminClients from "./pages/AdminClients";
 import FirstCardSetup from "./pages/FirstCardSetup";
-import OrderPreview from "./pages/OrderPreview";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
@@ -22,6 +19,14 @@ import Dashboard from "./pages/Dashboard";
 import GuestCardCreator from "./pages/GuestCardCreator";
 import FinalizeCard from "./pages/FinalizeCard";
 import Index from "./pages/Index";
+
+// Order funnel pages
+import OrderOffer from "./pages/order/OrderOffer";
+import OrderInfo from "./pages/order/OrderInfo";
+import OrderDesignNew from "./pages/order/OrderDesignNew";
+import OrderOptions from "./pages/order/OrderOptions";
+import OrderSummaryNew from "./pages/order/OrderSummaryNew";
+import OrderPayment from "./pages/order/OrderPayment";
 
 const queryClient = new QueryClient();
 
@@ -39,45 +44,50 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <Routes>
-                {/* Landing page */}
-                <Route path="/" element={<Index />} />
-                
-                {/* Public NFC Card */}
-                <Route path="/c/:slug" element={<LegacyCardRedirect />} />
-                <Route path="/card/:slug" element={<PublicCard />} />
-                
-                {/* Auth */}
-                <Route path="/login" element={<Login />} />
-                
-                {/* Guest card creation - no auth required */}
-                <Route path="/create" element={<GuestCardCreator />} />
-                
-                {/* Finalize card after auth */}
-                <Route path="/onboarding/finalize" element={<FinalizeCard />} />
-                
-                {/* Dashboard - Main user hub (guarded) */}
-                <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
-                
-                {/* Legacy onboarding (for logged in users) */}
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/onboarding/success" element={<OnboardingSuccess />} />
-                
-                {/* First card setup (legacy) */}
-                <Route path="/setup" element={<FirstCardSetup />} />
-                
-                {/* Order flow - All require at least 1 card */}
-                <Route path="/order" element={<CardRequiredGuard><OrderPreview /></CardRequiredGuard>} />
-                <Route path="/cart" element={<CardRequiredGuard><Cart /></CardRequiredGuard>} />
-                <Route path="/checkout" element={<CardRequiredGuard><Checkout /></CardRequiredGuard>} />
-                
-                {/* Admin - Client management */}
-                <Route path="/admin" element={<AdminClients />} />
-                <Route path="/admin/clients" element={<AdminClients />} />
-                
-                {/* 404 */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <OrderFunnelProvider>
+                <Routes>
+                  {/* Landing page */}
+                  <Route path="/" element={<Index />} />
+                  
+                  {/* Public NFC Card */}
+                  <Route path="/c/:slug" element={<LegacyCardRedirect />} />
+                  <Route path="/card/:slug" element={<PublicCard />} />
+                  
+                  {/* Auth */}
+                  <Route path="/login" element={<Login />} />
+                  
+                  {/* Guest card creation - no auth required */}
+                  <Route path="/create" element={<GuestCardCreator />} />
+                  
+                  {/* Finalize card after auth */}
+                  <Route path="/onboarding/finalize" element={<FinalizeCard />} />
+                  
+                  {/* Dashboard - Main user hub (guarded) */}
+                  <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
+                  
+                  {/* Legacy onboarding (for logged in users) */}
+                  <Route path="/onboarding" element={<Onboarding />} />
+                  <Route path="/onboarding/success" element={<OnboardingSuccess />} />
+                  
+                  {/* First card setup (legacy) */}
+                  <Route path="/setup" element={<FirstCardSetup />} />
+                  
+                  {/* ORDER FUNNEL - 6 steps */}
+                  <Route path="/order" element={<OrderOffer />} />
+                  <Route path="/order/info" element={<OrderInfo />} />
+                  <Route path="/order/design" element={<OrderDesignNew />} />
+                  <Route path="/order/options" element={<OrderOptions />} />
+                  <Route path="/order/summary" element={<OrderSummaryNew />} />
+                  <Route path="/order/payment" element={<OrderPayment />} />
+                  
+                  {/* Admin - Client management */}
+                  <Route path="/admin" element={<AdminClients />} />
+                  <Route path="/admin/clients" element={<AdminClients />} />
+                  
+                  {/* 404 */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </OrderFunnelProvider>
             </BrowserRouter>
           </TooltipProvider>
         </CartProvider>
