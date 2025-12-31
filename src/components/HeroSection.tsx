@@ -50,10 +50,10 @@ export function HeroSection() {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-display font-semibold leading-[1.1] tracking-tight"
             >
-              <span className="text-white">Carte NFC IWASP</span>
+              <span className="text-white">Partagez vos contacts</span>
               <br />
               <span className="bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 bg-clip-text text-transparent">
-                votre identité pro en un geste
+                en un seul geste
               </span>
             </motion.h1>
 
@@ -63,24 +63,29 @@ export function HeroSection() {
               transition={{ delay: 0.3, duration: 0.6 }}
               className="text-lg text-white/70 leading-relaxed"
             >
-              Partagez vos coordonnées instantanément. Compatible Apple Wallet, Google Wallet, 
-              et tous les smartphones NFC. Un simple toucher suffit.
+              Une carte NFC premium. Un achat unique. Votre profil digital inclus à vie.
+              <span className="block mt-2 text-white/50">
+                Compatible tous smartphones · Apple & Google Wallet
+              </span>
             </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="flex flex-wrap gap-4 pt-2"
+              className="flex flex-col sm:flex-row items-start gap-4 pt-2"
             >
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-background font-semibold px-8 py-6 rounded-full shadow-lg shadow-amber-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105"
-                onClick={handleOrderCTA}
-              >
-                Commander une carte
-                <ArrowRight size={18} className="ml-2" />
-              </Button>
+              <div className="flex flex-col items-start">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-background font-semibold px-8 py-6 rounded-full shadow-lg shadow-amber-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105"
+                  onClick={handleOrderCTA}
+                >
+                  Essayer gratuitement
+                  <ArrowRight size={18} className="ml-2" />
+                </Button>
+                <span className="text-sm text-white/50 mt-2 ml-2">Sans inscription</span>
+              </div>
               <Link to="/demo">
                 <Button 
                   variant="outline" 
