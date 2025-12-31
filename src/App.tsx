@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-
 import { AuthProvider } from "@/contexts/AuthContext";
 import PublicCard from "./pages/PublicCard";
 import AdminClients from "./pages/AdminClients";
+import FirstCardSetup from "./pages/FirstCardSetup";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +32,9 @@ const App = () => (
             
             {/* Auth */}
             <Route path="/login" element={<Login />} />
+            
+            {/* First card setup */}
+            <Route path="/setup" element={<FirstCardSetup />} />
             
             {/* Admin - Client management */}
             <Route path="/admin" element={<AdminClients />} />
