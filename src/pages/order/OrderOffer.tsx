@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useOrderFunnel, CustomerType } from "@/contexts/OrderFunnelContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { OrderProgressBar } from "@/components/order/OrderProgressBar";
 import { User, Briefcase, Building2, Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -62,18 +63,7 @@ export default function OrderOffer() {
       <main className="pt-24 pb-32 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Step Indicator */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <div className="flex items-center gap-2 text-sm">
-              <span className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">1</span>
-              <span className="hidden sm:inline text-muted-foreground">Offre</span>
-            </div>
-            {[2, 3, 4, 5, 6].map((step) => (
-              <div key={step} className="flex items-center gap-2 text-sm text-muted-foreground opacity-50">
-                <div className="w-8 h-1 bg-muted rounded-full" />
-                <span className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-semibold">{step}</span>
-              </div>
-            ))}
-          </div>
+          <OrderProgressBar currentStep={1} />
 
           {/* Header */}
           <motion.div 
