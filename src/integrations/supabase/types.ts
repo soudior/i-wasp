@@ -605,6 +605,7 @@ export type Database = {
         Returns: string
       }
       get_public_card: { Args: { p_slug: string }; Returns: Json }
+      get_vcard_data: { Args: { p_slug: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

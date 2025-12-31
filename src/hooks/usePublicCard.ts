@@ -40,7 +40,8 @@ export function usePublicCard(slug: string) {
       });
 
       if (error) throw error;
-      return data as PublicCardData | null;
+      if (!data) return null;
+      return data as unknown as PublicCardData;
     },
     enabled: !!slug,
   });

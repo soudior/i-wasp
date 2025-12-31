@@ -54,8 +54,8 @@ const PublicCard = () => {
     if (!card || !slug) return;
     
     try {
-      // Get vCard data securely from server
-      const { data, error } = await supabase.rpc("get_vcard_data", {
+      // Get vCard data securely from server using raw RPC call
+      const { data, error } = await supabase.rpc("get_vcard_data" as any, {
         p_slug: slug,
       });
       
@@ -64,17 +64,27 @@ const PublicCard = () => {
         return;
       }
 
+      const vcardData = data as {
+        first_name?: string;
+        last_name?: string;
+        title?: string;
+        company?: string;
+        email?: string;
+        phone?: string;
+        slug?: string;
+      };
+
       // Generate vCard content
       const vCardContent = [
         "BEGIN:VCARD",
         "VERSION:3.0",
-        `N:${data.last_name || ""};${data.first_name || ""};;;`,
-        `FN:${data.first_name || ""} ${data.last_name || ""}`,
-        data.title ? `TITLE:${data.title}` : null,
-        data.company ? `ORG:${data.company}` : null,
-        data.email ? `EMAIL:${data.email}` : null,
-        data.phone ? `TEL:${data.phone}` : null,
-        `URL:${window.location.origin}/card/${data.slug}`,
+        `N:${vcardData.last_name || ""};${vcardData.first_name || ""};;;`,
+        `FN:${vcardData.first_name || ""} ${vcardData.last_name || ""}`,
+        vcardData.title ? `TITLE:${vcardData.title}` : null,
+        vcardData.company ? `ORG:${vcardData.company}` : null,
+        vcardData.email ? `EMAIL:${vcardData.email}` : null,
+        vcardData.phone ? `TEL:${vcardData.phone}` : null,
+        `URL:${window.location.origin}/card/${vcardData.slug}`,
         "END:VCARD",
       ]
         .filter(Boolean)
@@ -84,7 +94,7 @@ const PublicCard = () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${data.first_name || "contact"}_${data.last_name || ""}.vcf`;
+      a.download = `${vcardData.first_name || "contact"}_${vcardData.last_name || ""}.vcf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
