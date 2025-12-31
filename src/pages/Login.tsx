@@ -1,27 +1,39 @@
 /**
  * Login - Apple Cupertino style
  * Minimal, functional authentication
+ * Supports returnTo parameter for seamless flow continuation
  */
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGuestCard } from "@/contexts/GuestCardContext";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, user, loading } = useAuth();
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const { signIn, signUp, user, loading } = useAuth();
+  const { hasGuestCard } = useGuestCard();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const returnTo = searchParams.get("returnTo") || "/dashboard";
 
   // Redirect if already authenticated
   useEffect(() => {
     if (!loading && user) {
-      navigate("/dashboard", { replace: true });
+      // If user has a guest card and returnTo is finalize, go there
+      if (hasGuestCard && returnTo.includes("finalize")) {
+        navigate(returnTo, { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, navigate, hasGuestCard, returnTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,21 +43,44 @@ export default function Login() {
       return;
     }
 
-    setIsLoading(true);
-    const { error } = await signIn(email, password);
-    setIsLoading(false);
-
-    if (error) {
-      if (error.message.includes("Invalid login credentials")) {
-        toast.error("Email ou mot de passe incorrect");
-      } else {
-        toast.error(error.message);
-      }
+    if (password.length < 6) {
+      toast.error("Le mot de passe doit contenir au moins 6 caractères");
       return;
     }
 
-    toast.success("Connexion réussie");
-    navigate("/dashboard");
+    setIsLoading(true);
+    
+    if (mode === "signup") {
+      const { error } = await signUp(email, password);
+      setIsLoading(false);
+
+      if (error) {
+        if (error.message.includes("already registered")) {
+          toast.error("Cet email est déjà utilisé");
+        } else {
+          toast.error(error.message);
+        }
+        return;
+      }
+
+      toast.success("Compte créé !");
+      // Navigate will happen via useEffect when user state updates
+    } else {
+      const { error } = await signIn(email, password);
+      setIsLoading(false);
+
+      if (error) {
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Email ou mot de passe incorrect");
+        } else {
+          toast.error(error.message);
+        }
+        return;
+      }
+
+      toast.success("Connexion réussie");
+      navigate(returnTo);
+    }
   };
 
   // Loading state
@@ -62,6 +97,20 @@ export default function Login() {
       className="min-h-dvh flex flex-col items-center justify-center p-6"
       style={{ backgroundColor: "#F5F5F7" }}
     >
+      {/* Back button if coming from guest flow */}
+      {hasGuestCard && (
+        <div className="w-full max-w-sm mb-4">
+          <button
+            onClick={() => navigate("/create")}
+            className="flex items-center gap-2 text-sm"
+            style={{ color: "#007AFF" }}
+          >
+            <ArrowLeft size={16} />
+            Retour à ma carte
+          </button>
+        </div>
+      )}
+
       {/* Card */}
       <div 
         className="w-full max-w-sm rounded-2xl p-8 shadow-sm"
@@ -73,8 +122,16 @@ export default function Login() {
             className="text-2xl font-semibold tracking-tight"
             style={{ color: "#1D1D1F" }}
           >
-            Connexion
+            {mode === "signup" ? "Créer un compte" : "Connexion"}
           </h1>
+          {hasGuestCard && (
+            <p 
+              className="text-sm mt-2"
+              style={{ color: "#8E8E93" }}
+            >
+              Pour sauvegarder votre carte
+            </p>
+          )}
         </div>
 
         {/* Form */}
@@ -140,11 +197,25 @@ export default function Login() {
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+            ) : mode === "signup" ? (
+              "Créer mon compte"
             ) : (
               "Se connecter"
             )}
           </button>
         </form>
+
+        {/* Toggle mode */}
+        <div className="mt-6 text-center">
+          <button
+            type="button"
+            onClick={() => setMode(mode === "login" ? "signup" : "login")}
+            className="text-sm"
+            style={{ color: "#007AFF" }}
+          >
+            {mode === "login" ? "Pas encore de compte ? Créer un compte" : "Déjà un compte ? Se connecter"}
+          </button>
+        </div>
       </div>
     </div>
   );
