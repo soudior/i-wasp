@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { leadCaptureSchema, validateForm, sanitizePhone } from "@/lib/validation";
 
 interface LeadCaptureSheetProps {
   open: boolean;
@@ -59,6 +60,7 @@ export function LeadCaptureSheet({
     email: "",
     phone: "",
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [consentGiven, setConsentGiven] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -68,21 +70,34 @@ export function LeadCaptureSheet({
       return;
     }
     
-    if (!formData.firstname.trim()) {
-      toast.error("Le prénom est requis");
+    // Validate with zod schema
+    const validation = validateForm(leadCaptureSchema, formData);
+    
+    if (validation.success === false) {
+      setFieldErrors(validation.errors);
+      const firstError = Object.values(validation.errors)[0];
+      if (firstError) toast.error(String(firstError));
       return;
     }
+    
+    // Clear errors on successful validation
+    setFieldErrors({});
+    const sanitizedData = validation.data;
 
     setIsSubmitting(true);
     try {
-      const leadScore = calculateLeadScore({ name: formData.firstname, email: formData.email, phone: formData.phone });
+      const leadScore = calculateLeadScore({ 
+        name: sanitizedData.firstname, 
+        email: sanitizedData.email, 
+        phone: sanitizedData.phone 
+      });
       const deviceType = getDeviceType();
       
       const { error } = await supabase.from("leads").insert({
         card_id: cardId,
-        name: formData.firstname || null,
-        email: formData.email || null,
-        phone: formData.phone || null,
+        name: sanitizedData.firstname || null,
+        email: sanitizedData.email || null,
+        phone: sanitizedData.phone ? sanitizePhone(sanitizedData.phone) : null,
         company: null,
         message: null,
         consent_given: true,
@@ -114,11 +129,20 @@ export function LeadCaptureSheet({
 
   const resetForm = () => {
     setFormData({ firstname: "", email: "", phone: "" });
+    setFieldErrors({});
     setConsentGiven(false);
   };
 
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
+    // Clear field error on change
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
   };
 
   const isFormValid = consentGiven && formData.firstname.trim();

@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { downloadVCard } from "@/lib/vcard";
+import { clientFormSchema, validateForm, type ClientFormData } from "@/lib/validation";
 
 interface Client {
   id: string;
@@ -46,7 +47,7 @@ interface Client {
   slug: string;
 }
 
-interface ClientFormData {
+interface ClientFormState {
   first_name: string;
   last_name: string;
   title: string;
@@ -57,7 +58,7 @@ interface ClientFormData {
   whatsapp: string;
 }
 
-const initialFormData: ClientFormData = {
+const initialFormData: ClientFormState = {
   first_name: "",
   last_name: "",
   title: "",
@@ -78,7 +79,8 @@ export default function AdminClients() {
   
   const [showForm, setShowForm] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
-  const [formData, setFormData] = useState<ClientFormData>(initialFormData);
+  const [formData, setFormData] = useState<ClientFormState>(initialFormData);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
   
   // Password protection state
@@ -131,7 +133,14 @@ export default function AdminClients() {
   const createClient = useMutation({
     mutationFn: async (data: ClientFormData) => {
       const { error } = await supabase.from("digital_cards").insert({
-        ...data,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        title: data.title || null,
+        company: data.company || null,
+        phone: data.phone || null,
+        email: data.email || null,
+        linkedin: data.linkedin || null,
+        whatsapp: data.whatsapp || null,
         user_id: user?.id,
         slug: `${data.first_name}-${data.last_name}`.toLowerCase().replace(/\s+/g, "-"),
       });
@@ -150,7 +159,16 @@ export default function AdminClients() {
     mutationFn: async ({ id, data }: { id: string; data: ClientFormData }) => {
       const { error } = await supabase
         .from("digital_cards")
-        .update(data)
+        .update({
+          first_name: data.first_name,
+          last_name: data.last_name,
+          title: data.title || null,
+          company: data.company || null,
+          phone: data.phone || null,
+          email: data.email || null,
+          linkedin: data.linkedin || null,
+          whatsapp: data.whatsapp || null,
+        })
         .eq("id", id);
       if (error) throw error;
     },
@@ -184,12 +202,14 @@ export default function AdminClients() {
 
   const resetForm = () => {
     setFormData(initialFormData);
+    setFieldErrors({});
     setEditingClient(null);
     setShowForm(false);
   };
 
   const handleEdit = (client: Client) => {
     setEditingClient(client);
+    setFieldErrors({});
     setFormData({
       first_name: client.first_name,
       last_name: client.last_name,
@@ -206,20 +226,36 @@ export default function AdminClients() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate required fields
-    if (!formData.first_name.trim()) {
-      toast.error("Le prénom est obligatoire");
-      return;
-    }
-    if (!formData.last_name.trim()) {
-      toast.error("Le nom est obligatoire");
+    // Validate with zod schema
+    const validation = validateForm(clientFormSchema, formData);
+    
+    if (validation.success === false) {
+      setFieldErrors(validation.errors);
+      const firstError = Object.values(validation.errors)[0];
+      if (firstError) toast.error(String(firstError));
       return;
     }
     
+    // Clear errors on success
+    setFieldErrors({});
+    const sanitizedData = validation.data;
+    
     if (editingClient) {
-      updateClient.mutate({ id: editingClient.id, data: formData });
+      updateClient.mutate({ id: editingClient.id, data: sanitizedData });
     } else {
-      createClient.mutate(formData);
+      createClient.mutate(sanitizedData);
+    }
+  };
+
+  // Handle field change with error clearing
+  const handleFieldChange = (field: keyof ClientFormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
     }
   };
 
@@ -399,21 +435,27 @@ export default function AdminClients() {
                   <Label style={{ color: "#1D1D1F" }}>Prénom</Label>
                   <Input
                     value={formData.first_name}
-                    onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                    onChange={handleFieldChange("first_name")}
                     required
-                    className="rounded-xl border-gray-200"
+                    className={`rounded-xl border-gray-200 ${fieldErrors.first_name ? "border-red-500" : ""}`}
                     style={{ backgroundColor: "#F5F5F7" }}
                   />
+                  {fieldErrors.first_name && (
+                    <p className="text-xs text-red-500">{fieldErrors.first_name}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label style={{ color: "#1D1D1F" }}>Nom</Label>
                   <Input
                     value={formData.last_name}
-                    onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                    onChange={handleFieldChange("last_name")}
                     required
-                    className="rounded-xl border-gray-200"
+                    className={`rounded-xl border-gray-200 ${fieldErrors.last_name ? "border-red-500" : ""}`}
                     style={{ backgroundColor: "#F5F5F7" }}
                   />
+                  {fieldErrors.last_name && (
+                    <p className="text-xs text-red-500">{fieldErrors.last_name}</p>
+                  )}
                 </div>
               </div>
 
@@ -422,19 +464,25 @@ export default function AdminClients() {
                   <Label style={{ color: "#1D1D1F" }}>Poste</Label>
                   <Input
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="rounded-xl border-gray-200"
+                    onChange={handleFieldChange("title")}
+                    className={`rounded-xl border-gray-200 ${fieldErrors.title ? "border-red-500" : ""}`}
                     style={{ backgroundColor: "#F5F5F7" }}
                   />
+                  {fieldErrors.title && (
+                    <p className="text-xs text-red-500">{fieldErrors.title}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label style={{ color: "#1D1D1F" }}>Entreprise</Label>
                   <Input
                     value={formData.company}
-                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="rounded-xl border-gray-200"
+                    onChange={handleFieldChange("company")}
+                    className={`rounded-xl border-gray-200 ${fieldErrors.company ? "border-red-500" : ""}`}
                     style={{ backgroundColor: "#F5F5F7" }}
                   />
+                  {fieldErrors.company && (
+                    <p className="text-xs text-red-500">{fieldErrors.company}</p>
+                  )}
                 </div>
               </div>
 
@@ -444,20 +492,26 @@ export default function AdminClients() {
                   <Input
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="rounded-xl border-gray-200"
+                    onChange={handleFieldChange("phone")}
+                    className={`rounded-xl border-gray-200 ${fieldErrors.phone ? "border-red-500" : ""}`}
                     style={{ backgroundColor: "#F5F5F7" }}
                   />
+                  {fieldErrors.phone && (
+                    <p className="text-xs text-red-500">{fieldErrors.phone}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label style={{ color: "#1D1D1F" }}>Email</Label>
                   <Input
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="rounded-xl border-gray-200"
+                    onChange={handleFieldChange("email")}
+                    className={`rounded-xl border-gray-200 ${fieldErrors.email ? "border-red-500" : ""}`}
                     style={{ backgroundColor: "#F5F5F7" }}
                   />
+                  {fieldErrors.email && (
+                    <p className="text-xs text-red-500">{fieldErrors.email}</p>
+                  )}
                 </div>
               </div>
 
@@ -466,22 +520,28 @@ export default function AdminClients() {
                   <Label style={{ color: "#1D1D1F" }}>LinkedIn (optionnel)</Label>
                   <Input
                     value={formData.linkedin}
-                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    onChange={handleFieldChange("linkedin")}
                     placeholder="https://linkedin.com/in/..."
-                    className="rounded-xl border-gray-200"
+                    className={`rounded-xl border-gray-200 ${fieldErrors.linkedin ? "border-red-500" : ""}`}
                     style={{ backgroundColor: "#F5F5F7" }}
                   />
+                  {fieldErrors.linkedin && (
+                    <p className="text-xs text-red-500">{fieldErrors.linkedin}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label style={{ color: "#1D1D1F" }}>WhatsApp (optionnel)</Label>
                   <Input
                     type="tel"
                     value={formData.whatsapp}
-                    onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                    onChange={handleFieldChange("whatsapp")}
                     placeholder="+33 6 12 34 56 78"
-                    className="rounded-xl border-gray-200"
+                    className={`rounded-xl border-gray-200 ${fieldErrors.whatsapp ? "border-red-500" : ""}`}
                     style={{ backgroundColor: "#F5F5F7" }}
                   />
+                  {fieldErrors.whatsapp && (
+                    <p className="text-xs text-red-500">{fieldErrors.whatsapp}</p>
+                  )}
                 </div>
               </div>
 
