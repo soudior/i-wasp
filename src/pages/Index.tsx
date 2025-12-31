@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Wifi, CreditCard, Building2, Hotel, Store, CalendarDays, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NFCPhysicalCardSection } from "@/components/print/NFCPhysicalCardSection";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCards } from "@/hooks/useCards";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
@@ -87,8 +89,16 @@ const pricingPlans = [
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: cards = [] } = useCards();
   const { addItem, clearCart } = useCart();
 
+  /**
+   * Handles order flow with card-first logic:
+   * 1. If not logged in → redirect to login
+   * 2. If no cards → redirect to onboarding
+   * 3. If has cards → proceed with cart
+   */
   const handleOrder = (plan: typeof pricingPlans[0]) => {
     // Pour les demandes de devis, rediriger vers le formulaire de contact
     if (plan.isQuote) {
@@ -96,7 +106,21 @@ const Index = () => {
       return;
     }
 
-    // Vider le panier et ajouter le produit sélectionné
+    // Step 1: Require authentication
+    if (!user) {
+      toast.info("Connectez-vous pour commander");
+      navigate("/login");
+      return;
+    }
+
+    // Step 2: Require at least 1 digital card
+    if (cards.length === 0) {
+      toast.info("Créez d'abord votre carte digitale");
+      navigate("/onboarding");
+      return;
+    }
+
+    // Step 3: User has cards - proceed with cart
     clearCart();
     addItem({
       templateId: plan.templateId,
@@ -108,6 +132,23 @@ const Index = () => {
 
     toast.success(`${plan.name} ajouté au panier`);
     navigate("/cart");
+  };
+
+  /**
+   * CTA handler for "Commander maintenant" button
+   * Always requires card creation first
+   */
+  const handleMainCTA = () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    if (cards.length === 0) {
+      navigate("/onboarding");
+      return;
+    }
+    // User has cards - scroll to pricing
+    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -162,7 +203,7 @@ const Index = () => {
             <Button 
               size="lg" 
               className="bg-foreground text-background hover:bg-foreground/90 gap-2"
-              onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={handleMainCTA}
             >
               Commander maintenant
               <ArrowRight className="w-4 h-4" />

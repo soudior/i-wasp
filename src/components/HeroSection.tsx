@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCards } from "@/hooks/useCards";
 import nfcCardWaxSeal from "@/assets/nfc-card-wax-seal.png";
 import nfcEnvelopesLuxury from "@/assets/nfc-envelopes-luxury.png";
 
@@ -12,6 +14,28 @@ const stats = [
 ];
 
 export function HeroSection() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: cards = [] } = useCards();
+
+  /**
+   * CTA handler - Card-first flow
+   * 1. Not logged in → login
+   * 2. No cards → onboarding
+   * 3. Has cards → order preview
+   */
+  const handleOrderCTA = () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    if (cards.length === 0) {
+      navigate("/onboarding");
+      return;
+    }
+    navigate("/order");
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Premium dark background */}
@@ -63,15 +87,14 @@ export function HeroSection() {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="flex flex-wrap gap-4 pt-2"
             >
-              <Link to="/order">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-background font-semibold px-8 py-6 rounded-full shadow-lg shadow-amber-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105"
-                >
-                  Commander une carte
-                  <ArrowRight size={18} className="ml-2" />
-                </Button>
-              </Link>
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-background font-semibold px-8 py-6 rounded-full shadow-lg shadow-amber-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105"
+                onClick={handleOrderCTA}
+              >
+                Commander une carte
+                <ArrowRight size={18} className="ml-2" />
+              </Button>
               <Link to="/demo">
                 <Button 
                   variant="outline" 
