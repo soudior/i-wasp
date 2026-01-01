@@ -8,7 +8,7 @@
  */
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { 
@@ -361,88 +361,135 @@ export function SocialNetworkSelector({ selectedLinks, onChange }: SocialNetwork
             </span>
           </div>
           
-          <div className="space-y-2">
-            {selectedLinks.map((link, index) => {
-              const network = socialNetworks.find(n => n.id === link.networkId);
-              if (!network) return null;
-              const IconComponent = getIconComponent(network.icon);
-              const isFirst = index === 0;
-              const isLast = index === selectedLinks.length - 1;
-              
-              const moveUp = () => {
-                if (isFirst) return;
-                const newLinks = [...selectedLinks];
-                [newLinks[index - 1], newLinks[index]] = [newLinks[index], newLinks[index - 1]];
-                onChange(newLinks);
-              };
-              
-              const moveDown = () => {
-                if (isLast) return;
-                const newLinks = [...selectedLinks];
-                [newLinks[index], newLinks[index + 1]] = [newLinks[index + 1], newLinks[index]];
-                onChange(newLinks);
-              };
-              
-              return (
-                <motion.div
-                  key={link.id}
-                  layout
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="flex items-center gap-3 p-3 bg-card/60 backdrop-blur-sm rounded-xl border border-border/30 shadow-sm"
-                >
-                  {/* Position indicator */}
-                  <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center text-xs font-medium text-accent shrink-0">
-                    {index + 1}
-                  </div>
-                  
-                  {/* Network info */}
-                  <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                    <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-                      <IconComponent size={14} className="text-accent" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{network.label}</p>
-                      {link.value && (
-                        <p className="text-xs text-muted-foreground truncate">@{link.value}</p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Move controls */}
-                  <div className="flex items-center gap-1 shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={moveUp}
-                      disabled={isFirst}
-                      className={`h-8 w-8 p-0 rounded-lg transition-all duration-300 ${
-                        isFirst 
-                          ? "opacity-30 cursor-not-allowed" 
-                          : "hover:bg-accent/10 hover:scale-105 active:scale-95"
-                      }`}
+          <Reorder.Group
+            axis="y"
+            values={selectedLinks}
+            onReorder={onChange}
+            className="space-y-2"
+          >
+            <AnimatePresence mode="popLayout">
+              {selectedLinks.map((link, index) => {
+                const network = socialNetworks.find(n => n.id === link.networkId);
+                if (!network) return null;
+                const IconComponent = getIconComponent(network.icon);
+                const isFirst = index === 0;
+                const isLast = index === selectedLinks.length - 1;
+                
+                const moveUp = () => {
+                  if (isFirst) return;
+                  const newLinks = [...selectedLinks];
+                  [newLinks[index - 1], newLinks[index]] = [newLinks[index], newLinks[index - 1]];
+                  onChange(newLinks);
+                };
+                
+                const moveDown = () => {
+                  if (isLast) return;
+                  const newLinks = [...selectedLinks];
+                  [newLinks[index], newLinks[index + 1]] = [newLinks[index + 1], newLinks[index]];
+                  onChange(newLinks);
+                };
+                
+                return (
+                  <Reorder.Item
+                    key={link.id}
+                    value={link}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ 
+                      opacity: 1, 
+                      scale: 1,
+                      transition: {
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 25
+                      }
+                    }}
+                    exit={{ 
+                      opacity: 0, 
+                      scale: 0.9,
+                      transition: { duration: 0.2 }
+                    }}
+                    whileDrag={{
+                      scale: 1.03,
+                      boxShadow: "0 10px 30px -10px rgba(0,0,0,0.3)",
+                      cursor: "grabbing"
+                    }}
+                    dragListener={false}
+                    className="flex items-center gap-3 p-3 bg-card/60 backdrop-blur-sm rounded-xl border border-border/30 shadow-sm"
+                  >
+                    {/* Position indicator with animation */}
+                    <motion.div 
+                      key={`pos-${index}`}
+                      initial={{ scale: 0.8 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                      className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center text-xs font-medium text-accent shrink-0"
                     >
-                      <ChevronUp size={16} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={moveDown}
-                      disabled={isLast}
-                      className={`h-8 w-8 p-0 rounded-lg transition-all duration-300 ${
-                        isLast 
-                          ? "opacity-30 cursor-not-allowed" 
-                          : "hover:bg-accent/10 hover:scale-105 active:scale-95"
-                      }`}
-                    >
-                      <ChevronDown size={16} />
-                    </Button>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                      {index + 1}
+                    </motion.div>
+                    
+                    {/* Network info */}
+                    <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                      <motion.div 
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                        className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0"
+                      >
+                        <IconComponent size={14} className="text-accent" />
+                      </motion.div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{network.label}</p>
+                        {link.value && (
+                          <p className="text-xs text-muted-foreground truncate">@{link.value}</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Move controls with enhanced animations */}
+                    <div className="flex items-center gap-1 shrink-0">
+                      <motion.div
+                        whileTap={{ scale: 0.9 }}
+                        whileHover={{ y: isFirst ? 0 : -2 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={moveUp}
+                          disabled={isFirst}
+                          className={`h-8 w-8 p-0 rounded-lg transition-all duration-300 ${
+                            isFirst 
+                              ? "opacity-30 cursor-not-allowed" 
+                              : "hover:bg-accent/10"
+                          }`}
+                        >
+                          <ChevronUp size={16} />
+                        </Button>
+                      </motion.div>
+                      <motion.div
+                        whileTap={{ scale: 0.9 }}
+                        whileHover={{ y: isLast ? 0 : 2 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={moveDown}
+                          disabled={isLast}
+                          className={`h-8 w-8 p-0 rounded-lg transition-all duration-300 ${
+                            isLast 
+                              ? "opacity-30 cursor-not-allowed" 
+                              : "hover:bg-accent/10"
+                          }`}
+                        >
+                          <ChevronDown size={16} />
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </Reorder.Item>
+                );
+              })}
+            </AnimatePresence>
+          </Reorder.Group>
           
           <p className="text-xs text-muted-foreground/70 mt-3 text-center italic">
             Les réseaux apparaîtront dans cet ordre sur votre carte
