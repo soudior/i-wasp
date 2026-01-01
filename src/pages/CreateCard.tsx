@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DigitalCard as DigitalCardPreview } from "@/components/DigitalCard";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { SocialLinksManager } from "@/components/SocialLinksManager";
+import { SmartLocationEditor } from "@/components/SmartLocationEditor";
 import { templateInfo, TemplateType } from "@/components/templates/CardTemplates";
 import { SocialLink } from "@/lib/socialNetworks";
 import { toast } from "sonner";
@@ -20,6 +21,14 @@ import {
   MessageSquare, Save, ArrowLeft,
   Sparkles, Camera, Image, Palette, Check
 } from "lucide-react";
+
+// Location data interface
+interface LocationData {
+  address: string;
+  latitude?: number;
+  longitude?: number;
+  label?: string;
+}
 
 const CreateCard = () => {
   const [searchParams] = useSearchParams();
@@ -32,6 +41,12 @@ const CreateCard = () => {
   
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>("executive");
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+  const [locationData, setLocationData] = useState<LocationData>({
+    address: "",
+    latitude: undefined,
+    longitude: undefined,
+    label: ""
+  });
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -39,7 +54,6 @@ const CreateCard = () => {
     company: "",
     email: "",
     phone: "",
-    location: "",
     website: "",
     linkedin: "",
     instagram: "",
@@ -54,14 +68,13 @@ const CreateCard = () => {
     if (editId && cards.length > 0) {
       const card = cards.find(c => c.id === editId);
       if (card) {
-        setFormData({
+          setFormData({
           firstName: card.first_name || "",
           lastName: card.last_name || "",
           title: card.title || "",
           company: card.company || "",
           email: card.email || "",
           phone: card.phone || "",
-          location: card.location || "",
           website: card.website || "",
           linkedin: card.linkedin || "",
           instagram: card.instagram || "",
@@ -70,6 +83,19 @@ const CreateCard = () => {
           photoUrl: card.photo_url || null,
           logoUrl: card.logo_url || null,
         });
+        // Load location data - parse from blocks if available or use location field
+        const blocks = card.blocks as any[] | null;
+        const locationBlock = blocks?.find((b: any) => b.type === "location");
+        if (locationBlock) {
+          setLocationData({
+            address: locationBlock.data?.address || card.location || "",
+            latitude: locationBlock.data?.latitude,
+            longitude: locationBlock.data?.longitude,
+            label: locationBlock.data?.label || ""
+          });
+        } else if (card.location) {
+          setLocationData({ address: card.location, label: "" });
+        }
         setSelectedTemplate((card.template as TemplateType) || "executive");
         // Load social links from database
         if (card.social_links && Array.isArray(card.social_links)) {
@@ -90,6 +116,20 @@ const CreateCard = () => {
     }
 
     try {
+      // Build blocks with location data - cast type as const for proper typing
+      const locationBlock = locationData.address ? {
+        id: `location_${Date.now()}`,
+        type: "location" as const,
+        visible: true,
+        order: 0,
+        data: {
+          address: locationData.address,
+          latitude: locationData.latitude,
+          longitude: locationData.longitude,
+          label: locationData.label || "Localisation"
+        }
+      } : null;
+
       if (editId) {
         await updateCard.mutateAsync({
           id: editId,
@@ -100,7 +140,7 @@ const CreateCard = () => {
             company: formData.company || null,
             email: formData.email || null,
             phone: formData.phone || null,
-            location: formData.location || null,
+            location: locationData.address || null,
             website: formData.website || null,
             linkedin: formData.linkedin || null,
             instagram: formData.instagram || null,
@@ -110,6 +150,7 @@ const CreateCard = () => {
             logo_url: formData.logoUrl,
             template: selectedTemplate,
             social_links: socialLinks,
+            blocks: locationBlock ? [locationBlock] : [],
           } as any,
         });
       } else {
@@ -120,7 +161,7 @@ const CreateCard = () => {
           company: formData.company || undefined,
           email: formData.email || undefined,
           phone: formData.phone || undefined,
-          location: formData.location || undefined,
+          location: locationData.address || undefined,
           website: formData.website || undefined,
           linkedin: formData.linkedin || undefined,
           instagram: formData.instagram || undefined,
@@ -130,6 +171,7 @@ const CreateCard = () => {
           logo_url: formData.logoUrl || undefined,
           template: selectedTemplate,
           social_links: socialLinks.length > 0 ? socialLinks : undefined,
+          blocks: locationBlock ? [locationBlock] : undefined,
         });
       }
       navigate("/dashboard");
@@ -332,17 +374,13 @@ const CreateCard = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="location" className="flex items-center gap-2">
+                      <Label className="flex items-center gap-2">
                         <MapPin size={14} className="text-chrome" />
                         Localisation
                       </Label>
-                      <Input
-                        id="location"
-                        name="location"
-                        placeholder="Paris, France"
-                        value={formData.location}
-                        onChange={handleChange}
-                        className="bg-surface-2 border-border/50 h-11"
+                      <SmartLocationEditor
+                        value={locationData}
+                        onChange={setLocationData}
                       />
                     </div>
 
@@ -431,7 +469,7 @@ const CreateCard = () => {
                   company: formData.company || "Prestige Corp",
                   email: formData.email || "a.dubois@prestige.com",
                   phone: formData.phone || "+33 6 12 34 56 78",
-                  location: formData.location || "Paris, France",
+                  location: locationData.address || "Paris, France",
                   website: formData.website || "prestige-corp.com",
                   linkedin: formData.linkedin || "alexandre-dubois",
                   instagram: formData.instagram || "@adubois",
