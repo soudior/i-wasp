@@ -977,27 +977,39 @@ function HotelWifiRenderer({ block, theme }: { block: HotelWifiBlock; theme: "da
   );
 }
 
-// Location Block Renderer
+// Location Block Renderer - Enhanced with mini-map
 function LocationRenderer({ block, theme }: { block: LocationBlock; theme: "dark" | "light" }) {
   const data = block.data;
   const isDark = theme === "dark";
+  const hasCoordinates = data.latitude !== undefined && data.longitude !== undefined;
+
+  if (!data.address) return null;
 
   return (
-    <motion.div variants={itemVariants}>
+    <motion.div variants={itemVariants} className="space-y-3">
+      {/* Label if provided */}
+      {data.label && (
+        <p className={cn(
+          "text-[11px] uppercase tracking-wider font-medium px-1",
+          isDark ? "text-white/30" : "text-neutral-400"
+        )}>
+          {data.label}
+        </p>
+      )}
+
+      {/* Use the card variant with mini-map for premium display */}
       <LocationPicker
         address={data.address}
         latitude={data.latitude}
         longitude={data.longitude}
-        variant="inline"
+        variant="card"
+        showMiniMap={hasCoordinates}
         className={cn(
-          "w-full p-4 rounded-2xl transition-all",
           isDark 
-            ? "bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.04]" 
-            : "bg-neutral-50 border border-neutral-100 hover:bg-neutral-100/80"
+            ? "bg-white/[0.02] border-white/[0.06]" 
+            : "bg-neutral-50 border-neutral-100"
         )}
-        iconClassName={isDark ? "text-amber-400/70" : "text-neutral-600"}
         textClassName={cn(
-          "text-[13px] font-medium",
           isDark ? "text-white/80" : "text-neutral-800"
         )}
       />
