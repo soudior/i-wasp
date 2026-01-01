@@ -10,7 +10,7 @@
  * Mobile-first, IWASP dark theme.
  */
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Navigation, Loader2, X, Check, Map as MapIcon,
@@ -499,59 +499,75 @@ function MapPicker({
   );
 }
 
-// Mini map preview component
-function MiniMapPreview({ lat, lng }: { lat: number; lng: number }) {
-  const [MapContainer, setMapContainer] = useState<any>(null);
-  const [TileLayer, setTileLayer] = useState<any>(null);
-  const [Marker, setMarker] = useState<any>(null);
-  const [L, setL] = useState<any>(null);
-
-  useEffect(() => {
-    Promise.all([
-      import('react-leaflet'),
-      import('leaflet'),
-      import('leaflet/dist/leaflet.css')
-    ]).then(([reactLeaflet, leaflet]) => {
-      setMapContainer(() => reactLeaflet.MapContainer);
-      setTileLayer(() => reactLeaflet.TileLayer);
-      setMarker(() => reactLeaflet.Marker);
-      setL(leaflet.default);
-      
-      delete (leaflet.default.Icon.Default.prototype as any)._getIconUrl;
-      leaflet.default.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-      });
-    });
-  }, []);
-
-  if (!MapContainer || !TileLayer || !Marker) {
-    return (
-      <div className="h-32 bg-muted/20 rounded-xl flex items-center justify-center">
-        <MapPin className="text-muted-foreground" />
-      </div>
-    );
-  }
-
+// Simple static map preview using OpenStreetMap image tiles (no React-Leaflet = no render2 bug)
+function StaticMapPreview({ lat, lng, address }: { lat: number; lng: number; address?: string }) {
+  // Use OpenStreetMap static tile image
+  const zoom = 15;
+  const tileX = Math.floor((lng + 180) / 360 * Math.pow(2, zoom));
+  const tileY = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom));
+  
+  const staticMapUrl = `https://tile.openstreetmap.org/${zoom}/${tileX}/${tileY}.png`;
+  
   return (
-    <div className="h-32 rounded-xl overflow-hidden border border-border/30">
-      <MapContainer 
-        center={[lat, lng]} 
-        zoom={14} 
-        className="h-full w-full"
-        style={{ height: '100%', width: '100%' }}
-        zoomControl={false}
-        dragging={false}
-        scrollWheelZoom={false}
-        doubleClickZoom={false}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker position={[lat, lng]} />
-      </MapContainer>
+    <div className="relative h-32 rounded-xl overflow-hidden border border-border/30 bg-muted/20">
+      <img 
+        src={staticMapUrl}
+        alt="Aperçu carte"
+        className="w-full h-full object-cover"
+        onError={(e) => {
+          // Fallback if tile fails to load
+          (e.target as HTMLImageElement).style.display = 'none';
+        }}
+      />
+      {/* Center marker overlay */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+          <MapPin size={16} className="text-white" />
+        </div>
+      </div>
+      {/* Coordinates badge */}
+      <div className="absolute bottom-2 left-2 right-2 bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1">
+        <p className="text-[10px] text-white/80 truncate">
+          {address ? address.substring(0, 50) + (address.length > 50 ? '...' : '') : `${lat.toFixed(4)}, ${lng.toFixed(4)}`}
+        </p>
+      </div>
     </div>
   );
 }
+
+// Error Boundary wrapper for map components
+class MapErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback?: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode; fallback?: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("Map component error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || (
+        <div className="h-32 bg-muted/20 rounded-xl flex items-center justify-center">
+          <div className="text-center">
+            <AlertCircle className="w-6 h-6 text-amber-500 mx-auto mb-2" />
+            <p className="text-xs text-muted-foreground">Carte non disponible</p>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 
 export function SmartLocationEditor({ value, onChange, className }: SmartLocationEditorProps) {
   const [isLocating, setIsLocating] = useState(false);
@@ -791,7 +807,9 @@ export function SmartLocationEditor({ value, onChange, className }: SmartLocatio
           className="space-y-3"
         >
           <Label className="text-xs text-muted-foreground">Aperçu</Label>
-          <MiniMapPreview lat={value.latitude!} lng={value.longitude!} />
+          <MapErrorBoundary>
+            <StaticMapPreview lat={value.latitude!} lng={value.longitude!} address={value.address} />
+          </MapErrorBoundary>
           
           {/* Universal "Y ALLER" Button - Opens device's default maps app */}
           <Button
