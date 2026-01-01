@@ -23,6 +23,7 @@ import FinalizeCard from "./pages/FinalizeCard";
 import Index from "./pages/Index";
 import Demo from "./pages/Demo";
 import Cart from "./pages/Cart";
+import HerbalismCard from "./pages/HerbalismCard";
 
 // Order funnel pages - 7 steps strict flow
 import OrderType from "./pages/order/OrderType";
@@ -74,6 +75,9 @@ const App = () => (
                       {/* Public NFC Card */}
                       <Route path="/c/:slug" element={<LegacyCardRedirect />} />
                       <Route path="/card/:slug" element={<PublicCard />} />
+                      
+                      {/* Client Demo Cards */}
+                      <Route path="/card/herbalism-marrakech" element={<HerbalismCard />} />
                       
                       {/* Auth */}
                       <Route path="/login" element={<Login />} />
