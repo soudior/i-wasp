@@ -152,11 +152,11 @@ function OrderPaymentContent() {
                 <p className="font-medium">
                   {state.personalInfo?.firstName} {state.personalInfo?.lastName}
                 </p>
-                <p className="text-muted-foreground">{state.locationInfo?.address}</p>
+                <p className="text-muted-foreground">{state.digitalInfo?.address}</p>
                 <p className="text-muted-foreground">
-                  {state.locationInfo?.postalCode} {state.locationInfo?.city}
+                  {state.digitalInfo?.postalCode} {state.digitalInfo?.city}
                 </p>
-                <p className="text-muted-foreground">{state.locationInfo?.country}</p>
+                <p className="text-muted-foreground">{state.digitalInfo?.country}</p>
               </CardContent>
             </Card>
           </motion.div>

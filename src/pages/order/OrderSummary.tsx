@@ -228,11 +228,11 @@ function OrderSummaryContent() {
                     </Button>
                   </CardHeader>
                   <CardContent>
-                    <p className="font-medium">{state.locationInfo?.address}</p>
+                    <p className="font-medium">{state.digitalInfo?.address}</p>
                     <p className="text-muted-foreground">
-                      {state.locationInfo?.postalCode} {state.locationInfo?.city}
+                      {state.digitalInfo?.postalCode} {state.digitalInfo?.city}
                     </p>
-                    <p className="text-muted-foreground">{state.locationInfo?.country}</p>
+                    <p className="text-muted-foreground">{state.digitalInfo?.country}</p>
                   </CardContent>
                 </Card>
               </motion.div>

@@ -153,10 +153,16 @@ export function ClientPreview({ compact = false }: ClientPreviewProps) {
                           <span className="text-sm">Email</span>
                         </div>
                       )}
-                      {state.locationInfo?.address && (
+                      {state.digitalInfo?.address && (
                         <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl">
                           <MapPin className="h-4 w-4 text-accent" />
                           <span className="text-sm">Localisation</span>
+                        </div>
+                      )}
+                      {state.digitalInfo?.website && (
+                        <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl">
+                          <Globe className="h-4 w-4 text-accent" />
+                          <span className="text-sm">Site web</span>
                         </div>
                       )}
                     </div>

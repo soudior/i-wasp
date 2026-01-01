@@ -3,12 +3,12 @@
  * 
  * STRICT ORDER FLOW (7 steps, no bypass):
  * 1. /order/type - Customer type selection (particulier / pro / équipe)
- * 2. /order/infos - Personal information
- * 3. /order/location - Location picker (geolocation)
- * 4. /order/card-design - Physical card customization (logo, color)
+ * 2. /order/identity - Personal info (name, title, phone, email)
+ * 3. /order/digital - Digital links (website, WhatsApp, Instagram, Google Reviews, geolocation)
+ * 4. /order/design - Card design (color, logo)
  * 5. /order/options - Quantity + promo code
  * 6. /order/summary - Final review
- * 7. /order/payment - Payment only (after validation of step 6)
+ * 7. /order/payment - Stripe payment
  */
 
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from "react";
@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 // Customer types
 export type CustomerType = "particulier" | "professionnel" | "entreprise";
 
-// Personal information (step 2)
+// Personal information (step 2: Identity)
 export interface PersonalInfo {
   firstName: string;
   lastName: string;
@@ -27,12 +27,16 @@ export interface PersonalInfo {
   title?: string;
 }
 
-// Location data (step 3)
-export interface LocationInfo {
-  address: string;
+// Digital links (step 3: Digital)
+export interface DigitalInfo {
+  website?: string;
+  whatsapp?: string;
+  instagram?: string;
+  googleReviews?: string;
+  // Geolocation
+  address?: string;
   latitude?: number;
   longitude?: number;
-  label?: string;
   city?: string;
   postalCode?: string;
   country?: string;
@@ -59,7 +63,7 @@ export interface OrderFunnelState {
   currentStep: number;
   customerType: CustomerType | null;
   personalInfo: PersonalInfo | null;
-  locationInfo: LocationInfo | null;
+  digitalInfo: DigitalInfo | null;
   designConfig: DesignConfig | null;
   orderOptions: OrderOptions | null;
   isComplete: boolean;
@@ -67,19 +71,19 @@ export interface OrderFunnelState {
 
 // Step paths mapping (7 steps STRICT)
 const STEP_PATHS = [
-  "/order/type",        // Step 1: Choose customer type
-  "/order/infos",       // Step 2: Personal info
-  "/order/location",    // Step 3: Location picker
-  "/order/card-design", // Step 4: Card customization
-  "/order/options",     // Step 5: Quantity + promo
-  "/order/summary",     // Step 6: Review
-  "/order/payment",     // Step 7: Payment
+  "/order/type",      // Step 1: Choose customer type
+  "/order/identity",  // Step 2: Personal info
+  "/order/digital",   // Step 3: Digital links + geolocation
+  "/order/design",    // Step 4: Card customization
+  "/order/options",   // Step 5: Quantity + promo
+  "/order/summary",   // Step 6: Review
+  "/order/payment",   // Step 7: Payment
 ];
 
 export const STEP_LABELS = [
   "Type",
-  "Infos",
-  "Localisation",
+  "Identité",
+  "Digital",
   "Design",
   "Options",
   "Récap",
@@ -93,7 +97,7 @@ interface OrderFunnelContextType {
   state: OrderFunnelState;
   setCustomerType: (type: CustomerType) => void;
   setPersonalInfo: (info: PersonalInfo) => void;
-  setLocationInfo: (info: LocationInfo) => void;
+  setDigitalInfo: (info: DigitalInfo) => void;
   setDesignConfig: (config: DesignConfig) => void;
   setOrderOptions: (options: OrderOptions) => void;
   goToStep: (step: number) => void;
@@ -111,7 +115,7 @@ const initialState: OrderFunnelState = {
   currentStep: 1,
   customerType: null,
   personalInfo: null,
-  locationInfo: null,
+  digitalInfo: null,
   designConfig: null,
   orderOptions: null,
   isComplete: false,
@@ -145,9 +149,9 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     if (step === 1) return true;
     if (step === 2) return state.customerType !== null;
     if (step === 3) return state.customerType !== null && state.personalInfo !== null;
-    if (step === 4) return state.customerType !== null && state.personalInfo !== null && state.locationInfo !== null;
-    if (step === 5) return state.customerType !== null && state.personalInfo !== null && state.locationInfo !== null && state.designConfig !== null;
-    if (step === 6) return state.customerType !== null && state.personalInfo !== null && state.locationInfo !== null && state.designConfig !== null && state.orderOptions !== null;
+    if (step === 4) return state.customerType !== null && state.personalInfo !== null && state.digitalInfo !== null;
+    if (step === 5) return state.customerType !== null && state.personalInfo !== null && state.digitalInfo !== null && state.designConfig !== null;
+    if (step === 6) return state.customerType !== null && state.personalInfo !== null && state.digitalInfo !== null && state.designConfig !== null && state.orderOptions !== null;
     if (step === 7) return state.isComplete;
     return false;
   }, [state]);
@@ -156,7 +160,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
   const getFirstIncompleteStep = useCallback((): number => {
     if (!state.customerType) return 1;
     if (!state.personalInfo) return 2;
-    if (!state.locationInfo) return 3;
+    if (!state.digitalInfo) return 3;
     if (!state.designConfig) return 4;
     if (!state.orderOptions) return 5;
     if (!state.isComplete) return 6;
@@ -189,11 +193,11 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  // Set location info (step 3)
-  const setLocationInfo = useCallback((info: LocationInfo) => {
+  // Set digital info (step 3)
+  const setDigitalInfo = useCallback((info: DigitalInfo) => {
     setState(prev => ({
       ...prev,
-      locationInfo: info,
+      digitalInfo: info,
       currentStep: Math.max(prev.currentStep, 3),
     }));
   }, []);
@@ -261,7 +265,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
       case 2:
         return state.personalInfo !== null;
       case 3:
-        return state.locationInfo !== null;
+        return state.digitalInfo !== null;
       case 4:
         return state.designConfig !== null;
       case 5:
@@ -287,7 +291,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
         state,
         setCustomerType,
         setPersonalInfo,
-        setLocationInfo,
+        setDigitalInfo,
         setDesignConfig,
         setOrderOptions,
         goToStep,
