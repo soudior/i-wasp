@@ -22,6 +22,8 @@ import {
   Plus, 
   X, 
   Check,
+  ChevronUp,
+  ChevronDown,
   Linkedin,
   Instagram,
   Facebook,
@@ -345,31 +347,106 @@ export function SocialNetworkSelector({ selectedLinks, onChange }: SocialNetwork
         );
       })}
 
-      {/* Selected Summary */}
+      {/* Selected Summary with Priority Ordering */}
       {selectedLinks.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 rounded-xl bg-accent/5 border border-accent/10"
+          className="p-4 rounded-2xl bg-accent/5 border border-accent/10"
         >
-          <p className="text-xs text-muted-foreground mb-2">Réseaux ajoutés:</p>
-          <div className="flex flex-wrap gap-2">
-            {selectedLinks.map(link => {
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs text-muted-foreground">Ordre d'affichage sur votre carte</p>
+            <span className="text-xs text-accent/70">
+              {selectedLinks.length} réseau{selectedLinks.length > 1 ? "x" : ""}
+            </span>
+          </div>
+          
+          <div className="space-y-2">
+            {selectedLinks.map((link, index) => {
               const network = socialNetworks.find(n => n.id === link.networkId);
               if (!network) return null;
               const IconComponent = getIconComponent(network.icon);
+              const isFirst = index === 0;
+              const isLast = index === selectedLinks.length - 1;
+              
+              const moveUp = () => {
+                if (isFirst) return;
+                const newLinks = [...selectedLinks];
+                [newLinks[index - 1], newLinks[index]] = [newLinks[index], newLinks[index - 1]];
+                onChange(newLinks);
+              };
+              
+              const moveDown = () => {
+                if (isLast) return;
+                const newLinks = [...selectedLinks];
+                [newLinks[index], newLinks[index + 1]] = [newLinks[index + 1], newLinks[index]];
+                onChange(newLinks);
+              };
               
               return (
-                <div
+                <motion.div
                   key={link.id}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 bg-accent/10 rounded-lg"
+                  layout
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="flex items-center gap-3 p-3 bg-card/60 backdrop-blur-sm rounded-xl border border-border/30 shadow-sm"
                 >
-                  <IconComponent size={12} className="text-accent" />
-                  <span className="text-xs font-medium">{network.label}</span>
-                </div>
+                  {/* Position indicator */}
+                  <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center text-xs font-medium text-accent shrink-0">
+                    {index + 1}
+                  </div>
+                  
+                  {/* Network info */}
+                  <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                      <IconComponent size={14} className="text-accent" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{network.label}</p>
+                      {link.value && (
+                        <p className="text-xs text-muted-foreground truncate">@{link.value}</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Move controls */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={moveUp}
+                      disabled={isFirst}
+                      className={`h-8 w-8 p-0 rounded-lg transition-all duration-300 ${
+                        isFirst 
+                          ? "opacity-30 cursor-not-allowed" 
+                          : "hover:bg-accent/10 hover:scale-105 active:scale-95"
+                      }`}
+                    >
+                      <ChevronUp size={16} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={moveDown}
+                      disabled={isLast}
+                      className={`h-8 w-8 p-0 rounded-lg transition-all duration-300 ${
+                        isLast 
+                          ? "opacity-30 cursor-not-allowed" 
+                          : "hover:bg-accent/10 hover:scale-105 active:scale-95"
+                      }`}
+                    >
+                      <ChevronDown size={16} />
+                    </Button>
+                  </div>
+                </motion.div>
               );
             })}
           </div>
+          
+          <p className="text-xs text-muted-foreground/70 mt-3 text-center italic">
+            Les réseaux apparaîtront dans cet ordre sur votre carte
+          </p>
         </motion.div>
       )}
     </div>
