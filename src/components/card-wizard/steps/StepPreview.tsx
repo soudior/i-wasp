@@ -1,7 +1,8 @@
 /**
- * StepPreview - Étape 4: Aperçu final + Liens sociaux
+ * StepPreview - Étape 4: Aperçu final + Liens sociaux + Suggestions IA
  * 
  * Interface premium de validation et sélection des réseaux sociaux
+ * Intègre les suggestions intelligentes de l'IA
  */
 
 import { motion } from "framer-motion";
@@ -11,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { CardFormData } from "../CardWizard";
 import { SocialLink } from "@/lib/socialNetworks";
 import { SocialNetworkSelector } from "./SocialNetworkSelector";
+import { AISuggestions } from "../AISuggestions";
 import { 
   Check, 
   X, 
@@ -53,6 +55,9 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
 
   return (
     <div className="space-y-6">
+      {/* AI Suggestions - Smart assistant */}
+      <AISuggestions data={data} onChange={onChange} />
+
       {/* Validation Checklist */}
       <Card className="border-border/50 shadow-xl bg-card/80 backdrop-blur-sm">
         <CardContent className="p-6">
