@@ -2,21 +2,23 @@
  * Step 3: Location
  * /order/location
  * 
- * - Auto geolocation button
- * - Interactive map picker (OpenStreetMap)
- * - Manual point selection
- * - Reverse geocoding
- * - Custom label
- * - Mandatory validation
+ * VALIDATION INFAILLIBLE:
+ * - Localisation obligatoire (géoloc, carte ou manuel)
+ * - Adresse de livraison complète requise
+ * - Bouton désactivé tant que tout n'est pas rempli
+ * - Messages clairs et guidage utilisateur
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOrderFunnel, OrderFunnelGuard, LocationInfo } from "@/contexts/OrderFunnelContext";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SmartLocationEditor } from "@/components/SmartLocationEditor";
+import { SmartInput } from "@/components/order/SmartInput";
+import { SmartContinueButton } from "@/components/order/SmartContinueButton";
+import { ValidationSummary } from "@/components/order/ValidationSummary";
 import { 
   OrderProgressBar, 
   AutoSaveIndicator, 
@@ -26,12 +28,11 @@ import {
   itemVariants 
 } from "@/components/order";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, ArrowRight, MapPin, Home, AlertCircle } from "lucide-react";
+import { ArrowLeft, MapPin, Home, AlertCircle, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import { validateLocation } from "@/lib/orderValidation";
 
 interface LocationData {
   address: string;
@@ -64,7 +65,6 @@ function OrderLocationContent() {
   });
 
   const [showRestoreBanner, setShowRestoreBanner] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Auto-save hook
   const { 
@@ -101,27 +101,47 @@ function OrderLocationContent() {
     setShowRestoreBanner(false);
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
+  // Combine data for validation
+  const fullLocationData = useMemo(() => ({
+    ...locationData,
+    ...deliveryAddress,
+  }), [locationData, deliveryAddress]);
 
-    if (!locationData.address.trim()) {
-      newErrors.address = "L'adresse est requise";
-    }
+  // Real-time validation
+  const validation = useMemo(() => {
+    return validateLocation(fullLocationData);
+  }, [fullLocationData]);
 
-    if (!deliveryAddress.city.trim()) {
-      newErrors.city = "La ville est requise";
-    }
+  // Validation items for summary
+  const validationItems = useMemo(() => [
+    {
+      key: "address",
+      label: "Adresse de l'établissement",
+      isValid: !!locationData.address.trim(),
+      message: "Sélectionnez une adresse sur la carte",
+    },
+    {
+      key: "postalCode",
+      label: "Code postal de livraison",
+      isValid: !!deliveryAddress.postalCode.trim(),
+      message: "Ajoutez le code postal",
+    },
+    {
+      key: "city",
+      label: "Ville de livraison",
+      isValid: !!deliveryAddress.city.trim(),
+      message: "Ajoutez la ville",
+    },
+  ], [locationData.address, deliveryAddress.postalCode, deliveryAddress.city]);
 
-    if (!deliveryAddress.postalCode.trim()) {
-      newErrors.postalCode = "Le code postal est requis";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  // Can proceed?
+  const canProceed = validation.isValid;
+  const blockingMessage = !canProceed
+    ? validationItems.find(i => !i.isValid)?.message
+    : undefined;
 
   const handleContinue = () => {
-    if (!validateForm()) {
+    if (!canProceed) {
       toast.error("Veuillez renseigner votre adresse complète");
       return;
     }
@@ -141,6 +161,7 @@ function OrderLocationContent() {
   };
 
   const hasLocation = locationData.address.trim() !== "";
+  const hasCoordinates = locationData.latitude && locationData.longitude;
 
   return (
     <div className="min-h-screen bg-background">
@@ -193,6 +214,20 @@ function OrderLocationContent() {
               </motion.div>
             </motion.div>
 
+            {/* Validation Summary */}
+            <AnimatePresence>
+              {!canProceed && (locationData.address || deliveryAddress.city) && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="mb-6"
+                >
+                  <ValidationSummary items={validationItems} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Form */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -206,6 +241,9 @@ function OrderLocationContent() {
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <MapPin size={20} className="text-primary" />
                     Adresse de votre établissement
+                    {hasLocation && (
+                      <CheckCircle2 className="h-5 w-5 text-emerald-500 ml-auto" />
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -213,8 +251,17 @@ function OrderLocationContent() {
                     value={locationData}
                     onChange={setLocationData}
                   />
-                  {errors.address && (
-                    <p className="text-xs text-destructive mt-2">{errors.address}</p>
+                  
+                  {/* Location status */}
+                  {hasLocation && hasCoordinates && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-3 flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400"
+                    >
+                      <CheckCircle2 className="h-4 w-4" />
+                      Localisation précise enregistrée
+                    </motion.div>
                   )}
                 </CardContent>
               </Card>
@@ -225,6 +272,9 @@ function OrderLocationContent() {
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <Home size={20} className="text-primary" />
                     Adresse de livraison
+                    {deliveryAddress.city && deliveryAddress.postalCode && (
+                      <CheckCircle2 className="h-5 w-5 text-emerald-500 ml-auto" />
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -233,53 +283,39 @@ function OrderLocationContent() {
                   </p>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="postalCode">Code postal *</Label>
-                      <Input
-                        id="postalCode"
-                        value={deliveryAddress.postalCode}
-                        onChange={(e) => {
-                          setDeliveryAddress(prev => ({ ...prev, postalCode: e.target.value }));
-                          if (errors.postalCode) {
-                            setErrors(prev => ({ ...prev, postalCode: "" }));
-                          }
-                        }}
-                        placeholder="75001"
-                        className={errors.postalCode ? "border-destructive" : ""}
-                      />
-                      {errors.postalCode && (
-                        <p className="text-xs text-destructive mt-1">{errors.postalCode}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="city">Ville *</Label>
-                      <Input
-                        id="city"
-                        value={deliveryAddress.city}
-                        onChange={(e) => {
-                          setDeliveryAddress(prev => ({ ...prev, city: e.target.value }));
-                          if (errors.city) {
-                            setErrors(prev => ({ ...prev, city: "" }));
-                          }
-                        }}
-                        placeholder="Paris"
-                        className={errors.city ? "border-destructive" : ""}
-                      />
-                      {errors.city && (
-                        <p className="text-xs text-destructive mt-1">{errors.city}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="country">Pays</Label>
-                    <Input
-                      id="country"
-                      value={deliveryAddress.country}
-                      onChange={(e) => setDeliveryAddress(prev => ({ ...prev, country: e.target.value }))}
-                      placeholder="France"
+                    <SmartInput
+                      id="postalCode"
+                      label="Code postal"
+                      value={deliveryAddress.postalCode}
+                      onChange={(value) => setDeliveryAddress(prev => ({ ...prev, postalCode: value }))}
+                      validate={(value) => ({
+                        isValid: value.trim().length > 0,
+                        message: value.trim().length === 0 ? "Requis" : undefined,
+                      })}
+                      required
+                      placeholder="75001"
+                    />
+                    <SmartInput
+                      id="city"
+                      label="Ville"
+                      value={deliveryAddress.city}
+                      onChange={(value) => setDeliveryAddress(prev => ({ ...prev, city: value }))}
+                      validate={(value) => ({
+                        isValid: value.trim().length > 0,
+                        message: value.trim().length === 0 ? "Requis" : undefined,
+                      })}
+                      required
+                      placeholder="Paris"
                     />
                   </div>
+
+                  <SmartInput
+                    id="country"
+                    label="Pays"
+                    value={deliveryAddress.country}
+                    onChange={(value) => setDeliveryAddress(prev => ({ ...prev, country: value }))}
+                    placeholder="France"
+                  />
                 </CardContent>
               </Card>
 
@@ -305,14 +341,11 @@ function OrderLocationContent() {
                 <ArrowLeft size={18} />
                 Retour
               </Button>
-              <Button
-                size="lg"
+              <SmartContinueButton
                 onClick={handleContinue}
-                className="px-8 h-14 text-lg rounded-full bg-gradient-to-r from-primary to-amber-500"
-              >
-                Continuer
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+                canProceed={canProceed}
+                blockingMessage={blockingMessage}
+              />
             </motion.div>
           </div>
         </main>

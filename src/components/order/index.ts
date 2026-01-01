@@ -11,3 +11,6 @@ export {
   type BlendMode
 } from './LogoPlacementEditor';
 export { LogoCropper } from './LogoCropper';
+export { SmartInput } from './SmartInput';
+export { SmartContinueButton } from './SmartContinueButton';
+export { ValidationSummary, ValidationChecklist } from './ValidationSummary';
