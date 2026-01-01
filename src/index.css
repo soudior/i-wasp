@@ -10,125 +10,151 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════════
-       i-wasp DESIGN SYSTEM — 3 PALETTES OFFICIELLES (STRICT)
+       IWASP DESIGN SYSTEM — PREMIUM IDENTITY
        
-       PALETTE 1 — "Nuit" (défaut) : site, dashboard, expérience premium
-       PALETTE 2 — "Blanc pur" : interface claire, cartes digitales
-       PALETTE 3 — "Carte matière" : template carte physique NFC
+       Identité visuelle digne d'une marque premium mondiale.
+       Aucune couleur hors système. Aucun compromis.
        
-       AUCUNE AUTRE COULEUR AUTORISÉE
+       COULEURS PRINCIPALES :
+       - Noir profond : #0E0E11
+       - Gris charbon : #15171C  
+       - Vert signature : #3CFF6B (accent unique)
+       - Blanc pur : #FFFFFF
        ═══════════════════════════════════════════════════════════════════ */
     
     /* ══════════════════════════════════════════════════════════════════
-       PALETTE 1 — "Nuit" (DÉFAUT)
-       Usage : site, dashboard, expérience premium
+       IWASP CORE COLORS
        ══════════════════════════════════════════════════════════════════ */
     
-    /* Couleurs de base */
-    --nuit-noir: 240 4% 3%;        /* #0B0B0C - Noir nuit */
-    --nuit-gris-profond: 240 4% 12%; /* #1C1C1E - Gris profond */
-    --nuit-gris-struct: 240 2% 57%; /* #8E8E93 - Gris structurel */
-    --nuit-blanc: 30 14% 95%;      /* #F4F2EF - Blanc texte */
-    --nuit-accent: 0 64% 33%;      /* #8B1E1E - Accent rare */
+    /* Couleurs principales IWASP */
+    --iwasp-noir: 240 6% 5%;              /* #0E0E11 - Noir profond */
+    --iwasp-charbon: 225 10% 10%;         /* #15171C - Gris charbon */
+    --iwasp-vert: 138 100% 62%;           /* #3CFF6B - Vert signature IWASP */
+    --iwasp-blanc: 0 0% 100%;             /* #FFFFFF - Blanc pur */
+    --iwasp-gris: 240 2% 57%;             /* #8E8E93 - Gris structurel */
+    --iwasp-erreur: 0 45% 45%;            /* Rouge discret, jamais violent */
     
-    /* Tokens sémantiques - Palette Nuit */
-    --background: var(--nuit-noir);
-    --foreground: var(--nuit-blanc);
+    /* Legacy palette mappings for compatibility */
+    --nuit-noir: var(--iwasp-noir);
+    --nuit-gris-profond: var(--iwasp-charbon);
+    --nuit-gris-struct: var(--iwasp-gris);
+    --nuit-blanc: var(--iwasp-blanc);
+    --nuit-accent: var(--iwasp-vert);
     
-    --card: var(--nuit-gris-profond);
-    --card-foreground: var(--nuit-blanc);
+    /* Tokens sémantiques - Palette IWASP Premium */
+    --background: var(--iwasp-noir);
+    --foreground: var(--iwasp-blanc);
     
-    --popover: var(--nuit-gris-profond);
-    --popover-foreground: var(--nuit-blanc);
+    --card: var(--iwasp-charbon);
+    --card-foreground: var(--iwasp-blanc);
     
-    --primary: var(--nuit-blanc);
-    --primary-foreground: var(--nuit-noir);
+    --popover: var(--iwasp-charbon);
+    --popover-foreground: var(--iwasp-blanc);
     
-    --secondary: var(--nuit-gris-profond);
-    --secondary-foreground: var(--nuit-gris-struct);
+    --primary: var(--iwasp-blanc);
+    --primary-foreground: var(--iwasp-noir);
     
-    --muted: 240 5% 15%;
-    --muted-foreground: var(--nuit-gris-struct);
+    --secondary: var(--iwasp-charbon);
+    --secondary-foreground: var(--iwasp-gris);
     
-    --accent: 240 5% 14%;
-    --accent-foreground: var(--nuit-blanc);
+    --muted: 225 10% 12%;
+    --muted-foreground: var(--iwasp-gris);
     
-    --destructive: var(--nuit-accent);
-    --destructive-foreground: var(--nuit-blanc);
+    /* Accent IWASP - Vert signature (utilisé avec parcimonie) */
+    --accent: var(--iwasp-vert);
+    --accent-foreground: var(--iwasp-noir);
     
-    --border: 240 5% 18%;
-    --input: 240 5% 15%;
-    --ring: var(--nuit-blanc);
+    --destructive: var(--iwasp-erreur);
+    --destructive-foreground: var(--iwasp-blanc);
     
-    --radius: 0.75rem;
+    --border: 225 10% 14%;
+    --input: 225 10% 12%;
+    --ring: var(--iwasp-vert);
     
     /* ══════════════════════════════════════════════════════════════════
-       PALETTE 2 — "Blanc pur"
-       Usage : interface claire, confort visuel, cartes digitales
+       RADIUS - FORMES IWASP
+       Standard : 14-18px | Boutons : pill shape
        ══════════════════════════════════════════════════════════════════ */
-    --blanc-pur: 0 0% 100%;        /* #FFFFFF - Blanc pur */
-    --blanc-ivoire: 30 14% 95%;    /* #F4F2EF - Blanc ivoire */
-    --blanc-gris-clair: 240 5% 83%; /* #D1D1D6 - Gris clair */
-    --blanc-gris-struct: 240 2% 57%; /* #8E8E93 - Gris structurel */
-    --blanc-noir: 240 4% 3%;       /* #0B0B0C - Noir texte */
-    --blanc-accent: 0 64% 33%;     /* #8B1E1E - Accent rare */
+    --radius: 1rem;           /* 16px - arrondi standard */
+    --radius-card: 1.125rem;  /* 18px - cartes premium */
+    --radius-btn: 9999px;     /* Pill shape pour boutons */
     
     /* ══════════════════════════════════════════════════════════════════
-       PALETTE 3 — "Carte matière" (blanc carte physique)
-       Usage : template carte physique NFC de base
-       Inspirée du plastique mat / papier premium
-       Aucun accent couleur sur cette palette
+       PALETTE "Blanc pur"
+       Usage : interface claire, cartes digitales
        ══════════════════════════════════════════════════════════════════ */
-    --carte-blanc: 60 7% 96%;      /* #F7F7F5 - Blanc carte */
-    --carte-chaud: 36 14% 93%;     /* #EFEDEA - Blanc chaud */
-    --carte-gris-leger: 60 4% 88%; /* #E2E2E0 - Gris très léger */
-    --carte-gris-struct: 240 2% 57%; /* #8E8E93 - Gris structurel */
-    --carte-noir-doux: 240 4% 12%; /* #1C1C1E - Noir doux */
+    --blanc-pur: 0 0% 100%;           /* #FFFFFF - Blanc pur */
+    --blanc-ivoire: 210 20% 98%;      /* #F9FAFB - Blanc très léger */
+    --blanc-gris-clair: 210 16% 93%;  /* #E5E7EB - Gris clair */
+    --blanc-gris-struct: 217 10% 64%; /* #9CA3AF - Gris structurel */
+    --blanc-noir: var(--iwasp-noir);
+    --blanc-accent: var(--iwasp-vert);
+    
+    /* ══════════════════════════════════════════════════════════════════
+       PALETTE "Carte matière" (carte physique NFC)
+       ══════════════════════════════════════════════════════════════════ */
+    --carte-blanc: 210 17% 98%;       /* #F9FAFB - Blanc carte */
+    --carte-chaud: 210 11% 96%;       /* #F3F4F6 - Blanc chaud */
+    --carte-gris-leger: 210 14% 89%;  /* #E5E7EB - Gris très léger */
+    --carte-gris-struct: 217 10% 64%; /* #9CA3AF - Gris structurel */
+    --carte-noir-doux: var(--iwasp-charbon);
 
     /* Surface tokens */
-    --surface-0: var(--nuit-noir);
-    --surface-1: 240 5% 8%;
-    --surface-2: var(--nuit-gris-profond);
-    --surface-3: 240 5% 15%;
+    --surface-0: var(--iwasp-noir);
+    --surface-1: 225 10% 7%;
+    --surface-2: var(--iwasp-charbon);
+    --surface-3: 225 10% 14%;
     
-    /* Glass effects - monochrome */
+    /* Glass effects */
     --glass: 0 0% 100%;
     --glass-opacity: 0.05;
     --glass-border: 0 0% 100%;
 
-    /* Shadows - monochrome */
-    --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.4);
-    --shadow-md: 0 8px 24px hsl(0 0% 0% / 0.5);
-    --shadow-lg: 0 16px 48px hsl(0 0% 0% / 0.6);
+    /* ══════════════════════════════════════════════════════════════════
+       SHADOWS - IWASP PREMIUM
+       Soft & réalistes uniquement. Jamais d'ombre dure.
+       ══════════════════════════════════════════════════════════════════ */
+    --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.25);
+    --shadow-md: 0 4px 20px hsl(0 0% 0% / 0.35);
+    --shadow-lg: 0 8px 32px hsl(0 0% 0% / 0.45);
     --shadow-card: 
-      0 25px 50px -12px hsl(0 0% 0% / 0.7),
+      0 4px 20px hsl(0 0% 0% / 0.35),
+      0 0 0 1px hsl(0 0% 100% / 0.03);
+    --shadow-elevated:
+      0 8px 32px hsl(0 0% 0% / 0.4),
       0 0 0 1px hsl(0 0% 100% / 0.05);
 
-    /* Gradients - monochrome only */
+    /* Gradients */
     --gradient-glass: linear-gradient(
       135deg,
-      hsl(0 0% 100% / 0.08) 0%,
+      hsl(0 0% 100% / 0.06) 0%,
       hsl(0 0% 100% / 0.02) 100%
     );
     --gradient-glass-strong: linear-gradient(
       135deg,
-      hsl(0 0% 100% / 0.15) 0%,
-      hsl(0 0% 100% / 0.05) 100%
+      hsl(0 0% 100% / 0.12) 0%,
+      hsl(0 0% 100% / 0.04) 100%
+    );
+    --gradient-accent: linear-gradient(
+      135deg,
+      hsl(var(--iwasp-vert)) 0%,
+      hsl(138 100% 55%) 100%
     );
 
     /* Typography */
-    --font-display: 'Inter', system-ui, sans-serif;
-    --font-body: 'Inter', system-ui, sans-serif;
+    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+    --tracking-tight: -0.01em;
 
-    /* Sidebar - Palette Nuit */
-    --sidebar-background: var(--nuit-noir);
-    --sidebar-foreground: var(--nuit-blanc);
-    --sidebar-primary: var(--nuit-blanc);
-    --sidebar-primary-foreground: var(--nuit-noir);
-    --sidebar-accent: var(--nuit-gris-profond);
-    --sidebar-accent-foreground: var(--nuit-blanc);
-    --sidebar-border: 240 5% 18%;
-    --sidebar-ring: var(--nuit-blanc);
+    /* Sidebar */
+    --sidebar-background: var(--iwasp-noir);
+    --sidebar-foreground: var(--iwasp-blanc);
+    --sidebar-primary: var(--iwasp-blanc);
+    --sidebar-primary-foreground: var(--iwasp-noir);
+    --sidebar-accent: var(--iwasp-charbon);
+    --sidebar-accent-foreground: var(--iwasp-blanc);
+    --sidebar-border: 225 10% 14%;
+    --sidebar-ring: var(--iwasp-vert);
     
     /* Mobile-first: Safe area insets */
     --safe-area-top: env(safe-area-inset-top, 0px);
@@ -139,6 +165,30 @@
     /* Mobile navigation heights */
     --mobile-header-height: 48px;
     --mobile-tab-bar-height: 64px;
+
+    /* ══════════════════════════════════════════════════════════════════
+       SPACING SYSTEM - 8px base
+       Sections: 24-32px | Modules: 16-20px | Buttons: generous padding
+       ══════════════════════════════════════════════════════════════════ */
+    --space-xs: 0.25rem;  /* 4px */
+    --space-sm: 0.5rem;   /* 8px */
+    --space-md: 1rem;     /* 16px */
+    --space-lg: 1.25rem;  /* 20px */
+    --space-xl: 1.5rem;   /* 24px */
+    --space-2xl: 2rem;    /* 32px */
+    --space-section: 2rem; /* 32px between sections */
+    --space-module: 1.25rem; /* 20px between modules */
+
+    /* ══════════════════════════════════════════════════════════════════
+       ANIMATION TIMING - IWASP PREMIUM
+       Durée : 180-220ms | Easing : ease-in-out
+       Aucune animation gratuite. Rassurer, pas divertir.
+       ══════════════════════════════════════════════════════════════════ */
+    --duration-fast: 180ms;
+    --duration-normal: 200ms;
+    --duration-slow: 220ms;
+    --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+    --easing-in-out: cubic-bezier(0.42, 0, 0.58, 1);
 
     /* Background aliases */
     --background-ivoire: var(--blanc-ivoire);
@@ -264,8 +314,12 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    @apply tracking-tight font-semibold;
+    @apply font-semibold;
+    letter-spacing: var(--tracking-tight);
   }
+  
+  h1 { @apply font-bold; }
+  h2, h3 { @apply font-semibold; }
   
   /* Touch-friendly minimum sizes */
   button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
@@ -279,19 +333,117 @@
 }
 
 @layer components {
+  /* ══════════════════════════════════════════════════════════════════
+     IWASP PREMIUM COMPONENTS
+     Aucun effet gratuit. Chaque élément doit rassurer.
+     ══════════════════════════════════════════════════════════════════ */
+  
   /* Glass morphism card */
   .glass {
     background: var(--gradient-glass);
     backdrop-filter: blur(40px) saturate(150%);
     -webkit-backdrop-filter: blur(40px) saturate(150%);
-    border: 1px solid hsl(var(--glass-border) / 0.1);
+    border: 1px solid hsl(var(--glass-border) / 0.08);
   }
   
   .glass-strong {
     background: var(--gradient-glass-strong);
     backdrop-filter: blur(60px) saturate(180%);
     -webkit-backdrop-filter: blur(60px) saturate(180%);
-    border: 1px solid hsl(var(--glass-border) / 0.15);
+    border: 1px solid hsl(var(--glass-border) / 0.12);
+  }
+  
+  /* IWASP Premium Card */
+  .card-iwasp {
+    @apply relative overflow-hidden;
+    background: hsl(var(--iwasp-charbon));
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    border: 1px solid hsl(0 0% 100% / 0.04);
+  }
+  
+  /* IWASP Accent Button */
+  .btn-iwasp {
+    @apply relative overflow-hidden font-medium;
+    background: var(--gradient-accent);
+    color: hsl(var(--iwasp-noir));
+    border-radius: var(--radius-btn);
+    padding: 0.875rem 2rem;
+    box-shadow: 0 4px 20px hsl(138 100% 62% / 0.25);
+    transition: all var(--duration-normal) var(--easing-in-out);
+  }
+  
+  .btn-iwasp:hover {
+    box-shadow: 0 6px 28px hsl(138 100% 62% / 0.35);
+    transform: translateY(-1px);
+  }
+  
+  .btn-iwasp:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 12px hsl(138 100% 62% / 0.3);
+  }
+  
+  .btn-iwasp:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  
+  /* IWASP Ghost Button */
+  .btn-iwasp-ghost {
+    @apply relative font-medium;
+    background: transparent;
+    color: hsl(var(--iwasp-blanc));
+    border: 1px solid hsl(0 0% 100% / 0.15);
+    border-radius: var(--radius-btn);
+    padding: 0.875rem 2rem;
+    transition: all var(--duration-normal) var(--easing-in-out);
+  }
+  
+  .btn-iwasp-ghost:hover {
+    background: hsl(0 0% 100% / 0.05);
+    border-color: hsl(0 0% 100% / 0.25);
+  }
+  
+  .btn-iwasp-ghost:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  
+  /* IWASP Module Container */
+  .module-iwasp {
+    @apply relative;
+    background: hsl(var(--iwasp-charbon));
+    border-radius: var(--radius-card);
+    padding: var(--space-lg);
+    border: 1px solid hsl(0 0% 100% / 0.04);
+    transition: all var(--duration-normal) var(--easing-in-out);
+  }
+  
+  .module-iwasp:hover {
+    border-color: hsl(0 0% 100% / 0.08);
+    box-shadow: var(--shadow-md);
+  }
+  
+  /* State: Disabled - 40% opacity */
+  .state-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  
+  /* State: Active - IWASP accent */
+  .state-active {
+    border-color: hsl(var(--iwasp-vert) / 0.5);
+    box-shadow: 0 0 0 2px hsl(var(--iwasp-vert) / 0.2);
+  }
+  
+  /* State: Error - discreet red */
+  .state-error {
+    border-color: hsl(var(--iwasp-erreur) / 0.5);
+  }
+  
+  /* Text accent IWASP */
+  .text-iwasp-vert {
+    color: hsl(var(--iwasp-vert));
   }
 
   /* Chrome text gradient */
