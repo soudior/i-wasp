@@ -1,16 +1,15 @@
 /**
- * LogoPlacementEditor - Éditeur de placement logo avancé
+ * LogoPlacementEditor - Éditeur de placement logo professionnel
  * 
  * FEATURES:
- * - Drag & drop direct sur la carte
- * - Contraintes visuelles (safe zone)
- * - Réglage opacité & échelle
- * - Effet caméléon (blending)
+ * - Drag & drop contraint avec snapping grille
+ * - Boutons de positionnement précis
+ * - Sensation luxe, solide, industrielle
  * - Aperçu temps réel premium
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence, useDragControls, PanInfo } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,15 +18,17 @@ import {
   AlignCenter, 
   Maximize2, 
   Grid3X3,
-  Move,
   Eye,
   Blend,
   Check,
   Loader2,
   AlertTriangle,
   RefreshCw,
-  Hand,
-  RotateCcw
+  ArrowUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  Move
 } from "lucide-react";
 
 // i-wasp logo
@@ -42,8 +43,8 @@ export interface LogoPlacementConfig {
   opacity: number;
   blendMode: BlendMode;
   scale: number;
-  customX?: number; // percentage from left (0-100)
-  customY?: number; // percentage from top (0-100)
+  customX?: number;
+  customY?: number;
 }
 
 interface LogoPlacementEditorProps {
@@ -84,10 +85,29 @@ const SAFE_ZONE = {
   left: BLEED / CARD_WIDTH * 100,
 };
 
-// Margins for drag constraints (percentage)
-const DRAG_MARGIN = 10;
+// Grid snapping configuration (invisible grid)
+const GRID_SIZE = 5; // 5% grid steps
+const SNAP_THRESHOLD = 3; // Snap within 3% of grid line
+
+// Drag constraints (safe zone margins)
+const MIN_X = 15;
+const MAX_X = 85;
+const MIN_Y = 20;
+const MAX_Y = 80;
 
 type LoadingState = "loading" | "loaded" | "error";
+
+function snapToGrid(value: number): number {
+  const snapped = Math.round(value / GRID_SIZE) * GRID_SIZE;
+  if (Math.abs(value - snapped) <= SNAP_THRESHOLD) {
+    return snapped;
+  }
+  return value;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
 
 function getPresetPosition(placement: LogoPlacement): { x: number; y: number } {
   switch (placement) {
@@ -95,13 +115,13 @@ function getPresetPosition(placement: LogoPlacement): { x: number; y: number } {
     case "auto-fit":
       return { x: 50, y: 50 };
     case "top-left":
-      return { x: 20, y: 25 };
+      return { x: 25, y: 30 };
     case "top-right":
-      return { x: 70, y: 25 };
+      return { x: 75, y: 30 };
     case "bottom-left":
-      return { x: 25, y: 75 };
+      return { x: 25, y: 70 };
     case "bottom-right":
-      return { x: 80, y: 75 };
+      return { x: 75, y: 70 };
     case "full":
       return { x: 50, y: 50 };
     default:
@@ -123,9 +143,8 @@ function getLogoSize(placement: LogoPlacement, scale: number): {
       maxHeight: "100%" 
     };
   }
-  // Base size as percentage of card - center gets bigger, corners smaller
   const baseSize = placement === "center" || placement === "auto-fit" || placement === "custom" ? 50 : 35;
-  const finalSize = Math.min(80, Math.max(20, baseSize * scale)); // Clamp between 20-80%
+  const finalSize = Math.min(80, Math.max(20, baseSize * scale));
   
   return { 
     width: `${finalSize}%`,
@@ -147,8 +166,9 @@ export function LogoPlacementEditor({
   const [imageKey, setImageKey] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragPosition, setDragPosition] = useState({ x: 50, y: 50 });
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
-  const dragControls = useDragControls();
+  const logoRef = useRef<HTMLDivElement>(null);
   
   const isLightCard = cardColor === "#FFFFFF" || cardColor === "#fafafa";
   const isFullMode = config.placement === "full";
@@ -162,13 +182,12 @@ export function LogoPlacementEditor({
     }
   }, [config.placement, config.customX, config.customY]);
 
-  // Reset loading state when URL changes - with pre-validation
+  // Reset loading state when URL changes
   useEffect(() => {
     if (logoUrl) {
       setLoadingState("loading");
       setImageKey(prev => prev + 1);
       
-      // Pre-load image to detect errors early
       const img = new Image();
       img.onload = () => setLoadingState("loaded");
       img.onerror = () => setLoadingState("error");
@@ -177,12 +196,10 @@ export function LogoPlacementEditor({
   }, [logoUrl]);
 
   const handleImageLoad = useCallback(() => {
-    console.log("[LogoPlacementEditor] Image loaded successfully");
     setLoadingState("loaded");
   }, []);
 
   const handleImageError = useCallback(() => {
-    console.error("[LogoPlacementEditor] Image failed to load:", logoUrl);
     setLoadingState("error");
   }, [logoUrl]);
 
@@ -191,43 +208,107 @@ export function LogoPlacementEditor({
     setImageKey(prev => prev + 1);
   }, []);
 
-  const updateConfig = (updates: Partial<LogoPlacementConfig>) => {
+  const updateConfig = useCallback((updates: Partial<LogoPlacementConfig>) => {
     onChange({ ...config, ...updates });
-  };
+  }, [config, onChange]);
 
-  const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (!cardRef.current || isFullMode) return;
+  // Professional drag handlers with snapping
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    if (isFullMode || !cardRef.current) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
     
     const cardRect = cardRef.current.getBoundingClientRect();
-    const cardWidth = cardRect.width;
-    const cardHeight = cardRect.height;
+    const offsetX = e.clientX - cardRect.left - (dragPosition.x / 100 * cardRect.width);
+    const offsetY = e.clientY - cardRect.top - (dragPosition.y / 100 * cardRect.height);
+    
+    setDragOffset({ x: offsetX, y: offsetY });
+    setIsDragging(true);
+    
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, [isFullMode, dragPosition]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isDragging || !cardRef.current || isFullMode) return;
+    
+    e.preventDefault();
+    
+    const cardRect = cardRef.current.getBoundingClientRect();
     
     // Calculate new position as percentage
-    const newX = Math.max(DRAG_MARGIN, Math.min(100 - DRAG_MARGIN, 
-      dragPosition.x + (info.offset.x / cardWidth) * 100
-    ));
-    const newY = Math.max(DRAG_MARGIN, Math.min(100 - DRAG_MARGIN, 
-      dragPosition.y + (info.offset.y / cardHeight) * 100
-    ));
+    let newX = ((e.clientX - cardRect.left - dragOffset.x) / cardRect.width) * 100;
+    let newY = ((e.clientY - cardRect.top - dragOffset.y) / cardRect.height) * 100;
+    
+    // Apply constraints
+    newX = clamp(newX, MIN_X, MAX_X);
+    newY = clamp(newY, MIN_Y, MAX_Y);
+    
+    // Apply grid snapping
+    newX = snapToGrid(newX);
+    newY = snapToGrid(newY);
     
     setDragPosition({ x: newX, y: newY });
+  }, [isDragging, dragOffset, isFullMode]);
+
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    if (!isDragging) return;
+    
+    e.preventDefault();
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    
     setIsDragging(false);
     
-    // Update config with custom position
+    // Save final position with snap
+    const finalX = snapToGrid(dragPosition.x);
+    const finalY = snapToGrid(dragPosition.y);
+    
+    updateConfig({ 
+      placement: "custom",
+      customX: finalX,
+      customY: finalY
+    });
+  }, [isDragging, dragPosition, updateConfig]);
+
+  // Direction buttons for precise positioning
+  const moveDirection = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
+    const step = GRID_SIZE;
+    let newX = dragPosition.x;
+    let newY = dragPosition.y;
+    
+    switch (direction) {
+      case 'up':
+        newY = clamp(dragPosition.y - step, MIN_Y, MAX_Y);
+        break;
+      case 'down':
+        newY = clamp(dragPosition.y + step, MIN_Y, MAX_Y);
+        break;
+      case 'left':
+        newX = clamp(dragPosition.x - step, MIN_X, MAX_X);
+        break;
+      case 'right':
+        newX = clamp(dragPosition.x + step, MIN_X, MAX_X);
+        break;
+    }
+    
+    setDragPosition({ x: newX, y: newY });
     updateConfig({ 
       placement: "custom",
       customX: newX,
       customY: newY
     });
-  }, [dragPosition, isFullMode, updateConfig]);
+  }, [dragPosition, updateConfig]);
 
-  const handleDragStart = useCallback(() => {
-    if (!isFullMode) {
-      setIsDragging(true);
-    }
-  }, [isFullMode]);
+  const handleCenterLogo = useCallback(() => {
+    setDragPosition({ x: 50, y: 50 });
+    updateConfig({ 
+      placement: "center",
+      customX: undefined,
+      customY: undefined
+    });
+  }, [updateConfig]);
 
-  const handlePresetClick = (placement: LogoPlacement) => {
+  const handlePresetClick = useCallback((placement: LogoPlacement) => {
     const newPos = getPresetPosition(placement);
     setDragPosition(newPos);
     updateConfig({ 
@@ -235,65 +316,47 @@ export function LogoPlacementEditor({
       customX: undefined, 
       customY: undefined 
     });
-  };
-
-  const handleCenterLogo = () => {
-    setDragPosition({ x: 50, y: 50 });
-    updateConfig({ 
-      placement: "center",
-      customX: undefined,
-      customY: undefined
-    });
-  };
+  }, [updateConfig]);
 
   const logoSize = getLogoSize(config.placement, config.scale);
 
   return (
     <div className="space-y-6">
-      {/* Card Preview with Drag & Drop */}
-      <Card className="overflow-hidden">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between mb-3">
+      {/* Card Preview with Professional Positioning */}
+      <Card className="overflow-hidden border-0 shadow-xl">
+        <CardContent className="p-5">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Aperçu impression</span>
-              {!isFullMode && (
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <Hand size={10} />
-                  Glissez le logo
-                </span>
-              )}
+              <span className="text-sm font-semibold tracking-tight">Aperçu impression</span>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleCenterLogo}
-                className="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
-                title="Recentrer"
-              >
-                <RotateCcw size={12} />
-              </button>
-              <button
-                onClick={() => setShowGuides(!showGuides)}
-                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-md transition-colors ${
-                  showGuides ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
-                }`}
-              >
-                <Eye size={14} />
-                Guides
-              </button>
-            </div>
+            <button
+              onClick={() => setShowGuides(!showGuides)}
+              className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all duration-200 ${
+                showGuides 
+                  ? "bg-primary text-primary-foreground shadow-sm" 
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              <Eye size={14} />
+              Guides
+            </button>
           </div>
 
           {/* Card Preview */}
           <div
             ref={cardRef}
-            className={`relative rounded-xl overflow-hidden shadow-2xl mx-auto ${
-              isDragging ? "cursor-grabbing" : !isFullMode ? "cursor-grab" : ""
+            className={`relative rounded-2xl overflow-hidden mx-auto select-none ${
+              isDragging ? "cursor-grabbing" : !isFullMode ? "cursor-default" : ""
             }`}
             style={{
               aspectRatio: CARD_RATIO,
               maxWidth: "100%",
               backgroundColor: cardColor,
-              boxShadow: `0 25px 50px -12px ${cardColor}40`,
+              boxShadow: `
+                0 25px 50px -12px ${cardColor}30,
+                0 0 0 1px ${isLightCard ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'}
+              `,
+              transition: "box-shadow 0.3s ease-out",
             }}
           >
             {/* Visual guides */}
@@ -303,6 +366,7 @@ export function LogoPlacementEditor({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
                   className="absolute inset-0 pointer-events-none z-10"
                 >
                   {/* Bleed zone */}
@@ -313,30 +377,31 @@ export function LogoPlacementEditor({
                       right: `${SAFE_ZONE.right}%`,
                       bottom: `${SAFE_ZONE.bottom}%`,
                       left: `${SAFE_ZONE.left}%`,
-                      borderColor: isLightCard ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)",
+                      borderColor: isLightCard ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.15)",
                     }}
                   />
-                  {/* Center lines */}
+                  {/* Center crosshair */}
                   <div 
                     className="absolute top-1/2 left-0 right-0 h-px"
-                    style={{ backgroundColor: isLightCard ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)" }}
+                    style={{ backgroundColor: isLightCard ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.08)" }}
                   />
                   <div 
                     className="absolute left-1/2 top-0 bottom-0 w-px"
-                    style={{ backgroundColor: isLightCard ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)" }}
+                    style={{ backgroundColor: isLightCard ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.08)" }}
                   />
                   
-                  {/* Drag constraint zone indicator */}
+                  {/* Allowed zone indicator during drag */}
                   {isDragging && (
                     <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="absolute border-2 border-primary/30 rounded-lg"
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      className="absolute border-2 border-primary/40 rounded-xl"
                       style={{
-                        top: `${DRAG_MARGIN}%`,
-                        left: `${DRAG_MARGIN}%`,
-                        right: `${DRAG_MARGIN}%`,
-                        bottom: `${DRAG_MARGIN}%`,
+                        top: `${MIN_Y - 5}%`,
+                        left: `${MIN_X - 5}%`,
+                        right: `${100 - MAX_X - 5}%`,
+                        bottom: `${100 - MAX_Y - 5}%`,
                       }}
                     />
                   )}
@@ -398,12 +463,12 @@ export function LogoPlacementEditor({
                         className="text-xs opacity-60"
                         style={{ color: textColor }}
                       >
-                        Veuillez télécharger un nouveau fichier PNG, JPG ou SVG
+                        Veuillez télécharger un nouveau fichier
                       </p>
                     </div>
                     <button
                       onClick={handleRetry}
-                      className="flex items-center gap-1.5 text-xs px-4 py-2 rounded-lg font-medium transition-all hover:scale-105"
+                      className="flex items-center gap-1.5 text-xs px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 active:scale-95"
                       style={{ 
                         backgroundColor: textColor,
                         color: cardColor 
@@ -417,9 +482,8 @@ export function LogoPlacementEditor({
               )}
             </AnimatePresence>
 
-            {/* Client Logo - Draggable */}
+            {/* Client Logo - Professional Drag System */}
             {isFullMode ? (
-              // Full mode - no drag, cover entire card
               <motion.img
                 key={`logo-${imageKey}`}
                 src={logoUrl}
@@ -440,49 +504,52 @@ export function LogoPlacementEditor({
                   objectFit: "cover",
                   mixBlendMode: config.blendMode,
                   zIndex: 5,
-                  // Fusion effect with card
                   filter: isLightCard 
                     ? `drop-shadow(0 0 20px rgba(0,0,0,0.1))` 
                     : `drop-shadow(0 0 20px rgba(0,0,0,0.3))`,
                 }}
-                className="object-cover"
               />
             ) : (
-              // Draggable mode
               <motion.div
-                drag
-                dragControls={dragControls}
-                dragMomentum={false}
-                dragElastic={0.1}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                initial={false}
+                ref={logoRef}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
                 animate={{
-                  opacity: loadingState === "loaded" ? 1 : 0,
-                }}
-                whileDrag={{ scale: 1.05, zIndex: 50 }}
-                style={{
-                  position: "absolute",
                   left: `${dragPosition.x}%`,
                   top: `${dragPosition.y}%`,
+                  opacity: loadingState === "loaded" ? 1 : 0,
+                  scale: isDragging ? 1.02 : 1,
+                }}
+                transition={{
+                  left: { type: "spring", stiffness: 400, damping: 35 },
+                  top: { type: "spring", stiffness: 400, damping: 35 },
+                  scale: { duration: 0.15, ease: "easeOut" },
+                  opacity: { duration: 0.2 },
+                }}
+                style={{
+                  position: "absolute",
                   transform: "translate(-50%, -50%)",
                   zIndex: isDragging ? 50 : 5,
                   cursor: isDragging ? "grabbing" : "grab",
+                  touchAction: "none",
                 }}
-                className="touch-none"
+                className="select-none"
               >
-              <motion.img
+                <motion.img
                   key={`logo-${imageKey}`}
                   src={logoUrl}
                   alt="Logo client"
                   onLoad={handleImageLoad}
                   onError={handleImageError}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ 
+                  animate={{
                     opacity: loadingState === "loaded" ? config.opacity / 100 : 0,
-                    scale: loadingState === "loaded" ? 1 : 0.9
+                    boxShadow: isDragging 
+                      ? "0 20px 40px -10px rgba(0,0,0,0.3)" 
+                      : "0 8px 20px -8px rgba(0,0,0,0.2)",
                   }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  transition={{ duration: 0.2 }}
                   style={{
                     width: logoSize.width,
                     height: logoSize.height,
@@ -490,30 +557,14 @@ export function LogoPlacementEditor({
                     maxHeight: logoSize.maxHeight,
                     objectFit: "contain",
                     mixBlendMode: config.blendMode,
-                    // Auto shadow based on card color for fusion effect
                     filter: isLightCard 
                       ? `drop-shadow(0 4px 12px rgba(0,0,0,0.15))` 
                       : `drop-shadow(0 4px 12px rgba(0,0,0,0.4))`,
+                    borderRadius: "4px",
                   }}
-                  className="object-contain pointer-events-none select-none"
+                  className="object-contain pointer-events-none"
                   draggable={false}
                 />
-                
-                {/* Drag handle indicator */}
-                {loadingState === "loaded" && !isDragging && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium whitespace-nowrap"
-                    style={{
-                      backgroundColor: isLightCard ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.9)",
-                      color: isLightCard ? "#fff" : "#000",
-                    }}
-                  >
-                    <Move size={10} />
-                    Déplacer
-                  </motion.div>
-                )}
               </motion.div>
             )}
 
@@ -525,7 +576,7 @@ export function LogoPlacementEditor({
                 className="h-4 object-contain"
                 style={{
                   filter: isLightCard ? "invert(1)" : "none",
-                  opacity: 0.7,
+                  opacity: 0.6,
                 }}
               />
             </div>
@@ -534,11 +585,11 @@ export function LogoPlacementEditor({
             <div className="absolute bottom-3 left-3 z-20">
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm"
-                style={{ backgroundColor: `${textColor}15` }}
+                style={{ backgroundColor: `${textColor}12` }}
               >
                 <div
                   className="w-4 h-4 rounded-full"
-                  style={{ backgroundColor: `${textColor}40` }}
+                  style={{ backgroundColor: `${textColor}30` }}
                 />
               </div>
             </div>
@@ -549,19 +600,79 @@ export function LogoPlacementEditor({
               style={{
                 background: isLightCard
                   ? "linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, transparent 100%)"
-                  : "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, transparent 100%)",
+                  : "linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, transparent 100%)",
               }}
             />
           </div>
 
+          {/* Position Controls */}
+          {!isFullMode && loadingState === "loaded" && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 flex items-center justify-center gap-2"
+            >
+              {/* Direction Buttons */}
+              <div className="flex items-center gap-1 bg-muted/50 rounded-xl p-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 rounded-lg hover:bg-background/80 active:scale-95 transition-all"
+                  onClick={() => moveDirection('left')}
+                >
+                  <ArrowLeft size={16} />
+                </Button>
+                
+                <div className="flex flex-col gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-9 rounded-lg hover:bg-background/80 active:scale-95 transition-all"
+                    onClick={() => moveDirection('up')}
+                  >
+                    <ArrowUp size={16} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-9 rounded-lg hover:bg-background/80 active:scale-95 transition-all"
+                    onClick={() => moveDirection('down')}
+                  >
+                    <ArrowDown size={16} />
+                  </Button>
+                </div>
+                
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 rounded-lg hover:bg-background/80 active:scale-95 transition-all"
+                  onClick={() => moveDirection('right')}
+                >
+                  <ArrowRight size={16} />
+                </Button>
+              </div>
+
+              {/* Center Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 px-4 rounded-xl font-medium hover:bg-primary hover:text-primary-foreground active:scale-95 transition-all duration-200"
+                onClick={handleCenterLogo}
+              >
+                <AlignCenter size={14} className="mr-1.5" />
+                Centrer
+              </Button>
+            </motion.div>
+          )}
+
           {/* Position info */}
-          <div className="flex items-center justify-between mt-3">
-            <p className="text-xs text-muted-foreground">
+          <div className="flex items-center justify-between mt-4">
+            <p className="text-xs text-muted-foreground font-medium">
               Format CR80 • 85.6 × 54 mm
             </p>
             {config.placement === "custom" && (
-              <p className="text-xs text-primary">
-                Position: {Math.round(dragPosition.x)}%, {Math.round(dragPosition.y)}%
+              <p className="text-xs text-primary font-medium">
+                {Math.round(dragPosition.x)}% × {Math.round(dragPosition.y)}%
               </p>
             )}
           </div>
