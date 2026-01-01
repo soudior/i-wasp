@@ -5,6 +5,7 @@
  * Intègre les suggestions intelligentes de l'IA
  */
 
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,11 +14,15 @@ import { CardFormData } from "../CardWizard";
 import { SocialLink } from "@/lib/socialNetworks";
 import { SocialNetworkSelector } from "./SocialNetworkSelector";
 import { AISuggestions } from "../AISuggestions";
+import { WhatsAppEditor } from "@/components/WhatsAppEditor";
+import { SmartLocationEditor } from "@/components/SmartLocationEditor";
 import { 
   Check, 
   X, 
   Globe,
-  Sparkles
+  Sparkles,
+  MessageCircle,
+  MapPin
 } from "lucide-react";
 
 interface StepPreviewProps {
@@ -27,6 +32,41 @@ interface StepPreviewProps {
 }
 
 export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
+  // WhatsApp state from phone number
+  const [whatsappData, setWhatsappData] = useState({
+    number: "",
+    countryCode: "+33",
+    message: "",
+  });
+
+  // Location state
+  const [locationData, setLocationData] = useState({
+    address: data.location || "",
+    latitude: undefined as number | undefined,
+    longitude: undefined as number | undefined,
+  });
+
+  // Sync WhatsApp to social links
+  const handleWhatsAppChange = (waData: typeof whatsappData) => {
+    setWhatsappData(waData);
+    if (waData.number) {
+      const fullNumber = waData.countryCode + waData.number;
+      const existingLinks = (data.socialLinks || []).filter(l => l.networkId !== "whatsapp");
+      onChange({
+        socialLinks: [
+          ...existingLinks,
+          { id: `whatsapp-${Date.now()}`, networkId: "whatsapp", value: fullNumber }
+        ]
+      });
+    }
+  };
+
+  // Sync location
+  const handleLocationChange = (locData: typeof locationData) => {
+    setLocationData(locData);
+    onChange({ location: locData.address });
+  };
+
   const checks = [
     { 
       label: "Informations complètes", 
@@ -108,6 +148,27 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
               </p>
             </motion.div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* WhatsApp Module */}
+      <Card className="border-border/50 shadow-xl bg-card/80 backdrop-blur-sm">
+        <CardContent className="p-6">
+          <WhatsAppEditor
+            value={whatsappData}
+            onChange={handleWhatsAppChange}
+            phoneNumber={data.phone}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Location Module */}
+      <Card className="border-border/50 shadow-xl bg-card/80 backdrop-blur-sm">
+        <CardContent className="p-6">
+          <SmartLocationEditor
+            value={locationData}
+            onChange={handleLocationChange}
+          />
         </CardContent>
       </Card>
 
