@@ -14,3 +14,4 @@ export { LogoCropper } from './LogoCropper';
 export { SmartInput } from './SmartInput';
 export { SmartContinueButton } from './SmartContinueButton';
 export { ValidationSummary, ValidationChecklist } from './ValidationSummary';
+export { ClientPreview } from './ClientPreview';
