@@ -1,11 +1,15 @@
 /**
- * Step 2: Quantity Selection
- * /order/quantity
+ * Step 4: Quantity & Options
+ * /order/options
+ * 
+ * - Quantity selection: 1, 2, 5, 10, 20, 50, 100
+ * - Promo code input
+ * - Dynamic pricing with volume discounts
  */
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
+import { useOrderFunnel, OrderFunnelGuard, type OrderOptions as OrderOptionsType } from "@/contexts/OrderFunnelContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { 
@@ -14,10 +18,13 @@ import {
   contentVariants,
   itemVariants 
 } from "@/components/order";
-import { formatPrice, calculateB2BPrice } from "@/lib/pricing";
+import { formatPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Minus, Plus, Check, Percent } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ArrowLeft, ArrowRight, Minus, Plus, Check, Percent, Tag } from "lucide-react";
+import { toast } from "sonner";
 
 // Base prices per customer type (in cents)
 const BASE_PRICES = {
@@ -41,6 +48,13 @@ const DISCOUNT_TIERS = [
   { min: 100, discount: 30 },
 ];
 
+// Valid promo codes
+const PROMO_CODES: Record<string, number> = {
+  "IWASP10": 10,
+  "WELCOME20": 20,
+  "VIP15": 15,
+};
+
 function getDiscount(quantity: number): number {
   for (let i = DISCOUNT_TIERS.length - 1; i >= 0; i--) {
     if (quantity >= DISCOUNT_TIERS[i].min) {
@@ -50,10 +64,16 @@ function getDiscount(quantity: number): number {
   return 0;
 }
 
-function OrderQuantityContent() {
-  const { state, setQuantity, nextStep, prevStep } = useOrderFunnel();
+function OrderOptionsContent() {
+  const { state, setOrderOptions, nextStep, prevStep } = useOrderFunnel();
   
-  const [selectedQuantity, setSelectedQuantity] = useState(state.quantity || 1);
+  const [selectedQuantity, setSelectedQuantity] = useState(state.orderOptions?.quantity || 1);
+  const [promoCode, setPromoCode] = useState(state.orderOptions?.promoCode || "");
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: number } | null>(
+    state.orderOptions?.promoCode && state.orderOptions?.promoDiscount
+      ? { code: state.orderOptions.promoCode, discount: state.orderOptions.promoDiscount }
+      : null
+  );
 
   // Get quantity options based on customer type
   const quantityOptions = QUANTITY_OPTIONS[state.customerType || "particulier"];
@@ -68,12 +88,45 @@ function OrderQuantityContent() {
 
   const basePrice = BASE_PRICES[state.customerType || "particulier"];
   const isEnterprise = state.customerType === "entreprise";
-  const discount = isEnterprise ? getDiscount(selectedQuantity) : 0;
-  const unitPrice = isEnterprise ? Math.round(basePrice * (1 - discount / 100)) : basePrice;
-  const totalPrice = unitPrice * selectedQuantity;
+  const volumeDiscount = isEnterprise ? getDiscount(selectedQuantity) : 0;
+  const unitPriceAfterVolume = isEnterprise ? Math.round(basePrice * (1 - volumeDiscount / 100)) : basePrice;
+  
+  // Apply promo discount on top of volume discount
+  const promoDiscount = appliedPromo?.discount || 0;
+  const unitPriceFinal = Math.round(unitPriceAfterVolume * (1 - promoDiscount / 100));
+  const totalPrice = unitPriceFinal * selectedQuantity;
+
+  const handleApplyPromo = () => {
+    const code = promoCode.toUpperCase().trim();
+    if (!code) {
+      toast.error("Veuillez entrer un code promo");
+      return;
+    }
+    
+    const discount = PROMO_CODES[code];
+    if (discount) {
+      setAppliedPromo({ code, discount });
+      toast.success(`Code promo appliqué : -${discount}%`);
+    } else {
+      toast.error("Code promo invalide");
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoCode("");
+    toast.info("Code promo retiré");
+  };
 
   const handleContinue = () => {
-    setQuantity(selectedQuantity);
+    const options: OrderOptionsType = {
+      quantity: selectedQuantity,
+      promoCode: appliedPromo?.code,
+      promoDiscount: appliedPromo?.discount,
+      unitPriceCents: unitPriceFinal,
+      totalPriceCents: totalPrice,
+    };
+    setOrderOptions(options);
     nextStep();
   };
 
@@ -85,7 +138,7 @@ function OrderQuantityContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-3xl mx-auto">
             {/* Step Indicator */}
-            <OrderProgressBar currentStep={2} />
+            <OrderProgressBar currentStep={4} />
 
             {/* Header */}
             <motion.div 
@@ -98,7 +151,7 @@ function OrderQuantityContent() {
                 className="text-3xl md:text-4xl font-display font-bold mb-3"
                 variants={itemVariants}
               >
-                Combien de cartes ?
+                Quantité et options
               </motion.h1>
               <motion.p 
                 className="text-muted-foreground text-lg"
@@ -196,34 +249,96 @@ function OrderQuantityContent() {
             </motion.div>
           )}
 
-          {/* Price Summary */}
+          {/* Promo Code */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
+            <Card className="mb-8">
+              <CardContent className="p-6">
+                <Label className="flex items-center gap-2 mb-3">
+                  <Tag size={16} className="text-primary" />
+                  Code promo
+                </Label>
+                {appliedPromo ? (
+                  <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-green-600" />
+                      <span className="font-medium text-green-700 dark:text-green-400">
+                        {appliedPromo.code} (-{appliedPromo.discount}%)
+                      </span>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={handleRemovePromo}>
+                      Retirer
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value)}
+                      placeholder="Entrez votre code"
+                      className="flex-1"
+                      onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
+                    />
+                    <Button variant="outline" onClick={handleApplyPromo}>
+                      Appliquer
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Price Summary */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
             <Card className="bg-primary/5 border-primary/20 mb-10">
               <CardContent className="p-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total estimé</p>
-                    <p className="text-3xl font-bold">{formatPrice(totalPrice)}</p>
-                    {selectedQuantity > 1 && (
-                      <p className="text-sm text-muted-foreground">
-                        soit {formatPrice(unitPrice)}/carte
-                      </p>
-                    )}
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {selectedQuantity} carte{selectedQuantity > 1 ? "s" : ""} × {formatPrice(basePrice)}
+                    </span>
+                    <span>{formatPrice(basePrice * selectedQuantity)}</span>
                   </div>
-                  {discount > 0 && (
-                    <div className="text-right">
-                      <div className="px-3 py-1 bg-green-500/10 text-green-600 rounded-full text-sm font-medium">
-                        -{discount}% de réduction
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Économie: {formatPrice((basePrice - unitPrice) * selectedQuantity)}
-                      </p>
+                  
+                  {volumeDiscount > 0 && (
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>Remise volume (-{volumeDiscount}%)</span>
+                      <span>-{formatPrice((basePrice - unitPriceAfterVolume) * selectedQuantity)}</span>
                     </div>
                   )}
+                  
+                  {promoDiscount > 0 && (
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>Code promo (-{promoDiscount}%)</span>
+                      <span>-{formatPrice((unitPriceAfterVolume - unitPriceFinal) * selectedQuantity)}</span>
+                    </div>
+                  )}
+                  
+                  <div className="border-t pt-3 flex justify-between items-center">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total estimé</p>
+                      <p className="text-3xl font-bold">{formatPrice(totalPrice)}</p>
+                      {selectedQuantity > 1 && (
+                        <p className="text-sm text-muted-foreground">
+                          soit {formatPrice(unitPriceFinal)}/carte
+                        </p>
+                      )}
+                    </div>
+                    {(volumeDiscount > 0 || promoDiscount > 0) && (
+                      <div className="text-right">
+                        <div className="px-3 py-1 bg-green-500/10 text-green-600 rounded-full text-sm font-medium">
+                          Économie: {formatPrice((basePrice * selectedQuantity) - totalPrice)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -234,7 +349,7 @@ function OrderQuantityContent() {
             className="flex justify-between items-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.7 }}
           >
             <Button variant="ghost" onClick={prevStep} className="gap-2">
               <ArrowLeft size={18} />
@@ -258,10 +373,10 @@ function OrderQuantityContent() {
   );
 }
 
-export default function OrderQuantity() {
+export default function OrderOptions() {
   return (
-    <OrderFunnelGuard step={2}>
-      <OrderQuantityContent />
+    <OrderFunnelGuard step={4}>
+      <OrderOptionsContent />
     </OrderFunnelGuard>
   );
 }

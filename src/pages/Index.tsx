@@ -109,7 +109,7 @@ const Index = () => {
           </div>
 
           {/* Actions - CTA principal vers configuration */}
-          <div className="flex flex-col items-center gap-2 pt-4">
+          <div className="flex flex-col items-center gap-4 pt-4">
             <Button 
               size="lg" 
               className="bg-foreground text-background hover:bg-foreground/90 gap-2 px-8 py-6 text-base"
@@ -118,17 +118,25 @@ const Index = () => {
               Configurer ma carte
               <ArrowRight className="w-4 h-4" />
             </Button>
-            <span className="text-sm text-muted-foreground">Configuration guidée en 5 étapes</span>
+            <Button 
+              variant="ghost" 
+              size="lg"
+              onClick={() => navigate("/demo")}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Voir une démonstration
+            </Button>
+            <span className="text-sm text-muted-foreground">Parcours guidé en 6 étapes</span>
           </div>
         </div>
       </section>
 
       {/* Demo Section - Étapes du parcours */}
       <section className="py-12 px-4 bg-muted/30 border-y border-border/20">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
+        <div className="max-w-5xl mx-auto text-center space-y-6">
           <div className="space-y-2">
             <h2 className="text-xl md:text-2xl font-semibold text-foreground">
-              Créez votre carte en 5 étapes
+              Créez votre carte en 6 étapes
             </h2>
             <p className="text-muted-foreground">
               Parcours guidé, simple et sécurisé.
@@ -136,13 +144,14 @@ const Index = () => {
           </div>
 
           {/* Étapes du parcours */}
-          <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 py-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 py-4">
             {[
-              { step: 1, title: "Type de client", desc: "Particulier, Pro, Équipe" },
-              { step: 2, title: "Vos infos", desc: "Nom, email, téléphone" },
-              { step: 3, title: "Design carte", desc: "Logo & couleur" },
-              { step: 4, title: "Quantité", desc: "Prix dégressifs" },
-              { step: 5, title: "Récapitulatif", desc: "Validation finale" },
+              { step: 1, title: "Type", desc: "Particulier, Pro, Équipe" },
+              { step: 2, title: "Profil", desc: "Vos informations" },
+              { step: 3, title: "Design", desc: "Logo & couleur" },
+              { step: 4, title: "Options", desc: "Quantité & promo" },
+              { step: 5, title: "Récap", desc: "Vérification" },
+              { step: 6, title: "Paiement", desc: "Sécurisé" },
             ].map(({ step, title, desc }) => (
               <div key={step} className="p-4 rounded-xl border border-border/30 bg-card/50">
                 <div className="w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center mx-auto mb-3">
