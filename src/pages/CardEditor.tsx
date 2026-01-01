@@ -78,6 +78,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { SocialLink } from "@/lib/socialNetworks";
+import { SmartLocationEditor } from "@/components/SmartLocationEditor";
 
 // Block type icons
 const blockIcons: Record<BlockType, React.ElementType> = {
@@ -287,55 +288,34 @@ function QRCodePreview({ value, size }: { value: string; size: number }) {
 }
 
 function LocationEditor({ block, onChange }: { block: LocationBlock; onChange: (b: LocationBlock) => void }) {
-  const updateData = (field: keyof LocationBlock["data"], value: string | number | undefined) => {
-    onChange({ ...block, data: { ...block.data, [field]: value } });
+  const handleLocationChange = (data: { 
+    address: string; 
+    latitude?: number; 
+    longitude?: number; 
+    label?: string 
+  }) => {
+    onChange({ 
+      ...block, 
+      data: { 
+        ...block.data, 
+        address: data.address,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        label: data.label,
+      } 
+    });
   };
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">Adresse</Label>
-        <Input
-          value={block.data.address}
-          onChange={(e) => updateData("address", e.target.value)}
-          placeholder="123 Rue de Paris, 75001 Paris"
-          className="h-10"
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Latitude (optionnel)</Label>
-          <Input
-            value={block.data.latitude || ""}
-            onChange={(e) => updateData("latitude", e.target.value ? parseFloat(e.target.value) : undefined)}
-            placeholder="48.8566"
-            type="number"
-            step="any"
-            className="h-10"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Longitude (optionnel)</Label>
-          <Input
-            value={block.data.longitude || ""}
-            onChange={(e) => updateData("longitude", e.target.value ? parseFloat(e.target.value) : undefined)}
-            placeholder="2.3522"
-            type="number"
-            step="any"
-            className="h-10"
-          />
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">Label affiché</Label>
-        <Input
-          value={block.data.label || ""}
-          onChange={(e) => updateData("label", e.target.value)}
-          placeholder="Notre adresse"
-          className="h-10"
-        />
-      </div>
-    </div>
+    <SmartLocationEditor
+      value={{
+        address: block.data.address,
+        latitude: block.data.latitude,
+        longitude: block.data.longitude,
+        label: block.data.label,
+      }}
+      onChange={handleLocationChange}
+    />
   );
 }
 
