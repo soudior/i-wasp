@@ -1,15 +1,24 @@
 /**
  * Step 2: Personal Information
  * /order/infos
+ * 
+ * VALIDATION INFAILLIBLE:
+ * - Bouton désactivé tant que le formulaire est invalide
+ * - Auto-correction (email lowercase, phone normalisé)
+ * - Messages clairs et humains
+ * - Impossible de continuer sans données valides
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOrderFunnel, OrderFunnelGuard, PersonalInfo } from "@/contexts/OrderFunnelContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { SmartInput } from "@/components/order/SmartInput";
+import { SmartContinueButton } from "@/components/order/SmartContinueButton";
+import { ValidationSummary } from "@/components/order/ValidationSummary";
 import { 
   OrderProgressBar, 
   AutoSaveIndicator, 
@@ -19,11 +28,17 @@ import {
   itemVariants 
 } from "@/components/order";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, User, Building } from "lucide-react";
+import { ArrowLeft, User, Building } from "lucide-react";
 import { toast } from "sonner";
+import {
+  normalizeEmail,
+  normalizePhone,
+  normalizeName,
+  validateEmailField,
+  validatePhoneField,
+  validatePersonalInfo,
+} from "@/lib/orderValidation";
 
 function OrderInfosContent() {
   const { state, setPersonalInfo, nextStep, prevStep } = useOrderFunnel();
@@ -40,7 +55,6 @@ function OrderInfosContent() {
     }
   );
 
-  const [errors, setErrors] = useState<Partial<Record<keyof PersonalInfo, string>>>({});
   const [showRestoreBanner, setShowRestoreBanner] = useState(false);
 
   // Auto-save hook
@@ -81,47 +95,79 @@ function OrderInfosContent() {
     setShowRestoreBanner(false);
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof PersonalInfo, string>> = {};
+  // Real-time validation
+  const validation = useMemo(() => {
+    return validatePersonalInfo(formData, state.customerType);
+  }, [formData, state.customerType]);
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = "Le prénom est requis";
-    }
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = "Le nom est requis";
-    }
-    if (!formData.email.trim()) {
-      newErrors.email = "L'email est requis";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Email invalide";
-    }
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Le téléphone est requis";
+  // Validation items for summary
+  const validationItems = useMemo(() => {
+    const items = [
+      {
+        key: "firstName",
+        label: "Prénom",
+        isValid: !validation.errors.firstName,
+        message: validation.errors.firstName,
+      },
+      {
+        key: "lastName",
+        label: "Nom",
+        isValid: !validation.errors.lastName,
+        message: validation.errors.lastName,
+      },
+      {
+        key: "email",
+        label: "Email valide",
+        isValid: !validation.errors.email,
+        message: validation.errors.email,
+      },
+      {
+        key: "phone",
+        label: "Téléphone valide",
+        isValid: !validation.errors.phone,
+        message: validation.errors.phone,
+      },
+    ];
+
+    // Add company for pro/entreprise
+    if (state.customerType === "entreprise" || state.customerType === "professionnel") {
+      items.push({
+        key: "company",
+        label: "Nom de l'entreprise",
+        isValid: !validation.errors.company,
+        message: validation.errors.company,
+      });
     }
 
-    // Company required for entreprise type
-    if (state.customerType === "entreprise" && !formData.company?.trim()) {
-      newErrors.company = "Le nom de l'entreprise est requis";
-    }
+    return items;
+  }, [validation.errors, state.customerType]);
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  // Can proceed?
+  const canProceed = validation.isValid;
+  const blockingMessage = !canProceed
+    ? Object.values(validation.errors)[0]
+    : undefined;
 
   const handleChange = (field: keyof PersonalInfo, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
   };
 
   const handleContinue = () => {
-    if (!validateForm()) {
+    if (!canProceed) {
       toast.error("Veuillez corriger les erreurs");
       return;
     }
 
-    setPersonalInfo(formData);
+    // Apply normalizations before saving
+    const normalizedData: PersonalInfo = {
+      ...formData,
+      firstName: normalizeName(formData.firstName),
+      lastName: normalizeName(formData.lastName),
+      email: normalizeEmail(formData.email),
+      phone: normalizePhone(formData.phone),
+    };
+
+    setPersonalInfo(normalizedData);
     clearSaved();
     nextStep();
   };
@@ -176,6 +222,20 @@ function OrderInfosContent() {
               </motion.div>
             </motion.div>
 
+            {/* Validation Summary */}
+            <AnimatePresence>
+              {!canProceed && formData.firstName && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="mb-6"
+                >
+                  <ValidationSummary items={validationItems} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Form */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -193,73 +253,71 @@ function OrderInfosContent() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="firstName">Prénom *</Label>
-                      <Input
-                        id="firstName"
-                        value={formData.firstName}
-                        onChange={(e) => handleChange("firstName", e.target.value)}
-                        placeholder="Jean"
-                        className={errors.firstName ? "border-destructive" : ""}
-                      />
-                      {errors.firstName && (
-                        <p className="text-xs text-destructive mt-1">{errors.firstName}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="lastName">Nom *</Label>
-                      <Input
-                        id="lastName"
-                        value={formData.lastName}
-                        onChange={(e) => handleChange("lastName", e.target.value)}
-                        placeholder="Dupont"
-                        className={errors.lastName ? "border-destructive" : ""}
-                      />
-                      {errors.lastName && (
-                        <p className="text-xs text-destructive mt-1">{errors.lastName}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => handleChange("email", e.target.value)}
-                      placeholder="jean.dupont@email.com"
-                      className={errors.email ? "border-destructive" : ""}
+                    <SmartInput
+                      id="firstName"
+                      label="Prénom"
+                      value={formData.firstName}
+                      onChange={(value) => handleChange("firstName", value)}
+                      onNormalize={normalizeName}
+                      validate={(value) => ({
+                        isValid: value.trim().length > 0,
+                        message: value.trim().length === 0 ? "Requis" : undefined,
+                      })}
+                      error={validation.errors.firstName}
+                      required
+                      placeholder="Jean"
                     />
-                    {errors.email && (
-                      <p className="text-xs text-destructive mt-1">{errors.email}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="phone">Téléphone *</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => handleChange("phone", e.target.value)}
-                      placeholder="+33 6 12 34 56 78"
-                      className={errors.phone ? "border-destructive" : ""}
-                    />
-                    {errors.phone && (
-                      <p className="text-xs text-destructive mt-1">{errors.phone}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="title">Titre / Fonction</Label>
-                    <Input
-                      id="title"
-                      value={formData.title || ""}
-                      onChange={(e) => handleChange("title", e.target.value)}
-                      placeholder="Directeur Commercial"
+                    <SmartInput
+                      id="lastName"
+                      label="Nom"
+                      value={formData.lastName}
+                      onChange={(value) => handleChange("lastName", value)}
+                      onNormalize={normalizeName}
+                      validate={(value) => ({
+                        isValid: value.trim().length > 0,
+                        message: value.trim().length === 0 ? "Requis" : undefined,
+                      })}
+                      error={validation.errors.lastName}
+                      required
+                      placeholder="Dupont"
                     />
                   </div>
+
+                  <SmartInput
+                    id="email"
+                    label="Email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(value) => handleChange("email", value)}
+                    onNormalize={normalizeEmail}
+                    validate={validateEmailField}
+                    error={validation.errors.email}
+                    required
+                    placeholder="jean.dupont@email.com"
+                    helpText="Nous vous enverrons les confirmations ici"
+                  />
+
+                  <SmartInput
+                    id="phone"
+                    label="Téléphone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(value) => handleChange("phone", value)}
+                    onNormalize={normalizePhone}
+                    validate={validatePhoneField}
+                    error={validation.errors.phone}
+                    required
+                    placeholder="+33 6 12 34 56 78"
+                    helpText="Format international recommandé"
+                  />
+
+                  <SmartInput
+                    id="title"
+                    label="Titre / Fonction"
+                    value={formData.title || ""}
+                    onChange={(value) => handleChange("title", value)}
+                    placeholder="Directeur Commercial"
+                  />
                 </CardContent>
               </Card>
 
@@ -273,21 +331,19 @@ function OrderInfosContent() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div>
-                      <Label htmlFor="company">
-                        Nom de l'entreprise {state.customerType === "entreprise" ? "*" : "(optionnel)"}
-                      </Label>
-                      <Input
-                        id="company"
-                        value={formData.company || ""}
-                        onChange={(e) => handleChange("company", e.target.value)}
-                        placeholder="Ma Société SAS"
-                        className={errors.company ? "border-destructive" : ""}
-                      />
-                      {errors.company && (
-                        <p className="text-xs text-destructive mt-1">{errors.company}</p>
-                      )}
-                    </div>
+                    <SmartInput
+                      id="company"
+                      label="Nom de l'entreprise"
+                      value={formData.company || ""}
+                      onChange={(value) => handleChange("company", value)}
+                      validate={(value) => ({
+                        isValid: state.customerType !== "entreprise" || value.trim().length > 0,
+                        message: "Requis pour les entreprises",
+                      })}
+                      error={validation.errors.company}
+                      required={state.customerType === "entreprise"}
+                      placeholder="Ma Société SAS"
+                    />
                   </CardContent>
                 </Card>
               )}
@@ -304,14 +360,11 @@ function OrderInfosContent() {
                 <ArrowLeft size={18} />
                 Retour
               </Button>
-              <Button
-                size="lg"
+              <SmartContinueButton
                 onClick={handleContinue}
-                className="px-8 h-14 text-lg rounded-full bg-gradient-to-r from-primary to-amber-500"
-              >
-                Continuer
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+                canProceed={canProceed}
+                blockingMessage={blockingMessage}
+              />
             </motion.div>
           </div>
         </main>
