@@ -3,6 +3,7 @@
  * 
  * Interface premium de validation et sélection des réseaux sociaux
  * Intègre les suggestions intelligentes de l'IA
+ * Inclut le système de validation pré-publication IWASP
  */
 
 import { useState, useMemo } from "react";
@@ -18,6 +19,8 @@ import { WhatsAppEditor } from "@/components/WhatsAppEditor";
 import { SmartLocationEditor } from "@/components/SmartLocationEditor";
 import { VCardEditor } from "@/components/VCardEditor";
 import GoogleReviewsEditor from "@/components/GoogleReviewsEditor";
+import { PublicationBlocker } from "@/components/PublicationBlocker";
+import { validateForPublication } from "@/lib/publicationValidator";
 import { 
   Check, 
   X, 
@@ -30,9 +33,10 @@ interface StepPreviewProps {
   data: CardFormData;
   onChange: (updates: Partial<CardFormData>) => void;
   validation: Record<string, boolean>;
+  onValidationChange?: (canPublish: boolean) => void;
 }
 
-export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
+export function StepPreview({ data, onChange, validation, onValidationChange }: StepPreviewProps) {
   // WhatsApp state from phone number
   const [whatsappData, setWhatsappData] = useState({
     number: "",
@@ -53,6 +57,16 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
     rating: data.googleReviews?.rating || 4.5,
     reviewCount: data.googleReviews?.reviewCount || 0,
   });
+
+  // Publication validation - calcul en temps réel
+  const publicationValidation = useMemo(() => {
+    return validateForPublication(data);
+  }, [data]);
+
+  // Notify parent of validation state changes
+  useMemo(() => {
+    onValidationChange?.(publicationValidation.canPublish);
+  }, [publicationValidation.canPublish, onValidationChange]);
 
   // Sync Google Reviews to parent form
   const handleGoogleReviewsChange = (reviewsData: typeof googleReviews) => {
@@ -83,28 +97,6 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
     onChange({ location: locData.address });
   };
 
-  const checks = [
-    { 
-      label: "Informations complètes", 
-      ok: Boolean(data.firstName && data.lastName),
-      detail: data.firstName && data.lastName 
-        ? `${data.firstName} ${data.lastName}` 
-        : "Prénom et nom requis"
-    },
-    { 
-      label: "Photo ou logo", 
-      ok: Boolean(data.photoUrl || data.logoUrl),
-      detail: data.photoUrl ? "Photo ajoutée" : data.logoUrl ? "Logo ajouté" : "Aucun visuel"
-    },
-    { 
-      label: "Design validé", 
-      ok: Boolean(data.template),
-      detail: data.template ? `Template: ${data.template}` : "Aucun template"
-    },
-  ];
-
-  const allValid = checks.every(c => c.ok);
-
   const handleSocialLinksChange = (links: SocialLink[]) => {
     onChange({ socialLinks: links });
   };
@@ -114,58 +106,8 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
       {/* AI Suggestions - Smart assistant */}
       <AISuggestions data={data} onChange={onChange} />
 
-      {/* Validation Checklist */}
-      <Card className="border-border/50 shadow-xl bg-card/80 backdrop-blur-sm">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles size={18} className="text-accent" />
-            <h3 className="font-semibold">Vérification finale</h3>
-          </div>
-          
-          <div className="space-y-3">
-            {checks.map((check, index) => (
-              <motion.div
-                key={check.label}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.4, ease: "easeOut" }}
-                className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
-                  check.ok 
-                    ? "bg-accent/10 border border-accent/20" 
-                    : "bg-destructive/10 border border-destructive/20"
-                }`}
-              >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors duration-300 ${
-                  check.ok ? "bg-accent" : "bg-destructive"
-                }`}>
-                  {check.ok ? (
-                    <Check size={14} className="text-accent-foreground" />
-                  ) : (
-                    <X size={14} className="text-destructive-foreground" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">{check.label}</p>
-                  <p className="text-xs text-muted-foreground">{check.detail}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {allValid && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, duration: 0.4, ease: "easeOut" }}
-              className="mt-4 p-4 rounded-xl bg-accent/5 border border-accent/10 text-center"
-            >
-              <p className="text-sm font-medium text-accent">
-                ✓ Votre carte est prête à être sauvegardée
-              </p>
-            </motion.div>
-          )}
-        </CardContent>
-      </Card>
+      {/* IWASP Publication Validator */}
+      <PublicationBlocker validation={publicationValidation} />
 
       {/* WhatsApp Module */}
       <Card className="border-border/50 shadow-xl bg-card/80 backdrop-blur-sm">

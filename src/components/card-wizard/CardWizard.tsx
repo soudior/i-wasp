@@ -15,12 +15,13 @@
  * 5. Sauvegarde
  */
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useCreateCard, useUpdateCard } from "@/hooks/useCards";
 import { templateInfo, TemplateType } from "@/components/templates/CardTemplates";
 import { SocialLink } from "@/lib/socialNetworks";
+import { validateForPublication } from "@/lib/publicationValidator";
 import { toast } from "sonner";
 import { 
   ArrowLeft, 
@@ -31,7 +32,8 @@ import {
   Palette,
   Eye,
   CreditCard,
-  Sparkles
+  Sparkles,
+  Lock
 } from "lucide-react";
 
 // Step components
@@ -129,18 +131,31 @@ export function CardWizard({ editId, initialData, onComplete }: CardWizardProps)
     googleReviews: initialData?.googleReviews || undefined,
   });
 
-  // Validation per step
+  // State for publication validation from StepPreview
+  const [canPublishCard, setCanPublishCard] = useState(false);
+
+  // Validation per step - utilise la validation de publication pour l'étape preview
   const stepValidation = useMemo(() => ({
     identity: Boolean(formData.firstName.trim() && formData.lastName.trim()),
     media: Boolean(formData.photoUrl || formData.logoUrl),
     design: Boolean(formData.template),
-    preview: true,
+    preview: canPublishCard, // Utilise le résultat de la validation de publication
     complete: Boolean(savedCardId),
-  }), [formData, savedCardId]);
+  }), [formData, savedCardId, canPublishCard]);
+
+  // Callback pour recevoir l'état de validation de StepPreview
+  const handleValidationChange = useCallback((canPublish: boolean) => {
+    setCanPublishCard(canPublish);
+  }, []);
 
   const currentStepId = STEPS[currentStep]?.id as keyof typeof stepValidation;
   const isCurrentStepValid = stepValidation[currentStepId] ?? false;
   const canProceed = isCurrentStepValid;
+
+  // Get publication validation for blocking
+  const publicationValidation = useMemo(() => {
+    return validateForPublication(formData);
+  }, [formData]);
 
   const updateFormData = (updates: Partial<CardFormData>) => {
     setFormData(prev => ({ ...prev, ...updates }));
@@ -241,6 +256,12 @@ export function CardWizard({ editId, initialData, onComplete }: CardWizardProps)
         return "Ajoutez une photo ou un logo pour continuer";
       case "design":
         return "Choisissez un template pour votre carte";
+      case "preview":
+        const errors = publicationValidation.criticalErrors;
+        if (errors.length > 0) {
+          return `${errors.length} élément(s) requis: ${errors.map(e => e.label).join(", ")}`;
+        }
+        return "Complétez tous les champs requis";
       default:
         return "Complétez cette étape pour continuer";
     }
@@ -327,6 +348,7 @@ export function CardWizard({ editId, initialData, onComplete }: CardWizardProps)
                       data={formData} 
                       onChange={updateFormData}
                       validation={stepValidation}
+                      onValidationChange={handleValidationChange}
                     />
                   )}
                   {currentStepId === "complete" && (
@@ -378,10 +400,17 @@ export function CardWizard({ editId, initialData, onComplete }: CardWizardProps)
                     <span>Enregistrement...</span>
                   </>
                 ) : currentStepId === "preview" ? (
-                  <>
-                    <Check size={20} />
-                    <span>Sauvegarder ma carte</span>
-                  </>
+                  canProceed ? (
+                    <>
+                      <Check size={20} />
+                      <span>Sauvegarder ma carte</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock size={20} />
+                      <span>Compléter les champs requis</span>
+                    </>
+                  )
                 ) : (
                   <>
                     <span>Continuer</span>
