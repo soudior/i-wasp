@@ -14,7 +14,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Navigation, Loader2, X, Check, Map as MapIcon,
-  Crosshair, AlertCircle
+  Crosshair, AlertCircle, Search
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,45 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+// Debounce utility
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debouncedValue;
+}
+
+// Address suggestion type
+interface AddressSuggestion {
+  display_name: string;
+  lat: string;
+  lon: string;
+  place_id: number;
+}
+
+// Address autocomplete using Nominatim
+async function searchAddresses(query: string): Promise<AddressSuggestion[]> {
+  if (!query || query.length < 3) return [];
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`,
+      {
+        headers: {
+          'Accept-Language': 'fr',
+          'User-Agent': 'IWASP-NFC-Cards/1.0'
+        }
+      }
+    );
+    const data = await response.json();
+    return data || [];
+  } catch (error) {
+    console.error("Address search error:", error);
+    return [];
+  }
+}
 
 interface LocationData {
   address: string;
@@ -82,6 +121,121 @@ async function forwardGeocode(address: string): Promise<{ lat: number; lon: numb
     console.error("Forward geocoding error:", error);
     return null;
   }
+}
+
+// Address Autocomplete Component
+function AddressAutocomplete({
+  value,
+  onChange,
+  onManualChange,
+  onBlur,
+  placeholder
+}: {
+  value: string;
+  onChange: (address: string, lat?: number, lon?: number) => void;
+  onManualChange: (address: string) => void;
+  onBlur?: () => void;
+  placeholder?: string;
+}) {
+  const [inputValue, setInputValue] = useState(value);
+  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const debouncedQuery = useDebounce(inputValue, 400);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Sync external value
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
+  // Fetch suggestions when debounced query changes
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (debouncedQuery.length < 3) {
+        setSuggestions([]);
+        return;
+      }
+      setIsSearching(true);
+      const results = await searchAddresses(debouncedQuery);
+      setSuggestions(results);
+      setIsSearching(false);
+      if (results.length > 0) setShowSuggestions(true);
+    };
+    fetchSuggestions();
+  }, [debouncedQuery]);
+
+  // Close suggestions on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSelectSuggestion = (suggestion: AddressSuggestion) => {
+    const lat = parseFloat(suggestion.lat);
+    const lon = parseFloat(suggestion.lon);
+    setInputValue(suggestion.display_name);
+    onChange(suggestion.display_name, lat, lon);
+    setShowSuggestions(false);
+    toast.success("Adresse sélectionnée", {
+      description: `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`
+    });
+  };
+
+  return (
+    <div ref={containerRef} className="space-y-2 relative">
+      <Label className="text-xs text-muted-foreground flex items-center gap-2">
+        Adresse
+        {isSearching && <Loader2 size={12} className="animate-spin" />}
+      </Label>
+      <div className="relative">
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+        <Input
+          value={inputValue}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            onManualChange(e.target.value);
+          }}
+          onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+          onBlur={() => {
+            // Delay to allow click on suggestion
+            setTimeout(() => onBlur?.(), 200);
+          }}
+          placeholder={placeholder}
+          className="h-11 pl-10"
+        />
+      </div>
+      
+      {/* Suggestions dropdown */}
+      <AnimatePresence>
+        {showSuggestions && suggestions.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="absolute z-50 w-full mt-1 bg-background border border-border rounded-xl shadow-xl overflow-hidden"
+          >
+            {suggestions.map((suggestion) => (
+              <button
+                key={suggestion.place_id}
+                type="button"
+                onClick={() => handleSelectSuggestion(suggestion)}
+                className="w-full text-left px-4 py-3 hover:bg-accent/10 transition-colors border-b border-border/30 last:border-0 flex items-start gap-3"
+              >
+                <MapPin size={16} className="text-accent mt-0.5 shrink-0" />
+                <span className="text-sm line-clamp-2">{suggestion.display_name}</span>
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 // Lazy-load map component to avoid SSR issues with better error handling
@@ -493,17 +647,21 @@ export function SmartLocationEditor({ value, onChange, className }: SmartLocatio
         )}
       </AnimatePresence>
 
-      {/* Address input */}
-      <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">Adresse</Label>
-        <Input
-          value={value.address}
-          onChange={(e) => onChange({ ...value, address: e.target.value })}
-          onBlur={handleAddressBlur}
-          placeholder="123 Rue de Paris, 75001 Paris"
-          className="h-10"
-        />
-      </div>
+      {/* Address input with autocomplete */}
+      <AddressAutocomplete
+        value={value.address}
+        onChange={(address, lat, lon) => {
+          onChange({
+            ...value,
+            address,
+            latitude: lat,
+            longitude: lon,
+          });
+        }}
+        onManualChange={(address) => onChange({ ...value, address })}
+        onBlur={handleAddressBlur}
+        placeholder="123 Rue de Paris, 75001 Paris"
+      />
 
       {/* Coordinates (read-only or editable) */}
       <div className="grid grid-cols-2 gap-3">
