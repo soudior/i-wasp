@@ -1,4 +1,5 @@
-import { MapPin, Navigation } from "lucide-react";
+import { useState, useEffect } from "react";
+import { MapPin, Navigation, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -14,7 +15,62 @@ interface LocationPickerProps {
   className?: string;
   iconClassName?: string;
   textClassName?: string;
-  variant?: "minimal" | "button" | "inline";
+  variant?: "minimal" | "button" | "inline" | "card";
+  showMiniMap?: boolean;
+}
+
+// Lazy-load mini map for preview
+function LocationMiniMap({ lat, lng }: { lat: number; lng: number }) {
+  const [MapContainer, setMapContainer] = useState<any>(null);
+  const [TileLayer, setTileLayer] = useState<any>(null);
+  const [Marker, setMarker] = useState<any>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    Promise.all([
+      import('react-leaflet'),
+      import('leaflet'),
+      import('leaflet/dist/leaflet.css')
+    ]).then(([reactLeaflet, leaflet]) => {
+      setMapContainer(() => reactLeaflet.MapContainer);
+      setTileLayer(() => reactLeaflet.TileLayer);
+      setMarker(() => reactLeaflet.Marker);
+      
+      delete (leaflet.default.Icon.Default.prototype as any)._getIconUrl;
+      leaflet.default.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+      });
+      setLoaded(true);
+    }).catch(() => setLoaded(false));
+  }, []);
+
+  if (!loaded || !MapContainer || !TileLayer || !Marker) {
+    return (
+      <div className="h-24 bg-muted/20 rounded-lg flex items-center justify-center">
+        <MapPin className="text-muted-foreground w-5 h-5" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-24 rounded-lg overflow-hidden">
+      <MapContainer 
+        center={[lat, lng]} 
+        zoom={14} 
+        className="h-full w-full"
+        style={{ height: '100%', width: '100%' }}
+        zoomControl={false}
+        dragging={false}
+        scrollWheelZoom={false}
+        doubleClickZoom={false}
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <Marker position={[lat, lng]} />
+      </MapContainer>
+    </div>
+  );
 }
 
 export function LocationPicker({ 
@@ -24,7 +80,8 @@ export function LocationPicker({
   className = "", 
   iconClassName = "",
   textClassName = "",
-  variant = "inline" 
+  variant = "inline",
+  showMiniMap = false
 }: LocationPickerProps) {
   if (!address && !latitude && !longitude) return null;
 
@@ -34,7 +91,6 @@ export function LocationPicker({
     let url: string;
     
     if (hasCoordinates) {
-      // Use precise coordinates when available
       if (app === "google") {
         url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
       } else if (app === "waze") {
@@ -43,12 +99,70 @@ export function LocationPicker({
         url = `https://maps.apple.com/?ll=${latitude},${longitude}&q=${encodeURIComponent(address || "Location")}`;
       }
     } else {
-      // Fall back to address-based navigation
       url = getMapUrl(address, app);
     }
     
     window.open(url, "_blank");
   };
+
+  // Card variant with mini-map preview
+  if (variant === "card") {
+    return (
+      <div className={`rounded-xl bg-muted/10 border border-border/20 overflow-hidden ${className}`}>
+        {showMiniMap && hasCoordinates && (
+          <LocationMiniMap lat={latitude} lng={longitude} />
+        )}
+        <div className="p-3 space-y-3">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <MapPin size={16} className="text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className={`text-sm font-medium truncate ${textClassName}`}>{address}</p>
+              {hasCoordinates && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {latitude?.toFixed(5)}, {longitude?.toFixed(5)}
+                </p>
+              )}
+            </div>
+          </div>
+          
+          {/* Navigation buttons */}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleOpenMap("google")}
+              className="flex-1 h-8 text-xs"
+            >
+              <Navigation size={12} className="mr-1.5 text-blue-500" />
+              Google Maps
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleOpenMap("waze")}
+              className="flex-1 h-8 text-xs"
+            >
+              <Navigation size={12} className="mr-1.5 text-cyan-500" />
+              Waze
+            </Button>
+            {isIOS() && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleOpenMap("apple")}
+                className="flex-1 h-8 text-xs"
+              >
+                <Navigation size={12} className="mr-1.5" />
+                Plans
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (variant === "minimal") {
     return (
