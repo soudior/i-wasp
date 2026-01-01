@@ -9,12 +9,13 @@ import { Check } from "lucide-react";
 import { useOrderFunnel } from "@/contexts/OrderFunnelContext";
 
 const STEPS = [
-  { number: 1, label: "Offre" },
+  { number: 1, label: "Type" },
   { number: 2, label: "Infos" },
-  { number: 3, label: "Design" },
-  { number: 4, label: "Options" },
-  { number: 5, label: "Récap" },
-  { number: 6, label: "Paiement" },
+  { number: 3, label: "Lieu" },
+  { number: 4, label: "Design" },
+  { number: 5, label: "Options" },
+  { number: 6, label: "Récap" },
+  { number: 7, label: "Paiement" },
 ];
 
 interface OrderProgressBarProps {

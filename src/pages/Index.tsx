@@ -126,7 +126,7 @@ const Index = () => {
             >
               Voir une démonstration
             </Button>
-            <span className="text-sm text-muted-foreground">Parcours guidé en 6 étapes</span>
+            <span className="text-sm text-muted-foreground">Parcours guidé en 7 étapes</span>
           </div>
         </div>
       </section>
@@ -136,7 +136,7 @@ const Index = () => {
         <div className="max-w-5xl mx-auto text-center space-y-6">
           <div className="space-y-2">
             <h2 className="text-xl md:text-2xl font-semibold text-foreground">
-              Créez votre carte en 6 étapes
+              Créez votre carte en 7 étapes
             </h2>
             <p className="text-muted-foreground">
               Parcours guidé, simple et sécurisé.
@@ -144,21 +144,22 @@ const Index = () => {
           </div>
 
           {/* Étapes du parcours */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 py-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 py-4">
             {[
               { step: 1, title: "Type", desc: "Particulier, Pro, Équipe" },
-              { step: 2, title: "Profil", desc: "Vos informations" },
-              { step: 3, title: "Design", desc: "Logo & couleur" },
-              { step: 4, title: "Options", desc: "Quantité & promo" },
-              { step: 5, title: "Récap", desc: "Vérification" },
-              { step: 6, title: "Paiement", desc: "Sécurisé" },
+              { step: 2, title: "Infos", desc: "Vos coordonnées" },
+              { step: 3, title: "Lieu", desc: "Géolocalisation" },
+              { step: 4, title: "Design", desc: "Logo & couleur" },
+              { step: 5, title: "Options", desc: "Quantité & promo" },
+              { step: 6, title: "Récap", desc: "Vérification" },
+              { step: 7, title: "Paiement", desc: "Sécurisé" },
             ].map(({ step, title, desc }) => (
-              <div key={step} className="p-4 rounded-xl border border-border/30 bg-card/50">
-                <div className="w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center mx-auto mb-3">
-                  <span className="text-sm font-semibold text-foreground">{step}</span>
+              <div key={step} className="p-3 rounded-xl border border-border/30 bg-card/50">
+                <div className="w-7 h-7 rounded-full bg-foreground/10 flex items-center justify-center mx-auto mb-2">
+                  <span className="text-xs font-semibold text-foreground">{step}</span>
                 </div>
-                <p className="text-sm font-medium">{title}</p>
-                <p className="text-xs text-muted-foreground mt-1">{desc}</p>
+                <p className="text-xs font-medium">{title}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{desc}</p>
               </div>
             ))}
           </div>
