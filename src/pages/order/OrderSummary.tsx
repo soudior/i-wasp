@@ -1,5 +1,5 @@
 /**
- * Step 5: Order Summary
+ * Step 6: Order Summary
  * /order/summary
  * 
  * - Récapitulatif complet de la commande
@@ -39,10 +39,10 @@ import iwaspLogo from "@/assets/iwasp-logo-white.png";
 
 function OrderSummaryContent() {
   const navigate = useNavigate();
-  const { state, prevStep, goToStep } = useOrderFunnel();
+  const { state, prevStep, goToStep, markComplete } = useOrderFunnel();
 
   const handleProceedToPayment = () => {
-    // Navigate to payment step
+    markComplete();
     navigate("/order/payment");
   };
 
@@ -64,7 +64,7 @@ function OrderSummaryContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-4xl mx-auto">
             {/* Step Indicator */}
-            <OrderProgressBar currentStep={5} />
+            <OrderProgressBar currentStep={6} />
 
             {/* Header */}
             <motion.div 
@@ -101,7 +101,7 @@ function OrderSummaryContent() {
                       <Package size={20} className="text-primary" />
                       Votre carte NFC
                     </CardTitle>
-                    <Button variant="ghost" size="sm" onClick={() => goToStep(3)}>
+                    <Button variant="ghost" size="sm" onClick={() => goToStep(4)}>
                       <Edit2 size={14} className="mr-1" />
                       Modifier
                     </Button>
@@ -187,21 +187,21 @@ function OrderSummaryContent() {
                       <div>
                         <p className="text-sm text-muted-foreground">Nom</p>
                         <p className="font-medium">
-                          {state.profileInfo?.firstName} {state.profileInfo?.lastName}
+                          {state.personalInfo?.firstName} {state.personalInfo?.lastName}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Email</p>
-                        <p className="font-medium">{state.profileInfo?.email}</p>
+                        <p className="font-medium">{state.personalInfo?.email}</p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Téléphone</p>
-                        <p className="font-medium">{state.profileInfo?.phone}</p>
+                        <p className="font-medium">{state.personalInfo?.phone}</p>
                       </div>
-                      {state.profileInfo?.company && (
+                      {state.personalInfo?.company && (
                         <div>
                           <p className="text-sm text-muted-foreground">Entreprise</p>
-                          <p className="font-medium">{state.profileInfo.company}</p>
+                          <p className="font-medium">{state.personalInfo.company}</p>
                         </div>
                       )}
                     </div>
@@ -221,17 +221,17 @@ function OrderSummaryContent() {
                       <MapPin size={20} className="text-primary" />
                       Adresse de livraison
                     </CardTitle>
-                    <Button variant="ghost" size="sm" onClick={() => goToStep(2)}>
+                    <Button variant="ghost" size="sm" onClick={() => goToStep(3)}>
                       <Edit2 size={14} className="mr-1" />
                       Modifier
                     </Button>
                   </CardHeader>
                   <CardContent>
-                    <p className="font-medium">{state.profileInfo?.address}</p>
+                    <p className="font-medium">{state.locationInfo?.address}</p>
                     <p className="text-muted-foreground">
-                      {state.profileInfo?.postalCode} {state.profileInfo?.city}
+                      {state.locationInfo?.postalCode} {state.locationInfo?.city}
                     </p>
-                    <p className="text-muted-foreground">{state.profileInfo?.country}</p>
+                    <p className="text-muted-foreground">{state.locationInfo?.country}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -333,7 +333,7 @@ function OrderSummaryContent() {
 
 export default function OrderSummary() {
   return (
-    <OrderFunnelGuard step={5}>
+    <OrderFunnelGuard step={6}>
       <OrderSummaryContent />
     </OrderFunnelGuard>
   );

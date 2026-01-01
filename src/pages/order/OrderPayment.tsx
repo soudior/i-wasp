@@ -1,5 +1,5 @@
 /**
- * Step 6: Payment
+ * Step 7: Payment
  * /order/payment
  * 
  * - Payment form
@@ -79,7 +79,7 @@ function OrderPaymentContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-2xl mx-auto">
             {/* Step Indicator */}
-            <OrderProgressBar currentStep={6} />
+            <OrderProgressBar currentStep={7} />
 
             {/* Header */}
             <motion.div 
@@ -150,13 +150,13 @@ function OrderPaymentContent() {
               </CardHeader>
               <CardContent>
                 <p className="font-medium">
-                  {state.profileInfo?.firstName} {state.profileInfo?.lastName}
+                  {state.personalInfo?.firstName} {state.personalInfo?.lastName}
                 </p>
-                <p className="text-muted-foreground">{state.profileInfo?.address}</p>
+                <p className="text-muted-foreground">{state.locationInfo?.address}</p>
                 <p className="text-muted-foreground">
-                  {state.profileInfo?.postalCode} {state.profileInfo?.city}
+                  {state.locationInfo?.postalCode} {state.locationInfo?.city}
                 </p>
-                <p className="text-muted-foreground">{state.profileInfo?.country}</p>
+                <p className="text-muted-foreground">{state.locationInfo?.country}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -233,7 +233,7 @@ function OrderPaymentContent() {
 
 export default function OrderPayment() {
   return (
-    <OrderFunnelGuard step={6}>
+    <OrderFunnelGuard step={7}>
       <OrderPaymentContent />
     </OrderFunnelGuard>
   );

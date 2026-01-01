@@ -24,9 +24,10 @@ import Index from "./pages/Index";
 import Demo from "./pages/Demo";
 import Cart from "./pages/Cart";
 
-// Order funnel pages - 6 steps strict flow
+// Order funnel pages - 7 steps strict flow
 import OrderType from "./pages/order/OrderType";
-import OrderProfile from "./pages/order/OrderProfile";
+import OrderInfos from "./pages/order/OrderInfos";
+import OrderLocation from "./pages/order/OrderLocation";
 import OrderDesign from "./pages/order/OrderDesign";
 import OrderOptions from "./pages/order/OrderOptions";
 import OrderSummary from "./pages/order/OrderSummary";
@@ -93,11 +94,12 @@ const App = () => (
                       {/* First card setup (legacy) */}
                       <Route path="/setup" element={<FirstCardSetup />} />
                       
-                      {/* ORDER FUNNEL - 6 steps STRICT */}
+                      {/* ORDER FUNNEL - 7 steps STRICT */}
                       <Route path="/order" element={<OrderRedirect />} />
                       <Route path="/order/type" element={<OrderType />} />
-                      <Route path="/order/profile" element={<OrderProfile />} />
-                      <Route path="/order/design" element={<OrderDesign />} />
+                      <Route path="/order/infos" element={<OrderInfos />} />
+                      <Route path="/order/location" element={<OrderLocation />} />
+                      <Route path="/order/card-design" element={<OrderDesign />} />
                       <Route path="/order/options" element={<OrderOptions />} />
                       <Route path="/order/summary" element={<OrderSummary />} />
                       <Route path="/order/payment" element={<OrderPayment />} />

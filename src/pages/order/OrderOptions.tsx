@@ -1,5 +1,5 @@
 /**
- * Step 4: Quantity & Options
+ * Step 5: Quantity & Options
  * /order/options
  * 
  * - Quantity selection: 1, 2, 5, 10, 20, 50, 100
@@ -138,7 +138,7 @@ function OrderOptionsContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-3xl mx-auto">
             {/* Step Indicator */}
-            <OrderProgressBar currentStep={4} />
+            <OrderProgressBar currentStep={5} />
 
             {/* Header */}
             <motion.div 
@@ -375,7 +375,7 @@ function OrderOptionsContent() {
 
 export default function OrderOptions() {
   return (
-    <OrderFunnelGuard step={4}>
+    <OrderFunnelGuard step={5}>
       <OrderOptionsContent />
     </OrderFunnelGuard>
   );

@@ -1,13 +1,14 @@
 /**
  * OrderFunnelContext - Manages multi-step order flow state
  * 
- * STRICT ORDER FLOW (6 steps, no bypass):
+ * STRICT ORDER FLOW (7 steps, no bypass):
  * 1. /order/type - Customer type selection (particulier / pro / équipe)
- * 2. /order/profile - Personal information + digital profile creation
- * 3. /order/design - Physical card customization (logo, color)
- * 4. /order/options - Quantity + promo code
- * 5. /order/summary - Final review
- * 6. /order/payment - Payment only (after validation of step 5)
+ * 2. /order/infos - Personal information
+ * 3. /order/location - Location picker (geolocation)
+ * 4. /order/card-design - Physical card customization (logo, color)
+ * 5. /order/options - Quantity + promo code
+ * 6. /order/summary - Final review
+ * 7. /order/payment - Payment only (after validation of step 6)
  */
 
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from "react";
@@ -16,31 +17,35 @@ import { useNavigate } from "react-router-dom";
 // Customer types
 export type CustomerType = "particulier" | "professionnel" | "entreprise";
 
-// Profile information (for digital profile + delivery)
-export interface ProfileInfo {
+// Personal information (step 2)
+export interface PersonalInfo {
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
   company?: string;
   title?: string;
-  linkedin?: string;
-  website?: string;
-  whatsapp?: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  country: string;
 }
 
-// Design configuration
+// Location data (step 3)
+export interface LocationInfo {
+  address: string;
+  latitude?: number;
+  longitude?: number;
+  label?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+}
+
+// Design configuration (step 4)
 export interface DesignConfig {
   logoUrl: string | null;
   cardColor: string;
   designPreviewUrl?: string;
 }
 
-// Order options (quantity + promo)
+// Order options (step 5)
 export interface OrderOptions {
   quantity: number;
   promoCode?: string;
@@ -53,36 +58,42 @@ export interface OrderOptions {
 export interface OrderFunnelState {
   currentStep: number;
   customerType: CustomerType | null;
-  profileInfo: ProfileInfo | null;
+  personalInfo: PersonalInfo | null;
+  locationInfo: LocationInfo | null;
   designConfig: DesignConfig | null;
   orderOptions: OrderOptions | null;
   isComplete: boolean;
 }
 
-// Step paths mapping (6 steps STRICT)
+// Step paths mapping (7 steps STRICT)
 const STEP_PATHS = [
-  "/order/type",      // Step 1: Choose customer type
-  "/order/profile",   // Step 2: Personal info + digital profile
-  "/order/design",    // Step 3: Card customization
-  "/order/options",   // Step 4: Quantity + promo
-  "/order/summary",   // Step 5: Review
-  "/order/payment",   // Step 6: Payment
+  "/order/type",        // Step 1: Choose customer type
+  "/order/infos",       // Step 2: Personal info
+  "/order/location",    // Step 3: Location picker
+  "/order/card-design", // Step 4: Card customization
+  "/order/options",     // Step 5: Quantity + promo
+  "/order/summary",     // Step 6: Review
+  "/order/payment",     // Step 7: Payment
 ];
 
 export const STEP_LABELS = [
   "Type",
-  "Profil",
+  "Infos",
+  "Localisation",
   "Design",
   "Options",
   "Récap",
   "Paiement"
 ];
 
+export const TOTAL_STEPS = 7;
+
 // Context interface
 interface OrderFunnelContextType {
   state: OrderFunnelState;
   setCustomerType: (type: CustomerType) => void;
-  setProfileInfo: (info: ProfileInfo) => void;
+  setPersonalInfo: (info: PersonalInfo) => void;
+  setLocationInfo: (info: LocationInfo) => void;
   setDesignConfig: (config: DesignConfig) => void;
   setOrderOptions: (options: OrderOptions) => void;
   goToStep: (step: number) => void;
@@ -93,12 +104,14 @@ interface OrderFunnelContextType {
   resetFunnel: () => void;
   validateCurrentStep: () => boolean;
   markComplete: () => void;
+  getStepPath: (step: number) => string;
 }
 
 const initialState: OrderFunnelState = {
   currentStep: 1,
   customerType: null,
-  profileInfo: null,
+  personalInfo: null,
+  locationInfo: null,
   designConfig: null,
   orderOptions: null,
   isComplete: false,
@@ -127,26 +140,36 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     sessionStorage.setItem("orderFunnelState", JSON.stringify(state));
   }, [state]);
 
-  // Check if a step can be accessed (6 steps, STRICT - no bypass)
+  // Check if a step can be accessed (7 steps, STRICT - no bypass)
   const canAccessStep = useCallback((step: number): boolean => {
     if (step === 1) return true;
     if (step === 2) return state.customerType !== null;
-    if (step === 3) return state.customerType !== null && state.profileInfo !== null;
-    if (step === 4) return state.customerType !== null && state.profileInfo !== null && state.designConfig !== null;
-    if (step === 5) return state.customerType !== null && state.profileInfo !== null && state.designConfig !== null && state.orderOptions !== null;
-    if (step === 6) return state.isComplete;
+    if (step === 3) return state.customerType !== null && state.personalInfo !== null;
+    if (step === 4) return state.customerType !== null && state.personalInfo !== null && state.locationInfo !== null;
+    if (step === 5) return state.customerType !== null && state.personalInfo !== null && state.locationInfo !== null && state.designConfig !== null;
+    if (step === 6) return state.customerType !== null && state.personalInfo !== null && state.locationInfo !== null && state.designConfig !== null && state.orderOptions !== null;
+    if (step === 7) return state.isComplete;
     return false;
   }, [state]);
 
   // Get first incomplete step
   const getFirstIncompleteStep = useCallback((): number => {
     if (!state.customerType) return 1;
-    if (!state.profileInfo) return 2;
-    if (!state.designConfig) return 3;
-    if (!state.orderOptions) return 4;
-    if (!state.isComplete) return 5;
-    return 6;
+    if (!state.personalInfo) return 2;
+    if (!state.locationInfo) return 3;
+    if (!state.designConfig) return 4;
+    if (!state.orderOptions) return 5;
+    if (!state.isComplete) return 6;
+    return 7;
   }, [state]);
+
+  // Get step path
+  const getStepPath = useCallback((step: number): string => {
+    if (step >= 1 && step <= TOTAL_STEPS) {
+      return STEP_PATHS[step - 1];
+    }
+    return STEP_PATHS[0];
+  }, []);
 
   // Set customer type (step 1)
   const setCustomerType = useCallback((type: CustomerType) => {
@@ -157,45 +180,54 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  // Set profile info (step 2)
-  const setProfileInfo = useCallback((info: ProfileInfo) => {
+  // Set personal info (step 2)
+  const setPersonalInfo = useCallback((info: PersonalInfo) => {
     setState(prev => ({
       ...prev,
-      profileInfo: info,
+      personalInfo: info,
       currentStep: Math.max(prev.currentStep, 2),
     }));
   }, []);
 
-  // Set design config (step 3)
-  const setDesignConfig = useCallback((config: DesignConfig) => {
+  // Set location info (step 3)
+  const setLocationInfo = useCallback((info: LocationInfo) => {
     setState(prev => ({
       ...prev,
-      designConfig: config,
+      locationInfo: info,
       currentStep: Math.max(prev.currentStep, 3),
     }));
   }, []);
 
-  // Set order options (step 4 - quantity + promo)
-  const setOrderOptions = useCallback((options: OrderOptions) => {
+  // Set design config (step 4)
+  const setDesignConfig = useCallback((config: DesignConfig) => {
     setState(prev => ({
       ...prev,
-      orderOptions: options,
+      designConfig: config,
       currentStep: Math.max(prev.currentStep, 4),
     }));
   }, []);
 
-  // Mark as complete (step 5 -> ready for payment)
+  // Set order options (step 5)
+  const setOrderOptions = useCallback((options: OrderOptions) => {
+    setState(prev => ({
+      ...prev,
+      orderOptions: options,
+      currentStep: Math.max(prev.currentStep, 5),
+    }));
+  }, []);
+
+  // Mark as complete (step 6 -> ready for payment)
   const markComplete = useCallback(() => {
     setState(prev => ({
       ...prev,
       isComplete: true,
-      currentStep: 5,
+      currentStep: 6,
     }));
   }, []);
 
   // Navigate to specific step
   const goToStep = useCallback((step: number) => {
-    if (step >= 1 && step <= 6 && canAccessStep(step)) {
+    if (step >= 1 && step <= TOTAL_STEPS && canAccessStep(step)) {
       setState(prev => ({ ...prev, currentStep: step }));
       navigate(STEP_PATHS[step - 1]);
     } else {
@@ -208,7 +240,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
   // Next step
   const nextStep = useCallback(() => {
     const next = state.currentStep + 1;
-    if (next <= 6) {
+    if (next <= TOTAL_STEPS) {
       goToStep(next);
     }
   }, [state.currentStep, goToStep]);
@@ -227,14 +259,16 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
       case 1:
         return state.customerType !== null;
       case 2:
-        return state.profileInfo !== null;
+        return state.personalInfo !== null;
       case 3:
-        return state.designConfig !== null;
+        return state.locationInfo !== null;
       case 4:
-        return state.orderOptions !== null;
+        return state.designConfig !== null;
       case 5:
-        return state.orderOptions !== null && state.isComplete;
+        return state.orderOptions !== null;
       case 6:
+        return state.orderOptions !== null && state.isComplete;
+      case 7:
         return state.isComplete;
       default:
         return false;
@@ -252,7 +286,8 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
       value={{
         state,
         setCustomerType,
-        setProfileInfo,
+        setPersonalInfo,
+        setLocationInfo,
         setDesignConfig,
         setOrderOptions,
         goToStep,
@@ -263,6 +298,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
         resetFunnel,
         validateCurrentStep,
         markComplete,
+        getStepPath,
       }}
     >
       {children}
@@ -287,14 +323,14 @@ export function OrderFunnelGuard({
   children: ReactNode;
 }) {
   const navigate = useNavigate();
-  const { canAccessStep, getFirstIncompleteStep } = useOrderFunnel();
+  const { canAccessStep, getFirstIncompleteStep, getStepPath } = useOrderFunnel();
 
   useEffect(() => {
     if (!canAccessStep(step)) {
       const firstIncomplete = getFirstIncompleteStep();
-      navigate(STEP_PATHS[firstIncomplete - 1], { replace: true });
+      navigate(getStepPath(firstIncomplete), { replace: true });
     }
-  }, [step, canAccessStep, getFirstIncompleteStep, navigate]);
+  }, [step, canAccessStep, getFirstIncompleteStep, navigate, getStepPath]);
 
   if (!canAccessStep(step)) {
     return null;
@@ -306,15 +342,15 @@ export function OrderFunnelGuard({
 // Cart guard - redirect to order funnel if not configured
 export function CartGuard({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
-  const { state, getFirstIncompleteStep } = useOrderFunnel();
+  const { state, getFirstIncompleteStep, getStepPath } = useOrderFunnel();
 
   useEffect(() => {
     // Cart only accessible after complete configuration
     if (!state.isComplete) {
       const firstIncomplete = getFirstIncompleteStep();
-      navigate(STEP_PATHS[firstIncomplete - 1], { replace: true });
+      navigate(getStepPath(firstIncomplete), { replace: true });
     }
-  }, [state.isComplete, getFirstIncompleteStep, navigate]);
+  }, [state.isComplete, getFirstIncompleteStep, navigate, getStepPath]);
 
   if (!state.isComplete) {
     return null;
