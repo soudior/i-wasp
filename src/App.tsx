@@ -29,8 +29,8 @@ import HerbalismCard from "./pages/HerbalismCard";
 
 // Order funnel pages - 7 steps strict flow
 import OrderType from "./pages/order/OrderType";
-import OrderInfos from "./pages/order/OrderInfos";
-import OrderLocation from "./pages/order/OrderLocation";
+import OrderIdentity from "./pages/order/OrderIdentity";
+import OrderDigital from "./pages/order/OrderDigital";
 import OrderDesign from "./pages/order/OrderDesign";
 import OrderOptions from "./pages/order/OrderOptions";
 import OrderSummary from "./pages/order/OrderSummary";
@@ -104,9 +104,9 @@ const App = () => (
                       {/* ORDER FUNNEL - 7 steps STRICT */}
                       <Route path="/order" element={<OrderRedirect />} />
                       <Route path="/order/type" element={<OrderType />} />
-                      <Route path="/order/infos" element={<OrderInfos />} />
-                      <Route path="/order/location" element={<OrderLocation />} />
-                      <Route path="/order/card-design" element={<OrderDesign />} />
+                      <Route path="/order/identity" element={<OrderIdentity />} />
+                      <Route path="/order/digital" element={<OrderDigital />} />
+                      <Route path="/order/design" element={<OrderDesign />} />
                       <Route path="/order/options" element={<OrderOptions />} />
                       <Route path="/order/summary" element={<OrderSummary />} />
                       <Route path="/order/payment" element={<OrderPayment />} />
