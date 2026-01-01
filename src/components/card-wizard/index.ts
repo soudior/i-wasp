@@ -2,6 +2,7 @@
 export { CardWizard, type CardFormData } from "./CardWizard";
 export { WizardProgress } from "./WizardProgress";
 export { WizardPreview } from "./WizardPreview";
+export { AISuggestions } from "./AISuggestions";
 
 // Steps
 export { StepIdentity } from "./steps/StepIdentity";
