@@ -1,17 +1,36 @@
 /**
  * NotFound - 404 Page
- * Apple Cupertino style - Always returns to home
+ * Apple Cupertino style - Always redirects to home after 3 seconds
+ * No page blanche - TOUJOURS une UI claire
  */
 
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, ArrowLeft } from "lucide-react";
+import { Home, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   const navigate = useNavigate();
+  const [countdown, setCountdown] = useState(3);
+
+  // Auto-redirect to home after countdown
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          navigate("/", { replace: true });
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [navigate]);
 
   const handleGoHome = () => {
-    window.location.href = "/";
+    navigate("/", { replace: true });
   };
 
   const handleGoBack = () => {
@@ -33,6 +52,12 @@ export default function NotFound() {
           <p className="text-muted-foreground">
             La page que vous recherchez n'existe pas ou a été déplacée.
           </p>
+        </div>
+
+        {/* Auto redirect indicator */}
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span>Redirection vers l'accueil dans {countdown}s...</span>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">

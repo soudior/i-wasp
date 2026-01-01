@@ -26,9 +26,9 @@ import Cart from "./pages/Cart";
 
 // Order funnel pages - 6 steps strict flow
 import OrderType from "./pages/order/OrderType";
-import OrderQuantity from "./pages/order/OrderQuantity";
 import OrderProfile from "./pages/order/OrderProfile";
 import OrderDesign from "./pages/order/OrderDesign";
+import OrderOptions from "./pages/order/OrderOptions";
 import OrderSummary from "./pages/order/OrderSummary";
 import OrderPayment from "./pages/order/OrderPayment";
 
@@ -96,9 +96,9 @@ const App = () => (
                       {/* ORDER FUNNEL - 6 steps STRICT */}
                       <Route path="/order" element={<OrderRedirect />} />
                       <Route path="/order/type" element={<OrderType />} />
-                      <Route path="/order/quantity" element={<OrderQuantity />} />
                       <Route path="/order/profile" element={<OrderProfile />} />
                       <Route path="/order/design" element={<OrderDesign />} />
+                      <Route path="/order/options" element={<OrderOptions />} />
                       <Route path="/order/summary" element={<OrderSummary />} />
                       <Route path="/order/payment" element={<OrderPayment />} />
                       
