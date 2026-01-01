@@ -16,13 +16,15 @@ import { SocialNetworkSelector } from "./SocialNetworkSelector";
 import { AISuggestions } from "../AISuggestions";
 import { WhatsAppEditor } from "@/components/WhatsAppEditor";
 import { SmartLocationEditor } from "@/components/SmartLocationEditor";
+import { VCardEditor } from "@/components/VCardEditor";
 import { 
   Check, 
   X, 
   Globe,
   Sparkles,
   MessageCircle,
-  MapPin
+  MapPin,
+  UserPlus
 } from "lucide-react";
 
 interface StepPreviewProps {
@@ -168,6 +170,25 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
           <SmartLocationEditor
             value={locationData}
             onChange={handleLocationChange}
+          />
+        </CardContent>
+      </Card>
+
+      {/* vCard Module */}
+      <Card className="border-border/50 shadow-xl bg-card/80 backdrop-blur-sm">
+        <CardContent className="p-6">
+          <VCardEditor
+            data={{
+              firstName: data.firstName,
+              lastName: data.lastName,
+              title: data.title,
+              company: data.company,
+              phone: data.phone,
+              email: data.email,
+              website: data.website,
+              location: locationData.address,
+              socialLinks: data.socialLinks,
+            }}
           />
         </CardContent>
       </Card>
