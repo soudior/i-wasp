@@ -3,6 +3,9 @@
  * 
  * Dashboard UI for adding, editing, removing, and reordering card blocks.
  * Mobile-first, premium design with drag & drop support.
+ * 
+ * MOBILE: Uses MobileModuleEditor for premium touch experience
+ * DESKTOP: Uses standard Reorder.Group
  */
 
 import { useState, useCallback } from "react";
@@ -34,6 +37,8 @@ import { SocialLinksManager } from "@/components/SocialLinksManager";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { MobileModuleEditor } from "@/components/MobileModuleEditor";
 import {
   CardBlock,
   BlockType,
@@ -955,6 +960,9 @@ function AddBlockMenu({ onAdd, existingTypes }: AddBlockMenuProps) {
 // ============================================================
 
 export function BlockEditor({ blocks, onChange, className }: BlockEditorProps) {
+  const isMobile = useIsMobile();
+  const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
+
   const handleReorder = (newBlocks: CardBlock[]) => {
     const reordered = newBlocks.map((block, index) => ({ ...block, order: index }));
     onChange(reordered);
@@ -1009,6 +1017,21 @@ export function BlockEditor({ blocks, onChange, className }: BlockEditorProps) {
 
   const existingTypes = blocks.map(b => b.type);
 
+  // Mobile: Use premium MobileModuleEditor
+  if (isMobile) {
+    return (
+      <div className={cn("space-y-4", className)}>
+        <MobileModuleEditor
+          blocks={blocks}
+          onChange={onChange}
+          onEditBlock={(blockId) => setEditingBlockId(blockId)}
+        />
+        <AddBlockMenu onAdd={handleAddBlock} existingTypes={existingTypes} />
+      </div>
+    );
+  }
+
+  // Desktop: Use standard Reorder.Group
   return (
     <div className={cn("space-y-4", className)}>
       <Reorder.Group
