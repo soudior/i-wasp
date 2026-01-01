@@ -17,14 +17,13 @@ import { AISuggestions } from "../AISuggestions";
 import { WhatsAppEditor } from "@/components/WhatsAppEditor";
 import { SmartLocationEditor } from "@/components/SmartLocationEditor";
 import { VCardEditor } from "@/components/VCardEditor";
+import GoogleReviewsEditor from "@/components/GoogleReviewsEditor";
 import { 
   Check, 
   X, 
   Globe,
   Sparkles,
-  MessageCircle,
-  MapPin,
-  UserPlus
+  Star
 } from "lucide-react";
 
 interface StepPreviewProps {
@@ -46,6 +45,13 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
     address: data.location || "",
     latitude: undefined as number | undefined,
     longitude: undefined as number | undefined,
+  });
+
+  // Google Reviews state
+  const [googleReviews, setGoogleReviews] = useState({
+    url: "",
+    rating: 4.5,
+    reviewCount: 0,
   });
 
   // Sync WhatsApp to social links
@@ -189,6 +195,18 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
               location: locationData.address,
               socialLinks: data.socialLinks,
             }}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Google Reviews Module */}
+      <Card className="border-border/50 shadow-xl bg-card/80 backdrop-blur-sm">
+        <CardContent className="p-6">
+          <GoogleReviewsEditor
+            initialUrl={googleReviews.url}
+            initialRating={googleReviews.rating}
+            initialReviewCount={googleReviews.reviewCount}
+            onUpdate={setGoogleReviews}
           />
         </CardContent>
       </Card>
