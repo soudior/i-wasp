@@ -18,7 +18,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   GripVertical, ChevronUp, ChevronDown, Eye, EyeOff, Trash2,
   Wifi, MapPin, Phone, Mail, MessageCircle, Globe, Share2, 
-  Gift, Info, Minus, User, Building, ChevronRight
+  Gift, Info, Minus, User, Building, ChevronRight, Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -68,6 +68,7 @@ const blockIcons: Record<BlockType, React.ElementType> = {
   offer: Gift,
   info: Info,
   divider: Minus,
+  googleReviews: Star,
 };
 
 // Get action-specific icon

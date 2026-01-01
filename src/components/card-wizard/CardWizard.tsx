@@ -43,6 +43,12 @@ import { StepComplete } from "./steps/StepComplete";
 import { WizardProgress } from "./WizardProgress";
 import { WizardPreview } from "./WizardPreview";
 
+export interface GoogleReviewsData {
+  url: string;
+  rating: number;
+  reviewCount: number;
+}
+
 export interface CardFormData {
   firstName: string;
   lastName: string;
@@ -57,6 +63,7 @@ export interface CardFormData {
   location: string;
   template: TemplateType;
   socialLinks: SocialLink[];
+  googleReviews?: GoogleReviewsData;
 }
 
 interface CardWizardProps {
@@ -119,6 +126,7 @@ export function CardWizard({ editId, initialData, onComplete }: CardWizardProps)
     location: initialData?.location || "",
     template: initialData?.template || "signature",
     socialLinks: initialData?.socialLinks || [],
+    googleReviews: initialData?.googleReviews || undefined,
   });
 
   // Validation per step
@@ -165,6 +173,22 @@ export function CardWizard({ editId, initialData, onComplete }: CardWizardProps)
     setIsSubmitting(true);
     
     try {
+      // Build blocks array with Google Reviews if present
+      const blocks: any[] = [];
+      if (formData.googleReviews?.url) {
+        blocks.push({
+          id: `google-reviews-${Date.now()}`,
+          type: "googleReviews",
+          visible: true,
+          order: 0,
+          data: {
+            url: formData.googleReviews.url,
+            rating: formData.googleReviews.rating,
+            reviewCount: formData.googleReviews.reviewCount,
+          },
+        });
+      }
+
       const cardData = {
         first_name: formData.firstName,
         last_name: formData.lastName,
@@ -179,6 +203,7 @@ export function CardWizard({ editId, initialData, onComplete }: CardWizardProps)
         logo_url: formData.logoUrl || undefined,
         template: formData.template,
         social_links: formData.socialLinks.length > 0 ? formData.socialLinks : undefined,
+        blocks: blocks.length > 0 ? blocks : undefined,
       };
 
       let resultId: string;

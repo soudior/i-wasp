@@ -33,7 +33,7 @@ import {
   ArrowLeft, Save, Plus, Eye, EyeOff, GripVertical, Trash2,
   User, Wifi, MapPin, Zap, Share2, Gift, Info, Minus,
   Phone, Mail, Globe, MessageCircle, ChevronDown, ChevronUp, Copy, Check,
-  Wand2, Sparkles, Move
+  Wand2, Sparkles, Move, Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -91,6 +91,7 @@ const blockIcons: Record<BlockType, React.ElementType> = {
   offer: Gift,
   info: Info,
   divider: Minus,
+  googleReviews: Star,
 };
 
 // Individual Block Editors
