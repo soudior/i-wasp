@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DigitalCard as DigitalCardPreview } from "@/components/DigitalCard";
 import { PhotoUpload } from "@/components/PhotoUpload";
+import { LogoEditor, LogoConfig } from "@/components/LogoEditor";
 import { SocialLinksManager } from "@/components/SocialLinksManager";
 import { SmartLocationEditor } from "@/components/SmartLocationEditor";
 import { templateInfo, TemplateType } from "@/components/templates/CardTemplates";
@@ -47,6 +48,12 @@ const CreateCard = () => {
     longitude: undefined,
     label: ""
   });
+  const [logoConfig, setLogoConfig] = useState<LogoConfig>({
+    url: null,
+    placement: "center",
+    opacity: 100,
+    scale: 1,
+  });
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -60,7 +67,6 @@ const CreateCard = () => {
     twitter: "",
     tagline: "",
     photoUrl: null as string | null,
-    logoUrl: null as string | null,
   });
 
   // Load card data if editing
@@ -81,8 +87,8 @@ const CreateCard = () => {
           twitter: card.twitter || "",
           tagline: card.tagline || "",
           photoUrl: card.photo_url || null,
-          logoUrl: card.logo_url || null,
         });
+        setLogoConfig(prev => ({ ...prev, url: card.logo_url || null }));
         // Load location data - parse from blocks if available or use location field
         const blocks = card.blocks as any[] | null;
         const locationBlock = blocks?.find((b: any) => b.type === "location");
@@ -147,7 +153,7 @@ const CreateCard = () => {
             twitter: formData.twitter || null,
             tagline: formData.tagline || null,
             photo_url: formData.photoUrl,
-            logo_url: formData.logoUrl,
+            logo_url: logoConfig.url,
             template: selectedTemplate,
             social_links: socialLinks,
             blocks: locationBlock ? [locationBlock] : [],
@@ -168,7 +174,7 @@ const CreateCard = () => {
           twitter: formData.twitter || undefined,
           tagline: formData.tagline || undefined,
           photo_url: formData.photoUrl || undefined,
-          logo_url: formData.logoUrl || undefined,
+          logo_url: logoConfig.url || undefined,
           template: selectedTemplate,
           social_links: socialLinks.length > 0 ? socialLinks : undefined,
           blocks: locationBlock ? [locationBlock] : undefined,
@@ -268,14 +274,12 @@ const CreateCard = () => {
                           <Image size={14} className="text-chrome" />
                           Logo de l'entreprise
                         </Label>
-                        <PhotoUpload
-                          value={formData.logoUrl}
-                          onChange={(url) => setFormData({ ...formData, logoUrl: url })}
-                          type="logo"
+                        <LogoEditor
+                          value={logoConfig}
+                          onChange={setLogoConfig}
+                          cardColor="#1A1A1A"
+                          textColor="#FFFFFF"
                         />
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Recommandé: Format rectangulaire, fond transparent
-                        </p>
                       </div>
                     </div>
                   </TabsContent>
@@ -475,7 +479,7 @@ const CreateCard = () => {
                   instagram: formData.instagram || "@adubois",
                   tagline: formData.tagline || "L'excellence en toute simplicité",
                   photoUrl: formData.photoUrl,
-                  logoUrl: formData.logoUrl,
+                  logoUrl: logoConfig.url,
                   socialLinks: socialLinks,
                 }} 
                 template={selectedTemplate}
