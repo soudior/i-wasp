@@ -13,7 +13,7 @@ import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { 
   Plus, Trash2, GripVertical, Eye, EyeOff, ChevronDown, ChevronUp,
   User, Wifi, MapPin, Zap, Share2, Gift, Info, Minus, Phone, Mail,
-  Globe, MessageCircle, Copy, Check, Building
+  Globe, MessageCircle, Copy, Check, Building, Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,6 +90,7 @@ const blockIcons: Record<BlockType, React.ElementType> = {
   offer: Gift,
   info: Info,
   divider: Minus,
+  googleReviews: Star,
 };
 
 const actionIcons: Record<ActionType, React.ElementType> = {

@@ -20,7 +20,8 @@ export type BlockType =
   | "social" 
   | "offer" 
   | "info"
-  | "divider";
+  | "divider"
+  | "googleReviews";
 
 export interface BaseBlock {
   id: string;
@@ -140,6 +141,16 @@ export interface DividerBlock extends BaseBlock {
   };
 }
 
+// Google Reviews Block - Business reviews
+export interface GoogleReviewsBlock extends BaseBlock {
+  type: "googleReviews";
+  data: {
+    url: string;
+    rating: number;
+    reviewCount: number;
+  };
+}
+
 // Union type for all blocks
 export type CardBlock = 
   | IdentityBlock 
@@ -150,7 +161,8 @@ export type CardBlock =
   | SocialBlock 
   | OfferBlock 
   | InfoBlock
-  | DividerBlock;
+  | DividerBlock
+  | GoogleReviewsBlock;
 
 // ============================================================
 // CARD BLOCKS CONFIGURATION
@@ -309,6 +321,21 @@ export function createDividerBlock(): DividerBlock {
     order: 0,
     data: {
       style: "line",
+    },
+  };
+}
+
+export function createGoogleReviewsBlock(data: Partial<GoogleReviewsBlock["data"]> = {}): GoogleReviewsBlock {
+  return {
+    id: generateBlockId(),
+    type: "googleReviews",
+    visible: true,
+    order: 0,
+    data: {
+      url: "",
+      rating: 0,
+      reviewCount: 0,
+      ...data,
     },
   };
 }
@@ -514,4 +541,5 @@ export const blockTypeInfo: Record<BlockType, { label: string; icon: string; des
   offer: { label: "Offre", icon: "Gift", description: "Promotion, offre spéciale" },
   info: { label: "Information", icon: "Info", description: "Texte libre, description" },
   divider: { label: "Séparateur", icon: "Minus", description: "Ligne de séparation" },
+  googleReviews: { label: "Avis Google", icon: "Star", description: "Note et avis clients" },
 };

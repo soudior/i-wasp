@@ -47,12 +47,20 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
     longitude: undefined as number | undefined,
   });
 
-  // Google Reviews state
+  // Google Reviews state - initialized from formData
   const [googleReviews, setGoogleReviews] = useState({
-    url: "",
-    rating: 4.5,
-    reviewCount: 0,
+    url: data.googleReviews?.url || "",
+    rating: data.googleReviews?.rating || 4.5,
+    reviewCount: data.googleReviews?.reviewCount || 0,
   });
+
+  // Sync Google Reviews to parent form
+  const handleGoogleReviewsChange = (reviewsData: typeof googleReviews) => {
+    setGoogleReviews(reviewsData);
+    if (reviewsData.url) {
+      onChange({ googleReviews: reviewsData });
+    }
+  };
 
   // Sync WhatsApp to social links
   const handleWhatsAppChange = (waData: typeof whatsappData) => {
@@ -206,7 +214,7 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
             initialUrl={googleReviews.url}
             initialRating={googleReviews.rating}
             initialReviewCount={googleReviews.reviewCount}
-            onUpdate={setGoogleReviews}
+            onUpdate={handleGoogleReviewsChange}
           />
         </CardContent>
       </Card>
