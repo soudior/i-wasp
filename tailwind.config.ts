@@ -84,11 +84,22 @@ export default {
            PALETTE 1 — "Nuit" (défaut)
            ══════════════════════════════════════════════════════════════ */
         nuit: {
-          noir: "hsl(var(--nuit-noir))",           /* #0B0B0C */
-          "gris-profond": "hsl(var(--nuit-gris-profond))", /* #1C1C1E */
+          noir: "hsl(var(--nuit-noir))",           /* #0E0E11 */
+          "gris-profond": "hsl(var(--nuit-gris-profond))", /* #15171C */
           "gris-struct": "hsl(var(--nuit-gris-struct))",   /* #8E8E93 */
-          blanc: "hsl(var(--nuit-blanc))",         /* #F4F2EF */
-          accent: "hsl(var(--nuit-accent))",       /* #8B1E1E */
+          blanc: "hsl(var(--nuit-blanc))",         /* #FFFFFF */
+          accent: "hsl(var(--nuit-accent))",       /* #3CFF6B */
+        },
+        
+        /* ══════════════════════════════════════════════════════════════
+           IWASP SIGNATURE COLORS
+           ══════════════════════════════════════════════════════════════ */
+        iwasp: {
+          noir: "hsl(var(--iwasp-noir))",          /* #0E0E11 - Noir profond */
+          charbon: "hsl(var(--iwasp-charbon))",    /* #15171C - Gris charbon */
+          vert: "hsl(var(--iwasp-vert))",          /* #3CFF6B - Vert signature */
+          blanc: "hsl(var(--iwasp-blanc))",        /* #FFFFFF - Blanc pur */
+          gris: "hsl(var(--iwasp-gris))",          /* #8E8E93 - Gris structurel */
         },
         
         /* ══════════════════════════════════════════════════════════════
@@ -96,31 +107,45 @@ export default {
            ══════════════════════════════════════════════════════════════ */
         blanc: {
           pur: "hsl(var(--blanc-pur))",            /* #FFFFFF */
-          ivoire: "hsl(var(--blanc-ivoire))",      /* #F4F2EF */
-          "gris-clair": "hsl(var(--blanc-gris-clair))",   /* #D1D1D6 */
-          "gris-struct": "hsl(var(--blanc-gris-struct))", /* #8E8E93 */
-          noir: "hsl(var(--blanc-noir))",          /* #0B0B0C */
-          accent: "hsl(var(--blanc-accent))",      /* #8B1E1E */
+          ivoire: "hsl(var(--blanc-ivoire))",      /* #F9FAFB */
+          "gris-clair": "hsl(var(--blanc-gris-clair))",   /* #E5E7EB */
+          "gris-struct": "hsl(var(--blanc-gris-struct))", /* #9CA3AF */
+          noir: "hsl(var(--blanc-noir))",          /* #0E0E11 */
+          accent: "hsl(var(--blanc-accent))",      /* #3CFF6B */
         },
         
         /* ══════════════════════════════════════════════════════════════
            PALETTE 3 — "Carte matière" (carte physique NFC)
            ══════════════════════════════════════════════════════════════ */
         carte: {
-          blanc: "hsl(var(--carte-blanc))",        /* #F7F7F5 */
-          chaud: "hsl(var(--carte-chaud))",        /* #EFEDEA */
-          "gris-leger": "hsl(var(--carte-gris-leger))",   /* #E2E2E0 */
-          "gris-struct": "hsl(var(--carte-gris-struct))", /* #8E8E93 */
-          "noir-doux": "hsl(var(--carte-noir-doux))",     /* #1C1C1E */
+          blanc: "hsl(var(--carte-blanc))",        /* #F9FAFB */
+          chaud: "hsl(var(--carte-chaud))",        /* #F3F4F6 */
+          "gris-leger": "hsl(var(--carte-gris-leger))",   /* #E5E7EB */
+          "gris-struct": "hsl(var(--carte-gris-struct))", /* #9CA3AF */
+          "noir-doux": "hsl(var(--carte-noir-doux))",     /* #15171C */
         },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        "2xl": "1rem",
-        "3xl": "1.5rem",
-        "4xl": "2rem",
+        xl: "0.875rem",    /* 14px - IWASP standard */
+        "2xl": "1rem",      /* 16px */
+        "3xl": "1.125rem",  /* 18px - IWASP cards */
+        "4xl": "1.5rem",    /* 24px */
+        full: "9999px",     /* Pill shape */
+      },
+      letterSpacing: {
+        tighter: "-0.02em",
+        tight: "-0.01em",   /* IWASP default for titles */
+      },
+      transitionDuration: {
+        fast: "180ms",
+        normal: "200ms",
+        slow: "220ms",
+      },
+      transitionTimingFunction: {
+        "iwasp": "cubic-bezier(0.42, 0, 0.58, 1)",
       },
       keyframes: {
         "accordion-down": {
@@ -201,28 +226,31 @@ export default {
         },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.6s ease-out both",
-        "fade-up": "fade-up 0.6s ease-out both",
-        "fade-down": "fade-down 0.6s ease-out both",
-        "fade-left": "fade-left 0.6s ease-out both",
-        "fade-right": "fade-right 0.6s ease-out both",
-        "scale-in": "scale-in 0.5s ease-out both",
-        "scale-up": "scale-up 0.6s ease-out both",
+        "accordion-down": "accordion-down 200ms ease-in-out",
+        "accordion-up": "accordion-up 200ms ease-in-out",
+        "fade-in": "fade-in 200ms ease-in-out both",
+        "fade-up": "fade-up 200ms ease-in-out both",
+        "fade-down": "fade-down 200ms ease-in-out both",
+        "fade-left": "fade-left 200ms ease-in-out both",
+        "fade-right": "fade-right 200ms ease-in-out both",
+        "scale-in": "scale-in 180ms ease-in-out both",
+        "scale-up": "scale-up 200ms ease-in-out both",
         "float-3d": "float-3d 8s ease-in-out infinite",
         "float-subtle": "float-subtle 3s ease-in-out infinite",
         "pulse-glow": "pulse-glow 4s ease-in-out infinite",
         "shimmer": "shimmer 3s ease-in-out infinite",
         "spin-slow": "spin-slow 20s linear infinite",
-        "card-enter": "card-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) both",
+        "card-enter": "card-enter 220ms cubic-bezier(0.42, 0, 0.58, 1) both",
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-iwasp': 'linear-gradient(135deg, hsl(138 100% 62%), hsl(138 100% 55%))',
       },
       boxShadow: {
-        'glass': '0 25px 50px -12px hsl(0 0% 0% / 0.6), 0 0 0 1px hsl(0 0% 100% / 0.05)',
+        'glass': '0 4px 20px hsl(0 0% 0% / 0.35), 0 0 0 1px hsl(0 0% 100% / 0.03)',
+        'elevated': '0 8px 32px hsl(0 0% 0% / 0.4), 0 0 0 1px hsl(0 0% 100% / 0.05)',
+        'iwasp': '0 4px 20px hsl(138 100% 62% / 0.2)',
       },
     },
   },
