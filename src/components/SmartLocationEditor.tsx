@@ -14,7 +14,9 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Navigation, Loader2, X, Check, Map as MapIcon,
-  Crosshair, AlertCircle, Search
+  Crosshair, AlertCircle, Search, Home, Building2, Store, 
+  Landmark, TreePine, GraduationCap, Hospital, UtensilsCrossed,
+  Hotel, Church, Fuel, ParkingCircle, Train, Plane
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,12 +40,69 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-// Address suggestion type
+// Address suggestion type with extended info
 interface AddressSuggestion {
   display_name: string;
   lat: string;
   lon: string;
   place_id: number;
+  type?: string;
+  class?: string;
+  addresstype?: string;
+}
+
+// Get icon based on place type
+function getPlaceIcon(suggestion: AddressSuggestion) {
+  const type = suggestion.type || '';
+  const placeClass = suggestion.class || '';
+  const addressType = suggestion.addresstype || '';
+  
+  // Check type/class combinations
+  if (['house', 'residential', 'apartments'].includes(type) || addressType === 'house') {
+    return { icon: Home, color: 'text-emerald-500', bg: 'bg-emerald-500/10' };
+  }
+  if (['office', 'commercial', 'company'].includes(type) || placeClass === 'office') {
+    return { icon: Building2, color: 'text-blue-500', bg: 'bg-blue-500/10' };
+  }
+  if (['shop', 'retail', 'supermarket', 'mall'].includes(type) || placeClass === 'shop') {
+    return { icon: Store, color: 'text-purple-500', bg: 'bg-purple-500/10' };
+  }
+  if (['restaurant', 'cafe', 'bar', 'fast_food'].includes(type) || placeClass === 'amenity' && ['restaurant', 'cafe'].includes(type)) {
+    return { icon: UtensilsCrossed, color: 'text-orange-500', bg: 'bg-orange-500/10' };
+  }
+  if (['hotel', 'hostel', 'motel', 'guest_house'].includes(type)) {
+    return { icon: Hotel, color: 'text-amber-500', bg: 'bg-amber-500/10' };
+  }
+  if (['hospital', 'clinic', 'doctors', 'pharmacy'].includes(type)) {
+    return { icon: Hospital, color: 'text-red-500', bg: 'bg-red-500/10' };
+  }
+  if (['school', 'university', 'college', 'kindergarten'].includes(type) || placeClass === 'education') {
+    return { icon: GraduationCap, color: 'text-indigo-500', bg: 'bg-indigo-500/10' };
+  }
+  if (['church', 'mosque', 'synagogue', 'temple'].includes(type) || placeClass === 'place_of_worship') {
+    return { icon: Church, color: 'text-slate-500', bg: 'bg-slate-500/10' };
+  }
+  if (['park', 'garden', 'forest', 'nature_reserve'].includes(type) || placeClass === 'leisure') {
+    return { icon: TreePine, color: 'text-green-600', bg: 'bg-green-600/10' };
+  }
+  if (['fuel', 'gas_station'].includes(type)) {
+    return { icon: Fuel, color: 'text-yellow-600', bg: 'bg-yellow-600/10' };
+  }
+  if (['parking'].includes(type)) {
+    return { icon: ParkingCircle, color: 'text-sky-500', bg: 'bg-sky-500/10' };
+  }
+  if (['station', 'railway', 'bus_station'].includes(type) || placeClass === 'railway') {
+    return { icon: Train, color: 'text-cyan-600', bg: 'bg-cyan-600/10' };
+  }
+  if (['airport', 'aerodrome'].includes(type)) {
+    return { icon: Plane, color: 'text-violet-500', bg: 'bg-violet-500/10' };
+  }
+  if (['government', 'townhall', 'courthouse', 'public_building'].includes(type) || placeClass === 'government') {
+    return { icon: Landmark, color: 'text-stone-500', bg: 'bg-stone-500/10' };
+  }
+  
+  // Default
+  return { icon: MapPin, color: 'text-accent', bg: 'bg-accent/10' };
 }
 
 // Address autocomplete using Nominatim
@@ -218,19 +277,37 @@ function AddressAutocomplete({
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="absolute z-50 w-full mt-1 bg-background border border-border rounded-xl shadow-xl overflow-hidden"
+            className="absolute z-50 w-full mt-1 bg-card border border-border rounded-xl shadow-2xl overflow-hidden backdrop-blur-sm"
           >
-            {suggestions.map((suggestion) => (
-              <button
-                key={suggestion.place_id}
-                type="button"
-                onClick={() => handleSelectSuggestion(suggestion)}
-                className="w-full text-left px-4 py-3 hover:bg-accent/10 transition-colors border-b border-border/30 last:border-0 flex items-start gap-3"
-              >
-                <MapPin size={16} className="text-accent mt-0.5 shrink-0" />
-                <span className="text-sm line-clamp-2">{suggestion.display_name}</span>
-              </button>
-            ))}
+            <div className="px-3 py-2 border-b border-border/50 bg-muted/30">
+              <span className="text-xs font-medium text-muted-foreground">Suggestions</span>
+            </div>
+            {suggestions.map((suggestion) => {
+              const { icon: PlaceIcon, color, bg } = getPlaceIcon(suggestion);
+              return (
+                <button
+                  key={suggestion.place_id}
+                  type="button"
+                  onClick={() => handleSelectSuggestion(suggestion)}
+                  className="w-full text-left px-3 py-3 hover:bg-accent/10 transition-all duration-150 border-b border-border/20 last:border-0 flex items-start gap-3 group"
+                >
+                  <div className={cn(
+                    "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
+                    bg
+                  )}>
+                    <PlaceIcon size={16} className={color} />
+                  </div>
+                  <div className="flex-1 min-w-0 pt-0.5">
+                    <span className="text-sm line-clamp-2 leading-snug">{suggestion.display_name}</span>
+                    {suggestion.type && (
+                      <span className="text-[10px] text-muted-foreground/70 uppercase tracking-wide mt-0.5 block">
+                        {suggestion.type.replace(/_/g, ' ')}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </motion.div>
         )}
       </AnimatePresence>
