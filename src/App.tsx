@@ -9,6 +9,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { OrderFunnelProvider, CartGuard } from "@/contexts/OrderFunnelContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
 import { AdminGuard } from "@/components/AdminGuard";
+import { FeatureValidationProvider } from "@/components/FeatureValidationProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PublicCard from "./pages/PublicCard";
 import AdminClients from "./pages/AdminClients";
@@ -61,11 +62,12 @@ const App = () => (
         <GuestCardProvider>
           <CartProvider>
             <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <ErrorBoundary>
-                  <OrderFunnelProvider>
+              <FeatureValidationProvider showOverlay={true}>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <ErrorBoundary>
+                    <OrderFunnelProvider>
                     <Routes>
                       {/* HOME - ALWAYS VALID */}
                       <Route path="/" element={<Index />} />
@@ -123,12 +125,13 @@ const App = () => (
                   </OrderFunnelProvider>
                 </ErrorBoundary>
               </BrowserRouter>
-            </TooltipProvider>
-          </CartProvider>
-        </GuestCardProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
+            </FeatureValidationProvider>
+          </TooltipProvider>
+        </CartProvider>
+      </GuestCardProvider>
+    </AuthProvider>
+  </QueryClientProvider>
+</ErrorBoundary>
 );
 
 export default App;
