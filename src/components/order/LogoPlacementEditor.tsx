@@ -12,9 +12,10 @@
  * - Effet caméléon (blending)
  * - Aperçu temps réel
  * - Guides visuels
+ * - Gestion robuste du chargement
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -26,7 +27,10 @@ import {
   Move,
   Eye,
   Blend,
-  Check
+  Check,
+  Loader2,
+  AlertTriangle,
+  RefreshCw
 } from "lucide-react";
 
 // i-wasp logo
@@ -81,6 +85,8 @@ const SAFE_ZONE = {
   bottom: BLEED / CARD_HEIGHT * 100,
   left: BLEED / CARD_WIDTH * 100,
 };
+
+type LoadingState = "loading" | "loaded" | "error";
 
 function getLogoStyles(placement: LogoPlacement, scale: number): React.CSSProperties {
   const baseStyles: React.CSSProperties = {
@@ -174,7 +180,31 @@ export function LogoPlacementEditor({
   onChange,
 }: LogoPlacementEditorProps) {
   const [showGuides, setShowGuides] = useState(true);
+  const [loadingState, setLoadingState] = useState<LoadingState>("loading");
+  const [imageKey, setImageKey] = useState(0);
+  
   const isLightCard = cardColor === "#FFFFFF" || cardColor === "#fafafa";
+
+  // Reset loading state when URL changes
+  useEffect(() => {
+    if (logoUrl) {
+      setLoadingState("loading");
+      setImageKey(prev => prev + 1);
+    }
+  }, [logoUrl]);
+
+  const handleImageLoad = useCallback(() => {
+    setLoadingState("loaded");
+  }, []);
+
+  const handleImageError = useCallback(() => {
+    setLoadingState("error");
+  }, []);
+
+  const handleRetry = useCallback(() => {
+    setLoadingState("loading");
+    setImageKey(prev => prev + 1);
+  }, []);
 
   const updateConfig = (updates: Partial<LogoPlacementConfig>) => {
     onChange({ ...config, ...updates });
@@ -241,16 +271,86 @@ export function LogoPlacementEditor({
               )}
             </AnimatePresence>
 
-            {/* Client Logo */}
+            {/* Loading State */}
+            <AnimatePresence mode="wait">
+              {loadingState === "loading" && (
+                <motion.div
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 flex items-center justify-center z-20"
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <Loader2 
+                      className="w-8 h-8 animate-spin"
+                      style={{ color: textColor }}
+                    />
+                    <span 
+                      className="text-xs opacity-60"
+                      style={{ color: textColor }}
+                    >
+                      Chargement...
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+
+              {loadingState === "error" && (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 flex items-center justify-center z-20"
+                >
+                  <div className="flex flex-col items-center gap-2 p-4">
+                    <AlertTriangle 
+                      className="w-8 h-8"
+                      style={{ color: textColor }}
+                    />
+                    <span 
+                      className="text-xs opacity-60 text-center"
+                      style={{ color: textColor }}
+                    >
+                      Erreur de chargement
+                    </span>
+                    <button
+                      onClick={handleRetry}
+                      className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg transition-colors"
+                      style={{ 
+                        backgroundColor: `${textColor}20`,
+                        color: textColor 
+                      }}
+                    >
+                      <RefreshCw size={12} />
+                      Réessayer
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Client Logo - Always rendered, visibility controlled by state */}
             <motion.img
+              key={`logo-${imageKey}`}
               src={logoUrl}
               alt="Logo client"
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ 
+                opacity: loadingState === "loaded" ? config.opacity / 100 : 0,
+                scale: loadingState === "loaded" ? 1 : 0.95
+              }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
               style={{
                 ...getLogoStyles(config.placement, config.scale),
-                opacity: config.opacity / 100,
                 mixBlendMode: config.blendMode,
+                zIndex: 5,
               }}
               className="object-contain"
+              crossOrigin="anonymous"
             />
 
             {/* i-wasp logo - FIXED top right */}
@@ -294,9 +394,31 @@ export function LogoPlacementEditor({
           <p className="text-center text-xs text-muted-foreground mt-3">
             Format CR80 • 85.6 × 54 mm • Zone de sécurité 3mm
           </p>
-          <p className="text-center text-xs text-amber-600 mt-1">
-            ⚠️ Cet aperçu représente le rendu final imprimé
-          </p>
+          
+          {/* Status indicator */}
+          <AnimatePresence mode="wait">
+            {loadingState === "loaded" && (
+              <motion.p 
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="text-center text-xs text-green-600 mt-1 flex items-center justify-center gap-1"
+              >
+                <Check size={12} />
+                Logo affiché correctement
+              </motion.p>
+            )}
+            {loadingState === "error" && (
+              <motion.p 
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="text-center text-xs text-amber-600 mt-1"
+              >
+                ⚠️ Problème avec l'image - cliquez sur Réessayer
+              </motion.p>
+            )}
+          </AnimatePresence>
         </CardContent>
       </Card>
 
