@@ -1,25 +1,20 @@
 /**
  * LogoPlacementEditor - Éditeur de placement logo avancé
  * 
- * OPTIONS:
- * - Centré
- * - Coin (4 positions)
- * - Ajuster automatiquement
- * - PLEIN FORMAT (logo couvrant toute la carte)
- * 
  * FEATURES:
- * - Réglage opacité
+ * - Drag & drop direct sur la carte
+ * - Contraintes visuelles (safe zone)
+ * - Réglage opacité & échelle
  * - Effet caméléon (blending)
- * - Aperçu temps réel
- * - Guides visuels
- * - Gestion robuste du chargement
+ * - Aperçu temps réel premium
  */
 
-import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { motion, AnimatePresence, useDragControls, PanInfo } from "framer-motion";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { 
   AlignCenter, 
   Maximize2, 
@@ -30,13 +25,15 @@ import {
   Check,
   Loader2,
   AlertTriangle,
-  RefreshCw
+  RefreshCw,
+  Hand,
+  RotateCcw
 } from "lucide-react";
 
 // i-wasp logo
 import iwaspLogoWhite from "@/assets/iwasp-logo-white.png";
 
-export type LogoPlacement = "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right" | "auto-fit" | "full";
+export type LogoPlacement = "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right" | "auto-fit" | "full" | "custom";
 
 export type BlendMode = "normal" | "multiply" | "screen" | "overlay";
 
@@ -45,6 +42,8 @@ export interface LogoPlacementConfig {
   opacity: number;
   blendMode: BlendMode;
   scale: number;
+  customX?: number; // percentage from left (0-100)
+  customY?: number; // percentage from top (0-100)
 }
 
 interface LogoPlacementEditorProps {
@@ -57,12 +56,11 @@ interface LogoPlacementEditorProps {
 
 const PLACEMENTS = [
   { id: "center" as const, label: "Centré", icon: AlignCenter },
-  { id: "top-left" as const, label: "Haut gauche", icon: Grid3X3 },
-  { id: "top-right" as const, label: "Haut droite", icon: Grid3X3 },
-  { id: "bottom-left" as const, label: "Bas gauche", icon: Grid3X3 },
-  { id: "bottom-right" as const, label: "Bas droite", icon: Grid3X3 },
-  { id: "auto-fit" as const, label: "Auto", icon: Move },
-  { id: "full" as const, label: "Plein format", icon: Maximize2 },
+  { id: "top-left" as const, label: "Haut G.", icon: Grid3X3 },
+  { id: "top-right" as const, label: "Haut D.", icon: Grid3X3 },
+  { id: "bottom-left" as const, label: "Bas G.", icon: Grid3X3 },
+  { id: "bottom-right" as const, label: "Bas D.", icon: Grid3X3 },
+  { id: "full" as const, label: "Plein", icon: Maximize2 },
 ];
 
 const BLEND_MODES = [
@@ -86,90 +84,40 @@ const SAFE_ZONE = {
   left: BLEED / CARD_WIDTH * 100,
 };
 
+// Margins for drag constraints (percentage)
+const DRAG_MARGIN = 10;
+
 type LoadingState = "loading" | "loaded" | "error";
 
-function getLogoStyles(placement: LogoPlacement, scale: number): React.CSSProperties {
-  const baseStyles: React.CSSProperties = {
-    position: "absolute",
-    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-  };
-
+function getPresetPosition(placement: LogoPlacement): { x: number; y: number } {
   switch (placement) {
     case "center":
-      return {
-        ...baseStyles,
-        top: "50%",
-        left: "50%",
-        transform: `translate(-50%, -50%) scale(${scale})`,
-        maxWidth: "50%",
-        maxHeight: "45%",
-      };
-    case "top-left":
-      return {
-        ...baseStyles,
-        top: "12%",
-        left: "8%",
-        transform: `scale(${scale})`,
-        transformOrigin: "top left",
-        maxWidth: "35%",
-        maxHeight: "35%",
-      };
-    case "top-right":
-      return {
-        ...baseStyles,
-        top: "12%",
-        right: "20%", // Leave space for i-wasp logo
-        transform: `scale(${scale})`,
-        transformOrigin: "top right",
-        maxWidth: "35%",
-        maxHeight: "35%",
-      };
-    case "bottom-left":
-      return {
-        ...baseStyles,
-        bottom: "15%",
-        left: "20%", // Leave space for NFC indicator
-        transform: `scale(${scale})`,
-        transformOrigin: "bottom left",
-        maxWidth: "35%",
-        maxHeight: "35%",
-      };
-    case "bottom-right":
-      return {
-        ...baseStyles,
-        bottom: "12%",
-        right: "8%",
-        transform: `scale(${scale})`,
-        transformOrigin: "bottom right",
-        maxWidth: "35%",
-        maxHeight: "35%",
-      };
     case "auto-fit":
-      return {
-        ...baseStyles,
-        top: "50%",
-        left: "50%",
-        transform: `translate(-50%, -50%) scale(${scale})`,
-        maxWidth: "60%",
-        maxHeight: "50%",
-        objectFit: "contain",
-      };
+      return { x: 50, y: 50 };
+    case "top-left":
+      return { x: 20, y: 25 };
+    case "top-right":
+      return { x: 70, y: 25 };
+    case "bottom-left":
+      return { x: 25, y: 75 };
+    case "bottom-right":
+      return { x: 80, y: 75 };
     case "full":
-      return {
-        ...baseStyles,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-        transform: `scale(${scale})`,
-        transformOrigin: "center",
-      };
+      return { x: 50, y: 50 };
     default:
-      return baseStyles;
+      return { x: 50, y: 50 };
   }
+}
+
+function getLogoSize(placement: LogoPlacement, scale: number): { maxWidth: string; maxHeight: string } {
+  if (placement === "full") {
+    return { maxWidth: "100%", maxHeight: "100%" };
+  }
+  const baseSize = placement === "center" || placement === "auto-fit" || placement === "custom" ? 50 : 35;
+  return { 
+    maxWidth: `${baseSize * scale}%`, 
+    maxHeight: `${baseSize * scale}%` 
+  };
 }
 
 export function LogoPlacementEditor({
@@ -182,8 +130,22 @@ export function LogoPlacementEditor({
   const [showGuides, setShowGuides] = useState(true);
   const [loadingState, setLoadingState] = useState<LoadingState>("loading");
   const [imageKey, setImageKey] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragPosition, setDragPosition] = useState({ x: 50, y: 50 });
+  const cardRef = useRef<HTMLDivElement>(null);
+  const dragControls = useDragControls();
   
   const isLightCard = cardColor === "#FFFFFF" || cardColor === "#fafafa";
+  const isFullMode = config.placement === "full";
+
+  // Initialize drag position based on placement
+  useEffect(() => {
+    if (config.placement === "custom" && config.customX !== undefined && config.customY !== undefined) {
+      setDragPosition({ x: config.customX, y: config.customY });
+    } else {
+      setDragPosition(getPresetPosition(config.placement));
+    }
+  }, [config.placement, config.customX, config.customY]);
 
   // Reset loading state when URL changes
   useEffect(() => {
@@ -210,27 +172,100 @@ export function LogoPlacementEditor({
     onChange({ ...config, ...updates });
   };
 
+  const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (!cardRef.current || isFullMode) return;
+    
+    const cardRect = cardRef.current.getBoundingClientRect();
+    const cardWidth = cardRect.width;
+    const cardHeight = cardRect.height;
+    
+    // Calculate new position as percentage
+    const newX = Math.max(DRAG_MARGIN, Math.min(100 - DRAG_MARGIN, 
+      dragPosition.x + (info.offset.x / cardWidth) * 100
+    ));
+    const newY = Math.max(DRAG_MARGIN, Math.min(100 - DRAG_MARGIN, 
+      dragPosition.y + (info.offset.y / cardHeight) * 100
+    ));
+    
+    setDragPosition({ x: newX, y: newY });
+    setIsDragging(false);
+    
+    // Update config with custom position
+    updateConfig({ 
+      placement: "custom",
+      customX: newX,
+      customY: newY
+    });
+  }, [dragPosition, isFullMode, updateConfig]);
+
+  const handleDragStart = useCallback(() => {
+    if (!isFullMode) {
+      setIsDragging(true);
+    }
+  }, [isFullMode]);
+
+  const handlePresetClick = (placement: LogoPlacement) => {
+    const newPos = getPresetPosition(placement);
+    setDragPosition(newPos);
+    updateConfig({ 
+      placement, 
+      customX: undefined, 
+      customY: undefined 
+    });
+  };
+
+  const handleCenterLogo = () => {
+    setDragPosition({ x: 50, y: 50 });
+    updateConfig({ 
+      placement: "center",
+      customX: undefined,
+      customY: undefined
+    });
+  };
+
+  const logoSize = getLogoSize(config.placement, config.scale);
+
   return (
     <div className="space-y-6">
-      {/* Card Preview with Guides */}
+      {/* Card Preview with Drag & Drop */}
       <Card className="overflow-hidden">
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium">Aperçu impression</span>
-            <button
-              onClick={() => setShowGuides(!showGuides)}
-              className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-md transition-colors ${
-                showGuides ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
-              }`}
-            >
-              <Eye size={14} />
-              Guides
-            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Aperçu impression</span>
+              {!isFullMode && (
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <Hand size={10} />
+                  Glissez le logo
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCenterLogo}
+                className="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+                title="Recentrer"
+              >
+                <RotateCcw size={12} />
+              </button>
+              <button
+                onClick={() => setShowGuides(!showGuides)}
+                className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-md transition-colors ${
+                  showGuides ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+                }`}
+              >
+                <Eye size={14} />
+                Guides
+              </button>
+            </div>
           </div>
 
           {/* Card Preview */}
           <div
-            className="relative rounded-xl overflow-hidden shadow-2xl mx-auto"
+            ref={cardRef}
+            className={`relative rounded-xl overflow-hidden shadow-2xl mx-auto ${
+              isDragging ? "cursor-grabbing" : !isFullMode ? "cursor-grab" : ""
+            }`}
             style={{
               aspectRatio: CARD_RATIO,
               maxWidth: "100%",
@@ -267,6 +302,21 @@ export function LogoPlacementEditor({
                     className="absolute left-1/2 top-0 bottom-0 w-px"
                     style={{ backgroundColor: isLightCard ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)" }}
                   />
+                  
+                  {/* Drag constraint zone indicator */}
+                  {isDragging && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="absolute border-2 border-primary/30 rounded-lg"
+                      style={{
+                        top: `${DRAG_MARGIN}%`,
+                        left: `${DRAG_MARGIN}%`,
+                        right: `${DRAG_MARGIN}%`,
+                        bottom: `${DRAG_MARGIN}%`,
+                      }}
+                    />
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -331,27 +381,93 @@ export function LogoPlacementEditor({
               )}
             </AnimatePresence>
 
-            {/* Client Logo - Always rendered, visibility controlled by state */}
-            <motion.img
-              key={`logo-${imageKey}`}
-              src={logoUrl}
-              alt="Logo client"
-              onLoad={handleImageLoad}
-              onError={handleImageError}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ 
-                opacity: loadingState === "loaded" ? config.opacity / 100 : 0,
-                scale: loadingState === "loaded" ? 1 : 0.95
-              }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              style={{
-                ...getLogoStyles(config.placement, config.scale),
-                mixBlendMode: config.blendMode,
-                zIndex: 5,
-              }}
-              className="object-contain"
-              crossOrigin="anonymous"
-            />
+            {/* Client Logo - Draggable */}
+            {isFullMode ? (
+              // Full mode - no drag
+              <motion.img
+                key={`logo-${imageKey}`}
+                src={logoUrl}
+                alt="Logo client"
+                onLoad={handleImageLoad}
+                onError={handleImageError}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ 
+                  opacity: loadingState === "loaded" ? config.opacity / 100 : 0,
+                  scale: loadingState === "loaded" ? config.scale : 0.95
+                }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  mixBlendMode: config.blendMode,
+                  zIndex: 5,
+                }}
+                className="object-cover"
+                crossOrigin="anonymous"
+              />
+            ) : (
+              // Draggable mode
+              <motion.div
+                drag
+                dragControls={dragControls}
+                dragMomentum={false}
+                dragElastic={0.1}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                initial={false}
+                animate={{
+                  opacity: loadingState === "loaded" ? 1 : 0,
+                }}
+                whileDrag={{ scale: 1.05, zIndex: 50 }}
+                style={{
+                  position: "absolute",
+                  left: `${dragPosition.x}%`,
+                  top: `${dragPosition.y}%`,
+                  transform: "translate(-50%, -50%)",
+                  zIndex: isDragging ? 50 : 5,
+                  cursor: isDragging ? "grabbing" : "grab",
+                }}
+                className="touch-none"
+              >
+                <motion.img
+                  key={`logo-${imageKey}`}
+                  src={logoUrl}
+                  alt="Logo client"
+                  onLoad={handleImageLoad}
+                  onError={handleImageError}
+                  style={{
+                    opacity: config.opacity / 100,
+                    mixBlendMode: config.blendMode,
+                    ...logoSize,
+                    objectFit: "contain",
+                  }}
+                  className={`object-contain pointer-events-none select-none transition-shadow duration-200 ${
+                    isDragging ? "drop-shadow-2xl" : ""
+                  }`}
+                  crossOrigin="anonymous"
+                  draggable={false}
+                />
+                
+                {/* Drag handle indicator */}
+                {loadingState === "loaded" && !isDragging && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium whitespace-nowrap"
+                    style={{
+                      backgroundColor: isLightCard ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.9)",
+                      color: isLightCard ? "#fff" : "#000",
+                    }}
+                  >
+                    <Move size={10} />
+                    Déplacer
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
 
             {/* i-wasp logo - FIXED top right */}
             <div className="absolute top-3 right-3 z-20">
@@ -390,10 +506,17 @@ export function LogoPlacementEditor({
             />
           </div>
 
-          {/* Dimensions info */}
-          <p className="text-center text-xs text-muted-foreground mt-3">
-            Format CR80 • 85.6 × 54 mm • Zone de sécurité 3mm
-          </p>
+          {/* Position info */}
+          <div className="flex items-center justify-between mt-3">
+            <p className="text-xs text-muted-foreground">
+              Format CR80 • 85.6 × 54 mm
+            </p>
+            {config.placement === "custom" && (
+              <p className="text-xs text-primary">
+                Position: {Math.round(dragPosition.x)}%, {Math.round(dragPosition.y)}%
+              </p>
+            )}
+          </div>
           
           {/* Status indicator */}
           <AnimatePresence mode="wait">
@@ -405,56 +528,70 @@ export function LogoPlacementEditor({
                 className="text-center text-xs text-green-600 mt-1 flex items-center justify-center gap-1"
               >
                 <Check size={12} />
-                Logo affiché correctement
-              </motion.p>
-            )}
-            {loadingState === "error" && (
-              <motion.p 
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="text-center text-xs text-amber-600 mt-1"
-              >
-                ⚠️ Problème avec l'image - cliquez sur Réessayer
+                {config.placement === "custom" ? "Position personnalisée" : "Logo positionné"}
               </motion.p>
             )}
           </AnimatePresence>
         </CardContent>
       </Card>
 
-      {/* Placement Options */}
+      {/* Quick Presets */}
       <div>
-        <Label className="text-sm font-medium mb-3 block">Position du logo</Label>
-        <div className="grid grid-cols-4 gap-2">
+        <Label className="text-sm font-medium mb-3 block">Positions prédéfinies</Label>
+        <div className="grid grid-cols-6 gap-2">
           {PLACEMENTS.map((p) => {
             const Icon = p.icon;
             const isSelected = config.placement === p.id;
             return (
               <button
                 key={p.id}
-                onClick={() => updateConfig({ placement: p.id })}
-                className={`relative flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-all ${
+                onClick={() => handlePresetClick(p.id)}
+                className={`relative flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all ${
                   isSelected
                     ? "border-primary bg-primary/5 shadow-sm"
                     : "border-border hover:border-primary/50"
-                } ${p.id === "full" ? "col-span-2" : ""}`}
+                }`}
               >
                 {isSelected && (
                   <motion.div
                     layoutId="placement-check"
-                    className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
+                    className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center"
                   >
-                    <Check size={12} className="text-primary-foreground" />
+                    <Check size={10} className="text-primary-foreground" />
                   </motion.div>
                 )}
-                <Icon size={18} className={isSelected ? "text-primary" : "text-muted-foreground"} />
-                <span className={`text-[10px] font-medium ${isSelected ? "text-primary" : ""}`}>
+                <Icon size={16} className={isSelected ? "text-primary" : "text-muted-foreground"} />
+                <span className={`text-[9px] font-medium ${isSelected ? "text-primary" : ""}`}>
                   {p.label}
                 </span>
               </button>
             );
           })}
         </div>
+        {config.placement === "custom" && (
+          <p className="text-xs text-muted-foreground mt-2 text-center">
+            💡 Position personnalisée par glisser-déposer
+          </p>
+        )}
+      </div>
+
+      {/* Scale Slider */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <Label className="text-sm font-medium flex items-center gap-2">
+            <Maximize2 size={16} />
+            Taille
+          </Label>
+          <span className="text-sm text-muted-foreground">{Math.round(config.scale * 100)}%</span>
+        </div>
+        <Slider
+          value={[config.scale * 100]}
+          onValueChange={([value]) => updateConfig({ scale: value / 100 })}
+          min={50}
+          max={isFullMode ? 150 : 120}
+          step={5}
+          className="w-full"
+        />
       </div>
 
       {/* Opacity Slider */}
@@ -475,30 +612,6 @@ export function LogoPlacementEditor({
           className="w-full"
         />
       </div>
-
-      {/* Scale Slider (for full mode) */}
-      {config.placement === "full" && (
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <Label className="text-sm font-medium flex items-center gap-2">
-              <Maximize2 size={16} />
-              Échelle
-            </Label>
-            <span className="text-sm text-muted-foreground">{Math.round(config.scale * 100)}%</span>
-          </div>
-          <Slider
-            value={[config.scale * 100]}
-            onValueChange={([value]) => updateConfig({ scale: value / 100 })}
-            min={100}
-            max={150}
-            step={5}
-            className="w-full"
-          />
-          <p className="text-xs text-muted-foreground mt-2">
-            💡 Augmentez l'échelle pour un débordement jusqu'aux bords (bleed)
-          </p>
-        </div>
-      )}
 
       {/* Blend Mode */}
       <div>
@@ -524,9 +637,6 @@ export function LogoPlacementEditor({
             );
           })}
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          L'effet caméléon mélange subtilement le logo avec la couleur de la carte
-        </p>
       </div>
     </div>
   );
