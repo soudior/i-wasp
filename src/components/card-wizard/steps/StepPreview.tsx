@@ -1,7 +1,7 @@
 /**
- * StepPreview - Étape 4: Aperçu final + Liens
+ * StepPreview - Étape 4: Aperçu final + Liens sociaux
  * 
- * Résumé de validation avant sauvegarde
+ * Interface premium de validation et sélection des réseaux sociaux
  */
 
 import { motion } from "framer-motion";
@@ -9,13 +9,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CardFormData } from "../CardWizard";
+import { SocialLink } from "@/lib/socialNetworks";
+import { SocialNetworkSelector } from "./SocialNetworkSelector";
 import { 
   Check, 
   X, 
-  Globe, 
-  Linkedin, 
-  Instagram,
-  MessageCircle
+  Globe,
+  Sparkles
 } from "lucide-react";
 
 interface StepPreviewProps {
@@ -47,12 +47,19 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
 
   const allValid = checks.every(c => c.ok);
 
+  const handleSocialLinksChange = (links: SocialLink[]) => {
+    onChange({ socialLinks: links });
+  };
+
   return (
     <div className="space-y-6">
       {/* Validation Checklist */}
-      <Card className="border-border/50 shadow-xl">
+      <Card className="border-border/50 shadow-xl bg-card/80 backdrop-blur-sm">
         <CardContent className="p-6">
-          <h3 className="font-semibold mb-4">Vérification finale</h3>
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles size={18} className="text-accent" />
+            <h3 className="font-semibold">Vérification finale</h3>
+          </div>
           
           <div className="space-y-3">
             {checks.map((check, index) => (
@@ -60,14 +67,14 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
                 key={check.label}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className={`flex items-center gap-3 p-3 rounded-xl ${
+                transition={{ delay: index * 0.1, duration: 0.4, ease: "easeOut" }}
+                className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
                   check.ok 
                     ? "bg-accent/10 border border-accent/20" 
                     : "bg-destructive/10 border border-destructive/20"
                 }`}
               >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors duration-300 ${
                   check.ok ? "bg-accent" : "bg-destructive"
                 }`}>
                   {check.ok ? (
@@ -86,9 +93,9 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
 
           {allValid && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4, duration: 0.4, ease: "easeOut" }}
               className="mt-4 p-4 rounded-xl bg-accent/5 border border-accent/10 text-center"
             >
               <p className="text-sm font-medium text-accent">
@@ -99,25 +106,34 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
         </CardContent>
       </Card>
 
-      {/* Optional: Social Links */}
-      <Card className="border-border/50 shadow-xl">
+      {/* Social Networks Selection */}
+      <Card className="border-border/50 shadow-xl bg-card/80 backdrop-blur-sm">
         <CardContent className="p-6">
-          <h3 className="font-semibold mb-4">Liens (optionnel)</h3>
-          <p className="text-xs text-muted-foreground mb-4">
-            Ajoutez vos réseaux pour une carte complète
+          <div className="flex items-center gap-2 mb-2">
+            <Globe size={18} className="text-accent" />
+            <h3 className="font-semibold">Vos liens</h3>
+          </div>
+          <p className="text-xs text-muted-foreground mb-5">
+            Connectez vos réseaux pour une carte complète et professionnelle
           </p>
           
-          <div className="space-y-4">
+          <SocialNetworkSelector
+            selectedLinks={data.socialLinks || []}
+            onChange={handleSocialLinksChange}
+          />
+
+          {/* Website field */}
+          <div className="mt-5 pt-5 border-t border-border/30">
             <div className="space-y-2">
-              <Label className="text-sm flex items-center gap-2">
-                <Globe size={14} className="text-muted-foreground" />
-                Site web
+              <Label className="text-sm flex items-center gap-2 text-muted-foreground">
+                <Globe size={14} />
+                Site web principal
               </Label>
               <Input
-                placeholder="www.example.com"
+                placeholder="www.votresite.com"
                 value={data.website}
                 onChange={(e) => onChange({ website: e.target.value })}
-                className="h-11 bg-muted/50 border-border/50 rounded-xl"
+                className="h-12 bg-muted/30 border-border/50 rounded-xl focus:ring-accent/30 transition-all duration-300"
               />
             </div>
           </div>
@@ -128,13 +144,13 @@ export function StepPreview({ data, onChange, validation }: StepPreviewProps) {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="text-center p-6"
+        transition={{ delay: 0.6, duration: 0.5, ease: "easeOut" }}
+        className="text-center py-6"
       >
         <p className="text-sm text-muted-foreground italic">
           "Vous ne créez pas une carte. Vous créez une impression."
         </p>
-        <p className="text-xs text-muted-foreground mt-2">
+        <p className="text-xs text-muted-foreground/70 mt-2">
           — IWASP
         </p>
       </motion.div>
