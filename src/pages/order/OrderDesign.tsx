@@ -186,27 +186,43 @@ function OrderDesignContent() {
     setIsUploading(true);
 
     try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}-logo.${fileExt}`;
-      const filePath = `order-logos/${fileName}`;
+      // Get current user for proper path structure (RLS policy requirement)
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id || 'anonymous';
+      
+      const fileExt = file.name.split(".").pop()?.toLowerCase();
+      const fileName = `logo-${Date.now()}.${fileExt}`;
+      // Path structure: {userId}/logo-{timestamp}.{ext} - required for RLS policy
+      const filePath = `${userId}/${fileName}`;
+
+      console.log("[OrderDesign] Uploading logo to:", filePath);
 
       const { error: uploadError } = await supabase.storage
         .from("card-assets")
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false
+        });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error("[OrderDesign] Upload error:", uploadError);
+        throw uploadError;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from("card-assets")
         .getPublicUrl(filePath);
 
+      console.log("[OrderDesign] Logo uploaded successfully:", publicUrl);
+
       setLogoUrl(publicUrl);
       setOriginalLogoUrl(publicUrl);
       setIsValidated(false);
-      toast.success("Logo téléchargé avec succès");
-    } catch (error) {
-      console.error("Upload error:", error);
-      toast.error("Erreur lors du téléchargement");
+      toast.success("Logo téléchargé avec succès !");
+    } catch (error: any) {
+      console.error("[OrderDesign] Upload error:", error);
+      const message = error?.message || "Erreur lors du téléchargement";
+      toast.error(message);
     } finally {
       setIsUploading(false);
     }

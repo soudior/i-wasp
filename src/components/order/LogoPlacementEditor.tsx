@@ -109,14 +109,29 @@ function getPresetPosition(placement: LogoPlacement): { x: number; y: number } {
   }
 }
 
-function getLogoSize(placement: LogoPlacement, scale: number): { maxWidth: string; maxHeight: string } {
+function getLogoSize(placement: LogoPlacement, scale: number): { 
+  width: string; 
+  height: string;
+  maxWidth: string; 
+  maxHeight: string;
+} {
   if (placement === "full") {
-    return { maxWidth: "100%", maxHeight: "100%" };
+    return { 
+      width: "100%", 
+      height: "100%",
+      maxWidth: "100%", 
+      maxHeight: "100%" 
+    };
   }
+  // Base size as percentage of card - center gets bigger, corners smaller
   const baseSize = placement === "center" || placement === "auto-fit" || placement === "custom" ? 50 : 35;
+  const finalSize = Math.min(80, Math.max(20, baseSize * scale)); // Clamp between 20-80%
+  
   return { 
-    maxWidth: `${baseSize * scale}%`, 
-    maxHeight: `${baseSize * scale}%` 
+    width: `${finalSize}%`,
+    height: "auto",
+    maxWidth: `${finalSize}%`, 
+    maxHeight: `${finalSize}%` 
   };
 }
 
@@ -147,21 +162,29 @@ export function LogoPlacementEditor({
     }
   }, [config.placement, config.customX, config.customY]);
 
-  // Reset loading state when URL changes
+  // Reset loading state when URL changes - with pre-validation
   useEffect(() => {
     if (logoUrl) {
       setLoadingState("loading");
       setImageKey(prev => prev + 1);
+      
+      // Pre-load image to detect errors early
+      const img = new Image();
+      img.onload = () => setLoadingState("loaded");
+      img.onerror = () => setLoadingState("error");
+      img.src = logoUrl;
     }
   }, [logoUrl]);
 
   const handleImageLoad = useCallback(() => {
+    console.log("[LogoPlacementEditor] Image loaded successfully");
     setLoadingState("loaded");
   }, []);
 
   const handleImageError = useCallback(() => {
+    console.error("[LogoPlacementEditor] Image failed to load:", logoUrl);
     setLoadingState("error");
-  }, []);
+  }, [logoUrl]);
 
   const handleRetry = useCallback(() => {
     setLoadingState("loading");
@@ -354,26 +377,39 @@ export function LogoPlacementEditor({
                   exit={{ opacity: 0 }}
                   className="absolute inset-0 flex items-center justify-center z-20"
                 >
-                  <div className="flex flex-col items-center gap-2 p-4">
-                    <AlertTriangle 
-                      className="w-8 h-8"
-                      style={{ color: textColor }}
-                    />
-                    <span 
-                      className="text-xs opacity-60 text-center"
-                      style={{ color: textColor }}
+                  <div className="flex flex-col items-center gap-3 p-4 max-w-[80%]">
+                    <div 
+                      className="w-12 h-12 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${textColor}15` }}
                     >
-                      Erreur de chargement
-                    </span>
+                      <AlertTriangle 
+                        className="w-6 h-6"
+                        style={{ color: textColor }}
+                      />
+                    </div>
+                    <div className="text-center">
+                      <p 
+                        className="text-sm font-medium mb-1"
+                        style={{ color: textColor }}
+                      >
+                        Logo invalide
+                      </p>
+                      <p 
+                        className="text-xs opacity-60"
+                        style={{ color: textColor }}
+                      >
+                        Veuillez télécharger un nouveau fichier PNG, JPG ou SVG
+                      </p>
+                    </div>
                     <button
                       onClick={handleRetry}
-                      className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg transition-colors"
+                      className="flex items-center gap-1.5 text-xs px-4 py-2 rounded-lg font-medium transition-all hover:scale-105"
                       style={{ 
-                        backgroundColor: `${textColor}20`,
-                        color: textColor 
+                        backgroundColor: textColor,
+                        color: cardColor 
                       }}
                     >
-                      <RefreshCw size={12} />
+                      <RefreshCw size={14} />
                       Réessayer
                     </button>
                   </div>
@@ -383,19 +419,19 @@ export function LogoPlacementEditor({
 
             {/* Client Logo - Draggable */}
             {isFullMode ? (
-              // Full mode - no drag
+              // Full mode - no drag, cover entire card
               <motion.img
                 key={`logo-${imageKey}`}
                 src={logoUrl}
                 alt="Logo client"
                 onLoad={handleImageLoad}
                 onError={handleImageError}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ 
                   opacity: loadingState === "loaded" ? config.opacity / 100 : 0,
-                  scale: loadingState === "loaded" ? config.scale : 0.95
+                  scale: loadingState === "loaded" ? config.scale : 0.98
                 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
                 style={{
                   position: "absolute",
                   inset: 0,
@@ -404,9 +440,12 @@ export function LogoPlacementEditor({
                   objectFit: "cover",
                   mixBlendMode: config.blendMode,
                   zIndex: 5,
+                  // Fusion effect with card
+                  filter: isLightCard 
+                    ? `drop-shadow(0 0 20px rgba(0,0,0,0.1))` 
+                    : `drop-shadow(0 0 20px rgba(0,0,0,0.3))`,
                 }}
                 className="object-cover"
-                crossOrigin="anonymous"
               />
             ) : (
               // Draggable mode
@@ -432,22 +471,31 @@ export function LogoPlacementEditor({
                 }}
                 className="touch-none"
               >
-                <motion.img
+              <motion.img
                   key={`logo-${imageKey}`}
                   src={logoUrl}
                   alt="Logo client"
                   onLoad={handleImageLoad}
                   onError={handleImageError}
-                  style={{
-                    opacity: config.opacity / 100,
-                    mixBlendMode: config.blendMode,
-                    ...logoSize,
-                    objectFit: "contain",
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ 
+                    opacity: loadingState === "loaded" ? config.opacity / 100 : 0,
+                    scale: loadingState === "loaded" ? 1 : 0.9
                   }}
-                  className={`object-contain pointer-events-none select-none transition-shadow duration-200 ${
-                    isDragging ? "drop-shadow-2xl" : ""
-                  }`}
-                  crossOrigin="anonymous"
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  style={{
+                    width: logoSize.width,
+                    height: logoSize.height,
+                    maxWidth: logoSize.maxWidth,
+                    maxHeight: logoSize.maxHeight,
+                    objectFit: "contain",
+                    mixBlendMode: config.blendMode,
+                    // Auto shadow based on card color for fusion effect
+                    filter: isLightCard 
+                      ? `drop-shadow(0 4px 12px rgba(0,0,0,0.15))` 
+                      : `drop-shadow(0 4px 12px rgba(0,0,0,0.4))`,
+                  }}
+                  className="object-contain pointer-events-none select-none"
                   draggable={false}
                 />
                 
