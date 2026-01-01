@@ -371,6 +371,12 @@ export function SmartLocationEditor({ value, onChange, className }: SmartLocatio
 
   return (
     <div className={cn("space-y-4", className)}>
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-1">
+        <MapPin size={16} className="text-accent" />
+        <span className="text-sm font-medium">Géolocalisation</span>
+      </div>
+
       {/* Geolocation buttons */}
       <div className="flex gap-2">
         <Button
@@ -379,14 +385,14 @@ export function SmartLocationEditor({ value, onChange, className }: SmartLocatio
           size="sm"
           onClick={handleAutoLocate}
           disabled={isLocating}
-          className="flex-1 h-10"
+          className="flex-1 h-11 rounded-xl bg-accent/5 border-accent/20 hover:bg-accent/10"
         >
           {isLocating ? (
             <Loader2 size={16} className="mr-2 animate-spin" />
           ) : (
-            <Crosshair size={16} className="mr-2" />
+            <Crosshair size={16} className="mr-2 text-accent" />
           )}
-          {isLocating ? "Localisation..." : "Ma position"}
+          {isLocating ? "Localisation..." : "Ma position actuelle"}
         </Button>
         
         <Button
@@ -394,10 +400,10 @@ export function SmartLocationEditor({ value, onChange, className }: SmartLocatio
           variant="outline"
           size="sm"
           onClick={() => setShowMapPicker(true)}
-          className="flex-1 h-10"
+          className="flex-1 h-11 rounded-xl"
         >
           <MapIcon size={16} className="mr-2" />
-          Choisir sur la carte
+          Choisir sur carte
         </Button>
       </div>
 
@@ -471,30 +477,61 @@ export function SmartLocationEditor({ value, onChange, className }: SmartLocatio
         />
       </div>
 
-      {/* Mini-map preview */}
+      {/* Mini-map preview with navigation buttons */}
       {hasCoordinates && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-2"
+          className="space-y-3"
         >
           <Label className="text-xs text-muted-foreground">Aperçu</Label>
           <MiniMapPreview lat={value.latitude!} lng={value.longitude!} />
           
-          {/* Open in Google Maps button */}
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => window.open(
-              `https://www.google.com/maps?q=${value.latitude},${value.longitude}`,
-              '_blank'
-            )}
-            className="w-full h-9 text-xs"
-          >
-            <Navigation size={14} className="mr-2" />
-            Ouvrir dans Google Maps
-          </Button>
+          {/* Navigation buttons - Auto-generated */}
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground">Ouvrir dans l'application</Label>
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => window.open(
+                  `https://www.google.com/maps/search/?api=1&query=${value.latitude},${value.longitude}`,
+                  '_blank'
+                )}
+                className="h-10 text-xs gap-1.5"
+              >
+                <Navigation size={14} className="text-blue-500" />
+                <span>Google</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => window.open(
+                  `https://maps.apple.com/?ll=${value.latitude},${value.longitude}&q=${encodeURIComponent(value.address || 'Location')}`,
+                  '_blank'
+                )}
+                className="h-10 text-xs gap-1.5"
+              >
+                <Navigation size={14} className="text-slate-500" />
+                <span>Plans</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => window.open(
+                  `https://www.waze.com/ul?ll=${value.latitude},${value.longitude}&navigate=yes`,
+                  '_blank'
+                )}
+                className="h-10 text-xs gap-1.5"
+              >
+                <Navigation size={14} className="text-cyan-500" />
+                <span>Waze</span>
+              </Button>
+            </div>
+          </div>
         </motion.div>
       )}
 
