@@ -8,6 +8,7 @@ import { GuestCardProvider } from "@/contexts/GuestCardContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { OrderFunnelProvider, CartGuard } from "@/contexts/OrderFunnelContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
+import { AdminGuard } from "@/components/AdminGuard";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PublicCard from "./pages/PublicCard";
 import AdminClients from "./pages/AdminClients";
@@ -111,10 +112,10 @@ const App = () => (
                       {/* Cart - Protected, only after full configuration */}
                       <Route path="/cart" element={<CartGuard><Cart /></CartGuard>} />
                       
-                      {/* Admin */}
-                      <Route path="/admin" element={<AdminOrders />} />
-                      <Route path="/admin/orders" element={<AdminOrders />} />
-                      <Route path="/admin/clients" element={<AdminClients />} />
+                      {/* Admin - Protected by AdminGuard */}
+                      <Route path="/admin" element={<AdminGuard><AdminOrders /></AdminGuard>} />
+                      <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
+                      <Route path="/admin/clients" element={<AdminGuard><AdminClients /></AdminGuard>} />
                       
                       {/* 404 - FALLBACK TO HOME */}
                       <Route path="*" element={<NotFound />} />

@@ -16,7 +16,8 @@ import {
   OrderTrustBadges,
   PageTransition,
   contentVariants,
-  itemVariants 
+  itemVariants,
+  ClientPreview 
 } from "@/components/order";
 import { formatPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
@@ -274,6 +275,9 @@ function OrderSummaryContent() {
                     <span>Total TTC</span>
                     <span>{formatPrice(state.orderOptions?.totalPriceCents || 0)}</span>
                   </div>
+
+                  {/* Client Preview Button */}
+                  <ClientPreview />
 
                   {/* CTA */}
                   <Button
