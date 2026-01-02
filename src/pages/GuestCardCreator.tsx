@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OnboardingPhotoUpload } from "@/components/onboarding/OnboardingPhotoUpload";
+import { LogoUploader } from "@/components/LogoUploader";
 import { toast } from "sonner";
 
 const formSteps = [
@@ -243,61 +244,14 @@ export default function GuestCardCreator() {
                     />
                   </div>
                   
-                  {/* Logo Upload */}
-                  <div className="space-y-2 pt-4">
-                    <Label>Logo de l'entreprise (optionnel)</Label>
-                    <div className="relative">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            if (guestCard.logo_url?.startsWith("blob:")) {
-                              URL.revokeObjectURL(guestCard.logo_url);
-                            }
-                            const localUrl = URL.createObjectURL(file);
-                            updateGuestCard("logo_url", localUrl);
-                          }
-                          e.target.value = "";
-                        }}
-                        className="hidden"
-                        id="guest-logo-upload"
-                      />
-                      {guestCard.logo_url ? (
-                        <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
-                          <img 
-                            src={guestCard.logo_url} 
-                            alt="Logo" 
-                            className="h-12 w-auto max-w-[120px] object-contain"
-                          />
-                          <div className="flex-1" />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              if (guestCard.logo_url?.startsWith("blob:")) {
-                                URL.revokeObjectURL(guestCard.logo_url);
-                              }
-                              updateGuestCard("logo_url", null);
-                            }}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            Supprimer
-                          </Button>
-                        </div>
-                      ) : (
-                        <label
-                          htmlFor="guest-logo-upload"
-                          className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-muted-foreground/25 rounded-xl cursor-pointer hover:border-primary/50 transition-colors"
-                        >
-                          <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                          <p className="text-sm font-medium">Cliquez pour ajouter</p>
-                          <p className="text-xs text-muted-foreground">PNG, JPG (fond transparent recommandé)</p>
-                        </label>
-                      )}
-                    </div>
+                  {/* Logo Upload with Real-Time Preview */}
+                  <div className="pt-4">
+                    <Label className="mb-2 block">Logo de l'entreprise (optionnel)</Label>
+                    <LogoUploader
+                      value={guestCard.logo_url}
+                      onChange={(url) => updateGuestCard("logo_url", url)}
+                      cardColor="black"
+                    />
                   </div>
                 </>
               )}
