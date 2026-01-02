@@ -1,6 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Building2, Hotel, Store, CalendarDays, Check, X, Crown, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { NFCPhysicalCardSection } from "@/components/print/NFCPhysicalCardSection";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 import nfcDemoVideo from "@/assets/nfc-demo-video.mp4";
@@ -308,43 +314,61 @@ const Index = () => {
             </p>
           </div>
 
-          {/* FAQ Section */}
-          <div className="space-y-4">
+          {/* FAQ Section - Accordion */}
+          <div>
             <h3 className="text-lg font-semibold text-foreground text-center mb-6">
               Questions fréquentes
             </h3>
             
-            {[
-              {
-                question: "Comment passer au GOLD ?",
-                answer: "Après avoir commandé votre carte, accédez à votre Dashboard et cliquez sur « Passer au Premium ». Vous serez mis en contact avec notre équipe via WhatsApp pour finaliser votre abonnement en toute simplicité."
-              },
-              {
-                question: "Puis-je annuler mon abonnement GOLD ?",
-                answer: "Oui, vous pouvez annuler à tout moment. Votre accès aux fonctionnalités GOLD reste actif jusqu'à la fin de la période payée. Aucun engagement, aucune surprise."
-              },
-              {
-                question: "La carte NFC est-elle incluse dans le GOLD ?",
-                answer: "La carte NFC physique est achetée séparément (à partir de 290 DH). L'abonnement GOLD (99 DH/mois) débloque les fonctionnalités avancées : Stories, WiFi rapide et Analytics."
-              },
-              {
-                question: "Que se passe-t-il si je reste en Pack Starter ?",
-                answer: "Votre carte NFC fonctionne parfaitement avec le Pack Starter inclus. Vous pouvez modifier votre profil et vos liens à tout moment. Seules les fonctionnalités exclusives (Story, WiFi, Stats) nécessitent le GOLD."
-              },
-            ].map((faq, index) => (
-              <div 
-                key={index}
-                className="p-4 rounded-xl border border-border/50 bg-card/30"
-              >
-                <h4 className="font-medium text-foreground mb-2 flex items-start gap-2">
-                  <span className="text-amber-500">?</span>
-                  {faq.question}
-                </h4>
-                <p className="text-sm text-muted-foreground pl-5">
-                  {faq.answer}
-                </p>
-              </div>
-            ))}
+            <Accordion type="single" collapsible className="space-y-3">
+              <AccordionItem value="item-1" className="border border-border/50 rounded-xl bg-card/30 px-4">
+                <AccordionTrigger className="text-left font-medium text-foreground hover:no-underline py-4">
+                  <span className="flex items-center gap-2">
+                    <span className="text-amber-500">?</span>
+                    Comment passer au GOLD ?
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground pb-4 pl-5">
+                  Après avoir commandé votre carte, accédez à votre Dashboard et cliquez sur « Passer au Premium ». Vous serez mis en contact avec notre équipe via WhatsApp pour finaliser votre abonnement en toute simplicité.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-2" className="border border-border/50 rounded-xl bg-card/30 px-4">
+                <AccordionTrigger className="text-left font-medium text-foreground hover:no-underline py-4">
+                  <span className="flex items-center gap-2">
+                    <span className="text-amber-500">?</span>
+                    Puis-je annuler mon abonnement GOLD ?
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground pb-4 pl-5">
+                  Oui, vous pouvez annuler à tout moment. Votre accès aux fonctionnalités GOLD reste actif jusqu'à la fin de la période payée. Aucun engagement, aucune surprise.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-3" className="border border-border/50 rounded-xl bg-card/30 px-4">
+                <AccordionTrigger className="text-left font-medium text-foreground hover:no-underline py-4">
+                  <span className="flex items-center gap-2">
+                    <span className="text-amber-500">?</span>
+                    La carte NFC est-elle incluse dans le GOLD ?
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground pb-4 pl-5">
+                  La carte NFC physique est achetée séparément (à partir de 290 DH). L'abonnement GOLD (99 DH/mois) débloque les fonctionnalités avancées : Stories, WiFi rapide et Analytics.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-4" className="border border-border/50 rounded-xl bg-card/30 px-4">
+                <AccordionTrigger className="text-left font-medium text-foreground hover:no-underline py-4">
+                  <span className="flex items-center gap-2">
+                    <span className="text-amber-500">?</span>
+                    Que se passe-t-il si je reste en Pack Starter ?
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground pb-4 pl-5">
+                  Votre carte NFC fonctionne parfaitement avec le Pack Starter inclus. Vous pouvez modifier votre profil et vos liens à tout moment. Seules les fonctionnalités exclusives (Story, WiFi, Stats) nécessitent le GOLD.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </div>
       </section>
