@@ -31,6 +31,8 @@ import CardSuccess from "./pages/CardSuccess";
 import UserGuide from "./pages/UserGuide";
 import Templates from "./pages/Templates";
 import Settings from "./pages/Settings";
+import Install from "./pages/Install";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 // Order funnel pages - 7 steps strict flow
 import OrderType from "./pages/order/OrderType";
@@ -96,7 +98,7 @@ const App = () => (
                       <Route path="/success" element={<CardSuccess />} />
                       <Route path="/guide" element={<UserGuide />} />
                       <Route path="/templates" element={<Templates />} />
-                      
+                      <Route path="/install" element={<Install />} />
                       {/* Finalize card after auth */}
                       <Route path="/onboarding/finalize" element={<FinalizeCard />} />
                       
@@ -133,6 +135,8 @@ const App = () => (
                       {/* 404 - FALLBACK TO HOME */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
+                    {/* PWA Install Prompt */}
+                    <PWAInstallPrompt />
                     {/* Debug Panel - Remove in production */}
                     <DebugPanel />
                   </OrderFunnelProvider>
