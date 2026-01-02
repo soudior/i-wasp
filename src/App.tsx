@@ -39,6 +39,7 @@ import Partenaires from "./pages/Partenaires";
 import DevenirPartenaire from "./pages/DevenirPartenaire";
 import CertificatPartenaire from "./pages/CertificatPartenaire";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 // Order funnel pages - 7 steps strict flow
 import OrderType from "./pages/order/OrderType";
@@ -151,6 +152,8 @@ const App = () => (
                       {/* 404 - FALLBACK TO HOME */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
+                    {/* Mobile Bottom Navigation */}
+                    <MobileBottomNav />
                     {/* PWA Install Prompt */}
                     <PWAInstallPrompt />
                     {/* Debug Panel - Remove in production */}

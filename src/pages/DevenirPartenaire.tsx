@@ -18,7 +18,10 @@ import {
   Crown,
   Gift,
   Eye,
-  Scissors
+  Scissors,
+  Package,
+  Percent,
+  BadgeCheck
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -97,6 +100,48 @@ const DevenirPartenaire = () => {
       icon: Crown,
       title: "Exclusivité Territoriale",
       description: "Nombre limité de partenaires par quartier."
+    }
+  ];
+
+  // Wholesale pricing packs
+  const wholesalePacks = [
+    {
+      name: "Pack Bronze",
+      icon: Package,
+      quantity: 10,
+      unitPrice: 70,
+      totalPrice: 700,
+      margin: 790,
+      marginPercent: 53,
+      color: "from-orange-600 to-orange-700",
+      borderColor: "border-orange-500/30",
+      popular: false
+    },
+    {
+      name: "Pack Silver",
+      icon: Package,
+      quantity: 50,
+      unitPrice: 55,
+      totalPrice: 2750,
+      margin: 4700,
+      marginPercent: 63,
+      color: "from-gray-400 to-gray-500",
+      borderColor: "border-gray-400/30",
+      popular: true,
+      bonus: "Présentoir comptoir OFFERT"
+    },
+    {
+      name: "Pack Gold",
+      icon: Crown,
+      quantity: 100,
+      unitPrice: 40,
+      totalPrice: 4000,
+      margin: 10900,
+      marginPercent: 73,
+      color: "from-amber-500 to-yellow-500",
+      borderColor: "border-amber-500/50",
+      popular: false,
+      bonus: "Présentoir + Stickers vitrine OFFERTS"
     }
   ];
 
@@ -183,8 +228,114 @@ const DevenirPartenaire = () => {
         </div>
       </section>
 
+      {/* Wholesale Pricing Section */}
+      <section className="py-16 px-4 bg-gradient-to-b from-amber-950/20 to-transparent">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 px-4 py-2 rounded-full text-sm mb-4">
+              <Percent className="h-4 w-4" />
+              Tarifs Grossiste Exclusifs
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Catalogue Prix Pro
+            </h2>
+            <p className="text-gray-400 max-w-xl mx-auto">
+              Prix de vente conseillé : <span className="text-amber-400 font-semibold">149 DH</span> par puce. 
+              Calculez votre marge ci-dessous.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {wholesalePacks.map((pack, index) => (
+              <motion.div
+                key={pack.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="relative"
+              >
+                {pack.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-yellow-500 text-black text-xs font-bold px-4 py-1 rounded-full z-10">
+                    ⭐ MEILLEURE VENTE
+                  </div>
+                )}
+                <Card className={`bg-gradient-to-b from-white/10 to-white/5 ${pack.borderColor} p-6 h-full ${pack.popular ? 'border-2 shadow-lg shadow-amber-500/20' : ''}`}>
+                  {/* Header */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${pack.color} flex items-center justify-center`}>
+                      <pack.icon className="h-6 w-6 text-black" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white">{pack.name}</h3>
+                      <p className="text-gray-400 text-sm">{pack.quantity} puces</p>
+                    </div>
+                  </div>
+
+                  {/* Pricing */}
+                  <div className="space-y-3 mb-6">
+                    <div className="flex justify-between items-center py-2 border-b border-white/10">
+                      <span className="text-gray-400 text-sm">Prix unitaire</span>
+                      <span className="text-white font-semibold">{pack.unitPrice} DH</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-white/10">
+                      <span className="text-gray-400 text-sm">Prix total HT</span>
+                      <span className="text-white font-bold text-lg">{pack.totalPrice.toLocaleString()} DH</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 bg-green-500/10 rounded-lg px-3">
+                      <span className="text-green-400 text-sm flex items-center gap-1">
+                        <TrendingUp className="h-4 w-4" />
+                        Votre marge
+                      </span>
+                      <div className="text-right">
+                        <span className="text-green-400 font-bold">+{pack.margin.toLocaleString()} DH</span>
+                        <span className="text-green-400/70 text-xs ml-1">({pack.marginPercent}%)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bonus */}
+                  {pack.bonus && (
+                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2 mb-4">
+                      <p className="text-amber-400 text-xs flex items-center gap-1">
+                        <Gift className="h-3 w-3" />
+                        {pack.bonus}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* CTA */}
+                  <a href="#candidature">
+                    <Button 
+                      className={`w-full ${pack.popular 
+                        ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-bold' 
+                        : 'bg-white/10 hover:bg-white/20 text-white'}`}
+                    >
+                      Choisir ce pack
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Additional info */}
+          <div className="mt-8 text-center">
+            <p className="text-gray-500 text-sm">
+              💡 Livraison gratuite à partir du Pack Silver. Paiement à la livraison disponible.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Benefits Grid */}
-      <section className="py-16 px-4 bg-gradient-to-b from-transparent to-amber-950/10">
+      <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">
             Les Avantages du Partenariat
