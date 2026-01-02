@@ -47,19 +47,19 @@ const socialLinks = [
 
 // IMPORTANT: Remplacez ce numéro par votre vrai numéro WhatsApp
 const WHATSAPP_NUMBER = "212600000000"; // Format: indicatif pays + numéro sans espaces
-const WHATSAPP_MESSAGE = "Bonjour ! Je suis intéressé(e) par une carte i-wasp. Pouvez-vous m'aider ?";
+const WHATSAPP_MESSAGE = "Bonjour l'équipe i-wasp ! 🐝 Je viens de voir votre vidéo sur le site et je suis très intéressé(e) par vos cartes NFC. J'aimerais en savoir plus sur l'offre [Starter / GOLD]. Pouvez-vous m'aider ?";
 
 export function Footer() {
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
   return (
     <>
-      {/* Bouton WhatsApp flottant */}
+      {/* Bouton WhatsApp flottant - Style doré luxe */}
       <a
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-5 py-3 rounded-full shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/40 group"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-600 hover:via-yellow-500 hover:to-amber-600 text-black px-5 py-3 rounded-full shadow-lg shadow-amber-500/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-amber-500/40 group"
         aria-label="Contacter sur WhatsApp"
       >
         <MessageCircle className="w-5 h-5" />
