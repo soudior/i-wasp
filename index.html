@@ -6,48 +6,49 @@
     <!-- iOS/PWA optimized viewport - prevents zoom, enables safe areas -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     
-    <!-- App identity -->
-    <title>IWASP - Cartes de Visite NFC Premium</title>
-    <meta name="description" content="Créez votre carte de visite NFC premium. Design élégant, partage instantané, analytics avancés." />
-    <meta name="author" content="IWASP" />
+    <!-- App identity - i-wasp Solutions NFC Élite -->
+    <title>i-wasp - Solutions NFC Élite au Maroc</title>
+    <meta name="description" content="Première solution NFC premium au Maroc. Cartes de visite connectées et ongles NFC innovants. Tap. Connect. Empower." />
+    <meta name="author" content="i-wasp" />
+    <meta name="keywords" content="NFC, carte visite digitale, networking, Maroc, luxe, premium, ongles NFC, i-wasp" />
     
-    <!-- PWA Configuration -->
+    <!-- PWA Configuration - Noir profond -->
     <meta name="theme-color" content="#000000" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="IWASP" />
+    <meta name="apple-mobile-web-app-title" content="i-wasp" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
     
-    <!-- PWA Icons -->
+    <!-- Favicon i-wasp -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
     <link rel="manifest" href="/manifest.json" />
     
     <!-- Splash screens for iOS -->
-    <link rel="apple-touch-startup-image" href="/splash.png" />
+    <link rel="apple-touch-startup-image" href="/apple-touch-icon.png" />
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="IWASP - Cartes de Visite NFC Premium" />
-    <meta property="og:description" content="Créez votre carte de visite NFC premium. Design élégant, partage instantané, analytics avancés." />
+    <!-- Open Graph - i-wasp branded -->
+    <meta property="og:title" content="i-wasp - Solutions NFC Élite au Maroc" />
+    <meta property="og:description" content="Première solution NFC premium au Maroc. Cartes de visite connectées et ongles NFC innovants. Tap. Connect. Empower." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://i-wasp.com/og-image.png" />
     <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="i-wasp" />
+    <meta property="og:url" content="https://i-wasp.com" />
 
-    <!-- Twitter -->
+    <!-- Twitter - i-wasp branded -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@iwasp" />
+    <meta name="twitter:site" content="@iwasp_ma" />
+    <meta name="twitter:title" content="i-wasp - Solutions NFC Élite" />
+    <meta name="twitter:description" content="Première solution NFC premium au Maroc. Tap. Connect. Empower." />
     <meta name="twitter:image" content="https://i-wasp.com/og-image.png" />
     
     <!-- Deep Linking / Universal Links -->
-    <!-- iOS Universal Links -->
     <meta name="apple-itunes-app" content="app-id=YOUR_APP_ID, app-argument=iwasp://" />
-    
-    <!-- Android App Links -->
     <meta name="google-play-app" content="app-id=com.iwasp.app" />
-    
-    <!-- Smart App Banner for iOS -->
     <link rel="alternate" href="android-app://com.iwasp.app/https/i-wasp.com" />
     <link rel="alternate" href="ios-app://YOUR_APP_ID/https/i-wasp.com" />
     
@@ -58,15 +59,13 @@
     <!-- Playfair Display - Luxury typography -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
     
-    <!-- iOS-specific: Disable callout, text size adjust -->
+    <!-- iOS-specific styles -->
     <style>
-      /* Prevent iOS from adjusting text size */
       html {
         -webkit-text-size-adjust: 100%;
         text-size-adjust: 100%;
       }
       
-      /* Safe area CSS variables */
       :root {
         --sat: env(safe-area-inset-top, 0px);
         --sar: env(safe-area-inset-right, 0px);
@@ -74,23 +73,20 @@
         --sal: env(safe-area-inset-left, 0px);
       }
       
-      /* Prevent overscroll bounce on iOS */
       html, body {
         overscroll-behavior: none;
         -webkit-overflow-scrolling: touch;
+        background-color: #000000;
       }
       
-      /* Disable tap highlight on iOS */
       * {
         -webkit-tap-highlight-color: transparent;
       }
       
-      /* Smooth scrolling */
       html {
         scroll-behavior: smooth;
       }
       
-      /* Fix viewport height on mobile */
       body {
         min-height: 100dvh;
       }
