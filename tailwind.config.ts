@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         display: ['SF Pro Display', 'Inter', 'system-ui', 'sans-serif'],
         body: ['SF Pro Text', 'Inter', 'system-ui', 'sans-serif'],
+        playfair: ['Playfair Display', 'Georgia', 'serif'],
       },
       colors: {
         /* ═══════════════════════════════════════════════════════════════
