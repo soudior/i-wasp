@@ -4,8 +4,11 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, ArrowRight, MessageCircle, Building2, Home, Stethoscope, Palette, MapPin, Contact, CalendarCheck, Instagram, Linkedin, Image } from "lucide-react";
+import { X, Check, ArrowRight, MessageCircle, Building2, Home, Stethoscope, Palette, MapPin, Contact, CalendarCheck, Instagram, Linkedin, Image, Hotel, Wifi, UtensilsCrossed, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { WiFiQRDisplay } from "@/components/WiFiQRGenerator";
+import { toast } from "sonner";
 import { useCart } from "@/contexts/CartContext";
 
 // Card mockup imports
@@ -30,6 +33,7 @@ const sectors = [
   { id: "all", name: "Tous", icon: null },
   { id: "business", name: "Business & Corporate", icon: Building2, color: "text-amber-400" },
   { id: "immobilier", name: "Immobilier & Luxe", icon: Home, color: "text-emerald-400" },
+  { id: "hotellerie", name: "Hôtellerie de Luxe", icon: Hotel, color: "text-rose-400" },
   { id: "sante", name: "Santé & Médical", icon: Stethoscope, color: "text-blue-400" },
   { id: "creatifs", name: "Créatifs & Freelance", icon: Palette, color: "text-purple-400" },
 ];
@@ -113,6 +117,45 @@ const templates = [
     keyFeature: { icon: Instagram, label: "Portfolio Instagram", color: "bg-purple-500/20 text-purple-400" },
     hasWhatsApp: true
   },
+  // HÔTELLERIE DE LUXE
+  { 
+    id: "palace",
+    name: "Palace Prestige", 
+    sector: "hotellerie",
+    cardImage: cardHotel, 
+    phoneImage: phoneHotel,
+    description: "Design élégant Palace. Pour hôtels 5 étoiles, riads de luxe et résidences haut de gamme.",
+    features: ["WiFi Instantané (QR)", "Réserver une chambre", "Menu Restaurant & Spa", "Conciergerie WhatsApp"],
+    keyFeature: { icon: Wifi, label: "Accès WiFi Instantané", color: "bg-rose-500/20 text-rose-400" },
+    hasWhatsApp: true,
+    isHotel: true,
+    hotelActions: [
+      { icon: Wifi, label: "Accès WiFi", action: "wifi" },
+      { icon: CalendarCheck, label: "Réserver", action: "booking" },
+      { icon: UtensilsCrossed, label: "Restaurant & Spa", action: "menu" },
+      { icon: MapPin, label: "Localisation", action: "maps" },
+      { icon: MessageCircle, label: "Conciergerie", action: "whatsapp" },
+    ]
+  },
+  { 
+    id: "riad",
+    name: "Riad Marocain", 
+    sector: "hotellerie",
+    cardImage: cardGoldAccent, 
+    phoneImage: phoneGold,
+    description: "Inspiration orientale. Parfait pour riads, maisons d'hôtes et boutique-hôtels.",
+    features: ["WiFi Instantané (QR)", "Booking intégré", "Galerie photos", "WhatsApp direct"],
+    keyFeature: { icon: Sparkles, label: "Expérience Riad", color: "bg-amber-500/20 text-amber-400" },
+    hasWhatsApp: true,
+    isHotel: true,
+    hotelActions: [
+      { icon: Wifi, label: "Accès WiFi", action: "wifi" },
+      { icon: CalendarCheck, label: "Réserver", action: "booking" },
+      { icon: Image, label: "Galerie", action: "gallery" },
+      { icon: MapPin, label: "Localisation", action: "maps" },
+      { icon: MessageCircle, label: "Contact", action: "whatsapp" },
+    ]
+  },
 ];
 
 const Templates = () => {
@@ -120,6 +163,25 @@ const Templates = () => {
   const { setSelectedTemplate: setCartTemplate } = useCart();
   const [activeSector, setActiveSector] = useState("all");
   const [selectedTemplate, setSelectedTemplate] = useState<typeof templates[0] | null>(null);
+  const [showWifiModal, setShowWifiModal] = useState(false);
+  const [wifiCopied, setWifiCopied] = useState<"ssid" | "password" | null>(null);
+
+  // Demo WiFi credentials for hotel templates
+  const demoWifi = {
+    ssid: "Palace_Guest_5G",
+    password: "Welcome2024!"
+  };
+
+  const copyToClipboard = async (text: string, type: "ssid" | "password") => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setWifiCopied(type);
+      toast.success(type === "ssid" ? "SSID copié" : "Mot de passe copié");
+      setTimeout(() => setWifiCopied(null), 2000);
+    } catch {
+      toast.error("Impossible de copier");
+    }
+  };
 
   // Handle template selection and navigation
   const handleSelectTemplate = (template: typeof templates[0]) => {
@@ -341,6 +403,25 @@ const Templates = () => {
                     ))}
                   </div>
 
+                  {/* Hotel-specific actions preview */}
+                  {'isHotel' in selectedTemplate && selectedTemplate.isHotel && (
+                    <div className="mb-8 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20">
+                      <p className="text-sm font-medium text-rose-400 mb-3">Actions hôtelières incluses :</p>
+                      <div className="flex flex-wrap gap-2">
+                        {'hotelActions' in selectedTemplate && selectedTemplate.hotelActions?.map((action: { icon: LucideIcon; label: string; action: string }) => (
+                          <button
+                            key={action.action}
+                            onClick={() => action.action === "wifi" && setShowWifiModal(true)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/50 text-foreground/80 text-xs font-medium hover:bg-background transition-colors"
+                          >
+                            <action.icon size={14} />
+                            {action.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* CTA */}
                   <Button
                     size="lg"
@@ -356,6 +437,76 @@ const Templates = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* WiFi Modal for Hotel Templates */}
+      <Dialog open={showWifiModal} onOpenChange={setShowWifiModal}>
+        <DialogContent className="max-w-sm rounded-3xl border-rose-500/20 bg-gradient-to-b from-surface-1 to-background">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-display text-xl">
+              <Wifi className="text-rose-400" />
+              Accès WiFi Instantané
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            {/* QR Code */}
+            <div className="flex justify-center">
+              <WiFiQRDisplay
+                ssid={demoWifi.ssid}
+                password={demoWifi.password}
+                size={160}
+              />
+            </div>
+
+            {/* WiFi Credentials */}
+            <div className="space-y-3">
+              {/* SSID */}
+              <div className="flex items-center justify-between p-3 rounded-xl bg-surface-2 border border-border/30">
+                <div>
+                  <p className="text-xs text-muted-foreground">Nom du réseau (SSID)</p>
+                  <p className="font-medium text-foreground">{demoWifi.ssid}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => copyToClipboard(demoWifi.ssid, "ssid")}
+                  className="h-8 w-8 p-0"
+                >
+                  {wifiCopied === "ssid" ? (
+                    <Check size={16} className="text-green-500" />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                  )}
+                </Button>
+              </div>
+
+              {/* Password */}
+              <div className="flex items-center justify-between p-3 rounded-xl bg-surface-2 border border-border/30">
+                <div>
+                  <p className="text-xs text-muted-foreground">Mot de passe</p>
+                  <p className="font-medium text-foreground font-mono">{demoWifi.password}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => copyToClipboard(demoWifi.password, "password")}
+                  className="h-8 w-8 p-0"
+                >
+                  {wifiCopied === "password" ? (
+                    <Check size={16} className="text-green-500" />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <p className="text-xs text-center text-muted-foreground">
+              Scannez le QR code ou copiez les identifiants pour vous connecter
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
