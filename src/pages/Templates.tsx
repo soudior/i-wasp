@@ -34,6 +34,7 @@ const sectors = [
   { id: "business", name: "Business & Corporate", icon: Building2, color: "text-amber-400" },
   { id: "immobilier", name: "Immobilier & Luxe", icon: Home, color: "text-emerald-400" },
   { id: "hotellerie", name: "Hôtellerie de Luxe", icon: Hotel, color: "text-rose-400" },
+  { id: "rental", name: "Gestion Locative", icon: Home, color: "text-[#d4af37]" },
   { id: "sante", name: "Santé & Médical", icon: Stethoscope, color: "text-blue-400" },
   { id: "creatifs", name: "Créatifs & Freelance", icon: Palette, color: "text-purple-400" },
 ];
@@ -155,6 +156,20 @@ const templates = [
       { icon: MapPin, label: "Localisation", action: "maps" },
       { icon: MessageCircle, label: "Contact", action: "whatsapp" },
     ]
+  },
+  // GESTION LOCATIVE
+  { 
+    id: "rental-concierge",
+    name: "Conciergerie Luxe", 
+    sector: "rental",
+    cardImage: cardGoldAccent, 
+    phoneImage: phoneGold,
+    description: "Réception numérique pour Airbnb, Booking et locations saisonnières. WiFi sécurisé après connexion Google.",
+    features: ["WiFi Instantané (QR sécurisé)", "Galerie Photos interactive", "Liens Airbnb/Booking", "Géolocalisation Maps", "WhatsApp direct"],
+    keyFeature: { icon: Wifi, label: "WiFi Sécurisé (Google Auth)", color: "bg-[#d4af37]/20 text-[#d4af37]" },
+    hasWhatsApp: true,
+    isRental: true,
+    demoUrl: "/rental-demo",
   },
 ];
 
@@ -419,6 +434,38 @@ const Templates = () => {
                           </button>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Rental-specific demo link */}
+                  {'isRental' in selectedTemplate && selectedTemplate.isRental && (
+                    <div className="mb-8 p-4 rounded-2xl bg-[#d4af37]/10 border border-[#d4af37]/20">
+                      <p className="text-sm font-medium text-[#d4af37] mb-3">Fonctionnalités Gestion Locative :</p>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/50 text-foreground/80 text-xs font-medium">
+                          <Wifi size={14} />
+                          WiFi sécurisé
+                        </span>
+                        <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/50 text-foreground/80 text-xs font-medium">
+                          <Image size={14} />
+                          Galerie interactive
+                        </span>
+                        <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/50 text-foreground/80 text-xs font-medium">
+                          <MapPin size={14} />
+                          Géolocalisation
+                        </span>
+                      </div>
+                      {'demoUrl' in selectedTemplate && selectedTemplate.demoUrl && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full border-[#d4af37]/30 text-[#d4af37] hover:bg-[#d4af37]/10"
+                          onClick={() => navigate(selectedTemplate.demoUrl as string)}
+                        >
+                          Voir la démo
+                          <ArrowRight size={14} className="ml-2" />
+                        </Button>
+                      )}
                     </div>
                   )}
 

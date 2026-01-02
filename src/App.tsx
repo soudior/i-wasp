@@ -41,6 +41,7 @@ import Nails from "./pages/Nails";
 import Partenaires from "./pages/Partenaires";
 import DevenirPartenaire from "./pages/DevenirPartenaire";
 import CertificatPartenaire from "./pages/CertificatPartenaire";
+import RentalDemo from "./pages/RentalDemo";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
@@ -150,6 +151,7 @@ const App = () => {
                       <Route path="/certificat-partenaire" element={<CertificatPartenaire />} />
                       <Route path="/privacy" element={<PrivacyPolicy />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                      <Route path="/rental-demo" element={<RentalDemo />} />
                       {/* Finalize card after auth */}
                       <Route path="/onboarding/finalize" element={<FinalizeCard />} />
                       

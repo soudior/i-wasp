@@ -14,6 +14,49 @@ export type Database = {
   }
   public: {
     Tables: {
+      card_properties: {
+        Row: {
+          card_id: string
+          created_at: string
+          id: string
+          property_id: string
+        }
+        Insert: {
+          card_id: string
+          created_at?: string
+          id?: string
+          property_id: string
+        }
+        Update: {
+          card_id?: string
+          created_at?: string
+          id?: string
+          property_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_properties_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "digital_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "card_properties_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "public_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "card_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "rental_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       card_scans: {
         Row: {
           card_id: string
@@ -500,6 +543,75 @@ export type Database = {
           last_name?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      rental_properties: {
+        Row: {
+          address: string | null
+          airbnb_url: string | null
+          amenities: string[] | null
+          booking_url: string | null
+          city: string | null
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          is_active: boolean
+          latitude: number | null
+          longitude: number | null
+          name: string
+          photos: string[] | null
+          price_per_night: number
+          updated_at: string
+          user_id: string
+          whatsapp_number: string | null
+          wifi_password: string | null
+          wifi_ssid: string | null
+        }
+        Insert: {
+          address?: string | null
+          airbnb_url?: string | null
+          amenities?: string[] | null
+          booking_url?: string | null
+          city?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          photos?: string[] | null
+          price_per_night?: number
+          updated_at?: string
+          user_id: string
+          whatsapp_number?: string | null
+          wifi_password?: string | null
+          wifi_ssid?: string | null
+        }
+        Update: {
+          address?: string | null
+          airbnb_url?: string | null
+          amenities?: string[] | null
+          booking_url?: string | null
+          city?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          photos?: string[] | null
+          price_per_night?: number
+          updated_at?: string
+          user_id?: string
+          whatsapp_number?: string | null
+          wifi_password?: string | null
+          wifi_ssid?: string | null
         }
         Relationships: []
       }
