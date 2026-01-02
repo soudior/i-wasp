@@ -3,7 +3,7 @@
  */
 
 import { Infinity, TreePine, RefreshCw } from "lucide-react";
-import nfcCardImage from "@/assets/cards/card-black-matte.png";
+import nfcCardImage from "@/assets/cards/card-black-matte.webp";
 
 const benefits = [
   {

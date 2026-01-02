@@ -3,16 +3,16 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-// Card mockup imports
-import cardBlackMatte from "@/assets/cards/card-black-matte.png";
+// Card mockup imports (WebP optimized where available)
+import cardBlackMatte from "@/assets/cards/card-black-matte.webp";
 import cardWhiteMinimal from "@/assets/cards/card-white-minimal.png";
 import cardNavyExecutive from "@/assets/cards/card-navy-executive.png";
 import cardGoldAccent from "@/assets/cards/card-gold-accent.png";
 import cardHotel from "@/assets/cards/card-hotel.png";
 import cardTourism from "@/assets/cards/card-tourism.png";
 
-// Phone preview imports
-import phoneBlack from "@/assets/phones/phone-black.png";
+// Phone preview imports (WebP optimized where available)
+import phoneBlack from "@/assets/phones/phone-black.webp";
 import phoneWhite from "@/assets/phones/phone-white.png";
 import phoneNavy from "@/assets/phones/phone-navy.png";
 import phoneGold from "@/assets/phones/phone-gold.png";
