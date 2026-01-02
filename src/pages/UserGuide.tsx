@@ -114,9 +114,20 @@ export default function UserGuide() {
           </div>
           
           {/* Caption under video */}
-          <p className="text-center text-white/50 text-sm mt-4">
+          <p className="text-center text-white/50 text-sm mt-4 mb-6">
             Un simple tap pour partager votre profil
           </p>
+          
+          {/* CTA Button */}
+          <Link to="/order/type" className="block">
+            <Button 
+              size="lg" 
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold shadow-lg shadow-primary/30"
+            >
+              Commander ma carte
+              <ArrowRight size={18} className="ml-2" />
+            </Button>
+          </Link>
         </motion.div>
       </section>
 
