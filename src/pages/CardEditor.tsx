@@ -63,6 +63,8 @@ import {
   getVisibleBlocks,
 } from "@/lib/cardBlocks";
 import { SocialLinksManager } from "@/components/SocialLinksManager";
+import { StoryEditor } from "@/components/StoryEditor";
+import { useStories } from "@/hooks/useStories";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { DynamicCardRenderer } from "@/components/DynamicCardRenderer";
 import {
@@ -737,6 +739,9 @@ export default function CardEditor() {
   const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [isReorderMode, setIsReorderMode] = useState(false);
 
+  // Story management
+  const { story, updateStory } = useStories(editId || undefined);
+
   // Handle AI generated template - Maps all AI fields to editor blocks
   const handleAITemplateGenerated = useCallback((result: { type: string; template: Record<string, any> }) => {
     const templateData = result.template;
@@ -1320,6 +1325,17 @@ export default function CardEditor() {
                   <span className="font-medium text-purple-400">Générer avec l'IA</span>
                   <Sparkles className="w-4 h-4 ml-2 text-purple-400" />
                 </Button>
+
+                {/* Story Editor - Only show when editing an existing card */}
+                {editId && (
+                  <Card variant="premium" className="p-4 mb-4 border-rose-500/20 bg-gradient-to-br from-rose-500/5 to-purple-500/5">
+                    <StoryEditor
+                      cardId={editId}
+                      currentStory={story}
+                      onStoryChange={updateStory}
+                    />
+                  </Card>
+                )}
 
                 <Reorder.Group axis="y" values={blocks} onReorder={handleReorder} className="space-y-3">
                   <AnimatePresence initial={false}>

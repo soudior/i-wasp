@@ -56,6 +56,60 @@ export type Database = {
           },
         ]
       }
+      card_stories: {
+        Row: {
+          card_id: string
+          content_type: string
+          created_at: string
+          expires_at: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          text_background_color: string | null
+          text_content: string | null
+          view_count: number
+        }
+        Insert: {
+          card_id: string
+          content_type?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          text_background_color?: string | null
+          text_content?: string | null
+          view_count?: number
+        }
+        Update: {
+          card_id?: string
+          content_type?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          text_background_color?: string | null
+          text_content?: string | null
+          view_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_stories_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "digital_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "card_stories_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "public_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_requests: {
         Row: {
           admin_notes: string | null
@@ -614,6 +668,7 @@ export type Database = {
         Returns: boolean
       }
       increment_card_view: { Args: { p_slug: string }; Returns: undefined }
+      increment_story_view: { Args: { p_story_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
