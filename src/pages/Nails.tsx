@@ -1,12 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { 
   ArrowRight, 
   Sparkles, 
   Droplets, 
-  Clock, 
   Hand, 
-  Smartphone, 
   ChevronDown,
   Check,
   Star,
@@ -23,66 +21,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { MobileOptimizedVideo } from "@/components/MobileOptimizedVideo";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 import nailsHero from "@/assets/nails/nails-hero.png";
 import nailsCafe from "@/assets/nails/nails-cafe.png";
 import nailsDemoVideo from "@/assets/nails/nails-demo-video.mp4";
-
-// Optimized Video Component with Hardware Acceleration for iOS
-function OptimizedVideo({ src }: { src: string }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(false);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          // iOS-optimized autoplay with fallback
-          video.play().catch(() => {
-            video.muted = true;
-            video.play().catch(() => {});
-          });
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "100px", threshold: 0.1 }
-    );
-
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <video
-      ref={videoRef}
-      src={isInView ? src : undefined}
-      autoPlay={isInView}
-      loop
-      muted
-      playsInline
-      preload="metadata"
-      onLoadedData={() => setIsLoaded(true)}
-      className={`w-full aspect-video object-cover transition-opacity duration-300 ${
-        isLoaded ? "opacity-100" : "opacity-0"
-      }`}
-      style={{ 
-        // Hardware acceleration for smooth iOS playback
-        WebkitTransform: "translate3d(0,0,0)",
-        transform: "translate3d(0,0,0)",
-        WebkitBackfaceVisibility: "hidden",
-        backfaceVisibility: "hidden",
-        WebkitPerspective: 1000,
-        perspective: 1000,
-        willChange: "transform"
-      }}
-    />
-  );
-}
 
 const Nails = () => {
   const navigate = useNavigate();
@@ -297,7 +240,12 @@ const Nails = () => {
 
           <div className="max-w-3xl mx-auto">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-purple-500/20 border border-purple-500/20">
-              <OptimizedVideo src={nailsDemoVideo} />
+              <MobileOptimizedVideo 
+                src={nailsDemoVideo} 
+                aspectRatio="16/9"
+                autoPlayOnDesktop={true}
+                rounded="rounded-3xl"
+              />
               <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/40 via-transparent to-transparent" />
             </div>
           </div>

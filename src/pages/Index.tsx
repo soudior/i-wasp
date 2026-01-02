@@ -1,15 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, CreditCard, Sparkles } from "lucide-react";
+import { CreditCard, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MobileOptimizedVideo } from "@/components/MobileOptimizedVideo";
 import nfcDemoVideo from "@/assets/nfc-demo-video.mp4";
 import nailsDemoVideo from "@/assets/nails/nails-demo-video.mp4";
 
 /**
  * Index - Page d'accueil Dual-Power i-wasp
  * 
- * Design luxueux noir & or. Animations désactivées pour focus sur vidéos.
- * Vidéos optimisées avec lazy loading et preload.
+ * Design luxueux noir & or. Vidéos optimisées pour mobile iOS/Android.
  */
 
 type ProductMode = "carte" | "ongle";
@@ -30,61 +30,6 @@ const productContent = {
     route: "/nails",
   },
 };
-
-// Native Video Component - Maximum iOS Performance
-function OptimizedVideo({ 
-  src, 
-  isActive 
-}: { 
-  src: string; 
-  isActive: boolean; 
-}) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (isActive) {
-      video.play().catch(() => {
-        video.muted = true;
-        video.play().catch(() => {});
-      });
-    } else {
-      video.pause();
-    }
-  }, [isActive]);
-
-  return (
-    <video
-      ref={videoRef}
-      src={src}
-      autoPlay={isActive}
-      loop
-      muted
-      playsInline
-      preload="auto"
-      onLoadedData={() => setIsLoaded(true)}
-      className={`w-full aspect-[9/16] object-cover rounded-[1.75rem] ${
-        isLoaded ? "opacity-100" : "opacity-0"
-      }`}
-      style={{ 
-        // Force native iOS video player with maximum hardware acceleration
-        WebkitTransform: "translate3d(0,0,0)",
-        transform: "translate3d(0,0,0)",
-        WebkitBackfaceVisibility: "hidden",
-        backfaceVisibility: "hidden",
-        WebkitPerspective: 1000,
-        perspective: 1000,
-        willChange: "transform",
-        // iOS Safari optimizations
-        WebkitOverflowScrolling: "touch",
-        WebkitTapHighlightColor: "transparent",
-      } as React.CSSProperties}
-    />
-  );
-}
 
 const Index = () => {
   const navigate = useNavigate();
@@ -156,11 +101,21 @@ const Index = () => {
             <div className="relative bg-gradient-to-b from-zinc-800 to-zinc-900 p-1.5 rounded-[2rem] shadow-2xl overflow-hidden">
               {/* Video Carte */}
               <div className={mode === "carte" ? "block" : "hidden"}>
-                <OptimizedVideo src={nfcDemoVideo} isActive={mode === "carte"} />
+                <MobileOptimizedVideo 
+                  src={nfcDemoVideo} 
+                  aspectRatio="9/16"
+                  autoPlayOnDesktop={mode === "carte"}
+                  rounded="rounded-[1.75rem]"
+                />
               </div>
               {/* Video Ongle */}
               <div className={mode === "ongle" ? "block" : "hidden"}>
-                <OptimizedVideo src={nailsDemoVideo} isActive={mode === "ongle"} />
+                <MobileOptimizedVideo 
+                  src={nailsDemoVideo} 
+                  aspectRatio="9/16"
+                  autoPlayOnDesktop={mode === "ongle"}
+                  rounded="rounded-[1.75rem]"
+                />
               </div>
             </div>
           </div>
