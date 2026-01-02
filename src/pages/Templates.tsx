@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, ArrowRight, MessageCircle, Building2, Home, Stethoscope, Palette, MapPin, Contact, CalendarCheck, Instagram, Linkedin, Image, Hotel, Wifi, UtensilsCrossed, Sparkles } from "lucide-react";
+import { X, Check, ArrowRight, MessageCircle, Building2, Home, Stethoscope, Palette, MapPin, Contact, CalendarCheck, Instagram, Linkedin, Image, Hotel, Wifi, UtensilsCrossed, Sparkles, Crown, Diamond } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { WiFiQRDisplay } from "@/components/WiFiQRGenerator";
@@ -19,6 +19,7 @@ import cardGoldAccent from "@/assets/cards/card-gold-accent.png";
 import cardHotel from "@/assets/cards/card-hotel.png";
 import cardTourism from "@/assets/cards/card-tourism.png";
 import cardLuxuryEco from "@/assets/cards/card-luxury-eco.png";
+import cardUltraLuxe from "@/assets/cards/card-ultra-luxe.png";
 
 // Phone preview imports
 import phoneBlack from "@/assets/phones/phone-black.png";
@@ -28,9 +29,11 @@ import phoneGold from "@/assets/phones/phone-gold.png";
 import phoneHotel from "@/assets/phones/phone-hotel.png";
 import phoneTourism from "@/assets/phones/phone-tourism.png";
 import phoneLuxury from "@/assets/phones/phone-luxury.png";
+import phoneUltraLuxe from "@/assets/phones/phone-ultra-luxe.png";
 
 const sectors = [
   { id: "all", name: "Tous", icon: null },
+  { id: "vip", name: "VIP Ultra-Luxe", icon: Crown, color: "text-amber-400" },
   { id: "business", name: "Business & Corporate", icon: Building2, color: "text-amber-400" },
   { id: "immobilier", name: "Immobilier & Luxe", icon: Home, color: "text-emerald-400" },
   { id: "hotellerie", name: "Hôtellerie de Luxe", icon: Hotel, color: "text-rose-400" },
@@ -41,6 +44,20 @@ const sectors = [
 
 
 const templates = [
+  // VIP ULTRA-LUXE (Featured first)
+  { 
+    id: "ultra-luxe",
+    name: "Morocco VIP", 
+    sector: "vip",
+    cardImage: cardUltraLuxe, 
+    phoneImage: phoneUltraLuxe,
+    description: "Noir mat & or 24 carats. Présentation vidéo 4K. L'excellence pour les clients VIP au Maroc.",
+    features: ["Vidéo 4K de présentation", "Design noir mat premium", "Accents or 24K", "Bouton WhatsApp VIP", "Badge Crown exclusif"],
+    keyFeature: { icon: Crown, label: "VIP Ultra-Luxe", color: "bg-amber-500/20 text-amber-400" },
+    hasWhatsApp: true,
+    isVIP: true,
+    demoUrl: "/demo/ultra-luxe",
+  },
   { 
     id: "signature",
     name: "Executive Pro", 
