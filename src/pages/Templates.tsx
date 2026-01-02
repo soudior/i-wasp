@@ -4,7 +4,8 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, ArrowRight, MessageCircle, Building2, Home, Stethoscope, Palette } from "lucide-react";
+import { X, Check, ArrowRight, MessageCircle, Building2, Home, Stethoscope, Palette, MapPin, Contact, CalendarCheck, Instagram, Linkedin, Image } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
 // Card mockup imports
@@ -33,6 +34,7 @@ const sectors = [
   { id: "creatifs", name: "Créatifs & Freelance", icon: Palette, color: "text-purple-400" },
 ];
 
+
 const templates = [
   { 
     id: "signature",
@@ -41,7 +43,8 @@ const templates = [
     cardImage: cardBlackMatte, 
     phoneImage: phoneBlack,
     description: "Design minimaliste noir & or. Parfait pour les dirigeants et entrepreneurs.",
-    features: ["Finition matte premium", "Design corporate", "Logo embossé", "NFC haute performance"],
+    features: ["Lien LinkedIn", "V-Card (Enregistrer contact)", "Design corporate", "NFC haute performance"],
+    keyFeature: { icon: Linkedin, label: "LinkedIn + V-Card", color: "bg-blue-500/20 text-blue-400" },
     hasWhatsApp: true
   },
   { 
@@ -51,7 +54,8 @@ const templates = [
     cardImage: cardNavyExecutive, 
     phoneImage: phoneNavy,
     description: "Bleu nuit profond avec accents dorés. Pour les cabinets et consultants.",
-    features: ["Bleu nuit profond", "Accents dorés", "Finition luxe", "Design executive"],
+    features: ["Lien LinkedIn", "V-Card (Enregistrer contact)", "Finition luxe", "Design executive"],
+    keyFeature: { icon: Contact, label: "V-Card intégrée", color: "bg-amber-500/20 text-amber-400" },
     hasWhatsApp: true
   },
   { 
@@ -61,7 +65,8 @@ const templates = [
     cardImage: cardGoldAccent, 
     phoneImage: phoneGold,
     description: "Or champagne premium. Idéal pour agents immobiliers et promoteurs de luxe.",
-    features: ["Finition or champagne", "Grandes photos", "WhatsApp direct", "Galerie intégrée"],
+    features: ["Localisation Agence", "Galerie Photos", "WhatsApp direct", "Visite virtuelle"],
+    keyFeature: { icon: MapPin, label: "Localisation + Galerie", color: "bg-emerald-500/20 text-emerald-400" },
     hasWhatsApp: true
   },
   { 
@@ -71,7 +76,8 @@ const templates = [
     cardImage: cardHotel, 
     phoneImage: phoneHotel,
     description: "Marbre et or. Pour l'immobilier haut de gamme et résidences de prestige.",
-    features: ["Design marbre", "Bordure dorée", "Visite virtuelle", "Contact rapide"],
+    features: ["Localisation Agence", "Galerie Photos", "Visite virtuelle 360°", "Contact rapide"],
+    keyFeature: { icon: Image, label: "Galerie immersive", color: "bg-emerald-500/20 text-emerald-400" },
     hasWhatsApp: true
   },
   { 
@@ -81,7 +87,8 @@ const templates = [
     cardImage: cardWhiteMinimal, 
     phoneImage: phoneWhite,
     description: "Design sobre et professionnel. Pour médecins, dentistes et praticiens.",
-    features: ["Design épuré", "Bouton RDV", "Horaires intégrés", "Localisation cabinet"],
+    features: ["Bouton Prendre RDV", "Horaires intégrés", "Localisation cabinet", "Design épuré"],
+    keyFeature: { icon: CalendarCheck, label: "Prendre RDV (Doctolib)", color: "bg-blue-500/20 text-blue-400" },
     hasWhatsApp: false
   },
   { 
@@ -91,7 +98,8 @@ const templates = [
     cardImage: cardTourism, 
     phoneImage: phoneTourism,
     description: "Tons apaisants. Parfait pour thérapeutes, coachs bien-être et kinés.",
-    features: ["Couleurs apaisantes", "Booking intégré", "Services détaillés", "Avis clients"],
+    features: ["Bouton Prendre RDV", "Booking intégré", "Services détaillés", "Avis clients"],
+    keyFeature: { icon: CalendarCheck, label: "Calendly intégré", color: "bg-teal-500/20 text-teal-400" },
     hasWhatsApp: true
   },
   { 
@@ -101,7 +109,8 @@ const templates = [
     cardImage: cardLuxuryEco, 
     phoneImage: phoneLuxury,
     description: "Design audacieux émeraude. Pour artistes, designers et photographes.",
-    features: ["Style portfolio", "Galerie visuelle", "Réseaux sociaux", "Showreel vidéo"],
+    features: ["Portfolio Instagram", "Galerie visuelle", "Réseaux sociaux", "Showreel vidéo"],
+    keyFeature: { icon: Instagram, label: "Portfolio Instagram", color: "bg-purple-500/20 text-purple-400" },
     hasWhatsApp: true
   },
 ];
@@ -240,6 +249,14 @@ const Templates = () => {
                       <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
                         {template.description}
                       </p>
+                      
+                      {/* Key feature badge */}
+                      {template.keyFeature && (
+                        <div className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full text-xs font-medium ${template.keyFeature.color}`}>
+                          <template.keyFeature.icon size={14} />
+                          {template.keyFeature.label}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>
