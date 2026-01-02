@@ -10,6 +10,27 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Authentication helper
+async function verifyAuth(req: Request): Promise<{ user: any; error?: string }> {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader) {
+    return { user: null, error: 'Authorization header required' };
+  }
+
+  const supabaseClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    { global: { headers: { Authorization: authHeader } } }
+  );
+
+  const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+  if (authError || !user) {
+    return { user: null, error: 'Unauthorized - valid authentication required' };
+  }
+
+  return { user };
+}
+
 type EmailType = 
   | "order_confirmation" 
   | "welcome"
@@ -614,11 +635,22 @@ serve(async (req) => {
   }
 
   try {
+    // Verify authentication
+    const { user, error: authError } = await verifyAuth(req);
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: authError || 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log('Authenticated user:', user.id);
+
     const { orderId, emailType, trackingNumber, language = "fr" }: OrderEmailRequest = await req.json();
 
     console.log(`Processing ${emailType} email for order ${orderId} in ${language}`);
 
-    // Initialize Supabase client
+    // Initialize Supabase client with service role for database access
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
