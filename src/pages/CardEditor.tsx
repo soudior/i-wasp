@@ -65,6 +65,7 @@ import {
 import { SocialLinksManager } from "@/components/SocialLinksManager";
 import { StoryEditor } from "@/components/StoryEditor";
 import { useStories } from "@/hooks/useStories";
+import { FeatureGate } from "@/components/SubscriptionCard";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { DynamicCardRenderer } from "@/components/DynamicCardRenderer";
 import {
@@ -1326,15 +1327,17 @@ export default function CardEditor() {
                   <Sparkles className="w-4 h-4 ml-2 text-purple-400" />
                 </Button>
 
-                {/* Story Editor - Only show when editing an existing card */}
+                {/* Story Editor - Only show when editing an existing card - Premium Feature */}
                 {editId && (
-                  <Card variant="premium" className="p-4 mb-4 border-rose-500/20 bg-gradient-to-br from-rose-500/5 to-purple-500/5">
-                    <StoryEditor
-                      cardId={editId}
-                      currentStory={story}
-                      onStoryChange={updateStory}
-                    />
-                  </Card>
+                  <FeatureGate feature="stories">
+                    <Card variant="premium" className="p-4 mb-4 border-rose-500/20 bg-gradient-to-br from-rose-500/5 to-purple-500/5">
+                      <StoryEditor
+                        cardId={editId}
+                        currentStory={story}
+                        onStoryChange={updateStory}
+                      />
+                    </Card>
+                  </FeatureGate>
                 )}
 
                 <Reorder.Group axis="y" values={blocks} onReorder={handleReorder} className="space-y-3">

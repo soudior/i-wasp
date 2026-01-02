@@ -458,6 +458,54 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          cancelled_at: string | null
+          created_at: string
+          currency: string
+          expires_at: string | null
+          id: string
+          notes: string | null
+          payment_method: string | null
+          plan: string
+          price_cents: number
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancelled_at?: string | null
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          plan?: string
+          price_cents?: number
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancelled_at?: string | null
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          plan?: string
+          price_cents?: number
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -669,6 +717,7 @@ export type Database = {
       }
       increment_card_view: { Args: { p_slug: string }; Returns: undefined }
       increment_story_view: { Args: { p_story_id: string }; Returns: undefined }
+      is_premium: { Args: { p_user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
