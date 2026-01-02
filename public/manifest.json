@@ -1,15 +1,18 @@
 {
-  "name": "IWASP",
-  "short_name": "IWASP",
-  "description": "Cartes de visite NFC premium",
+  "name": "i-wasp - NFC Premium",
+  "short_name": "i-wasp",
+  "description": "Le futur du networking digital. Cartes de visite NFC premium et ongles connectés au Maroc.",
   "theme_color": "#000000",
   "background_color": "#000000",
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
-  "id": "/",
-  "categories": ["business", "productivity"],
+  "id": "com.iwasp.app",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "social", "lifestyle"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/favicon.ico",
@@ -34,5 +37,41 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Mon Dashboard",
+      "short_name": "Dashboard",
+      "description": "Accéder à mon tableau de bord",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Commander",
+      "short_name": "Commander",
+      "description": "Commander une carte NFC",
+      "url": "/order/type",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "i-wasp Nails",
+      "short_name": "Nails",
+      "description": "Découvrir les ongles connectés",
+      "url": "/nails",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "share_target": {
+    "action": "/share-target",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }

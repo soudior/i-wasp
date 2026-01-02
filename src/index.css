@@ -797,4 +797,95 @@
   .press-feedback {
     @apply active:scale-[0.98] transition-transform duration-100;
   }
+  
+  /* ══════════════════════════════════════════════════════════════════
+     NATIVE APP FEEL - STYLES POUR EXPORTATION APP STORE
+     ══════════════════════════════════════════════════════════════════ */
+  
+  /* Disable text selection on interactive elements */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Apply to buttons and interactive elements */
+  button, [role="button"], .btn, .tap-feedback {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Prevent pull-to-refresh on app pages */
+  .native-scroll {
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Safe area padding for notched devices */
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-x {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  
+  /* Standalone mode (when installed as PWA) */
+  @media (display-mode: standalone) {
+    body {
+      /* Extra padding for status bar */
+      padding-top: env(safe-area-inset-top);
+    }
+    
+    /* Hide browser-specific elements */
+    .browser-only {
+      display: none !important;
+    }
+  }
+  
+  /* iOS rubber band effect prevention */
+  .no-bounce {
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Smooth page transitions */
+  .page-transition {
+    animation: pageEnter 0.3s ease-out;
+  }
+  
+  @keyframes pageEnter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Native-like header blur */
+  .native-header {
+    @apply backdrop-blur-xl;
+    background: rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+  }
+  
+  /* Radial gradient for splash screen */
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
 }
