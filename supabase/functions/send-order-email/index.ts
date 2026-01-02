@@ -12,6 +12,7 @@ const corsHeaders = {
 
 type EmailType = 
   | "order_confirmation" 
+  | "welcome"
   | "payment_confirmed" 
   | "in_production" 
   | "shipped" 
@@ -60,6 +61,8 @@ const getEmailSubject = (emailType: EmailType, orderNumber: string): string => {
   switch (emailType) {
     case "order_confirmation":
       return `✅ Confirmation de commande #${orderNumber} - IWASP`;
+    case "welcome":
+      return `🐝 Bienvenue dans l'ère du networking digital avec IWASP ! 🚀`;
     case "payment_confirmed":
       return `💳 Paiement confirmé - Commande #${orderNumber} - IWASP`;
     case "in_production":
@@ -185,6 +188,87 @@ const generateEmailHtml = (emailType: EmailType, order: OrderData): string => {
               ${shippingDetails}
               <p class="message">
                 Nous vous tiendrons informé(e) de l'avancement de votre commande par email.
+              </p>
+            </div>
+            ${footer}
+          </div>
+        </body>
+        </html>
+      `;
+
+    case "welcome":
+      return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          ${baseStyles}
+          <style>
+            .welcome-hero { background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%); padding: 50px 30px; text-align: center; }
+            .welcome-hero h1 { color: #d4af37; font-size: 32px; margin: 0 0 10px; }
+            .welcome-hero .bee-icon { font-size: 48px; margin-bottom: 15px; }
+            .welcome-hero p { color: #ffffff; opacity: 0.9; font-size: 16px; }
+            .step-card { background: white; border-radius: 12px; padding: 25px; margin: 15px 0; border-left: 4px solid #d4af37; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+            .step-number { background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #1a1a2e; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 12px; }
+            .step-title { color: #1a1a2e; font-weight: 600; font-size: 16px; }
+            .step-desc { color: #718096; font-size: 14px; margin-top: 8px; line-height: 1.5; }
+            .cta-button { display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #1a1a2e !important; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; margin: 10px 5px; }
+            .cta-button-secondary { background: transparent; border: 2px solid #d4af37; color: #d4af37 !important; }
+            .whatsapp-box { background: #25D366; color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 25px 0; }
+            .whatsapp-box a { color: white !important; text-decoration: none; font-weight: 600; }
+            .guide-link { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
+            .guide-link a { color: #d4af37 !important; text-decoration: underline; font-weight: 500; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="welcome-hero">
+              <div class="bee-icon">🐝</div>
+              <h1>Bienvenue chez IWASP !</h1>
+              <p>Félicitations ! Vous venez de faire le premier pas pour moderniser vos échanges professionnels.</p>
+            </div>
+            <div class="content">
+              <p class="greeting">Bonjour ${order.shipping_name},</p>
+              <p class="message">
+                Votre carte IWASP est entrée en phase de préparation. Voici ce qu'il va se passer ensuite :
+              </p>
+              
+              <div class="step-card">
+                <span class="step-number">1</span>
+                <span class="step-title">Personnalisation</span>
+                <p class="step-desc">Nous gravons votre logo avec précision sur votre carte NFC premium.</p>
+              </div>
+              
+              <div class="step-card">
+                <span class="step-number">2</span>
+                <span class="step-title">Expédition</span>
+                <p class="step-desc">Vous recevrez un numéro de suivi dès que votre carte quittera nos bureaux.</p>
+              </div>
+              
+              <div class="step-card">
+                <span class="step-number">3</span>
+                <span class="step-title">Activation</span>
+                <p class="step-desc">Dès réception, il vous suffira de "taper" votre carte sur un téléphone pour l'associer à votre profil digital.</p>
+              </div>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="https://i-wasp.com/guide" class="cta-button">📖 Voir le guide d'utilisation</a>
+              </div>
+              
+              <div class="guide-link">
+                <p style="margin: 0 0 10px; color: #4a5568;">💡 <strong>Conseil Pro :</strong></p>
+                <p style="margin: 0; color: #718096; font-size: 14px;">Pour une connexion NFC optimale, placez votre carte IWASP près du <strong>haut de l'iPhone</strong> ou au <strong>centre de l'Android</strong> de votre client.</p>
+              </div>
+              
+              ${orderDetails}
+              
+              <div class="whatsapp-box">
+                <p style="margin: 0 0 10px;">Besoin d'aide ? Contactez-nous sur WhatsApp :</p>
+                <a href="https://wa.me/212600000000?text=Bonjour%20IWASP%2C%20j%27ai%20une%20question%20concernant%20ma%20commande%20%23${order.order_number}">💬 Écrire sur WhatsApp</a>
+              </div>
+              
+              <p class="message" style="text-align: center; font-style: italic;">
+                Bienvenue dans la ruche ! 🐝<br>
+                <strong>L'équipe IWASP</strong>
               </p>
             </div>
             ${footer}
