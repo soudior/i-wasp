@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Download, X, Smartphone, CheckCircle2, ArrowRight } from "lucide-react";
+import { Download, X, Smartphone, CheckCircle2, ArrowRight, Apple, Monitor, Chrome } from "lucide-react";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -9,17 +9,29 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+type DeviceType = 'ios' | 'android' | 'desktop' | 'unknown';
+
 const Install = () => {
   const navigate = useNavigate();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+  const [deviceType, setDeviceType] = useState<DeviceType>('unknown');
+  const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
-    // Detect iOS
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    setIsIOS(isIOSDevice);
+    // Detect device type
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(userAgent) && !(window as any).MSStream;
+    const isAndroid = /android/.test(userAgent);
+    const isMobile = isIOS || isAndroid;
+    
+    if (isIOS) {
+      setDeviceType('ios');
+    } else if (isAndroid) {
+      setDeviceType('android');
+    } else {
+      setDeviceType('desktop');
+    }
 
     // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
@@ -47,16 +59,157 @@ const Install = () => {
         setIsInstalled(true);
       }
       setDeferredPrompt(null);
-    } else if (isIOS) {
-      setShowIOSInstructions(true);
+    } else {
+      setShowInstructions(true);
     }
   };
+
+  const getDeviceIcon = () => {
+    switch (deviceType) {
+      case 'ios': return <Apple className="h-6 w-6" />;
+      case 'android': return <Smartphone className="h-6 w-6" />;
+      default: return <Monitor className="h-6 w-6" />;
+    }
+  };
+
+  const getDeviceName = () => {
+    switch (deviceType) {
+      case 'ios': return 'iPhone / iPad';
+      case 'android': return 'Android';
+      default: return 'Ordinateur';
+    }
+  };
+
+  const renderIOSInstructions = () => (
+    <div className="space-y-6 text-left">
+      <div className="flex items-center gap-3 p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800">
+        <Apple className="h-8 w-8 text-white" />
+        <div>
+          <p className="text-white font-medium">Safari requis</p>
+          <p className="text-zinc-500 text-xs">L'installation ne fonctionne que dans Safari</p>
+        </div>
+      </div>
+      
+      {[
+        { step: 1, title: "Partager", desc: "Appuyez sur l'icône Partager en bas de Safari", icon: "⬆️" },
+        { step: 2, title: "Écran d'accueil", desc: "Faites défiler et choisissez 'Sur l'écran d'accueil'", icon: "➕" },
+        { step: 3, title: "Ajouter", desc: "Confirmez en appuyant sur 'Ajouter'", icon: "✓" },
+      ].map(({ step, title, desc, icon }) => (
+        <div 
+          key={step}
+          className="flex items-start gap-4 p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800/50"
+        >
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-black font-bold text-lg flex-shrink-0">
+            {step}
+          </div>
+          <div className="flex-1">
+            <p className="text-white font-semibold mb-1">{title}</p>
+            <p className="text-zinc-400 text-sm leading-relaxed">{desc}</p>
+          </div>
+          <span className="text-3xl">{icon}</span>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderAndroidInstructions = () => (
+    <div className="space-y-6 text-left">
+      <div className="flex items-center gap-3 p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800">
+        <Chrome className="h-8 w-8 text-white" />
+        <div>
+          <p className="text-white font-medium">Chrome recommandé</p>
+          <p className="text-zinc-500 text-xs">Fonctionne aussi avec Edge et Samsung Internet</p>
+        </div>
+      </div>
+      
+      {deferredPrompt ? (
+        <div className="text-center py-8">
+          <p className="text-zinc-400 mb-6">L'installation automatique est disponible !</p>
+          <Button
+            size="lg"
+            onClick={handleInstall}
+            className="bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold gap-3 px-8"
+          >
+            <Download className="h-5 w-5" />
+            Installer maintenant
+          </Button>
+        </div>
+      ) : (
+        [
+          { step: 1, title: "Menu Chrome", desc: "Appuyez sur les 3 points ⋮ en haut à droite", icon: "⋮" },
+          { step: 2, title: "Installer l'app", desc: "Choisissez 'Installer l'application' ou 'Ajouter à l'écran d'accueil'", icon: "📲" },
+          { step: 3, title: "Confirmer", desc: "Appuyez sur 'Installer' dans la popup", icon: "✓" },
+        ].map(({ step, title, desc, icon }) => (
+          <div 
+            key={step}
+            className="flex items-start gap-4 p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800/50"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-black font-bold text-lg flex-shrink-0">
+              {step}
+            </div>
+            <div className="flex-1">
+              <p className="text-white font-semibold mb-1">{title}</p>
+              <p className="text-zinc-400 text-sm leading-relaxed">{desc}</p>
+            </div>
+            <span className="text-3xl">{icon}</span>
+          </div>
+        ))
+      )}
+    </div>
+  );
+
+  const renderDesktopInstructions = () => (
+    <div className="space-y-6 text-left">
+      <div className="flex items-center gap-3 p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800">
+        <Chrome className="h-8 w-8 text-white" />
+        <div>
+          <p className="text-white font-medium">Chrome, Edge ou Brave</p>
+          <p className="text-zinc-500 text-xs">Safari desktop ne supporte pas les PWA</p>
+        </div>
+      </div>
+      
+      {deferredPrompt ? (
+        <div className="text-center py-8">
+          <p className="text-zinc-400 mb-6">L'installation automatique est disponible !</p>
+          <Button
+            size="lg"
+            onClick={handleInstall}
+            className="bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold gap-3 px-8"
+          >
+            <Download className="h-5 w-5" />
+            Installer maintenant
+          </Button>
+        </div>
+      ) : (
+        [
+          { step: 1, title: "Icône d'installation", desc: "Cliquez sur l'icône dans la barre d'adresse (ou menu ⋮)", icon: "📥" },
+          { step: 2, title: "Installer", desc: "Confirmez l'installation dans la popup", icon: "✓" },
+        ].map(({ step, title, desc, icon }) => (
+          <div 
+            key={step}
+            className="flex items-start gap-4 p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800/50"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-black font-bold text-lg flex-shrink-0">
+              {step}
+            </div>
+            <div className="flex-1">
+              <p className="text-white font-semibold mb-1">{title}</p>
+              <p className="text-zinc-400 text-sm leading-relaxed">{desc}</p>
+            </div>
+            <span className="text-3xl">{icon}</span>
+          </div>
+        ))
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
       {/* Header */}
       <div className="p-4 flex items-center justify-between">
-        <img src={iwaspLogo} alt="i-wasp" className="h-8 w-auto" />
+        <Link to="/">
+          <img src={iwaspLogo} alt="IWASP" className="h-8 w-auto" />
+        </Link>
         <Button 
           variant="ghost" 
           size="icon"
@@ -68,103 +221,101 @@ const Install = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
         {isInstalled ? (
           // Already installed state
-          <div className="space-y-6 animate-fade-up">
-            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mx-auto">
-              <CheckCircle2 className="h-10 w-10 text-white" />
+          <div className="space-y-6 animate-fade-up text-center max-w-sm">
+            <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mx-auto shadow-2xl shadow-emerald-500/30">
+              <CheckCircle2 className="h-12 w-12 text-white" />
             </div>
             <div>
-              <h1 className="font-playfair text-2xl font-bold text-white mb-2">
+              <h1 className="font-playfair text-3xl font-bold text-white mb-3">
                 Application installée !
               </h1>
-              <p className="text-zinc-400 text-sm">
-                i-wasp est maintenant sur votre écran d'accueil.
+              <p className="text-zinc-400">
+                IWASP est maintenant sur votre écran d'accueil. Profitez de l'expérience complète !
               </p>
             </div>
             <Button
+              size="lg"
               onClick={() => navigate("/dashboard")}
-              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-semibold gap-2"
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-semibold gap-2 px-8"
             >
               Accéder au Dashboard
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
-        ) : showIOSInstructions ? (
-          // iOS Instructions
-          <div className="space-y-8 animate-fade-up max-w-sm">
-            <div>
+        ) : showInstructions ? (
+          // Device-specific instructions
+          <div className="w-full max-w-md animate-fade-up">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto mb-4 text-amber-500">
+                {getDeviceIcon()}
+              </div>
               <h1 className="font-playfair text-2xl font-bold text-white mb-2">
-                Installer sur iPhone
+                Installer sur {getDeviceName()}
               </h1>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-zinc-500 text-sm">
                 Suivez ces étapes simples
               </p>
             </div>
 
-            <div className="space-y-4 text-left">
-              {[
-                { step: 1, text: "Appuyez sur le bouton Partager", icon: "↑" },
-                { step: 2, text: "Faites défiler et appuyez sur 'Sur l'écran d'accueil'", icon: "+" },
-                { step: 3, text: "Appuyez sur 'Ajouter' en haut à droite", icon: "✓" },
-              ].map(({ step, text, icon }) => (
-                <div 
-                  key={step}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-zinc-900/50 border border-zinc-800"
-                >
-                  <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-black font-bold">
-                    {step}
-                  </div>
-                  <p className="text-white text-sm flex-1">{text}</p>
-                  <span className="text-2xl">{icon}</span>
-                </div>
-              ))}
-            </div>
+            {deviceType === 'ios' && renderIOSInstructions()}
+            {deviceType === 'android' && renderAndroidInstructions()}
+            {deviceType === 'desktop' && renderDesktopInstructions()}
 
-            <Button
-              variant="outline"
-              onClick={() => setShowIOSInstructions(false)}
-              className="border-zinc-700 text-zinc-300"
-            >
-              Retour
-            </Button>
+            <div className="mt-8 text-center">
+              <Button
+                variant="outline"
+                onClick={() => setShowInstructions(false)}
+                className="border-zinc-700 text-zinc-300 hover:bg-zinc-900"
+              >
+                ← Retour
+              </Button>
+            </div>
           </div>
         ) : (
-          // Install prompt
-          <div className="space-y-8 animate-fade-up">
+          // Main install prompt
+          <div className="space-y-8 animate-fade-up text-center max-w-sm">
             {/* App icon preview */}
             <div className="relative">
-              <div className="w-24 h-24 rounded-[28px] bg-black border-2 border-zinc-800 flex items-center justify-center mx-auto shadow-2xl shadow-amber-500/20">
-                <img src={iwaspLogo} alt="i-wasp" className="h-12 w-auto" />
+              <div className="w-28 h-28 rounded-[32px] bg-gradient-to-br from-zinc-900 to-black border-2 border-zinc-800 flex items-center justify-center mx-auto shadow-2xl">
+                <img src={iwaspLogo} alt="IWASP" className="h-14 w-auto" />
               </div>
               {/* Glow effect */}
-              <div className="absolute inset-0 rounded-[28px] bg-amber-500/20 blur-2xl -z-10" />
+              <div className="absolute inset-0 rounded-[32px] bg-amber-500/20 blur-3xl -z-10 scale-150" />
+            </div>
+
+            {/* Device detection badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 text-sm text-zinc-400">
+              {getDeviceIcon()}
+              <span>Détecté : <span className="text-white font-medium">{getDeviceName()}</span></span>
             </div>
 
             <div>
-              <h1 className="font-playfair text-3xl font-bold text-white mb-3">
-                Installez l'app i-wasp
+              <h1 className="font-playfair text-3xl font-bold text-white mb-4">
+                Installez IWASP
               </h1>
-              <p className="text-zinc-400 text-sm max-w-xs mx-auto">
-                Gérez vos stories, suivez vos statistiques et recevez des notifications en un clic.
+              <p className="text-zinc-400 leading-relaxed">
+                Accédez à votre profil digital en un clic depuis votre écran d'accueil. Gratuit et instantané.
               </p>
             </div>
 
             {/* Benefits */}
-            <div className="grid grid-cols-2 gap-3 max-w-xs mx-auto">
+            <div className="grid grid-cols-2 gap-4">
               {[
-                "Accès rapide",
-                "Mode hors-ligne",
-                "Notifications",
-                "Expérience native"
-              ].map((benefit) => (
+                { icon: "⚡", title: "Accès rapide", desc: "1 tap pour ouvrir" },
+                { icon: "📴", title: "Mode hors-ligne", desc: "Fonctionne partout" },
+                { icon: "🔔", title: "Notifications", desc: "Nouveaux contacts" },
+                { icon: "✨", title: "Expérience native", desc: "Comme une vraie app" }
+              ].map(({ icon, title, desc }) => (
                 <div 
-                  key={benefit}
-                  className="flex items-center gap-2 text-xs text-zinc-400"
+                  key={title}
+                  className="p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800/50 text-left"
                 >
-                  <CheckCircle2 className="h-4 w-4 text-amber-500" />
-                  {benefit}
+                  <span className="text-2xl">{icon}</span>
+                  <p className="text-white font-medium text-sm mt-2">{title}</p>
+                  <p className="text-zinc-500 text-xs">{desc}</p>
                 </div>
               ))}
             </div>
@@ -173,10 +324,10 @@ const Install = () => {
             <Button
               size="lg"
               onClick={handleInstall}
-              className="bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-600 hover:via-yellow-500 hover:to-amber-600 text-black font-semibold gap-3 px-8 py-6 rounded-xl shadow-lg shadow-amber-500/30"
+              className="w-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-600 hover:via-yellow-500 hover:to-amber-600 text-black font-semibold gap-3 py-7 rounded-2xl shadow-lg shadow-amber-500/30 text-base"
             >
               <Download className="h-5 w-5" />
-              {isIOS ? "Voir les instructions" : "Installer l'application"}
+              {deferredPrompt ? "Installer l'application" : "Voir les instructions"}
             </Button>
 
             <p className="text-xs text-zinc-600">
@@ -187,9 +338,9 @@ const Install = () => {
       </div>
 
       {/* Footer */}
-      <div className="p-6 text-center">
+      <div className="p-6 text-center border-t border-zinc-900">
         <p className="text-xs text-zinc-700">
-          Powered by i-wasp • Tap. Connect. Empower.
+          IWASP • Tap. Connect. Empower.
         </p>
       </div>
     </div>

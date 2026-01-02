@@ -10,6 +10,7 @@ const navLinks = [
   { href: "/", label: "Accueil" },
   { href: "/order", label: "Commander" },
   { href: "/demo-dashboard", label: "Démo" },
+  { href: "/install", label: "📲 App" },
   { href: "/templates", label: "Templates" },
   { href: "/contact", label: "Contact" },
 ];
