@@ -29,7 +29,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { supabase } from "@/integrations/supabase/client";
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -169,6 +168,9 @@ function OrderDesignContent() {
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    // Allow re-selecting the same file later
+    e.target.value = "";
+
     if (!file) return;
 
     // Validate file type
@@ -186,49 +188,29 @@ function OrderDesignContent() {
     setIsUploading(true);
 
     try {
-      // Get current user for proper path structure (RLS policy requirement)
-      const { data: { user } } = await supabase.auth.getUser();
-      const userId = user?.id || 'anonymous';
-      
-      const fileExt = file.name.split(".").pop()?.toLowerCase();
-      const fileName = `logo-${Date.now()}.${fileExt}`;
-      // Path structure: {userId}/logo-{timestamp}.{ext} - required for RLS policy
-      const filePath = `${userId}/${fileName}`;
+      // Local-only preview (no server upload): instant feedback + no RLS issues
+      const localUrl = URL.createObjectURL(file);
 
-      console.log("[OrderDesign] Uploading logo to:", filePath);
+      // Revoke previous blob URLs to avoid leaks
+      if (logoUrl?.startsWith("blob:")) URL.revokeObjectURL(logoUrl);
+      if (originalLogoUrl?.startsWith("blob:")) URL.revokeObjectURL(originalLogoUrl);
 
-      const { error: uploadError } = await supabase.storage
-        .from("card-assets")
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: false
-        });
-
-      if (uploadError) {
-        console.error("[OrderDesign] Upload error:", uploadError);
-        throw uploadError;
-      }
-
-      const { data: { publicUrl } } = supabase.storage
-        .from("card-assets")
-        .getPublicUrl(filePath);
-
-      console.log("[OrderDesign] Logo uploaded successfully:", publicUrl);
-
-      setLogoUrl(publicUrl);
-      setOriginalLogoUrl(publicUrl);
+      setLogoUrl(localUrl);
+      setOriginalLogoUrl(localUrl);
       setIsValidated(false);
-      toast.success("Logo téléchargé avec succès !");
+      toast.success("Logo chargé (prévisualisation)");
     } catch (error: any) {
-      console.error("[OrderDesign] Upload error:", error);
-      const message = error?.message || "Erreur lors du téléchargement";
-      toast.error(message);
+      console.error("[OrderDesign] Local logo preview error:", error);
+      toast.error("Erreur de lecture du fichier");
     } finally {
       setIsUploading(false);
     }
   };
 
   const handleRemoveLogo = () => {
+    if (logoUrl?.startsWith("blob:")) URL.revokeObjectURL(logoUrl);
+    if (originalLogoUrl?.startsWith("blob:")) URL.revokeObjectURL(originalLogoUrl);
+
     setLogoUrl(null);
     setOriginalLogoUrl(null);
     setIsValidated(false);
