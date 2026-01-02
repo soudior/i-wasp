@@ -9,8 +9,8 @@ import iwaspLogo from "@/assets/iwasp-logo.png";
 const navLinks = [
   { href: "/", label: "Accueil" },
   { href: "/order", label: "Commander" },
+  { href: "/nails", label: "💅 Nails", highlight: true },
   { href: "/demo-dashboard", label: "Démo" },
-  { href: "/install", label: "📲 App" },
   { href: "/templates", label: "Templates" },
   { href: "/contact", label: "Contact" },
 ];
@@ -62,6 +62,8 @@ export function Navbar() {
                 className={`text-sm font-medium transition-all duration-300 ${
                   link.href === "/order"
                     ? "px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-background hover:from-amber-600 hover:to-amber-700 shadow-sm hover:shadow-md hover:scale-105"
+                    : (link as any).highlight
+                    ? "px-3 py-1 rounded-full bg-gradient-to-r from-rose-500/20 to-pink-500/20 text-rose-300 border border-rose-400/30 hover:bg-rose-500/30"
                     : location.pathname === link.href
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
