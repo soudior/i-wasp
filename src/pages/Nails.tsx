@@ -88,7 +88,7 @@ const Nails = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-zinc-900">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/">
-            <img src={iwaspLogo} alt="i-wasp" className="h-8 w-auto" />
+            <img src={iwaspLogo} alt="i-wasp" className="h-8 w-auto" loading="eager" />
           </Link>
           <Button
             variant="outline"
@@ -453,7 +453,7 @@ const Nails = () => {
       <footer className="py-8 border-t border-zinc-900">
         <div className="container mx-auto px-6 text-center">
           <Link to="/" className="inline-block mb-4">
-            <img src={iwaspLogo} alt="i-wasp" className="h-8 w-auto mx-auto" />
+            <img src={iwaspLogo} alt="i-wasp" className="h-8 w-auto mx-auto" loading="lazy" />
           </Link>
           <p className="text-zinc-600 text-sm">
             © {new Date().getFullYear()} i-wasp · Tap. Connect. Empower.
