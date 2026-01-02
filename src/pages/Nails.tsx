@@ -26,6 +26,7 @@ import iwaspLogo from "@/assets/iwasp-logo-white.png";
 import nailsHero from "@/assets/nails/nails-hero.png";
 import nailsCafe from "@/assets/nails/nails-cafe.png";
 import nailsDemoVideo from "@/assets/nails/nails-demo-video.mp4";
+import nailsPoster from "@/assets/posters/nails-demo-poster.webp";
 
 const Nails = () => {
   const navigate = useNavigate();
@@ -241,7 +242,8 @@ const Nails = () => {
           <div className="max-w-3xl mx-auto">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-purple-500/20 border border-purple-500/20">
               <MobileOptimizedVideo 
-                src={nailsDemoVideo} 
+                src={nailsDemoVideo}
+                poster={nailsPoster}
                 aspectRatio="16/9"
                 autoPlayOnDesktop={true}
                 rounded="rounded-3xl"
