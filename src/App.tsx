@@ -136,6 +136,7 @@ const App = () => (
                       
                       {/* Admin - Protected by AdminGuard */}
                       <Route path="/admin" element={<AdminGuard><AdminOrders /></AdminGuard>} />
+                      <Route path="/admin-iwasp" element={<AdminGuard><AdminOrders /></AdminGuard>} />
                       <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
                       <Route path="/admin/clients" element={<AdminGuard><AdminClients /></AdminGuard>} />
                       
