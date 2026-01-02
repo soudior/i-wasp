@@ -320,6 +320,51 @@ export type Database = {
           },
         ]
       }
+      leads_partenaires: {
+        Row: {
+          certified_at: string | null
+          city: string
+          created_at: string
+          email: string | null
+          id: string
+          is_certified: boolean | null
+          manicure_stations: number | null
+          notes: string | null
+          salon_name: string
+          status: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          certified_at?: string | null
+          city: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_certified?: boolean | null
+          manicure_stations?: number | null
+          notes?: string | null
+          salon_name: string
+          status?: string
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          certified_at?: string | null
+          city?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_certified?: boolean | null
+          manicure_stations?: number | null
+          notes?: string | null
+          salon_name?: string
+          status?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           admin_notes: string | null
