@@ -25,6 +25,8 @@ import {
   supportsGoogleWallet 
 } from "@/lib/wallet";
 import { PhysicalCardStudio } from "@/components/print/PhysicalCardStudio";
+import { DashboardCustomization } from "@/components/DashboardCustomization";
+import { GoldVerificationBadge } from "@/components/GoldFeatureCard";
 
 import { 
   Plus, CreditCard, Users, Eye, TrendingUp, 
@@ -216,8 +218,9 @@ const Dashboard = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 animate-fade-up">
             <div>
-              <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
+              <h1 className="font-display text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
                 Tableau de bord
+                {isPremium && <GoldVerificationBadge />}
               </h1>
               <p className="text-muted-foreground">
                 Bienvenue, {user?.email}
@@ -278,6 +281,11 @@ const Dashboard = () => {
               Mon Plan
             </h2>
             <SubscriptionCard />
+          </div>
+
+          {/* Customization Section - Noir & Or */}
+          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.14s' }}>
+            <DashboardCustomization />
           </div>
 
           {/* Orders Section - Premium Glassmorphism */}
