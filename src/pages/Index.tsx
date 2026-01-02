@@ -175,6 +175,64 @@ const Index = () => {
           </p>
         </div>
       </section>
+
+      {/* Section À propos */}
+      <section className="py-20 px-4 bg-gradient-to-b from-black via-zinc-950 to-black">
+        <div className="max-w-2xl mx-auto text-center space-y-8">
+          {/* Icône décorative */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/30"
+          >
+            <Sparkles className="w-8 h-8 text-amber-400" />
+          </motion.div>
+
+          {/* Titre */}
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="font-playfair text-2xl md:text-4xl font-bold text-white leading-tight"
+          >
+            L'Innovation qui ne se voit pas,
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500">
+              mais qui change tout.
+            </span>
+          </motion.h2>
+
+          {/* Texte */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="space-y-6 text-zinc-400 text-base md:text-lg leading-relaxed"
+          >
+            <p>
+              Né à l'intersection du <span className="text-amber-400 font-medium">luxe</span> et de la <span className="text-amber-400 font-medium">technologie</span>, i-wasp redéfinit le networking au Maroc. Nous croyons que la connexion humaine doit être fluide, élégante et instantanée.
+            </p>
+            <p>
+              Que ce soit à travers nos <span className="text-white font-medium">Cartes Premium</span> ou notre innovation mondiale <span className="text-pink-400 font-medium">Nails NFC</span>, nous offrons aux entrepreneurs et aux passionnés de mode un outil unique : une identité numérique accessible d'un simple geste.
+            </p>
+            <p className="text-zinc-300 font-medium italic">
+              Plus qu'une carte, plus qu'une manucure : une révolution invisible qui vous connecte au futur.
+            </p>
+          </motion.div>
+
+          {/* Ligne décorative dorée */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="w-24 h-0.5 mx-auto bg-gradient-to-r from-transparent via-amber-500 to-transparent"
+          />
+        </div>
+      </section>
     </div>
   );
 };
