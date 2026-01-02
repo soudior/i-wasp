@@ -6,8 +6,8 @@
  * 3. /order/digital - Digital links + geolocation
  * 4. /order/design - Card design
  * 5. /order/options - Quantity + promo
- * 6. /order/preview - Final Preview (premium mockup)
- * 7. /order/payment - Stripe payment
+ * 6. /order/summary - Order summary
+ * 7. /order/payment - Payment (COD for Morocco, Card for Europe)
  */
 
 export { default as OrderType } from "./OrderType";
@@ -18,3 +18,4 @@ export { default as OrderOptions } from "./OrderOptions";
 export { default as OrderSummary } from "./OrderSummary";
 export { default as OrderPreviewFinal } from "./OrderPreviewFinal";
 export { default as OrderPayment } from "./OrderPayment";
+export { default as OrderConfirmation } from "./OrderConfirmation";

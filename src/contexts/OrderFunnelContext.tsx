@@ -36,13 +36,14 @@ export interface DigitalInfo {
   whatsapp?: string;
   instagram?: string;
   googleReviews?: string;
-  // Geolocation
+  // Geolocation & Shipping
   address?: string;
   latitude?: number;
   longitude?: number;
   city?: string;
   postalCode?: string;
   country?: string;
+  neighborhood?: string; // Quartier (Maroc)
 }
 
 // Design configuration (step 4)
@@ -59,6 +60,7 @@ export interface OrderOptions {
   promoDiscount?: number;
   unitPriceCents: number;
   totalPriceCents: number;
+  paymentMethod?: "cod" | "card"; // Maroc = COD, Europe = Card
 }
 
 // Complete funnel state

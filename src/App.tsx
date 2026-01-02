@@ -46,6 +46,7 @@ import OrderOptions from "./pages/order/OrderOptions";
 import OrderSummary from "./pages/order/OrderSummary";
 import OrderPreviewFinal from "./pages/order/OrderPreviewFinal";
 import OrderPayment from "./pages/order/OrderPayment";
+import OrderConfirmation from "./pages/order/OrderConfirmation";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -130,6 +131,7 @@ const App = () => (
                       <Route path="/order/summary" element={<OrderSummary />} />
                       <Route path="/order/preview" element={<OrderPreviewFinal />} />
                       <Route path="/order/payment" element={<OrderPayment />} />
+                      <Route path="/order/confirmation" element={<OrderConfirmation />} />
                       
                       {/* Cart - Protected, only after full configuration */}
                       <Route path="/cart" element={<CartGuard><Cart /></CartGuard>} />

@@ -89,10 +89,13 @@ export function getUnitPrice(quantity: number, isB2B: boolean = false): number {
   return PRICING.b2b.tier1.unitPrice;
 }
 
-// Format price for display (cents to euros)
-export function formatPrice(cents: number): string {
-  const euros = cents / 100;
-  return `${euros.toFixed(2).replace(".", ",")} ${PRICING.currencySymbol}`;
+// Format price for display (cents to euros/dirhams)
+export function formatPrice(cents: number, currency: "EUR" | "MAD" = "EUR"): string {
+  const amount = cents / 100;
+  if (currency === "MAD") {
+    return `${amount.toFixed(0)} MAD`;
+  }
+  return `${amount.toFixed(2).replace(".", ",")} ${PRICING.currencySymbol}`;
 }
 
 // Format price short (no decimals if whole number)
