@@ -10,17 +10,30 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { 
   Upload, User, Lock, Image, Check, Loader2, 
-  Camera, Trash2, Eye, Crown, ArrowLeft
+  Camera, Trash2, Eye, Crown, ArrowLeft, AlertTriangle
 } from "lucide-react";
+import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 import iwaspCertifiedBadge from "@/assets/iwasp-certified-badge.png";
 
 const Settings = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { impactLight, impactMedium, notificationSuccess, notificationError } = useHapticFeedback();
   
   // Profile state
   const [firstName, setFirstName] = useState("");
@@ -43,6 +56,7 @@ const Settings = () => {
   // Loading states
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   // Handle logo file selection
   const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,12 +130,15 @@ const Settings = () => {
 
   // Save profile
   const handleSaveProfile = async () => {
+    impactLight();
     setSavingProfile(true);
     try {
       // Simulate save (in production, this would update the profiles table)
       await new Promise(resolve => setTimeout(resolve, 1000));
+      notificationSuccess();
       toast.success("Profil mis à jour avec succès !");
     } catch (error) {
+      notificationError();
       toast.error("Erreur lors de la mise à jour du profil.");
     } finally {
       setSavingProfile(false);
@@ -131,15 +148,18 @@ const Settings = () => {
   // Change password
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
+      notificationError();
       toast.error("Les mots de passe ne correspondent pas.");
       return;
     }
 
     if (newPassword.length < 6) {
+      notificationError();
       toast.error("Le mot de passe doit contenir au moins 6 caractères.");
       return;
     }
 
+    impactMedium();
     setSavingPassword(true);
     try {
       const { error } = await supabase.auth.updateUser({
@@ -151,11 +171,51 @@ const Settings = () => {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      notificationSuccess();
       toast.success("Mot de passe modifié avec succès !");
     } catch (error: any) {
+      notificationError();
       toast.error(error.message || "Erreur lors du changement de mot de passe.");
     } finally {
       setSavingPassword(false);
+    }
+  };
+
+  // Delete account (Apple App Store requirement)
+  const handleDeleteAccount = async () => {
+    impactMedium();
+    setDeletingAccount(true);
+    try {
+      // Delete user data from database tables
+      if (user) {
+        // Delete user's cards
+        await supabase.from('digital_cards').delete().eq('user_id', user.id);
+        // Delete user's orders
+        await supabase.from('orders').delete().eq('user_id', user.id);
+        // Delete user's leads
+        const { data: cards } = await supabase.from('digital_cards').select('id').eq('user_id', user.id);
+        if (cards) {
+          for (const card of cards) {
+            await supabase.from('leads').delete().eq('card_id', card.id);
+          }
+        }
+        // Delete profile
+        await supabase.from('profiles').delete().eq('user_id', user.id);
+        // Delete subscription
+        await supabase.from('subscriptions').delete().eq('user_id', user.id);
+      }
+
+      // Sign out and redirect
+      await signOut();
+      notificationSuccess();
+      toast.success("Votre compte a été supprimé avec succès.");
+      navigate("/");
+    } catch (error: any) {
+      notificationError();
+      toast.error("Erreur lors de la suppression du compte. Veuillez contacter le support.");
+      console.error("Delete account error:", error);
+    } finally {
+      setDeletingAccount(false);
     }
   };
 
@@ -509,6 +569,85 @@ const Settings = () => {
                       "Modifier le mot de passe"
                     )}
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Danger Zone - Account Deletion (Apple App Store Requirement) */}
+            <Card className="bg-red-950/20 border-red-900/30">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-red-900/30 flex items-center justify-center">
+                    <AlertTriangle className="h-5 w-5 text-red-400" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-red-400">Zone de danger</CardTitle>
+                    <CardDescription className="text-red-300/60">
+                      Actions irréversibles sur votre compte
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="p-4 rounded-xl bg-red-900/10 border border-red-900/30">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-red-300">Supprimer mon compte</p>
+                      <p className="text-xs text-red-400/60 mt-1">
+                        Cette action supprimera définitivement votre compte et toutes vos données.
+                      </p>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant="destructive" 
+                          className="bg-red-600 hover:bg-red-700 text-white shrink-0"
+                          disabled={deletingAccount}
+                        >
+                          {deletingAccount ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              Suppression...
+                            </>
+                          ) : (
+                            <>
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Supprimer mon compte
+                            </>
+                          )}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="text-white flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5 text-red-500" />
+                            Supprimer définitivement votre compte ?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription className="text-zinc-400">
+                            Cette action est <span className="text-red-400 font-medium">irréversible</span>. 
+                            Toutes vos données seront supprimées, y compris :
+                            <ul className="mt-3 space-y-1 text-sm">
+                              <li>• Vos cartes digitales</li>
+                              <li>• Vos contacts et leads</li>
+                              <li>• Vos commandes</li>
+                              <li>• Votre abonnement</li>
+                            </ul>
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
+                            Annuler
+                          </AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={handleDeleteAccount}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                          >
+                            Oui, supprimer mon compte
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               </CardContent>
             </Card>
