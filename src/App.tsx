@@ -10,6 +10,7 @@ import { OrderFunnelProvider, CartGuard } from "@/contexts/OrderFunnelContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
 import { AdminGuard } from "@/components/AdminGuard";
 import { FeatureValidationProvider } from "@/components/FeatureValidationProvider";
+import { DebugPanel } from "@/components/debug";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PublicCard from "./pages/PublicCard";
 import AdminClients from "./pages/AdminClients";
@@ -126,6 +127,8 @@ const App = () => (
                       {/* 404 - FALLBACK TO HOME */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
+                    {/* Debug Panel - Remove in production */}
+                    <DebugPanel />
                   </OrderFunnelProvider>
                 </ErrorBoundary>
               </BrowserRouter>
