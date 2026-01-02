@@ -7,99 +7,139 @@ interface SplashScreenProps {
   minDuration?: number;
 }
 
-export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenProps) {
+/**
+ * SplashScreen Premium IWASP
+ * Design noir profond (#000000) avec effet shimmer or brossé
+ * Fade-in/out 1.5s pour transition fluide
+ */
+export function SplashScreen({ onComplete, minDuration = 1500 }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsExiting(true);
-      setTimeout(() => {
-        setIsVisible(false);
-        onComplete?.();
-      }, 500);
     }, minDuration);
 
     return () => clearTimeout(timer);
-  }, [minDuration, onComplete]);
+  }, [minDuration]);
+
+  // Gérer la fin de l'animation de sortie
+  const handleExitComplete = () => {
+    setIsVisible(false);
+    onComplete?.();
+  };
 
   if (!isVisible) return null;
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={handleExitComplete}>
       {!isExiting && (
         <motion.div
-          initial={{ opacity: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center"
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center"
+          style={{ backgroundColor: '#000000' }}
         >
-          {/* Background gradient effect */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-amber-500/20 via-amber-500/5 to-transparent rounded-full blur-3xl" />
+          {/* Gradient radial or subtil */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div 
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl opacity-30"
+              style={{
+                background: 'radial-gradient(ellipse at center, rgba(212,175,55,0.4) 0%, rgba(184,134,11,0.2) 40%, transparent 70%)'
+              }}
+            />
           </div>
 
-          {/* Logo with pulse animation */}
+          {/* Logo avec effet shimmer or brossé */}
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="relative z-10"
           >
+            {/* Halo lumineux or */}
             <motion.div
               animate={{ 
-                scale: [1, 1.05, 1],
-                filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"]
+                opacity: [0.3, 0.6, 0.3],
+                scale: [1, 1.1, 1]
               }}
               transition={{ 
-                duration: 2, 
+                duration: 2.5, 
                 repeat: Infinity, 
                 ease: "easeInOut" 
               }}
-              className="relative"
-            >
-              {/* Glow effect */}
-              <div className="absolute inset-0 blur-2xl bg-amber-500/30 rounded-full scale-150" />
-              
-              {/* Logo */}
+              className="absolute inset-0 blur-3xl rounded-full"
+              style={{ 
+                background: 'radial-gradient(circle, rgba(212,175,55,0.5) 0%, transparent 70%)',
+                transform: 'scale(2)'
+              }}
+            />
+            
+            {/* Logo principal avec shimmer */}
+            <div className="relative overflow-hidden">
               <img 
                 src={iwaspLogo} 
                 alt="i-wasp" 
-                className="relative z-10 h-24 w-auto drop-shadow-[0_0_30px_rgba(245,158,11,0.5)]"
+                className="relative z-10 h-28 w-auto"
+                style={{
+                  filter: 'drop-shadow(0 0 40px rgba(212,175,55,0.6))'
+                }}
               />
-            </motion.div>
+              
+              {/* Effet shimmer or brossé qui traverse le logo */}
+              <motion.div
+                animate={{ x: ['-100%', '200%'] }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  repeatDelay: 0.5
+                }}
+                className="absolute inset-0 z-20 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(90deg, transparent 0%, rgba(255,215,0,0.4) 50%, transparent 100%)',
+                  width: '50%'
+                }}
+              />
+            </div>
           </motion.div>
 
-          {/* Tagline */}
+          {/* Tagline avec fade-in décalé */}
           <motion.p
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="mt-6 text-amber-400/80 text-sm tracking-widest uppercase"
+            transition={{ delay: 0.4, duration: 0.5, ease: "easeOut" }}
+            className="mt-8 text-sm tracking-[0.25em] uppercase font-light"
+            style={{ color: 'rgba(212,175,55,0.8)' }}
           >
             Tap. Connect. Empower.
           </motion.p>
 
-          {/* Loading indicator */}
+          {/* Indicateur de chargement minimaliste */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
-            className="absolute bottom-20 flex gap-1"
+            transition={{ delay: 0.8 }}
+            className="absolute bottom-16 flex gap-1.5"
           >
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
                 animate={{ 
-                  scale: [1, 1.2, 1],
-                  opacity: [0.3, 1, 0.3]
+                  opacity: [0.2, 1, 0.2],
+                  scale: [0.8, 1, 0.8]
                 }}
                 transition={{
-                  duration: 1,
+                  duration: 1.2,
                   repeat: Infinity,
-                  delay: i * 0.2
+                  delay: i * 0.15,
+                  ease: "easeInOut"
                 }}
-                className="w-2 h-2 rounded-full bg-amber-500"
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ backgroundColor: 'rgba(212,175,55,0.9)' }}
               />
             ))}
           </motion.div>

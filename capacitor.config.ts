@@ -15,24 +15,23 @@ const config: CapacitorConfig = {
   ios: {
     contentInset: 'automatic',
     preferredContentMode: 'mobile',
-    backgroundColor: '#F5F5F7',
+    backgroundColor: '#000000',
     scheme: 'IWASP',
-    // Hardware acceleration for video playback
     allowsLinkPreview: false,
     scrollEnabled: true,
     limitsNavigationsToAppBoundDomains: true,
   },
   android: {
-    backgroundColor: '#F5F5F7',
-    // Hardware acceleration
+    backgroundColor: '#000000',
     webContentsDebuggingEnabled: false,
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 1500,
+      // Désactivé : on utilise notre propre loader web
+      launchShowDuration: 0,
       launchAutoHide: true,
-      launchFadeOutDuration: 300,
-      backgroundColor: '#F5F5F7',
+      launchFadeOutDuration: 0,
+      backgroundColor: '#000000',
       androidSplashResourceName: 'splash',
       androidScaleType: 'CENTER_CROP',
       showSpinner: false,
@@ -40,8 +39,8 @@ const config: CapacitorConfig = {
       splashImmersive: true
     },
     StatusBar: {
-      style: 'DARK',
-      backgroundColor: '#F5F5F7'
+      style: 'LIGHT',
+      backgroundColor: '#000000'
     },
     Haptics: {
       enabled: true

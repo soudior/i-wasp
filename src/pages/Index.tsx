@@ -39,7 +39,7 @@ const Index = () => {
   const content = productContent[mode];
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="h-screen overflow-y-auto bg-black flex flex-col">
       {/* Hero Section */}
       <section className="flex-1 flex flex-col items-center justify-center px-4 py-12 md:py-20">
         <div className="max-w-xl mx-auto text-center space-y-8">
@@ -57,15 +57,15 @@ const Index = () => {
             </p>
           </div>
 
-          {/* Sélecteur Carte / Ongle - Sans animation hover:scale */}
+          {/* Sélecteur Carte / Ongle - Bordures dorées premium */}
           <div className="flex justify-center">
-            <div className="inline-flex bg-zinc-900/80 backdrop-blur-sm p-1.5 rounded-2xl border border-zinc-800">
+            <div className="inline-flex bg-zinc-900/80 backdrop-blur-sm p-1.5 rounded-2xl border border-amber-500/20 shadow-[0_0_20px_rgba(212,175,55,0.1)]">
               <button
                 onClick={() => setMode("carte")}
-                className={`relative flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-sm transition-colors duration-200 ${
+                className={`relative flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
                   mode === "carte"
-                    ? "text-black bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    ? "text-black bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                    : "text-zinc-400 hover:text-amber-300"
                 }`}
               >
                 <CreditCard className="w-4 h-4" />
@@ -74,10 +74,10 @@ const Index = () => {
               
               <button
                 onClick={() => setMode("ongle")}
-                className={`relative flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-sm transition-colors duration-200 ${
+                className={`relative flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
                   mode === "ongle"
-                    ? "text-black bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    ? "text-black bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                    : "text-zinc-400 hover:text-amber-300"
                 }`}
               >
                 <Sparkles className="w-4 h-4" />
@@ -99,8 +99,8 @@ const Index = () => {
               }}
             />
             
-            {/* Cadre smartphone premium */}
-            <div className="relative bg-gradient-to-b from-zinc-800 to-zinc-900 p-1.5 rounded-[2rem] shadow-2xl overflow-hidden">
+            {/* Cadre smartphone premium avec bordure dorée */}
+            <div className="relative bg-gradient-to-b from-zinc-800 to-zinc-900 p-1.5 rounded-[2rem] shadow-2xl overflow-hidden border border-amber-500/20 gold-glow-border">
               {/* Video Carte */}
               <div className={mode === "carte" ? "block" : "hidden"}>
                 <MobileOptimizedVideo 
