@@ -3,7 +3,7 @@ import { ArrowRight, Building2, Hotel, Store, CalendarDays, Check } from "lucide
 import { Button } from "@/components/ui/button";
 import { NFCPhysicalCardSection } from "@/components/print/NFCPhysicalCardSection";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
-
+import nfcDemoVideo from "@/assets/nfc-demo-video.mp4";
 /**
  * Index - Page institutionnelle i-wasp
  * 
@@ -246,6 +246,55 @@ const Index = () => {
 
       {/* Section Template carte physique NFC */}
       <NFCPhysicalCardSection logoUrl={iwaspLogo} />
+
+      {/* Section Vidéo Démo - L'expérience i-wasp */}
+      <section className="py-16 px-4 bg-gradient-to-b from-background to-muted/30">
+        <div className="max-w-2xl mx-auto text-center space-y-8">
+          {/* Titre */}
+          <div className="space-y-2">
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">
+              L'expérience i-wasp en action
+            </h2>
+            <p className="text-muted-foreground">
+              Un geste suffit pour partager votre identité professionnelle
+            </p>
+          </div>
+
+          {/* Vidéo avec effet premium */}
+          <div className="relative mx-auto max-w-sm">
+            {/* Ombre dorée */}
+            <div 
+              className="absolute inset-0 rounded-3xl blur-2xl opacity-30"
+              style={{ 
+                background: "linear-gradient(135deg, #D4AF37 0%, #F4E4BC 50%, #B8860B 100%)",
+                transform: "translateY(8px) scale(0.95)"
+              }}
+            />
+            
+            {/* Conteneur vidéo */}
+            <div className="relative rounded-3xl overflow-hidden border border-border/30 shadow-2xl">
+              <video
+                src={nfcDemoVideo}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full aspect-[9/16] object-cover"
+              />
+            </div>
+          </div>
+
+          {/* CTA */}
+          <Button 
+            size="lg"
+            className="bg-foreground text-background hover:bg-foreground/90 gap-2 px-10 py-6 text-base"
+            onClick={handleConfigureCard}
+          >
+            Commander ma carte i-wasp
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+        </div>
+      </section>
 
       {/* Footer minimal */}
       <footer className="py-6 px-4 border-t border-border/20">
