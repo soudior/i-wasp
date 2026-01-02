@@ -42,6 +42,7 @@ import Partenaires from "./pages/Partenaires";
 import DevenirPartenaire from "./pages/DevenirPartenaire";
 import CertificatPartenaire from "./pages/CertificatPartenaire";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 // Order funnel pages - 7 steps strict flow
@@ -147,6 +148,8 @@ const App = () => {
                       <Route path="/partenaires" element={<Partenaires />} />
                       <Route path="/devenir-partenaire" element={<DevenirPartenaire />} />
                       <Route path="/certificat-partenaire" element={<CertificatPartenaire />} />
+                      <Route path="/privacy" element={<PrivacyPolicy />} />
+                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                       {/* Finalize card after auth */}
                       <Route path="/onboarding/finalize" element={<FinalizeCard />} />
                       
