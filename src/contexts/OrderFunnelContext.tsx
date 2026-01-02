@@ -17,6 +17,9 @@ import { useNavigate } from "react-router-dom";
 // Customer types
 export type CustomerType = "particulier" | "professionnel" | "entreprise";
 
+// Product type
+export type ProductType = "card" | "nails";
+
 // Personal information (step 2: Identity)
 export interface PersonalInfo {
   firstName: string;
@@ -61,6 +64,7 @@ export interface OrderOptions {
 // Complete funnel state
 export interface OrderFunnelState {
   currentStep: number;
+  productType: ProductType | null;
   customerType: CustomerType | null;
   personalInfo: PersonalInfo | null;
   digitalInfo: DigitalInfo | null;
@@ -95,6 +99,7 @@ export const TOTAL_STEPS = 7;
 // Context interface
 interface OrderFunnelContextType {
   state: OrderFunnelState;
+  setProductType: (type: ProductType) => void;
   setCustomerType: (type: CustomerType) => void;
   setPersonalInfo: (info: PersonalInfo) => void;
   setDigitalInfo: (info: DigitalInfo) => void;
@@ -113,6 +118,7 @@ interface OrderFunnelContextType {
 
 const initialState: OrderFunnelState = {
   currentStep: 1,
+  productType: null,
   customerType: null,
   personalInfo: null,
   digitalInfo: null,
@@ -173,6 +179,14 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
       return STEP_PATHS[step - 1];
     }
     return STEP_PATHS[0];
+  }, []);
+
+  // Set product type (step 0/1)
+  const setProductType = useCallback((type: ProductType) => {
+    setState(prev => ({
+      ...prev,
+      productType: type,
+    }));
   }, []);
 
   // Set customer type (step 1)
@@ -289,6 +303,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     <OrderFunnelContext.Provider
       value={{
         state,
+        setProductType,
         setCustomerType,
         setPersonalInfo,
         setDigitalInfo,
