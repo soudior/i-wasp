@@ -92,11 +92,55 @@ export default function UserGuide() {
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="px-6 py-16 text-center">
+      {/* Hero Video - Instagram Reels Style */}
+      <section className="px-6 py-8">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-sm mx-auto"
+        >
+          {/* Video Container - Reels Format (9:16) */}
+          <div className="relative aspect-[9/16] rounded-3xl overflow-hidden bg-gradient-to-b from-primary/20 to-primary/5 shadow-2xl shadow-primary/20">
+            {/* Placeholder until video is added */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+              <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-4 animate-pulse">
+                <Smartphone size={32} className="text-primary" />
+              </div>
+              <p className="text-white/60 text-sm">
+                Vidéo de démonstration NFC
+              </p>
+              <p className="text-white/40 text-xs mt-2">
+                Bientôt disponible
+              </p>
+            </div>
+            
+            {/* 
+              When video is added, replace the placeholder with:
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              >
+                <source src={nfcDemoVideo} type="video/mp4" />
+              </video>
+            */}
+          </div>
+          
+          {/* Caption under video */}
+          <p className="text-center text-white/50 text-sm mt-4">
+            Un simple tap pour partager votre profil
+          </p>
+        </motion.div>
+      </section>
+
+      {/* Hero Text */}
+      <section className="px-6 py-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
           className="max-w-2xl mx-auto"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-primary/20 text-primary text-sm font-medium mb-6">
