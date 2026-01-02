@@ -5,9 +5,11 @@ import { useCards, useUpdateCard, useDeleteCard } from "@/hooks/useCards";
 import { useLeads } from "@/hooks/useLeads";
 import { useScans } from "@/hooks/useScans";
 import { useUserOrders, getOrderStatusLabel, getOrderStatusColor } from "@/hooks/useOrders";
+import { useSubscription } from "@/hooks/useSubscription";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { DashboardCard } from "@/components/DashboardCard";
+import { SubscriptionCard } from "@/components/SubscriptionCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -118,6 +120,7 @@ const Dashboard = () => {
   const { data: leads = [] } = useLeads();
   const { data: scans = [] } = useScans();
   const { data: orders = [], isLoading: ordersLoading } = useUserOrders();
+  const { isPremium } = useSubscription();
   const updateCard = useUpdateCard();
   const deleteCard = useDeleteCard();
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
@@ -262,6 +265,14 @@ const Dashboard = () => {
                 </Card>
               </div>
             ))}
+          </div>
+
+          {/* Subscription Section - Mon Plan */}
+          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.12s' }}>
+            <h2 className="font-display text-xl font-semibold text-foreground flex items-center gap-2 mb-6">
+              Mon Plan
+            </h2>
+            <SubscriptionCard />
           </div>
 
           {/* Orders Section - Premium Glassmorphism */}
