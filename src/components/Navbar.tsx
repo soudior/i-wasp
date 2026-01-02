@@ -4,24 +4,27 @@ import { Menu, X, LayoutDashboard, LogOut, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
+import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import iwaspLogo from "@/assets/iwasp-logo.png";
 
-const navLinks = [
-  { href: "/", label: "Accueil" },
-  { href: "/order", label: "Commander" },
-  { href: "/nails", label: "💅 Nails", highlight: true },
-  { href: "/demo-dashboard", label: "Démo" },
-  { href: "/templates", label: "Templates" },
-  { href: "/contact", label: "Contact" },
-];
-
 export function Navbar() {
+  const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut, loading } = useAuth();
   const { totalItems } = useCart();
+
+  const navLinks = [
+    { href: "/", label: t("nav.home") },
+    { href: "/order", label: t("nav.order") },
+    { href: "/nails", label: t("nav.nails"), highlight: true },
+    { href: "/demo-dashboard", label: t("nav.demo") },
+    { href: "/templates", label: t("nav.templates") },
+    { href: "/contact", label: t("nav.contact") },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,7 +65,7 @@ export function Navbar() {
                 className={`text-sm font-medium transition-all duration-300 ${
                   link.href === "/order"
                     ? "px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-background hover:from-amber-600 hover:to-amber-700 shadow-sm hover:shadow-md hover:scale-105"
-                    : (link as any).highlight
+                    : link.highlight
                     ? "px-3 py-1 rounded-full bg-gradient-to-r from-rose-500/20 to-pink-500/20 text-rose-300 border border-rose-400/30 hover:bg-rose-500/30"
                     : location.pathname === link.href
                     ? "text-foreground"
@@ -76,6 +79,9 @@ export function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
+            {/* Language Selector */}
+            <LanguageSelector />
+
             {/* Cart Icon */}
             <Link to="/cart" className="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
               <ShoppingCart size={20} />
@@ -92,24 +98,24 @@ export function Navbar() {
                   <Link to="/dashboard">
                     <Button variant="ghost" size="sm" className="gap-2">
                       <LayoutDashboard size={16} />
-                      Dashboard
+                      {t("nav.dashboard")}
                     </Button>
                   </Link>
                   <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
                     <LogOut size={16} />
-                    Déconnexion
+                    {t("nav.logout")}
                   </Button>
                 </>
               ) : (
                 <>
                   <Link to="/login">
                     <Button variant="ghost" size="sm">
-                      Connexion
+                      {t("nav.login")}
                     </Button>
                   </Link>
                   <Link to="/signup">
                     <Button variant="chrome" size="sm">
-                      Commencer
+                      {t("nav.signup")}
                     </Button>
                   </Link>
                 </>
@@ -118,12 +124,15 @@ export function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-foreground"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="md:hidden flex items-center gap-2">
+            <LanguageSelector />
+            <button
+              className="p-2 text-foreground"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu (CSS-only, kept mounted to avoid DOM reconciliation edge-cases) */}
@@ -156,7 +165,7 @@ export function Navbar() {
                   <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button variant="chrome" className="w-full gap-2">
                       <LayoutDashboard size={16} />
-                      Dashboard
+                      {t("nav.dashboard")}
                     </Button>
                   </Link>
                   <Button
@@ -168,19 +177,19 @@ export function Navbar() {
                     }}
                   >
                     <LogOut size={16} />
-                    Déconnexion
+                    {t("nav.logout")}
                   </Button>
                 </>
               ) : (
                 <>
                   <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button variant="outline" className="w-full">
-                      Connexion
+                      {t("nav.login")}
                     </Button>
                   </Link>
                   <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button variant="chrome" className="w-full">
-                      Commencer
+                      {t("nav.signup")}
                     </Button>
                   </Link>
                 </>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCards, useUpdateCard, useDeleteCard } from "@/hooks/useCards";
 import { useLeads } from "@/hooks/useLeads";
@@ -17,7 +18,7 @@ import { toast } from "sonner";
 import { formatPrice } from "@/lib/pricing";
 import { generateInvoicePDF, downloadInvoice } from "@/lib/invoiceGenerator";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS, es, it, nl } from "date-fns/locale";
 import { 
   generateAppleWalletPass, 
   generateGoogleWalletPass,
@@ -116,6 +117,7 @@ function OrderTimelineStep({
 }
 
 const Dashboard = () => {
+  const { t, i18n } = useTranslation();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { data: cards = [], isLoading: cardsLoading } = useCards();
@@ -132,6 +134,17 @@ const Dashboard = () => {
   const [downloadingInvoice, setDownloadingInvoice] = useState<string | null>(null);
   const [physicalCardId, setPhysicalCardId] = useState<string | null>(null);
 
+  // Get locale for date-fns based on current language
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'en': return enUS;
+      case 'es': return es;
+      case 'it': return it;
+      case 'nl': return nl;
+      default: return fr;
+    }
+  };
+
   const selectedCard = cards.find(c => c.id === selectedCardId);
   const walletCard = cards.find(c => c.id === walletCardId);
   const physicalCard = cards.find(c => c.id === physicalCardId);
@@ -141,10 +154,10 @@ const Dashboard = () => {
     try {
       const blob = await generateInvoicePDF(order);
       downloadInvoice(blob, order.order_number);
-      toast.success("Facture téléchargée");
+      toast.success(t("dashboard.invoiceDownloaded"));
     } catch (error) {
       console.error("Failed to generate invoice:", error);
-      toast.error("Erreur lors de la génération");
+      toast.error(t("dashboard.invoiceError"));
     } finally {
       setDownloadingInvoice(null);
     }
@@ -160,13 +173,13 @@ const Dashboard = () => {
       id: cardId,
       data: { nfc_enabled: !currentState },
     });
-    toast.success(currentState ? "NFC désactivé" : "NFC activé");
+    toast.success(currentState ? t("dashboard.nfcDisabled") : t("dashboard.nfcEnabled"));
   };
 
   const handleCopyLink = (slug: string) => {
     const url = `${window.location.origin}/c/${slug}`;
     navigator.clipboard.writeText(url);
-    toast.success("Lien copié !");
+    toast.success(t("dashboard.linkCopied"));
   };
 
   const handleDeleteCard = async () => {
@@ -219,11 +232,11 @@ const Dashboard = () => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 animate-fade-up">
             <div>
               <h1 className="font-display text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
-                Tableau de bord
+                {t("dashboard.title")}
                 {isPremium && <GoldVerificationBadge />}
               </h1>
               <p className="text-muted-foreground">
-                Bienvenue, {user?.email}
+                {t("dashboard.welcome")}, {user?.email}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -235,13 +248,13 @@ const Dashboard = () => {
               <Link to="/orders">
                 <Button variant="outline">
                   <ShoppingBag size={18} />
-                  Mes commandes
+                  {t("dashboard.myOrders")}
                 </Button>
               </Link>
               <Link to="/create">
                 <Button variant="chrome">
                   <Plus size={18} />
-                  Nouvelle carte
+                  {t("dashboard.newCard")}
                 </Button>
               </Link>
             </div>
@@ -250,10 +263,10 @@ const Dashboard = () => {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
             {[
-              { label: "Cartes actives", value: cards.filter(c => c.is_active).length.toString(), icon: CreditCard },
-              { label: "Commandes", value: orders.length.toString(), icon: ShoppingBag },
-              { label: "Leads capturés", value: totalLeads.toString(), icon: Users },
-              { label: "Taux de conversion", value: `${conversionRate}%`, icon: TrendingUp },
+              { label: t("dashboard.activeCards"), value: cards.filter(c => c.is_active).length.toString(), icon: CreditCard },
+              { label: t("dashboard.orders"), value: orders.length.toString(), icon: ShoppingBag },
+              { label: t("dashboard.capturedLeads"), value: totalLeads.toString(), icon: Users },
+              { label: t("dashboard.conversionRate"), value: `${conversionRate}%`, icon: TrendingUp },
             ].map((stat, index) => (
               <div
                 key={stat.label}
@@ -278,7 +291,7 @@ const Dashboard = () => {
           {/* Subscription Section - Mon Plan */}
           <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.12s' }}>
             <h2 className="font-display text-xl font-semibold text-foreground flex items-center gap-2 mb-6">
-              Mon Plan
+              {t("dashboard.myPlan")}
             </h2>
             <SubscriptionCard />
           </div>
@@ -293,12 +306,12 @@ const Dashboard = () => {
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-display text-xl font-semibold text-foreground flex items-center gap-2">
                 <ShoppingBag className="h-5 w-5" />
-                Mes commandes
+                {t("dashboard.myOrders")}
               </h2>
               {orders.length > 0 && (
                 <Link to="/orders">
                   <Button variant="outline" size="sm" className="gap-2">
-                    Voir tout
+                    {t("dashboard.viewAll")}
                     <ChevronRight size={14} />
                   </Button>
                 </Link>
@@ -315,15 +328,15 @@ const Dashboard = () => {
                   <ShoppingBag className="h-7 w-7 text-muted-foreground" />
                 </div>
                 <h3 className="font-display text-lg font-semibold mb-2">
-                  Aucune commande
+                  {t("dashboard.noOrders")}
                 </h3>
                 <p className="text-muted-foreground text-sm mb-5 max-w-xs mx-auto">
-                  Commandez votre carte NFC IWASP et rejoignez l'ère du networking intelligent.
+                  {t("dashboard.noOrdersDesc")}
                 </p>
                 <Link to="/checkout">
                   <Button variant="chrome" className="gap-2">
                     <ShoppingBag size={16} />
-                    Commander
+                    {t("dashboard.orderNow")}
                   </Button>
                 </Link>
               </Card>
