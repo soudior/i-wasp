@@ -28,6 +28,7 @@ import Demo from "./pages/Demo";
 import Cart from "./pages/Cart";
 import HerbalismCard from "./pages/HerbalismCard";
 import CardSuccess from "./pages/CardSuccess";
+import UserGuide from "./pages/UserGuide";
 
 // Order funnel pages - 7 steps strict flow
 import OrderType from "./pages/order/OrderType";
@@ -91,6 +92,7 @@ const App = () => (
                       {/* Guest card creation - no auth required */}
                       <Route path="/create" element={<GuestCardCreator />} />
                       <Route path="/success" element={<CardSuccess />} />
+                      <Route path="/guide" element={<UserGuide />} />
                       
                       {/* Finalize card after auth */}
                       <Route path="/onboarding/finalize" element={<FinalizeCard />} />
