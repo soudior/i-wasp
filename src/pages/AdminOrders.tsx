@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   useIsAdmin, 
@@ -11,6 +11,7 @@ import {
 } from "@/hooks/useAdmin";
 import { getOrderStatusLabel, getOrderStatusColor } from "@/hooks/useOrders";
 import { formatPrice } from "@/lib/pricing";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -46,17 +47,68 @@ import {
   StickyNote,
   Clock,
   MapPin,
-  User
+  User,
+  TrendingUp,
+  Crown,
+  CreditCard,
+  Image as ImageIcon
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { Order } from "@/hooks/useOrders";
 import { toast } from "sonner";
 
+// Admin statistics hook
+function useAdminStats() {
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    goldSubscribers: 0,
+    cardsToProuce: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        // Fetch revenue from orders
+        const { data: ordersData } = await supabase
+          .from("orders")
+          .select("total_price_cents, status");
+        
+        const totalRevenue = ordersData?.reduce((acc, o) => acc + (o.total_price_cents || 0), 0) || 0;
+        const cardsToProuce = ordersData?.filter(o => 
+          o.status === "pending" || o.status === "paid" || o.status === "in_production"
+        ).length || 0;
+
+        // Fetch gold subscribers
+        const { count: goldCount } = await supabase
+          .from("subscriptions")
+          .select("*", { count: "exact", head: true })
+          .eq("plan", "premium")
+          .eq("status", "active");
+
+        setStats({
+          totalRevenue,
+          goldSubscribers: goldCount || 0,
+          cardsToProuce
+        });
+      } catch (error) {
+        console.error("Error fetching admin stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
+
+  return { stats, loading };
+}
+
 export default function AdminOrders() {
   const navigate = useNavigate();
   const { data: isAdmin, isLoading: checkingAdmin } = useIsAdmin();
   const { data: orders, isLoading: loadingOrders } = useAllOrders();
+  const { stats, loading: loadingStats } = useAdminStats();
   
   const confirmOrder = useConfirmCODOrder();
   const startProduction = useStartProduction();
@@ -71,6 +123,45 @@ export default function AdminOrders() {
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [adminNotes, setAdminNotes] = useState("");
+
+  // Download logo helper
+  const handleDownloadLogo = async (order: Order) => {
+    if (!order.logo_url) {
+      toast.error("Aucun logo disponible pour cette commande");
+      return;
+    }
+    
+    try {
+      const response = await fetch(order.logo_url);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `logo-${order.order_number}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success("Logo téléchargé");
+    } catch (error) {
+      console.error("Error downloading logo:", error);
+      toast.error("Erreur lors du téléchargement");
+    }
+  };
+
+  // Get product type label
+  const getProductTypeLabel = (order: Order) => {
+    // Check order_items for product type or use order_type field
+    const items = order.order_items as any[];
+    if (items && items.length > 0) {
+      const hasNails = items.some(item => 
+        item.name?.toLowerCase().includes("nail") || 
+        item.name?.toLowerCase().includes("ongle")
+      );
+      if (hasNails) return { label: "Ongles NFC", color: "bg-pink-100 text-pink-800" };
+    }
+    return { label: "Carte NFC", color: "bg-blue-100 text-blue-800" };
+  };
   
   // Loading state
   if (checkingAdmin) {
@@ -384,7 +475,56 @@ export default function AdminOrders() {
           </CardContent>
         </Card>
         
-        {/* Stats Cards */}
+        {/* Revenue & GOLD Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card className="bg-gradient-to-br from-amber-500/10 to-yellow-500/10 border-amber-200">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-amber-500/20 rounded-full">
+                  <TrendingUp className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-amber-700">
+                    {loadingStats ? "..." : formatPrice(stats.totalRevenue)}
+                  </div>
+                  <p className="text-sm text-amber-600">Chiffre d'affaires total</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-gradient-to-br from-yellow-500/10 to-amber-500/10 border-yellow-200">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-yellow-500/20 rounded-full">
+                  <Crown className="h-6 w-6 text-yellow-600" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-yellow-700">
+                    {loadingStats ? "..." : stats.goldSubscribers}
+                  </div>
+                  <p className="text-sm text-yellow-600">Abonnés GOLD actifs</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border-purple-200">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-purple-500/20 rounded-full">
+                  <CreditCard className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-purple-700">
+                    {loadingStats ? "..." : stats.cardsToProuce}
+                  </div>
+                  <p className="text-sm text-purple-600">Cartes à produire</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Order Status Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <Card>
             <CardContent className="pt-6">
@@ -439,6 +579,8 @@ export default function AdminOrders() {
                       <TableHead>N° Commande</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Client</TableHead>
+                      <TableHead>Produit</TableHead>
+                      <TableHead>Logo</TableHead>
                       <TableHead>Qté</TableHead>
                       <TableHead>Total</TableHead>
                       <TableHead>Statut</TableHead>
@@ -465,6 +607,29 @@ export default function AdminOrders() {
                               {order.shipping_city}
                             </p>
                           </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getProductTypeLabel(order).color}>
+                            {getProductTypeLabel(order).label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {order.logo_url ? (
+                            <button 
+                              onClick={() => handleDownloadLogo(order)}
+                              className="group relative"
+                              title="Télécharger le logo"
+                            >
+                              <img 
+                                src={order.logo_url} 
+                                alt="Logo" 
+                                className="h-8 w-8 object-contain rounded border bg-white group-hover:ring-2 ring-primary transition-all"
+                              />
+                              <Download className="absolute -bottom-1 -right-1 h-3 w-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </button>
+                          ) : (
+                            <span className="text-muted-foreground text-xs">—</span>
+                          )}
                         </TableCell>
                         <TableCell>
                           {order.quantity}
