@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Mail, Lock, User, ArrowRight, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -40,9 +41,9 @@ const Signup = () => {
 
     setIsLoading(true);
     const { error } = await signUp(email, password, firstName, lastName);
-    setIsLoading(false);
 
     if (error) {
+      setIsLoading(false);
       if (error.message.includes("already registered")) {
         toast.error("Cet email est déjà utilisé");
       } else {
@@ -51,7 +52,20 @@ const Signup = () => {
       return;
     }
 
-    toast.success("Compte créé avec succès !");
+    // Send welcome email in background
+    try {
+      const dashboardUrl = `${window.location.origin}/dashboard`;
+      await supabase.functions.invoke('send-welcome-email', {
+        body: { email, firstName, lastName, dashboardUrl }
+      });
+      console.log("Welcome email sent");
+    } catch (emailError) {
+      console.error("Failed to send welcome email:", emailError);
+      // Don't block signup if email fails
+    }
+
+    setIsLoading(false);
+    toast.success("Compte créé avec succès ! Vérifiez votre email 📧");
     navigate("/onboarding");
   };
 
