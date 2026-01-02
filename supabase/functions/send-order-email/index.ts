@@ -325,35 +325,73 @@ const generateEmailHtml = (emailType: EmailType, order: OrderData, language: "fr
         <head>
           ${baseStyles}
           <style>
-            .welcome-hero { background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%); padding: 50px 30px; text-align: center; }
-            .welcome-hero h1 { color: #d4af37; font-size: 32px; margin: 0 0 10px; }
+            .welcome-hero { background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%); padding: 50px 30px; text-align: center; }
+            .welcome-hero h1 { color: #d4af37; font-size: 32px; margin: 0 0 10px; font-family: 'Playfair Display', Georgia, serif; }
             .welcome-hero .bee-icon { font-size: 48px; margin-bottom: 15px; }
             .welcome-hero p { color: #ffffff; opacity: 0.9; font-size: 16px; }
             .step-card { background: white; border-radius: 12px; padding: 25px; margin: 15px 0; border-left: 4px solid #d4af37; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-            .step-number { background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #1a1a2e; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 12px; }
+            .step-number { background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #000000; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 12px; }
             .step-title { color: #1a1a2e; font-weight: 600; font-size: 16px; }
-            .step-desc { color: #718096; font-size: 14px; margin-top: 8px; line-height: 1.5; }
-            .cta-button { display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #1a1a2e !important; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; margin: 10px 5px; }
-            .cta-button-secondary { background: transparent; border: 2px solid #d4af37; color: #d4af37 !important; }
+            .step-desc { color: #718096; font-size: 14px; margin-top: 8px; line-height: 1.6; }
+            .cta-button { display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #000000 !important; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; margin: 10px 5px; }
+            .cta-button-secondary { background: #000000; border: 2px solid #d4af37; color: #d4af37 !important; }
             .whatsapp-box { background: #25D366; color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 25px 0; }
             .whatsapp-box a { color: white !important; text-decoration: none; font-weight: 600; }
-            .guide-link { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
-            .guide-link a { color: #d4af37 !important; text-decoration: underline; font-weight: 500; }
+            .pwa-section { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 30px; border-radius: 12px; margin: 25px 0; border: 2px dashed #d4af37; }
+            .pwa-section h3 { color: #1a1a2e; margin: 0 0 15px; font-size: 18px; }
+            .pwa-step { display: flex; align-items: flex-start; margin: 12px 0; }
+            .pwa-step-num { background: #d4af37; color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; margin-right: 12px; flex-shrink: 0; }
+            .pwa-step-text { color: #4a5568; font-size: 14px; line-height: 1.5; }
+            .pwa-step-text strong { color: #1a1a2e; }
+            .gold-box { background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #000000; padding: 20px; border-radius: 8px; text-align: center; margin: 25px 0; }
+            .gold-box h3 { margin: 0 0 10px; font-size: 16px; }
+            .gold-box a { color: #000000 !important; text-decoration: none; font-weight: 700; background: rgba(0,0,0,0.1); padding: 8px 16px; border-radius: 6px; display: inline-block; margin-top: 10px; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="welcome-hero">
               <div class="bee-icon">🐝</div>
-              <h1>Bienvenue chez IWASP !</h1>
-              <p>Félicitations ! Vous venez de faire le premier pas pour moderniser vos échanges professionnels.</p>
+              <h1>Bienvenue chez i-wasp !</h1>
+              <p>Félicitations, vous faites désormais partie du réseau i-wasp.</p>
             </div>
             <div class="content">
               <p class="greeting">Bonjour ${order.shipping_name},</p>
               <p class="message">
-                Votre carte IWASP est entrée en phase de préparation. Voici ce qu'il va se passer ensuite :
+                Votre commande est validée et votre carte NFC entre en production. 🎉
               </p>
               
+              <!-- PWA Installation Section -->
+              <div class="pwa-section">
+                <h3>📱 Votre application i-wasp est déjà disponible !</h3>
+                <p style="color: #4a5568; margin: 0 0 15px; font-size: 14px;">
+                  Pas besoin d'attendre votre carte. Installez l'app sur votre écran d'accueil :
+                </p>
+                <div class="pwa-step">
+                  <span class="pwa-step-num">1</span>
+                  <span class="pwa-step-text">Ouvrez <strong>i-wasp.com</strong> sur votre téléphone (Safari ou Chrome)</span>
+                </div>
+                <div class="pwa-step">
+                  <span class="pwa-step-num">2</span>
+                  <span class="pwa-step-text">Appuyez sur <strong>"Partager"</strong> (iOS) ou <strong>"⋮"</strong> (Android)</span>
+                </div>
+                <div class="pwa-step">
+                  <span class="pwa-step-num">3</span>
+                  <span class="pwa-step-text">Sélectionnez <strong>"Sur l'écran d'accueil"</strong></span>
+                </div>
+                <p style="color: #718096; margin: 15px 0 0; font-size: 13px; text-align: center;">
+                  ✨ L'icône i-wasp apparaîtra comme une vraie application !
+                </p>
+              </div>
+              
+              <!-- Dashboard CTA -->
+              <div class="gold-box">
+                <h3>🎨 Configurez votre profil dès maintenant</h3>
+                <p style="margin: 5px 0 0; font-size: 14px;">Ajoutez votre logo, vos réseaux sociaux et testez la fonction Story.</p>
+                <a href="https://i-wasp.com/dashboard">Accéder à mon Dashboard →</a>
+              </div>
+              
+              <!-- Production Steps -->
               <div class="step-card">
                 <span class="step-number">1</span>
                 <span class="step-title">Personnalisation</span>
@@ -369,28 +407,19 @@ const generateEmailHtml = (emailType: EmailType, order: OrderData, language: "fr
               <div class="step-card">
                 <span class="step-number">3</span>
                 <span class="step-title">Activation</span>
-                <p class="step-desc">Dès réception, il vous suffira de "taper" votre carte sur un téléphone pour l'associer à votre profil digital.</p>
-              </div>
-              
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="https://i-wasp.com/guide" class="cta-button">📖 Voir le guide d'utilisation</a>
-              </div>
-              
-              <div class="guide-link">
-                <p style="margin: 0 0 10px; color: #4a5568;">💡 <strong>Conseil Pro :</strong></p>
-                <p style="margin: 0; color: #718096; font-size: 14px;">Pour une connexion NFC optimale, placez votre carte IWASP près du <strong>haut de l'iPhone</strong> ou au <strong>centre de l'Android</strong> de votre client.</p>
+                <p class="step-desc">Dès réception, "tapez" votre carte sur un téléphone pour l'associer à votre profil digital.</p>
               </div>
               
               ${orderDetails}
               
               <div class="whatsapp-box">
-                <p style="margin: 0 0 10px;">Besoin d'aide ? Contactez-nous sur WhatsApp :</p>
-                <a href="https://wa.me/212600000000?text=Bonjour%20IWASP%2C%20j%27ai%20une%20question%20concernant%20ma%20commande%20%23${order.order_number}">💬 Écrire sur WhatsApp</a>
+                <p style="margin: 0 0 10px;">Une question ? Contactez-nous sur WhatsApp :</p>
+                <a href="https://wa.me/212600000000?text=Bonjour%20i-wasp%20!%20J%27ai%20une%20question%20concernant%20ma%20commande%20%23${order.order_number}">💬 Écrire sur WhatsApp</a>
               </div>
               
               <p class="message" style="text-align: center; font-style: italic;">
                 Bienvenue dans la ruche ! 🐝<br>
-                <strong>L'équipe IWASP</strong>
+                <strong>L'équipe i-wasp</strong>
               </p>
             </div>
             ${footer}
