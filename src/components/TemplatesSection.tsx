@@ -71,6 +71,8 @@ export function TemplatesSection() {
                     <motion.img
                       src={template.cardImage}
                       alt={template.name}
+                      loading="lazy"
+                      decoding="async"
                       className="absolute inset-4 w-[60%] h-auto object-contain z-10"
                       whileHover={{ scale: 1.05, rotate: -2 }}
                       transition={{ duration: 0.4 }}
@@ -79,6 +81,8 @@ export function TemplatesSection() {
                     <motion.img
                       src={template.phoneImage}
                       alt={`${template.name} preview`}
+                      loading="lazy"
+                      decoding="async"
                       className="absolute right-2 top-1/2 -translate-y-1/2 w-[45%] h-auto object-contain z-20"
                       initial={{ x: 20, opacity: 0.8 }}
                       whileHover={{ x: 0, opacity: 1, scale: 1.02 }}
