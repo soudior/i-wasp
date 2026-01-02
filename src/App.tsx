@@ -34,6 +34,7 @@ import OrderDigital from "./pages/order/OrderDigital";
 import OrderDesign from "./pages/order/OrderDesign";
 import OrderOptions from "./pages/order/OrderOptions";
 import OrderSummary from "./pages/order/OrderSummary";
+import OrderPreviewFinal from "./pages/order/OrderPreviewFinal";
 import OrderPayment from "./pages/order/OrderPayment";
 
 const queryClient = new QueryClient({
@@ -109,6 +110,7 @@ const App = () => (
                       <Route path="/order/design" element={<OrderDesign />} />
                       <Route path="/order/options" element={<OrderOptions />} />
                       <Route path="/order/summary" element={<OrderSummary />} />
+                      <Route path="/order/preview" element={<OrderPreviewFinal />} />
                       <Route path="/order/payment" element={<OrderPayment />} />
                       
                       {/* Cart - Protected, only after full configuration */}
