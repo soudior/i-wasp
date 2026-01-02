@@ -11,7 +11,11 @@ import {
   ChevronDown,
   Check,
   Star,
-  Palette
+  Palette,
+  Diamond,
+  Eye,
+  Zap,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,34 +27,35 @@ import {
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 import nailsHero from "@/assets/nails/nails-hero.png";
 import nailsCafe from "@/assets/nails/nails-cafe.png";
+import nailsDemoVideo from "@/assets/nails/nails-demo-video.mp4";
 
 const Nails = () => {
   const navigate = useNavigate();
 
   const features = [
-    { icon: Sparkles, title: "Élégance discrète", desc: "Un accessoire mode qui cache une technologie révolutionnaire" },
+    { icon: Diamond, title: "Technologie Invisible", desc: "Puce ultra-fine qui disparaît sous votre vernis" },
     { icon: Droplets, title: "Résistant à l'eau", desc: "Portez-le sous la douche, à la piscine, sans souci" },
-    { icon: Clock, title: "Longue durée", desc: "Jusqu'à 2 semaines de networking stylé" },
+    { icon: Shield, title: "Résistance UV", desc: "Compatible lampes UV et produits manucure" },
     { icon: Palette, title: "2 finitions", desc: "Or Rose & Noir avec logo i-wasp gravé" },
   ];
 
   const steps = [
     {
       num: 1,
-      title: "Collez l'ongle NFC",
-      desc: "Appliquez l'ongle comme un ongle classique. Il adhère parfaitement à votre ongle naturel.",
+      title: "Posez la puce sur l'ongle",
+      desc: "Appliquez la puce ultra-fine sur votre ongle propre. Elle est si légère que vous ne la sentez pas.",
       icon: Hand,
     },
     {
       num: 2,
-      title: "Activez votre profil",
-      desc: "Connectez-vous à votre dashboard i-wasp et personnalisez votre carte digitale.",
-      icon: Smartphone,
+      title: "Appliquez votre vernis",
+      desc: "Vernissez par-dessus (classique ou semi-permanent). La puce disparaît complètement sous la couleur.",
+      icon: Palette,
     },
     {
       num: 3,
-      title: "Connectez-vous !",
-      desc: "Approchez votre ongle d'un smartphone. Votre profil s'ouvre instantanément comme par magie.",
+      title: "Flashez et connectez !",
+      desc: "Personne ne verra la puce, mais tout le monde verra votre profil. C'est magique !",
       icon: Sparkles,
     },
   ];
@@ -118,20 +123,20 @@ const Nails = () => {
             >
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-rose-500/20 to-amber-500/20 border border-rose-400/30 mb-6">
-                <Sparkles className="h-4 w-4 text-rose-400" />
-                <span className="text-sm text-rose-300 font-medium">Nouveau : Collection Nails</span>
+                <Diamond className="h-4 w-4 text-rose-400" />
+                <span className="text-sm text-rose-300 font-medium">Technologie Invisible</span>
               </div>
 
               <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                i-wasp Nails
+                Le secret le mieux gardé
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-300 to-amber-400">
-                  Le Networking Discret
+                  de votre manucure 🤫
                 </span>
               </h1>
 
               <p className="text-lg text-zinc-400 leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
-                La technologie NFC dissimulée dans un accessoire mode élégant. 
-                Partagez votre profil d'un simple geste, avec style.
+                <span className="text-rose-300 font-semibold">Pourquoi porter une carte quand on peut porter l'innovation ?</span>
+                {" "}La puce i-wasp est si fine qu'elle devient <span className="text-white font-medium">totalement invisible</span> sous votre vernis.
               </p>
 
               {/* CTA Buttons */}
@@ -226,8 +231,58 @@ const Nails = () => {
         </div>
       </section>
 
-      {/* Lifestyle Image Section */}
-      <section className="py-16">
+      {/* Video Demo Section - Technologie Invisible */}
+      <section className="py-16 relative overflow-hidden">
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(168, 85, 247, 0.3) 0%, transparent 60%)',
+          }}
+        />
+        <div className="container mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/20 to-rose-500/20 border border-purple-400/30 mb-6">
+              <Eye className="h-4 w-4 text-purple-400" />
+              <span className="text-sm text-purple-300 font-medium">Démonstration</span>
+            </div>
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-4">
+              Voyez la magie en action
+            </h2>
+            <p className="text-zinc-400 max-w-2xl mx-auto">
+              La puce disparaît complètement. Votre manucure reste parfaite et naturelle, mais elle devient connectée.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="max-w-3xl mx-auto"
+          >
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-purple-500/20 border border-purple-500/20">
+              <video 
+                src={nailsDemoVideo}
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                className="w-full aspect-video object-cover"
+              />
+              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Invisible Technology Section */}
+      <section className="py-16 border-t border-zinc-900">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -251,21 +306,55 @@ const Nails = () => {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-6">
-                L'élégance rencontre
-                <span className="text-rose-400"> la technologie</span>
-              </h2>
-              <p className="text-zinc-400 leading-relaxed mb-6">
-                Imaginez-vous au café, lors d'un événement networking, ou simplement en rencontre professionnelle. 
-                D'un geste naturel et élégant, vous approchez votre main du smartphone de votre interlocuteur. 
-                Votre profil complet apparaît instantanément.
-              </p>
-              <p className="text-zinc-400 leading-relaxed mb-8">
-                Plus besoin de cartes papier qui s'abîment. Plus de "je n'ai plus de cartes sur moi". 
-                Votre networking est littéralement au bout de vos doigts.
-              </p>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-rose-500/20 border border-amber-400/30 mb-4">
+                <Diamond className="h-3 w-3 text-amber-400" />
+                <span className="text-xs text-amber-300 font-medium">Épaisseur nanométrique</span>
+              </div>
               
-              <div className="flex items-center gap-4">
+              <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-6">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-rose-400">Technologie Invisible</span>
+                <span className="block text-white">sous votre vernis</span>
+              </h2>
+              
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-rose-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Zap className="h-4 w-4 text-rose-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium mb-1">Ultra-fine et légère</p>
+                    <p className="text-zinc-400 text-sm">Posée directement sur l'ongle avant le vernis (classique ou semi-permanent)</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Eye className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium mb-1">Disparition totale</p>
+                    <p className="text-zinc-400 text-sm">La puce est invisible sous la couleur. Aucune bosse sur l'ongle.</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Shield className="h-4 w-4 text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium mb-1">Résistance totale</p>
+                    <p className="text-zinc-400 text-sm">Compatible lampes UV et tous produits de manucure professionnels</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-500/10 to-amber-500/10 border border-rose-500/20">
+                <p className="text-rose-200 text-sm italic">
+                  "C'est le futur du networking féminin : l'élégance d'une main soignée, la puissance d'un profil digital."
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-4 mt-6">
                 <div className="flex -space-x-2">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500 to-amber-500 border-2 border-black flex items-center justify-center">
