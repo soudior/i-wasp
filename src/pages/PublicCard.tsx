@@ -10,12 +10,15 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { usePublicCard, useCardActionUrl, useIncrementCardView } from "@/hooks/usePublicCard";
 import { useRecordScan } from "@/hooks/useScans";
+import { usePublicStory } from "@/hooks/useStories";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Phone, Mail, Linkedin, MessageCircle, UserPlus } from "lucide-react";
+import { StoryRing } from "@/components/StoryRing";
 
 const PublicCard = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: card, isLoading, error } = usePublicCard(slug || "");
+  const { story } = usePublicStory(card?.id || undefined);
   const recordScan = useRecordScan();
   const getActionUrl = useCardActionUrl();
   const incrementView = useIncrementCardView();
@@ -153,25 +156,17 @@ const PublicCard = () => {
       >
         {/* Profile Section */}
         <div className="text-center mb-6">
-          {/* Photo */}
-          {card.photo_url ? (
-            <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden">
-              <img 
-                src={card.photo_url} 
-                alt={fullName}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ) : (
-            <div 
-              className="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: "#F5F5F7" }}
-            >
-              <span className="text-2xl font-medium" style={{ color: "#8E8E93" }}>
-                {card.first_name.charAt(0)}{card.last_name.charAt(0)}
-              </span>
-            </div>
-          )}
+          {/* Photo with Story Ring */}
+          <div className="flex justify-center mb-4">
+            <StoryRing
+              photoUrl={card.photo_url || undefined}
+              firstName={card.first_name}
+              lastName={card.last_name}
+              story={story}
+              email={card.has_email ? undefined : undefined}
+              size="lg"
+            />
+          </div>
 
           {/* Name */}
           <h1 
