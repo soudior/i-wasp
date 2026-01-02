@@ -635,18 +635,28 @@ export default function AdminOrders() {
                                 {order.shipping_city}
                               </p>
                             </div>
-                            {/* WhatsApp Button */}
+                            {/* Contact Buttons */}
                             {order.shipping_phone && (
-                              <a
-                                href={generateWhatsAppLink(order)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="ml-2 p-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white transition-colors shrink-0"
-                                title="Envoyer confirmation WhatsApp"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <MessageCircle className="h-4 w-4" />
-                              </a>
+                              <div className="flex items-center gap-1 ml-2">
+                                <a
+                                  href={generateWhatsAppLink(order)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white transition-colors shrink-0"
+                                  title="Envoyer confirmation WhatsApp"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <MessageCircle className="h-4 w-4" />
+                                </a>
+                                <a
+                                  href={`tel:${order.shipping_phone}`}
+                                  className="p-1.5 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-colors shrink-0"
+                                  title="Appeler le client"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Phone className="h-4 w-4" />
+                                </a>
+                              </div>
                             )}
                           </div>
                         </TableCell>
