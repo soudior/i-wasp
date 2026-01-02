@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import iwaspLogo from "@/assets/iwasp-logo.png";
+import nfcDemoVideo from "@/assets/nfc-demo-video.mp4";
 
 const steps = [
   {
@@ -101,31 +102,15 @@ export default function UserGuide() {
         >
           {/* Video Container - Reels Format (9:16) */}
           <div className="relative aspect-[9/16] rounded-3xl overflow-hidden bg-gradient-to-b from-primary/20 to-primary/5 shadow-2xl shadow-primary/20">
-            {/* Placeholder until video is added */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-              <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-4 animate-pulse">
-                <Smartphone size={32} className="text-primary" />
-              </div>
-              <p className="text-white/60 text-sm">
-                Vidéo de démonstration NFC
-              </p>
-              <p className="text-white/40 text-xs mt-2">
-                Bientôt disponible
-              </p>
-            </div>
-            
-            {/* 
-              When video is added, replace the placeholder with:
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              >
-                <source src={nfcDemoVideo} type="video/mp4" />
-              </video>
-            */}
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            >
+              <source src={nfcDemoVideo} type="video/mp4" />
+            </video>
           </div>
           
           {/* Caption under video */}
