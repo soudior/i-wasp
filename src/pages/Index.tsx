@@ -66,9 +66,9 @@ const Index = () => {
               size="lg"
               variant="outline"
               className="border-2 border-amber-500/60 bg-transparent text-amber-400 hover:bg-amber-500/10 hover:border-amber-400 font-medium gap-2 px-8 py-6 text-base rounded-xl transition-all duration-300"
-              onClick={() => navigate("/templates")}
+              onClick={() => navigate("/demo-dashboard")}
             >
-              Voir les Templates
+              Essayer la Démo
             </Button>
           </div>
 
