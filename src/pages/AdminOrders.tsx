@@ -51,7 +51,9 @@ import {
   TrendingUp,
   Crown,
   CreditCard,
-  Image as ImageIcon
+  Image as ImageIcon,
+  MessageCircle,
+  Phone
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -147,6 +149,31 @@ export default function AdminOrders() {
       console.error("Error downloading logo:", error);
       toast.error("Erreur lors du téléchargement");
     }
+  };
+
+  // Generate WhatsApp confirmation message
+  const generateWhatsAppLink = (order: Order) => {
+    const phone = order.shipping_phone?.replace(/[\s\-\.\(\)]/g, "") || "";
+    const cleanPhone = phone.startsWith("+") ? phone.slice(1) : phone;
+    
+    // Get product type
+    const productType = getProductTypeLabel(order);
+    const productName = productType.label;
+    
+    // Build message
+    const message = encodeURIComponent(
+      `Bonjour ${order.shipping_name || ""},\n\n` +
+      `Ici l'équipe i-wasp Maroc 🐝\n\n` +
+      `Nous avons bien reçu votre commande :\n\n` +
+      `📦 ${productName} (x${order.quantity})\n` +
+      `📍 Livraison à : ${order.shipping_city || "Maroc"}\n\n` +
+      `Pour valider l'envoi et lancer la gravure personnalisée, merci de confirmer par un simple *OUI* ou un 👍\n\n` +
+      `Votre profil digital est déjà prêt à configurer !\n\n` +
+      `Merci de votre confiance,\n` +
+      `L'équipe i-wasp`
+    );
+    
+    return `https://wa.me/${cleanPhone}?text=${message}`;
   };
 
   // Get product type label
@@ -600,12 +627,27 @@ export default function AdminOrders() {
                           {format(new Date(order.created_at), "dd/MM/yy", { locale: fr })}
                         </TableCell>
                         <TableCell>
-                          <div>
-                            <p className="font-medium text-sm">{order.shipping_name}</p>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1">
-                              <MapPin className="h-3 w-3" />
-                              {order.shipping_city}
-                            </p>
+                          <div className="flex items-center gap-2">
+                            <div>
+                              <p className="font-medium text-sm">{order.shipping_name}</p>
+                              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                <MapPin className="h-3 w-3" />
+                                {order.shipping_city}
+                              </p>
+                            </div>
+                            {/* WhatsApp Button */}
+                            {order.shipping_phone && (
+                              <a
+                                href={generateWhatsAppLink(order)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="ml-2 p-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white transition-colors shrink-0"
+                                title="Envoyer confirmation WhatsApp"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <MessageCircle className="h-4 w-4" />
+                              </a>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>
