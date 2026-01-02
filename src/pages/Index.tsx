@@ -272,14 +272,14 @@ const Index = () => {
             />
             
             {/* Conteneur vidéo */}
-            <div className="relative rounded-3xl overflow-hidden border border-border/30 shadow-2xl">
+            <div className="relative rounded-3xl overflow-hidden border border-border/30 shadow-2xl group cursor-pointer">
               <video
                 src={nfcDemoVideo}
                 autoPlay
                 loop
                 muted
                 playsInline
-                className="w-full aspect-[9/16] object-cover"
+                className="w-full aspect-[9/16] object-cover transition-transform duration-300 ease-out group-hover:scale-[1.02]"
               />
             </div>
           </div>
