@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,6 +16,22 @@ interface UserProfile {
   phone?: string;
 }
 
+async function verifyAuth(req: Request): Promise<{ user: any; error?: string }> {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader) return { user: null, error: 'Authorization header required' };
+
+  const supabaseClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    { global: { headers: { Authorization: authHeader } } }
+  );
+
+  const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+  if (authError || !user) return { user: null, error: 'Unauthorized - valid authentication required' };
+
+  return { user };
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -22,6 +39,16 @@ serve(async (req) => {
   }
 
   try {
+    const { user, error: authError } = await verifyAuth(req);
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: authError || 'Unauthorized', code: 'UNAUTHORIZED' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    console.log('Authenticated user:', user.id);
+
     const { profile, language = 'fr' } = await req.json() as { profile: UserProfile; language?: string };
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -135,11 +162,12 @@ Pour une entreprise: priorise LinkedIn, site web, adresse`;
 
   } catch (error) {
     console.error('Smart suggestions error:', error);
+    const isUnauthorized = error instanceof Error && /unauthorized|auth/i.test(error.message);
     return new Response(JSON.stringify({ 
       error: error instanceof Error ? error.message : 'Unknown error',
-      code: 'INTERNAL_ERROR'
+      code: isUnauthorized ? 'UNAUTHORIZED' : 'INTERNAL_ERROR'
     }), {
-      status: 500,
+      status: isUnauthorized ? 401 : 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
