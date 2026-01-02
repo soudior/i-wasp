@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { MobileOptimizedVideo } from "@/components/MobileOptimizedVideo";
 import nfcDemoVideo from "@/assets/nfc-demo-video.mp4";
 import nailsDemoVideo from "@/assets/nails/nails-demo-video.mp4";
+import nfcPoster from "@/assets/posters/nfc-demo-poster.webp";
+import nailsPoster from "@/assets/posters/nails-demo-poster.webp";
 
 /**
  * Index - Page d'accueil Dual-Power i-wasp
@@ -102,7 +104,8 @@ const Index = () => {
               {/* Video Carte */}
               <div className={mode === "carte" ? "block" : "hidden"}>
                 <MobileOptimizedVideo 
-                  src={nfcDemoVideo} 
+                  src={nfcDemoVideo}
+                  poster={nfcPoster}
                   aspectRatio="9/16"
                   autoPlayOnDesktop={mode === "carte"}
                   rounded="rounded-[1.75rem]"
@@ -111,7 +114,8 @@ const Index = () => {
               {/* Video Ongle */}
               <div className={mode === "ongle" ? "block" : "hidden"}>
                 <MobileOptimizedVideo 
-                  src={nailsDemoVideo} 
+                  src={nailsDemoVideo}
+                  poster={nailsPoster}
                   aspectRatio="9/16"
                   autoPlayOnDesktop={mode === "ongle"}
                   rounded="rounded-[1.75rem]"
