@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Configuration -->
+    <key>CFBundleDevelopmentRegion</key>
+    <string>fr</string>
+    <key>CFBundleDisplayName</key>
+    <string>IWASP</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    
+    <!-- iOS Launch -->
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+    <key>UIMainStoryboardFile</key>
+    <string>Main</string>
+    
+    <!-- Device Orientation -->
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+    </array>
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    
+    <!-- Appearance -->
+    <key>UIStatusBarStyle</key>
+    <string>UIStatusBarStyleDefault</string>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <true/>
+    <key>UIRequiresFullScreen</key>
+    <true/>
+    
+    <!-- App Transport Security -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+    
+    <!-- Privacy Descriptions (Required for App Store) -->
+    <key>NSCameraUsageDescription</key>
+    <string>IWASP a besoin d'accéder à votre caméra pour scanner les cartes NFC et prendre des photos de profil.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>IWASP a besoin d'accéder à vos photos pour vous permettre de choisir une photo de profil.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>IWASP a besoin de sauvegarder des images dans votre galerie.</string>
+    <key>NSContactsUsageDescription</key>
+    <string>IWASP a besoin d'accéder à vos contacts pour ajouter des cartes de visite à votre répertoire.</string>
+    <key>NFCReaderUsageDescription</key>
+    <string>IWASP utilise NFC pour lire et programmer les cartes de visite intelligentes.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>IWASP utilise votre position pour afficher les services à proximité sur votre carte.</string>
+    
+    <!-- NFC Configuration -->
+    <key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+    <array>
+        <string>D2760000850101</string>
+    </array>
+    
+    <!-- URL Schemes for Deep Linking -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>com.iwasp.app</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>iwasp</string>
+            </array>
+        </dict>
+    </array>
+    
+    <!-- Associated Domains (for Universal Links) -->
+    <key>com.apple.developer.associated-domains</key>
+    <array>
+        <string>applinks:i-wasp.com</string>
+        <string>applinks:www.i-wasp.com</string>
+    </array>
+    
+    <!-- Background Modes -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>fetch</string>
+        <string>remote-notification</string>
+    </array>
+    
+    <!-- App Capabilities -->
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
+</dict>
+</plist>
