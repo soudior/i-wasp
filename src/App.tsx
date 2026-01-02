@@ -32,6 +32,7 @@ import UserGuide from "./pages/UserGuide";
 import Templates from "./pages/Templates";
 import Settings from "./pages/Settings";
 import Install from "./pages/Install";
+import Help from "./pages/Help";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 // Order funnel pages - 7 steps strict flow
@@ -99,6 +100,8 @@ const App = () => (
                       <Route path="/guide" element={<UserGuide />} />
                       <Route path="/templates" element={<Templates />} />
                       <Route path="/install" element={<Install />} />
+                      <Route path="/help" element={<Help />} />
+                      <Route path="/faq" element={<Help />} />
                       {/* Finalize card after auth */}
                       <Route path="/onboarding/finalize" element={<FinalizeCard />} />
                       
