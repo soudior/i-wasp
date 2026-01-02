@@ -397,8 +397,18 @@ export default function GuestCardCreator() {
                     )}
                   </div>
 
+                  {/* NEW: Preview Success Page */}
+                  <Button 
+                    onClick={() => navigate("/success")}
+                    className="w-full h-14 gap-2 text-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500"
+                  >
+                    <Sparkles size={20} />
+                    Voir mon profil
+                  </Button>
+
                   {/* Primary CTA - Save */}
                   <Button 
+                    variant="outline"
                     onClick={() => requireAuth("save")}
                     className="w-full h-12 gap-2"
                   >
