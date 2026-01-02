@@ -31,7 +31,7 @@ const productContent = {
   },
 };
 
-// Optimized Video Component with Hardware Acceleration for iOS
+// Native Video Component - Maximum iOS Performance
 function OptimizedVideo({ 
   src, 
   isActive 
@@ -41,67 +41,47 @@ function OptimizedVideo({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(false);
 
-  // Intersection Observer for lazy loading
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "100px", threshold: 0.1 }
-    );
-
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, []);
-
-  // Play/pause based on active state with iOS optimization
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video || !isInView) return;
-
     if (isActive) {
-      // iOS requires user gesture for autoplay - use low power mode
       video.play().catch(() => {
-        // Fallback for iOS autoplay restrictions
         video.muted = true;
         video.play().catch(() => {});
       });
     } else {
       video.pause();
     }
-  }, [isActive, isInView]);
+  }, [isActive]);
 
   return (
     <video
       ref={videoRef}
-      src={isInView ? src : undefined}
+      src={src}
       autoPlay={isActive}
       loop
       muted
       playsInline
-      preload="metadata"
+      preload="auto"
       onLoadedData={() => setIsLoaded(true)}
-      className={`w-full aspect-[9/16] object-cover rounded-[1.75rem] transition-opacity duration-300 ${
+      className={`w-full aspect-[9/16] object-cover rounded-[1.75rem] ${
         isLoaded ? "opacity-100" : "opacity-0"
       }`}
       style={{ 
-        // Hardware acceleration for smooth iOS playback
+        // Force native iOS video player with maximum hardware acceleration
         WebkitTransform: "translate3d(0,0,0)",
         transform: "translate3d(0,0,0)",
         WebkitBackfaceVisibility: "hidden",
         backfaceVisibility: "hidden",
         WebkitPerspective: 1000,
         perspective: 1000,
-        willChange: "transform"
-      }}
+        willChange: "transform",
+        // iOS Safari optimizations
+        WebkitOverflowScrolling: "touch",
+        WebkitTapHighlightColor: "transparent",
+      } as React.CSSProperties}
     />
   );
 }

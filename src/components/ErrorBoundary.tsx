@@ -1,11 +1,11 @@
 /**
- * ErrorBoundary - Captures React errors and displays fallback UI
- * Prevents white screen of death in production
+ * ErrorBoundary - Production-ready error handling
+ * Clean user experience, no technical details exposed
  */
 
 import React, { Component, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { RefreshCw, Home } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -13,42 +13,24 @@ interface Props {
 
 interface State {
   hasError: boolean;
-  error: Error | null;
-  errorInfo: React.ErrorInfo | null;
 }
 
 class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = {
-      hasError: false,
-      error: null,
-      errorInfo: null,
-    };
+    this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error): State {
-    return {
-      hasError: true,
-      error,
-      errorInfo: null,
-    };
+  static getDerivedStateFromError(): State {
+    return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("Error Boundary caught an error:", error, errorInfo);
-    this.setState({
-      error,
-      errorInfo,
-    });
+  componentDidCatch() {
+    // Silent catch - no console logs in production
   }
 
   handleReset = () => {
-    this.setState({
-      hasError: false,
-      error: null,
-      errorInfo: null,
-    });
+    this.setState({ hasError: false });
   };
 
   handleGoHome = () => {
@@ -58,40 +40,31 @@ class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-dvh flex items-center justify-center p-6 bg-background">
+        <div 
+          className="min-h-dvh flex items-center justify-center p-6"
+          style={{ backgroundColor: "#F5F5F7" }}
+        >
           <div className="max-w-md w-full text-center space-y-6">
             <div className="flex justify-center">
-              <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
-                <AlertTriangle className="w-8 h-8 text-destructive" />
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: "#F5F5F7" }}
+              >
+                <span className="text-4xl">🔄</span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl font-semibold text-foreground">
-                Une erreur est survenue
+              <h1 
+                className="text-2xl font-semibold"
+                style={{ color: "#1D1D1F" }}
+              >
+                Actualisation requise
               </h1>
-              <p className="text-muted-foreground">
-                L'application a rencontré un problème inattendu. Veuillez réessayer.
+              <p style={{ color: "#8E8E93" }}>
+                Veuillez rafraîchir la page pour continuer.
               </p>
             </div>
-
-            {process.env.NODE_ENV === "development" && this.state.error && (
-              <div className="p-4 rounded-lg bg-muted/50 text-left">
-                <p className="text-xs font-mono text-destructive break-all">
-                  {this.state.error.toString()}
-                </p>
-                {this.state.errorInfo && (
-                  <details className="mt-2">
-                    <summary className="text-xs text-muted-foreground cursor-pointer">
-                      Stack trace
-                    </summary>
-                    <pre className="text-[10px] mt-2 text-muted-foreground overflow-auto max-h-40">
-                      {this.state.errorInfo.componentStack}
-                    </pre>
-                  </details>
-                )}
-              </div>
-            )}
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
@@ -102,9 +75,13 @@ class ErrorBoundary extends Component<Props, State> {
                 <RefreshCw size={16} />
                 Réessayer
               </Button>
-              <Button onClick={this.handleGoHome} className="gap-2">
+              <Button 
+                onClick={this.handleGoHome} 
+                className="gap-2"
+                style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
+              >
                 <Home size={16} />
-                Retour à l'accueil
+                Accueil
               </Button>
             </div>
           </div>
