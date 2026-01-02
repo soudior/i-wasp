@@ -148,6 +148,7 @@ export default {
       transitionTimingFunction: {
         "iwasp": "cubic-bezier(0.42, 0, 0.58, 1)",
       },
+      /* ANIMATIONS DISABLED FOR PRODUCTION - STATIC UI */
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -157,91 +158,23 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "fade-in": {
-          from: { opacity: "0" },
-          to: { opacity: "1" },
-        },
-        "fade-up": {
-          from: { opacity: "0", transform: "translateY(20px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
-        },
-        "fade-down": {
-          from: { opacity: "0", transform: "translateY(-20px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
-        },
-        "fade-left": {
-          from: { opacity: "0", transform: "translateX(20px)" },
-          to: { opacity: "1", transform: "translateX(0)" },
-        },
-        "fade-right": {
-          from: { opacity: "0", transform: "translateX(-20px)" },
-          to: { opacity: "1", transform: "translateX(0)" },
-        },
-        "scale-in": {
-          from: { opacity: "0", transform: "scale(0.95)" },
-          to: { opacity: "1", transform: "scale(1)" },
-        },
-        "scale-up": {
-          from: { opacity: "0", transform: "scale(0.95) translateY(20px)" },
-          to: { opacity: "1", transform: "scale(1) translateY(0)" },
-        },
-        "float-3d": {
-          "0%, 100%": { 
-            transform: "translateY(0px) rotateX(0deg) rotateY(0deg)" 
-          },
-          "25%": {
-            transform: "translateY(-8px) rotateX(2deg) rotateY(-1deg)"
-          },
-          "50%": { 
-            transform: "translateY(-12px) rotateX(0deg) rotateY(2deg)" 
-          },
-          "75%": {
-            transform: "translateY(-6px) rotateX(-1deg) rotateY(0deg)"
-          },
-        },
-        "float-subtle": {
-          "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-10px)" },
-        },
-        "pulse-glow": {
-          "0%, 100%": { 
-            opacity: "0.4",
-            transform: "scale(1)"
-          },
-          "50%": { 
-            opacity: "0.7",
-            transform: "scale(1.02)"
-          },
-        },
-        "shimmer": {
-          from: { transform: "translateX(-100%)" },
-          to: { transform: "translateX(100%)" },
-        },
-        "spin-slow": {
-          from: { transform: "rotate(0deg)" },
-          to: { transform: "rotate(360deg)" },
-        },
-        "card-enter": {
-          from: { opacity: "0", transform: "translateY(30px) rotateX(10deg)" },
-          to: { opacity: "1", transform: "translateY(0) rotateX(0deg)" },
-        },
       },
       animation: {
-        "accordion-down": "accordion-down 200ms ease-in-out",
-        "accordion-up": "accordion-up 200ms ease-in-out",
-        "fade-in": "fade-in 200ms ease-in-out both",
-        "fade-up": "fade-up 200ms ease-in-out both",
-        "fade-down": "fade-down 200ms ease-in-out both",
-        "fade-left": "fade-left 200ms ease-in-out both",
-        "fade-right": "fade-right 200ms ease-in-out both",
-        "scale-in": "scale-in 180ms ease-in-out both",
-        "scale-up": "scale-up 200ms ease-in-out both",
-        "float-3d": "float-3d 8s ease-in-out infinite",
-        "float-subtle": "float-subtle 3s ease-in-out infinite",
-        "pulse-glow": "pulse-glow 4s ease-in-out infinite",
-        "shimmer": "shimmer 3s ease-in-out infinite",
-        "spin-slow": "spin-slow 20s linear infinite",
-        "card-enter": "card-enter 220ms cubic-bezier(0.42, 0, 0.58, 1) both",
+        "accordion-down": "accordion-down 0ms",
+        "accordion-up": "accordion-up 0ms",
+        "fade-in": "none",
+        "fade-up": "none",
+        "fade-down": "none",
+        "fade-left": "none",
+        "fade-right": "none",
+        "scale-in": "none",
+        "scale-up": "none",
+        "float-3d": "none",
+        "float-subtle": "none",
+        "pulse-glow": "none",
+        "shimmer": "none",
+        "spin-slow": "none",
+        "card-enter": "none",
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

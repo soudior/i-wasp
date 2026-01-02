@@ -11,7 +11,7 @@ import { OrderFunnelProvider, CartGuard } from "@/contexts/OrderFunnelContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
 import { AdminGuard } from "@/components/AdminGuard";
 import { FeatureValidationProvider } from "@/components/FeatureValidationProvider";
-import { DebugPanel } from "@/components/debug";
+// Debug panel removed for production build
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { SplashScreen } from "@/components/SplashScreen";
 import { NetworkProvider } from "@/components/NetworkProvider";
@@ -192,8 +192,6 @@ const App = () => {
                     <MobileBottomNav />
                     {/* PWA Install Prompt */}
                     <PWAInstallPrompt />
-                    {/* Debug Panel - Remove in production */}
-                    <DebugPanel />
                   </OrderFunnelProvider>
                 </ErrorBoundary>
               </BrowserRouter>
