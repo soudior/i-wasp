@@ -9,8 +9,8 @@ import iwaspLogo from "@/assets/iwasp-logo.png";
 const navLinks = [
   { href: "/", label: "Accueil" },
   { href: "/order", label: "Commander" },
-  { href: "/templates", label: "Nos Templates" },
-  { href: "/#pricing", label: "Tarifs" },
+  { href: "/demo-dashboard", label: "Démo" },
+  { href: "/templates", label: "Templates" },
   { href: "/contact", label: "Contact" },
 ];
 
