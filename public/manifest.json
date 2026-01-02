@@ -15,9 +15,9 @@
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "/favicon.ico",
+      "src": "/favicon.png",
       "sizes": "64x64",
-      "type": "image/x-icon"
+      "type": "image/png"
     },
     {
       "src": "/apple-touch-icon.png",
