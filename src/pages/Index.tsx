@@ -302,10 +302,49 @@ const Index = () => {
           </div>
 
           {/* Promotion */}
-          <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 text-center">
+          <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 text-center mb-12">
             <p className="text-sm font-medium text-foreground">
               🎁 Offre de lancement : -10% avec le code <span className="font-mono bg-foreground/10 px-2 py-0.5 rounded">IWASP10</span>
             </p>
+          </div>
+
+          {/* FAQ Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground text-center mb-6">
+              Questions fréquentes
+            </h3>
+            
+            {[
+              {
+                question: "Comment passer au GOLD ?",
+                answer: "Après avoir commandé votre carte, accédez à votre Dashboard et cliquez sur « Passer au Premium ». Vous serez mis en contact avec notre équipe via WhatsApp pour finaliser votre abonnement en toute simplicité."
+              },
+              {
+                question: "Puis-je annuler mon abonnement GOLD ?",
+                answer: "Oui, vous pouvez annuler à tout moment. Votre accès aux fonctionnalités GOLD reste actif jusqu'à la fin de la période payée. Aucun engagement, aucune surprise."
+              },
+              {
+                question: "La carte NFC est-elle incluse dans le GOLD ?",
+                answer: "La carte NFC physique est achetée séparément (à partir de 290 DH). L'abonnement GOLD (99 DH/mois) débloque les fonctionnalités avancées : Stories, WiFi rapide et Analytics."
+              },
+              {
+                question: "Que se passe-t-il si je reste en Pack Starter ?",
+                answer: "Votre carte NFC fonctionne parfaitement avec le Pack Starter inclus. Vous pouvez modifier votre profil et vos liens à tout moment. Seules les fonctionnalités exclusives (Story, WiFi, Stats) nécessitent le GOLD."
+              },
+            ].map((faq, index) => (
+              <div 
+                key={index}
+                className="p-4 rounded-xl border border-border/50 bg-card/30"
+              >
+                <h4 className="font-medium text-foreground mb-2 flex items-start gap-2">
+                  <span className="text-amber-500">?</span>
+                  {faq.question}
+                </h4>
+                <p className="text-sm text-muted-foreground pl-5">
+                  {faq.answer}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
