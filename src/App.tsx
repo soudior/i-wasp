@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +13,8 @@ import { AdminGuard } from "@/components/AdminGuard";
 import { FeatureValidationProvider } from "@/components/FeatureValidationProvider";
 import { DebugPanel } from "@/components/debug";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { SplashScreen } from "@/components/SplashScreen";
+import { NetworkProvider } from "@/components/NetworkProvider";
 import PublicCard from "./pages/PublicCard";
 import AdminClients from "./pages/AdminClients";
 import FirstCardSetup from "./pages/FirstCardSetup";
@@ -71,19 +74,49 @@ function OrderRedirect() {
   return <Navigate to="/order/type" replace />;
 }
 
-const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <GuestCardProvider>
-          <CartProvider>
-            <TooltipProvider>
-              <FeatureValidationProvider showOverlay={true}>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <ErrorBoundary>
-                    <OrderFunnelProvider>
+const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    // Check if running as installed PWA
+    const standalone = window.matchMedia('(display-mode: standalone)').matches;
+    setIsStandalone(standalone);
+    
+    // Only show splash on first visit per session in standalone mode
+    if (!standalone) {
+      setShowSplash(false);
+    } else {
+      const splashShown = sessionStorage.getItem('splash-shown');
+      if (splashShown) {
+        setShowSplash(false);
+      }
+    }
+  }, []);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+    sessionStorage.setItem('splash-shown', 'true');
+  };
+
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <NetworkProvider>
+          <AuthProvider>
+            <GuestCardProvider>
+              <CartProvider>
+                <TooltipProvider>
+                  <FeatureValidationProvider showOverlay={true}>
+                    {/* Splash Screen for installed PWA */}
+                    {showSplash && isStandalone && (
+                      <SplashScreen onComplete={handleSplashComplete} minDuration={2000} />
+                    )}
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter>
+                      <ErrorBoundary>
+                        <OrderFunnelProvider>
                     <Routes>
                       {/* HOME - ALWAYS VALID */}
                       <Route path="/" element={<Index />} />
@@ -166,8 +199,10 @@ const App = () => (
         </CartProvider>
       </GuestCardProvider>
     </AuthProvider>
-  </QueryClientProvider>
+  </NetworkProvider>
+</QueryClientProvider>
 </ErrorBoundary>
-);
+  );
+};
 
 export default App;
