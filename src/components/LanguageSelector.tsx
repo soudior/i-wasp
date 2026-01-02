@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Globe } from "lucide-react";
 import { languages, type LanguageCode } from "@/i18n";
 import {
   DropdownMenu,
@@ -35,7 +34,7 @@ export function LanguageSelector() {
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="end" 
-        className="w-40 bg-background/95 backdrop-blur-xl border-border/50 z-[100]"
+        className="w-44 bg-background/95 backdrop-blur-xl border-border/50 z-[100]"
       >
         {languages.map((lang) => (
           <DropdownMenuItem
@@ -47,6 +46,9 @@ export function LanguageSelector() {
           >
             <span className="text-base">{lang.flag}</span>
             <span className="text-sm font-medium">{lang.name}</span>
+            {lang.rtl && (
+              <span className="text-xs text-muted-foreground ml-auto">RTL</span>
+            )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
