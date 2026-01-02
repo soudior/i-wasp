@@ -168,6 +168,10 @@ export function getNetworkById(id: string): SocialNetwork | undefined {
   return socialNetworks.find(n => n.id === id);
 }
 
+/**
+ * Smart Links - Intelligent URL generation with native app priority
+ * Detects platform (iOS/Android) and redirects to appropriate app scheme
+ */
 export function getSocialUrl(networkId: string, value: string, preferNativeApp = true): string {
   const network = getNetworkById(networkId);
   if (!network) return "";
@@ -180,12 +184,89 @@ export function getSocialUrl(networkId: string, value: string, preferNativeApp =
     ? normalizedValue.replace(/^\+/, '')
     : normalizedValue;
   
-  // Try native app on mobile
-  if (preferNativeApp && network.appScheme && isMobile()) {
-    return network.appScheme.replace("{value}", finalValue);
+  const webUrl = network.urlTemplate.replace("{value}", finalValue);
+  
+  // Smart Links: Try native app on mobile with intelligent fallback
+  if (preferNativeApp && isMobile() && network.appScheme) {
+    const appUrl = network.appScheme.replace("{value}", finalValue);
+    
+    // For iOS, use universal links where available for better UX
+    if (isIOS()) {
+      // These networks support iOS Universal Links - they open the app if installed
+      const universalLinkNetworks = ['instagram', 'linkedin', 'twitter', 'youtube', 'spotify', 'tiktok'];
+      if (universalLinkNetworks.includes(networkId)) {
+        return webUrl; // Universal links work through web URLs on iOS
+      }
+      return appUrl;
+    }
+    
+    // For Android, use intent scheme for better app detection
+    if (isAndroid()) {
+      // WhatsApp, Telegram, etc. work better with their app schemes on Android
+      return appUrl;
+    }
+    
+    return appUrl;
   }
   
-  return network.urlTemplate.replace("{value}", finalValue);
+  return webUrl;
+}
+
+/**
+ * Open a social link with smart app detection
+ * Attempts to open native app, falls back to web if not installed
+ */
+export function openSmartLink(networkId: string, value: string): void {
+  const network = getNetworkById(networkId);
+  if (!network || !value) return;
+  
+  const normalizedValue = normalizeUsername(value, networkId);
+  const finalValue = networkId === "whatsapp" 
+    ? normalizedValue.replace(/^\+/, '')
+    : normalizedValue;
+  
+  const webUrl = network.urlTemplate.replace("{value}", finalValue);
+  
+  // On mobile, try native app first with timeout fallback
+  if (isMobile() && network.appScheme) {
+    const appUrl = network.appScheme.replace("{value}", finalValue);
+    
+    // Store current time to detect if app opened
+    const startTime = Date.now();
+    
+    // Create hidden iframe to try opening app
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = appUrl;
+    document.body.appendChild(iframe);
+    
+    // Fallback to web if app doesn't open within 1.5s
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+      // If still on page after 1.5s, app didn't open - use web URL
+      if (Date.now() - startTime < 2000) {
+        window.open(webUrl, '_blank');
+      }
+    }, 1500);
+    
+    // Also try window.location for some apps
+    window.location.href = appUrl;
+  } else {
+    window.open(webUrl, '_blank');
+  }
+}
+
+/**
+ * Get appropriate icon based on platform
+ */
+export function getPlatformSpecificLabel(networkId: string): string {
+  const network = getNetworkById(networkId);
+  if (!network) return "";
+  
+  if (isMobile() && network.appScheme) {
+    return `Ouvrir ${network.label}`;
+  }
+  return `Voir sur ${network.label}`;
 }
 
 export function isMobile(): boolean {

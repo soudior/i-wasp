@@ -215,54 +215,67 @@ const Templates = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Animated background gradients */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[hsl(var(--iwasp-vert)/0.08)] rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[hsl(var(--iwasp-vert)/0.05)] rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[hsl(138_100%_62%/0.03)] rounded-full blur-[150px]" />
+      </div>
+      
       <Navbar />
 
-      <main className="pt-32 pb-24">
+      <main className="pt-32 pb-24 relative z-10">
         <div className="container mx-auto px-6">
           
-          {/* Header */}
+          {/* Header with glassmorphism */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <span className="inline-block px-4 py-1.5 rounded-full bg-amber-500/10 text-amber-400 text-sm font-medium mb-6">
-              Modèles par Secteur
-            </span>
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground tracking-tight mb-6">
-              Nos Templates par Métier
+            <motion.span 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-block px-5 py-2 rounded-full glass-futuristic text-[hsl(var(--iwasp-vert))] text-sm font-medium mb-6"
+            >
+              ✨ Studio de Création Futuriste
+            </motion.span>
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight mb-6">
+              <span className="bg-gradient-to-r from-white via-[hsl(var(--iwasp-vert))] to-white bg-clip-text text-transparent bg-[length:200%_auto] animate-[gradient-shift_3s_ease_infinite]">
+                Templates Premium
+              </span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Choisissez le modèle adapté à votre secteur d'activité. 100% personnalisable.
+              Choisissez votre univers. Votre carte NFC s'adapte automatiquement à votre métier.
             </p>
           </motion.div>
 
-          {/* Sector filters with icons */}
+          {/* Sector filters with glassmorphism badges */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
             className="flex flex-wrap justify-center gap-3 mb-16"
           >
-            {sectors.map((sector) => (
-              <button
+            {sectors.map((sector, index) => (
+              <motion.button
                 key={sector.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}
                 onClick={() => setActiveSector(sector.id)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
-                  activeSector === sector.id
-                    ? "bg-amber-500 text-background"
-                    : "bg-surface-2 text-muted-foreground hover:text-foreground hover:bg-surface-3"
-                }`}
+                className={`sector-badge ${activeSector === sector.id ? 'active' : ''}`}
               >
                 {sector.icon && <sector.icon size={16} />}
                 {sector.name}
-              </button>
+              </motion.button>
             ))}
           </motion.div>
 
-          {/* Templates grid */}
+          {/* Templates grid with glassmorphism cards */}
           <motion.div 
             layout
             className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -272,44 +285,48 @@ const Templates = () => {
                 <motion.div
                   key={template.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ delay: index * 0.05, duration: 0.4 }}
+                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                  transition={{ delay: index * 0.05, duration: 0.4, type: "spring", damping: 20 }}
                   className="group cursor-pointer"
                   onClick={() => setSelectedTemplate(template)}
                 >
-                  <div className="relative rounded-3xl overflow-hidden bg-surface-1 border border-foreground/5 hover:border-amber-500/30 transition-all duration-500 hover:shadow-2xl hover:shadow-amber-500/10">
+                  <div className="relative rounded-3xl overflow-hidden glass-futuristic glow-border animated-border floating-glow transition-all duration-500">
                     {/* Card + Phone composite */}
-                    <div className="aspect-[4/3] relative overflow-hidden bg-gradient-to-br from-surface-2 to-background">
-                      {/* Card image */}
+                    <div className="aspect-[4/3] relative overflow-hidden">
+                      {/* Animated background gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--iwasp-charbon))] via-[hsl(var(--iwasp-noir))] to-[hsl(var(--iwasp-charbon))]" />
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--iwasp-vert)/0.1)_0%,transparent_60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      
+                      {/* Card image with floating effect */}
                       <motion.img
                         src={template.cardImage}
                         alt={template.name}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-[55%] h-auto object-contain z-10"
-                        whileHover={{ scale: 1.05, rotate: -3 }}
-                        transition={{ duration: 0.4 }}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 w-[55%] h-auto object-contain z-10 drop-shadow-2xl"
+                        whileHover={{ scale: 1.08, rotate: -5, y: -10 }}
+                        transition={{ duration: 0.4, type: "spring" }}
                       />
                       {/* Phone preview */}
                       <motion.img
                         src={template.phoneImage}
                         alt={`${template.name} preview`}
-                        className="absolute right-0 top-1/2 -translate-y-1/2 w-[50%] h-auto object-contain z-20"
-                        whileHover={{ scale: 1.02 }}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 w-[50%] h-auto object-contain z-20 drop-shadow-xl"
+                        whileHover={{ scale: 1.05, y: -5 }}
                         transition={{ duration: 0.4 }}
                       />
                       {/* Gradient overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-30" />
-                      
-                      {/* Hover overlay */}
-                      <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/10 transition-colors duration-500 z-25" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--iwasp-noir))] via-transparent to-transparent z-30" />
                     </div>
 
-                    {/* Info */}
-                    <div className="p-6">
+                    {/* Info with glass effect */}
+                    <div className="p-6 relative">
+                      {/* Subtle glow line */}
+                      <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-[hsl(var(--iwasp-vert)/0.3)] to-transparent" />
+                      
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className={`text-xs font-medium tracking-wider uppercase ${getSectorInfo(template.sector)?.color || 'text-amber-400'}`}>
+                          <span className={`text-xs font-medium tracking-wider uppercase ${getSectorInfo(template.sector)?.color || 'text-[hsl(var(--iwasp-vert))]'}`}>
                             {getSectorInfo(template.sector)?.name || template.sector}
                           </span>
                           {template.hasWhatsApp && (
@@ -318,18 +335,23 @@ const Templates = () => {
                             </div>
                           )}
                         </div>
-                        <ArrowRight size={16} className="text-muted-foreground group-hover:text-amber-400 group-hover:translate-x-1 transition-all" />
+                        <motion.div
+                          whileHover={{ x: 5 }}
+                          className="w-8 h-8 rounded-full glass flex items-center justify-center"
+                        >
+                          <ArrowRight size={14} className="text-muted-foreground group-hover:text-[hsl(var(--iwasp-vert))] transition-colors" />
+                        </motion.div>
                       </div>
-                      <h3 className="text-xl font-semibold text-foreground group-hover:text-amber-400 transition-colors">
+                      <h3 className="text-xl font-semibold text-foreground group-hover:text-[hsl(var(--iwasp-vert))] transition-colors">
                         {template.name}
                       </h3>
                       <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
                         {template.description}
                       </p>
                       
-                      {/* Key feature badge */}
+                      {/* Key feature badge with glow */}
                       {template.keyFeature && (
-                        <div className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full text-xs font-medium ${template.keyFeature.color}`}>
+                        <div className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full text-xs font-medium ${template.keyFeature.color} glass`}>
                           <template.keyFeature.icon size={14} />
                           {template.keyFeature.label}
                         </div>
