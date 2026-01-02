@@ -74,7 +74,8 @@ function OrderDigitalContent() {
       longitude: undefined,
       city: "",
       postalCode: "",
-      country: "France",
+      country: "Maroc",
+      neighborhood: "",
     }
   );
 
@@ -137,7 +138,8 @@ function OrderDigitalContent() {
       longitude: locationData.longitude,
       city: formData.city || undefined,
       postalCode: formData.postalCode || undefined,
-      country: formData.country || "France",
+      country: formData.country || "Maroc",
+      neighborhood: formData.neighborhood || undefined,
     };
 
     setDigitalInfo(digitalInfo);
@@ -280,18 +282,18 @@ function OrderDigitalContent() {
                 </CardContent>
               </Card>
 
-              {/* Location Card */}
+              {/* Location & Shipping Card */}
               <Card className="card-iwasp">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <MapPin size={20} className="text-iwasp-vert" />
-                    Géolocalisation
+                    Adresse de livraison
                     {locationData.address && (
                       <CheckCircle2 className="h-5 w-5 text-iwasp-vert ml-auto" />
                     )}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-4">
                   <SmartLocationEditor
                     value={locationData}
                     onChange={(data) => setLocationData({
@@ -302,14 +304,61 @@ function OrderDigitalContent() {
                     })}
                   />
                   
+                  {/* City & Postal Code */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="city">Ville</Label>
+                      <Input
+                        id="city"
+                        value={formData.city || ""}
+                        onChange={(e) => handleChange("city", e.target.value)}
+                        placeholder="Casablanca"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="postalCode">Code postal</Label>
+                      <Input
+                        id="postalCode"
+                        value={formData.postalCode || ""}
+                        onChange={(e) => handleChange("postalCode", e.target.value)}
+                        placeholder="20000"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Neighborhood - Important for Morocco */}
+                  <div className="space-y-2">
+                    <Label htmlFor="neighborhood" className="flex items-center gap-2">
+                      Quartier
+                      <span className="text-xs text-muted-foreground">(facilite la livraison)</span>
+                    </Label>
+                    <Input
+                      id="neighborhood"
+                      value={formData.neighborhood || ""}
+                      onChange={(e) => handleChange("neighborhood", e.target.value)}
+                      placeholder="Ex: Maârif, Anfa, Guéliz..."
+                    />
+                  </div>
+
+                  {/* Country */}
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Pays</Label>
+                    <Input
+                      id="country"
+                      value={formData.country || "Maroc"}
+                      onChange={(e) => handleChange("country", e.target.value)}
+                      placeholder="Maroc"
+                    />
+                  </div>
+                  
                   {locationData.address && (
                     <motion.div
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-3 flex items-center gap-2 text-sm text-iwasp-vert"
+                      className="flex items-center gap-2 text-sm text-iwasp-vert"
                     >
                       <CheckCircle2 className="h-4 w-4" />
-                      Localisation enregistrée
+                      Adresse enregistrée
                     </motion.div>
                   )}
                 </CardContent>
