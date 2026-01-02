@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogIn, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 
-// Demo property data
+// Demo property data with sample iCal URLs (these would be real Airbnb/Booking export links in production)
 const DEMO_PROPERTY: RentalPropertyData = {
   name: "Riad Jardin Secret",
   description: "Magnifique riad traditionnel au cœur de la médina avec piscine, terrasse panoramique et décoration artisanale. Parfait pour un séjour authentique à Marrakech.",
@@ -30,6 +30,11 @@ const DEMO_PROPERTY: RentalPropertyData = {
   wifiPassword: "bienvenue2024",
   airbnbUrl: "https://airbnb.com",
   bookingUrl: "https://booking.com",
+  // Note: These iCal URLs would be real export links from Airbnb/Booking in production
+  // Example Airbnb: https://www.airbnb.com/calendar/ical/12345.ics?s=abc123
+  // Example Booking: https://admin.booking.com/hotel/hoteladmin/ical.html?t=xyz789
+  airbnbIcalUrl: null, // Add your Airbnb iCal export URL here
+  bookingIcalUrl: null, // Add your Booking.com iCal export URL here
   whatsappNumber: "+212600000000",
   hostName: "Mohamed",
   amenities: ["Piscine", "WiFi", "Climatisation", "Petit-déjeuner", "Terrasse", "Parking"],
@@ -125,6 +130,10 @@ export default function RentalDemo() {
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37]" />
               Liens Airbnb & Booking
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37]" />
+              Calendrier temps réel Airbnb/Booking (iCal)
             </li>
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37]" />

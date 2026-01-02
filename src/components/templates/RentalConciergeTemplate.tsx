@@ -13,6 +13,7 @@
 
 import { useState } from "react";
 import { IWASPBrandBadge } from "./IWASPBrandBadge";
+import { AvailabilityCalendar } from "./AvailabilityCalendar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -48,6 +49,8 @@ export interface RentalPropertyData {
   // Booking
   bookingUrl?: string;
   airbnbUrl?: string;
+  airbnbIcalUrl?: string;
+  bookingIcalUrl?: string;
   
   // Contact
   whatsappNumber?: string;
@@ -388,6 +391,15 @@ export function RentalConciergeTemplate({
                   </div>
                   <ChevronRight size={16} className="text-green-400/50" />
                 </button>
+              )}
+
+              {/* Availability Calendar */}
+              {(property.airbnbIcalUrl || property.bookingIcalUrl) && (
+                <AvailabilityCalendar 
+                  airbnbIcalUrl={property.airbnbIcalUrl}
+                  bookingIcalUrl={property.bookingIcalUrl}
+                  className="mt-4"
+                />
               )}
             </div>
 

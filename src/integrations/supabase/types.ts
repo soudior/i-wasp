@@ -549,8 +549,10 @@ export type Database = {
       rental_properties: {
         Row: {
           address: string | null
+          airbnb_ical_url: string | null
           airbnb_url: string | null
           amenities: string[] | null
+          booking_ical_url: string | null
           booking_url: string | null
           city: string | null
           created_at: string
@@ -571,8 +573,10 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          airbnb_ical_url?: string | null
           airbnb_url?: string | null
           amenities?: string[] | null
+          booking_ical_url?: string | null
           booking_url?: string | null
           city?: string | null
           created_at?: string
@@ -593,8 +597,10 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          airbnb_ical_url?: string | null
           airbnb_url?: string | null
           amenities?: string[] | null
+          booking_ical_url?: string | null
           booking_url?: string | null
           city?: string | null
           created_at?: string

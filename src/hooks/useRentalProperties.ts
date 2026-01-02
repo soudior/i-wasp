@@ -22,6 +22,8 @@ export interface RentalProperty {
   photos: string[];
   booking_url: string | null;
   airbnb_url: string | null;
+  airbnb_ical_url: string | null;
+  booking_ical_url: string | null;
   whatsapp_number: string | null;
   wifi_ssid: string | null;
   wifi_password: string | null;
@@ -43,6 +45,8 @@ export interface CreatePropertyInput {
   photos?: string[];
   booking_url?: string;
   airbnb_url?: string;
+  airbnb_ical_url?: string;
+  booking_ical_url?: string;
   whatsapp_number?: string;
   wifi_ssid?: string;
   wifi_password?: string;
