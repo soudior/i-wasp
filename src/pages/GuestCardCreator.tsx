@@ -19,7 +19,7 @@ import { Progress } from "@/components/ui/progress";
 import { 
   ArrowLeft, ArrowRight, User, Briefcase, 
   Phone, Link2, Check, Eye, EyeOff, Save, ShoppingBag,
-  FlaskConical, Lock, Share2, Sparkles
+  FlaskConical, Lock, Share2, Sparkles, Upload
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OnboardingPhotoUpload } from "@/components/onboarding/OnboardingPhotoUpload";
@@ -242,6 +242,63 @@ export default function GuestCardCreator() {
                       className="h-12"
                     />
                   </div>
+                  
+                  {/* Logo Upload */}
+                  <div className="space-y-2 pt-4">
+                    <Label>Logo de l'entreprise (optionnel)</Label>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            if (guestCard.logo_url?.startsWith("blob:")) {
+                              URL.revokeObjectURL(guestCard.logo_url);
+                            }
+                            const localUrl = URL.createObjectURL(file);
+                            updateGuestCard("logo_url", localUrl);
+                          }
+                          e.target.value = "";
+                        }}
+                        className="hidden"
+                        id="guest-logo-upload"
+                      />
+                      {guestCard.logo_url ? (
+                        <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
+                          <img 
+                            src={guestCard.logo_url} 
+                            alt="Logo" 
+                            className="h-12 w-auto max-w-[120px] object-contain"
+                          />
+                          <div className="flex-1" />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              if (guestCard.logo_url?.startsWith("blob:")) {
+                                URL.revokeObjectURL(guestCard.logo_url);
+                              }
+                              updateGuestCard("logo_url", null);
+                            }}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            Supprimer
+                          </Button>
+                        </div>
+                      ) : (
+                        <label
+                          htmlFor="guest-logo-upload"
+                          className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-muted-foreground/25 rounded-xl cursor-pointer hover:border-primary/50 transition-colors"
+                        >
+                          <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                          <p className="text-sm font-medium">Cliquez pour ajouter</p>
+                          <p className="text-xs text-muted-foreground">PNG, JPG (fond transparent recommandé)</p>
+                        </label>
+                      )}
+                    </div>
+                  </div>
                 </>
               )}
 
@@ -431,12 +488,51 @@ export default function GuestCardCreator() {
           )}
 
           <Card className={cn(
-            "w-full max-w-[320px] p-6 shadow-lg relative",
+            "w-full max-w-[320px] p-6 shadow-lg relative overflow-hidden",
             isGuestMode && hasGuestCard && "ring-2 ring-amber-500/20 ring-offset-2 ring-offset-background"
           )}>
+            {/* Client Logo - Top with animation */}
+            {guestCard.logo_url ? (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="flex justify-center mb-6"
+              >
+                <button
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  className="focus:outline-none"
+                >
+                  <img 
+                    src={guestCard.logo_url} 
+                    alt="Logo client" 
+                    className="max-h-[80px] w-auto object-contain drop-shadow-md"
+                    style={{ 
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+                    }}
+                  />
+                </button>
+              </motion.div>
+            ) : guestCard.company ? (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex justify-center mb-6"
+              >
+                <span className="text-xl font-semibold text-primary/80">
+                  {guestCard.company}
+                </span>
+              </motion.div>
+            ) : null}
+
             <div className="text-center">
               {/* Avatar */}
-              <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden shadow-lg"
+              >
                 {guestCard.photo_url ? (
                   <img 
                     src={guestCard.photo_url} 
@@ -449,18 +545,28 @@ export default function GuestCardCreator() {
                     {guestCard.last_name.charAt(0) || ""}
                   </span>
                 )}
-              </div>
+              </motion.div>
               
               {/* Name */}
-              <h2 className="text-lg font-semibold text-foreground">
+              <motion.h2 
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-lg font-semibold text-foreground"
+              >
                 {guestCard.first_name || "Prénom"} {guestCard.last_name || "Nom"}
-              </h2>
+              </motion.h2>
               
               {/* Title & Company */}
               {(guestCard.title || guestCard.company) && (
-                <p className="text-sm text-muted-foreground mt-1">
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.15 }}
+                  className="text-sm text-muted-foreground mt-1"
+                >
                   {guestCard.title}{guestCard.title && guestCard.company && " · "}{guestCard.company}
-                </p>
+                </motion.p>
               )}
               
               {/* Contact info */}
