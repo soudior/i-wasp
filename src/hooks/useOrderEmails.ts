@@ -2,6 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type EmailType = 
   | "order_confirmation" 
+  | "welcome"
   | "payment_confirmed" 
   | "in_production" 
   | "shipped" 
