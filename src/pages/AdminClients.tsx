@@ -69,8 +69,8 @@ const initialFormData: ClientFormState = {
   whatsapp: "",
 };
 
-// Simple password protection - change this password as needed
-const ADMIN_PASSWORD = "iwasp2024";
+// Security: Admin access is controlled by RLS policies using has_role(auth.uid(), 'admin')
+// No client-side password needed - database enforces access control
 
 export default function AdminClients() {
   const { user, loading: authLoading } = useAuth();
@@ -83,35 +83,42 @@ export default function AdminClients() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
   
-  // Password protection state
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [passwordInput, setPasswordInput] = useState("");
-  const [passwordError, setPasswordError] = useState(false);
+  // Check admin role via RLS - the database queries will fail if user doesn't have admin role
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [checkingRole, setCheckingRole] = useState(true);
 
-  // Check if already unlocked in session
+  // Verify admin role on mount
   useEffect(() => {
-    const unlocked = sessionStorage.getItem("iwasp_admin_unlocked");
-    if (unlocked === "true") {
-      setIsUnlocked(true);
+    async function checkAdminRole() {
+      if (!user) {
+        setIsAdmin(false);
+        setCheckingRole(false);
+        return;
+      }
+      
+      try {
+        // Check if user has admin role via RLS
+        const { data, error } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+        
+        setIsAdmin(!!data);
+      } catch (error) {
+        console.error('Error checking admin role:', error);
+        setIsAdmin(false);
+      } finally {
+        setCheckingRole(false);
+      }
     }
-  }, []);
+    
+    checkAdminRole();
+  }, [user]);
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passwordInput === ADMIN_PASSWORD) {
-      setIsUnlocked(true);
-      sessionStorage.setItem("iwasp_admin_unlocked", "true");
-      setPasswordError(false);
-    } else {
-      setPasswordError(true);
-      setPasswordInput("");
-    }
-  };
-
-  const handleLockAdmin = () => {
-    sessionStorage.removeItem("iwasp_admin_unlocked");
-    setIsUnlocked(false);
-    setPasswordInput("");
+  const handleLogout = async () => {
+    navigate('/');
   };
 
   // Fetch all clients (admin sees all cards)
@@ -286,7 +293,7 @@ export default function AdminClients() {
   };
 
   // Loading state
-  if (authLoading || isLoading) {
+  if (authLoading || checkingRole || isLoading) {
     return (
       <div className="min-h-dvh flex items-center justify-center" style={{ backgroundColor: "#F5F5F7" }}>
         <Loader2 className="h-8 w-8 animate-spin" style={{ color: "#007AFF" }} />
@@ -328,51 +335,30 @@ export default function AdminClients() {
     );
   }
 
-  // Password gate
-  if (!isUnlocked) {
+  // Admin role check - enforced by RLS
+  if (!isAdmin) {
     return (
       <div className="min-h-dvh flex items-center justify-center p-4" style={{ backgroundColor: "#F5F5F7" }}>
-        <div className="w-full max-w-sm rounded-2xl p-8 shadow-sm" style={{ backgroundColor: "#FFFFFF" }}>
-          <div className="text-center mb-6">
-            <div 
-              className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center"
-              style={{ backgroundColor: "#F5F5F7" }}
-            >
-              <Lock className="h-5 w-5" style={{ color: "#8E8E93" }} />
-            </div>
-            <h1 className="text-xl font-semibold" style={{ color: "#1D1D1F" }}>
-              Gestion des clients
-            </h1>
+        <div className="w-full max-w-sm rounded-2xl p-8 shadow-sm text-center" style={{ backgroundColor: "#FFFFFF" }}>
+          <div 
+            className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center"
+            style={{ backgroundColor: "#FEE2E2" }}
+          >
+            <Lock className="h-5 w-5" style={{ color: "#DC2626" }} />
           </div>
-
-          <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <Input
-              type="password"
-              value={passwordInput}
-              onChange={(e) => {
-                setPasswordInput(e.target.value);
-                setPasswordError(false);
-              }}
-              placeholder="Mot de passe"
-              className="rounded-xl border-gray-200 text-center"
-              style={{ backgroundColor: "#F5F5F7" }}
-              autoFocus
-            />
-            
-            {passwordError && (
-              <p className="text-sm text-center" style={{ color: "#FF3B30" }}>
-                Mot de passe incorrect
-              </p>
-            )}
-
-            <Button
-              type="submit"
-              className="w-full rounded-xl font-medium"
-              style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
-            >
-              Accéder
-            </Button>
-          </form>
+          <h1 className="text-lg font-semibold mb-2" style={{ color: "#1D1D1F" }}>
+            Accès refusé
+          </h1>
+          <p className="text-sm mb-6" style={{ color: "#8E8E93" }}>
+            Vous n'avez pas les droits administrateur pour accéder à cette page.
+          </p>
+          <button
+            onClick={() => navigate('/')}
+            className="w-full py-3 rounded-xl font-medium text-sm transition-all active:scale-[0.98]"
+            style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
+          >
+            Retour à l'accueil
+          </button>
         </div>
       </div>
     );
@@ -392,9 +378,9 @@ export default function AdminClients() {
             {hasNoClients ? "Créez votre première carte" : "Gestion des clients"}
           </h1>
           <button
-            onClick={handleLockAdmin}
+            onClick={handleLogout}
             className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
-            title="Verrouiller"
+            title="Retour"
           >
             <LogOut className="h-5 w-5" style={{ color: "#8E8E93" }} />
           </button>

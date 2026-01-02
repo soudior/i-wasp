@@ -1,10 +1,102 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key",
 };
+
+// Input validation schemas
+const uuidSchema = z.string().uuid();
+const urlSchema = z.string().url().max(2048);
+
+const triggerRequestSchema = z.object({
+  action: z.enum(["trigger", "sync_lead"]),
+  lead_id: uuidSchema,
+  webhook_url: urlSchema,
+  config_id: uuidSchema.optional(),
+  user_id: uuidSchema.optional(),
+  field_mapping: z.object({
+    name: z.boolean().optional(),
+    email: z.boolean().optional(),
+    phone: z.boolean().optional(),
+    company: z.boolean().optional(),
+    score: z.boolean().optional(),
+    source: z.boolean().optional(),
+    consent_status: z.boolean().optional(),
+    timestamp: z.boolean().optional(),
+    card_owner: z.boolean().optional(),
+    actions: z.boolean().optional(),
+  }).optional(),
+  retry_count: z.number().int().min(1).max(5).optional().default(3),
+  sync_consented_only: z.boolean().optional().default(true),
+});
+
+const scoreUpdateRequestSchema = z.object({
+  action: z.literal("score_updated"),
+  lead_id: uuidSchema,
+  webhook_url: urlSchema,
+  old_score: z.number().int().min(0).max(100).optional(),
+  new_score: z.number().int().min(0).max(100).optional(),
+  config_id: uuidSchema.optional(),
+  user_id: uuidSchema.optional(),
+  retry_count: z.number().int().min(1).max(5).optional().default(3),
+  sync_consented_only: z.boolean().optional().default(true),
+});
+
+const testRequestSchema = z.object({
+  action: z.literal("test"),
+  webhook_url: urlSchema,
+  config_id: uuidSchema.optional(),
+  user_id: uuidSchema.optional(),
+});
+
+const bulkSyncRequestSchema = z.object({
+  action: z.literal("bulk_sync"),
+  lead_ids: z.array(uuidSchema).min(1).max(100),
+  webhook_url: urlSchema,
+  retry_count: z.number().int().min(1).max(5).optional().default(3),
+  sync_consented_only: z.boolean().optional().default(true),
+  user_id: uuidSchema.optional(),
+});
+
+// Validate webhook URL is not a private/internal IP
+function isValidWebhookUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.toLowerCase();
+    
+    // Block private/internal IPs and localhost
+    const blockedPatterns = [
+      /^localhost$/i,
+      /^127\./,
+      /^10\./,
+      /^192\.168\./,
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./,
+      /^0\./,
+      /^169\.254\./,
+      /^::1$/,
+      /^fc00:/i,
+      /^fe80:/i,
+    ];
+    
+    for (const pattern of blockedPatterns) {
+      if (pattern.test(hostname)) {
+        return false;
+      }
+    }
+    
+    // Only allow HTTPS for security
+    if (parsed.protocol !== "https:") {
+      return false;
+    }
+    
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 interface WebhookPayload {
   event: "lead.created" | "lead.score_updated" | "test";
@@ -29,16 +121,16 @@ interface WebhookPayload {
 }
 
 interface FieldMapping {
-  name: boolean;
-  email: boolean;
-  phone: boolean;
-  company: boolean;
-  score: boolean;
-  source: boolean;
-  consent_status: boolean;
-  timestamp: boolean;
-  card_owner: boolean;
-  actions: boolean;
+  name?: boolean;
+  email?: boolean;
+  phone?: boolean;
+  company?: boolean;
+  score?: boolean;
+  source?: boolean;
+  consent_status?: boolean;
+  timestamp?: boolean;
+  card_owner?: boolean;
+  actions?: boolean;
 }
 
 // Simple logging helper
@@ -144,21 +236,27 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const body = await req.json();
-    const { 
-      action, 
-      lead_id, 
-      webhook_url, 
-      old_score, 
-      new_score, 
-      config_id,
-      user_id,
-      field_mapping,
-      retry_count = 3,
-      sync_consented_only = true 
-    } = body;
+    // Parse and validate request body
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
-    log("Received request", { action, lead_id, config_id });
+    // Basic action check
+    const action = (body as Record<string, unknown>)?.action;
+    if (!action || typeof action !== "string") {
+      return new Response(
+        JSON.stringify({ error: "Missing or invalid action" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    log("Received request", { action });
 
     // Helper to log webhook attempt
     async function logWebhookAttempt(
@@ -192,9 +290,22 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Action: trigger webhook for a specific lead
     if (action === "trigger" || action === "sync_lead") {
-      if (!lead_id || !webhook_url) {
+      // Validate input with Zod
+      const parseResult = triggerRequestSchema.safeParse(body);
+      if (!parseResult.success) {
+        log("Validation failed", parseResult.error.flatten());
         return new Response(
-          JSON.stringify({ error: "Missing lead_id or webhook_url" }),
+          JSON.stringify({ error: "Invalid request", details: parseResult.error.flatten() }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      const { lead_id, webhook_url, config_id, user_id, field_mapping, retry_count, sync_consented_only } = parseResult.data;
+      
+      // Validate webhook URL (SSRF protection)
+      if (!isValidWebhookUrl(webhook_url)) {
+        return new Response(
+          JSON.stringify({ error: "Invalid webhook URL. Must be HTTPS and not a private/internal address." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -293,9 +404,22 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Action: score_updated trigger
     if (action === "score_updated") {
-      if (!lead_id || !webhook_url) {
+      // Validate input with Zod
+      const parseResult = scoreUpdateRequestSchema.safeParse(body);
+      if (!parseResult.success) {
+        log("Validation failed", parseResult.error.flatten());
         return new Response(
-          JSON.stringify({ error: "Missing lead_id or webhook_url" }),
+          JSON.stringify({ error: "Invalid request", details: parseResult.error.flatten() }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      const { lead_id, webhook_url, old_score, new_score, config_id, user_id, retry_count, sync_consented_only } = parseResult.data;
+      
+      // Validate webhook URL (SSRF protection)
+      if (!isValidWebhookUrl(webhook_url)) {
+        return new Response(
+          JSON.stringify({ error: "Invalid webhook URL. Must be HTTPS and not a private/internal address." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -340,7 +464,7 @@ const handler = async (req: Request): Promise<Response> => {
         phone: lead.phone,
         company: lead.company,
         message: lead.message,
-        score: new_score || lead.lead_score || 0,
+        score: new_score ?? lead.lead_score ?? 0,
         old_score,
         new_score,
         source: lead.source || "nfc",
@@ -348,7 +472,7 @@ const handler = async (req: Request): Promise<Response> => {
         consent_given: lead.consent_given || false,
         consent_status: lead.consent_given ? "consented" : "not_consented",
         timestamp: new Date().toISOString(),
-        is_hot_lead: (new_score || 0) >= 50,
+        is_hot_lead: (new_score ?? 0) >= 50,
       };
 
       log("Sending score_updated webhook", { webhook_url, old_score, new_score });
@@ -373,7 +497,7 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({ 
           success: result.success, 
           message: result.success ? "Score update webhook triggered" : "Webhook failed",
-          is_hot_lead: (new_score || 0) >= 50,
+          is_hot_lead: (new_score ?? 0) >= 50,
           attempts: result.attempts
         }),
         { status: result.success ? 200 : 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -382,9 +506,22 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Action: test webhook connection
     if (action === "test") {
-      if (!webhook_url) {
+      // Validate input with Zod
+      const parseResult = testRequestSchema.safeParse(body);
+      if (!parseResult.success) {
+        log("Validation failed", parseResult.error.flatten());
         return new Response(
-          JSON.stringify({ error: "Missing webhook_url" }),
+          JSON.stringify({ error: "Invalid request", details: parseResult.error.flatten() }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      const { webhook_url, config_id, user_id } = parseResult.data;
+      
+      // Validate webhook URL (SSRF protection)
+      if (!isValidWebhookUrl(webhook_url)) {
+        return new Response(
+          JSON.stringify({ error: "Invalid webhook URL. Must be HTTPS and not a private/internal address." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -434,11 +571,22 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Action: bulk sync leads
     if (action === "bulk_sync") {
-      const { lead_ids, webhook_url: bulkWebhookUrl } = body;
-      
-      if (!lead_ids?.length || !bulkWebhookUrl) {
+      // Validate input with Zod
+      const parseResult = bulkSyncRequestSchema.safeParse(body);
+      if (!parseResult.success) {
+        log("Validation failed", parseResult.error.flatten());
         return new Response(
-          JSON.stringify({ error: "Missing lead_ids or webhook_url" }),
+          JSON.stringify({ error: "Invalid request", details: parseResult.error.flatten() }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      const { lead_ids, webhook_url, retry_count, sync_consented_only, user_id } = parseResult.data;
+      
+      // Validate webhook URL (SSRF protection)
+      if (!isValidWebhookUrl(webhook_url)) {
+        return new Response(
+          JSON.stringify({ error: "Invalid webhook URL. Must be HTTPS and not a private/internal address." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -479,7 +627,7 @@ const handler = async (req: Request): Promise<Response> => {
           is_hot_lead: (lead.lead_score || 0) >= 50,
         };
 
-        const result = await sendWithRetry(bulkWebhookUrl, payload, retry_count);
+        const result = await sendWithRetry(webhook_url, payload, retry_count);
         if (result.success) {
           results.success++;
         } else {
@@ -510,5 +658,7 @@ const handler = async (req: Request): Promise<Response> => {
     );
   }
 };
+
+serve(handler);
 
 serve(handler);
