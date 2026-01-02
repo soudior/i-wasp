@@ -15,6 +15,7 @@ import { Play, Volume2, VolumeX, AlertCircle } from "lucide-react";
 
 interface MobileOptimizedVideoProps {
   src: string;
+  webmSrc?: string; // WebM source pour Android (plus léger)
   poster?: string;
   aspectRatio?: "9/16" | "16/9" | "4/3" | "1/1";
   autoPlayOnDesktop?: boolean;
@@ -25,6 +26,7 @@ interface MobileOptimizedVideoProps {
 
 export function MobileOptimizedVideo({
   src,
+  webmSrc,
   poster,
   aspectRatio = "9/16",
   autoPlayOnDesktop = true,
@@ -213,11 +215,10 @@ export function MobileOptimizedVideo({
         </div>
       )}
 
-      {/* Video Element */}
+      {/* Video Element avec sources WebM + MP4 */}
       {isInView && (
         <video
           ref={videoRef}
-          src={src}
           poster={poster || fallbackPoster}
           loop
           muted={isMuted}
@@ -248,7 +249,12 @@ export function MobileOptimizedVideo({
             WebkitBackfaceVisibility: "hidden",
             backfaceVisibility: "hidden",
           }}
-        />
+        >
+          {/* WebM prioritaire (Android, Chrome) - plus léger */}
+          {webmSrc && <source src={webmSrc} type="video/webm" />}
+          {/* MP4 fallback (iOS, Safari) */}
+          <source src={src} type="video/mp4" />
+        </video>
       )}
 
       {/* Play Button Overlay */}
