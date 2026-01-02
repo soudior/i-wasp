@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Building2, Hotel, Store, CalendarDays, Check } from "lucide-react";
+import { ArrowRight, Building2, Hotel, Store, CalendarDays, Check, X, Crown, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NFCPhysicalCardSection } from "@/components/print/NFCPhysicalCardSection";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
@@ -176,67 +176,133 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Section Pricing - OBLIGATOIRE ET VISIBLE */}
+      {/* Section Comparaison - Starter vs GOLD */}
       <section id="pricing" className="py-16 px-4 bg-muted/20 border-t border-border/20">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-2">
-              Tarifs clairs et transparents
+              Choisissez votre formule
             </h2>
             <p className="text-muted-foreground">
-              Un achat unique. Pas d'abonnement. Service digital inclus à vie.
+              Carte NFC incluse dans les deux offres. Passez au GOLD pour débloquer le maximum.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {pricingPlans.map((plan) => (
-              <div 
-                key={plan.id}
-                className={`relative p-6 rounded-2xl border transition-all ${
-                  plan.popular 
-                    ? "border-foreground bg-foreground/5 shadow-lg" 
-                    : "border-border/50 bg-card/50"
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-foreground text-background text-xs font-medium rounded-full">
-                    Populaire
-                  </div>
-                )}
-                
-                <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold text-foreground mb-1">{plan.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-3">{plan.description}</p>
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-4xl font-bold text-foreground">{plan.price}€</span>
-                    {plan.priceNote && (
-                      <span className="text-sm text-muted-foreground">{plan.priceNote}</span>
-                    )}
-                  </div>
+          {/* Comparison Table */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Pack Starter */}
+            <div className="relative p-6 rounded-2xl border border-border/50 bg-card/50">
+              <div className="text-center mb-6">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-secondary flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-muted-foreground" />
                 </div>
-
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm">
-                      <Check className="w-4 h-4 text-foreground mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button 
-                  className="w-full" 
-                  variant={plan.popular ? "default" : "outline"}
-                  onClick={handleConfigureCard}
-                >
-                  {plan.cta}
-                </Button>
+                <h3 className="text-xl font-bold text-foreground mb-1">Pack Starter</h3>
+                <p className="text-sm text-muted-foreground mb-3">Inclus avec votre carte</p>
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-3xl font-bold text-foreground">0 DH</span>
+                  <span className="text-sm text-muted-foreground">/mois</span>
+                </div>
               </div>
-            ))}
+
+              <div className="space-y-3">
+                {[
+                  { label: "Carte NFC Physique", included: true },
+                  { label: "Profil Personnalisable", included: true },
+                  { label: "Liens (Insta, WA, etc.)", included: true },
+                  { label: "Modification en temps réel", included: true },
+                  { label: "Fonction Story", included: false },
+                  { label: "Accès WiFi Rapide", included: false },
+                  { label: "Statistiques (Analytics)", included: false },
+                ].map((feature) => (
+                  <div key={feature.label} className="flex items-center gap-3 text-sm">
+                    {feature.included ? (
+                      <div className="w-5 h-5 rounded-full bg-green-500/10 flex items-center justify-center">
+                        <Check className="w-3 h-3 text-green-600" />
+                      </div>
+                    ) : (
+                      <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center">
+                        <X className="w-3 h-3 text-muted-foreground" />
+                      </div>
+                    )}
+                    <span className={feature.included ? "text-foreground" : "text-muted-foreground"}>
+                      {feature.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <Button 
+                className="w-full mt-6" 
+                variant="outline"
+                onClick={handleConfigureCard}
+              >
+                Commander ma carte
+              </Button>
+            </div>
+
+            {/* i-wasp GOLD */}
+            <div className="relative p-6 rounded-2xl border-2 border-amber-500/50 bg-gradient-to-br from-amber-500/10 via-amber-400/5 to-orange-500/10 shadow-xl shadow-amber-500/10">
+              {/* Popular badge */}
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                <Crown className="w-3 h-3" />
+                RECOMMANDÉ
+              </div>
+              
+              {/* Gold glow effect */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/20 rounded-full blur-3xl" />
+              
+              <div className="relative text-center mb-6">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                  <Crown className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-1">i-wasp GOLD</h3>
+                <p className="text-sm text-muted-foreground mb-3">Toutes les fonctionnalités</p>
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-3xl font-bold text-amber-600">99 DH</span>
+                  <span className="text-sm text-muted-foreground">/mois</span>
+                </div>
+              </div>
+
+              <div className="relative space-y-3">
+                {[
+                  { label: "Carte NFC Physique", included: true },
+                  { label: "Profil Personnalisable", included: true },
+                  { label: "Liens (Insta, WA, etc.)", included: true },
+                  { label: "Modification en temps réel", included: true },
+                  { label: "Fonction Story", included: true, highlight: true },
+                  { label: "Accès WiFi Rapide", included: true, highlight: true },
+                  { label: "Statistiques (Analytics)", included: true, highlight: true },
+                ].map((feature) => (
+                  <div key={feature.label} className="flex items-center gap-3 text-sm">
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                      feature.highlight 
+                        ? "bg-amber-500 shadow-sm shadow-amber-500/50" 
+                        : "bg-green-500/10"
+                    }`}>
+                      <Check className={`w-3 h-3 ${feature.highlight ? "text-white" : "text-green-600"}`} />
+                    </div>
+                    <span className={feature.highlight ? "text-foreground font-medium" : "text-foreground"}>
+                      {feature.label}
+                      {feature.highlight && (
+                        <span className="ml-2 text-xs text-amber-600 font-semibold">EXCLUSIF</span>
+                      )}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <Button 
+                className="w-full mt-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white border-0 gap-2"
+                onClick={handleConfigureCard}
+              >
+                <Crown className="w-4 h-4" />
+                Passer au GOLD
+              </Button>
+            </div>
           </div>
 
           {/* Promotion */}
-          <div className="mt-8 p-4 rounded-xl bg-primary/10 border border-primary/20 text-center">
+          <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 text-center">
             <p className="text-sm font-medium text-foreground">
               🎁 Offre de lancement : -10% avec le code <span className="font-mono bg-foreground/10 px-2 py-0.5 rounded">IWASP10</span>
             </p>
