@@ -13,14 +13,15 @@ interface SendEmailParams {
   orderId: string;
   emailType: EmailType;
   trackingNumber?: string;
+  language?: "fr" | "ar";
 }
 
-export async function sendOrderEmail({ orderId, emailType, trackingNumber }: SendEmailParams): Promise<boolean> {
+export async function sendOrderEmail({ orderId, emailType, trackingNumber, language = "fr" }: SendEmailParams): Promise<boolean> {
   try {
-    console.log(`Sending ${emailType} email for order ${orderId}`);
+    console.log(`Sending ${emailType} email for order ${orderId} in ${language}`);
     
     const { data, error } = await supabase.functions.invoke("send-order-email", {
-      body: { orderId, emailType, trackingNumber }
+      body: { orderId, emailType, trackingNumber, language }
     });
 
     if (error) {
@@ -38,8 +39,13 @@ export async function sendOrderEmail({ orderId, emailType, trackingNumber }: Sen
 
 // Helper to trigger emails on order status changes
 export function useOrderEmailTrigger() {
-  const triggerEmail = async (orderId: string, emailType: EmailType, trackingNumber?: string) => {
-    return sendOrderEmail({ orderId, emailType, trackingNumber });
+  const triggerEmail = async (orderId: string, emailType: EmailType, options?: { trackingNumber?: string; language?: "fr" | "ar" }) => {
+    return sendOrderEmail({ 
+      orderId, 
+      emailType, 
+      trackingNumber: options?.trackingNumber,
+      language: options?.language 
+    });
   };
 
   return { triggerEmail };

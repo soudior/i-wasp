@@ -24,6 +24,7 @@ interface OrderEmailRequest {
   orderId: string;
   emailType: EmailType;
   trackingNumber?: string;
+  language?: "fr" | "ar";
 }
 
 interface OrderData {
@@ -57,7 +58,28 @@ const formatDate = (dateString: string): string => {
   });
 };
 
-const getEmailSubject = (emailType: EmailType, orderNumber: string): string => {
+const getEmailSubject = (emailType: EmailType, orderNumber: string, language: "fr" | "ar" = "fr"): string => {
+  if (language === "ar") {
+    switch (emailType) {
+      case "order_confirmation":
+        return `✅ تأكيد الطلب #${orderNumber} - IWASP`;
+      case "welcome":
+        return `🐝 مرحبا بيك فـ IWASP ! 🚀`;
+      case "payment_confirmed":
+        return `💳 تأكد الخلاص - الطلب #${orderNumber} - IWASP`;
+      case "in_production":
+        return `🏭 الطلب ديالك #${orderNumber} كيتصنع - IWASP`;
+      case "shipped":
+        return `📦 الطلب ديالك #${orderNumber} تصيفط - IWASP`;
+      case "delivered":
+        return `🎉 الطلب ديالك #${orderNumber} وصل - IWASP`;
+      case "invoice":
+        return `🧾 الفاتورة - الطلب #${orderNumber} - IWASP`;
+      default:
+        return `الطلب #${orderNumber} - IWASP`;
+    }
+  }
+  
   switch (emailType) {
     case "order_confirmation":
       return `✅ Confirmation de commande #${orderNumber} - IWASP`;
@@ -80,7 +102,9 @@ const getEmailSubject = (emailType: EmailType, orderNumber: string): string => {
   }
 };
 
-const generateEmailHtml = (emailType: EmailType, order: OrderData): string => {
+const generateEmailHtml = (emailType: EmailType, order: OrderData, language: "fr" | "ar" = "fr"): string => {
+  const isArabic = language === "ar";
+  const rtlStyle = isArabic ? 'direction: rtl; text-align: right;' : '';
   const baseStyles = `
     <style>
       body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; }
@@ -197,6 +221,104 @@ const generateEmailHtml = (emailType: EmailType, order: OrderData): string => {
       `;
 
     case "welcome":
+      if (isArabic) {
+        return `
+          <!DOCTYPE html>
+          <html dir="rtl" lang="ar">
+          <head>
+            ${baseStyles}
+            <style>
+              body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl; }
+              .welcome-hero { background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%); padding: 50px 30px; text-align: center; }
+              .welcome-hero h1 { color: #d4af37; font-size: 32px; margin: 0 0 10px; }
+              .welcome-hero .bee-icon { font-size: 48px; margin-bottom: 15px; }
+              .welcome-hero p { color: #ffffff; opacity: 0.9; font-size: 16px; }
+              .step-card { background: white; border-radius: 12px; padding: 25px; margin: 15px 0; border-right: 4px solid #d4af37; border-left: none; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: right; }
+              .step-number { background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #1a1a2e; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; margin-left: 12px; }
+              .step-title { color: #1a1a2e; font-weight: 600; font-size: 16px; }
+              .step-desc { color: #718096; font-size: 14px; margin-top: 8px; line-height: 1.8; }
+              .cta-button { display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #1a1a2e !important; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; margin: 10px 5px; }
+              .whatsapp-box { background: #25D366; color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 25px 0; }
+              .whatsapp-box a { color: white !important; text-decoration: none; font-weight: 600; }
+              .guide-link { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
+              .content { text-align: right; }
+              .greeting { text-align: right; }
+              .message { text-align: right; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="welcome-hero">
+                <div class="bee-icon">🐝</div>
+                <h1>مرحبا بيك فـ IWASP !</h1>
+                <p>مبروك عليك ! دابا بديتي تغير الطريقة لي كتواصل بيها مع الناس فالخدمة.</p>
+              </div>
+              <div class="content">
+                <p class="greeting">سلام ${order.shipping_name}،</p>
+                <p class="message">
+                  الكارطة ديالك IWASP دخلات للتحضير. هاشنو غادي يوقع دابا :
+                </p>
+                
+                <div class="step-card">
+                  <span class="step-number">1</span>
+                  <span class="step-title">التخصيص</span>
+                  <p class="step-desc">غادي نحفرو اللوڭو ديالك بدقة على الكارطة NFC الفاخرة ديالك.</p>
+                </div>
+                
+                <div class="step-card">
+                  <span class="step-number">2</span>
+                  <span class="step-title">الإرسال</span>
+                  <p class="step-desc">غادي توصلك رقم التتبع ملي الكارطة ديالك تخرج من عندنا.</p>
+                </div>
+                
+                <div class="step-card">
+                  <span class="step-number">3</span>
+                  <span class="step-title">التفعيل</span>
+                  <p class="step-desc">ملي توصلك، غير طابقها على التيليفون وغادي تتربط بالبروفايل ديالك أوتوماتيك!</p>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="https://i-wasp.com/guide" class="cta-button">📖 شوف دليل الاستعمال</a>
+                </div>
+                
+                <div class="guide-link">
+                  <p style="margin: 0 0 10px; color: #4a5568;">💡 <strong>نصيحة Pro :</strong></p>
+                  <p style="margin: 0; color: #718096; font-size: 14px;">باش تكون الكونيكسيون NFC زوينة، حط الكارطة ديالك فوق <strong>اللّي فوق فـ iPhone</strong> ولا فـ <strong>الوسط فـ Android</strong>.</p>
+                </div>
+                
+                <div class="order-box" style="border-right: 4px solid #d4af37; border-left: none;">
+                  <h3>📋 تفاصيل الطلب</h3>
+                  <div class="order-detail">
+                    <span>رقم الطلب</span>
+                    <span>#${order.order_number}</span>
+                  </div>
+                  <div class="order-detail">
+                    <span>التاريخ</span>
+                    <span>${formatDate(order.created_at)}</span>
+                  </div>
+                  <div class="order-detail">
+                    <span>العدد</span>
+                    <span>${order.quantity} كارطة</span>
+                  </div>
+                </div>
+                
+                <div class="whatsapp-box">
+                  <p style="margin: 0 0 10px;">محتاج شي مساعدة؟ راسلنا على واتساب :</p>
+                  <a href="https://wa.me/212600000000?text=سلام%20IWASP%2C%20عندي%20سؤال%20على%20الطلب%20%23${order.order_number}">💬 كتب لينا على واتساب</a>
+                </div>
+                
+                <p class="message" style="text-align: center; font-style: italic;">
+                  مرحبا بيك فالخلية ! 🐝<br>
+                  <strong>فريق IWASP</strong>
+                </p>
+              </div>
+              ${footer}
+            </div>
+          </body>
+          </html>
+        `;
+      }
+      
       return `
         <!DOCTYPE html>
         <html>
@@ -463,9 +585,9 @@ serve(async (req) => {
   }
 
   try {
-    const { orderId, emailType, trackingNumber }: OrderEmailRequest = await req.json();
+    const { orderId, emailType, trackingNumber, language = "fr" }: OrderEmailRequest = await req.json();
 
-    console.log(`Processing ${emailType} email for order ${orderId}`);
+    console.log(`Processing ${emailType} email for order ${orderId} in ${language}`);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -507,8 +629,8 @@ serve(async (req) => {
         from: "IWASP <no-reply@i-wasp.com>",
         reply_to: "contact@i-wasp.com",
         to: [order.customer_email],
-        subject: getEmailSubject(emailType, order.order_number),
-        html: generateEmailHtml(emailType, orderData),
+        subject: getEmailSubject(emailType, order.order_number, language),
+        html: generateEmailHtml(emailType, orderData, language),
       });
 
       console.log("Customer email sent:", customerEmailResult);
