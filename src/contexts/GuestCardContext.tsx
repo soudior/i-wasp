@@ -18,6 +18,7 @@ export interface GuestCardData {
   whatsapp: string;
   website: string;
   photo_url: string | null;
+  logo_url: string | null;
 }
 
 const STORAGE_KEY = "iwasp_guest_card";
@@ -33,6 +34,7 @@ const initialGuestCard: GuestCardData = {
   whatsapp: "",
   website: "",
   photo_url: null,
+  logo_url: null,
 };
 
 interface GuestCardContextType {
