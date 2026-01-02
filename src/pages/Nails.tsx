@@ -28,7 +28,7 @@ import nailsHero from "@/assets/nails/nails-hero.png";
 import nailsCafe from "@/assets/nails/nails-cafe.png";
 import nailsDemoVideo from "@/assets/nails/nails-demo-video.mp4";
 
-// Optimized Video Component with lazy loading
+// Optimized Video Component with Hardware Acceleration for iOS
 function OptimizedVideo({ src }: { src: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -42,7 +42,11 @@ function OptimizedVideo({ src }: { src: string }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsInView(true);
-          video.play().catch(() => {});
+          // iOS-optimized autoplay with fallback
+          video.play().catch(() => {
+            video.muted = true;
+            video.play().catch(() => {});
+          });
           observer.disconnect();
         }
       },
@@ -66,7 +70,16 @@ function OptimizedVideo({ src }: { src: string }) {
       className={`w-full aspect-video object-cover transition-opacity duration-300 ${
         isLoaded ? "opacity-100" : "opacity-0"
       }`}
-      style={{ willChange: "auto", transform: "translateZ(0)" }}
+      style={{ 
+        // Hardware acceleration for smooth iOS playback
+        WebkitTransform: "translate3d(0,0,0)",
+        transform: "translate3d(0,0,0)",
+        WebkitBackfaceVisibility: "hidden",
+        backfaceVisibility: "hidden",
+        WebkitPerspective: 1000,
+        perspective: 1000,
+        willChange: "transform"
+      }}
     />
   );
 }

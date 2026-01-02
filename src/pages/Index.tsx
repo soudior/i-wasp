@@ -31,7 +31,7 @@ const productContent = {
   },
 };
 
-// Optimized Video Component with lazy loading
+// Optimized Video Component with Hardware Acceleration for iOS
 function OptimizedVideo({ 
   src, 
   isActive 
@@ -55,20 +55,25 @@ function OptimizedVideo({
           observer.disconnect();
         }
       },
-      { rootMargin: "50px", threshold: 0.1 }
+      { rootMargin: "100px", threshold: 0.1 }
     );
 
     observer.observe(video);
     return () => observer.disconnect();
   }, []);
 
-  // Play/pause based on active state
+  // Play/pause based on active state with iOS optimization
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !isInView) return;
 
     if (isActive) {
-      video.play().catch(() => {});
+      // iOS requires user gesture for autoplay - use low power mode
+      video.play().catch(() => {
+        // Fallback for iOS autoplay restrictions
+        video.muted = true;
+        video.play().catch(() => {});
+      });
     } else {
       video.pause();
     }
@@ -88,8 +93,14 @@ function OptimizedVideo({
         isLoaded ? "opacity-100" : "opacity-0"
       }`}
       style={{ 
-        willChange: "auto",
-        transform: "translateZ(0)" // GPU acceleration
+        // Hardware acceleration for smooth iOS playback
+        WebkitTransform: "translate3d(0,0,0)",
+        transform: "translate3d(0,0,0)",
+        WebkitBackfaceVisibility: "hidden",
+        backfaceVisibility: "hidden",
+        WebkitPerspective: 1000,
+        perspective: 1000,
+        willChange: "transform"
       }}
     />
   );
