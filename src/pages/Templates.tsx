@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, ArrowRight } from "lucide-react";
+import { X, Check, ArrowRight, MessageCircle, Building2, Home, Stethoscope, Palette } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
 // Card mockup imports
@@ -25,78 +25,91 @@ import phoneHotel from "@/assets/phones/phone-hotel.png";
 import phoneTourism from "@/assets/phones/phone-tourism.png";
 import phoneLuxury from "@/assets/phones/phone-luxury.png";
 
-const categories = ["Tous", "Business", "Essential", "Premium", "Eco-Luxe", "Hospitality", "Travel"];
+const sectors = [
+  { id: "all", name: "Tous", icon: null },
+  { id: "business", name: "Business & Corporate", icon: Building2, color: "text-amber-400" },
+  { id: "immobilier", name: "Immobilier & Luxe", icon: Home, color: "text-emerald-400" },
+  { id: "sante", name: "Santé & Médical", icon: Stethoscope, color: "text-blue-400" },
+  { id: "creatifs", name: "Créatifs & Freelance", icon: Palette, color: "text-purple-400" },
+];
 
 const templates = [
   { 
     id: "signature",
-    name: "Signature", 
-    category: "Business", 
+    name: "Executive Pro", 
+    sector: "business",
     cardImage: cardBlackMatte, 
     phoneImage: phoneBlack,
-    description: "Le design emblématique IWASP. Noir mat premium avec finitions métalliques.",
-    features: ["Finition matte premium", "Bords métalliques", "Logo embossé", "NFC haute performance"]
-  },
-  { 
-    id: "minimal", 
-    name: "Minimal", 
-    category: "Essential", 
-    cardImage: cardWhiteMinimal, 
-    phoneImage: phoneWhite,
-    description: "L'élégance épurée. Design blanc immaculé pour un impact visuel fort.",
-    features: ["Design épuré", "Blanc immaculé", "Texture fine", "Contraste parfait"]
+    description: "Design minimaliste noir & or. Parfait pour les dirigeants et entrepreneurs.",
+    features: ["Finition matte premium", "Design corporate", "Logo embossé", "NFC haute performance"],
+    hasWhatsApp: true
   },
   { 
     id: "executive", 
-    name: "Executive", 
-    category: "Business", 
+    name: "Corporate Elite", 
+    sector: "business",
     cardImage: cardNavyExecutive, 
     phoneImage: phoneNavy,
-    description: "Pour les dirigeants. Bleu nuit profond avec accents or pour un prestige absolu.",
-    features: ["Bleu nuit profond", "Accents dorés", "Finition luxe", "Design executive"]
+    description: "Bleu nuit profond avec accents dorés. Pour les cabinets et consultants.",
+    features: ["Bleu nuit profond", "Accents dorés", "Finition luxe", "Design executive"],
+    hasWhatsApp: true
   },
   { 
     id: "luxe", 
-    name: "Luxe", 
-    category: "Premium", 
+    name: "Prestige Immo", 
+    sector: "immobilier",
     cardImage: cardGoldAccent, 
     phoneImage: phoneGold,
-    description: "L'opulence assumée. Or champagne pour une présence inoubliable.",
-    features: ["Finition or champagne", "Gravure premium", "Metal brossé", "Éclat luxueux"]
-  },
-  { 
-    id: "luxury", 
-    name: "Liana x I-WASP", 
-    category: "Eco-Luxe", 
-    cardImage: cardLuxuryEco, 
-    phoneImage: phoneLuxury,
-    description: "Luxe numérique éco-responsable. Design émeraude premium pour une identité durable.",
-    features: ["Design éco-luxe", "Émeraude premium", "Carbon neutral", "Tech durable"]
+    description: "Or champagne premium. Idéal pour agents immobiliers et promoteurs de luxe.",
+    features: ["Finition or champagne", "Grandes photos", "WhatsApp direct", "Galerie intégrée"],
+    hasWhatsApp: true
   },
   { 
     id: "hotel", 
-    name: "Hôtellerie", 
-    category: "Hospitality", 
+    name: "Luxury Living", 
+    sector: "immobilier",
     cardImage: cardHotel, 
     phoneImage: phoneHotel,
-    description: "Pour l'hôtellerie 5 étoiles. Marbre et or pour une expérience client exceptionnelle.",
-    features: ["Design marbre", "Bordure dorée", "Infos hôtel", "Services intégrés"]
+    description: "Marbre et or. Pour l'immobilier haut de gamme et résidences de prestige.",
+    features: ["Design marbre", "Bordure dorée", "Visite virtuelle", "Contact rapide"],
+    hasWhatsApp: true
+  },
+  { 
+    id: "minimal", 
+    name: "MedPro", 
+    sector: "sante", 
+    cardImage: cardWhiteMinimal, 
+    phoneImage: phoneWhite,
+    description: "Design sobre et professionnel. Pour médecins, dentistes et praticiens.",
+    features: ["Design épuré", "Bouton RDV", "Horaires intégrés", "Localisation cabinet"],
+    hasWhatsApp: false
   },
   { 
     id: "tourism", 
-    name: "Tourisme", 
-    category: "Travel", 
+    name: "WellCare", 
+    sector: "sante",
     cardImage: cardTourism, 
     phoneImage: phoneTourism,
-    description: "Pour les guides et agences. Couleurs terre chaleureuses et motif boussole.",
-    features: ["Tons terracotta", "Motif boussole", "Infos voyage", "Guide intégré"]
+    description: "Tons apaisants. Parfait pour thérapeutes, coachs bien-être et kinés.",
+    features: ["Couleurs apaisantes", "Booking intégré", "Services détaillés", "Avis clients"],
+    hasWhatsApp: true
+  },
+  { 
+    id: "luxury", 
+    name: "Creative Studio", 
+    sector: "creatifs",
+    cardImage: cardLuxuryEco, 
+    phoneImage: phoneLuxury,
+    description: "Design audacieux émeraude. Pour artistes, designers et photographes.",
+    features: ["Style portfolio", "Galerie visuelle", "Réseaux sociaux", "Showreel vidéo"],
+    hasWhatsApp: true
   },
 ];
 
 const Templates = () => {
   const navigate = useNavigate();
   const { setSelectedTemplate: setCartTemplate } = useCart();
-  const [activeCategory, setActiveCategory] = useState("Tous");
+  const [activeSector, setActiveSector] = useState("all");
   const [selectedTemplate, setSelectedTemplate] = useState<typeof templates[0] | null>(null);
 
   // Handle template selection and navigation
@@ -107,9 +120,13 @@ const Templates = () => {
     navigate(`/create?template=${template.id}`);
   };
 
-  const filteredTemplates = activeCategory === "Tous" 
+  const filteredTemplates = activeSector === "all" 
     ? templates 
-    : templates.filter(t => t.category === activeCategory);
+    : templates.filter(t => t.sector === activeSector);
+
+  const getSectorInfo = (sectorId: string) => {
+    return sectors.find(s => s.id === sectorId);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -126,34 +143,35 @@ const Templates = () => {
             className="text-center mb-16"
           >
             <span className="inline-block px-4 py-1.5 rounded-full bg-amber-500/10 text-amber-400 text-sm font-medium mb-6">
-              Collection Premium
+              Modèles par Secteur
             </span>
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground tracking-tight mb-6">
-              Nos Templates
+              Nos Templates par Métier
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Chaque template est conçu pour impressionner. Qualité premium garantie.
+              Choisissez le modèle adapté à votre secteur d'activité. 100% personnalisable.
             </p>
           </motion.div>
 
-          {/* Category filters */}
+          {/* Sector filters with icons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
             className="flex flex-wrap justify-center gap-3 mb-16"
           >
-            {categories.map((category) => (
+            {sectors.map((sector) => (
               <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
-                  activeCategory === category
+                key={sector.id}
+                onClick={() => setActiveSector(sector.id)}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                  activeSector === sector.id
                     ? "bg-amber-500 text-background"
                     : "bg-surface-2 text-muted-foreground hover:text-foreground hover:bg-surface-3"
                 }`}
               >
-                {category}
+                {sector.icon && <sector.icon size={16} />}
+                {sector.name}
               </button>
             ))}
           </motion.div>
@@ -204,9 +222,16 @@ const Templates = () => {
                     {/* Info */}
                     <div className="p-6">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-amber-400 font-medium tracking-wider uppercase">
-                          {template.category}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-xs font-medium tracking-wider uppercase ${getSectorInfo(template.sector)?.color || 'text-amber-400'}`}>
+                            {getSectorInfo(template.sector)?.name || template.sector}
+                          </span>
+                          {template.hasWhatsApp && (
+                            <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
+                              <MessageCircle size={12} className="text-green-400" />
+                            </div>
+                          )}
+                        </div>
                         <ArrowRight size={16} className="text-muted-foreground group-hover:text-amber-400 group-hover:translate-x-1 transition-all" />
                       </div>
                       <h3 className="text-xl font-semibold text-foreground group-hover:text-amber-400 transition-colors">
@@ -269,9 +294,17 @@ const Templates = () => {
 
                 {/* Content side */}
                 <div className="p-8 md:p-12 flex flex-col justify-center">
-                  <span className="text-sm text-amber-400 font-medium tracking-wider uppercase mb-4">
-                    {selectedTemplate.category}
-                  </span>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className={`text-sm font-medium tracking-wider uppercase ${getSectorInfo(selectedTemplate.sector)?.color || 'text-amber-400'}`}>
+                      {getSectorInfo(selectedTemplate.sector)?.name || selectedTemplate.sector}
+                    </span>
+                    {selectedTemplate.hasWhatsApp && (
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">
+                        <MessageCircle size={12} />
+                        WhatsApp
+                      </div>
+                    )}
+                  </div>
                   <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground mb-4">
                     {selectedTemplate.name}
                   </h2>
