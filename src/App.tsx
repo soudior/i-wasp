@@ -79,21 +79,12 @@ function OrderRedirect() {
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // Check if running as installed PWA
-    const standalone = window.matchMedia('(display-mode: standalone)').matches;
-    setIsStandalone(standalone);
-    
-    // Only show splash on first visit per session in standalone mode
-    if (!standalone) {
+    // Show splash on first visit per session (PWA or native app)
+    const splashShown = sessionStorage.getItem('splash-shown');
+    if (splashShown) {
       setShowSplash(false);
-    } else {
-      const splashShown = sessionStorage.getItem('splash-shown');
-      if (splashShown) {
-        setShowSplash(false);
-      }
     }
   }, []);
 
@@ -111,8 +102,8 @@ const App = () => {
               <CartProvider>
                 <TooltipProvider>
                   <FeatureValidationProvider showOverlay={true}>
-                    {/* Splash Screen for installed PWA */}
-                    {showSplash && isStandalone && (
+                    {/* Splash Screen - Premium gold & black loading */}
+                    {showSplash && (
                       <SplashScreen onComplete={handleSplashComplete} minDuration={2000} />
                     )}
                     <Toaster />

@@ -148,16 +148,19 @@ export default function Login() {
           )}
         </div>
 
-        {/* Google OAuth Button */}
+        {/* Google OAuth Button - Glassmorphism Premium */}
         <button
           type="button"
           onClick={handleGoogleLogin}
           disabled={isGoogleLoading || isLoading}
-          className="w-full py-3.5 rounded-xl font-medium text-sm flex items-center justify-center gap-3 mb-6 disabled:opacity-50"
+          className="w-full py-3.5 rounded-xl font-medium text-sm flex items-center justify-center gap-3 mb-6 disabled:opacity-50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
           style={{
-            backgroundColor: "#FFFFFF",
+            background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
             color: "#1D1D1F",
-            border: "1px solid #E5E5E7",
+            border: "1px solid rgba(212,175,55,0.3)",
+            boxShadow: "0 4px 20px rgba(212,175,55,0.1), inset 0 1px 0 rgba(255,255,255,0.5)",
           }}
         >
           {isGoogleLoading ? (
