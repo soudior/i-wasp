@@ -72,9 +72,16 @@ export function SocialLinksManager({ value, onChange }: SocialLinksManagerProps)
 
   return (
     <div className="space-y-4">
-      <Label className="flex items-center gap-2 text-sm font-medium text-foreground">
-        Réseaux sociaux
-      </Label>
+      <div className="flex items-center justify-between">
+        <Label className="flex items-center gap-2 text-sm font-medium text-foreground">
+          Réseaux & Services
+        </Label>
+        {value.length > 0 && (
+          <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+            {value.length} lien{value.length > 1 ? "s" : ""}
+          </span>
+        )}
+      </div>
 
       {/* Added links with reorder */}
       <Reorder.Group 
@@ -155,21 +162,25 @@ export function SocialLinksManager({ value, onChange }: SocialLinksManagerProps)
         </AnimatePresence>
       </Reorder.Group>
 
-      {/* Add button - Apple style */}
+      {/* Add button - Premium style */}
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={() => setSheetOpen(true)}
-        className="w-full flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all text-muted-foreground hover:text-primary"
+        className="w-full flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed border-amber-500/30 hover:border-amber-500/50 bg-gradient-to-r from-amber-500/5 to-amber-600/5 hover:from-amber-500/10 hover:to-amber-600/10 transition-all text-amber-600 dark:text-amber-400"
       >
         <Plus size={18} />
-        <span className="text-sm font-medium">Ajouter un réseau</span>
+        <span className="text-sm font-medium">Ajouter un lien</span>
       </motion.button>
 
       {value.length === 0 && (
         <p className="text-xs text-muted-foreground text-center">
-          Ajoutez vos réseaux sociaux pour les afficher sur votre carte
+          Ajoutez Instagram, Spotify, WhatsApp, TikTok, et plus encore...
         </p>
       )}
+
+      <p className="text-xs text-center text-muted-foreground/70">
+        ↕ Glissez-déposez pour réorganiser l'ordre
+      </p>
 
       {/* Bottom Sheet */}
       <SocialBottomSheet

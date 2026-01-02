@@ -123,7 +123,7 @@ export function validateUsername(input: string, networkId: string): { valid: boo
 }
 
 export const socialNetworks: SocialNetwork[] = [
-  // Classic
+  // Classic Social
   { id: "linkedin", label: "LinkedIn", category: "classic", placeholder: "votre-profil", urlTemplate: "https://linkedin.com/in/{value}", appScheme: "linkedin://in/{value}", icon: "Linkedin" },
   { id: "instagram", label: "Instagram", category: "classic", placeholder: "username", urlTemplate: "https://instagram.com/{value}", appScheme: "instagram://user?username={value}", icon: "Instagram" },
   { id: "facebook", label: "Facebook", category: "classic", placeholder: "username", urlTemplate: "https://facebook.com/{value}", appScheme: "fb://profile/{value}", icon: "Facebook" },
@@ -131,25 +131,37 @@ export const socialNetworks: SocialNetwork[] = [
   { id: "tiktok", label: "TikTok", category: "classic", placeholder: "username", urlTemplate: "https://tiktok.com/@{value}", appScheme: "snssdk1233://user/profile/{value}", icon: "Music" },
   { id: "snapchat", label: "Snapchat", category: "classic", placeholder: "username", urlTemplate: "https://snapchat.com/add/{value}", appScheme: "snapchat://add/{value}", icon: "Camera" },
   { id: "youtube", label: "YouTube", category: "classic", placeholder: "channel", urlTemplate: "https://youtube.com/@{value}", appScheme: "vnd.youtube://www.youtube.com/@{value}", icon: "Youtube" },
+  { id: "pinterest", label: "Pinterest", category: "classic", placeholder: "username", urlTemplate: "https://pinterest.com/{value}", icon: "Heart" },
+  { id: "threads", label: "Threads", category: "classic", placeholder: "username", urlTemplate: "https://threads.net/@{value}", icon: "AtSign" },
   
-  // Professional
+  // Professional / Contact
   { id: "whatsapp", label: "WhatsApp", category: "professional", placeholder: "+212612345678", urlTemplate: "https://wa.me/{value}", appScheme: "whatsapp://send?phone={value}", icon: "MessageCircle" },
   { id: "telegram", label: "Telegram", category: "professional", placeholder: "username", urlTemplate: "https://t.me/{value}", appScheme: "tg://resolve?domain={value}", icon: "Send" },
   { id: "calendly", label: "Calendly", category: "professional", placeholder: "votre-lien", urlTemplate: "https://calendly.com/{value}", icon: "Calendar" },
+  { id: "doctolib", label: "Doctolib", category: "professional", placeholder: "votre-cabinet", urlTemplate: "https://doctolib.fr/{value}", icon: "Stethoscope" },
   { id: "email", label: "Email", category: "professional", placeholder: "email@example.com", urlTemplate: "mailto:{value}", icon: "Mail" },
   { id: "phone", label: "Téléphone", category: "professional", placeholder: "+212612345678", urlTemplate: "tel:{value}", icon: "Phone" },
   
-  // Creators / Tech
+  // Creators / Entertainment
+  { id: "spotify", label: "Spotify", category: "creators", placeholder: "artist/playlist-id", urlTemplate: "https://open.spotify.com/{value}", appScheme: "spotify://{value}", icon: "Music2" },
+  { id: "applemusic", label: "Apple Music", category: "creators", placeholder: "artist/album-id", urlTemplate: "https://music.apple.com/{value}", icon: "Headphones" },
+  { id: "soundcloud", label: "SoundCloud", category: "creators", placeholder: "username", urlTemplate: "https://soundcloud.com/{value}", icon: "Disc" },
   { id: "github", label: "GitHub", category: "creators", placeholder: "username", urlTemplate: "https://github.com/{value}", icon: "Github" },
   { id: "behance", label: "Behance", category: "creators", placeholder: "username", urlTemplate: "https://behance.net/{value}", icon: "Palette" },
   { id: "dribbble", label: "Dribbble", category: "creators", placeholder: "username", urlTemplate: "https://dribbble.com/{value}", icon: "Dribbble" },
   { id: "notion", label: "Notion", category: "creators", placeholder: "page-id", urlTemplate: "https://notion.so/{value}", icon: "FileText" },
   { id: "medium", label: "Medium", category: "creators", placeholder: "username", urlTemplate: "https://medium.com/@{value}", icon: "BookOpen" },
+  { id: "twitch", label: "Twitch", category: "creators", placeholder: "channel", urlTemplate: "https://twitch.tv/{value}", icon: "Tv" },
   
-  // Business
+  // Business / Hospitality
   { id: "google-business", label: "Google Business", category: "business", placeholder: "business-id", urlTemplate: "https://g.page/{value}", icon: "Building2" },
+  { id: "tripadvisor", label: "TripAdvisor", category: "business", placeholder: "hotel-id", urlTemplate: "https://tripadvisor.com/{value}", icon: "Star" },
+  { id: "booking", label: "Booking.com", category: "business", placeholder: "hotel-slug", urlTemplate: "https://booking.com/hotel/{value}", icon: "BedDouble" },
+  { id: "airbnb", label: "Airbnb", category: "business", placeholder: "listing-id", urlTemplate: "https://airbnb.com/rooms/{value}", icon: "Home" },
   { id: "website", label: "Site web", category: "business", placeholder: "example.com", urlTemplate: "https://{value}", icon: "Globe" },
   { id: "store", label: "Boutique", category: "business", placeholder: "example.com/shop", urlTemplate: "https://{value}", icon: "ShoppingBag" },
+  { id: "menu", label: "Menu / Carte", category: "business", placeholder: "lien-menu", urlTemplate: "https://{value}", icon: "UtensilsCrossed" },
+  { id: "reservation", label: "Réservation", category: "business", placeholder: "lien-booking", urlTemplate: "https://{value}", icon: "CalendarCheck" },
 ];
 
 export function getNetworkById(id: string): SocialNetwork | undefined {
