@@ -30,6 +30,7 @@ import HerbalismCard from "./pages/HerbalismCard";
 import CardSuccess from "./pages/CardSuccess";
 import UserGuide from "./pages/UserGuide";
 import Templates from "./pages/Templates";
+import Settings from "./pages/Settings";
 
 // Order funnel pages - 7 steps strict flow
 import OrderType from "./pages/order/OrderType";
@@ -101,6 +102,7 @@ const App = () => (
                       
                       {/* Dashboard - Main user hub (guarded) */}
                       <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
+                      <Route path="/settings" element={<DashboardGuard><Settings /></DashboardGuard>} />
                       
                       {/* Legacy onboarding (for logged in users) */}
                       <Route path="/onboarding" element={<Onboarding />} />

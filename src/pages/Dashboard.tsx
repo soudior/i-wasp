@@ -224,6 +224,11 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              <Link to="/settings">
+                <Button variant="outline" size="icon">
+                  <Pencil size={18} />
+                </Button>
+              </Link>
               <Link to="/orders">
                 <Button variant="outline">
                   <ShoppingBag size={18} />
