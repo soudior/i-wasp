@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { 
   ArrowRight, 
   Sparkles, 
@@ -28,6 +27,49 @@ import iwaspLogo from "@/assets/iwasp-logo-white.png";
 import nailsHero from "@/assets/nails/nails-hero.png";
 import nailsCafe from "@/assets/nails/nails-cafe.png";
 import nailsDemoVideo from "@/assets/nails/nails-demo-video.mp4";
+
+// Optimized Video Component with lazy loading
+function OptimizedVideo({ src }: { src: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          video.play().catch(() => {});
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "100px", threshold: 0.1 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <video
+      ref={videoRef}
+      src={isInView ? src : undefined}
+      autoPlay={isInView}
+      loop
+      muted
+      playsInline
+      preload="metadata"
+      onLoadedData={() => setIsLoaded(true)}
+      className={`w-full aspect-video object-cover transition-opacity duration-300 ${
+        isLoaded ? "opacity-100" : "opacity-0"
+      }`}
+      style={{ willChange: "auto", transform: "translateZ(0)" }}
+    />
+  );
+}
 
 const Nails = () => {
   const navigate = useNavigate();
@@ -115,12 +157,7 @@ const Nails = () => {
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Text content */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center lg:text-left"
-            >
+            <div className="text-center lg:text-left">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-rose-500/20 to-amber-500/20 border border-rose-400/30 mb-6">
                 <Diamond className="h-4 w-4 text-rose-400" />
@@ -170,20 +207,16 @@ const Nails = () => {
                   <span>Livraison Maroc</span>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Hero Image */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
+            <div className="relative">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-rose-500/20">
                 <img 
                   src={nailsHero} 
                   alt="i-wasp Nails - Ongles NFC de luxe" 
                   className="w-full aspect-square object-cover"
+                  loading="lazy"
                 />
                 {/* Gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -202,7 +235,7 @@ const Nails = () => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -212,12 +245,8 @@ const Nails = () => {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {features.map((feature, index) => (
-              <motion.div
+              <div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="text-center p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800/50 hover:border-rose-500/30 transition-colors"
               >
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500/20 to-amber-500/20 flex items-center justify-center mx-auto mb-4">
@@ -225,7 +254,7 @@ const Nails = () => {
                 </div>
                 <h3 className="text-white font-semibold mb-2">{feature.title}</h3>
                 <p className="text-zinc-500 text-sm">{feature.desc}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -240,13 +269,7 @@ const Nails = () => {
           }}
         />
         <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
+          <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/20 to-rose-500/20 border border-purple-400/30 mb-6">
               <Eye className="h-4 w-4 text-purple-400" />
               <span className="text-sm text-purple-300 font-medium">Démonstration</span>
@@ -257,27 +280,14 @@ const Nails = () => {
             <p className="text-zinc-400 max-w-2xl mx-auto">
               La puce disparaît complètement. Votre manucure reste parfaite et naturelle, mais elle devient connectée.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="max-w-3xl mx-auto"
-          >
+          <div className="max-w-3xl mx-auto">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-purple-500/20 border border-purple-500/20">
-              <video 
-                src={nailsDemoVideo}
-                autoPlay 
-                loop 
-                muted 
-                playsInline
-                className="w-full aspect-video object-cover"
-              />
+              <OptimizedVideo src={nailsDemoVideo} />
               <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/40 via-transparent to-transparent" />
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -285,27 +295,17 @@ const Nails = () => {
       <section className="py-16 border-t border-zinc-900">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="relative rounded-3xl overflow-hidden"
-            >
+            <div className="relative rounded-3xl overflow-hidden">
               <img 
                 src={nailsCafe} 
                 alt="i-wasp Nails en situation - Café chic" 
                 className="w-full aspect-[4/3] object-cover"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
+            <div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-rose-500/20 border border-amber-400/30 mb-4">
                 <Diamond className="h-3 w-3 text-amber-400" />
                 <span className="text-xs text-amber-300 font-medium">Épaisseur nanométrique</span>
@@ -367,7 +367,7 @@ const Nails = () => {
                   <p className="text-zinc-500 text-sm">+50 clientes satisfaites</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -375,29 +375,19 @@ const Nails = () => {
       {/* How it Works */}
       <section className="py-20 bg-gradient-to-b from-transparent via-rose-950/10 to-transparent">
         <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
+          <div className="text-center mb-16">
             <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-4">
               Comment ça marche ?
             </h2>
             <p className="text-zinc-400 max-w-2xl mx-auto">
               En 3 étapes simples, passez du traditionnel au digital
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {steps.map((step, index) => (
-              <motion.div
+              <div
                 key={step.num}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-                viewport={{ once: true }}
                 className="relative"
               >
                 {/* Connector line */}
@@ -405,14 +395,14 @@ const Nails = () => {
                   <div className="hidden md:block absolute top-16 left-1/2 w-full h-0.5 bg-gradient-to-r from-rose-500/50 to-transparent" />
                 )}
                 
-                <div className="relative bg-zinc-900/80 border border-zinc-800 rounded-3xl p-8 text-center hover:border-rose-500/30 transition-all hover:-translate-y-1">
+                <div className="relative bg-zinc-900/80 border border-zinc-800 rounded-3xl p-8 text-center hover:border-rose-500/30 transition-colors">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500 to-amber-500 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-rose-500/30">
                     <span className="text-2xl font-bold text-white">{step.num}</span>
                   </div>
                   <h3 className="text-xl font-semibold text-white mb-3">{step.title}</h3>
                   <p className="text-zinc-400 text-sm leading-relaxed">{step.desc}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -421,30 +411,18 @@ const Nails = () => {
       {/* FAQ Section */}
       <section className="py-20">
         <div className="container mx-auto px-6 max-w-3xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
+          <div className="text-center mb-12">
             <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-4">
               Questions fréquentes
             </h2>
             <p className="text-zinc-400">
               Tout ce que vous devez savoir sur les i-wasp Nails
             </p>
-          </motion.div>
+          </div>
 
           <Accordion type="single" collapsible className="space-y-4">
             {faqs.map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
+              <div key={index}>
                 <AccordionItem 
                   value={`faq-${index}`} 
                   className="bg-zinc-900/50 border border-zinc-800 rounded-2xl px-6 data-[state=open]:border-rose-500/30"
@@ -456,7 +434,7 @@ const Nails = () => {
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>
-              </motion.div>
+              </div>
             ))}
           </Accordion>
         </div>
@@ -473,13 +451,7 @@ const Nails = () => {
         />
 
         <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="max-w-2xl mx-auto text-center"
-          >
+          <div className="max-w-2xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-500/20 border border-rose-400/30 mb-6">
               <Sparkles className="h-4 w-4 text-rose-400" />
               <span className="text-sm text-rose-300">Offre de lancement</span>
@@ -510,7 +482,7 @@ const Nails = () => {
                 199 MAD au lieu de <span className="line-through">299 MAD</span> • Paiement à la livraison
               </p>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
