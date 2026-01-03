@@ -6,6 +6,7 @@ import { MobileOptimizedVideo } from "@/components/MobileOptimizedVideo";
 import { AnimatedIWASPLogo, IWASPSlogan } from "@/components/AnimatedIWASPLogo";
 import { GoldPricingComparison } from "@/components/GoldPricingComparison";
 import { VisionAnimatedIcons, CertifiedBadgeSection } from "@/components/VisionAnimatedIcons";
+import { DashboardCarousel } from "@/components/DashboardCarousel";
 import nfcPoster from "@/assets/posters/nfc-demo-poster.webp";
 import nailsPoster from "@/assets/posters/nails-demo-poster.webp";
 
@@ -299,6 +300,9 @@ const Index = () => {
           <CertifiedBadgeSection />
         </div>
       </section>
+
+      {/* Dashboard Carousel - Preuves Visuelles */}
+      <DashboardCarousel />
 
       {/* Section Pricing GOLD Comparatif */}
       <GoldPricingComparison />
