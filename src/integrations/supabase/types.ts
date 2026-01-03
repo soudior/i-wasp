@@ -669,6 +669,39 @@ export type Database = {
         }
         Relationships: []
       }
+      template_assignments: {
+        Row: {
+          assigned_by: string | null
+          created_at: string
+          id: string
+          is_locked: boolean
+          notes: string | null
+          template_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          is_locked?: boolean
+          notes?: string | null
+          template_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          is_locked?: boolean
+          notes?: string | null
+          template_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
