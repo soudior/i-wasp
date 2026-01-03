@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import iwaspLogo from "@/assets/iwasp-logo.png";
+import { AnimatedIWASPLogo } from "@/components/AnimatedIWASPLogo";
 
 export function Navbar() {
   const { t } = useTranslation();
@@ -40,19 +40,19 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 animate-fade-down ${
-        isScrolled ? "glass-strong" : "bg-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled ? "bg-black/90 backdrop-blur-xl border-b border-amber-500/10" : "bg-transparent"
       }`}
     >
-      <nav className="container mx-auto px-6 py-4">
+      <nav className="container mx-auto px-6 py-3">
         <div className="flex items-center justify-between">
-          {/* Logo I-WASP */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <img 
-              src={iwaspLogo} 
-              alt="I-WASP" 
-              className="h-8 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
-            />
+          {/* Logo Animé i-wasp + Slogan */}
+          <Link to="/" className="flex items-center gap-4 group">
+            <AnimatedIWASPLogo size="sm" showAnimation={false} />
+            {/* Slogan visible on desktop */}
+            <span className="hidden lg:block text-amber-400/60 text-xs font-light tracking-wide border-l border-amber-500/20 pl-4">
+              Connecter le physique au digital
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
