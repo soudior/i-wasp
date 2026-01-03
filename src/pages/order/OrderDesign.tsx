@@ -379,6 +379,39 @@ function OrderDesignContent() {
               >
                 Templates Dark Luxury avec Stories 24h intégrées
               </motion.p>
+              
+              {/* Imported Data Preview Banner */}
+              {state.designConfig?.importedData && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-6 max-w-2xl mx-auto p-4 rounded-2xl border border-[#d4af37]/40 bg-gradient-to-r from-[#d4af37]/10 via-black/50 to-[#d4af37]/10"
+                >
+                  <div className="flex items-center gap-4">
+                    {state.designConfig.importedData.logo && (
+                      <img 
+                        src={state.designConfig.importedData.logo} 
+                        alt="Logo" 
+                        className="h-12 w-auto object-contain rounded-lg bg-white/10 p-1"
+                      />
+                    )}
+                    <div className="flex-1 text-left">
+                      <p className="text-sm text-[#d4af37] font-medium">
+                        ✨ Données importées de {state.designConfig.importedData.brandName || state.designConfig.importedData.website}
+                      </p>
+                      <p className="text-xs text-white/50">
+                        {state.designConfig.importedData.products?.length || 0} produits • 
+                        {state.designConfig.importedData.storyImages?.length || 0} stories prêtes
+                      </p>
+                    </div>
+                    <div 
+                      className="w-8 h-8 rounded-full border-2 border-white/20"
+                      style={{ backgroundColor: state.designConfig.importedData.colors?.primary || '#d4af37' }}
+                    />
+                  </div>
+                </motion.div>
+              )}
+              
               {/* Auto-save indicator */}
               <motion.div 
                 className="flex justify-center mt-3"

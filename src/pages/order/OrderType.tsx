@@ -16,6 +16,7 @@ import { Footer } from "@/components/Footer";
 import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from "@/components/order";
 import { WebsiteImporter, ScrapedWebsiteData } from "@/components/order/WebsiteImporter";
 import { User, Briefcase, Building2, Check, ArrowRight, Sparkles, CreditCard, Hand } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import nailsHero from "@/assets/nails/nails-hero.png";
 import cardPreview from "@/assets/cards/card-black-matte.png";
@@ -206,7 +207,7 @@ export default function OrderType() {
                 ))}
               </div>
 
-              {/* Website Import Section - Only for card product */}
+              {/* i-wasp Magic Import Section - Only for card product */}
               {state.productType === "card" && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -214,38 +215,53 @@ export default function OrderType() {
                   transition={{ delay: 0.3 }}
                   className="mb-8"
                 >
-                  <div className="relative">
+                  {/* Divider with Gold accent */}
+                  <div className="relative py-6">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-border" />
+                      <div className="w-full border-t border-[#d4af37]/30" />
                     </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-3 text-muted-foreground">
-                        ou importez votre site existant
+                    <div className="relative flex justify-center">
+                      <span className="bg-background px-4 text-sm font-medium text-[#d4af37] flex items-center gap-2">
+                        <Sparkles size={14} />
+                        MAGIE i-wasp
+                        <Sparkles size={14} />
                       </span>
                     </div>
                   </div>
                   
-                  <div className="mt-6">
-                    <WebsiteImporter 
-                      onDataImported={handleWebsiteDataImported}
-                    />
-                  </div>
+                  {/* Website Importer Component */}
+                  <WebsiteImporter 
+                    onDataImported={handleWebsiteDataImported}
+                    onEditImportedData={importedData ? () => {
+                      // Open edit modal or scroll to import section
+                      toast.info("Modifiez les données à l'étape Design");
+                    } : undefined}
+                  />
 
-                  {/* Import Success Indicator */}
+                  {/* Import Success Summary */}
                   {importedData && (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="mt-4 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-center gap-3"
+                      className="mt-6 p-5 rounded-2xl border-2 border-[#d4af37]/40 bg-gradient-to-r from-[#d4af37]/10 via-transparent to-[#d4af37]/10"
                     >
-                      <Check className="text-emerald-500" size={20} />
-                      <div>
-                        <p className="text-sm font-medium text-emerald-400">
-                          Site importé : {importedData.brandName || importedData.website}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Les données seront appliquées à votre template
-                        </p>
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#d4af37] to-[#b8860b] flex items-center justify-center">
+                          <Check className="text-black" size={24} />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-[#d4af37]">
+                            {importedData.brandName || "Site importé"} ✨
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {importedData.products?.length || 0} produits • {importedData.storyImages?.length || 0} stories • 
+                            {importedData.colors?.primary ? " Couleurs" : ""}{importedData.logo ? " • Logo" : ""}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground">Template suggéré</p>
+                          <p className="text-sm font-medium text-[#d4af37]">Herbalism Élite</p>
+                        </div>
                       </div>
                     </motion.div>
                   )}
