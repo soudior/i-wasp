@@ -28,7 +28,16 @@ import {
 import { PhysicalCardStudio } from "@/components/print/PhysicalCardStudio";
 import { DashboardCustomization } from "@/components/DashboardCustomization";
 import { GoldVerificationBadge } from "@/components/GoldFeatureCard";
-import { AICoachPanel, PushNotificationsPanel, PerformanceChart } from "@/components/dashboard";
+import { 
+  AICoachPanel, 
+  PushNotificationsPanel, 
+  PerformanceChart,
+  GoldDashboardHeader,
+  GoldAnalyticsPanel,
+  GoldLeadsCRM,
+  GoldCoachTips,
+  GoldSettingsPanel,
+} from "@/components/dashboard";
 
 import { 
   Plus, CreditCard, Users, Eye, TrendingUp, 
@@ -230,98 +239,80 @@ const Dashboard = () => {
       
       <main className="relative z-10 pt-24 pb-16">
         <div className="container mx-auto px-6">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 animate-fade-up">
-            <div>
-              <h1 className="font-display text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
-                {t("dashboard.title")}
-                {isPremium && <GoldVerificationBadge />}
-              </h1>
-              <p className="text-muted-foreground">
-                {t("dashboard.welcome")}, {user?.email}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link to="/settings">
-                <Button variant="outline" size="icon">
-                  <Pencil size={18} />
-                </Button>
-              </Link>
-              <Link to="/orders">
-                <Button variant="outline">
-                  <ShoppingBag size={18} />
-                  {t("dashboard.myOrders")}
-                </Button>
-              </Link>
-              <Link to="/create">
-                <Button variant="chrome">
-                  <Plus size={18} />
-                  {t("dashboard.newCard")}
-                </Button>
-              </Link>
-            </div>
+          {/* Gold Dashboard Header - Prestige */}
+          <GoldDashboardHeader
+            userName={user?.user_metadata?.first_name || user?.email?.split("@")[0] || "Client"}
+            isPremium={isPremium}
+            onPushNotification={() => toast.info("Fonctionnalité Push disponible ci-dessous")}
+            totalScans={scans.length}
+          />
+
+          {/* Quick Actions Bar */}
+          <div className="flex items-center justify-end gap-3 mb-8 animate-fade-up">
+            <Link to="/settings">
+              <Button variant="outline" size="icon">
+                <Pencil size={18} />
+              </Button>
+            </Link>
+            <Link to="/orders">
+              <Button variant="outline">
+                <ShoppingBag size={18} />
+                {t("dashboard.myOrders")}
+              </Button>
+            </Link>
+            <Link to="/create">
+              <Button variant="chrome">
+                <Plus size={18} />
+                {t("dashboard.newCard")}
+              </Button>
+            </Link>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {[
-              { label: t("dashboard.activeCards"), value: cards.filter(c => c.is_active).length.toString(), icon: CreditCard },
-              { label: "Scans NFC", value: scans.length.toString(), icon: Zap },
-              { label: t("dashboard.capturedLeads"), value: totalLeads.toString(), icon: Users },
-              { label: t("dashboard.conversionRate"), value: `${conversionRate}%`, icon: TrendingUp },
-            ].map((stat, index) => (
-              <div
-                key={stat.label}
-                className="animate-fade-up"
-                style={{ animationDelay: `${0.1 + index * 0.05}s` }}
-              >
-                <Card variant="premium" className="p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-foreground/10 flex items-center justify-center">
-                      <stat.icon size={20} className="text-chrome" />
-                    </div>
-                  </div>
-                  <p className="font-display text-2xl font-bold text-foreground mb-1">
-                    {stat.value}
-                  </p>
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                </Card>
-              </div>
-            ))}
+          {/* Gold Analytics Panel - 30 days chart */}
+          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+            <GoldAnalyticsPanel
+              scans={scans}
+              leads={leads}
+              cards={cards}
+            />
           </div>
 
-          {/* Pro Analytics Section - NEW */}
-          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.11s' }}>
-            <h2 className="font-display text-xl font-semibold text-foreground flex items-center gap-2 mb-6">
-              <BarChart3 className="h-5 w-5 text-primary" />
-              Centre de Commande NFC
-              <Badge variant="secondary" className="bg-primary/10 text-primary text-[10px]">PRO</Badge>
-            </h2>
-            
-            <div className="grid lg:grid-cols-3 gap-6">
-              {/* Performance Chart */}
-              <div className="lg:col-span-2">
-                <PerformanceChart 
-                  scans={scans} 
-                  leads={leads} 
-                  cards={cards} 
-                />
-              </div>
-              
-              {/* AI Coach */}
-              <div className="space-y-6">
-                <AICoachPanel 
-                  scans={scans} 
-                  leads={leads} 
+          {/* Two Column Layout: CRM + Coach */}
+          <div className="grid lg:grid-cols-3 gap-6 mb-12">
+            {/* Gold Leads CRM - 2 columns */}
+            <div className="lg:col-span-2 animate-fade-up" style={{ animationDelay: '0.12s' }}>
+              <GoldLeadsCRM
+                leads={leads}
+                onStatusChange={(leadId, status) => {
+                  toast.success(`Lead marqué comme ${status}`);
+                }}
+              />
+            </div>
+
+            {/* Right Column: Coach + Settings */}
+            <div className="space-y-6">
+              {/* Gold Coach Tips */}
+              <div className="animate-fade-up" style={{ animationDelay: '0.14s' }}>
+                <GoldCoachTips
+                  scans={scans}
+                  leads={leads}
                   cards={cards}
-                  isPremium={isPremium}
+                />
+              </div>
+
+              {/* Gold Settings Panel */}
+              <div className="animate-fade-up" style={{ animationDelay: '0.16s' }}>
+                <GoldSettingsPanel
+                  wifiEnabled={false}
+                  cardSlug={cards[0]?.slug}
+                  onMagicImport={() => navigate("/order/type")}
                 />
               </div>
             </div>
           </div>
 
-          {/* Push Notifications Gold - NEW */}
-          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.115s' }}>
+          {/* Push Notifications Gold */}
+          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.18s' }}>
             <PushNotificationsPanel 
               leads={leads}
               isPremium={isPremium}
