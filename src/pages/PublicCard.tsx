@@ -19,6 +19,9 @@ import { AutoschluesselTemplate } from "@/components/templates/AutoschluesselTem
 import HerbalismEliteTemplate from "@/components/templates/HerbalismEliteTemplate";
 import { IWASPBrandBadgeMinimal } from "@/components/templates/IWASPBrandBadge";
 
+// Import local profile photo for Herbalism Marrakech
+import ibrahimPhoto from "@/assets/clients/ibrahim-herbalism.jpeg";
+
 const PublicCard = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: card, isLoading, error } = usePublicCard(slug || "");
@@ -162,11 +165,8 @@ const PublicCard = () => {
 
   // Use HerbalismEliteTemplate for herbalism-elite template
   if (template === 'herbalism-elite') {
-    // Get whatsapp number from card for direct link
-    const getWhatsAppNumber = async () => {
-      const url = await getActionUrl(slug || "", "whatsapp");
-      return url?.replace("https://wa.me/", "") || "";
-    };
+    // Use imported photo for herbalism-marrakech slug
+    const profilePhotoUrl = slug === 'herbalism-marrakech' ? ibrahimPhoto : card.photo_url;
     
     return (
       <HerbalismEliteTemplate 
@@ -175,8 +175,9 @@ const PublicCard = () => {
           brandName: card.company || "Herbalism Marrakech",
           tagline: card.tagline || "An Herbal Experience",
           logo: card.logo_url || undefined,
-          phone: card.has_phone ? "+212 6 66 54 03 29" : undefined,
-          whatsapp: card.has_whatsapp ? "212666540329" : undefined,
+          profilePhoto: profilePhotoUrl || undefined,
+          phone: card.has_phone ? "+212 675 571257" : undefined,
+          whatsapp: card.has_whatsapp ? "212675571257" : undefined,
           website: card.website || undefined,
           instagram: card.has_instagram ? "herbalism.marrakech" : undefined,
           googleReviewsUrl: "https://maps.app.goo.gl/ecBsV54n8TZnfN3NA?g_st=iwb",
@@ -185,6 +186,7 @@ const PublicCard = () => {
             lastName: card.last_name,
             company: card.company || undefined,
             title: card.title || undefined,
+            phone: "+212 675 571257",
           }
         }}
       />
