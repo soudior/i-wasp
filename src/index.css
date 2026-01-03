@@ -358,305 +358,105 @@
 
 @layer components {
   /* ══════════════════════════════════════════════════════════════════
-     IWASP PREMIUM COMPONENTS
-     Aucun effet gratuit. Chaque élément doit rassurer.
+     IWASP SAAS PREMIUM COMPONENTS
+     Clean, minimal, professional. No decorative effects.
+     Type: Uber / Stripe / Linear aesthetic.
      ══════════════════════════════════════════════════════════════════ */
   
-  /* Glass morphism card */
+  /* Simple card with subtle border */
   .glass {
-    background: var(--gradient-glass);
-    backdrop-filter: blur(40px) saturate(150%);
-    -webkit-backdrop-filter: blur(40px) saturate(150%);
-    border: 1px solid hsl(var(--glass-border) / 0.08);
+    background: hsl(var(--iwasp-charbon));
+    border: 1px solid hsl(0 0% 100% / 0.06);
   }
   
   .glass-strong {
-    background: var(--gradient-glass-strong);
-    backdrop-filter: blur(60px) saturate(180%);
-    -webkit-backdrop-filter: blur(60px) saturate(180%);
-    border: 1px solid hsl(var(--glass-border) / 0.12);
+    background: hsl(var(--surface-elevated));
+    border: 1px solid hsl(0 0% 100% / 0.08);
   }
   
-  /* ══════════════════════════════════════════════════════════════════
-     GLASSMORPHISM FUTURISTE - Templates Premium
-     Bordures lumineuses + effets de verre + animations subtiles
-     ══════════════════════════════════════════════════════════════════ */
-  
+  /* Clean card - no glow, no gradient border */
   .glass-futuristic {
-    background: linear-gradient(
-      135deg,
-      hsl(0 0% 100% / 0.08) 0%,
-      hsl(0 0% 100% / 0.02) 50%,
-      hsl(0 0% 100% / 0.05) 100%
-    );
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid hsl(0 0% 100% / 0.1);
-    box-shadow: 
-      0 8px 32px hsl(0 0% 0% / 0.3),
-      inset 0 1px 0 hsl(0 0% 100% / 0.1),
-      inset 0 -1px 0 hsl(0 0% 0% / 0.1);
+    background: hsl(var(--iwasp-charbon));
+    border: 1px solid hsl(0 0% 100% / 0.08);
+    box-shadow: 0 4px 12px hsl(0 0% 0% / 0.4);
   }
   
   .glass-futuristic:hover {
-    border-color: hsl(var(--iwasp-vert) / 0.4);
-    box-shadow: 
-      0 12px 40px hsl(0 0% 0% / 0.4),
-      0 0 20px hsl(var(--iwasp-vert) / 0.15),
-      inset 0 1px 0 hsl(0 0% 100% / 0.15),
-      inset 0 -1px 0 hsl(0 0% 0% / 0.1);
+    border-color: hsl(0 0% 100% / 0.12);
+    box-shadow: 0 6px 16px hsl(0 0% 0% / 0.5);
   }
   
-  /* Glow border effect */
-  .glow-border {
-    position: relative;
-  }
+  /* REMOVED: glow-border, animated-border, floating-glow */
+  /* These decorative effects are disabled for SaaS premium look */
   
-  .glow-border::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      135deg,
-      hsl(var(--iwasp-vert) / 0.5) 0%,
-      transparent 30%,
-      transparent 70%,
-      hsl(var(--iwasp-vert) / 0.3) 100%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity var(--duration-normal) var(--easing-in-out);
-  }
-  
-  .glow-border:hover::before {
-    opacity: 1;
-  }
-  
-  /* Animated gradient border */
-  @keyframes gradient-rotate {
-    0% { --gradient-angle: 0deg; }
-    100% { --gradient-angle: 360deg; }
-  }
-  
-  @property --gradient-angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-  }
-  
-  .animated-border {
-    position: relative;
-    background: hsl(var(--iwasp-charbon));
-    border-radius: var(--radius-card);
-  }
-  
-  .animated-border::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    padding: 2px;
-    background: conic-gradient(
-      from var(--gradient-angle),
-      hsl(var(--iwasp-vert)) 0%,
-      transparent 20%,
-      transparent 40%,
-      hsl(138 100% 70%) 50%,
-      transparent 60%,
-      transparent 80%,
-      hsl(var(--iwasp-vert)) 100%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    opacity: 0;
-    animation: gradient-rotate 3s linear infinite paused;
-    transition: opacity var(--duration-normal) var(--easing-in-out);
-  }
-  
-  .animated-border:hover::before {
-    opacity: 1;
-    animation-play-state: running;
-  }
-  
-  /* Floating glow effect */
-  .floating-glow {
-    position: relative;
-  }
-  
-  .floating-glow::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(
-      ellipse at 50% 0%,
-      hsl(var(--iwasp-vert) / 0.15) 0%,
-      transparent 60%
-    );
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity var(--duration-slow) var(--easing-in-out);
-  }
-  
-  .floating-glow:hover::after {
-    opacity: 1;
-  }
-  
-  /* Sector badge with glow */
+  /* Sector badge - minimal style */
   .sector-badge {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium;
-    background: hsl(0 0% 100% / 0.05);
-    border: 1px solid hsl(0 0% 100% / 0.1);
+    background: hsl(0 0% 100% / 0.04);
+    border: 1px solid hsl(0 0% 100% / 0.08);
     transition: all var(--duration-normal) var(--easing-in-out);
   }
   
   .sector-badge:hover,
   .sector-badge.active {
-    background: hsl(var(--iwasp-vert) / 0.15);
-    border-color: hsl(var(--iwasp-vert) / 0.4);
-    color: hsl(var(--iwasp-vert));
-    box-shadow: 0 0 16px hsl(var(--iwasp-vert) / 0.2);
+    background: hsl(0 0% 100% / 0.08);
+    border-color: hsl(0 0% 100% / 0.12);
   }
   
   .sector-badge.active {
-    background: hsl(var(--iwasp-vert));
-    color: hsl(var(--iwasp-noir));
-    border-color: hsl(var(--iwasp-vert));
+    background: hsl(var(--iwasp-accent));
+    color: hsl(0 0% 0%);
+    border-color: hsl(var(--iwasp-accent));
   }
   
-  /* Animated gradient text */
-  @keyframes gradient-shift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-  }
-  
-  /* IWASP Premium Card */
+  /* IWASP Premium Card - Clean, no gold glow */
   .card-iwasp {
     @apply relative overflow-hidden;
     background: hsl(var(--iwasp-charbon));
     border-radius: var(--radius-card);
-    box-shadow: var(--shadow-card);
+    box-shadow: 0 2px 8px hsl(0 0% 0% / 0.3);
     border: 1px solid hsl(0 0% 100% / 0.04);
   }
   
   /* ══════════════════════════════════════════════════════════════════
-     BORDURES DORÉES LUMINEUSES - PREMIUM GOLD
-     Pour les cartes produits avec aspect luxe VIP
+     SAAS CARD SYSTEM - No decorative borders
+     Clean surfaces with subtle depth
      ══════════════════════════════════════════════════════════════════ */
   
-  .gold-glow-border {
-    position: relative;
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    box-shadow: 
-      0 0 20px rgba(212, 175, 55, 0.15),
-      inset 0 1px 0 rgba(255, 215, 0, 0.1);
-    transition: all var(--duration-normal) var(--easing-in-out);
-  }
-  
-  .gold-glow-border:hover {
-    border-color: rgba(212, 175, 55, 0.5);
-    box-shadow: 
-      0 0 30px rgba(212, 175, 55, 0.25),
-      0 0 60px rgba(212, 175, 55, 0.1),
-      inset 0 1px 0 rgba(255, 215, 0, 0.15);
-  }
-  
-  /* Animated gold border */
-  .gold-animated-border {
-    position: relative;
-    border-radius: var(--radius-card);
-    background: linear-gradient(135deg, hsl(var(--iwasp-charbon)) 0%, hsl(225 10% 8%) 100%);
-  }
-  
-  .gold-animated-border::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      135deg,
-      rgba(212, 175, 55, 0.6) 0%,
-      rgba(184, 134, 11, 0.3) 25%,
-      rgba(255, 215, 0, 0.4) 50%,
-      rgba(184, 134, 11, 0.3) 75%,
-      rgba(212, 175, 55, 0.6) 100%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-  
-  /* Shimmer effect for gold elements */
-  @keyframes gold-shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-  
-  .gold-shimmer {
-    background: linear-gradient(
-      90deg,
-      rgba(212, 175, 55, 0) 0%,
-      rgba(255, 215, 0, 0.3) 50%,
-      rgba(212, 175, 55, 0) 100%
-    );
-    background-size: 200% 100%;
-    animation: gold-shimmer 3s ease-in-out infinite;
-  }
-  
-  /* Product card with gold accent */
+  /* Product card - professional, no gold glow */
   .card-product-premium {
     @apply relative overflow-hidden;
-    background: linear-gradient(180deg, hsl(var(--iwasp-charbon)) 0%, hsl(225 10% 7%) 100%);
+    background: hsl(var(--iwasp-charbon));
     border-radius: var(--radius-card);
-    border: 1px solid rgba(212, 175, 55, 0.25);
-    box-shadow: 
-      0 8px 32px hsl(0 0% 0% / 0.4),
-      0 0 0 1px rgba(212, 175, 55, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    border: 1px solid hsl(0 0% 100% / 0.06);
+    box-shadow: 0 4px 12px hsl(0 0% 0% / 0.4);
     transition: all var(--duration-normal) var(--easing-in-out);
   }
   
   .card-product-premium:hover {
-    border-color: rgba(212, 175, 55, 0.45);
-    box-shadow: 
-      0 12px 48px hsl(0 0% 0% / 0.5),
-      0 0 40px rgba(212, 175, 55, 0.15),
-      0 0 0 1px rgba(212, 175, 55, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    border-color: hsl(0 0% 100% / 0.1);
+    box-shadow: 0 8px 24px hsl(0 0% 0% / 0.5);
     transform: translateY(-2px);
   }
   
-  /* IWASP Accent Button */
+  /* Primary CTA Button - Yellow accent */
   .btn-iwasp {
     @apply relative overflow-hidden font-medium;
-    background: var(--gradient-accent);
-    color: hsl(var(--iwasp-noir));
+    background: hsl(var(--iwasp-accent));
+    color: hsl(0 0% 0%);
     border-radius: var(--radius-btn);
     padding: 0.875rem 2rem;
-    box-shadow: 0 4px 20px hsl(138 100% 62% / 0.25);
+    box-shadow: none;
     transition: all var(--duration-normal) var(--easing-in-out);
   }
   
   .btn-iwasp:hover {
-    box-shadow: 0 6px 28px hsl(138 100% 62% / 0.35);
+    background: hsl(var(--gold-light));
     transform: translateY(-1px);
   }
   
   .btn-iwasp:active {
     transform: translateY(0);
-    box-shadow: 0 2px 12px hsl(138 100% 62% / 0.3);
   }
   
   .btn-iwasp:disabled {
@@ -664,20 +464,20 @@
     pointer-events: none;
   }
   
-  /* IWASP Ghost Button */
+  /* Secondary/Ghost Button */
   .btn-iwasp-ghost {
     @apply relative font-medium;
     background: transparent;
     color: hsl(var(--iwasp-blanc));
-    border: 1px solid hsl(0 0% 100% / 0.15);
+    border: 1px solid hsl(0 0% 100% / 0.12);
     border-radius: var(--radius-btn);
     padding: 0.875rem 2rem;
     transition: all var(--duration-normal) var(--easing-in-out);
   }
   
   .btn-iwasp-ghost:hover {
-    background: hsl(0 0% 100% / 0.05);
-    border-color: hsl(0 0% 100% / 0.25);
+    background: hsl(0 0% 100% / 0.04);
+    border-color: hsl(0 0% 100% / 0.2);
   }
   
   .btn-iwasp-ghost:disabled {
@@ -685,7 +485,7 @@
     pointer-events: none;
   }
   
-  /* IWASP Module Container */
+  /* Module Container - Minimal */
   .module-iwasp {
     @apply relative;
     background: hsl(var(--iwasp-charbon));
@@ -697,123 +497,63 @@
   
   .module-iwasp:hover {
     border-color: hsl(0 0% 100% / 0.08);
-    box-shadow: var(--shadow-md);
   }
   
-  /* State: Disabled - 40% opacity */
+  /* States - Clean, no glow */
   .state-disabled {
     opacity: 0.4;
     pointer-events: none;
   }
   
-  /* State: Active - IWASP accent */
   .state-active {
-    border-color: hsl(var(--iwasp-vert) / 0.5);
-    box-shadow: 0 0 0 2px hsl(var(--iwasp-vert) / 0.2);
+    border-color: hsl(var(--iwasp-accent));
   }
   
-  /* State: Error - discreet red */
   .state-error {
-    border-color: hsl(var(--iwasp-erreur) / 0.5);
+    border-color: hsl(var(--iwasp-erreur));
   }
   
-  /* Text accent IWASP */
+  /* Text accent */
   .text-iwasp-vert {
-    color: hsl(var(--iwasp-vert));
+    color: hsl(var(--iwasp-accent));
   }
 
-  /* Chrome text gradient */
+  /* Chrome text gradient - subtle */
   .text-chrome {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(
       180deg,
       hsl(0 0% 100%) 0%,
-      hsl(0 0% 70%) 100%
+      hsl(0 0% 75%) 100%
     );
   }
 
-  /* Subtle glow text */
-  .text-glow {
-    text-shadow: 0 0 40px hsl(0 0% 100% / 0.5);
-  }
+  /* REMOVED: text-glow - no text shadows */
 
-  /* Premium card styles */
+  /* Premium card styles - clean */
   .card-3d {
     @apply relative;
-    transform-style: preserve-3d;
-    perspective: 1000px;
   }
 
   .card-glass {
     @apply relative rounded-3xl overflow-hidden;
-    background: linear-gradient(
-      135deg,
-      hsl(0 0% 100% / 0.08) 0%,
-      hsl(0 0% 100% / 0.02) 100%
-    );
-    backdrop-filter: blur(40px) saturate(150%);
-    -webkit-backdrop-filter: blur(40px) saturate(150%);
-    border: 1px solid hsl(0 0% 100% / 0.1);
-    box-shadow: 
-      0 25px 50px -12px hsl(0 0% 0% / 0.6),
-      0 0 0 1px hsl(0 0% 100% / 0.05),
-      inset 0 1px 0 hsl(0 0% 100% / 0.1);
+    background: hsl(var(--iwasp-charbon));
+    border: 1px solid hsl(0 0% 100% / 0.08);
+    box-shadow: 0 8px 32px hsl(0 0% 0% / 0.4);
   }
 
-  .card-glass::before {
-    content: '';
-    @apply absolute inset-0 pointer-events-none;
-    background: linear-gradient(
-      180deg,
-      hsl(0 0% 100% / 0.1) 0%,
-      transparent 50%
-    );
-  }
+  /* ══════════════════════════════════════════════════════════════════
+     SAAS UTILITIES - Minimal & Professional
+     ══════════════════════════════════════════════════════════════════ */
 
-  /* Floating animation */
-  @keyframes float-3d {
-    0%, 100% { 
-      transform: translateY(0px) rotateX(0deg) rotateY(0deg);
-    }
-    25% {
-      transform: translateY(-8px) rotateX(2deg) rotateY(-1deg);
-    }
-    50% { 
-      transform: translateY(-12px) rotateX(0deg) rotateY(2deg);
-    }
-    75% {
-      transform: translateY(-6px) rotateX(-1deg) rotateY(0deg);
-    }
-  }
-
-  .animate-float-3d {
-    animation: float-3d 8s ease-in-out infinite;
-  }
-
-  /* Subtle pulse glow */
-  @keyframes pulse-glow {
-    0%, 100% { 
-      opacity: 0.4;
-      transform: scale(1);
-    }
-    50% { 
-      opacity: 0.7;
-      transform: scale(1.02);
-    }
-  }
-
-  .animate-pulse-glow {
-    animation: pulse-glow 4s ease-in-out infinite;
-  }
-
-  /* NFC wave effect - Apple-like */
+  /* NFC wave effect - subtle */
   @keyframes nfc-wave {
     0% {
       transform: scale(0.8);
-      opacity: 0.6;
+      opacity: 0.4;
     }
     100% {
-      transform: scale(2.5);
+      transform: scale(2);
       opacity: 0;
     }
   }
@@ -822,86 +562,10 @@
     @apply absolute rounded-full;
     background: radial-gradient(
       circle,
-      hsl(0 0% 100% / 0.3) 0%,
+      hsl(0 0% 100% / 0.2) 0%,
       transparent 70%
     );
     animation: nfc-wave 2.5s ease-out infinite;
-  }
-
-  /* Shimmer effect */
-  @keyframes shimmer {
-    0% { 
-      transform: translateX(-100%);
-    }
-    100% { 
-      transform: translateX(100%);
-    }
-  }
-
-  .shimmer {
-    @apply absolute inset-0 overflow-hidden;
-  }
-
-  .shimmer::after {
-    content: '';
-    @apply absolute inset-0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      hsl(0 0% 100% / 0.08) 50%,
-      transparent 100%
-    );
-    animation: shimmer 3s ease-in-out infinite;
-  }
-
-  /* Orb background effect */
-  .orb {
-    @apply absolute rounded-full blur-3xl;
-    background: var(--gradient-orb);
-  }
-
-  /* Button premium styles */
-  .btn-glass {
-    @apply relative overflow-hidden;
-    background: linear-gradient(
-      135deg,
-      hsl(0 0% 100% / 0.1) 0%,
-      hsl(0 0% 100% / 0.05) 100%
-    );
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid hsl(0 0% 100% / 0.15);
-  }
-
-  .btn-glass:hover {
-    background: linear-gradient(
-      135deg,
-      hsl(0 0% 100% / 0.15) 0%,
-      hsl(0 0% 100% / 0.08) 100%
-    );
-    border-color: hsl(0 0% 100% / 0.25);
-  }
-
-  .btn-chrome {
-    background: linear-gradient(
-      135deg,
-      hsl(0 0% 95%) 0%,
-      hsl(0 0% 85%) 50%,
-      hsl(0 0% 90%) 100%
-    );
-    @apply text-background;
-    box-shadow: 
-      0 4px 16px hsl(0 0% 0% / 0.3),
-      inset 0 1px 0 hsl(0 0% 100% / 0.5);
-  }
-
-  .btn-chrome:hover {
-    background: linear-gradient(
-      135deg,
-      hsl(0 0% 100%) 0%,
-      hsl(0 0% 90%) 50%,
-      hsl(0 0% 95%) 100%
-    );
   }
 
   /* Grid pattern background */
@@ -912,197 +576,107 @@
     background-size: 60px 60px;
   }
 
-  /* Noise texture overlay */
-  .noise {
-    @apply fixed inset-0 pointer-events-none z-50 opacity-[0.015];
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  }
-
-  /* Reveal animations */
-  @keyframes reveal-up {
-    from {
-      opacity: 0;
-      transform: translateY(40px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes reveal-scale {
-    from {
-      opacity: 0;
-      transform: scale(0.9);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  .animate-reveal-up {
-    animation: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .animate-reveal-scale {
-    animation: reveal-scale 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  /* Apple Wallet button style */
+  /* Wallet button - clean style */
   .wallet-btn {
     @apply relative overflow-hidden rounded-xl px-6 py-3 font-medium text-sm;
-    background: linear-gradient(
-      180deg,
-      hsl(0 0% 12%) 0%,
-      hsl(0 0% 8%) 100%
-    );
-    border: 1px solid hsl(0 0% 20%);
-    box-shadow: 
-      0 4px 12px hsl(0 0% 0% / 0.4),
-      inset 0 1px 0 hsl(0 0% 25%);
+    background: hsl(var(--iwasp-charbon));
+    border: 1px solid hsl(0 0% 100% / 0.1);
+    transition: all var(--duration-normal) var(--easing-in-out);
   }
 
   .wallet-btn:hover {
-    background: linear-gradient(
-      180deg,
-      hsl(0 0% 15%) 0%,
-      hsl(0 0% 10%) 100%
-    );
+    background: hsl(var(--surface-elevated));
+    border-color: hsl(0 0% 100% / 0.15);
   }
 
   /* ══════════════════════════════════════════════════════════════════
-     DARK LUXURY SYSTEM - Composants Premium Gold
-     Esthétique noir profond avec accents dorés
+     SAAS PREMIUM BUTTONS - No decorative effects
      ══════════════════════════════════════════════════════════════════ */
 
-  /* Luxury Tablet Card - Pour galerie templates */
-  .luxury-tablet {
+  /* Simple glass button */
+  .btn-glass {
     @apply relative overflow-hidden;
-    background: hsl(var(--luxury-black));
-    border-radius: 1.5rem;
-    border: 1px solid hsl(var(--gold-primary) / 0.25);
-    box-shadow: 
-      0 25px 60px hsl(0 0% 0% / 0.8),
-      0 0 40px hsl(var(--gold-primary) / 0.1),
-      inset 0 1px 0 hsl(var(--gold-primary) / 0.1);
-    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    background: hsl(0 0% 100% / 0.04);
+    border: 1px solid hsl(0 0% 100% / 0.1);
   }
 
-  .luxury-tablet:hover {
-    border-color: hsl(var(--gold-primary) / 0.5);
-    box-shadow: 
-      0 35px 80px hsl(0 0% 0% / 0.9),
-      0 0 60px hsl(var(--gold-primary) / 0.2),
-      0 0 100px hsl(var(--gold-primary) / 0.1),
-      inset 0 1px 0 hsl(var(--gold-primary) / 0.15);
-    transform: translateY(-4px);
+  .btn-glass:hover {
+    background: hsl(0 0% 100% / 0.08);
+    border-color: hsl(0 0% 100% / 0.15);
   }
 
-  /* Glassmorphism Gold Button */
-  .glass-gold-btn {
-    @apply relative overflow-hidden font-medium;
-    background: linear-gradient(
-      135deg,
-      hsl(var(--gold-primary) / 0.15) 0%,
-      hsl(var(--gold-dark) / 0.08) 100%
-    );
-    backdrop-filter: blur(24px) saturate(150%);
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    border: 1px solid hsl(var(--gold-primary) / 0.3);
-    border-radius: 0.875rem;
-    color: hsl(var(--gold-light));
-    padding: 1rem 1.5rem;
-    transition: all 0.3s ease;
-  }
-
-  .glass-gold-btn:hover {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--gold-primary) / 0.25) 0%,
-      hsl(var(--gold-dark) / 0.15) 100%
-    );
-    border-color: hsl(var(--gold-primary) / 0.5);
-    box-shadow: 0 0 30px hsl(var(--gold-primary) / 0.2);
-  }
-
-  /* Gold Gradient Button - V4 Download style */
+  /* Primary gold CTA - solid, no gradient glow */
   .btn-gold-gradient {
     @apply relative overflow-hidden font-semibold;
-    background: linear-gradient(
-      135deg,
-      hsl(var(--gold-primary)) 0%,
-      hsl(var(--gold-light)) 50%,
-      hsl(var(--gold-primary)) 100%
-    );
-    background-size: 200% 200%;
-    color: hsl(var(--luxury-black));
-    border-radius: 0.875rem;
+    background: hsl(var(--iwasp-accent));
+    color: hsl(0 0% 0%);
+    border-radius: 0.75rem;
     padding: 1rem 2rem;
-    box-shadow: 
-      0 8px 32px hsl(var(--gold-primary) / 0.4),
-      inset 0 1px 0 hsl(0 0% 100% / 0.3);
-    transition: all 0.3s ease;
+    transition: all var(--duration-normal) var(--easing-in-out);
   }
 
   .btn-gold-gradient:hover {
-    background-position: 100% 100%;
-    box-shadow: 
-      0 12px 40px hsl(var(--gold-primary) / 0.5),
-      inset 0 1px 0 hsl(0 0% 100% / 0.4);
+    background: hsl(var(--gold-light));
+    transform: translateY(-1px);
+  }
+
+  /* Glass gold button - subtle */
+  .glass-gold-btn {
+    @apply relative overflow-hidden font-medium;
+    background: hsl(var(--iwasp-accent) / 0.1);
+    border: 1px solid hsl(var(--iwasp-accent) / 0.2);
+    border-radius: 0.75rem;
+    color: hsl(var(--iwasp-accent));
+    padding: 1rem 1.5rem;
+    transition: all var(--duration-normal) var(--easing-in-out);
+  }
+
+  .glass-gold-btn:hover {
+    background: hsl(var(--iwasp-accent) / 0.15);
+    border-color: hsl(var(--iwasp-accent) / 0.3);
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     SAAS CARDS - Clean surfaces, no glow
+     ══════════════════════════════════════════════════════════════════ */
+
+  /* Luxury tablet - clean version */
+  .luxury-tablet {
+    @apply relative overflow-hidden;
+    background: hsl(var(--iwasp-charbon));
+    border-radius: 1.5rem;
+    border: 1px solid hsl(0 0% 100% / 0.06);
+    box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5);
+    transition: all var(--duration-normal) var(--easing-in-out);
+  }
+
+  .luxury-tablet:hover {
+    border-color: hsl(0 0% 100% / 0.1);
+    box-shadow: 0 12px 48px hsl(0 0% 0% / 0.6);
     transform: translateY(-2px);
   }
 
-  /* Gold Title Shimmer Effect */
-  @keyframes title-shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-
-  .text-gold-shimmer {
-    background: linear-gradient(
-      90deg,
-      hsl(var(--gold-dark)) 0%,
-      hsl(var(--gold-light)) 25%,
-      hsl(var(--gold-shimmer)) 50%,
-      hsl(var(--gold-light)) 75%,
-      hsl(var(--gold-dark)) 100%
-    );
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: title-shimmer 4s ease-in-out infinite;
-  }
-
-  /* Gold icon styling */
-  .icon-gold {
-    color: hsl(var(--gold-primary));
-    filter: drop-shadow(0 0 8px hsl(var(--gold-primary) / 0.4));
-  }
-
-  /* Luxury Surface (cards background) */
+  /* Luxury surface - no gold border */
   .luxury-surface {
-    background: linear-gradient(
-      180deg,
-      hsl(var(--luxury-card)) 0%,
-      hsl(var(--luxury-surface)) 100%
-    );
-    border: 1px solid hsl(var(--gold-primary) / 0.15);
+    background: hsl(var(--iwasp-charbon));
+    border: 1px solid hsl(0 0% 100% / 0.06);
     border-radius: 1.25rem;
   }
 
-  /* Stories Ring Gold */
+  /* Gold icon - no glow filter */
+  .icon-gold {
+    color: hsl(var(--iwasp-accent));
+  }
+
+  /* Gold text - solid color, no shimmer */
+  .text-gold-shimmer {
+    color: hsl(var(--iwasp-accent));
+  }
+
+  /* Stories ring - simple border */
   .stories-ring-gold {
-    background: conic-gradient(
-      from 0deg,
-      hsl(var(--gold-primary)),
-      hsl(var(--gold-light)),
-      hsl(var(--gold-shimmer)),
-      hsl(var(--gold-light)),
-      hsl(var(--gold-primary))
-    );
-    padding: 3px;
+    border: 2px solid hsl(var(--iwasp-accent));
+    padding: 2px;
     border-radius: 50%;
   }
 

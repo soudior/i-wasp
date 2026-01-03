@@ -151,27 +151,27 @@ export function WalletPassButtons({
     }
   };
 
-  // Style variants
+  // Style variants - SaaS Premium (no glow, clean)
   const buttonStyles = {
     dark: {
       base: "relative flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all active:scale-[0.98]",
-      apple: "bg-black text-white hover:bg-gray-900",
-      google: "bg-white text-gray-900 border border-gray-200 hover:bg-gray-50",
-      locked: "opacity-60 cursor-not-allowed",
+      apple: "bg-black text-white hover:bg-zinc-900 border border-zinc-800",
+      google: "bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50",
+      locked: "opacity-50 cursor-not-allowed bg-zinc-900 border border-zinc-800 text-zinc-500",
       icon: "w-5 h-5",
     },
     light: {
       base: "relative flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all active:scale-[0.98]",
-      apple: "bg-black text-white hover:bg-gray-900",
-      google: "bg-white text-gray-900 border border-gray-200 hover:bg-gray-50",
-      locked: "opacity-60 cursor-not-allowed",
+      apple: "bg-black text-white hover:bg-zinc-900",
+      google: "bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50",
+      locked: "opacity-50 cursor-not-allowed bg-zinc-100 border border-zinc-200 text-zinc-400",
       icon: "w-5 h-5",
     },
     gold: {
       base: "relative flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all active:scale-[0.98]",
-      apple: "bg-gradient-to-r from-[#FFC700] to-[#FFD700] text-black hover:from-[#FFD700] hover:to-[#FFE44D] shadow-lg shadow-[#FFC700]/20",
-      google: "bg-gradient-to-r from-[#FFC700] to-[#FFD700] text-black hover:from-[#FFD700] hover:to-[#FFE44D] shadow-lg shadow-[#FFC700]/20",
-      locked: "from-gray-400 to-gray-500 cursor-not-allowed shadow-none",
+      apple: "bg-[#FFC700] text-black hover:bg-[#FFD700]",
+      google: "bg-[#FFC700] text-black hover:bg-[#FFD700]",
+      locked: "opacity-50 cursor-not-allowed bg-zinc-800 border border-zinc-700 text-zinc-500",
       icon: "w-5 h-5",
     },
   };
@@ -189,13 +189,12 @@ export function WalletPassButtons({
 
   return (
     <div className="space-y-3">
-      {/* Header */}
+      {/* Header - Clean, no glow */}
       <div className="flex items-center gap-2 mb-4">
         <Wallet className="w-5 h-5 text-[#FFC700]" />
-        <span className="font-semibold text-sm">Wallet Pass iWasp</span>
+        <span className="font-medium text-sm text-foreground">Wallet Pass</span>
         {isGold && (
-          <span className="ml-auto px-2 py-0.5 bg-[#FFC700]/20 text-[#FFC700] text-xs font-bold rounded-full flex items-center gap-1">
-            <Crown className="w-3 h-3" />
+          <span className="ml-auto px-2 py-0.5 bg-[#FFC700]/10 text-[#FFC700] text-xs font-medium rounded">
             GOLD
           </span>
         )}
@@ -238,23 +237,23 @@ export function WalletPassButtons({
         )}
       </div>
 
-      {/* Upgrade message for FREE users */}
+      {/* Upgrade message for FREE users - clean style */}
       {!isGold && showUpgradeMessage && (
-        <div className="mt-4 p-3 bg-[#FFC700]/10 border border-[#FFC700]/20 rounded-xl">
-          <div className="flex items-start gap-2">
-            <Crown className="w-4 h-4 text-[#FFC700] mt-0.5 flex-shrink-0" />
+        <div className="mt-4 p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
+          <div className="flex items-start gap-3">
+            <Lock className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-[#FFC700]">
-                Fonctionnalité GOLD
+              <p className="text-sm font-medium text-foreground">
+                Réservé aux membres GOLD
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Passe en GOLD pour ajouter ta carte iWasp dans Apple Wallet et Google Wallet.
+                Ajoute ta carte iWasp dans Apple Wallet ou Google Wallet.
               </p>
               <button
                 onClick={() => navigate("/pricing")}
-                className="mt-2 text-xs font-semibold text-[#FFC700] hover:text-[#FFD700] transition-colors"
+                className="mt-2 text-xs font-medium text-[#FFC700] hover:underline"
               >
-                Découvrir GOLD →
+                Passer à GOLD →
               </button>
             </div>
           </div>
