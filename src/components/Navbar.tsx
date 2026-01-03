@@ -18,11 +18,11 @@ export function Navbar() {
   const { totalItems } = useCart();
 
   const navLinks = [
-    { href: "/", label: t("nav.home") },
-    { href: "/order", label: t("nav.order") },
-    { href: "/nails", label: t("nav.nails"), highlight: true },
-    { href: "/demo-dashboard", label: t("nav.demo") },
-    { href: "/contact", label: t("nav.contact") },
+    { href: "/", label: "Accueil" },
+    { href: "/features", label: "Fonctionnalités" },
+    { href: "/pricing", label: "Tarifs" },
+    { href: "/enterprise", label: "Entreprises" },
+    { href: "/order/type", label: "Commander", highlight: true },
   ];
 
   useEffect(() => {
@@ -40,35 +40,32 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? "bg-black/90 backdrop-blur-xl border-b border-amber-500/10" : "bg-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? "bg-iwasp-bg/95 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
       }`}
     >
-      <nav className="container mx-auto px-6 py-3">
+      <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo Animé i-wasp + Slogan */}
-          <Link to="/" className="flex items-center gap-4 group">
-            <AnimatedIWASPLogo size="sm" showAnimation={false} />
-            {/* Slogan visible on desktop */}
-            <span className="hidden lg:block text-amber-400/60 text-xs font-light tracking-wide border-l border-amber-500/20 pl-4">
-              Connecter le physique au digital
-            </span>
+          {/* Logo iWasp */}
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-8 h-8 rounded-lg bg-gold-500 flex items-center justify-center">
+              <span className="text-black font-bold text-sm">iW</span>
+            </div>
+            <span className="text-white font-semibold text-lg tracking-tight">iWasp</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
-                className={`text-sm font-medium transition-all duration-300 ${
-                  link.href === "/order"
-                    ? "px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-background hover:from-amber-600 hover:to-amber-700 shadow-sm hover:shadow-md hover:scale-105"
-                    : link.highlight
-                    ? "px-3 py-1 rounded-full bg-gradient-to-r from-rose-500/20 to-pink-500/20 text-rose-300 border border-rose-400/30 hover:bg-rose-500/30"
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  link.highlight
+                    ? "bg-gold-500 text-black hover:bg-gold-400"
                     : location.pathname === link.href
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "text-white bg-white/10"
+                    : "text-iwasp-gray hover:text-white hover:bg-white/5"
                 }`}
               >
                 {link.label}

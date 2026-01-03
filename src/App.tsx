@@ -26,6 +26,7 @@ import OnboardingSuccess from "./pages/OnboardingSuccess";
 import Dashboard from "./pages/Dashboard";
 import GuestCardCreator from "./pages/GuestCardCreator";
 import FinalizeCard from "./pages/FinalizeCard";
+import HomeSaaS from "./pages/HomeSaaS";
 import Index from "./pages/Index";
 import Demo from "./pages/Demo";
 import Cart from "./pages/Cart";
@@ -47,6 +48,9 @@ import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import About from "./pages/About";
 import Vision from "./pages/Vision";
+import Features from "./pages/Features";
+import Pricing from "./pages/Pricing";
+import Enterprise from "./pages/Enterprise";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 // Order funnel pages - 7 steps strict flow
@@ -115,7 +119,8 @@ const App = () => {
                         <OrderFunnelProvider>
                     <Routes>
                       {/* HOME - ALWAYS VALID */}
-                      <Route path="/" element={<Index />} />
+                      <Route path="/" element={<HomeSaaS />} />
+                      <Route path="/legacy" element={<Index />} />
                       
                       {/* Demo - ALWAYS VALID */}
                       <Route path="/demo" element={<Demo />} />
@@ -148,6 +153,13 @@ const App = () => {
                       <Route path="/about" element={<About />} />
                       <Route path="/a-propos" element={<About />} />
                       <Route path="/vision" element={<Vision />} />
+                      <Route path="/features" element={<Features />} />
+                      <Route path="/fonctionnalites" element={<Features />} />
+                      <Route path="/pricing" element={<Pricing />} />
+                      <Route path="/tarifs" element={<Pricing />} />
+                      <Route path="/enterprise" element={<Enterprise />} />
+                      <Route path="/entreprises" element={<Enterprise />} />
+                      <Route path="/business" element={<Enterprise />} />
                       <Route path="/rental-demo" element={<RentalDemo />} />
                       <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
                       {/* Finalize card after auth */}
