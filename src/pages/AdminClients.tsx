@@ -30,12 +30,14 @@ import {
   CreditCard,
   ShoppingBag,
   Users,
-  Key
+  Key,
+  Crown
 } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { downloadVCard } from "@/lib/vcard";
 import { clientFormSchema, validateForm, type ClientFormData } from "@/lib/validation";
 import { TemplateAssignmentPanel } from "@/components/admin/TemplateAssignmentPanel";
+import { WhiteLabelManager } from "@/components/admin/WhiteLabelManager";
 
 interface Client {
   id: string;
@@ -85,7 +87,7 @@ export default function AdminClients() {
   const [formData, setFormData] = useState<ClientFormState>(initialFormData);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"clients" | "templates">("clients");
+  const [activeTab, setActiveTab] = useState<"clients" | "templates" | "whitelabel">("clients");
   
   // Check admin role via RLS - the database queries will fail if user doesn't have admin role
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -418,6 +420,18 @@ export default function AdminClients() {
                 <Key className="h-4 w-4" />
                 Templates
               </button>
+              <button
+                onClick={() => setActiveTab("whitelabel")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === "whitelabel"
+                    ? "bg-white shadow-sm"
+                    : "hover:bg-white/50"
+                }`}
+                style={{ color: activeTab === "whitelabel" ? "#1D1D1F" : "#8E8E93" }}
+              >
+                <Crown className="h-4 w-4" />
+                White-label
+              </button>
             </div>
           </div>
         )}
@@ -428,6 +442,13 @@ export default function AdminClients() {
         {activeTab === "templates" && !hasNoClients && (
           <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: "#0B0B0B" }}>
             <TemplateAssignmentPanel />
+          </div>
+        )}
+
+        {/* White-label Tab */}
+        {activeTab === "whitelabel" && !hasNoClients && (
+          <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: "#FFFFFF" }}>
+            <WhiteLabelManager />
           </div>
         )}
 
