@@ -19,7 +19,7 @@ import {
   Phone, Link2, Check, Sparkles, Crown, Target,
   Laptop, Camera, Building2, HelpCircle, Mail, MessageCircle,
   Instagram, Linkedin, Lock, Eye, Star, BarChart3, Palette, 
-  BadgeCheck, Infinity
+  BadgeCheck, Infinity, Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OnboardingPhotoUpload } from "@/components/onboarding/OnboardingPhotoUpload";
@@ -63,6 +63,7 @@ const linkFields = [
   { key: 'phone' as const, label: 'Téléphone', icon: Phone, placeholder: '+212 6 00 00 00 00', type: 'tel' },
   { key: 'email' as const, label: 'Email', icon: Mail, placeholder: 'vous@exemple.com', type: 'email' },
   { key: 'whatsapp' as const, label: 'WhatsApp', icon: MessageCircle, placeholder: '+212 6 00 00 00 00', type: 'tel' },
+  { key: 'website' as const, label: 'Site web', icon: Globe, placeholder: 'https://monsite.com', type: 'url' },
   { key: 'instagram' as const, label: 'Instagram', icon: Instagram, placeholder: '@votrenom', type: 'text' },
   { key: 'linkedin' as const, label: 'LinkedIn', icon: Linkedin, placeholder: 'linkedin.com/in/votrenom', type: 'text' },
 ];
@@ -121,7 +122,7 @@ const formSteps = [
     title: "Liens", 
     subtitle: "Tes coordonnées",
     icon: Link2,
-    fields: ["phone", "email", "whatsapp", "instagram", "linkedin"] as const
+    fields: ["phone", "email", "whatsapp", "website", "instagram", "linkedin"] as const
   },
   { 
     id: 4, 
@@ -596,7 +597,7 @@ export default function Onboarding() {
                     )}
 
                     {/* Links Preview */}
-                    <div className="flex justify-center gap-3 mt-5">
+                    <div className="flex flex-wrap justify-center gap-3 mt-5">
                       {formData.phone && (
                         <div className="w-11 h-11 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
                           <Phone className="w-5 h-5 text-[#007AFF]" />
@@ -610,6 +611,11 @@ export default function Onboarding() {
                       {formData.whatsapp && (
                         <div className="w-11 h-11 rounded-full bg-[#25D366]/10 flex items-center justify-center">
                           <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                        </div>
+                      )}
+                      {formData.website && (
+                        <div className="w-11 h-11 rounded-full bg-[#6366F1]/10 flex items-center justify-center">
+                          <Globe className="w-5 h-5 text-[#6366F1]" />
                         </div>
                       )}
                       {formData.instagram && (
