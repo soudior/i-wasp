@@ -28,11 +28,14 @@ import {
   LogOut,
   ExternalLink,
   CreditCard,
-  ShoppingBag
+  ShoppingBag,
+  Users,
+  Key
 } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { downloadVCard } from "@/lib/vcard";
 import { clientFormSchema, validateForm, type ClientFormData } from "@/lib/validation";
+import { TemplateAssignmentPanel } from "@/components/admin/TemplateAssignmentPanel";
 
 interface Client {
   id: string;
@@ -82,6 +85,7 @@ export default function AdminClients() {
   const [formData, setFormData] = useState<ClientFormState>(initialFormData);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"clients" | "templates">("clients");
   
   // Check admin role via RLS - the database queries will fail if user doesn't have admin role
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -375,7 +379,7 @@ export default function AdminClients() {
       <header className="sticky top-0 z-10 backdrop-blur-xl border-b" style={{ backgroundColor: "rgba(245, 245, 247, 0.8)", borderColor: "rgba(0,0,0,0.08)" }}>
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-xl font-semibold tracking-tight" style={{ color: "#1D1D1F" }}>
-            {hasNoClients ? "Créez votre première carte" : "Gestion des clients"}
+            {hasNoClients ? "Créez votre première carte" : "Administration"}
           </h1>
           <button
             onClick={handleLogout}
@@ -385,9 +389,51 @@ export default function AdminClients() {
             <LogOut className="h-5 w-5" style={{ color: "#8E8E93" }} />
           </button>
         </div>
+        
+        {/* Tabs */}
+        {!hasNoClients && (
+          <div className="max-w-4xl mx-auto px-4 pb-3">
+            <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: "#E5E5E7" }}>
+              <button
+                onClick={() => setActiveTab("clients")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === "clients"
+                    ? "bg-white shadow-sm"
+                    : "hover:bg-white/50"
+                }`}
+                style={{ color: activeTab === "clients" ? "#1D1D1F" : "#8E8E93" }}
+              >
+                <Users className="h-4 w-4" />
+                Clients
+              </button>
+              <button
+                onClick={() => setActiveTab("templates")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === "templates"
+                    ? "bg-white shadow-sm"
+                    : "hover:bg-white/50"
+                }`}
+                style={{ color: activeTab === "templates" ? "#1D1D1F" : "#8E8E93" }}
+              >
+                <Key className="h-4 w-4" />
+                Templates
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        {/* Templates Tab */}
+        {activeTab === "templates" && !hasNoClients && (
+          <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: "#0B0B0B" }}>
+            <TemplateAssignmentPanel />
+          </div>
+        )}
+
+        {/* Clients Tab */}
+        {(activeTab === "clients" || hasNoClients) && (
+          <>
         {/* Add Client Button - only show when clients exist and form is not shown */}
         {!shouldShowForm && clients && clients.length > 0 && (
           <Button
@@ -704,6 +750,8 @@ export default function AdminClients() {
             ))
           )}
         </div>
+        )}
+        </>
         )}
       </main>
     </div>
