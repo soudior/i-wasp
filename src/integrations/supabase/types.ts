@@ -205,6 +205,7 @@ export type Database = {
           created_at: string
           email: string | null
           first_name: string
+          hide_branding: boolean
           id: string
           instagram: string | null
           is_active: boolean
@@ -234,6 +235,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           first_name: string
+          hide_branding?: boolean
           id?: string
           instagram?: string | null
           is_active?: boolean
@@ -263,6 +265,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           first_name?: string
+          hide_branding?: boolean
           id?: string
           instagram?: string | null
           is_active?: boolean
