@@ -36,10 +36,11 @@ export function MobileOptimizedVideo({
 }: MobileOptimizedVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
+  // Force initial state: no loading, assume playing for iOS autoplay
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [showPlayButton, setShowPlayButton] = useState(true);
+  const [showPlayButton, setShowPlayButton] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   // Détecter mobile
@@ -56,12 +57,27 @@ export function MobileOptimizedVideo({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Anti-bug iOS: éviter tout état de chargement infini
+  // iOS autoplay: force play on mount with immediate retry
   useEffect(() => {
-    setIsLoading(true);
+    const video = videoRef.current;
+    if (!video) return;
+    
+    // Force autoplay for iOS - try multiple times
+    const tryPlay = async () => {
+      try {
+        video.muted = true;
+        await video.play();
+        setIsPlaying(true);
+        setShowPlayButton(false);
+      } catch {
+        // Retry after a short delay
+        setTimeout(tryPlay, 500);
+      }
+    };
+    
+    tryPlay();
+    setIsLoading(false);
     setHasError(false);
-    const t = window.setTimeout(() => setIsLoading(false), 2500);
-    return () => window.clearTimeout(t);
   }, [src]);
 
   const handlePlay = useCallback(async () => {
