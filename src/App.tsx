@@ -45,6 +45,8 @@ import RentalDemo from "./pages/RentalDemo";
 import UltraLuxeDemo from "./pages/UltraLuxeDemo";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import About from "./pages/About";
+import Vision from "./pages/Vision";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 // Order funnel pages - 7 steps strict flow
@@ -143,6 +145,9 @@ const App = () => {
                       <Route path="/certificat-partenaire" element={<CertificatPartenaire />} />
                       <Route path="/privacy" element={<PrivacyPolicy />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/a-propos" element={<About />} />
+                      <Route path="/vision" element={<Vision />} />
                       <Route path="/rental-demo" element={<RentalDemo />} />
                       <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
                       {/* Finalize card after auth */}
