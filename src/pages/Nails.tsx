@@ -25,7 +25,8 @@ import { MobileOptimizedVideo } from "@/components/MobileOptimizedVideo";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 import nailsHero from "@/assets/nails/nails-hero.png";
 import nailsCafe from "@/assets/nails/nails-cafe.png";
-import nailsDemoVideo from "@/assets/nails/nails-demo-video.mp4";
+// Video from /public for iOS compatibility
+const nailsDemoVideo = "/nails-demo-video.mp4";
 import nailsPoster from "@/assets/posters/nails-demo-poster.webp";
 
 const Nails = () => {
@@ -83,7 +84,7 @@ const Nails = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="h-screen overflow-y-scroll scrolling-touch overscroll-y-auto bg-black" style={{ WebkitOverflowScrolling: 'touch' }}>
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-zinc-900">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
