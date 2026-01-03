@@ -6,7 +6,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, MessageCircle, UserPlus, Key, Shield, Wrench, Car, Cog, MapPin, Wifi } from "lucide-react";
+import { Phone, MessageCircle, UserPlus, Key, Shield, Wrench, Car, Cog, MapPin, Wifi, Compass, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import autoschluesselBg from "@/assets/clients/autoschluessel-service-bg.jpg";
 
@@ -30,16 +30,17 @@ const services = [
 
 type TabType = "kontakt" | "leistungen";
 
-// Clean phone number utility
+// Clean phone number utility - removes +, spaces, dashes for wa.me format
 const cleanPhoneNumber = (phone: string): string => {
-  return phone.replace(/[^0-9+]/g, '').replace(/^\+/, '');
+  return phone.replace(/[^0-9]/g, '');
 };
 
 export function AutoschluesselTemplate({ data }: AutoschluesselTemplateProps) {
   const [activeTab, setActiveTab] = useState<TabType>("kontakt");
+  const [showFullImage, setShowFullImage] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   
-  // Clean WhatsApp number for proper wa.me format
+  // Clean WhatsApp number for proper wa.me format (no + or spaces)
   const rawPhone = data?.whatsapp || data?.phone || "+49 162 6405973";
   const cleanedPhone = cleanPhoneNumber(rawPhone);
   const whatsappLink = `https://wa.me/${cleanedPhone}?text=${encodeURIComponent("Hallo, ich brauche Hilfe mit meinem Autoschlüssel")}`;
@@ -82,6 +83,12 @@ END:VCARD`;
     URL.revokeObjectURL(url);
   };
 
+  // Handle Mein Gebiet - show fullscreen image for 3 seconds
+  const handleMeinGebiet = () => {
+    setShowFullImage(true);
+    setTimeout(() => setShowFullImage(false), 3000);
+  };
+
   useEffect(() => {
     scrollToCard();
   }, [activeTab]);
@@ -98,6 +105,47 @@ END:VCARD`;
         {/* Dark overlay for contrast */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70" />
       </div>
+
+      {/* Fullscreen Image Modal */}
+      <AnimatePresence>
+        {showFullImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 bg-black"
+            onClick={() => setShowFullImage(false)}
+          >
+            <motion.img
+              src={autoschluesselBg}
+              alt="Mein Gebiet"
+              className="w-full h-full object-cover"
+              initial={{ scale: 1.1, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 1.05, opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            />
+            <button
+              onClick={() => setShowFullImage(false)}
+              className="absolute top-6 right-6 p-3 rounded-full bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            {/* Auto-close indicator */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+              <div className="h-1 w-32 bg-white/20 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-[#FFC700]"
+                  initial={{ width: "100%" }}
+                  animate={{ width: "0%" }}
+                  transition={{ duration: 3, ease: "linear" }}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Split Screen Layout - Mobile: stacked, Desktop: side by side */}
       <div className="relative z-10 min-h-screen flex flex-col lg:flex-row lg:items-center lg:justify-end">
@@ -119,13 +167,13 @@ END:VCARD`;
           </motion.div>
         </div>
 
-        {/* Right Side - Floating Glassmorphism Card */}
+        {/* Right Side - Floating Glassmorphism Card with Slide-in Animation */}
         <div className="flex-1 lg:flex-none lg:w-[420px] flex items-center justify-center p-4 lg:p-8 lg:pr-12">
           <motion.div
             ref={cardRef}
-            initial={{ opacity: 0, y: 30, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
             className="w-full max-w-sm"
           >
             {/* Glassmorphism Card */}
@@ -186,6 +234,27 @@ END:VCARD`;
                       exit={{ opacity: 0, x: 10 }}
                       transition={{ duration: 0.15 }}
                     >
+                      {/* MEIN GEBIET Button - Premium with Shimmer */}
+                      <button
+                        onClick={handleMeinGebiet}
+                        className="relative w-full h-12 rounded-xl mb-3 overflow-hidden group border border-[#FFC700]/50 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors"
+                      >
+                        {/* Shimmer effect */}
+                        <div className="absolute inset-0 overflow-hidden">
+                          <div 
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-[#FFC700]/30 to-transparent"
+                            style={{
+                              animation: "shimmer 2s ease-in-out infinite",
+                              transform: "translateX(-100%)"
+                            }}
+                          />
+                        </div>
+                        <div className="relative z-10 flex items-center justify-center gap-2">
+                          <Compass className="w-5 h-5 text-[#FFC700]" />
+                          <span className="text-[#FFC700] font-semibold text-sm">MEIN GEBIET</span>
+                        </div>
+                      </button>
+
                       {/* Primary CTA - WhatsApp */}
                       <Button
                         onClick={handleWhatsApp}
@@ -295,6 +364,15 @@ END:VCARD`;
           </motion.div>
         </div>
       </div>
+
+      {/* Shimmer Animation CSS */}
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          50% { transform: translateX(100%); }
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
     </div>
   );
 }
