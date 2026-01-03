@@ -130,6 +130,15 @@ export const TEMPLATE_REGISTRY: TemplateRegistryEntry[] = [
     description: "Réception numérique pour locations saisonnières.",
     createdAt: "2024-01-01",
   },
+  {
+    id: "vcard-airbnb-booking",
+    name: "vCard Airbnb Booking",
+    visibility: "public",
+    component: "VCardAirbnbBookingTemplate",
+    category: "rental",
+    description: "Carte digitale NFC premium pour Airbnb, Booking, Riads. Optimisée pour avis et réservations.",
+    createdAt: "2025-01-03",
+  },
 
   // ===== PRIVATE TEMPLATES (Admin Only) =====
   {

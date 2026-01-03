@@ -17,6 +17,7 @@ import { Loader2, Phone, Mail, Linkedin, MessageCircle, UserPlus } from "lucide-
 import { StoryRing } from "@/components/StoryRing";
 import { AutoschluesselTemplate } from "@/components/templates/AutoschluesselTemplate";
 import HerbalismEliteTemplate from "@/components/templates/HerbalismEliteTemplate";
+import VCardAirbnbBookingTemplate from "@/components/templates/VCardAirbnbBookingTemplate";
 import { IWASPBrandBadgeMinimal } from "@/components/templates/IWASPBrandBadge";
 
 // Import local profile photo for Herbalism Marrakech
@@ -198,6 +199,27 @@ const PublicCard = () => {
             title: card.title || undefined,
             phone: phoneNumber,
           }
+        }}
+      />
+    );
+  }
+
+  // Use VCardAirbnbBookingTemplate for vcard-airbnb-booking template
+  if (template === 'vcard-airbnb-booking') {
+    return (
+      <VCardAirbnbBookingTemplate
+        cardId={card.id}
+        data={{
+          propertyName: card.company || `${card.first_name} ${card.last_name}`,
+          propertyType: card.title || undefined,
+          tagline: card.tagline || undefined,
+          coverPhoto: card.photo_url || undefined,
+          logoUrl: card.logo_url || undefined,
+          address: (card as any).location || undefined,
+          phone: card.has_phone ? undefined : undefined,
+          whatsapp: card.has_whatsapp ? undefined : undefined,
+          email: card.has_email ? undefined : undefined,
+          website: card.website || undefined,
         }}
       />
     );
