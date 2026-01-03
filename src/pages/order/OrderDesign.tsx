@@ -31,6 +31,7 @@ import { TemplatePreviewModal } from "@/components/order/TemplatePreviewModal";
 import { LuxuryHotelTemplate } from "@/components/templates/LuxuryHotelTemplate";
 import { LuxurySpaTemplate } from "@/components/templates/LuxurySpaTemplate";
 import { HebergementEliteTemplate } from "@/components/templates/HebergementEliteTemplate";
+import { GastronomieEliteTemplate } from "@/components/templates/GastronomieEliteTemplate";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -65,6 +66,16 @@ interface DesignFormData extends DesignConfig {
 // Available templates for the gallery
 const AVAILABLE_TEMPLATES: TemplateDefinition[] = [
   {
+    id: "gastronomie-elite",
+    name: "Gastronomie Élite",
+    category: "retail",
+    description: "Template premium pour restaurants & bars avec menu, réservation de table, avis Google et Instagram.",
+    features: ["Menu", "Réservation", "Avis Google", "Instagram", "Carte", "vCard Gold"],
+    premium: true,
+    new: true,
+    previewComponent: <GastronomieEliteTemplate data={{} as any} isPreview={true} />,
+  },
+  {
     id: "hebergement-elite",
     name: "Hébergement Élite",
     category: "hotel",
@@ -81,7 +92,6 @@ const AVAILABLE_TEMPLATES: TemplateDefinition[] = [
     description: "Template ultra-premium pour hôtels 5 étoiles avec design noir & or, modules WiFi, carte interactive et avis Google.",
     features: ["WiFi", "Carte", "WhatsApp", "Avis Google", "Site web", "vCard"],
     premium: true,
-    new: true,
     previewComponent: <LuxuryHotelTemplate data={{} as any} isPreview={true} />,
   },
   {
@@ -91,7 +101,6 @@ const AVAILABLE_TEMPLATES: TemplateDefinition[] = [
     description: "Template apaisant pour spas & wellness avec courbes organiques, animations calmes et accents cuivrés.",
     features: ["Réservation", "WhatsApp", "Carte", "Avis Google", "Instagram", "vCard"],
     premium: true,
-    new: true,
     previewComponent: <LuxurySpaTemplate data={{} as any} isPreview={true} />,
   },
   {
