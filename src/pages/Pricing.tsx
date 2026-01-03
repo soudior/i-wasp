@@ -102,11 +102,11 @@ export default function Pricing() {
 
             {/* GOLD Plan - Mise en avant maximale */}
             <div className="relative p-6 lg:p-8 rounded-2xl bg-gradient-to-b from-[#FFC700]/20 via-[#1F1F1F] to-[#1F1F1F] border-2 border-[#FFC700] shadow-[0_0_40px_rgba(255,199,0,0.3)] animate-fade-in">
-              {/* Badge Recommandé */}
+              {/* Badge Meilleure Valeur */}
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                 <span className="px-6 py-2 rounded-full bg-[#FFC700] text-[#0B0B0B] text-sm font-bold shadow-lg shadow-[#FFC700]/40 flex items-center gap-2">
                   <Crown className="w-4 h-4" />
-                  RECOMMANDÉ
+                  MEILLEURE VALEUR
                 </span>
               </div>
               
@@ -123,9 +123,30 @@ export default function Pricing() {
               </h3>
               <p className="text-[#FFC700] font-medium mb-5">{SUBSCRIPTION_PLANS.GOLD.tagline}</p>
               
-              <div className="mb-5">
-                <span className="text-5xl font-bold text-white">{SUBSCRIPTION_PLANS.GOLD.price}</span>
-                <span className="text-[#E5E5E5]/60 ml-2 text-lg">{SUBSCRIPTION_PLANS.GOLD.currency}{SUBSCRIPTION_PLANS.GOLD.period}</span>
+              {/* Pricing Options */}
+              <div className="mb-6 space-y-3">
+                {/* Annual - Best Value */}
+                <div className="p-4 rounded-xl bg-[#FFC700]/10 border-2 border-[#FFC700] relative">
+                  <div className="absolute -top-2 right-3">
+                    <span className="px-2 py-0.5 rounded-full bg-[#FFC700] text-[#0B0B0B] text-xs font-bold">
+                      2 MOIS OFFERTS
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-bold text-white">{SUBSCRIPTION_PLANS.GOLD.priceAnnual}</span>
+                    <span className="text-[#E5E5E5]/60">{SUBSCRIPTION_PLANS.GOLD.currency}{SUBSCRIPTION_PLANS.GOLD.periodAnnual}</span>
+                  </div>
+                  <p className="text-[#FFC700] text-sm mt-1">≈ 41 MAD/mois</p>
+                </div>
+                
+                {/* Monthly */}
+                <div className="p-3 rounded-xl bg-white/5 border border-[#E5E5E5]/10">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-bold text-[#E5E5E5]">{SUBSCRIPTION_PLANS.GOLD.priceMonthly}</span>
+                    <span className="text-[#E5E5E5]/50">{SUBSCRIPTION_PLANS.GOLD.currency}{SUBSCRIPTION_PLANS.GOLD.periodMonthly}</span>
+                  </div>
+                  <p className="text-[#E5E5E5]/50 text-xs mt-1">Facturation mensuelle</p>
+                </div>
               </div>
               
               <p className="text-sm text-[#FFC700]/80 mb-6 italic">
