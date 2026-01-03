@@ -15,6 +15,8 @@ interface AutoschluesselTemplateProps {
     firstName?: string;
     lastName?: string;
   };
+  // Hide IWASP branding for private/white-label cards
+  hideBranding?: boolean;
 }
 
 const services = [
@@ -25,9 +27,11 @@ const services = [
   { icon: Car, label: "Fahrzeugprogrammierung" },
 ];
 
-export function AutoschluesselTemplate({ data }: AutoschluesselTemplateProps) {
-  const whatsappLink = "https://wa.me/491626405973?text=Hallo,%20ich%20brauche%20Hilfe%20mit%20meinem%20Autoschlüssel";
-  const phoneNumber = "+491626405973";
+export function AutoschluesselTemplate({ data, hideBranding = false }: AutoschluesselTemplateProps) {
+  const whatsappLink = data?.whatsapp 
+    ? `https://wa.me/${data.whatsapp.replace(/[^0-9]/g, '')}?text=Hallo,%20ich%20brauche%20Hilfe%20mit%20meinem%20Autoschlüssel`
+    : "https://wa.me/491626405973?text=Hallo,%20ich%20brauche%20Hilfe%20mit%20meinem%20Autoschlüssel";
+  const phoneNumber = data?.phone || "+491626405973";
 
   const handleWhatsApp = () => {
     window.open(whatsappLink, "_blank");
@@ -149,17 +153,19 @@ END:VCARD`;
           </div>
         </motion.div>
 
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 text-center"
-        >
-          <p className="text-gray-600 text-xs">
-            Powered by IWASP
-          </p>
-        </motion.div>
+        {/* Footer - Only show if branding is not hidden */}
+        {!hideBranding && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8 text-center"
+          >
+            <p className="text-gray-600 text-xs">
+              Powered by IWASP
+            </p>
+          </motion.div>
+        )}
       </div>
     </div>
   );
