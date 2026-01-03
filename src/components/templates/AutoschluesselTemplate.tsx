@@ -1,12 +1,12 @@
 /**
  * Autoschlüssel Service Template
  * Professional German automotive key specialist template
- * WhatsApp-focused conversion design with tabbed services
+ * WhatsApp-focused conversion design - No branding
  */
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, MessageCircle, UserPlus, Key, Settings, Shield, Wrench, Car, Cog } from "lucide-react";
+import { Phone, MessageCircle, UserPlus, Key, Shield, Wrench, Car, Cog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import autoschluesselBg from "@/assets/clients/autoschluessel-service-bg.jpg";
 
@@ -21,16 +21,16 @@ interface AutoschluesselTemplateProps {
 }
 
 const services = [
-  { icon: Key, label: "Zündschloss & Lenkradschloss Reparatur" },
   { icon: Cog, label: "Autoschlüssel anfertigen & programmieren" },
+  { icon: Key, label: "Zündschloss & Lenkradschloss Reparatur" },
   { icon: Shield, label: "Wegfahrsperre Probleme beheben" },
   { icon: Wrench, label: "Autoschlüssel reparieren" },
   { icon: Car, label: "Fahrzeugprogrammierung" },
 ];
 
-type TabType = "kontakt" | "services";
+type TabType = "kontakt" | "leistungen";
 
-export function AutoschluesselTemplate({ data, hideBranding = false }: AutoschluesselTemplateProps) {
+export function AutoschluesselTemplate({ data }: AutoschluesselTemplateProps) {
   const [activeTab, setActiveTab] = useState<TabType>("kontakt");
   
   const whatsappLink = data?.whatsapp 
@@ -66,16 +66,26 @@ END:VCARD`;
 
   return (
     <div className="min-h-screen bg-[#0B0B0B] text-white">
-      <div className="max-w-md mx-auto px-4 py-6">
-        {/* Header */}
+      {/* Subtle background image */}
+      <div className="fixed inset-0 z-0">
+        <img
+          src={autoschluesselBg}
+          alt=""
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-[#0B0B0B]/92" />
+      </div>
+
+      <div className="relative z-10 max-w-md mx-auto px-4 py-6">
+        {/* Header with professional icon */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6"
         >
-          {/* Icon */}
-          <div className="w-16 h-16 mx-auto mb-3 bg-[#1F1F1F] rounded-2xl flex items-center justify-center">
-            <Key className="w-8 h-8 text-[#FFC700]" />
+          {/* Professional Key Icon */}
+          <div className="w-20 h-20 mx-auto mb-4 bg-[#1F1F1F] rounded-2xl flex items-center justify-center border border-[#FFC700]/20">
+            <Key className="w-10 h-10 text-[#FFC700]" />
           </div>
 
           {/* Title */}
@@ -84,8 +94,8 @@ END:VCARD`;
           </h1>
           
           {/* Location */}
-          <p className="text-gray-500 text-xs">
-            Raum Aachen, Heinsberg, Düren
+          <p className="text-gray-400 text-sm">
+            Raum Aachen • Heinsberg • Düren
           </p>
         </motion.div>
 
@@ -107,14 +117,14 @@ END:VCARD`;
             Kontakt
           </button>
           <button
-            onClick={() => setActiveTab("services")}
+            onClick={() => setActiveTab("leistungen")}
             className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
-              activeTab === "services"
+              activeTab === "leistungen"
                 ? "bg-[#FFC700] text-black"
                 : "text-gray-400 hover:text-white"
             }`}
           >
-            Meine Services
+            Meine Leistungen
           </button>
         </motion.div>
 
@@ -152,15 +162,15 @@ END:VCARD`;
                 <Button
                   onClick={handleAddContact}
                   variant="outline"
-                  className="h-12 bg-[#1F1F1F] hover:bg-[#2A2A2A] border-0 text-white rounded-xl"
+                  className="h-12 bg-[#1F1F1F] hover:bg-[#2A2A2A] border-0 text-white rounded-xl text-xs"
                 >
                   <UserPlus className="w-4 h-4 mr-2" />
-                  Speichern
+                  Zum Kontakt hinzufügen
                 </Button>
               </div>
 
               {/* Quick Services Preview */}
-              <div className="bg-[#1F1F1F] rounded-2xl p-4">
+              <div className="bg-[#1F1F1F]/80 backdrop-blur-sm rounded-2xl p-4">
                 <h2 className="text-xs font-medium text-gray-400 mb-3 uppercase tracking-wide">
                   Unsere Leistungen
                 </h2>
@@ -176,88 +186,59 @@ END:VCARD`;
                   ))}
                 </div>
                 <button
-                  onClick={() => setActiveTab("services")}
+                  onClick={() => setActiveTab("leistungen")}
                   className="mt-3 text-[#FFC700] text-sm font-medium hover:underline"
                 >
-                  Alle Services anzeigen →
+                  Alle Leistungen anzeigen →
                 </button>
               </div>
             </motion.div>
           ) : (
             <motion.div
-              key="services"
+              key="leistungen"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              {/* Services with Background Image */}
-              <div className="relative rounded-2xl overflow-hidden">
-                {/* Background Image with Overlay */}
-                <div className="absolute inset-0">
-                  <img
-                    src={autoschluesselBg}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/85" />
+              {/* Services List */}
+              <div className="bg-[#1F1F1F]/80 backdrop-blur-sm rounded-2xl p-5">
+                <h2 className="text-sm font-medium text-[#FFC700] mb-4 uppercase tracking-wide">
+                  Meine Leistungen
+                </h2>
+                <div className="space-y-3">
+                  {services.map((service, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.08 }}
+                      className="flex items-start gap-4 bg-white/5 rounded-xl p-4"
+                    >
+                      <div className="w-10 h-10 bg-[#FFC700]/15 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <service.icon className="w-5 h-5 text-[#FFC700]" />
+                      </div>
+                      <span className="text-white text-sm font-medium leading-tight pt-2">
+                        {service.label}
+                      </span>
+                    </motion.div>
+                  ))}
                 </div>
 
-                {/* Content */}
-                <div className="relative p-5">
-                  <h2 className="text-sm font-medium text-[#FFC700] mb-4 uppercase tracking-wide">
-                    Meine Services
-                  </h2>
-                  <div className="space-y-4">
-                    {services.map((service, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="flex items-start gap-4 bg-white/5 backdrop-blur-sm rounded-xl p-4"
-                      >
-                        <div className="w-10 h-10 bg-[#FFC700]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <service.icon className="w-5 h-5 text-[#FFC700]" />
-                        </div>
-                        <div>
-                          <span className="text-white text-sm font-medium leading-tight">
-                            {service.label}
-                          </span>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* CTA in Services Tab */}
-                  <div className="mt-6">
-                    <Button
-                      onClick={handleWhatsApp}
-                      className="w-full h-12 bg-[#FFC700] hover:bg-[#FFD633] text-black font-medium rounded-xl"
-                    >
-                      <MessageCircle className="w-4 h-4 mr-2" />
-                      Jetzt anfragen
-                    </Button>
-                  </div>
+                {/* CTA in Services Tab */}
+                <div className="mt-6">
+                  <Button
+                    onClick={handleWhatsApp}
+                    className="w-full h-12 bg-[#FFC700] hover:bg-[#FFD633] text-black font-medium rounded-xl"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Jetzt anfragen
+                  </Button>
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Footer */}
-        {!hideBranding && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-8 text-center"
-          >
-            <p className="text-gray-600 text-xs">
-              Powered by IWASP
-            </p>
-          </motion.div>
-        )}
       </div>
     </div>
   );
