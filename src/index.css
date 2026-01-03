@@ -34,6 +34,19 @@
     --iwasp-gris: 240 2% 57%;             /* #8E8E93 - Gris structurel */
     --iwasp-erreur: 0 45% 45%;            /* Rouge discret, jamais violent */
     
+    /* ══════════════════════════════════════════════════════════════════
+       PALETTE "DARK LUXURY" - Or Premium
+       Usage : Templates élite, interfaces premium
+       ══════════════════════════════════════════════════════════════════ */
+    --gold-primary: 43 74% 49%;           /* #D4AF37 - Or principal */
+    --gold-light: 48 95% 60%;             /* #F5C542 - Or clair */
+    --gold-dark: 43 76% 38%;              /* #B8860B - Or foncé */
+    --gold-shimmer: 51 100% 50%;          /* #FFD700 - Or brillant */
+    --luxury-black: 0 0% 0%;              /* #000000 - Noir profond absolu */
+    --luxury-surface: 0 0% 4%;            /* #0A0A0A - Surface sombre */
+    --luxury-card: 0 0% 7%;               /* #121212 - Carte sombre */
+    --luxury-border: 43 50% 30%;          /* Bordure or subtile */
+    
     /* Legacy palette mappings for compatibility */
     --nuit-noir: var(--iwasp-noir);
     --nuit-gris-profond: var(--iwasp-charbon);
@@ -956,6 +969,152 @@
       hsl(0 0% 15%) 0%,
       hsl(0 0% 10%) 100%
     );
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     DARK LUXURY SYSTEM - Composants Premium Gold
+     Esthétique noir profond avec accents dorés
+     ══════════════════════════════════════════════════════════════════ */
+
+  /* Luxury Tablet Card - Pour galerie templates */
+  .luxury-tablet {
+    @apply relative overflow-hidden;
+    background: hsl(var(--luxury-black));
+    border-radius: 1.5rem;
+    border: 1px solid hsl(var(--gold-primary) / 0.25);
+    box-shadow: 
+      0 25px 60px hsl(0 0% 0% / 0.8),
+      0 0 40px hsl(var(--gold-primary) / 0.1),
+      inset 0 1px 0 hsl(var(--gold-primary) / 0.1);
+    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .luxury-tablet:hover {
+    border-color: hsl(var(--gold-primary) / 0.5);
+    box-shadow: 
+      0 35px 80px hsl(0 0% 0% / 0.9),
+      0 0 60px hsl(var(--gold-primary) / 0.2),
+      0 0 100px hsl(var(--gold-primary) / 0.1),
+      inset 0 1px 0 hsl(var(--gold-primary) / 0.15);
+    transform: translateY(-4px);
+  }
+
+  /* Glassmorphism Gold Button */
+  .glass-gold-btn {
+    @apply relative overflow-hidden font-medium;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gold-primary) / 0.15) 0%,
+      hsl(var(--gold-dark) / 0.08) 100%
+    );
+    backdrop-filter: blur(24px) saturate(150%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    border: 1px solid hsl(var(--gold-primary) / 0.3);
+    border-radius: 0.875rem;
+    color: hsl(var(--gold-light));
+    padding: 1rem 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .glass-gold-btn:hover {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gold-primary) / 0.25) 0%,
+      hsl(var(--gold-dark) / 0.15) 100%
+    );
+    border-color: hsl(var(--gold-primary) / 0.5);
+    box-shadow: 0 0 30px hsl(var(--gold-primary) / 0.2);
+  }
+
+  /* Gold Gradient Button - V4 Download style */
+  .btn-gold-gradient {
+    @apply relative overflow-hidden font-semibold;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gold-primary)) 0%,
+      hsl(var(--gold-light)) 50%,
+      hsl(var(--gold-primary)) 100%
+    );
+    background-size: 200% 200%;
+    color: hsl(var(--luxury-black));
+    border-radius: 0.875rem;
+    padding: 1rem 2rem;
+    box-shadow: 
+      0 8px 32px hsl(var(--gold-primary) / 0.4),
+      inset 0 1px 0 hsl(0 0% 100% / 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .btn-gold-gradient:hover {
+    background-position: 100% 100%;
+    box-shadow: 
+      0 12px 40px hsl(var(--gold-primary) / 0.5),
+      inset 0 1px 0 hsl(0 0% 100% / 0.4);
+    transform: translateY(-2px);
+  }
+
+  /* Gold Title Shimmer Effect */
+  @keyframes title-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .text-gold-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--gold-dark)) 0%,
+      hsl(var(--gold-light)) 25%,
+      hsl(var(--gold-shimmer)) 50%,
+      hsl(var(--gold-light)) 75%,
+      hsl(var(--gold-dark)) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: title-shimmer 4s ease-in-out infinite;
+  }
+
+  /* Gold icon styling */
+  .icon-gold {
+    color: hsl(var(--gold-primary));
+    filter: drop-shadow(0 0 8px hsl(var(--gold-primary) / 0.4));
+  }
+
+  /* Luxury Surface (cards background) */
+  .luxury-surface {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--luxury-card)) 0%,
+      hsl(var(--luxury-surface)) 100%
+    );
+    border: 1px solid hsl(var(--gold-primary) / 0.15);
+    border-radius: 1.25rem;
+  }
+
+  /* Stories Ring Gold */
+  .stories-ring-gold {
+    background: conic-gradient(
+      from 0deg,
+      hsl(var(--gold-primary)),
+      hsl(var(--gold-light)),
+      hsl(var(--gold-shimmer)),
+      hsl(var(--gold-light)),
+      hsl(var(--gold-primary))
+    );
+    padding: 3px;
+    border-radius: 50%;
+  }
+
+  /* Instant transition for stories */
+  .story-transition-instant {
+    transition: opacity 0ms, transform 0ms;
+  }
+
+  /* Auto-scroll lock */
+  .scroll-lock-view {
+    scroll-snap-type: y mandatory;
+    scroll-snap-align: start;
   }
 }
 

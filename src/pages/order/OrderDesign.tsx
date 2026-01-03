@@ -27,6 +27,7 @@ import {
 import { LogoPlacementEditor, LogoPlacementConfig, LogoPlacement, BlendMode } from "@/components/order/LogoPlacementEditor";
 import { LogoCropper } from "@/components/order/LogoCropper";
 import { TemplateGallery, TemplateDefinition } from "@/components/order/TemplateGallery";
+import { LuxuryTemplateGallery, LuxuryTemplateDefinition } from "@/components/order/LuxuryTemplateGallery";
 import { TemplatePreviewModal } from "@/components/order/TemplatePreviewModal";
 import { LuxuryHotelTemplate } from "@/components/templates/LuxuryHotelTemplate";
 import { LuxurySpaTemplate } from "@/components/templates/LuxurySpaTemplate";
@@ -65,26 +66,39 @@ interface DesignFormData extends DesignConfig {
   selectedTemplate?: string;
 }
 
-// Available templates for the gallery
-const AVAILABLE_TEMPLATES: TemplateDefinition[] = [
+// Available templates for the gallery - Luxury Edition
+const AVAILABLE_TEMPLATES: LuxuryTemplateDefinition[] = [
   {
-    id: "marrakech-guide-elite",
-    name: "Marrakech Guide Élite",
-    category: "retail",
-    description: "Template premium pour guides touristiques avec bons plans exclusifs, recommandations géolocalisées et certification officielle.",
-    features: ["Bons Plans", "Restaurants", "Hébergements", "Expériences", "Souks", "vCard Gold"],
+    id: "hebergement-elite",
+    name: "Hébergement Élite",
+    category: "hotel",
+    description: "Template premium pour Airbnb & Booking avec galerie HD, calendrier iCal, WiFi copiable et check-in automatique.",
+    features: ["Stories", "Airbnb", "Booking", "WiFi", "vCard Gold", "Calendrier"],
     premium: true,
     new: true,
+    hasStories: true,
+    previewComponent: <HebergementEliteTemplate data={{} as any} isPreview={true} />,
+  },
+  {
+    id: "marrakech-guide-elite",
+    name: "Guide Marrakech Élite",
+    category: "business",
+    description: "Template premium pour guides touristiques avec bons plans exclusifs, recommandations géolocalisées et certification officielle.",
+    features: ["Stories", "Bons Plans", "WhatsApp", "Carte", "vCard Gold"],
+    premium: true,
+    new: true,
+    hasStories: true,
     previewComponent: <MarrakechGuideEliteTemplate data={{} as any} isPreview={true} />,
   },
   {
     id: "herbalism-elite",
-    name: "Herbalism Marrakech Élite",
+    name: "Herbalism Élite",
     category: "retail",
     description: "Template premium pour boutiques bien-être & herboristerie avec galerie produits, multi-géolocalisation et Wi-Fi boutique.",
-    features: ["Galerie produits", "Multi-boutiques", "WiFi", "Avis Google", "Instagram", "vCard Gold"],
+    features: ["Stories", "Produits", "WiFi", "WhatsApp", "vCard Gold"],
     premium: true,
     new: true,
+    hasStories: true,
     previewComponent: <HerbalismEliteTemplate data={{} as any} isPreview={true} />,
   },
   {
@@ -92,115 +106,11 @@ const AVAILABLE_TEMPLATES: TemplateDefinition[] = [
     name: "Gastronomie Élite",
     category: "retail",
     description: "Template premium pour restaurants & bars avec menu, réservation de table, avis Google et Instagram.",
-    features: ["Menu", "Réservation", "Avis Google", "Instagram", "Carte", "vCard Gold"],
+    features: ["Stories", "Menu", "Réservation", "WhatsApp", "vCard Gold"],
     premium: true,
     new: true,
+    hasStories: true,
     previewComponent: <GastronomieEliteTemplate data={{} as any} isPreview={true} />,
-  },
-  {
-    id: "hebergement-elite",
-    name: "Hébergement Élite",
-    category: "hotel",
-    description: "Template premium pour Airbnb & Booking avec boutons réservation, code WiFi copiable et check-in automatique.",
-    features: ["Airbnb", "Booking", "WiFi", "Check-in", "Carte", "vCard Gold"],
-    premium: true,
-    new: true,
-    previewComponent: <HebergementEliteTemplate data={{} as any} isPreview={true} />,
-  },
-  {
-    id: "luxury-hotel",
-    name: "Luxury Hotel",
-    category: "hotel",
-    description: "Template ultra-premium pour hôtels 5 étoiles avec design noir & or, modules WiFi, carte interactive et avis Google.",
-    features: ["WiFi", "Carte", "WhatsApp", "Avis Google", "Site web", "vCard"],
-    premium: true,
-    previewComponent: <LuxuryHotelTemplate data={{} as any} isPreview={true} />,
-  },
-  {
-    id: "luxury-spa",
-    name: "Luxury Spa",
-    category: "retail",
-    description: "Template apaisant pour spas & wellness avec courbes organiques, animations calmes et accents cuivrés.",
-    features: ["Réservation", "WhatsApp", "Carte", "Avis Google", "Instagram", "vCard"],
-    premium: true,
-    previewComponent: <LuxurySpaTemplate data={{} as any} isPreview={true} />,
-  },
-  {
-    id: "executive",
-    name: "Executive",
-    category: "business",
-    description: "Design professionnel avec accents dorés pour dirigeants et entrepreneurs.",
-    features: ["vCard", "LinkedIn", "WhatsApp", "Site web"],
-    premium: true,
-    previewComponent: (
-      <div className="w-full max-w-sm bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 text-white">
-        <div className="w-16 h-16 rounded-xl bg-[#d4af37]/20 mx-auto mb-4 flex items-center justify-center">
-          <span className="text-[#d4af37] text-2xl font-serif">E</span>
-        </div>
-        <h3 className="text-center font-semibold">Executive Template</h3>
-        <p className="text-center text-white/50 text-sm mt-1">Directeur • Entreprise</p>
-        <div className="mt-4 space-y-2">
-          <div className="h-10 rounded-lg bg-white/10" />
-          <div className="h-10 rounded-lg bg-[#d4af37]/20" />
-        </div>
-      </div>
-    ),
-  },
-  {
-    id: "minimal-white",
-    name: "Minimal Blanc",
-    category: "minimal",
-    description: "Design épuré et moderne avec fond blanc et typographie élégante.",
-    features: ["vCard", "Réseaux sociaux", "Site web"],
-    previewComponent: (
-      <div className="w-full max-w-sm bg-white rounded-2xl p-6 shadow-lg border">
-        <div className="w-16 h-16 rounded-full bg-gray-100 mx-auto mb-4" />
-        <h3 className="text-center font-medium text-gray-900">Prénom Nom</h3>
-        <p className="text-center text-gray-500 text-sm mt-1">Titre • Entreprise</p>
-        <div className="mt-4 space-y-2">
-          <div className="h-10 rounded-lg bg-gray-100" />
-          <div className="h-10 rounded-lg bg-gray-100" />
-        </div>
-      </div>
-    ),
-  },
-  {
-    id: "boutique",
-    name: "Boutique Luxe",
-    category: "retail",
-    description: "Template élégant pour boutiques et commerces premium.",
-    features: ["Localisation", "Horaires", "WhatsApp", "Instagram"],
-    previewComponent: (
-      <div className="w-full max-w-sm bg-gradient-to-br from-rose-50 to-amber-50 rounded-2xl p-6 border border-rose-100">
-        <div className="w-14 h-14 rounded-xl bg-rose-100 mx-auto mb-4 flex items-center justify-center">
-          <span className="text-rose-500 text-xl">✦</span>
-        </div>
-        <h3 className="text-center font-serif text-gray-900">Ma Boutique</h3>
-        <p className="text-center text-rose-500 text-sm mt-1">Mode & Accessoires</p>
-        <div className="mt-4 space-y-2">
-          <div className="h-10 rounded-lg bg-white/60" />
-          <div className="h-10 rounded-lg bg-rose-100" />
-        </div>
-      </div>
-    ),
-  },
-  {
-    id: "creative",
-    name: "Creative Studio",
-    category: "creative",
-    description: "Design audacieux avec dégradés vibrants pour créatifs et artistes.",
-    features: ["Portfolio", "Réseaux sociaux", "Contact"],
-    previewComponent: (
-      <div className="w-full max-w-sm bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 rounded-2xl p-6 text-white">
-        <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur mx-auto mb-4" />
-        <h3 className="text-center font-bold">Creative Studio</h3>
-        <p className="text-center text-white/70 text-sm mt-1">Designer • Artiste</p>
-        <div className="mt-4 space-y-2">
-          <div className="h-10 rounded-lg bg-white/20" />
-          <div className="h-10 rounded-lg bg-white/10" />
-        </div>
-      </div>
-    ),
   },
 ];
 
@@ -430,12 +340,12 @@ function OrderDesignContent() {
                       (activeTab === "custom" && logoUrl && isValidated);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: "#000000" }}>
       <Navbar />
       
       <PageTransition>
         <main className="pt-24 pb-32 px-4">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             {/* Step Indicator */}
             <OrderProgressBar currentStep={4} />
 
@@ -450,76 +360,82 @@ function OrderDesignContent() {
               )}
             </AnimatePresence>
 
-            {/* Header */}
+            {/* Header - Gold Shimmer */}
             <motion.div 
-              className="text-center mb-8"
+              className="text-center mb-10"
               variants={contentVariants}
               initial="initial"
               animate="animate"
             >
               <motion.h1 
-                className="text-3xl md:text-4xl font-display font-bold mb-3"
+                className="text-3xl md:text-4xl font-display font-bold mb-3 text-gold-shimmer"
                 variants={itemVariants}
               >
-                Choisissez votre design
+                Choisissez votre Template Élite
               </motion.h1>
               <motion.p 
-                className="text-muted-foreground text-lg"
+                className="text-white/50 text-lg"
                 variants={itemVariants}
               >
-                Sélectionnez un template ou personnalisez votre carte
+                Templates Dark Luxury avec Stories 24h intégrées
               </motion.p>
               {/* Auto-save indicator */}
               <motion.div 
-                className="flex justify-center mt-2"
+                className="flex justify-center mt-3"
                 variants={itemVariants}
               >
                 <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
               </motion.div>
             </motion.div>
 
-            {/* Design Mode Tabs */}
+            {/* Design Mode Tabs - Gold Style */}
             <Tabs 
               value={activeTab} 
               onValueChange={(v) => {
                 setActiveTab(v as "templates" | "custom");
                 setIsValidated(false);
               }}
-              className="mb-8"
+              className="mb-10"
             >
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-12">
-                <TabsTrigger value="templates" className="gap-2 text-sm">
+              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-14 bg-black/50 border border-[#d4af37]/20 rounded-xl p-1">
+                <TabsTrigger 
+                  value="templates" 
+                  className="gap-2 text-sm rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#d4af37] data-[state=active]:to-[#b8860b] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(212,175,55,0.3)]"
+                >
                   <LayoutGrid size={16} />
-                  Templates
+                  Templates Élite
                 </TabsTrigger>
-                <TabsTrigger value="custom" className="gap-2 text-sm">
+                <TabsTrigger 
+                  value="custom" 
+                  className="gap-2 text-sm rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#d4af37] data-[state=active]:to-[#b8860b] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(212,175,55,0.3)]"
+                >
                   <Palette size={16} />
                   Personnalisé
                 </TabsTrigger>
               </TabsList>
 
-              {/* Templates Tab */}
-              <TabsContent value="templates" className="mt-6">
-                <TemplateGallery
+              {/* Templates Tab - Luxury Gallery */}
+              <TabsContent value="templates" className="mt-8">
+                <LuxuryTemplateGallery
                   templates={AVAILABLE_TEMPLATES}
                   selectedTemplateId={selectedTemplate}
                   onSelectTemplate={handleSelectTemplate}
                   onPreviewTemplate={handlePreviewTemplate}
                 />
 
-                {/* Template Validation */}
+                {/* Template Validation - Gold Style */}
                 {selectedTemplate && !isValidated && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-6"
+                    className="mt-8 flex justify-center"
                   >
                     <Button
                       size="lg"
                       onClick={handleValidateDesign}
-                      className="w-full max-w-md mx-auto h-14 text-lg rounded-xl bg-gradient-to-r from-[#d4af37] to-amber-500 hover:opacity-90 flex"
+                      className="h-16 px-10 text-lg rounded-2xl btn-gold-gradient"
                     >
-                      <CheckCircle2 className="mr-2 h-5 w-5" />
+                      <CheckCircle2 className="mr-3 h-6 w-6" />
                       Confirmer ce template
                     </Button>
                   </motion.div>
@@ -529,14 +445,21 @@ function OrderDesignContent() {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-6"
+                    className="mt-8"
                   >
-                    <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20 max-w-md mx-auto">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
-                      <AlertDescription className="text-green-700 dark:text-green-400">
-                        Template "{AVAILABLE_TEMPLATES.find(t => t.id === selectedTemplate)?.name}" sélectionné !
-                      </AlertDescription>
-                    </Alert>
+                    <div className="max-w-md mx-auto p-4 rounded-2xl border border-[#d4af37]/30 bg-[#d4af37]/10">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#d4af37] flex items-center justify-center">
+                          <CheckCircle2 className="h-5 w-5 text-black" />
+                        </div>
+                        <div>
+                          <p className="text-[#d4af37] font-medium">Template sélectionné</p>
+                          <p className="text-white/60 text-sm">
+                            {AVAILABLE_TEMPLATES.find(t => t.id === selectedTemplate)?.name}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </motion.div>
                 )}
               </TabsContent>
