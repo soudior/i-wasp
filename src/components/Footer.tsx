@@ -70,7 +70,7 @@ export function Footer() {
 
         {/* Instagram */}
         <a
-          href="https://instagram.com/iwasp.nfc"
+          href="https://instagram.com/iwasp.info"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-3 bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] hover:opacity-90 text-white px-5 py-3 rounded-full shadow-lg shadow-[#E1306C]/30 transition-all duration-300 hover:scale-105 hover:shadow-xl"
