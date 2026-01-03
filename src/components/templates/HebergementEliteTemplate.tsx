@@ -38,6 +38,7 @@ import {
 import { VCardData } from "@/lib/vcard";
 import { VCardGoldButton } from "@/components/VCardGoldButton";
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
+import { StoriesSection, useCardStories } from "@/components/templates/StoriesSection";
 import { toast } from "sonner";
 
 // Template data interface
@@ -99,6 +100,7 @@ export interface HebergementEliteData {
 
 interface HebergementEliteTemplateProps {
   data: HebergementEliteData;
+  cardId?: string;
   isPreview?: boolean;
 }
 
@@ -332,11 +334,13 @@ const ContactHostButton: React.FC<{
   );
 };
 
-export function HebergementEliteTemplate({ data, isPreview = false }: HebergementEliteTemplateProps) {
+export function HebergementEliteTemplate({ data, cardId, isPreview = false }: HebergementEliteTemplateProps) {
   const [copiedWifi, setCopiedWifi] = useState(false);
   const [copiedKeyCode, setCopiedKeyCode] = useState(false);
   const [fullscreenGallery, setFullscreenGallery] = useState<number | null>(null);
   const photosRef = useRef<HTMLDivElement>(null);
+  const storiesRef = useRef<HTMLDivElement>(null);
+  const { stories } = useCardStories(cardId);
 
   const handleCopyWifi = async () => {
     if (data.wifiPassword) {
@@ -437,6 +441,18 @@ export function HebergementEliteTemplate({ data, isPreview = false }: Hebergemen
       style={{ backgroundColor: "#000000" }}
     >
       <div className="max-w-md mx-auto px-4 py-8">
+
+        {/* === Stories Section (Top Priority) === */}
+        <div ref={storiesRef}>
+          <StoriesSection
+            cardId={cardId}
+            ownerName={data.hostName || data.propertyName}
+            ownerPhoto={data.hostPhoto}
+            whatsappNumber={data.whatsapp}
+            variant="premium"
+          />
+        </div>
+        
         
         {/* === Photo Gallery (Priority #1) === */}
         <div ref={photosRef}>

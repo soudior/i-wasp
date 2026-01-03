@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreditCard, Sparkles } from "lucide-react";
+import { CreditCard, Sparkles, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileOptimizedVideo } from "@/components/MobileOptimizedVideo";
 import nfcPoster from "@/assets/posters/nfc-demo-poster.webp";
@@ -160,8 +160,81 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Section À propos - Sans animations */}
-      <section className="py-20 px-4 bg-gradient-to-b from-black via-zinc-950 to-black">
+      {/* Section Stories Dynamiques - Exclusivité */}
+      <section className="py-16 px-4 bg-gradient-to-b from-black to-zinc-950">
+        <div className="max-w-3xl mx-auto">
+          {/* Badge Exclusivité */}
+          <div className="text-center mb-8">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-amber-600/10 border border-amber-500/30 text-amber-400 text-sm font-medium">
+              <Sparkles className="w-4 h-4" />
+              Exclusivité i-wasp
+            </span>
+          </div>
+
+          {/* Titre */}
+          <h2 className="font-playfair text-2xl md:text-4xl font-bold text-white text-center leading-tight mb-6">
+            Stories Dynamiques 24h
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500">
+              Votre actualité en temps réel
+            </span>
+          </h2>
+
+          {/* Description */}
+          <p className="text-center text-zinc-400 text-base md:text-lg max-w-xl mx-auto mb-10">
+            Chaque carte NFC i-wasp vous permet de partager vos <span className="text-amber-400 font-medium">stories éphémères</span> comme sur Instagram. Vos contacts voient vos actualités dès qu'ils scannent votre carte.
+          </p>
+
+          {/* Preview Cards */}
+          <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mb-10">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="relative">
+                <div
+                  className="absolute inset-0 rounded-full p-[2px]"
+                  style={{
+                    background: "linear-gradient(135deg, #d4af37, #f5c542, #d4af37)",
+                  }}
+                />
+                <div className="relative w-full aspect-square rounded-full bg-zinc-900 border-2 border-black overflow-hidden">
+                  <div className="w-full h-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-amber-400/50" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-amber-400" />
+              </div>
+              <h3 className="text-white font-medium mb-1">24h de visibilité</h3>
+              <p className="text-zinc-500 text-sm">Stories éphémères qui disparaissent automatiquement</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <CreditCard className="w-5 h-5 text-amber-400" />
+              </div>
+              <h3 className="text-white font-medium mb-1">Un scan suffit</h3>
+              <p className="text-zinc-500 text-sm">Vos contacts voient vos stories au scan NFC</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-amber-400" />
+              </div>
+              <h3 className="text-white font-medium mb-1">Impact maximum</h3>
+              <p className="text-zinc-500 text-sm">Partagez vos actualités en temps réel</p>
+            </div>
+          </div>
+
+          {/* Ligne décorative */}
+          <div className="w-24 h-0.5 mx-auto mt-10 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+        </div>
+      </section>
+
+      {/* Section À propos */}
+      <section className="py-20 px-4 bg-gradient-to-b from-zinc-950 via-black to-black">
         <div className="max-w-2xl mx-auto text-center space-y-8">
           {/* Icône décorative statique */}
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/30">
