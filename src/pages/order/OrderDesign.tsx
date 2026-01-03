@@ -33,6 +33,7 @@ import { LuxurySpaTemplate } from "@/components/templates/LuxurySpaTemplate";
 import { HebergementEliteTemplate } from "@/components/templates/HebergementEliteTemplate";
 import { GastronomieEliteTemplate } from "@/components/templates/GastronomieEliteTemplate";
 import { HerbalismEliteTemplate } from "@/components/templates/HerbalismEliteTemplate";
+import { MarrakechGuideEliteTemplate } from "@/components/templates/MarrakechGuideEliteTemplate";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,6 +67,16 @@ interface DesignFormData extends DesignConfig {
 
 // Available templates for the gallery
 const AVAILABLE_TEMPLATES: TemplateDefinition[] = [
+  {
+    id: "marrakech-guide-elite",
+    name: "Marrakech Guide Élite",
+    category: "retail",
+    description: "Template premium pour guides touristiques avec bons plans exclusifs, recommandations géolocalisées et certification officielle.",
+    features: ["Bons Plans", "Restaurants", "Hébergements", "Expériences", "Souks", "vCard Gold"],
+    premium: true,
+    new: true,
+    previewComponent: <MarrakechGuideEliteTemplate data={{} as any} isPreview={true} />,
+  },
   {
     id: "herbalism-elite",
     name: "Herbalism Marrakech Élite",
