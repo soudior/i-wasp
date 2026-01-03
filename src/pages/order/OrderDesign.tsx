@@ -32,6 +32,7 @@ import { LuxuryHotelTemplate } from "@/components/templates/LuxuryHotelTemplate"
 import { LuxurySpaTemplate } from "@/components/templates/LuxurySpaTemplate";
 import { HebergementEliteTemplate } from "@/components/templates/HebergementEliteTemplate";
 import { GastronomieEliteTemplate } from "@/components/templates/GastronomieEliteTemplate";
+import { HerbalismEliteTemplate } from "@/components/templates/HerbalismEliteTemplate";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -65,6 +66,16 @@ interface DesignFormData extends DesignConfig {
 
 // Available templates for the gallery
 const AVAILABLE_TEMPLATES: TemplateDefinition[] = [
+  {
+    id: "herbalism-elite",
+    name: "Herbalism Marrakech Élite",
+    category: "retail",
+    description: "Template premium pour boutiques bien-être & herboristerie avec galerie produits, multi-géolocalisation et Wi-Fi boutique.",
+    features: ["Galerie produits", "Multi-boutiques", "WiFi", "Avis Google", "Instagram", "vCard Gold"],
+    premium: true,
+    new: true,
+    previewComponent: <HerbalismEliteTemplate data={{} as any} isPreview={true} />,
+  },
   {
     id: "gastronomie-elite",
     name: "Gastronomie Élite",
