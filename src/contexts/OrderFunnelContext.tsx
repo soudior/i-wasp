@@ -47,12 +47,41 @@ export interface DigitalInfo {
   neighborhood?: string; // Quartier (Maroc)
 }
 
+// Imported website data (auto-génération par URL)
+export interface ImportedWebsiteData {
+  logo?: string;
+  colors?: {
+    primary?: string;
+    secondary?: string;
+    accent?: string;
+    background?: string;
+  };
+  brandName?: string;
+  tagline?: string;
+  phone?: string;
+  whatsapp?: string;
+  email?: string;
+  address?: string;
+  instagram?: string;
+  facebook?: string;
+  googleMapsUrl?: string;
+  website?: string;
+  products?: Array<{
+    name: string;
+    image?: string;
+    price?: string;
+    category?: string;
+  }>;
+  storyImages?: string[];
+}
+
 // Design configuration (step 4)
 export interface DesignConfig {
   logoUrl: string | null;
   cardColor: string;
   designPreviewUrl?: string;
   template?: string; // Selected template ID
+  importedData?: ImportedWebsiteData; // Data from website import
 }
 
 // Order options (step 5)
