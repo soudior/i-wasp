@@ -12,6 +12,7 @@ import {
   Instagram, X, Play, Heart, Sparkles, Store
 } from "lucide-react";
 import { VCardGoldButton } from "@/components/VCardGoldButton";
+import { StoriesSection, useCardStories } from "@/components/templates/StoriesSection";
 import { cn } from "@/lib/utils";
 
 // Types
@@ -81,6 +82,7 @@ interface HerbalismData {
 
 interface HerbalismEliteTemplateProps {
   data?: HerbalismData;
+  cardId?: string;
   isPreview?: boolean;
 }
 
@@ -574,9 +576,11 @@ const WiFiCard = ({ ssid, password }: { ssid: string; password: string }) => {
 // Main Template Component
 export function HerbalismEliteTemplate({ 
   data = DEMO_DATA,
+  cardId,
   isPreview = false 
 }: HerbalismEliteTemplateProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const { stories } = useCardStories(cardId);
   
   // Handle store selection (open in maps)
   const handleStoreSelect = (store: StoreLocation) => {
@@ -624,6 +628,16 @@ export function HerbalismEliteTemplate({
         animate="visible"
         className="relative max-w-md mx-auto px-4 py-8 space-y-8"
       >
+        {/* Stories Section - Top Priority */}
+        <motion.div variants={itemVariants}>
+          <StoriesSection
+            cardId={cardId}
+            ownerName={data.brandName}
+            ownerPhoto={data.logo}
+            whatsappNumber={data.whatsapp}
+            variant="premium"
+          />
+        </motion.div>
         {/* Header */}
         <motion.header variants={itemVariants} className="text-center space-y-4">
           {/* Logo */}

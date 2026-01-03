@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { VCardData } from "@/lib/vcard";
 import { VCardGoldButton } from "@/components/VCardGoldButton";
+import { StoriesSection, useCardStories } from "@/components/templates/StoriesSection";
 import { toast } from "sonner";
 
 // Template data interface
@@ -88,10 +89,12 @@ export interface GastronomieEliteData {
 
 interface GastronomieEliteTemplateProps {
   data: GastronomieEliteData;
+  cardId?: string;
   isPreview?: boolean;
 }
 
-export function GastronomieEliteTemplate({ data, isPreview = false }: GastronomieEliteTemplateProps) {
+export function GastronomieEliteTemplate({ data, cardId, isPreview = false }: GastronomieEliteTemplateProps) {
+  const { stories } = useCardStories(cardId);
 
   const handleWhatsApp = () => {
     if (data.whatsapp) {
@@ -173,6 +176,15 @@ export function GastronomieEliteTemplate({ data, isPreview = false }: Gastronomi
       style={{ backgroundColor: "#000000" }}
     >
       <div className="max-w-md mx-auto px-4 py-12">
+
+        {/* === Stories Section (Top Priority) === */}
+        <StoriesSection
+          cardId={cardId}
+          ownerName={data.restaurantName}
+          ownerPhoto={data.logoUrl}
+          whatsappNumber={data.whatsapp}
+          variant="premium"
+        />
         
         {/* === Header: Logo + Name + Cuisine + Rating === */}
         <motion.header

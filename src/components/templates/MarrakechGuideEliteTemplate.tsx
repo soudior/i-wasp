@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { VCardGoldButton } from '@/components/VCardGoldButton';
 import { handleWhatsAppTap, handleSocialTap } from '@/lib/smartActions';
+import { StoriesSection, useCardStories } from '@/components/templates/StoriesSection';
 
 // Types
 interface Recommendation {
@@ -46,6 +47,7 @@ interface GuideData {
 
 interface MarrakechGuideEliteTemplateProps {
   data?: Partial<GuideData>;
+  cardId?: string;
   isPreview?: boolean;
 }
 
@@ -489,11 +491,14 @@ const VideoPlayer: React.FC<{
 // Main Component
 export const MarrakechGuideEliteTemplate: React.FC<MarrakechGuideEliteTemplateProps> = ({
   data = {},
+  cardId,
   isPreview = false
 }) => {
   const guideData: GuideData = { ...defaultData, ...data };
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const categoriesRef = useRef<HTMLDivElement>(null);
+  const storiesRef = useRef<HTMLDivElement>(null);
+  const { stories } = useCardStories(cardId);
 
   const scrollToCategories = useCallback(() => {
     if (categoriesRef.current) {
@@ -537,6 +542,16 @@ export const MarrakechGuideEliteTemplate: React.FC<MarrakechGuideEliteTemplatePr
         animate="visible"
         className="relative z-10 max-w-lg mx-auto px-4 py-8 space-y-8"
       >
+        {/* Stories Section - Top Priority */}
+        <motion.div variants={itemVariants} ref={storiesRef}>
+          <StoriesSection
+            cardId={cardId}
+            ownerName={guideData.name}
+            ownerPhoto={guideData.photoUrl}
+            whatsappNumber={guideData.whatsapp}
+            variant="premium"
+          />
+        </motion.div>
         {/* Header Section */}
         <motion.div variants={itemVariants} className="text-center space-y-6">
           {/* Photo */}
