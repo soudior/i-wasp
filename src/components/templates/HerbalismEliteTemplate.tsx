@@ -43,6 +43,9 @@ interface HerbalismData {
   brandName: string;
   tagline?: string;
   
+  // Profile photo (personal avatar)
+  profilePhoto?: string;
+  
   // Contact
   phone?: string;
   email?: string;
@@ -654,8 +657,22 @@ export function HerbalismEliteTemplate({
 
         {/* Header */}
         <motion.header variants={itemVariants} className="text-center space-y-4">
-          {/* Logo */}
-          {data.logo && (
+          {/* Profile Photo (Avatar) - Shows contact person */}
+          {data.profilePhoto && (
+            <motion.div 
+              className="w-28 h-28 mx-auto rounded-full overflow-hidden border-3 border-[#d4af37]/50 shadow-2xl shadow-[#d4af37]/20"
+              whileHover={{ scale: 1.05 }}
+            >
+              <img 
+                src={data.profilePhoto} 
+                alt={data.vcardData?.firstName || data.brandName}
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+          )}
+          
+          {/* Logo (Brand) - Only show if no profile photo */}
+          {!data.profilePhoto && data.logo && (
             <motion.div 
               className="w-24 h-24 mx-auto rounded-3xl overflow-hidden border-2 border-[#d4af37]/30 shadow-2xl shadow-[#d4af37]/10"
               whileHover={{ scale: 1.05, rotate: 2 }}
