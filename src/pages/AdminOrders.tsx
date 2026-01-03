@@ -407,61 +407,98 @@ export default function AdminOrders() {
   const shippedCount = orders?.filter(o => o.status === "shipped").length || 0;
   const deliveredCount = orders?.filter(o => o.status === "delivered").length || 0;
 
-  // Export CSV function
+  // Get card type from template
+  const getCardTypeForExport = (template: string): string => {
+    if (template.includes("airbnb") || template.includes("hotel") || template.includes("rental") || template.includes("booking")) {
+      return "Airbnb / Booking";
+    }
+    if (template.includes("employee") || template.includes("salari")) {
+      return "Salarié";
+    }
+    return "Business";
+  };
+
+  // Get offer plan from price
+  const getOfferFromPrice = (priceCents: number): string => {
+    if (priceCents === 0) return "Free";
+    if (priceCents <= 15000) return "Gold";
+    return "Premium";
+  };
+
+  // Get status emoji for Google Sheet
+  const getStatusEmoji = (status: string): string => {
+    switch (status) {
+      case "pending": return "🟡 Nouvelle";
+      case "paid": return "🟠 En cours";
+      case "in_production": return "🟠 En cours";
+      case "shipped": return "🟢 Prête";
+      case "delivered": return "🔴 Livrée";
+      default: return status;
+    }
+  };
+
+  // Export CSV function - Format Google Sheet "Commandes iWasp"
   const handleExportCSV = () => {
     if (!orders || orders.length === 0) {
       toast.error("Aucune commande à exporter");
       return;
     }
 
+    // Headers matching Google Sheet columns
     const headers = [
-      "N° Commande",
-      "Date",
-      "Client",
-      "Email",
+      "Nom du client",
       "Téléphone",
-      "Adresse",
-      "Ville",
-      "Code Postal",
-      "Quantité",
-      "Total (€)",
+      "Type de carte",
+      "Offre",
+      "Prix (MAD)",
+      "Mode de paiement",
       "Statut",
-      "Template",
-      "Type"
+      "Lien carte i-wasp.com",
+      "Date",
+      "Remarque"
     ];
 
-    const rows = orders.map(order => [
-      order.order_number,
-      format(new Date(order.created_at), "dd/MM/yyyy HH:mm", { locale: fr }),
-      order.shipping_name || "",
-      order.customer_email || "",
-      order.shipping_phone || "",
-      order.shipping_address || "",
-      order.shipping_city || "",
-      order.shipping_postal_code || "",
-      order.quantity.toString(),
-      (order.total_price_cents / 100).toFixed(2),
-      getOrderStatusLabel(order.status),
-      order.template,
-      order.order_type
-    ]);
+    const rows = orders.map(order => {
+      const cardType = getCardTypeForExport(order.template);
+      const offer = getOfferFromPrice(order.total_price_cents);
+      const priceMad = Math.round(order.total_price_cents / 100).toString();
+      const paymentMode = order.payment_method === "cod" ? "Cash" : (order.payment_method || "Cash");
+      const status = getStatusEmoji(order.status);
+      const cardLink = `https://i-wasp.com/c/${order.order_number}`;
+      const date = format(new Date(order.created_at), "dd/MM/yyyy", { locale: fr });
+      const notes = (order as any).admin_notes || "";
 
+      return [
+        order.shipping_name || "",
+        order.shipping_phone || "",
+        cardType,
+        offer,
+        priceMad,
+        paymentMode,
+        status,
+        cardLink,
+        date,
+        notes
+      ];
+    });
+
+    // Use tab separator for easy paste to Google Sheets
     const csvContent = [
-      headers.join(";"),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(";"))
+      headers.join("\t"),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join("\t"))
     ].join("\n");
 
     const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `iwasp-commandes-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    link.download = `commandes-iwasp-${format(new Date(), "yyyy-MM-dd")}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    toast.success(`${orders.length} commandes exportées`);
+    toast.success(`${orders.length} commandes exportées pour Google Sheets`);
   };
   
   return (
