@@ -76,53 +76,75 @@ export const SUBSCRIPTION_PLANS = {
   GOLD: {
     id: "gold",
     name: "GOLD",
-    tagline: "Premium Illimité",
-    description: "La solution complète pour les professionnels exigeants",
+    tagline: "Solution Business",
+    description: "La solution business complète pour les professionnels",
     price: 490,
     currency: "MAD",
     period: "/an",
     color: "gold",
     
-    // Tout ce qui est inclus dans GOLD
+    // Fonctionnalités GOLD - Solution Business Premium
     included: [
-      "Tout FREE +",
-      "Templates premium illimités",
-      "Statistiques de scans détaillées",
-      "Options dynamiques (boutons, sections)",
-      "Personnalisation avancée",
-      "Suppression du branding iWasp",
-      "Stories 24h illimitées",
-      "Capture de leads + CRM",
-      "Push notifications",
-      "Badge certifié GOLD",
-      "Coach IA personnalisé",
-      "Support prioritaire 24/7",
+      "Carte NFC avec profil 100% dynamique",
       "Liens illimités",
-      "Export Excel des leads",
+      "Sections dynamiques (boutons, CTA)",
+      "Templates premium (Business, Tech, Immobilier, Creator)",
+      "Personnalisation complète du profil",
+      "Statistiques de scans (vues, clics)",
+      "Mise à jour en temps réel",
+      "QR code personnalisé",
+      "Suppression du branding iWasp",
+      "Support prioritaire",
+    ],
+    
+    // Avantages business additionnels
+    businessFeatures: [
+      "Capture de leads automatique",
+      "Dashboard analytics avancé",
+      "Export Excel des contacts",
+      "Push notifications",
+      "Badge Certifié GOLD",
+      "Coach IA personnalisé",
+      "Intégration CRM",
     ],
     
     excluded: [], // GOLD a tout
     
     features: {
+      // Profil dynamique
       nfcCards: Infinity,
-      digitalProfile: "unlimited",
+      digitalProfile: "dynamic", // 100% dynamique
       profilePhoto: true,
       essentialInfo: true,
-      socialLinks: Infinity,
-      qrCode: "advanced",
-      appAccess: true,
-      premiumTemplates: true,
-      scanStats: true,
-      dynamicOptions: true,
-      advancedCustomization: true,
-      removeBranding: true,
-      stories: true,
+      socialLinks: Infinity, // Illimités
+      dynamicSections: true, // Boutons, CTA
+      realTimeUpdate: true, // Mise à jour en temps réel
+      
+      // Templates & Personnalisation
+      premiumTemplates: true, // Business, Tech, Immobilier, Creator
+      advancedCustomization: true, // Personnalisation complète
+      qrCode: "custom", // QR code personnalisé
+      removeBranding: true, // Sans branding iWasp
+      
+      // Analytics & Stats
+      scanStats: true, // Vues, clics
       analytics: true,
+      
+      // Business Features
       leadCapture: true,
       pushNotifications: true,
       badge: true,
       aiCoach: true,
+      crmIntegration: true,
+      excelExport: true,
+      
+      // Support
       prioritySupport: true,
+      
+      // Legacy compatibility
+      appAccess: true,
+      stories: true,
+      dynamicOptions: true,
     },
     
     limits: {
@@ -130,7 +152,19 @@ export const SUBSCRIPTION_PLANS = {
       maxSocialLinks: Infinity,
       maxStories: Infinity,
       maxTemplates: Infinity,
+      maxDynamicSections: Infinity,
     },
+    
+    // Templates disponibles avec GOLD
+    availableTemplates: [
+      "Business",
+      "Tech",
+      "Immobilier", 
+      "Creator",
+      "Luxury",
+      "Minimal",
+      "Corporate",
+    ],
   },
 } as const;
 
@@ -173,6 +207,8 @@ export const FEATURE_COMPARISON = [
 // Helper pour vérifier si une feature est disponible selon le plan
 export function hasFeature(planId: PlanId, feature: keyof typeof SUBSCRIPTION_PLANS.FREE.features): boolean {
   const plan = getPlan(planId);
-  const value = plan.features[feature];
-  return value === true || value === Infinity || value === "unlimited" || value === "advanced";
+  const value = plan.features[feature as keyof typeof plan.features];
+  if (value === true || value === Infinity) return true;
+  if (typeof value === "string" && value !== "basic") return true;
+  return false;
 }
