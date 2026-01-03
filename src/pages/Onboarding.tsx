@@ -17,7 +17,8 @@ import { toast } from "sonner";
 import { 
   Loader2, ArrowLeft, ArrowRight, User, Briefcase, 
   Phone, Link2, Check, Sparkles, Crown, Target,
-  Laptop, Camera, Building2, HelpCircle
+  Laptop, Camera, Building2, HelpCircle, Mail, MessageCircle,
+  Instagram, Linkedin, Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OnboardingPhotoUpload } from "@/components/onboarding/OnboardingPhotoUpload";
@@ -33,6 +34,7 @@ interface FormData {
   email: string;
   linkedin: string;
   whatsapp: string;
+  instagram: string;
   website: string;
   photo_url: string | null;
   objective: UserObjective;
@@ -47,10 +49,21 @@ const initialFormData: FormData = {
   email: "",
   linkedin: "",
   whatsapp: "",
+  instagram: "",
   website: "",
   photo_url: null,
   objective: null,
 };
+
+const FREE_LINKS_LIMIT = 3;
+
+const linkFields = [
+  { key: 'phone' as const, label: 'Téléphone', icon: Phone, placeholder: '+212 6 00 00 00 00', type: 'tel' },
+  { key: 'email' as const, label: 'Email', icon: Mail, placeholder: 'vous@exemple.com', type: 'email' },
+  { key: 'whatsapp' as const, label: 'WhatsApp', icon: MessageCircle, placeholder: '+212 6 00 00 00 00', type: 'tel' },
+  { key: 'instagram' as const, label: 'Instagram', icon: Instagram, placeholder: '@votrenom', type: 'text' },
+  { key: 'linkedin' as const, label: 'LinkedIn', icon: Linkedin, placeholder: 'linkedin.com/in/votrenom', type: 'text' },
+];
 
 const objectiveOptions = [
   { 
@@ -103,17 +116,10 @@ const formSteps = [
   },
   { 
     id: 3, 
-    title: "Contact", 
-    subtitle: "Comment te joindre ?",
-    icon: Phone,
-    fields: ["phone", "email", "whatsapp"] as const
-  },
-  { 
-    id: 4, 
     title: "Liens", 
-    subtitle: "Tes réseaux",
+    subtitle: "Tes coordonnées",
     icon: Link2,
-    fields: ["linkedin", "website"] as const
+    fields: ["phone", "email", "whatsapp", "instagram", "linkedin"] as const
   },
 ];
 
@@ -144,6 +150,7 @@ export default function Onboarding() {
           phone: data.phone || null,
           email: data.email || null,
           linkedin: data.linkedin || null,
+          instagram: data.instagram || null,
           whatsapp: data.whatsapp || null,
           website: data.website || null,
           photo_url: data.photo_url || null,
@@ -438,60 +445,91 @@ export default function Onboarding() {
 
               {step === 3 && (
                 <>
-                  <div className="space-y-2">
-                    <Label className="text-[#E5E5E5]/70">Téléphone</Label>
-                    <Input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => updateField("phone", e.target.value)}
-                      placeholder="+212 6 00 00 00 00"
-                      className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
-                      autoFocus
-                    />
+                  {/* Links counter */}
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-sm text-[#E5E5E5]/70">
+                      Liens ajoutés : <span className={cn(
+                        "font-semibold",
+                        linkFields.filter(f => formData[f.key]?.trim()).length >= FREE_LINKS_LIMIT 
+                          ? "text-[#FFC700]" 
+                          : "text-white"
+                      )}>
+                        {linkFields.filter(f => formData[f.key]?.trim()).length}
+                      </span>
+                      <span className="text-[#E5E5E5]/40"> / {FREE_LINKS_LIMIT} (FREE)</span>
+                    </p>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[#E5E5E5]/70">Email</Label>
-                    <Input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => updateField("email", e.target.value)}
-                      placeholder="vous@exemple.com"
-                      className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[#E5E5E5]/70">WhatsApp</Label>
-                    <Input
-                      type="tel"
-                      value={formData.whatsapp}
-                      onChange={(e) => updateField("whatsapp", e.target.value)}
-                      placeholder="+212 6 00 00 00 00"
-                      className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
-                    />
-                  </div>
-                </>
-              )}
 
-              {step === 4 && (
-                <>
-                  <div className="space-y-2">
-                    <Label className="text-[#E5E5E5]/70">LinkedIn</Label>
-                    <Input
-                      value={formData.linkedin}
-                      onChange={(e) => updateField("linkedin", e.target.value)}
-                      placeholder="https://linkedin.com/in/votrenom"
-                      className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
-                      autoFocus
-                    />
+                  <div className="space-y-3">
+                    {linkFields.map((field, index) => {
+                      const filledCount = linkFields.filter(f => formData[f.key]?.trim()).length;
+                      const isCurrentFilled = formData[field.key]?.trim();
+                      const isLocked = !isCurrentFilled && filledCount >= FREE_LINKS_LIMIT;
+                      
+                      return (
+                        <div key={field.key} className="relative">
+                          <div className={cn(
+                            "flex items-center gap-3 p-3 rounded-xl border transition-all",
+                            isLocked 
+                              ? "border-[#E5E5E5]/5 bg-[#1F1F1F]/50 opacity-60" 
+                              : formData[field.key]?.trim() 
+                                ? "border-[#FFC700]/30 bg-[#FFC700]/5" 
+                                : "border-[#E5E5E5]/10 bg-[#1F1F1F]"
+                          )}>
+                            <div className={cn(
+                              "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
+                              formData[field.key]?.trim() ? "bg-[#FFC700]/20" : "bg-[#E5E5E5]/10"
+                            )}>
+                              {isLocked ? (
+                                <Lock className="w-5 h-5 text-[#E5E5E5]/40" />
+                              ) : (
+                                <field.icon className={cn(
+                                  "w-5 h-5",
+                                  formData[field.key]?.trim() ? "text-[#FFC700]" : "text-[#E5E5E5]/50"
+                                )} />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <Label className="text-[#E5E5E5]/70 text-xs mb-1 block">{field.label}</Label>
+                              <Input
+                                type={field.type}
+                                value={formData[field.key]}
+                                onChange={(e) => {
+                                  if (isLocked) {
+                                    toast.error("Passe en GOLD pour des liens illimités");
+                                    return;
+                                  }
+                                  updateField(field.key, e.target.value);
+                                }}
+                                placeholder={field.placeholder}
+                                disabled={isLocked}
+                                className={cn(
+                                  "h-10 border-0 bg-transparent text-white placeholder:text-[#E5E5E5]/30 p-0 focus-visible:ring-0",
+                                  isLocked && "cursor-not-allowed"
+                                )}
+                                autoFocus={index === 0}
+                              />
+                            </div>
+                            {formData[field.key]?.trim() && (
+                              <Check className="w-5 h-5 text-[#FFC700]" />
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[#E5E5E5]/70">Site web</Label>
-                    <Input
-                      value={formData.website}
-                      onChange={(e) => updateField("website", e.target.value)}
-                      placeholder="https://votre-site.com"
-                      className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
-                    />
+
+                  {/* GOLD upgrade message */}
+                  <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-[#FFC700]/10 to-[#FFC700]/5 border border-[#FFC700]/20">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#FFC700]/20 flex items-center justify-center flex-shrink-0">
+                        <Crown className="w-5 h-5 text-[#FFC700]" />
+                      </div>
+                      <div>
+                        <p className="text-white font-medium text-sm">Passe en GOLD pour des liens illimités</p>
+                        <p className="text-[#E5E5E5]/50 text-xs">+ Analytics, CRM, et plus encore</p>
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
