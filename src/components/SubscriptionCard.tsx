@@ -1,9 +1,8 @@
 /**
  * SubscriptionCard - Carte affichant le plan actuel et option upgrade
- * Style Apple Cupertino Premium
+ * Style SaaS Professional
  */
 
-import { motion } from "framer-motion";
 import { Crown, Check, Lock, Zap, MessageCircle, Wifi, BarChart3 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,7 @@ export function SubscriptionCard({ onUpgradeRequest }: SubscriptionCardProps) {
 
   if (isLoading) {
     return (
-      <Card className="p-6 animate-pulse">
+      <Card className="p-6 bg-card border border-border">
         <div className="h-6 bg-muted rounded w-1/3 mb-4" />
         <div className="h-4 bg-muted rounded w-2/3" />
       </Card>
@@ -37,7 +36,6 @@ export function SubscriptionCard({ onUpgradeRequest }: SubscriptionCardProps) {
     if (onUpgradeRequest) {
       onUpgradeRequest();
     } else {
-      // Default: open WhatsApp with upgrade request
       const message = encodeURIComponent(
         "Bonjour ! Je souhaite passer au plan Premium i-wasp à 99 DH/mois. Merci de me contacter pour finaliser l'abonnement."
       );
@@ -47,22 +45,19 @@ export function SubscriptionCard({ onUpgradeRequest }: SubscriptionCardProps) {
 
   if (isPremium) {
     return (
-      <Card className="relative overflow-hidden border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-400/5 to-orange-500/10">
-        {/* Premium glow effect */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/20 rounded-full blur-3xl" />
-        
-        <div className="relative p-6">
+      <Card className="bg-card border border-primary/20">
+        <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                <Crown className="h-6 w-6 text-white" />
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Crown className="h-6 w-6 text-primary" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-display text-lg font-bold text-foreground">
+                  <h3 className="font-display text-lg font-semibold text-foreground">
                     Plan Premium
                   </h3>
-                  <Badge className="bg-amber-500 text-white border-0">
+                  <Badge className="bg-primary text-primary-foreground border-0">
                     Actif
                   </Badge>
                 </div>
@@ -72,7 +67,7 @@ export function SubscriptionCard({ onUpgradeRequest }: SubscriptionCardProps) {
               </div>
             </div>
             <div className="text-right">
-              <p className="font-display text-2xl font-bold text-foreground">99 DH</p>
+              <p className="font-display text-2xl font-semibold text-foreground">99 DH</p>
               <p className="text-xs text-muted-foreground">/mois</p>
             </div>
           </div>
@@ -82,10 +77,10 @@ export function SubscriptionCard({ onUpgradeRequest }: SubscriptionCardProps) {
             {PREMIUM_FEATURES.map((feature) => (
               <div
                 key={feature.label}
-                className="flex items-center gap-2 p-2 rounded-xl bg-white/50 dark:bg-white/5"
+                className="flex items-center gap-2 p-2 rounded-lg bg-muted"
               >
-                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                  <feature.icon className="h-4 w-4 text-amber-600" />
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <feature.icon className="h-4 w-4 text-primary" />
                 </div>
                 <span className="text-sm font-medium text-foreground">{feature.label}</span>
               </div>
@@ -104,16 +99,16 @@ export function SubscriptionCard({ onUpgradeRequest }: SubscriptionCardProps) {
 
   // Free plan
   return (
-    <Card className="relative overflow-hidden">
+    <Card className="bg-card border border-border">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
               <Zap className="h-6 w-6 text-muted-foreground" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-display text-lg font-bold text-foreground">
+                <h3 className="font-display text-lg font-semibold text-foreground">
                   Plan Gratuit
                 </h3>
                 <Badge variant="secondary">Actuel</Badge>
@@ -126,10 +121,10 @@ export function SubscriptionCard({ onUpgradeRequest }: SubscriptionCardProps) {
         </div>
 
         {/* Upgrade prompt */}
-        <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 mb-4">
+        <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 mb-4">
           <div className="flex items-start gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center shrink-0">
-              <Crown className="h-5 w-5 text-white" />
+            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shrink-0">
+              <Crown className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
               <h4 className="font-semibold text-foreground mb-1">
@@ -146,10 +141,10 @@ export function SubscriptionCard({ onUpgradeRequest }: SubscriptionCardProps) {
             {PREMIUM_FEATURES.map((feature) => (
               <div
                 key={feature.label}
-                className="flex items-center justify-between p-2 rounded-xl bg-white/50 dark:bg-white/5"
+                className="flex items-center justify-between p-2 rounded-lg bg-muted"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center">
                     <feature.icon className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div>
@@ -164,7 +159,7 @@ export function SubscriptionCard({ onUpgradeRequest }: SubscriptionCardProps) {
 
           <Button 
             onClick={handleUpgradeClick}
-            className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white border-0 gap-2"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
           >
             <Crown className="h-4 w-4" />
             Passer au Premium · 99 DH/mois
@@ -192,7 +187,7 @@ export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
   const { isPremium, isLoading } = useSubscription();
 
   if (isLoading) {
-    return <div className="animate-pulse bg-muted rounded-xl h-32" />;
+    return <div className="bg-muted rounded-xl h-32" />;
   }
 
   if (!isPremium) {
@@ -208,13 +203,9 @@ export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
     };
 
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-6 rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-orange-500/5 text-center"
-      >
-        <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-500/10 flex items-center justify-center">
-          <Lock className="h-6 w-6 text-amber-500" />
+      <div className="p-6 rounded-xl border border-primary/10 bg-primary/5 text-center">
+        <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
+          <Lock className="h-6 w-6 text-primary" />
         </div>
         <h3 className="font-semibold text-foreground mb-1">
           {featureLabels[feature]}
@@ -224,7 +215,7 @@ export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
         </p>
         <Button
           size="sm"
-          className="bg-amber-500 hover:bg-amber-600 text-white gap-2"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
           onClick={() => {
             const message = encodeURIComponent(
               `Bonjour ! Je souhaite passer au plan Premium i-wasp pour accéder à ${featureLabels[feature]}.`
@@ -235,7 +226,7 @@ export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
           <Crown className="h-4 w-4" />
           Passer au Premium
         </Button>
-      </motion.div>
+      </div>
     );
   }
 

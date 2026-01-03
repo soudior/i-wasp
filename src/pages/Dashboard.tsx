@@ -228,12 +228,7 @@ const Dashboard = () => {
   // Note: Auth and empty state checks are handled by DashboardGuard at route level
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-grid opacity-20" />
-      <div className="absolute top-20 left-1/4 w-[600px] h-[600px] orb opacity-20 animate-pulse-glow" />
-      <div className="absolute bottom-40 right-1/4 w-[400px] h-[400px] orb opacity-15" />
-      <div className="noise" />
+    <div className="min-h-screen bg-background">
       
       <Navbar />
       
@@ -248,7 +243,7 @@ const Dashboard = () => {
           />
 
           {/* Quick Actions Bar */}
-          <div className="flex items-center justify-end gap-3 mb-8 animate-fade-up">
+          <div className="flex items-center justify-end gap-3 mb-8">
             <Link to="/settings">
               <Button variant="outline" size="icon">
                 <Pencil size={18} />
@@ -261,7 +256,7 @@ const Dashboard = () => {
               </Button>
             </Link>
             <Link to="/create">
-              <Button variant="chrome">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Plus size={18} />
                 {t("dashboard.newCard")}
               </Button>
@@ -269,7 +264,7 @@ const Dashboard = () => {
           </div>
 
           {/* Gold Analytics Panel - 30 days chart */}
-          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+          <div className="mb-12">
             <GoldAnalyticsPanel
               scans={scans}
               leads={leads}
@@ -280,7 +275,7 @@ const Dashboard = () => {
           {/* Two Column Layout: CRM + Coach */}
           <div className="grid lg:grid-cols-3 gap-6 mb-12">
             {/* Gold Leads CRM - 2 columns */}
-            <div className="lg:col-span-2 animate-fade-up" style={{ animationDelay: '0.12s' }}>
+            <div className="lg:col-span-2">
               <GoldLeadsCRM
                 leads={leads}
                 onStatusChange={(leadId, status) => {
@@ -292,7 +287,7 @@ const Dashboard = () => {
             {/* Right Column: Coach + Settings */}
             <div className="space-y-6">
               {/* Gold Coach Tips */}
-              <div className="animate-fade-up" style={{ animationDelay: '0.14s' }}>
+              <div>
                 <GoldCoachTips
                   scans={scans}
                   leads={leads}
@@ -301,7 +296,7 @@ const Dashboard = () => {
               </div>
 
               {/* Gold Settings Panel */}
-              <div className="animate-fade-up" style={{ animationDelay: '0.16s' }}>
+              <div>
                 <GoldSettingsPanel
                   wifiEnabled={false}
                   cardSlug={cards[0]?.slug}
@@ -312,7 +307,7 @@ const Dashboard = () => {
           </div>
 
           {/* Push Notifications Gold */}
-          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.18s' }}>
+          <div className="mb-12">
             <PushNotificationsPanel 
               leads={leads}
               isPremium={isPremium}
@@ -321,7 +316,7 @@ const Dashboard = () => {
           </div>
 
           {/* Subscription Section - Mon Plan */}
-          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.12s' }}>
+          <div className="mb-12">
             <h2 className="font-display text-xl font-semibold text-foreground flex items-center gap-2 mb-6">
               {t("dashboard.myPlan")}
             </h2>
@@ -329,12 +324,12 @@ const Dashboard = () => {
           </div>
 
           {/* Customization Section - Noir & Or */}
-          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.14s' }}>
+          <div className="mb-12">
             <DashboardCustomization />
           </div>
 
           {/* Orders Section - Premium Glassmorphism */}
-          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.15s' }}>
+          <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-display text-xl font-semibold text-foreground flex items-center gap-2">
                 <ShoppingBag className="h-5 w-5" />
@@ -355,8 +350,8 @@ const Dashboard = () => {
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             ) : orders.length === 0 ? (
-              <Card className="p-8 text-center card-glass border-border/50 backdrop-blur-xl">
-                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-secondary/50 flex items-center justify-center">
+              <Card className="p-8 text-center bg-card border border-border">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-muted flex items-center justify-center">
                   <ShoppingBag className="h-7 w-7 text-muted-foreground" />
                 </div>
                 <h3 className="font-display text-lg font-semibold mb-2">
@@ -366,7 +361,7 @@ const Dashboard = () => {
                   {t("dashboard.noOrdersDesc")}
                 </p>
                 <Link to="/checkout">
-                  <Button variant="chrome" className="gap-2">
+                  <Button className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">
                     <ShoppingBag size={16} />
                     {t("dashboard.orderNow")}
                   </Button>
@@ -377,14 +372,13 @@ const Dashboard = () => {
                 {orders.slice(0, 3).map((order, index) => (
                   <Card 
                     key={order.id} 
-                    className="card-glass border-border/50 backdrop-blur-xl overflow-hidden animate-fade-up hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
-                    style={{ animationDelay: `${0.2 + index * 0.05}s` }}
+                    className="bg-card border border-border overflow-hidden hover:border-border/80 transition-colors"
                   >
                     <div className="p-5">
                       {/* Order header */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
                             <Package className="h-5 w-5 text-primary" />
                           </div>
                           <div>
