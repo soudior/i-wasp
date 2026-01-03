@@ -132,7 +132,7 @@ const App = () => {
                       <Route path="/create" element={<GuestCardCreator />} />
                       <Route path="/success" element={<CardSuccess />} />
                       <Route path="/guide" element={<UserGuide />} />
-                      <Route path="/templates" element={<Templates />} />
+                      <Route path="/templates" element={<Navigate to="/order/design" replace />} />
                       <Route path="/install" element={<Install />} />
                       <Route path="/help" element={<Help />} />
                       <Route path="/faq" element={<Help />} />
