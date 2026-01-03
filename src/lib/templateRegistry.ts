@@ -24,6 +24,8 @@ export interface TemplateRegistryEntry {
   category?: string;
   // Creation date
   createdAt: string;
+  // Branding options for private templates
+  hideBranding?: boolean;
 }
 
 // Template Registry - Single source of truth for all templates
@@ -138,6 +140,7 @@ export const TEMPLATE_REGISTRY: TemplateRegistryEntry[] = [
     category: "automotive",
     description: "Template allemand pour service automobile. Assignation manuelle uniquement.",
     createdAt: "2024-01-03",
+    hideBranding: true, // No IWASP branding on private templates
   },
 
   // ===== CLIENT-SPECIFIC TEMPLATES =====
@@ -247,4 +250,28 @@ export function getVisibilityColor(visibility: TemplateVisibility): string {
     default:
       return "bg-gray-500/20 text-gray-400";
   }
+}
+
+/**
+ * Check if branding should be hidden for a template
+ * Private and client templates can have branding hidden
+ */
+export function shouldHideBranding(templateId: string): boolean {
+  const template = TEMPLATE_REGISTRY.find((t) => t.id === templateId);
+  if (!template) return false;
+  
+  // Private templates hide branding by default
+  if (template.visibility === "private") return template.hideBranding !== false;
+  
+  // Client templates can optionally hide branding
+  if (template.visibility === "client") return template.hideBranding === true;
+  
+  return false;
+}
+
+/**
+ * Check if template is white-label (no IWASP branding)
+ */
+export function isWhiteLabelTemplate(templateId: string): boolean {
+  return shouldHideBranding(templateId);
 }
