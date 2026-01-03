@@ -22,7 +22,6 @@ export function Navbar() {
     { href: "/order", label: t("nav.order") },
     { href: "/nails", label: t("nav.nails"), highlight: true },
     { href: "/demo-dashboard", label: t("nav.demo") },
-    { href: "/templates", label: t("nav.templates") },
     { href: "/contact", label: t("nav.contact") },
   ];
 
