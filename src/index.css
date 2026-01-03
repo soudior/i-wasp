@@ -336,6 +336,13 @@
   }
 }
 
+@layer utilities {
+  /* iOS momentum scroll when overflow scrolling inside a container */
+  .scrolling-touch {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 @layer components {
   /* ══════════════════════════════════════════════════════════════════
      IWASP PREMIUM COMPONENTS

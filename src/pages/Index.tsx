@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { CreditCard, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileOptimizedVideo } from "@/components/MobileOptimizedVideo";
-import nfcDemoVideo from "@/assets/nfc-demo-video.mp4";
-import nailsDemoVideo from "@/assets/nails/nails-demo-video.mp4";
 import nfcPoster from "@/assets/posters/nfc-demo-poster.webp";
 import nailsPoster from "@/assets/posters/nails-demo-poster.webp";
+
+// iOS: servir les vidéos depuis /public pour éviter les soucis de lecture
+const nfcDemoVideo = "/nfc-demo-video.mp4";
+const nailsDemoVideo = "/nails-demo-video.mp4";
 
 /**
  * Index - Page d'accueil Dual-Power i-wasp
@@ -39,7 +41,7 @@ const Index = () => {
   const content = productContent[mode];
 
   return (
-    <div className="min-h-screen overflow-y-auto overflow-x-hidden bg-black flex flex-col touch-pan-y">
+    <div className="h-screen overflow-y-scroll scrolling-touch bg-black flex flex-col">
       {/* Hero Section */}
       <section className="flex-1 flex flex-col items-center justify-center px-4 py-12 md:py-20">
         <div className="max-w-xl mx-auto text-center space-y-8">
