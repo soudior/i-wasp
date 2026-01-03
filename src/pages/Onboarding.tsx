@@ -18,10 +18,11 @@ import {
   Loader2, ArrowLeft, ArrowRight, User, Briefcase, 
   Phone, Link2, Check, Sparkles, Crown, Target,
   Laptop, Camera, Building2, HelpCircle, Mail, MessageCircle,
-  Instagram, Linkedin, Lock
+  Instagram, Linkedin, Lock, Eye
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OnboardingPhotoUpload } from "@/components/onboarding/OnboardingPhotoUpload";
+import { QRCodeSVG } from "qrcode.react";
 
 type UserObjective = 'freelance' | 'creator' | 'business' | 'other' | null;
 
@@ -120,6 +121,13 @@ const formSteps = [
     subtitle: "Tes coordonnées",
     icon: Link2,
     fields: ["phone", "email", "whatsapp", "instagram", "linkedin"] as const
+  },
+  { 
+    id: 4, 
+    title: "Aperçu", 
+    subtitle: "Ta carte NFC",
+    icon: Eye,
+    fields: [] as const
   },
 ];
 
@@ -531,6 +539,97 @@ export default function Onboarding() {
                       </div>
                     </div>
                   </div>
+                </>
+              )}
+
+              {step === 4 && (
+                <>
+                  <p className="text-center text-[#E5E5E5]/70 mb-6">
+                    Voici ce que verront les personnes qui scannent ta carte.
+                  </p>
+
+                  {/* Card Preview */}
+                  <div className="bg-white rounded-3xl p-6 shadow-2xl mx-auto max-w-[320px]">
+                    {/* Profile Photo */}
+                    <div className="flex justify-center mb-4">
+                      <div className="w-24 h-24 rounded-full bg-[#F5F5F7] flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
+                        {formData.photo_url ? (
+                          <img 
+                            src={formData.photo_url} 
+                            alt="Photo" 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-3xl font-bold text-[#1D1D1F]">
+                            {formData.first_name.charAt(0)}{formData.last_name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Name */}
+                    <h2 className="text-xl font-bold text-[#1D1D1F] text-center">
+                      {formData.first_name} {formData.last_name}
+                    </h2>
+
+                    {/* Title & Company */}
+                    {(formData.title || formData.company) && (
+                      <p className="text-[#8E8E93] text-center mt-1">
+                        {formData.title}{formData.title && formData.company ? " · " : ""}{formData.company}
+                      </p>
+                    )}
+
+                    {/* Links Preview */}
+                    <div className="flex justify-center gap-3 mt-5">
+                      {formData.phone && (
+                        <div className="w-11 h-11 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
+                          <Phone className="w-5 h-5 text-[#007AFF]" />
+                        </div>
+                      )}
+                      {formData.email && (
+                        <div className="w-11 h-11 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
+                          <Mail className="w-5 h-5 text-[#007AFF]" />
+                        </div>
+                      )}
+                      {formData.whatsapp && (
+                        <div className="w-11 h-11 rounded-full bg-[#25D366]/10 flex items-center justify-center">
+                          <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                        </div>
+                      )}
+                      {formData.instagram && (
+                        <div className="w-11 h-11 rounded-full bg-[#E4405F]/10 flex items-center justify-center">
+                          <Instagram className="w-5 h-5 text-[#E4405F]" />
+                        </div>
+                      )}
+                      {formData.linkedin && (
+                        <div className="w-11 h-11 rounded-full bg-[#0A66C2]/10 flex items-center justify-center">
+                          <Linkedin className="w-5 h-5 text-[#0A66C2]" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* QR Code */}
+                    <div className="mt-6 flex justify-center">
+                      <div className="p-3 bg-[#F5F5F7] rounded-2xl">
+                        <QRCodeSVG 
+                          value={`https://iwasp.app/c/${formData.first_name.toLowerCase()}-${formData.last_name.toLowerCase()}`}
+                          size={100}
+                          level="M"
+                          fgColor="#1D1D1F"
+                          bgColor="#F5F5F7"
+                        />
+                      </div>
+                    </div>
+
+                    {/* IWASP Badge */}
+                    <p className="text-center text-[10px] text-[#8E8E93] mt-4 tracking-wide">
+                      Powered by IWASP
+                    </p>
+                  </div>
+
+                  <p className="text-center text-xs text-[#E5E5E5]/40 mt-6">
+                    Le QR code sera généré automatiquement après création
+                  </p>
                 </>
               )}
             </div>
