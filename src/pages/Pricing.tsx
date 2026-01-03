@@ -75,14 +75,18 @@ export default function Pricing() {
                 Commence gratuitement avec une carte NFC simple.
               </p>
               
-              <Link to="/signup">
+              <a 
+                href="https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commencer%20gratuitement%20avec%20une%20carte%20NFC%20i-wasp."
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Button 
                   variant="outline"
                   className="w-full py-5 font-medium border-border text-foreground hover:bg-muted"
                 >
                   Commencer gratuitement
                 </Button>
-              </Link>
+              </a>
 
               <div className="mt-6 pt-6 border-t border-border">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Inclus</p>

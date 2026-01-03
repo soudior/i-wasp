@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import nfcCardWaxSeal from "@/assets/nfc-card-wax-seal.png";
@@ -10,13 +10,9 @@ const stats = [
   { value: "50K+", label: "Cartes créées" },
 ];
 
+const WHATSAPP_FREE_URL = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commencer%20gratuitement%20avec%20une%20carte%20NFC%20i-wasp.";
+
 export function HeroSection() {
-  const navigate = useNavigate();
-
-  const handleOrderCTA = () => {
-    navigate("/create");
-  };
-
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 bg-background">
       {/* Simple grid background */}
@@ -49,14 +45,19 @@ export function HeroSection() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-start gap-4 pt-2">
               <div className="flex flex-col items-start">
-                <Button 
-                  size="lg" 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 rounded-full transition-colors"
-                  onClick={handleOrderCTA}
+                <a 
+                  href={WHATSAPP_FREE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  Essayer gratuitement
-                  <ArrowRight size={18} className="ml-2" />
-                </Button>
+                  <Button 
+                    size="lg" 
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 rounded-full transition-colors"
+                  >
+                    Commencer gratuitement
+                    <ArrowRight size={18} className="ml-2" />
+                  </Button>
+                </a>
                 <span className="text-sm text-muted-foreground mt-2 ml-2">Sans inscription</span>
               </div>
               <Link to="/demo">
