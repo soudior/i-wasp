@@ -12,6 +12,7 @@
 
 import { useState } from "react";
 import { IWASPBrandBadge } from "./IWASPBrandBadge";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -421,11 +422,9 @@ export function HotelConciergeTemplate({
             )}
           </div>
 
-          {/* FOOTER */}
+          {/* Global IWASP Branding Footer */}
           <div className="mt-6 pt-4 border-t border-white/5">
-            <p className="text-center text-white/20 text-[10px] tracking-wide">
-              {t.poweredBy}
-            </p>
+            <IWASPBrandingInline variant="dark" />
           </div>
         </div>
       </div>

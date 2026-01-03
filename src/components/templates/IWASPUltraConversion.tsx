@@ -36,6 +36,7 @@ import {
 import { downloadVCard, VCardData } from "@/lib/vcard";
 import { CardData, TemplateProps } from "./CardTemplates";
 import { IWASPBrandBadgeMinimal } from "./IWASPBrandBadge";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -677,16 +678,12 @@ export function IWASPUltraConversion({
         </BentoCard>
 
         {/* Footer */}
+        {/* Global IWASP Branding Footer */}
         <motion.div 
-          className="text-center pt-4 pb-2"
+          className="pt-4 pb-2"
           variants={itemVariants}
         >
-          <p 
-            className="text-[10px] uppercase tracking-[0.2em]"
-            style={{ color: "rgba(255, 255, 255, 0.25)" }}
-          >
-            Powered by IWASP
-          </p>
+          <IWASPBrandingInline variant="dark" />
         </motion.div>
       </motion.div>
 

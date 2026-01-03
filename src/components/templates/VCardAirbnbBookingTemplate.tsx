@@ -45,6 +45,7 @@ import { VCardData } from "@/lib/vcard";
 import { VCardGoldButton } from "@/components/VCardGoldButton";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import iwaspLogo from "@/assets/iwasp-logo-white.png";
 
 // ============ INTERFACES ============
@@ -919,8 +920,8 @@ export function VCardAirbnbBookingTemplate({
               Partagez vos infos en un geste
             </p>
             <div className="flex items-center justify-center gap-2 text-[#d4af37] text-xs">
-              <img src={iwaspLogo} alt="iWasp" className="h-4 w-auto opacity-80" />
-              <span>Powered by iWasp</span>
+              <img src={iwaspLogo} alt="i-Wasp" className="h-4 w-auto opacity-80" />
+              <span>Powered by i-Wasp.com</span>
             </div>
           </div>
         </motion.section>
@@ -934,11 +935,9 @@ export function VCardAirbnbBookingTemplate({
           />
         </motion.section>
 
-        {/* === Footer === */}
-        <motion.footer variants={itemVariants} className="text-center pt-8 pb-4">
-          <p className="text-xs text-white/30">
-            Powered by <span className="text-[#d4af37]">i-wasp.com</span>
-          </p>
+        {/* Global IWASP Branding Footer */}
+        <motion.footer variants={itemVariants} className="pt-8 pb-4">
+          <IWASPBrandingInline variant="dark" />
         </motion.footer>
       </div>
 

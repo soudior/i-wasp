@@ -27,6 +27,7 @@ import {
 import { downloadVCard, VCardData } from "@/lib/vcard";
 import { CardData, TemplateProps } from "./CardTemplates";
 import { IWASPBrandBadgeMinimal } from "./IWASPBrandBadge";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 
 // Animation variants - using typed Easing
 import type { Easing } from "framer-motion";
@@ -402,17 +403,12 @@ export function IWASPDarkSignature({
           )}
         </motion.div>
 
-        {/* Footer - Powered by IWASP */}
+        {/* Global IWASP Branding Footer */}
         <motion.div 
-          className="text-center mt-10 pb-4"
+          className="mt-10 pb-4"
           variants={itemVariants}
         >
-          <p 
-            className="text-[10px] uppercase tracking-[0.2em]"
-            style={{ color: "rgba(255, 255, 255, 0.25)" }}
-          >
-            Powered by IWASP
-          </p>
+          <IWASPBrandingInline variant="dark" />
         </motion.div>
       </motion.div>
     </div>

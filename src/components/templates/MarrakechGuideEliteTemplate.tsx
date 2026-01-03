@@ -10,6 +10,7 @@ import { VCardGoldButton } from '@/components/VCardGoldButton';
 import { handleWhatsAppTap, handleSocialTap } from '@/lib/smartActions';
 import { StoriesSection, useCardStories } from '@/components/templates/StoriesSection';
 import { IntroVideoSection } from '@/components/templates/IntroVideoSection';
+import { IWASPBrandingInline } from '@/components/IWASPBrandingFooter';
 
 // Types
 interface Recommendation {
@@ -605,15 +606,12 @@ export const MarrakechGuideEliteTemplate: React.FC<MarrakechGuideEliteTemplatePr
           </div>
         </motion.div>
 
-        {/* Footer */}
+        {/* Global IWASP Branding Footer */}
         <motion.div 
           variants={itemVariants}
-          className="pt-8 text-center"
+          className="pt-8"
         >
-          <div className="inline-flex items-center gap-2 text-xs text-white/30">
-            <Palmtree className="w-4 h-4" />
-            <span>Powered by i-wasp • Marrakech</span>
-          </div>
+          <IWASPBrandingInline variant="dark" />
         </motion.div>
       </motion.div>
 

@@ -7,6 +7,7 @@
  */
 
 import { IWASPBrandBadgeMinimal } from "./IWASPBrandBadge";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import { CardActionButtons } from "./CardActions";
 import { ActionsList } from "./ActionsList";
 import { CardData, TemplateProps } from "./CardTemplates";
@@ -131,6 +132,11 @@ export function IWASPSignatureTemplate({
           />
         </div>
 
+        {/* Global IWASP Branding Footer */}
+        <div className="px-8 pb-6 pt-2">
+          <IWASPBrandingInline variant="dark" />
+        </div>
+
         {/* Subtle bottom line */}
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-foreground/5 to-transparent" />
       </div>
@@ -240,6 +246,11 @@ export function IWASPSignatureLightTemplate({
             cardId={cardId}
             enableLeadCapture={enableLeadCapture}
           />
+        </div>
+
+        {/* Global IWASP Branding Footer */}
+        <div className="px-8 pb-6 pt-2">
+          <IWASPBrandingInline variant="light" />
         </div>
 
         {/* Subtle bottom line */}

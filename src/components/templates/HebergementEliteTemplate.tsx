@@ -40,6 +40,7 @@ import { VCardGoldButton } from "@/components/VCardGoldButton";
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 import { StoriesSection, useCardStories } from "@/components/templates/StoriesSection";
 import { IntroVideoSection } from "@/components/templates/IntroVideoSection";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import { toast } from "sonner";
 
 // Template data interface
@@ -858,16 +859,14 @@ export function HebergementEliteTemplate({ data, cardId, isPreview = false }: He
           />
         </motion.section>
 
-        {/* === Footer === */}
+        {/* Global IWASP Branding Footer */}
         <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.9 }}
-          className="text-center pt-8 pb-4"
+          className="pt-8 pb-4"
         >
-          <p className="text-xs text-white/30">
-            Powered by <span className="text-[#d4af37]">i-wasp</span>
-          </p>
+          <IWASPBrandingInline variant="dark" />
         </motion.footer>
       </div>
 

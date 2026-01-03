@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, MessageCircle, UserPlus, Key, Shield, Wrench, Car, Cog, MapPin, Wifi, Compass, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import autoschluesselBg from "@/assets/clients/autoschluessel-service-bg.jpg";
 import autoschluesselGebiet from "@/assets/clients/autoschluessel-gebiet.jpeg";
 
@@ -356,6 +357,11 @@ END:VCARD`;
             </div>
           </motion.div>
         </div>
+      </div>
+      
+      {/* Global IWASP Branding Footer */}
+      <div className="absolute bottom-4 left-0 right-0 z-20">
+        <IWASPBrandingInline variant="dark" />
       </div>
 
       {/* Shimmer Animation CSS */}

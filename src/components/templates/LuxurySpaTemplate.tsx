@@ -10,6 +10,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IWASPBrandBadge } from "./IWASPBrandBadge";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   Phone, MapPin, MessageSquare, Star, Globe, Calendar,
@@ -647,18 +648,14 @@ END:VCARD`;
           </div>
 
           {/* Footer */}
+          {/* Global IWASP Branding Footer */}
           <motion.div 
             className="pt-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            <p 
-              className="text-center text-[10px] tracking-widest uppercase"
-              style={{ color: theme.textMuted, opacity: 0.5 }}
-            >
-              {t.poweredBy}
-            </p>
+            <IWASPBrandingInline variant="dark" />
           </motion.div>
         </div>
       </motion.div>
