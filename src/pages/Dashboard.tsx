@@ -28,6 +28,7 @@ import {
 import { PhysicalCardStudio } from "@/components/print/PhysicalCardStudio";
 import { DashboardCustomization } from "@/components/DashboardCustomization";
 import { GoldVerificationBadge } from "@/components/GoldFeatureCard";
+import { AICoachPanel, PushNotificationsPanel, PerformanceChart } from "@/components/dashboard";
 
 import { 
   Plus, CreditCard, Users, Eye, TrendingUp, 
@@ -35,7 +36,8 @@ import {
   Wifi, WifiOff, Pencil, Trash2, ExternalLink, Copy,
   LogOut, X, Apple, Smartphone, ShoppingBag,
   Clock, CheckCircle2, Factory, Truck, Package,
-  Download, MapPin, ChevronRight, FileText, Loader2, Image
+  Download, MapPin, ChevronRight, FileText, Loader2, Image,
+  Zap, BarChart3
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -261,10 +263,10 @@ const Dashboard = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
               { label: t("dashboard.activeCards"), value: cards.filter(c => c.is_active).length.toString(), icon: CreditCard },
-              { label: t("dashboard.orders"), value: orders.length.toString(), icon: ShoppingBag },
+              { label: "Scans NFC", value: scans.length.toString(), icon: Zap },
               { label: t("dashboard.capturedLeads"), value: totalLeads.toString(), icon: Users },
               { label: t("dashboard.conversionRate"), value: `${conversionRate}%`, icon: TrendingUp },
             ].map((stat, index) => (
@@ -286,6 +288,45 @@ const Dashboard = () => {
                 </Card>
               </div>
             ))}
+          </div>
+
+          {/* Pro Analytics Section - NEW */}
+          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.11s' }}>
+            <h2 className="font-display text-xl font-semibold text-foreground flex items-center gap-2 mb-6">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Centre de Commande NFC
+              <Badge variant="secondary" className="bg-primary/10 text-primary text-[10px]">PRO</Badge>
+            </h2>
+            
+            <div className="grid lg:grid-cols-3 gap-6">
+              {/* Performance Chart */}
+              <div className="lg:col-span-2">
+                <PerformanceChart 
+                  scans={scans} 
+                  leads={leads} 
+                  cards={cards} 
+                />
+              </div>
+              
+              {/* AI Coach */}
+              <div className="space-y-6">
+                <AICoachPanel 
+                  scans={scans} 
+                  leads={leads} 
+                  cards={cards}
+                  isPremium={isPremium}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Push Notifications Gold - NEW */}
+          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.115s' }}>
+            <PushNotificationsPanel 
+              leads={leads}
+              isPremium={isPremium}
+              onUpgrade={() => navigate("/checkout")}
+            />
           </div>
 
           {/* Subscription Section - Mon Plan */}
