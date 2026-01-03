@@ -22,6 +22,9 @@ export interface VCardData {
   // Photo (Base64 or URL)
   photoUrl?: string;
   photoBase64?: string;
+  // Logo (Gold V4 feature)
+  logoUrl?: string;
+  logoBase64?: string;
   // Social networks
   linkedin?: string;
   instagram?: string;
@@ -30,10 +33,19 @@ export interface VCardData {
   facebook?: string;
   tiktok?: string;
   youtube?: string;
+  telegram?: string;
+  snapchat?: string;
+  pinterest?: string;
+  github?: string;
   // Additional fields
   note?: string;
   birthday?: string;
   nickname?: string;
+  // Gold V4 features
+  googleMapsUrl?: string;
+  airbnbUrl?: string;
+  bookingUrl?: string;
+  tripadvisorUrl?: string;
 }
 
 /**
@@ -174,17 +186,64 @@ export function generateVCard(data: VCardData): string {
     lines.push(`X-SOCIALPROFILE;TYPE=youtube:${youtubeUrl}`);
   }
 
-  // Note with WhatsApp link if provided
+  if (data.telegram) {
+    const telegramUrl = data.telegram.startsWith('http') 
+      ? data.telegram 
+      : `https://t.me/${data.telegram.replace('@', '')}`;
+    lines.push(`X-SOCIALPROFILE;TYPE=telegram:${telegramUrl}`);
+  }
+
+  if (data.snapchat) {
+    const snapchatUrl = data.snapchat.startsWith('http') 
+      ? data.snapchat 
+      : `https://snapchat.com/add/${data.snapchat.replace('@', '')}`;
+    lines.push(`X-SOCIALPROFILE;TYPE=snapchat:${snapchatUrl}`);
+  }
+
+  if (data.pinterest) {
+    const pinterestUrl = data.pinterest.startsWith('http') 
+      ? data.pinterest 
+      : `https://pinterest.com/${data.pinterest.replace('@', '')}`;
+    lines.push(`X-SOCIALPROFILE;TYPE=pinterest:${pinterestUrl}`);
+  }
+
+  if (data.github) {
+    const githubUrl = data.github.startsWith('http') 
+      ? data.github 
+      : `https://github.com/${data.github}`;
+    lines.push(`X-SOCIALPROFILE;TYPE=github:${githubUrl}`);
+  }
+
+  // Note with WhatsApp link and all booking/maps if provided (Gold V4)
   const noteParts: string[] = [];
   if (data.whatsapp) {
     const cleanNumber = data.whatsapp.replace(/[^0-9+]/g, '');
     noteParts.push(`WhatsApp: https://wa.me/${cleanNumber.replace('+', '')}`);
+  }
+  if (data.googleMapsUrl) {
+    noteParts.push(`Google Maps: ${data.googleMapsUrl}`);
+  }
+  if (data.airbnbUrl) {
+    noteParts.push(`Airbnb: ${data.airbnbUrl}`);
+  }
+  if (data.bookingUrl) {
+    noteParts.push(`Booking: ${data.bookingUrl}`);
+  }
+  if (data.tripadvisorUrl) {
+    noteParts.push(`Tripadvisor: ${data.tripadvisorUrl}`);
   }
   if (data.note) {
     noteParts.push(data.note);
   }
   if (noteParts.length > 0) {
     lines.push(`NOTE:${escapeVCard(noteParts.join(' | '))}`);
+  }
+
+  // Logo as additional URL (Gold V4 feature - visible in some contact apps)
+  if (data.logoUrl) {
+    lines.push(`LOGO;MEDIATYPE=image/png:${data.logoUrl}`);
+  } else if (data.logoBase64) {
+    lines.push(`LOGO;ENCODING=b;TYPE=PNG:${data.logoBase64}`);
   }
 
   // Producer
