@@ -17,12 +17,14 @@ export function Navbar() {
   const { user, signOut, loading } = useAuth();
   const { totalItems } = useCart();
 
+  const WHATSAPP_COMMANDER = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20une%20carte%20NFC%20i-wasp.";
+  
   const navLinks = [
-    { href: "/", label: "Accueil" },
-    { href: "/features", label: "Fonctionnalités" },
-    { href: "/pricing", label: "Tarifs" },
-    { href: "/enterprise", label: "Entreprises" },
-    { href: "/order/type", label: "Commander", highlight: true },
+    { href: "/", label: "Accueil", isExternal: false },
+    { href: "/features", label: "Fonctionnalités", isExternal: false },
+    { href: "/pricing", label: "Tarifs", isExternal: false },
+    { href: "/enterprise", label: "Entreprises", isExternal: false },
+    { href: WHATSAPP_COMMANDER, label: "Commander", highlight: true, isExternal: true },
   ];
 
   useEffect(() => {
@@ -57,19 +59,35 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  link.highlight
-                    ? "bg-gold-500 text-black hover:bg-gold-400"
-                    : location.pathname === link.href
-                    ? "text-white bg-white/10"
-                    : "text-iwasp-gray hover:text-white hover:bg-white/5"
-                }`}
-              >
-                {link.label}
-              </Link>
+              link.isExternal ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    link.highlight
+                      ? "bg-gold-500 text-black hover:bg-gold-400"
+                      : "text-iwasp-gray hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    link.highlight
+                      ? "bg-gold-500 text-black hover:bg-gold-400"
+                      : location.pathname === link.href
+                      ? "text-white bg-white/10"
+                      : "text-iwasp-gray hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
           </div>
 
@@ -142,18 +160,35 @@ export function Navbar() {
         >
           <div className="py-6 space-y-4">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`block text-lg font-medium transition-colors ${
-                  link.href === "/order"
-                    ? "inline-flex px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-background font-semibold"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
+              link.isExternal ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`block text-lg font-medium transition-colors ${
+                    link.highlight
+                      ? "inline-flex px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-background font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={`block text-lg font-medium transition-colors ${
+                    link.highlight
+                      ? "inline-flex px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-background font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
             <div className="pt-4 flex flex-col gap-3">
               {user ? (

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { CreditCard, Sparkles, Clock, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileOptimizedVideo } from "@/components/MobileOptimizedVideo";
@@ -13,6 +12,10 @@ import nailsPoster from "@/assets/posters/nails-demo-poster.webp";
 // iOS: servir les vidéos depuis /public pour éviter les soucis de lecture
 const nfcDemoVideo = "/nfc-demo-video.mp4";
 const nailsDemoVideo = "/nails-demo-video.mp4";
+
+// WhatsApp links
+const WHATSAPP_CARTE = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20une%20carte%20NFC%20i-wasp.";
+const WHATSAPP_NAILS = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20un%20Pack%20Nails%20i-wasp.";
 
 /**
  * Index - Page d'accueil Dual-Power i-wasp
@@ -28,19 +31,18 @@ const productContent = {
     tagline: "L'icône du networking professionnel.",
     description: "Minimaliste, puissante, éternelle.",
     cta: "Commander ma Carte",
-    route: "/order/type",
+    whatsapp: WHATSAPP_CARTE,
   },
   ongle: {
     video: nailsDemoVideo,
     tagline: "L'innovation invisible.",
     description: "Votre réseau au bout des doigts, sous votre vernis.",
     cta: "Commander mon Pack Nails",
-    route: "/nails",
+    whatsapp: WHATSAPP_NAILS,
   },
 };
 
 const Index = () => {
-  const navigate = useNavigate();
   const [mode, setMode] = useState<ProductMode>("carte");
   const content = productContent[mode];
 
@@ -144,23 +146,35 @@ const Index = () => {
 
           {/* CTA Buttons - Sans hover:scale */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-            <Button 
-              size="lg" 
-              className="w-full sm:w-auto bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-600 hover:via-yellow-500 hover:to-amber-600 text-black font-semibold gap-2 px-8 py-6 text-base rounded-xl shadow-lg shadow-amber-500/30 transition-colors duration-200"
-              onClick={() => navigate("/order/type")}
+            <a 
+              href={WHATSAPP_CARTE}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto"
             >
-              <CreditCard className="w-4 h-4" />
-              Commander ma Carte
-            </Button>
+              <Button 
+                size="lg" 
+                className="w-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-600 hover:via-yellow-500 hover:to-amber-600 text-black font-semibold gap-2 px-8 py-6 text-base rounded-xl shadow-lg shadow-amber-500/30 transition-colors duration-200"
+              >
+                <CreditCard className="w-4 h-4" />
+                Commander ma Carte
+              </Button>
+            </a>
             
-            <Button 
-              size="lg"
-              className="w-full sm:w-auto bg-gradient-to-r from-pink-500 via-rose-400 to-amber-400 hover:from-pink-600 hover:via-rose-500 hover:to-amber-500 text-black font-semibold gap-2 px-8 py-6 text-base rounded-xl shadow-lg shadow-pink-500/30 transition-colors duration-200"
-              onClick={() => navigate("/nails")}
+            <a 
+              href={WHATSAPP_NAILS}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto"
             >
-              <Sparkles className="w-4 h-4" />
-              Commander mon Pack Nails
-            </Button>
+              <Button 
+                size="lg"
+                className="w-full bg-gradient-to-r from-pink-500 via-rose-400 to-amber-400 hover:from-pink-600 hover:via-rose-500 hover:to-amber-500 text-black font-semibold gap-2 px-8 py-6 text-base rounded-xl shadow-lg shadow-pink-500/30 transition-colors duration-200"
+              >
+                <Sparkles className="w-4 h-4" />
+                Commander mon Pack Nails
+              </Button>
+            </a>
           </div>
 
           {/* Signature subtile */}

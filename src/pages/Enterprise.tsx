@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   Building2, 
@@ -12,6 +11,10 @@ import {
   Globe,
   Lock
 } from "lucide-react";
+
+// WhatsApp links
+const WHATSAPP_DEVIS = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20demander%20un%20devis%20pour%20des%20cartes%20NFC%20pour%20mon%20entreprise.";
+const WHATSAPP_DEMO = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20voir%20une%20démo%20de%20la%20solution%20iWasp%20Business.";
 
 const benefits = [
   {
@@ -100,17 +103,17 @@ export default function Enterprise() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/contact">
+                <a href={WHATSAPP_DEVIS} target="_blank" rel="noopener noreferrer">
                   <Button size="lg" className="bg-gold-500 hover:bg-gold-600 text-black font-semibold px-8">
                     Demander un devis
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
-                </Link>
-                <Link to="/demo">
+                </a>
+                <a href={WHATSAPP_DEMO} target="_blank" rel="noopener noreferrer">
                   <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/5">
                     Voir une démo
                   </Button>
-                </Link>
+                </a>
               </div>
             </div>
             
@@ -257,16 +260,16 @@ export default function Enterprise() {
               Discutons de vos besoins. Notre équipe vous accompagne de A à Z dans le déploiement.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/contact">
+              <a href={WHATSAPP_DEVIS} target="_blank" rel="noopener noreferrer">
                 <Button size="lg" className="bg-gold-500 hover:bg-gold-600 text-black font-semibold px-8">
                   Demander un devis
                 </Button>
-              </Link>
-              <Link to="/demo">
+              </a>
+              <a href={WHATSAPP_DEMO} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/5">
                   Réserver une démo
                 </Button>
-              </Link>
+              </a>
             </div>
           </div>
         </div>

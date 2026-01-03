@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, Shield, Clock, Sparkles } from "lucide-react";
+
+const WHATSAPP_COMMANDER = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20une%20carte%20NFC%20i-wasp.";
+const WHATSAPP_DEMO = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20voir%20une%20démo%20de%20la%20carte%20NFC%20i-wasp.";
 
 const trustBadges = [
   { icon: Shield, label: "Sans engagement" },
@@ -48,7 +50,7 @@ export function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link to="/order">
+            <a href={WHATSAPP_COMMANDER} target="_blank" rel="noopener noreferrer">
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-background font-semibold px-8 py-6 rounded-full shadow-lg shadow-amber-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105"
@@ -56,8 +58,8 @@ export function CTASection() {
                 Commander une carte
                 <ArrowRight size={18} className="ml-2" />
               </Button>
-            </Link>
-            <Link to="/demo">
+            </a>
+            <a href={WHATSAPP_DEMO} target="_blank" rel="noopener noreferrer">
               <Button 
                 variant="outline" 
                 size="lg"
@@ -65,7 +67,7 @@ export function CTASection() {
               >
                 Voir une démo
               </Button>
-            </Link>
+            </a>
           </div>
 
           <div className="flex flex-wrap justify-center gap-6">
