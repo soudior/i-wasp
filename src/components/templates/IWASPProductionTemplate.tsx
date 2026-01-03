@@ -15,6 +15,7 @@
 import { useState, useRef, useMemo } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { IWASPBrandBadge } from "./IWASPBrandBadge";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import { CardActionButtons } from "./CardActions";
 import { CardData, TemplateProps } from "./CardTemplates";
 import { 
@@ -520,16 +521,14 @@ export function IWASPProductionTemplate({
             </motion.div>
           </div>
 
-          {/* Footer - Powered by IWASP */}
+          {/* Global IWASP Branding Footer */}
           <motion.div 
-            className="border-t border-white/[0.04] py-5 text-center"
+            className="border-t border-white/[0.04] py-5"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <p className="text-[10px] text-white/15 tracking-[0.2em] uppercase font-light">
-              Powered by IWASP
-            </p>
+            <IWASPBrandingInline variant="dark" />
           </motion.div>
 
           {/* Bottom gradient line */}
@@ -811,15 +810,14 @@ export function IWASPProductionLightTemplate({
             />
           </div>
 
+          {/* Global IWASP Branding Footer */}
           <motion.div 
-            className="border-t border-neutral-100 py-5 text-center"
+            className="border-t border-neutral-100 py-5"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <p className="text-[10px] text-neutral-300 tracking-[0.2em] uppercase font-light">
-              Powered by IWASP
-            </p>
+            <IWASPBrandingInline variant="light" />
           </motion.div>
         </motion.div>
       </div>

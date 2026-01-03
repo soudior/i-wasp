@@ -13,6 +13,7 @@
 
 import { useState } from "react";
 import { IWASPBrandBadge } from "./IWASPBrandBadge";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import { AvailabilityCalendar } from "./AvailabilityCalendar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -403,11 +404,9 @@ export function RentalConciergeTemplate({
               )}
             </div>
 
-            {/* FOOTER */}
+            {/* Global IWASP Branding Footer */}
             <div className="pt-4 border-t border-white/5">
-              <p className="text-center text-white/20 text-[10px] tracking-wide">
-                {translations.poweredBy}
-              </p>
+              <IWASPBrandingInline variant="dark" />
             </div>
           </div>
         </div>

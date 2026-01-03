@@ -14,6 +14,7 @@
 
 import { useState } from "react";
 import { IWASPBrandBadge } from "./IWASPBrandBadge";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import { CardActionButtons } from "./CardActions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -483,11 +484,9 @@ export function HotelGuideTemplate({
           )}
         </div>
 
-        {/* Footer */}
-        <div className="border-t border-white/5 py-4 text-center">
-          <p className="text-[10px] text-white/20 tracking-widest uppercase">
-            {t.poweredBy}
-          </p>
+        {/* Global IWASP Branding Footer */}
+        <div className="border-t border-white/5 py-4">
+          <IWASPBrandingInline variant="dark" />
         </div>
       </div>
     </div>
@@ -616,8 +615,9 @@ export function HotelGuideLightTemplate(props: HotelTemplateProps) {
           )}
         </div>
 
-        <div className="border-t border-stone-100 py-4 text-center">
-          <p className="text-[10px] text-stone-300 tracking-widest uppercase">{t.poweredBy}</p>
+        {/* Global IWASP Branding Footer */}
+        <div className="border-t border-stone-100 py-4">
+          <IWASPBrandingInline variant="light" />
         </div>
       </div>
     </div>

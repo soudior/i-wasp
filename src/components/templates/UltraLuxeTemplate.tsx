@@ -12,6 +12,7 @@ import {
   Calendar, Star, Diamond
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import { cn } from "@/lib/utils";
 
 interface UltraLuxeData {
@@ -352,16 +353,14 @@ export function UltraLuxeTemplate({ data, isPreview = false }: UltraLuxeTemplate
           </motion.div>
         )}
 
-        {/* Footer */}
+        {/* Global IWASP Branding Footer */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 1.1 }}
-          className="text-center mt-12"
+          className="mt-12"
         >
-          <p className="text-[10px] text-gray-600 tracking-widest uppercase">
-            Powered by <span className="text-amber-500">IWASP</span> • Premium NFC Card
-          </p>
+          <IWASPBrandingInline variant="light" />
         </motion.div>
       </div>
     </div>

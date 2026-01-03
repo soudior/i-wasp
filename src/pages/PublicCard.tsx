@@ -19,6 +19,7 @@ import { AutoschluesselTemplate } from "@/components/templates/AutoschluesselTem
 import HerbalismEliteTemplate from "@/components/templates/HerbalismEliteTemplate";
 import VCardAirbnbBookingTemplate from "@/components/templates/VCardAirbnbBookingTemplate";
 import { IWASPBrandBadgeMinimal } from "@/components/templates/IWASPBrandBadge";
+import { IWASPBrandingFooter } from "@/components/IWASPBrandingFooter";
 
 // Import local profile photo for Herbalism Marrakech
 import ibrahimPhoto from "@/assets/clients/ibrahim-herbalism.jpeg";
@@ -346,6 +347,9 @@ const PublicCard = () => {
           </button>
         </div>
       </div>
+      
+      {/* Global IWASP Branding Footer */}
+      <IWASPBrandingFooter variant="light" />
     </div>
   );
 };

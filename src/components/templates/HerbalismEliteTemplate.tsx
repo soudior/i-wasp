@@ -14,6 +14,7 @@ import {
 import { VCardGoldButton } from "@/components/VCardGoldButton";
 import { StoriesSection, useCardStories } from "@/components/templates/StoriesSection";
 import { IntroVideoSection } from "@/components/templates/IntroVideoSection";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import { cn } from "@/lib/utils";
 
 // Types
@@ -856,14 +857,12 @@ export function HerbalismEliteTemplate({
           </motion.section>
         )}
         
-        {/* Footer */}
+        {/* Global IWASP Branding Footer */}
         <motion.footer 
           variants={itemVariants}
-          className="text-center pt-8 pb-4"
+          className="pt-8 pb-4"
         >
-          <p className="text-white/30 text-xs tracking-wider">
-            Powered by <span className="text-[#d4af37]/50">IWASP</span>
-          </p>
+          <IWASPBrandingInline variant="dark" />
         </motion.footer>
       </motion.div>
       

@@ -9,6 +9,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IWASPBrandBadge } from "./IWASPBrandBadge";
+import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -499,16 +500,14 @@ END:VCARD`;
             </motion.button>
           </div>
 
-          {/* Footer */}
+          {/* Global IWASP Branding Footer */}
           <motion.div 
             className="pt-6 border-t border-white/[0.04]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            <p className="text-center text-white/15 text-[10px] tracking-widest uppercase">
-              {t.poweredBy}
-            </p>
+            <IWASPBrandingInline variant="dark" />
           </motion.div>
         </div>
       </motion.div>
