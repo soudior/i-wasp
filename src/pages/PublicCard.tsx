@@ -4,6 +4,7 @@
  * Mobile-first, single screen, no scroll
  * 
  * SECURITY: Uses secure RPC functions - never exposes raw contact data
+ * Supports custom templates for private/white-label cards
  */
 
 import { useEffect, useState, useCallback } from "react";
@@ -14,6 +15,7 @@ import { usePublicStory } from "@/hooks/useStories";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Phone, Mail, Linkedin, MessageCircle, UserPlus } from "lucide-react";
 import { StoryRing } from "@/components/StoryRing";
+import { AutoschluesselTemplate } from "@/components/templates/AutoschluesselTemplate";
 
 const PublicCard = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -135,6 +137,24 @@ const PublicCard = () => {
           </p>
         </div>
       </div>
+    );
+  }
+
+  // Check for custom template
+  const template = (card as any)?.template;
+  
+  // Use AutoschluesselTemplate for autoschluessel template
+  if (template === 'autoschluessel') {
+    return (
+      <AutoschluesselTemplate 
+        data={{
+          phone: card.has_phone ? undefined : undefined, // Data comes from template
+          whatsapp: card.has_whatsapp ? undefined : undefined,
+          firstName: card.first_name,
+          lastName: card.last_name,
+        }}
+        hideBranding={true}
+      />
     );
   }
 
