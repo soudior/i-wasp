@@ -16,10 +16,13 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { 
   Loader2, ArrowLeft, ArrowRight, User, Briefcase, 
-  Phone, Link2, Check, Sparkles, Crown
+  Phone, Link2, Check, Sparkles, Crown, Target,
+  Laptop, Camera, Building2, HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OnboardingPhotoUpload } from "@/components/onboarding/OnboardingPhotoUpload";
+
+type UserObjective = 'freelance' | 'creator' | 'business' | 'other' | null;
 
 interface FormData {
   first_name: string;
@@ -32,6 +35,7 @@ interface FormData {
   whatsapp: string;
   website: string;
   photo_url: string | null;
+  objective: UserObjective;
 }
 
 const initialFormData: FormData = {
@@ -45,7 +49,35 @@ const initialFormData: FormData = {
   whatsapp: "",
   website: "",
   photo_url: null,
+  objective: null,
 };
+
+const objectiveOptions = [
+  { 
+    id: 'freelance' as const, 
+    label: 'Indépendant / Freelance', 
+    icon: Laptop,
+    description: 'Consultant, coach, prestataire'
+  },
+  { 
+    id: 'creator' as const, 
+    label: 'Créateur / Influenceur', 
+    icon: Camera,
+    description: 'Artiste, influenceur, content creator'
+  },
+  { 
+    id: 'business' as const, 
+    label: 'Entreprise / Équipe', 
+    icon: Building2,
+    description: 'Startup, PME, équipe commerciale'
+  },
+  { 
+    id: 'other' as const, 
+    label: 'Autre', 
+    icon: HelpCircle,
+    description: 'Usage personnel ou spécifique'
+  },
+];
 
 const formSteps = [
   { 
@@ -56,28 +88,35 @@ const formSteps = [
     fields: [] as const
   },
   { 
-    id: 1, 
+    id: 1,
+    title: "Objectif",
+    subtitle: "Ton usage",
+    icon: Target,
+    fields: ["objective"] as const
+  },
+  { 
+    id: 2, 
     title: "Identité", 
     subtitle: "Qui es-tu ?",
     icon: User,
     fields: ["first_name", "last_name", "photo_url"] as const
   },
   { 
-    id: 2, 
+    id: 3, 
     title: "Profession", 
     subtitle: "Que fais-tu ?",
     icon: Briefcase,
     fields: ["title", "company"] as const
   },
   { 
-    id: 3, 
+    id: 4, 
     title: "Contact", 
     subtitle: "Comment te joindre ?",
     icon: Phone,
     fields: ["phone", "email", "whatsapp"] as const
   },
   { 
-    id: 4, 
+    id: 5, 
     title: "Liens", 
     subtitle: "Tes réseaux",
     icon: Link2,
@@ -133,6 +172,13 @@ export default function Onboarding() {
 
   const handleNext = () => {
     if (step === 1) {
+      if (!formData.objective) {
+        toast.error("Choisis ton objectif pour continuer");
+        return;
+      }
+    }
+
+    if (step === 2) {
       if (!formData.first_name.trim()) {
         toast.error("Le prénom est obligatoire");
         return;
@@ -290,6 +336,52 @@ export default function Onboarding() {
             <div className="space-y-4">
               {step === 1 && (
                 <>
+                  <p className="text-lg text-white font-medium mb-6">
+                    Quel est ton objectif avec iWasp ?
+                  </p>
+                  <div className="space-y-3">
+                    {objectiveOptions.map((option) => (
+                      <button
+                        key={option.id}
+                        onClick={() => setFormData(prev => ({ ...prev, objective: option.id }))}
+                        className={cn(
+                          "w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left",
+                          formData.objective === option.id
+                            ? "border-[#FFC700] bg-[#FFC700]/10"
+                            : "border-[#E5E5E5]/10 bg-[#1F1F1F] hover:border-[#E5E5E5]/30"
+                        )}
+                      >
+                        <div className={cn(
+                          "w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors",
+                          formData.objective === option.id
+                            ? "bg-[#FFC700]/20"
+                            : "bg-[#E5E5E5]/10"
+                        )}>
+                          <option.icon className={cn(
+                            "w-6 h-6",
+                            formData.objective === option.id ? "text-[#FFC700]" : "text-[#E5E5E5]/70"
+                          )} />
+                        </div>
+                        <div>
+                          <p className={cn(
+                            "font-medium",
+                            formData.objective === option.id ? "text-white" : "text-[#E5E5E5]"
+                          )}>
+                            {option.label}
+                          </p>
+                          <p className="text-sm text-[#E5E5E5]/50">{option.description}</p>
+                        </div>
+                        {formData.objective === option.id && (
+                          <Check className="w-5 h-5 text-[#FFC700] ml-auto" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {step === 2 && (
+                <>
                   <div className="flex justify-center mb-6">
                     <OnboardingPhotoUpload
                       value={formData.photo_url}
@@ -320,7 +412,7 @@ export default function Onboarding() {
                 </>
               )}
 
-              {step === 2 && (
+              {step === 3 && (
                 <>
                   <div className="space-y-2">
                     <Label className="text-[#E5E5E5]/70">Poste</Label>
@@ -344,7 +436,7 @@ export default function Onboarding() {
                 </>
               )}
 
-              {step === 3 && (
+              {step === 4 && (
                 <>
                   <div className="space-y-2">
                     <Label className="text-[#E5E5E5]/70">Téléphone</Label>
@@ -380,7 +472,7 @@ export default function Onboarding() {
                 </>
               )}
 
-              {step === 4 && (
+              {step === 5 && (
                 <>
                   <div className="space-y-2">
                     <Label className="text-[#E5E5E5]/70">LinkedIn</Label>
