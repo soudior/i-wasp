@@ -29,6 +29,7 @@ import { LogoCropper } from "@/components/order/LogoCropper";
 import { TemplateGallery, TemplateDefinition } from "@/components/order/TemplateGallery";
 import { TemplatePreviewModal } from "@/components/order/TemplatePreviewModal";
 import { LuxuryHotelTemplate } from "@/components/templates/LuxuryHotelTemplate";
+import { LuxurySpaTemplate } from "@/components/templates/LuxurySpaTemplate";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -71,6 +72,16 @@ const AVAILABLE_TEMPLATES: TemplateDefinition[] = [
     premium: true,
     new: true,
     previewComponent: <LuxuryHotelTemplate data={{} as any} isPreview={true} />,
+  },
+  {
+    id: "luxury-spa",
+    name: "Luxury Spa",
+    category: "retail",
+    description: "Template apaisant pour spas & wellness avec courbes organiques, animations calmes et accents cuivrés.",
+    features: ["Réservation", "WhatsApp", "Carte", "Avis Google", "Instagram", "vCard"],
+    premium: true,
+    new: true,
+    previewComponent: <LuxurySpaTemplate data={{} as any} isPreview={true} />,
   },
   {
     id: "executive",
