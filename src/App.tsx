@@ -53,6 +53,7 @@ import Features from "./pages/Features";
 import Pricing from "./pages/Pricing";
 import Enterprise from "./pages/Enterprise";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 
 // Order funnel pages - 7 steps strict flow
 import OrderType from "./pages/order/OrderType";
@@ -204,6 +205,8 @@ const App = () => {
                     </Routes>
                     {/* Mobile Bottom Navigation */}
                     <MobileBottomNav />
+                    {/* Global WhatsApp Button */}
+                    <FloatingWhatsApp />
                     {/* PWA Install Prompt */}
                     <PWAInstallPrompt />
                   </OrderFunnelProvider>
