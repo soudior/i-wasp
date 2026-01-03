@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Phone, MessageCircle, UserPlus, Key, Shield, Wrench, Car, Cog, MapPin, Wifi, Compass, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import autoschluesselBg from "@/assets/clients/autoschluessel-service-bg.jpg";
+import autoschluesselGebiet from "@/assets/clients/autoschluessel-gebiet.jpeg";
 
 interface AutoschluesselTemplateProps {
   data?: {
@@ -83,10 +84,9 @@ END:VCARD`;
     URL.revokeObjectURL(url);
   };
 
-  // Handle Mein Gebiet - show fullscreen image for 3 seconds
+  // Handle Mein Gebiet - show fullscreen promo image
   const handleMeinGebiet = () => {
     setShowFullImage(true);
-    setTimeout(() => setShowFullImage(false), 3000);
   };
 
   useEffect(() => {
@@ -106,7 +106,7 @@ END:VCARD`;
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70" />
       </div>
 
-      {/* Fullscreen Image Modal */}
+      {/* Fullscreen Image Modal - Promo Image */}
       <AnimatePresence>
         {showFullImage && (
           <motion.div
@@ -114,34 +114,27 @@ END:VCARD`;
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 bg-black"
+            className="fixed inset-0 z-50 bg-black flex items-center justify-center"
             onClick={() => setShowFullImage(false)}
           >
             <motion.img
-              src={autoschluesselBg}
-              alt="Mein Gebiet"
-              className="w-full h-full object-cover"
-              initial={{ scale: 1.1, opacity: 0 }}
+              src={autoschluesselGebiet}
+              alt="Mein Gebiet - Zone d'intervention"
+              className="max-w-full max-h-full object-contain"
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 1.05, opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.3 }}
             />
             <button
               onClick={() => setShowFullImage(false)}
-              className="absolute top-6 right-6 p-3 rounded-full bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 transition-colors"
+              className="absolute top-6 right-6 p-3 rounded-full bg-black/60 text-white backdrop-blur-sm hover:bg-black/80 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
-            {/* Auto-close indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-              <div className="h-1 w-32 bg-white/20 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-[#FFC700]"
-                  initial={{ width: "100%" }}
-                  animate={{ width: "0%" }}
-                  transition={{ duration: 3, ease: "linear" }}
-                />
-              </div>
+            {/* Tap to close hint */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50 text-xs">
+              Tippen zum Schließen
             </div>
           </motion.div>
         )}
