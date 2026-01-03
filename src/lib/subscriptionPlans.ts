@@ -1,6 +1,9 @@
 /**
  * Subscription Plans Configuration
  * ONLY 2 plans: FREE (discovery) and GOLD (premium)
+ * 
+ * FREE = Découverte fonctionnelle mais limitée
+ * GOLD = Solution premium complète
  */
 
 export const SUBSCRIPTION_PLANS = {
@@ -8,53 +11,122 @@ export const SUBSCRIPTION_PLANS = {
     id: "free",
     name: "FREE",
     tagline: "Découverte",
-    description: "Pour tester iWasp et découvrir le NFC",
+    description: "Testez iWasp gratuitement avec les fonctionnalités essentielles",
     price: 0,
     currency: "MAD",
     period: "",
     color: "zinc",
+    
+    // Ce qui est INCLUS dans FREE
+    included: [
+      "1 carte NFC active",
+      "1 profil digital basique",
+      "Informations essentielles (nom, poste, entreprise)",
+      "Photo de profil",
+      "Jusqu'à 3 liens",
+      "QR code basique",
+      "Accès à l'application",
+    ],
+    
+    // Ce qui N'EST PAS inclus dans FREE
+    excluded: [
+      "Templates premium",
+      "Statistiques de scans",
+      "Options dynamiques",
+      "Personnalisation avancée",
+      "Suppression du branding iWasp",
+      "Stories 24h",
+      "Capture de leads",
+      "Push notifications",
+      "Badge certifié",
+      "Coach IA",
+      "Support prioritaire",
+    ],
+    
     features: {
-      nfcCard: true,
+      nfcCards: 1,
       digitalProfile: "basic",
+      profilePhoto: true,
+      essentialInfo: true, // nom, poste, entreprise
       socialLinks: 3,
-      stories: 0,
+      qrCode: "basic",
+      appAccess: true,
+      premiumTemplates: false,
+      scanStats: false,
+      dynamicOptions: false,
+      advancedCustomization: false,
+      removeBranding: false,
+      stories: false,
       analytics: false,
       leadCapture: false,
       pushNotifications: false,
       badge: false,
       aiCoach: false,
-      templates: 1,
-      support: "community",
+      prioritySupport: false,
     },
+    
     limits: {
+      maxNfcCards: 1,
       maxSocialLinks: 3,
       maxStories: 0,
-      maxTemplates: 1,
+      maxTemplates: 1, // template basique uniquement
     },
   },
+  
   GOLD: {
     id: "gold",
     name: "GOLD",
     tagline: "Premium Illimité",
-    description: "La solution complète pour les professionnels",
+    description: "La solution complète pour les professionnels exigeants",
     price: 490,
     currency: "MAD",
     period: "/an",
     color: "gold",
+    
+    // Tout ce qui est inclus dans GOLD
+    included: [
+      "Tout FREE +",
+      "Templates premium illimités",
+      "Statistiques de scans détaillées",
+      "Options dynamiques (boutons, sections)",
+      "Personnalisation avancée",
+      "Suppression du branding iWasp",
+      "Stories 24h illimitées",
+      "Capture de leads + CRM",
+      "Push notifications",
+      "Badge certifié GOLD",
+      "Coach IA personnalisé",
+      "Support prioritaire 24/7",
+      "Liens illimités",
+      "Export Excel des leads",
+    ],
+    
+    excluded: [], // GOLD a tout
+    
     features: {
-      nfcCard: true,
+      nfcCards: Infinity,
       digitalProfile: "unlimited",
+      profilePhoto: true,
+      essentialInfo: true,
       socialLinks: Infinity,
-      stories: Infinity,
+      qrCode: "advanced",
+      appAccess: true,
+      premiumTemplates: true,
+      scanStats: true,
+      dynamicOptions: true,
+      advancedCustomization: true,
+      removeBranding: true,
+      stories: true,
       analytics: true,
       leadCapture: true,
       pushNotifications: true,
       badge: true,
       aiCoach: true,
-      templates: Infinity,
-      support: "priority",
+      prioritySupport: true,
     },
+    
     limits: {
+      maxNfcCards: Infinity,
       maxSocialLinks: Infinity,
       maxStories: Infinity,
       maxTemplates: Infinity,
@@ -73,78 +145,34 @@ export function isPremiumPlan(planId: string): boolean {
   return planId === "gold" || planId === "premium";
 }
 
-// Feature comparison for display
+// Feature comparison pour affichage tableau
 export const FEATURE_COMPARISON = [
-  { 
-    name: "Carte NFC Premium", 
-    free: "1 carte", 
-    gold: "1 carte",
-    category: "base"
-  },
-  { 
-    name: "Profil digital", 
-    free: "Basique", 
-    gold: "Illimité",
-    category: "profile"
-  },
-  { 
-    name: "Liens sociaux", 
-    free: "3 maximum", 
-    gold: "Illimités",
-    category: "profile"
-  },
-  { 
-    name: "Templates métiers", 
-    free: "1 template", 
-    gold: "Tous les templates",
-    category: "design"
-  },
-  { 
-    name: "Stories 24h", 
-    free: false, 
-    gold: "Illimitées",
-    category: "engagement"
-  },
-  { 
-    name: "Dashboard Analytics", 
-    free: false, 
-    gold: true,
-    category: "analytics"
-  },
-  { 
-    name: "Capture de Leads", 
-    free: false, 
-    gold: true,
-    category: "business"
-  },
-  { 
-    name: "Push Notifications", 
-    free: false, 
-    gold: true,
-    category: "engagement"
-  },
-  { 
-    name: "Badge Certifié GOLD", 
-    free: false, 
-    gold: true,
-    category: "trust"
-  },
-  { 
-    name: "Coach IA personnalisé", 
-    free: false, 
-    gold: true,
-    category: "support"
-  },
-  { 
-    name: "Export leads Excel", 
-    free: false, 
-    gold: true,
-    category: "business"
-  },
-  { 
-    name: "Support", 
-    free: "Email", 
-    gold: "Prioritaire 24/7",
-    category: "support"
-  },
+  // Inclus dans FREE
+  { name: "Carte NFC active", free: "1 carte", gold: "Illimité", category: "base" },
+  { name: "Profil digital", free: "Basique", gold: "Illimité", category: "profile" },
+  { name: "Photo de profil", free: true, gold: true, category: "profile" },
+  { name: "Infos essentielles", free: true, gold: true, category: "profile" },
+  { name: "Liens sociaux", free: "3 maximum", gold: "Illimités", category: "profile" },
+  { name: "QR code", free: "Basique", gold: "Avancé", category: "base" },
+  { name: "Accès application", free: true, gold: true, category: "base" },
+  
+  // Exclusif GOLD
+  { name: "Templates premium", free: false, gold: "Tous", category: "design" },
+  { name: "Statistiques de scans", free: false, gold: true, category: "analytics" },
+  { name: "Options dynamiques", free: false, gold: true, category: "features" },
+  { name: "Personnalisation avancée", free: false, gold: true, category: "design" },
+  { name: "Sans branding iWasp", free: false, gold: true, category: "branding" },
+  { name: "Stories 24h", free: false, gold: "Illimitées", category: "engagement" },
+  { name: "Capture de Leads + CRM", free: false, gold: true, category: "business" },
+  { name: "Push Notifications", free: false, gold: true, category: "engagement" },
+  { name: "Badge Certifié GOLD", free: false, gold: true, category: "trust" },
+  { name: "Coach IA personnalisé", free: false, gold: true, category: "support" },
+  { name: "Support", free: "Email", gold: "Prioritaire 24/7", category: "support" },
 ] as const;
+
+// Helper pour vérifier si une feature est disponible selon le plan
+export function hasFeature(planId: PlanId, feature: keyof typeof SUBSCRIPTION_PLANS.FREE.features): boolean {
+  const plan = getPlan(planId);
+  const value = plan.features[feature];
+  return value === true || value === Infinity || value === "unlimited" || value === "advanced";
+}
