@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { 
   ArrowRight, 
   Sparkles, 
@@ -29,8 +29,11 @@ import nailsCafe from "@/assets/nails/nails-cafe.png";
 const nailsDemoVideo = "/nails-demo-video.mp4";
 import nailsPoster from "@/assets/posters/nails-demo-poster.webp";
 
+// WhatsApp links
+const WHATSAPP_NAILS = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20un%20Pack%20Nails%20i-wasp.";
+const WHATSAPP_DEMO = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20voir%20une%20démo%20des%20i-wasp%20Nails.";
+
 const Nails = () => {
-  const navigate = useNavigate();
 
   const features = [
     { icon: Diamond, title: "Technologie Invisible", desc: "Puce ultra-fine qui disparaît sous votre vernis" },
@@ -91,14 +94,15 @@ const Nails = () => {
           <Link to="/">
             <img src={iwaspLogo} alt="i-wasp" className="h-8 w-auto" loading="eager" />
           </Link>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/order/type")}
-            className="border-rose-400/50 text-rose-300 hover:bg-rose-500/10"
-          >
-            Commander
-          </Button>
+          <a href={WHATSAPP_NAILS} target="_blank" rel="noopener noreferrer">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-rose-400/50 text-rose-300 hover:bg-rose-500/10"
+            >
+              Commander
+            </Button>
+          </a>
         </div>
       </header>
 
@@ -136,22 +140,24 @@ const Nails = () => {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button
-                  size="lg"
-                  onClick={() => navigate("/order/type")}
-                  className="bg-gradient-to-r from-rose-500 via-pink-400 to-rose-500 hover:from-rose-600 hover:via-pink-500 hover:to-rose-600 text-white font-semibold gap-2 px-8 py-6 rounded-xl shadow-lg shadow-rose-500/30"
-                >
-                  Découvrir les i-wasp Nails
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => navigate("/demo-dashboard")}
-                  className="border-zinc-700 text-zinc-300 hover:bg-zinc-900 px-8 py-6 rounded-xl"
-                >
-                  Voir la démo
-                </Button>
+                <a href={WHATSAPP_NAILS} target="_blank" rel="noopener noreferrer">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-rose-500 via-pink-400 to-rose-500 hover:from-rose-600 hover:via-pink-500 hover:to-rose-600 text-white font-semibold gap-2 px-8 py-6 rounded-xl shadow-lg shadow-rose-500/30"
+                  >
+                    Découvrir les i-wasp Nails
+                    <ArrowRight className="h-5 w-5" />
+                  </Button>
+                </a>
+                <a href={WHATSAPP_DEMO} target="_blank" rel="noopener noreferrer">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-zinc-700 text-zinc-300 hover:bg-zinc-900 px-8 py-6 rounded-xl"
+                  >
+                    Voir la démo
+                  </Button>
+                </a>
               </div>
 
               {/* Trust badges */}
@@ -432,15 +438,16 @@ const Nails = () => {
             </p>
 
             <div className="flex flex-col items-center gap-4">
-              <Button
-                size="lg"
-                onClick={() => navigate("/order/type")}
-                className="bg-gradient-to-r from-rose-500 via-pink-400 to-amber-500 hover:from-rose-600 hover:via-pink-500 hover:to-amber-600 text-white font-bold gap-3 px-12 py-7 rounded-2xl shadow-xl shadow-rose-500/40 text-lg"
-              >
-                <Sparkles className="h-5 w-5" />
-                Commander mes i-wasp Nails
-                <ArrowRight className="h-5 w-5" />
-              </Button>
+              <a href={WHATSAPP_NAILS} target="_blank" rel="noopener noreferrer">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-rose-500 via-pink-400 to-amber-500 hover:from-rose-600 hover:via-pink-500 hover:to-amber-600 text-white font-bold gap-3 px-12 py-7 rounded-2xl shadow-xl shadow-rose-500/40 text-lg"
+                >
+                  <Sparkles className="h-5 w-5" />
+                  Commander mes i-wasp Nails
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
+              </a>
               
               <p className="text-zinc-600 text-sm">
                 199 MAD au lieu de <span className="line-through">299 MAD</span> • Paiement à la livraison
