@@ -31,9 +31,21 @@ import {
   Star,
   MapPin,
   CheckCircle2,
-  Info
+  Info,
+  Home,
+  Building,
+  Store
 } from "lucide-react";
 import { toast } from "sonner";
+
+// Address types for differentiated fields
+type AddressType = "personal" | "business" | "boutique";
+
+const addressTypes = [
+  { id: "personal" as AddressType, icon: Home, label: "Personnel", hint: "Domicile" },
+  { id: "business" as AddressType, icon: Building, label: "Appartement", hint: "Immeuble / Résidence" },
+  { id: "boutique" as AddressType, icon: Store, label: "Boutique", hint: "Commerce / Bureau" },
+];
 
 // URL validation helper
 const isValidUrl = (url: string): boolean => {
@@ -78,6 +90,8 @@ function OrderDigitalContent() {
       neighborhood: "",
     }
   );
+
+  const [addressType, setAddressType] = useState<AddressType>("personal");
 
   const [locationData, setLocationData] = useState({
     address: formData.address || "",
@@ -294,6 +308,34 @@ function OrderDigitalContent() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Address Type Selector - Gold themed */}
+                  <div className="space-y-2">
+                    <Label className="text-sm">Type d'adresse</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {addressTypes.map((type) => (
+                        <button
+                          key={type.id}
+                          onClick={() => setAddressType(type.id)}
+                          className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all ${
+                            addressType === type.id
+                              ? "border-amber-400 bg-amber-500/10 shadow-md"
+                              : "border-border hover:border-amber-400/50 bg-card"
+                          }`}
+                        >
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-1 ${
+                            addressType === type.id
+                              ? "bg-gradient-to-br from-amber-400 to-amber-600"
+                              : "bg-muted"
+                          }`}>
+                            <type.icon className={`w-5 h-5 ${addressType === type.id ? "text-black" : "text-muted-foreground"}`} />
+                          </div>
+                          <span className="text-xs font-medium">{type.label}</span>
+                          <span className="text-[10px] text-muted-foreground">{type.hint}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <SmartLocationEditor
                     value={locationData}
                     onChange={(data) => setLocationData({

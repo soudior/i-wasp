@@ -47,6 +47,7 @@ const customerTypes = [
     subtitle: "Usage personnel",
     description: "Créez votre carte de visite digitale unique pour développer votre réseau.",
     benefits: ["Design sur mesure", "Partage instantané NFC", "Profil digital complet"],
+    gradient: "from-amber-400 to-amber-600",
   },
   {
     id: "professionnel" as CustomerType,
@@ -55,6 +56,7 @@ const customerTypes = [
     subtitle: "Indépendant & freelance",
     description: "Solution idéale pour les entrepreneurs qui veulent marquer les esprits.",
     benefits: ["Logo personnalisé", "Liens vers vos réseaux", "Géolocalisation"],
+    gradient: "from-amber-500 to-yellow-500",
   },
   {
     id: "entreprise" as CustomerType,
@@ -63,6 +65,7 @@ const customerTypes = [
     subtitle: "PME & entreprises",
     description: "Équipez votre équipe avec des cartes professionnelles cohérentes.",
     benefits: ["Design unifié", "Quantités flexibles", "Gestion centralisée"],
+    gradient: "from-yellow-400 to-amber-500",
   },
 ];
 
@@ -192,7 +195,7 @@ export default function OrderType() {
                     </p>
                   </motion.div>
 
-                  {/* Customer Type Options */}
+                  {/* Customer Type Options with Gold Icons */}
                   <div className="grid gap-4 md:grid-cols-3 mb-12">
                     {customerTypes.map((type, index) => (
                       <motion.button
@@ -203,31 +206,41 @@ export default function OrderType() {
                         onClick={() => handleSelectCustomer(type.id)}
                         className={`relative p-5 rounded-2xl border-2 text-left transition-all duration-300 hover:scale-[1.02] group ${
                           state.customerType === type.id
-                            ? "border-primary bg-primary/5 shadow-lg"
-                            : "border-border hover:border-primary/50 bg-card"
+                            ? "border-amber-400 bg-amber-500/5 shadow-lg shadow-amber-500/10"
+                            : "border-border hover:border-amber-400/50 bg-card"
                         }`}
                       >
                         {state.customerType === type.id && (
                           <motion.div 
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center"
+                            className="absolute top-3 right-3 w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg"
                           >
-                            <Check size={14} className="text-primary-foreground" />
+                            <Check size={14} className="text-black" />
                           </motion.div>
                         )}
                         
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-colors ${
+                        {/* Gold gradient icon */}
+                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-3 transition-all shadow-lg ${
                           state.customerType === type.id 
-                            ? "bg-primary text-primary-foreground" 
-                            : "bg-primary/10 text-primary"
+                            ? `bg-gradient-to-br ${type.gradient}` 
+                            : `bg-gradient-to-br ${type.gradient} opacity-80`
                         }`}>
-                          <type.icon className="w-6 h-6" />
+                          <type.icon className="w-7 h-7 text-black" />
                         </div>
                         
                         <h3 className="font-semibold text-lg mb-1">{type.title}</h3>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">{type.subtitle}</p>
+                        <p className="text-xs text-amber-500/80 uppercase tracking-wide font-medium mb-2">{type.subtitle}</p>
                         <p className="text-xs text-muted-foreground">{type.description}</p>
+                        
+                        {/* Benefits chips */}
+                        <div className="flex flex-wrap gap-1 mt-3">
+                          {type.benefits.slice(0, 2).map((benefit, i) => (
+                            <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                              {benefit}
+                            </span>
+                          ))}
+                        </div>
                       </motion.button>
                     ))}
                   </div>
