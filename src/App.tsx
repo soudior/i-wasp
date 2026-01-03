@@ -44,6 +44,7 @@ import DevenirPartenaire from "./pages/DevenirPartenaire";
 import CertificatPartenaire from "./pages/CertificatPartenaire";
 import RentalDemo from "./pages/RentalDemo";
 import UltraLuxeDemo from "./pages/UltraLuxeDemo";
+import VCardAirbnbBookingDemo from "./pages/VCardAirbnbBookingDemo";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import About from "./pages/About";
@@ -162,6 +163,7 @@ const App = () => {
                       <Route path="/business" element={<Enterprise />} />
                       <Route path="/rental-demo" element={<RentalDemo />} />
                       <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
+                      <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
                       {/* Finalize card after auth */}
                       <Route path="/onboarding/finalize" element={<FinalizeCard />} />
                       
