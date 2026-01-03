@@ -65,8 +65,12 @@ interface HerbalismData {
   
   // Reviews
   googleReviewsUrl?: string;
+  tripAdvisorUrl?: string;
   rating?: number;
   reviewCount?: number;
+  
+  // Direct location link (Google Maps)
+  directionsUrl?: string;
   
   // Introduction Video
   introVideoUrl?: string;
@@ -615,6 +619,12 @@ export function HerbalismEliteTemplate({
       case 'reviews':
         window.open(value, '_blank');
         break;
+      case 'tripadvisor':
+        window.open(value, '_blank');
+        break;
+      case 'directions':
+        window.open(value, '_blank');
+        break;
     }
   };
   
@@ -797,6 +807,19 @@ export function HerbalismEliteTemplate({
           </motion.section>
         )}
         
+        {/* Direct Directions Button */}
+        {data.directionsUrl && (
+          <motion.section variants={itemVariants}>
+            <GlassButton 
+              icon={Navigation}
+              variant="emerald"
+              onClick={() => handleAction('directions', data.directionsUrl)}
+            >
+              Itinéraire vers la boutique
+            </GlassButton>
+          </motion.section>
+        )}
+
         {/* Google Reviews */}
         {data.googleReviewsUrl && (
           <motion.section variants={itemVariants}>
@@ -806,6 +829,18 @@ export function HerbalismEliteTemplate({
               onClick={() => handleAction('reviews', data.googleReviewsUrl)}
             >
               Laisser un avis Google
+            </GlassButton>
+          </motion.section>
+        )}
+        
+        {/* TripAdvisor Reviews */}
+        {data.tripAdvisorUrl && (
+          <motion.section variants={itemVariants}>
+            <GlassButton 
+              icon={Star}
+              onClick={() => handleAction('tripadvisor', data.tripAdvisorUrl)}
+            >
+              TripAdvisor
             </GlassButton>
           </motion.section>
         )}

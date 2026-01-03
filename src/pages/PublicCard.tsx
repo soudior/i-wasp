@@ -189,6 +189,8 @@ const PublicCard = () => {
           website: card.website || undefined,
           instagram: card.has_instagram ? "herbalism.marrakech" : undefined,
           googleReviewsUrl: "https://maps.app.goo.gl/ecBsV54n8TZnfN3NA?g_st=iwb",
+          tripAdvisorUrl: "https://www.tripadvisor.fr/Attraction_Review-g293734-d25386907-Reviews-Herbalism_Marrakech-Marrakech_Marrakech_Safi.html",
+          directionsUrl: "https://maps.app.goo.gl/ecBsV54n8TZnfN3NA?g_st=iwb",
           vcardData: {
             firstName: card.first_name,
             lastName: card.last_name,
