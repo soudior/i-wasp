@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Play, Volume2, VolumeX, AlertCircle } from "lucide-react";
+import { Play, AlertCircle } from "lucide-react";
 
 /**
  * MobileOptimizedVideo - Composant vidéo 100% compatible iOS & Android
@@ -29,21 +29,18 @@ export function MobileOptimizedVideo({
   webmSrc,
   poster,
   aspectRatio = "9/16",
-  autoPlayOnDesktop = true,
+  autoPlayOnDesktop: _autoPlayOnDesktop = true,
   className = "",
   rounded = "rounded-[1.75rem]",
   showControlsOnMobile = true,
 }: MobileOptimizedVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  const [isLoading, setIsLoading] = useState(false); // Start as false to prevent infinite loading
+
+  const [isLoading, setIsLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [showPlayButton, setShowPlayButton] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const [isInView, setIsInView] = useState(true); // Start as true to force immediate render
 
   // Détecter mobile
   useEffect(() => {
@@ -53,79 +50,33 @@ export function MobileOptimizedVideo({
       const isSmallScreen = window.innerWidth < 768;
       setIsMobile(isMobileDevice || isSmallScreen);
     };
-    
+
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Intersection Observer pour lazy loading
+  // Anti-bug iOS: éviter tout état de chargement infini
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-        }
-      },
-      { rootMargin: "100px", threshold: 0.1 }
-    );
-
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, []);
-
-  // Autoplay sur desktop si visible
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video || !isInView || isMobile || !autoPlayOnDesktop) return;
-
-    const attemptAutoplay = async () => {
-      try {
-        video.muted = true;
-        await video.play();
-        setIsPlaying(true);
-        setShowPlayButton(false);
-      } catch {
-        // Autoplay bloqué, afficher le bouton play
-        setShowPlayButton(true);
-      }
-    };
-
-    if (!isLoading && !hasError) {
-      attemptAutoplay();
-    }
-  }, [isInView, isMobile, autoPlayOnDesktop, isLoading, hasError]);
+    setIsLoading(true);
+    setHasError(false);
+    const t = window.setTimeout(() => setIsLoading(false), 2500);
+    return () => window.clearTimeout(t);
+  }, [src]);
 
   const handlePlay = useCallback(async () => {
     const video = videoRef.current;
     if (!video) return;
 
     try {
-      // Sur mobile, on garde muted pour éviter les blocages
-      if (isMobile) {
-        video.muted = true;
-      }
-      
       await video.play();
       setIsPlaying(true);
       setShowPlayButton(false);
     } catch (err) {
       console.warn("Video play failed:", err);
-      // Essayer avec muted
-      try {
-        video.muted = true;
-        await video.play();
-        setIsPlaying(true);
-        setShowPlayButton(false);
-        setIsMuted(true);
-      } catch {
-        setHasError(true);
-      }
+      setHasError(true);
     }
-  }, [isMobile]);
+  }, []);
 
   const handlePause = useCallback(() => {
     const video = videoRef.current;
@@ -133,13 +84,6 @@ export function MobileOptimizedVideo({
     video.pause();
     setIsPlaying(false);
     setShowPlayButton(true);
-  }, []);
-
-  const toggleMute = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.muted = !video.muted;
-    setIsMuted(video.muted);
   }, []);
 
   const handleVideoClick = useCallback(() => {
@@ -187,13 +131,12 @@ export function MobileOptimizedVideo({
 
   return (
     <div
-      ref={containerRef}
       className={`relative w-full ${aspectClasses[aspectRatio]} min-h-[300px] bg-zinc-900 ${rounded} overflow-hidden ${className}`}
     >
       {/* Loading Skeleton - Only show briefly, max 3 seconds */}
       {isLoading && !hasError && (
         <div className="absolute inset-0 bg-zinc-900 flex items-center justify-center z-10">
-          <div className="w-12 h-12 rounded-full border-3 border-zinc-700 border-t-amber-500 animate-spin" />
+          <div className="w-12 h-12 rounded-full border-4 border-zinc-700 border-t-amber-500 animate-spin" />
         </div>
       )}
 
@@ -262,29 +205,6 @@ export function MobileOptimizedVideo({
         </button>
       )}
 
-      {/* Mute Toggle (visible quand lecture en cours) */}
-      {isPlaying && !isMobile && (
-        <button
-          onClick={toggleMute}
-          className="absolute bottom-4 right-4 z-30 w-10 h-10 rounded-full bg-black/60 backdrop-blur-xl flex items-center justify-center text-white hover:bg-black/80 transition-colors"
-          aria-label={isMuted ? "Activer le son" : "Couper le son"}
-        >
-          {isMuted ? (
-            <VolumeX className="w-5 h-5" />
-          ) : (
-            <Volume2 className="w-5 h-5" />
-          )}
-        </button>
-      )}
-
-      {/* Poster Image Fallback (affiché avant chargement) */}
-      {poster && !isInView && (
-        <img
-          src={poster}
-          alt="Aperçu"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-      )}
     </div>
   );
 }
