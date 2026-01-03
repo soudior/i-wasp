@@ -20,13 +20,13 @@ export default {
       },
       colors: {
         /* ═══════════════════════════════════════════════════════════════
-           i-wasp DESIGN SYSTEM — 3 PALETTES OFFICIELLES (STRICT)
+           iWASP SaaS DESIGN SYSTEM — OFFICIAL PALETTE (N1 LEVEL)
            
-           PALETTE 1 — "Nuit" : site, dashboard, expérience premium
-           PALETTE 2 — "Blanc pur" : interface claire, cartes digitales
-           PALETTE 3 — "Carte matière" : template carte physique NFC
-           
-           AUCUNE AUTRE COULEUR AUTORISÉE
+           - Fond principal : #0B0B0B
+           - Texte principal : #FFFFFF
+           - Accent / CTA / NFC : #FFC700
+           - Cartes & blocs UI : #1F1F1F
+           - Texte secondaire : #E5E5E5
            ═══════════════════════════════════════════════════════════════ */
         
         /* Semantic tokens */
@@ -82,25 +82,33 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE 1 — "Nuit" (défaut)
-           ══════════════════════════════════════════════════════════════ */
-        nuit: {
-          noir: "hsl(var(--nuit-noir))",           /* #0E0E11 */
-          "gris-profond": "hsl(var(--nuit-gris-profond))", /* #15171C */
-          "gris-struct": "hsl(var(--nuit-gris-struct))",   /* #8E8E93 */
-          blanc: "hsl(var(--nuit-blanc))",         /* #FFFFFF */
-          accent: "hsl(var(--nuit-accent))",       /* #3CFF6B */
-        },
-        
-        /* ══════════════════════════════════════════════════════════════
-           IWASP SIGNATURE COLORS
+           IWASP OFFICIAL COLORS
            ══════════════════════════════════════════════════════════════ */
         iwasp: {
-          noir: "hsl(var(--iwasp-noir))",          /* #0E0E11 - Noir profond */
-          charbon: "hsl(var(--iwasp-charbon))",    /* #15171C - Gris charbon */
-          vert: "hsl(var(--iwasp-vert))",          /* #3CFF6B - Vert signature */
-          blanc: "hsl(var(--iwasp-blanc))",        /* #FFFFFF - Blanc pur */
-          gris: "hsl(var(--iwasp-gris))",          /* #8E8E93 - Gris structurel */
+          bg: "#0B0B0B",                   /* Fond principal */
+          card: "#1F1F1F",                 /* Cartes & blocs UI */
+          accent: "#FFC700",               /* Accent/CTA/NFC */
+          white: "#FFFFFF",                /* Texte principal */
+          gray: "#E5E5E5",                 /* Texte secondaire */
+          success: "#22C55E",              /* Succès */
+          error: "#EF4444",                /* Erreur */
+        },
+        
+        /* Gold accent system for CTAs */
+        gold: {
+          DEFAULT: "#FFC700",
+          light: "#FFD21F",
+          dark: "#D6A800",
+          50: "#FFFBEB",
+          100: "#FEF3C7",
+          200: "#FDE68A",
+          300: "#FCD34D",
+          400: "#FBBF24",
+          500: "#FFC700",
+          600: "#D6A800",
+          700: "#B38600",
+          800: "#8A6600",
+          900: "#614900",
         },
         
         /* ══════════════════════════════════════════════════════════════

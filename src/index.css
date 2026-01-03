@@ -10,51 +10,51 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════════
-       IWASP DESIGN SYSTEM — PREMIUM IDENTITY
+       iWASP DESIGN SYSTEM — SAAS PREMIUM (N1 LEVEL)
        
-       Identité visuelle digne d'une marque premium mondiale.
-       Aucune couleur hors système. Aucun compromis.
-       
-       COULEURS PRINCIPALES :
-       - Noir profond : #0E0E11
-       - Gris charbon : #15171C  
-       - Vert signature : #3CFF6B (accent unique)
-       - Blanc pur : #FFFFFF
+       Palette officielle - NE PAS MODIFIER
+       - Fond principal : #0B0B0B
+       - Texte principal : #FFFFFF
+       - Accent / CTA / NFC : #FFC700
+       - Cartes & blocs UI : #1F1F1F
+       - Texte secondaire : #E5E5E5
        ═══════════════════════════════════════════════════════════════════ */
     
     /* ══════════════════════════════════════════════════════════════════
-       IWASP CORE COLORS
+       CORE COLORS - OFFICIAL PALETTE
        ══════════════════════════════════════════════════════════════════ */
     
-    /* Couleurs principales IWASP */
-    --iwasp-noir: 240 6% 5%;              /* #0E0E11 - Noir profond */
-    --iwasp-charbon: 225 10% 10%;         /* #15171C - Gris charbon */
-    --iwasp-vert: 138 100% 62%;           /* #3CFF6B - Vert signature IWASP */
-    --iwasp-blanc: 0 0% 100%;             /* #FFFFFF - Blanc pur */
-    --iwasp-gris: 240 2% 57%;             /* #8E8E93 - Gris structurel */
-    --iwasp-erreur: 0 45% 45%;            /* Rouge discret, jamais violent */
+    /* Couleurs principales iWASP SaaS */
+    --iwasp-noir: 0 0% 4%;                /* #0B0B0B - Fond principal */
+    --iwasp-charbon: 0 0% 12%;            /* #1F1F1F - Cartes & blocs UI */
+    --iwasp-accent: 45 100% 50%;          /* #FFC700 - Accent/CTA/NFC */
+    --iwasp-blanc: 0 0% 100%;             /* #FFFFFF - Texte principal */
+    --iwasp-gris: 0 0% 90%;               /* #E5E5E5 - Texte secondaire */
+    --iwasp-erreur: 0 65% 50%;            /* Rouge erreur */
+    --iwasp-success: 142 70% 45%;         /* Vert succès */
     
     /* ══════════════════════════════════════════════════════════════════
-       PALETTE "DARK LUXURY" - Or Premium
-       Usage : Templates élite, interfaces premium
+       GOLD/YELLOW ACCENT SYSTEM
        ══════════════════════════════════════════════════════════════════ */
-    --gold-primary: 43 74% 49%;           /* #D4AF37 - Or principal */
-    --gold-light: 48 95% 60%;             /* #F5C542 - Or clair */
-    --gold-dark: 43 76% 38%;              /* #B8860B - Or foncé */
-    --gold-shimmer: 51 100% 50%;          /* #FFD700 - Or brillant */
-    --luxury-black: 0 0% 0%;              /* #000000 - Noir profond absolu */
-    --luxury-surface: 0 0% 4%;            /* #0A0A0A - Surface sombre */
-    --luxury-card: 0 0% 7%;               /* #121212 - Carte sombre */
-    --luxury-border: 43 50% 30%;          /* Bordure or subtile */
+    --gold-primary: 45 100% 50%;          /* #FFC700 - CTA principal */
+    --gold-light: 48 100% 55%;            /* #FFD21F - Hover state */
+    --gold-dark: 43 100% 42%;             /* #D6A800 - Active state */
+    --gold-glow: 45 100% 50%;             /* Glow effect */
     
-    /* Legacy palette mappings for compatibility */
+    /* Surface layers */
+    --surface-bg: 0 0% 4%;                /* #0B0B0B */
+    --surface-card: 0 0% 12%;             /* #1F1F1F */
+    --surface-elevated: 0 0% 16%;         /* #292929 */
+    --surface-overlay: 0 0% 20%;          /* #333333 */
+    
+    /* Legacy compatibility */
     --nuit-noir: var(--iwasp-noir);
     --nuit-gris-profond: var(--iwasp-charbon);
     --nuit-gris-struct: var(--iwasp-gris);
     --nuit-blanc: var(--iwasp-blanc);
-    --nuit-accent: var(--iwasp-vert);
+    --nuit-accent: var(--iwasp-accent);
     
-    /* Tokens sémantiques - Palette IWASP Premium */
+    /* Semantic tokens */
     --background: var(--iwasp-noir);
     --foreground: var(--iwasp-blanc);
     
@@ -64,25 +64,25 @@
     --popover: var(--iwasp-charbon);
     --popover-foreground: var(--iwasp-blanc);
     
-    --primary: var(--iwasp-blanc);
-    --primary-foreground: var(--iwasp-noir);
+    --primary: var(--iwasp-accent);
+    --primary-foreground: 0 0% 0%;
     
     --secondary: var(--iwasp-charbon);
     --secondary-foreground: var(--iwasp-gris);
     
-    --muted: 225 10% 12%;
+    --muted: 0 0% 16%;
     --muted-foreground: var(--iwasp-gris);
     
-    /* Accent IWASP - Vert signature (utilisé avec parcimonie) */
-    --accent: var(--iwasp-vert);
-    --accent-foreground: var(--iwasp-noir);
+    /* Accent = CTA Yellow */
+    --accent: var(--iwasp-accent);
+    --accent-foreground: 0 0% 0%;
     
     --destructive: var(--iwasp-erreur);
     --destructive-foreground: var(--iwasp-blanc);
     
-    --border: 225 10% 14%;
-    --input: 225 10% 12%;
-    --ring: var(--iwasp-vert);
+    --border: 0 0% 18%;
+    --input: 0 0% 14%;
+    --ring: var(--iwasp-accent);
     
     /* ══════════════════════════════════════════════════════════════════
        RADIUS - FORMES IWASP
