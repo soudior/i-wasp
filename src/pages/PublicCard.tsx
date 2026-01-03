@@ -16,6 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Phone, Mail, Linkedin, MessageCircle, UserPlus } from "lucide-react";
 import { StoryRing } from "@/components/StoryRing";
 import { AutoschluesselTemplate } from "@/components/templates/AutoschluesselTemplate";
+import HerbalismEliteTemplate from "@/components/templates/HerbalismEliteTemplate";
+import { IWASPBrandBadgeMinimal } from "@/components/templates/IWASPBrandBadge";
 
 const PublicCard = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -154,6 +156,37 @@ const PublicCard = () => {
           lastName: card.last_name,
         }}
         hideBranding={true}
+      />
+    );
+  }
+
+  // Use HerbalismEliteTemplate for herbalism-elite template
+  if (template === 'herbalism-elite') {
+    // Get whatsapp number from card for direct link
+    const getWhatsAppNumber = async () => {
+      const url = await getActionUrl(slug || "", "whatsapp");
+      return url?.replace("https://wa.me/", "") || "";
+    };
+    
+    return (
+      <HerbalismEliteTemplate 
+        cardId={card.id}
+        data={{
+          brandName: card.company || "Herbalism Marrakech",
+          tagline: card.tagline || "An Herbal Experience",
+          logo: card.logo_url || undefined,
+          phone: card.has_phone ? "+212 6 66 54 03 29" : undefined,
+          whatsapp: card.has_whatsapp ? "212666540329" : undefined,
+          website: card.website || undefined,
+          instagram: card.has_instagram ? "herbalism.marrakech" : undefined,
+          googleReviewsUrl: "https://maps.app.goo.gl/ecBsV54n8TZnfN3NA?g_st=iwb",
+          vcardData: {
+            firstName: card.first_name,
+            lastName: card.last_name,
+            company: card.company || undefined,
+            title: card.title || undefined,
+          }
+        }}
       />
     );
   }
