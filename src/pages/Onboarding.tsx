@@ -96,27 +96,20 @@ const formSteps = [
   },
   { 
     id: 2, 
-    title: "Identité", 
-    subtitle: "Qui es-tu ?",
+    title: "Profil", 
+    subtitle: "Ton identité NFC",
     icon: User,
-    fields: ["first_name", "last_name", "photo_url"] as const
+    fields: ["first_name", "last_name", "title", "company", "photo_url"] as const
   },
   { 
     id: 3, 
-    title: "Profession", 
-    subtitle: "Que fais-tu ?",
-    icon: Briefcase,
-    fields: ["title", "company"] as const
-  },
-  { 
-    id: 4, 
     title: "Contact", 
     subtitle: "Comment te joindre ?",
     icon: Phone,
     fields: ["phone", "email", "whatsapp"] as const
   },
   { 
-    id: 5, 
+    id: 4, 
     title: "Liens", 
     subtitle: "Tes réseaux",
     icon: Link2,
@@ -185,6 +178,10 @@ export default function Onboarding() {
       }
       if (!formData.last_name.trim()) {
         toast.error("Le nom est obligatoire");
+        return;
+      }
+      if (!formData.title.trim()) {
+        toast.error("Le poste / activité est obligatoire");
         return;
       }
     }
@@ -390,42 +387,40 @@ export default function Onboarding() {
                     />
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label className="text-[#E5E5E5]/70">Prénom *</Label>
-                    <Input
-                      value={formData.first_name}
-                      onChange={(e) => updateField("first_name", e.target.value)}
-                      placeholder="Jean"
-                      className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
-                      autoFocus
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label className="text-[#E5E5E5]/70">Prénom *</Label>
+                      <Input
+                        value={formData.first_name}
+                        onChange={(e) => updateField("first_name", e.target.value)}
+                        placeholder="Jean"
+                        className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
+                        autoFocus
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[#E5E5E5]/70">Nom *</Label>
+                      <Input
+                        value={formData.last_name}
+                        onChange={(e) => updateField("last_name", e.target.value)}
+                        placeholder="Dupont"
+                        className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[#E5E5E5]/70">Nom *</Label>
-                    <Input
-                      value={formData.last_name}
-                      onChange={(e) => updateField("last_name", e.target.value)}
-                      placeholder="Dupont"
-                      className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
-                    />
-                  </div>
-                </>
-              )}
 
-              {step === 3 && (
-                <>
                   <div className="space-y-2">
-                    <Label className="text-[#E5E5E5]/70">Poste</Label>
+                    <Label className="text-[#E5E5E5]/70">Poste / Activité *</Label>
                     <Input
                       value={formData.title}
                       onChange={(e) => updateField("title", e.target.value)}
                       placeholder="Directeur Commercial"
                       className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
-                      autoFocus
                     />
                   </div>
+
                   <div className="space-y-2">
-                    <Label className="text-[#E5E5E5]/70">Entreprise</Label>
+                    <Label className="text-[#E5E5E5]/70">Entreprise <span className="text-[#E5E5E5]/40">(optionnel)</span></Label>
                     <Input
                       value={formData.company}
                       onChange={(e) => updateField("company", e.target.value)}
@@ -433,10 +428,15 @@ export default function Onboarding() {
                       className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
                     />
                   </div>
+
+                  <p className="text-center text-sm text-[#E5E5E5]/50 mt-4 flex items-center justify-center gap-2">
+                    <Check className="w-4 h-4 text-[#FFC700]" />
+                    Tu pourras modifier ces informations à tout moment.
+                  </p>
                 </>
               )}
 
-              {step === 4 && (
+              {step === 3 && (
                 <>
                   <div className="space-y-2">
                     <Label className="text-[#E5E5E5]/70">Téléphone</Label>
@@ -472,7 +472,7 @@ export default function Onboarding() {
                 </>
               )}
 
-              {step === 5 && (
+              {step === 4 && (
                 <>
                   <div className="space-y-2">
                     <Label className="text-[#E5E5E5]/70">LinkedIn</Label>
