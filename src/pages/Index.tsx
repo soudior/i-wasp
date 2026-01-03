@@ -39,7 +39,7 @@ const Index = () => {
   const content = productContent[mode];
 
   return (
-    <div className="h-screen overflow-y-auto bg-black flex flex-col">
+    <div className="min-h-screen overflow-y-auto overflow-x-hidden bg-black flex flex-col touch-pan-y">
       {/* Hero Section */}
       <section className="flex-1 flex flex-col items-center justify-center px-4 py-12 md:py-20">
         <div className="max-w-xl mx-auto text-center space-y-8">

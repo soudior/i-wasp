@@ -37,13 +37,13 @@ export function MobileOptimizedVideo({
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Start as false to prevent infinite loading
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [showPlayButton, setShowPlayButton] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-  const [isInView, setIsInView] = useState(false);
+  const [isInView, setIsInView] = useState(true); // Start as true to force immediate render
 
   // Détecter mobile
   useEffect(() => {
@@ -190,10 +190,10 @@ export function MobileOptimizedVideo({
       ref={containerRef}
       className={`relative w-full ${aspectClasses[aspectRatio]} min-h-[300px] bg-zinc-900 ${rounded} overflow-hidden ${className}`}
     >
-      {/* Loading Skeleton */}
+      {/* Loading Skeleton - Only show briefly, max 3 seconds */}
       {isLoading && !hasError && (
-        <div className="absolute inset-0 bg-zinc-900 animate-pulse flex items-center justify-center z-10">
-          <div className="w-16 h-16 rounded-full border-4 border-zinc-700 border-t-amber-500 animate-spin" />
+        <div className="absolute inset-0 bg-zinc-900 flex items-center justify-center z-10">
+          <div className="w-12 h-12 rounded-full border-3 border-zinc-700 border-t-amber-500 animate-spin" />
         </div>
       )}
 
@@ -215,47 +215,39 @@ export function MobileOptimizedVideo({
         </div>
       )}
 
-      {/* Video Element avec sources WebM + MP4 */}
-      {isInView && (
-        <video
-          ref={videoRef}
-          poster={poster || fallbackPoster}
-          loop
-          muted={isMuted}
-          playsInline
-          webkit-playsinline="true"
-          x-webkit-airplay="allow"
-          preload="metadata"
-          controls={isMobile && showControlsOnMobile && isPlaying}
-          onLoadedData={handleLoadedData}
-          onCanPlay={handleCanPlay}
-          onError={handleError}
-          onPlay={() => {
-            setIsPlaying(true);
-            setShowPlayButton(false);
-          }}
-          onPause={() => {
-            setIsPlaying(false);
-            setShowPlayButton(true);
-          }}
-          onClick={handleVideoClick}
-          className={`absolute inset-0 w-full h-full object-cover cursor-pointer ${
-            isLoading || hasError ? "opacity-0" : "opacity-100"
-          } transition-opacity duration-300`}
-          style={{
-            // Hardware acceleration iOS
-            WebkitTransform: "translate3d(0,0,0)",
-            transform: "translate3d(0,0,0)",
-            WebkitBackfaceVisibility: "hidden",
-            backfaceVisibility: "hidden",
-          }}
-        >
-          {/* WebM prioritaire (Android, Chrome) - plus léger */}
-          {webmSrc && <source src={webmSrc} type="video/webm" />}
-          {/* MP4 fallback (iOS, Safari) */}
-          <source src={src} type="video/mp4" />
-        </video>
-      )}
+      {/* Video Element - Always render, no lazy loading delay */}
+      <video
+        ref={videoRef}
+        poster={poster || fallbackPoster}
+        loop
+        muted
+        playsInline
+        autoPlay
+        preload="auto"
+        controls={isMobile && showControlsOnMobile && isPlaying}
+        onLoadedData={handleLoadedData}
+        onCanPlay={handleCanPlay}
+        onError={handleError}
+        onPlay={() => {
+          setIsPlaying(true);
+          setShowPlayButton(false);
+        }}
+        onPause={() => {
+          setIsPlaying(false);
+          setShowPlayButton(true);
+        }}
+        onClick={handleVideoClick}
+        className={`absolute inset-0 w-full h-full object-cover cursor-pointer ${
+          hasError ? "opacity-0" : "opacity-100"
+        } transition-opacity duration-300`}
+        style={{
+          WebkitTransform: "translate3d(0,0,0)",
+          transform: "translate3d(0,0,0)",
+        }}
+      >
+        {webmSrc && <source src={webmSrc} type="video/webm" />}
+        <source src={src} type="video/mp4" />
+      </video>
 
       {/* Play Button Overlay */}
       {showPlayButton && !hasError && !isLoading && (
