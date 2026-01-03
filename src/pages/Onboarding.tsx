@@ -18,7 +18,8 @@ import {
   Loader2, ArrowLeft, ArrowRight, User, Briefcase, 
   Phone, Link2, Check, Sparkles, Crown, Target,
   Laptop, Camera, Building2, HelpCircle, Mail, MessageCircle,
-  Instagram, Linkedin, Lock, Eye
+  Instagram, Linkedin, Lock, Eye, Star, BarChart3, Palette, 
+  BadgeCheck, Infinity
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OnboardingPhotoUpload } from "@/components/onboarding/OnboardingPhotoUpload";
@@ -129,6 +130,21 @@ const formSteps = [
     icon: Eye,
     fields: [] as const
   },
+  { 
+    id: 5, 
+    title: "Upgrade", 
+    subtitle: "Passe en GOLD",
+    icon: Crown,
+    fields: [] as const
+  },
+];
+
+const goldFeatures = [
+  { icon: Infinity, label: "Liens illimités", description: "Ajoute autant de liens que tu veux" },
+  { icon: Palette, label: "Templates premium", description: "Designs exclusifs et personnalisables" },
+  { icon: BarChart3, label: "Statistiques détaillées", description: "Analyse tes scans et visiteurs" },
+  { icon: Star, label: "Personnalisation complète", description: "Couleurs, polices, mise en page" },
+  { icon: BadgeCheck, label: "Sans branding iWasp", description: "Ta marque uniquement" },
 ];
 
 export default function Onboarding() {
@@ -630,6 +646,85 @@ export default function Onboarding() {
                   <p className="text-center text-xs text-[#E5E5E5]/40 mt-6">
                     Le QR code sera généré automatiquement après création
                   </p>
+                </>
+              )}
+
+              {step === 5 && (
+                <>
+                  {/* GOLD Header */}
+                  <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FFC700] to-[#FFD700] mb-4 shadow-lg shadow-[#FFC700]/30">
+                      <Crown className="w-8 h-8 text-[#0B0B0B]" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">
+                      Débloque tout le potentiel de ta carte NFC
+                    </h2>
+                    <p className="text-[#E5E5E5]/60">
+                      Passe en GOLD et transforme ta carte en outil business
+                    </p>
+                  </div>
+
+                  {/* Features List */}
+                  <div className="space-y-3 mb-8">
+                    {goldFeatures.map((feature, index) => (
+                      <div 
+                        key={feature.label}
+                        className="flex items-center gap-4 p-4 rounded-xl bg-[#1F1F1F] border border-[#E5E5E5]/10 animate-fade-in"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <div className="w-11 h-11 rounded-xl bg-[#FFC700]/20 flex items-center justify-center flex-shrink-0">
+                          <feature.icon className="w-5 h-5 text-[#FFC700]" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-white">{feature.label}</p>
+                          <p className="text-sm text-[#E5E5E5]/50">{feature.description}</p>
+                        </div>
+                        <Check className="w-5 h-5 text-[#FFC700] ml-auto flex-shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Pricing */}
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FFC700]/20 to-[#FFC700]/5 border border-[#FFC700]/30 mb-6">
+                    <div className="flex items-baseline justify-center gap-1 mb-2">
+                      <span className="text-4xl font-bold text-white">49</span>
+                      <span className="text-xl text-[#E5E5E5]">MAD</span>
+                      <span className="text-[#E5E5E5]/60">/mois</span>
+                    </div>
+                    <p className="text-center text-sm text-[#E5E5E5]/50">
+                      ou 499 MAD/an <span className="text-[#FFC700]">(2 mois offerts)</span>
+                    </p>
+                  </div>
+
+                  {/* GOLD CTA Button */}
+                  <button 
+                    onClick={() => {
+                      // TODO: Handle GOLD subscription
+                      toast.success("Redirection vers le paiement...");
+                      // For now, proceed with card creation
+                      createCard.mutate(formData);
+                    }}
+                    disabled={createCard.isPending}
+                    className="w-full py-4 rounded-xl font-bold text-lg text-[#0B0B0B] bg-gradient-to-r from-[#FFC700] to-[#FFD700] hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#FFC700]/30"
+                  >
+                    {createCard.isPending ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <>
+                        <Crown size={20} />
+                        Passer en GOLD – 49 MAD/mois
+                      </>
+                    )}
+                  </button>
+
+                  {/* Skip Option */}
+                  <button 
+                    onClick={() => createCard.mutate(formData)}
+                    disabled={createCard.isPending}
+                    className="w-full mt-4 py-3 text-[#E5E5E5]/60 hover:text-[#E5E5E5] transition-colors text-sm"
+                  >
+                    Continuer avec FREE
+                  </button>
                 </>
               )}
             </div>
