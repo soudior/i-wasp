@@ -74,8 +74,8 @@ export default function Pricing() {
                 <span className="text-4xl font-bold text-white">Gratuit</span>
               </div>
               
-              <p className="text-sm text-[#E5E5E5]/50 mb-6">
-                {SUBSCRIPTION_PLANS.FREE.description}
+              <p className="text-sm text-[#E5E5E5]/70 mb-6 italic">
+                Commence gratuitement avec une carte NFC simple.
               </p>
               
               <Link to="/signup">
@@ -128,8 +128,8 @@ export default function Pricing() {
                 <span className="text-[#E5E5E5]/60 ml-2 text-lg">{SUBSCRIPTION_PLANS.GOLD.currency}{SUBSCRIPTION_PLANS.GOLD.period}</span>
               </div>
               
-              <p className="text-sm text-[#E5E5E5]/70 mb-6">
-                {SUBSCRIPTION_PLANS.GOLD.description}
+              <p className="text-sm text-[#FFC700]/80 mb-6 italic">
+                Transforme ta carte NFC en véritable outil business.
               </p>
               
               <Link to="/order/type">
