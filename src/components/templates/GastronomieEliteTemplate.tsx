@@ -33,7 +33,8 @@ import {
   Clock,
   FileText
 } from "lucide-react";
-import { downloadVCard, VCardData } from "@/lib/vcard";
+import { VCardData } from "@/lib/vcard";
+import { VCardGoldButton } from "@/components/VCardGoldButton";
 import { toast } from "sonner";
 
 // Template data interface
@@ -121,21 +122,18 @@ export function GastronomieEliteTemplate({ data, isPreview = false }: Gastronomi
     }
   };
 
-  const handleDownloadVCard = () => {
-    const vcardData: VCardData = {
-      firstName: data.restaurantName,
-      lastName: "",
-      title: data.cuisineType || "Restaurant",
-      company: data.ownerName,
-      email: data.email,
-      phone: data.phone,
-      address: data.address,
-      website: data.website,
-      whatsapp: data.whatsapp,
-      instagram: data.instagramHandle,
-    };
-    downloadVCard(vcardData);
-    toast.success("Contact téléchargé !");
+  // vCard data for VCardGoldButton
+  const vcardData: VCardData = {
+    firstName: data.restaurantName,
+    lastName: "",
+    title: data.cuisineType || "Restaurant",
+    company: data.ownerName,
+    email: data.email,
+    phone: data.phone,
+    address: data.address,
+    website: data.website,
+    whatsapp: data.whatsapp,
+    instagram: data.instagramHandle,
   };
 
   // Preview mode - simplified
@@ -487,52 +485,18 @@ export function GastronomieEliteTemplate({ data, isPreview = false }: Gastronomi
           </motion.section>
         )}
 
-        {/* === vCard Download - Gold Glassmorphism === */}
+        {/* === vCard Download - Gold Glassmorphism V4 === */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
           className="mb-8"
         >
-          <button
-            onClick={handleDownloadVCard}
-            className="group relative w-full overflow-hidden rounded-2xl p-5 transition-all duration-300 hover:scale-[1.02]"
-            style={{
-              background: "linear-gradient(135deg, rgba(212,175,55,0.2) 0%, rgba(184,134,11,0.15) 100%)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(212,175,55,0.3)",
-              boxShadow: "0 8px 32px rgba(212,175,55,0.2), inset 0 1px 0 rgba(255,255,255,0.1)"
-            }}
-          >
-            {/* Shimmer effect */}
-            <motion.div 
-              className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100"
-              initial={{ x: "-100%" }}
-              whileHover={{ x: "100%" }}
-              transition={{ duration: 0.8, ease: "easeInOut" }}
-              style={{
-                background: "linear-gradient(90deg, transparent 0%, rgba(255,215,0,0.3) 50%, transparent 100%)",
-                width: "50%"
-              }}
-            />
-            
-            <div className="relative flex items-center justify-center gap-3">
-              <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center"
-                style={{ 
-                  background: "linear-gradient(135deg, #d4af37 0%, #b8860b 100%)",
-                  boxShadow: "0 4px 15px rgba(212,175,55,0.4)"
-                }}
-              >
-                <User size={24} className="text-black" />
-              </div>
-              <div className="text-left">
-                <p className="font-semibold text-white text-lg">Enregistrer le contact</p>
-                <p className="text-sm text-[#d4af37]">Télécharger vCard</p>
-              </div>
-            </div>
-          </button>
+          <VCardGoldButton 
+            data={vcardData}
+            label="Enregistrer le contact"
+            size="lg"
+          />
         </motion.section>
 
         {/* === Footer === */}

@@ -1,7 +1,9 @@
 /**
- * vCard 3.0 Generator - IWASP Professional
+ * vCard 4.0 Generator - IWASP Professional
  * Compatible: iOS, Android, Outlook, Google Contacts
  * File: contact.vcf
+ * 
+ * Supports: Photos, Addresses, Social Links, Multiple URLs
  */
 
 export interface VCardData {
@@ -12,17 +14,30 @@ export interface VCardData {
   email?: string;
   phone?: string;
   address?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
   website?: string;
   nfcPageUrl?: string;
+  // Photo (Base64 or URL)
+  photoUrl?: string;
+  photoBase64?: string;
   // Social networks
   linkedin?: string;
   instagram?: string;
   twitter?: string;
   whatsapp?: string;
+  facebook?: string;
+  tiktok?: string;
+  youtube?: string;
+  // Additional fields
+  note?: string;
+  birthday?: string;
+  nickname?: string;
 }
 
 /**
- * Escape special characters for vCard format
+ * Escape special characters for vCard 4.0 format
  */
 function escapeVCard(value: string): string {
   return value
@@ -32,44 +47,91 @@ function escapeVCard(value: string): string {
     .replace(/\n/g, '\\n');
 }
 
+/**
+ * Format address for vCard 4.0
+ */
+function formatAddress(data: VCardData): string | null {
+  if (!data.address && !data.city && !data.postalCode && !data.country) {
+    return null;
+  }
+  
+  // ADR format: PO Box;Extended;Street;City;Region;Postal Code;Country
+  const parts = [
+    '', // PO Box
+    '', // Extended address
+    escapeVCard(data.address || ''), // Street
+    escapeVCard(data.city || ''), // City
+    '', // Region/State
+    escapeVCard(data.postalCode || ''), // Postal code
+    escapeVCard(data.country || '') // Country
+  ];
+  
+  return parts.join(';');
+}
+
 export function generateVCard(data: VCardData): string {
   const lines: string[] = [
     "BEGIN:VCARD",
-    "VERSION:3.0",
+    "VERSION:4.0",
     `FN:${escapeVCard(data.firstName)} ${escapeVCard(data.lastName)}`,
     `N:${escapeVCard(data.lastName)};${escapeVCard(data.firstName)};;;`,
   ];
 
+  // Nickname
+  if (data.nickname) {
+    lines.push(`NICKNAME:${escapeVCard(data.nickname)}`);
+  }
+
+  // Organization
   if (data.company) {
     lines.push(`ORG:${escapeVCard(data.company)}`);
   }
 
+  // Title
   if (data.title) {
     lines.push(`TITLE:${escapeVCard(data.title)}`);
   }
 
+  // Phone
   if (data.phone) {
-    lines.push(`TEL;TYPE=CELL:${data.phone}`);
+    lines.push(`TEL;TYPE=cell;VALUE=uri:tel:${data.phone.replace(/\s/g, '')}`);
   }
 
+  // Email
   if (data.email) {
-    lines.push(`EMAIL;TYPE=INTERNET:${data.email}`);
+    lines.push(`EMAIL;TYPE=work:${data.email}`);
   }
 
-  if (data.address) {
-    lines.push(`ADR;TYPE=WORK:;;${escapeVCard(data.address)};;;;`);
+  // Address
+  const formattedAddress = formatAddress(data);
+  if (formattedAddress) {
+    lines.push(`ADR;TYPE=work:${formattedAddress}`);
   }
 
+  // Photo (URL or Base64)
+  if (data.photoBase64) {
+    lines.push(`PHOTO;ENCODING=b;TYPE=JPEG:${data.photoBase64}`);
+  } else if (data.photoUrl) {
+    lines.push(`PHOTO;MEDIATYPE=image/jpeg:${data.photoUrl}`);
+  }
+
+  // Birthday
+  if (data.birthday) {
+    lines.push(`BDAY:${data.birthday}`);
+  }
+
+  // Website
   if (data.website) {
     const url = data.website.startsWith('http') ? data.website : `https://${data.website}`;
-    lines.push(`URL;TYPE=WORK:${url}`);
+    lines.push(`URL;TYPE=work:${url}`);
   }
 
+  // NFC Page URL (preferred URL)
   if (data.nfcPageUrl) {
-    lines.push(`URL;TYPE=PREF:${data.nfcPageUrl}`);
+    lines.push(`URL;TYPE=pref:${data.nfcPageUrl}`);
   }
 
-  // Social networks as X-SOCIALPROFILE (supported by iOS, Android, Outlook)
+  // Social networks as X-SOCIALPROFILE (vCard 4.0 extension, supported by iOS, Android, Outlook)
   if (data.linkedin) {
     const linkedinUrl = data.linkedin.startsWith('http') 
       ? data.linkedin 
@@ -91,12 +153,43 @@ export function generateVCard(data: VCardData): string {
     lines.push(`X-SOCIALPROFILE;TYPE=twitter:${twitterUrl}`);
   }
 
-  // Note with WhatsApp link if provided
-  if (data.whatsapp) {
-    const cleanNumber = data.whatsapp.replace(/[^0-9+]/g, '');
-    lines.push(`NOTE:WhatsApp: https://wa.me/${cleanNumber.replace('+', '')}`);
+  if (data.facebook) {
+    const facebookUrl = data.facebook.startsWith('http') 
+      ? data.facebook 
+      : `https://facebook.com/${data.facebook}`;
+    lines.push(`X-SOCIALPROFILE;TYPE=facebook:${facebookUrl}`);
   }
 
+  if (data.tiktok) {
+    const tiktokUrl = data.tiktok.startsWith('http') 
+      ? data.tiktok 
+      : `https://tiktok.com/@${data.tiktok.replace('@', '')}`;
+    lines.push(`X-SOCIALPROFILE;TYPE=tiktok:${tiktokUrl}`);
+  }
+
+  if (data.youtube) {
+    const youtubeUrl = data.youtube.startsWith('http') 
+      ? data.youtube 
+      : `https://youtube.com/@${data.youtube.replace('@', '')}`;
+    lines.push(`X-SOCIALPROFILE;TYPE=youtube:${youtubeUrl}`);
+  }
+
+  // Note with WhatsApp link if provided
+  const noteParts: string[] = [];
+  if (data.whatsapp) {
+    const cleanNumber = data.whatsapp.replace(/[^0-9+]/g, '');
+    noteParts.push(`WhatsApp: https://wa.me/${cleanNumber.replace('+', '')}`);
+  }
+  if (data.note) {
+    noteParts.push(data.note);
+  }
+  if (noteParts.length > 0) {
+    lines.push(`NOTE:${escapeVCard(noteParts.join(' | '))}`);
+  }
+
+  // Producer
+  lines.push("PRODID:-//IWASP//Digital Business Card//FR");
+  
   lines.push("END:VCARD");
 
   return lines.join("\r\n");
@@ -156,7 +249,10 @@ export function getVCardPreview(data: VCardData): {
   }
   
   if (data.address) {
-    fields.push({ label: "Adresse", value: data.address, icon: "map-pin" });
+    const fullAddress = [data.address, data.city, data.postalCode, data.country]
+      .filter(Boolean)
+      .join(', ');
+    fields.push({ label: "Adresse", value: fullAddress, icon: "map-pin" });
   }
   
   if (data.website) {
@@ -169,6 +265,10 @@ export function getVCardPreview(data: VCardData): {
   
   if (data.instagram) {
     fields.push({ label: "Instagram", value: data.instagram, icon: "instagram" });
+  }
+  
+  if (data.photoUrl) {
+    fields.push({ label: "Photo", value: "Incluse", icon: "camera" });
   }
   
   // Minimum required: name + one contact method
