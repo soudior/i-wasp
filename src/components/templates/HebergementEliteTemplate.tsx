@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { VCardData } from "@/lib/vcard";
 import { VCardGoldButton } from "@/components/VCardGoldButton";
+import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 import { toast } from "sonner";
 
 // Template data interface
@@ -87,6 +88,10 @@ export interface HebergementEliteData {
   
   // Website
   website?: string;
+  
+  // iCal URLs for availability
+  airbnbIcalUrl?: string;
+  bookingIcalUrl?: string;
   
   // vCard data
   email?: string;
@@ -578,6 +583,26 @@ export function HebergementEliteTemplate({ data, isPreview = false }: Hebergemen
                 <ChevronRight size={18} className="text-[#d4af37]" />
               </a>
             )}
+          </motion.section>
+        )}
+
+        {/* === Availability Calendar (iCal Integration) === */}
+        {(data.airbnbIcalUrl || data.bookingIcalUrl) && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="mb-8"
+          >
+            <h2 className="text-xs uppercase tracking-[0.2em] text-white/40 mb-3 px-1">
+              Disponibilités
+            </h2>
+            <AvailabilityCalendar
+              airbnbIcalUrl={data.airbnbIcalUrl}
+              bookingIcalUrl={data.bookingIcalUrl}
+              daysAhead={60}
+              compact={false}
+            />
           </motion.section>
         )}
 
