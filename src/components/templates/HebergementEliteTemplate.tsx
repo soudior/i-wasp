@@ -39,6 +39,7 @@ import { VCardData } from "@/lib/vcard";
 import { VCardGoldButton } from "@/components/VCardGoldButton";
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 import { StoriesSection, useCardStories } from "@/components/templates/StoriesSection";
+import { IntroVideoSection } from "@/components/templates/IntroVideoSection";
 import { toast } from "sonner";
 
 // Template data interface
@@ -55,6 +56,10 @@ export interface HebergementEliteData {
   
   // Logo
   logoUrl?: string;
+  
+  // Introduction Video
+  introVideoUrl?: string;
+  introVideoPoster?: string;
   
   // Booking links
   airbnbUrl?: string;
@@ -453,6 +458,15 @@ export function HebergementEliteTemplate({ data, cardId, isPreview = false }: He
           />
         </div>
         
+        {/* === Introduction Video === */}
+        {data.introVideoUrl && (
+          <IntroVideoSection
+            videoUrl={data.introVideoUrl}
+            posterUrl={data.introVideoPoster}
+            title="Découvrez le bien"
+            subtitle="Visite virtuelle en vidéo"
+          />
+        )}
         
         {/* === Photo Gallery (Priority #1) === */}
         <div ref={photosRef}>

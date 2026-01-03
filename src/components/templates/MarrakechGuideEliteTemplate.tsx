@@ -9,6 +9,7 @@ import {
 import { VCardGoldButton } from '@/components/VCardGoldButton';
 import { handleWhatsAppTap, handleSocialTap } from '@/lib/smartActions';
 import { StoriesSection, useCardStories } from '@/components/templates/StoriesSection';
+import { IntroVideoSection } from '@/components/templates/IntroVideoSection';
 
 // Types
 interface Recommendation {
@@ -40,8 +41,9 @@ interface GuideData {
   whatsapp?: string;
   instagram?: string;
   email?: string;
-  videoUrl?: string;
-  videoPoster?: string;
+  // Introduction Video
+  introVideoUrl?: string;
+  introVideoPoster?: string;
   categories: Category[];
 }
 
@@ -441,53 +443,6 @@ const CertificationBadge: React.FC<{ certificationId?: string }> = ({ certificat
   </motion.div>
 );
 
-// Video Player
-const VideoPlayer: React.FC<{ 
-  videoUrl: string; 
-  posterUrl?: string;
-}> = ({ videoUrl, posterUrl }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
-
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
-  };
-
-  return (
-    <motion.div 
-      variants={itemVariants}
-      className="relative rounded-3xl overflow-hidden"
-    >
-      <video
-        ref={videoRef}
-        src={videoUrl}
-        poster={posterUrl}
-        muted
-        playsInline
-        autoPlay
-        loop
-        className="w-full aspect-video object-cover"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-      
-      <button
-        onClick={toggleMute}
-        className="absolute bottom-4 right-4 p-3 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 text-white"
-      >
-        {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-      </button>
-      
-      <div className="absolute bottom-4 left-4 flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-        <span className="text-sm text-white/80">Découvrez Marrakech</span>
-      </div>
-    </motion.div>
-  );
-};
-
 // Main Component
 export const MarrakechGuideEliteTemplate: React.FC<MarrakechGuideEliteTemplateProps> = ({
   data = {},
@@ -582,11 +537,15 @@ export const MarrakechGuideEliteTemplate: React.FC<MarrakechGuideEliteTemplatePr
         </motion.div>
 
         {/* Video Section (if available) */}
-        {guideData.videoUrl && (
-          <VideoPlayer 
-            videoUrl={guideData.videoUrl} 
-            posterUrl={guideData.videoPoster}
-          />
+        {guideData.introVideoUrl && (
+          <motion.div variants={itemVariants}>
+            <IntroVideoSection 
+              videoUrl={guideData.introVideoUrl} 
+              posterUrl={guideData.introVideoPoster}
+              title="Découvrez Marrakech"
+              subtitle="Visite guidée exclusive"
+            />
+          </motion.div>
         )}
 
         {/* Bons Plans Section */}

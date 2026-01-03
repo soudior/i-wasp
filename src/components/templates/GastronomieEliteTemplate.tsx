@@ -36,6 +36,7 @@ import {
 import { VCardData } from "@/lib/vcard";
 import { VCardGoldButton } from "@/components/VCardGoldButton";
 import { StoriesSection, useCardStories } from "@/components/templates/StoriesSection";
+import { IntroVideoSection } from "@/components/templates/IntroVideoSection";
 import { toast } from "sonner";
 
 // Template data interface
@@ -50,6 +51,10 @@ export interface GastronomieEliteData {
   
   // Logo
   logoUrl?: string;
+  
+  // Introduction Video
+  introVideoUrl?: string;
+  introVideoPoster?: string;
   
   // Menu
   menuUrl?: string; // PDF or webpage URL
@@ -185,6 +190,16 @@ export function GastronomieEliteTemplate({ data, cardId, isPreview = false }: Ga
           whatsappNumber={data.whatsapp}
           variant="premium"
         />
+        
+        {/* === Introduction Video === */}
+        {data.introVideoUrl && (
+          <IntroVideoSection
+            videoUrl={data.introVideoUrl}
+            posterUrl={data.introVideoPoster}
+            title="Notre Univers"
+            subtitle="Une expérience culinaire unique"
+          />
+        )}
         
         {/* === Header: Logo + Name + Cuisine + Rating === */}
         <motion.header
