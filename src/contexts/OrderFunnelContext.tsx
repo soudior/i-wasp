@@ -52,6 +52,7 @@ export interface DesignConfig {
   logoUrl: string | null;
   cardColor: string;
   designPreviewUrl?: string;
+  template?: string; // Selected template ID
 }
 
 // Order options (step 5)
