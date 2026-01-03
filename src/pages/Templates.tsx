@@ -188,6 +188,18 @@ const templates = [
     isRental: true,
     demoUrl: "/rental-demo",
   },
+  { 
+    id: "vcard-airbnb-booking",
+    name: "vCard Airbnb Booking – iWasp", 
+    sector: "rental",
+    cardImage: cardGoldAccent, 
+    phoneImage: phoneGold,
+    description: "Carte NFC premium pour Airbnb, Booking, Riads. Avis, réservations, WiFi QR, et autour du logement.",
+    features: ["Géolocalisation + Itinéraire", "Galerie Photos HD", "Avis Airbnb/Booking/Google", "WiFi QR automatique", "Autour du logement", "Carte NFC iWasp"],
+    keyFeature: { icon: Diamond, label: "Premium Hébergement", color: "bg-[#d4af37]/20 text-[#d4af37]" },
+    hasWhatsApp: true,
+    isRental: true,
+  },
 ];
 
 const Templates = () => {
