@@ -165,8 +165,16 @@ const PublicCard = () => {
 
   // Use HerbalismEliteTemplate for herbalism-elite template
   if (template === 'herbalism-elite') {
-    // Use imported photo for herbalism-marrakech slug
-    const profilePhotoUrl = slug === 'herbalism-marrakech' ? ibrahimPhoto : card.photo_url;
+    // Determine if this is the personal Ibrahim card or the business card
+    const isIbrahimPersonalCard = slug === 'ibrahim-benelfares';
+    const isHerbalismBusinessCard = slug === 'herbalism-marrakech';
+    
+    // Use imported photo for both cards (same person)
+    const profilePhotoUrl = ibrahimPhoto;
+    
+    // Phone numbers: Ibrahim personal vs Herbalism business
+    const phoneNumber = isIbrahimPersonalCard ? "+212 675 571257" : "+212 666 540 329";
+    const whatsappNumber = isIbrahimPersonalCard ? "212675571257" : "212666540329";
     
     return (
       <HerbalismEliteTemplate 
@@ -175,9 +183,9 @@ const PublicCard = () => {
           brandName: card.company || "Herbalism Marrakech",
           tagline: card.tagline || "An Herbal Experience",
           logo: card.logo_url || undefined,
-          profilePhoto: profilePhotoUrl || undefined,
-          phone: card.has_phone ? "+212 675 571257" : undefined,
-          whatsapp: card.has_whatsapp ? "212675571257" : undefined,
+          profilePhoto: profilePhotoUrl,
+          phone: card.has_phone ? phoneNumber : undefined,
+          whatsapp: card.has_whatsapp ? whatsappNumber : undefined,
           website: card.website || undefined,
           instagram: card.has_instagram ? "herbalism.marrakech" : undefined,
           googleReviewsUrl: "https://maps.app.goo.gl/ecBsV54n8TZnfN3NA?g_st=iwb",
@@ -186,7 +194,7 @@ const PublicCard = () => {
             lastName: card.last_name,
             company: card.company || undefined,
             title: card.title || undefined,
-            phone: "+212 675 571257",
+            phone: phoneNumber,
           }
         }}
       />
