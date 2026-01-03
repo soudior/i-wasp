@@ -13,6 +13,7 @@
 
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { scrollToTopInstant } from "@/hooks/useScrollToTop";
 
 // Customer types
 export type CustomerType = "particulier" | "professionnel" | "entreprise";
@@ -245,15 +246,18 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  // Navigate to specific step
+  // Navigate to specific step with scroll to top
   const goToStep = useCallback((step: number) => {
     if (step >= 1 && step <= TOTAL_STEPS && canAccessStep(step)) {
       setState(prev => ({ ...prev, currentStep: step }));
       navigate(STEP_PATHS[step - 1]);
+      // Auto scroll to top after navigation
+      scrollToTopInstant();
     } else {
       // Redirect to first incomplete step
       const firstIncomplete = getFirstIncompleteStep();
       navigate(STEP_PATHS[firstIncomplete - 1], { replace: true });
+      scrollToTopInstant();
     }
   }, [canAccessStep, getFirstIncompleteStep, navigate]);
 
