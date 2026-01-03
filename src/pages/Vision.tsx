@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Crown, Globe, Sparkles, Users, Zap, ArrowRight, Building2, MapPin, Bell, BarChart3 } from "lucide-react";
 import phoneGold from "@/assets/phones/phone-gold.png";
+import { DashboardPreview } from "@/components/DashboardPreview";
 
 export default function Vision() {
   return (
@@ -109,6 +110,38 @@ export default function Vision() {
                 </ul>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Proof Section */}
+      <section className="py-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 mb-4">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span className="text-xs font-medium text-amber-400">Capture Écran Réelle</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              La Preuve par <span className="text-amber-400">l'Interface</span>
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Voici exactement ce que vous obtenez avec i-wasp Gold. Aucune promesse en l'air.
+            </p>
+          </div>
+
+          {/* Real Dashboard Previews */}
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-8">
+            <DashboardPreview variant="analytics" />
+            <DashboardPreview variant="leads" />
+          </div>
+
+          {/* Proof badge */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30">
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-sm text-green-400">Dashboard opérationnel • Clients actifs</span>
+            </div>
           </div>
         </div>
       </section>

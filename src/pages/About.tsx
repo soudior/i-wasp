@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Zap, Shield, Target, Crown, ArrowRight, Sparkles, BarChart3, Bell, Wifi } from "lucide-react";
 import cardBlackMatte from "@/assets/cards/card-black-matte.webp";
-import phoneBlack from "@/assets/phones/phone-black.webp";
-
+import { DashboardPreview } from "@/components/DashboardPreview";
 export default function About() {
   return (
     <div className="min-h-screen bg-black">
@@ -88,7 +87,7 @@ export default function About() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 mb-4">
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <span className="text-xs font-medium text-amber-400">Dashboard Gold</span>
+              <span className="text-xs font-medium text-amber-400">Capture Réelle du Dashboard</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Votre Centre de <span className="text-amber-400">Commandement</span>
@@ -98,14 +97,18 @@ export default function About() {
             </p>
           </div>
           
-          {/* Phone Preview */}
-          <div className="relative max-w-sm mx-auto">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/30 to-transparent rounded-3xl blur-3xl" />
-            <img 
-              src={phoneBlack} 
-              alt="Dashboard i-wasp Gold" 
-              className="relative w-full drop-shadow-2xl"
-            />
+          {/* Real Dashboard Previews */}
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <DashboardPreview variant="analytics" />
+            <DashboardPreview variant="leads" />
+          </div>
+          
+          {/* Proof badge */}
+          <div className="text-center mt-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30">
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-sm text-green-400">Interface réelle • Données en direct</span>
+            </div>
           </div>
         </div>
       </section>
