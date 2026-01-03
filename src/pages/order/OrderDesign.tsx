@@ -24,6 +24,7 @@ import {
   contentVariants,
   itemVariants 
 } from "@/components/order";
+import { ImportedDataPreview } from "@/components/order/ImportedDataPreview";
 import { LogoPlacementEditor, LogoPlacementConfig, LogoPlacement, BlendMode } from "@/components/order/LogoPlacementEditor";
 import { LogoCropper } from "@/components/order/LogoCropper";
 import { TemplateGallery, TemplateDefinition } from "@/components/order/TemplateGallery";
@@ -183,6 +184,69 @@ function OrderDesignContent() {
     isValidated,
     selectedTemplate: selectedTemplate || undefined,
   }), [logoUrl, selectedColor, logoConfig, isValidated, selectedTemplate]);
+
+  // Generate templates with imported data applied
+  const getTemplatesWithImportedData = useMemo(() => {
+    return (): LuxuryTemplateDefinition[] => {
+      const importedData = state.designConfig?.importedData;
+      
+      // If no imported data, return default templates
+      if (!importedData) return AVAILABLE_TEMPLATES;
+
+      // Map imported data to template-specific format
+      const herbalismData = {
+        brandName: importedData.brandName || "Votre Marque",
+        tagline: importedData.tagline,
+        logo: importedData.logo,
+        phone: importedData.phone,
+        email: importedData.email,
+        website: importedData.website,
+        instagram: importedData.instagram,
+        whatsapp: importedData.whatsapp,
+        googleReviewsUrl: importedData.googleMapsUrl,
+        products: importedData.products?.map((p, i) => ({
+          id: String(i + 1),
+          name: p.name,
+          image: p.image || "",
+          category: p.category || "Produit",
+          ingredients: [],
+          benefits: [],
+          price: p.price,
+        })),
+      };
+
+      return AVAILABLE_TEMPLATES.map(template => {
+        if (template.id === "herbalism-elite" && importedData) {
+          return {
+            ...template,
+            description: importedData.brandName 
+              ? `Template personnalisé pour ${importedData.brandName} avec vos données importées.`
+              : template.description,
+            previewComponent: <HerbalismEliteTemplate data={herbalismData as any} isPreview={true} />,
+          };
+        }
+        if (template.id === "gastronomie-elite" && importedData) {
+          return {
+            ...template,
+            description: importedData.brandName 
+              ? `Template gastronomie pour ${importedData.brandName}`
+              : template.description,
+            previewComponent: <GastronomieEliteTemplate data={{
+              restaurantName: importedData.brandName || "Restaurant",
+              tagline: importedData.tagline,
+              logo: importedData.logo,
+              phone: importedData.phone,
+              email: importedData.email,
+              website: importedData.website,
+              instagram: importedData.instagram,
+              whatsapp: importedData.whatsapp,
+            } as any} isPreview={true} />,
+          };
+        }
+        return template;
+      });
+    };
+  }, [state.designConfig?.importedData]);
 
   // Auto-save hook
   const { 
@@ -449,8 +513,25 @@ function OrderDesignContent() {
 
               {/* Templates Tab - Luxury Gallery */}
               <TabsContent value="templates" className="mt-8">
+                {/* Imported Data Preview - Show when data exists */}
+                {state.designConfig?.importedData && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-8"
+                  >
+                    <ImportedDataPreview
+                      data={state.designConfig.importedData}
+                      selectedTemplate={selectedTemplate || undefined}
+                      onEditData={() => {
+                        toast.info("Retournez à l'étape 1 pour modifier les données importées");
+                      }}
+                    />
+                  </motion.div>
+                )}
+
                 <LuxuryTemplateGallery
-                  templates={AVAILABLE_TEMPLATES}
+                  templates={getTemplatesWithImportedData()}
                   selectedTemplateId={selectedTemplate}
                   onSelectTemplate={handleSelectTemplate}
                   onPreviewTemplate={handlePreviewTemplate}
@@ -489,6 +570,7 @@ function OrderDesignContent() {
                           <p className="text-[#d4af37] font-medium">Template sélectionné</p>
                           <p className="text-white/60 text-sm">
                             {AVAILABLE_TEMPLATES.find(t => t.id === selectedTemplate)?.name}
+                            {state.designConfig?.importedData && " • Données importées appliquées"}
                           </p>
                         </div>
                       </div>
