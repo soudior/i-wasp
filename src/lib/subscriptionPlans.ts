@@ -13,8 +13,10 @@ export const SUBSCRIPTION_PLANS = {
     tagline: "Découverte",
     description: "Testez iWasp gratuitement avec les fonctionnalités essentielles",
     price: 0,
+    priceMonthly: 0,
+    priceAnnual: 0,
     currency: "MAD",
-    period: "",
+    period: "/mois",
     color: "zinc",
     
     // Ce qui est INCLUS dans FREE
@@ -78,9 +80,12 @@ export const SUBSCRIPTION_PLANS = {
     name: "GOLD",
     tagline: "Solution Business",
     description: "La solution business complète pour les professionnels",
-    price: 490,
+    priceMonthly: 49,
+    priceAnnual: 499,
+    savingsAnnual: 2, // 2 mois offerts
     currency: "MAD",
-    period: "/an",
+    periodMonthly: "/mois",
+    periodAnnual: "/an",
     color: "gold",
     
     // Fonctionnalités GOLD - Solution Business Premium
