@@ -2,6 +2,7 @@
  * Step 4: Design Configuration
  * /order/card-design
  * 
+ * - Template gallery with real-time preview
  * - Upload logo client (PNG/JPG/SVG, max 15Mo)
  * - Choix couleur carte (3 palettes verrouillées)
  * - Placement logo: Centré, Coin, Auto, PLEIN FORMAT
@@ -25,10 +26,14 @@ import {
 } from "@/components/order";
 import { LogoPlacementEditor, LogoPlacementConfig, LogoPlacement, BlendMode } from "@/components/order/LogoPlacementEditor";
 import { LogoCropper } from "@/components/order/LogoCropper";
+import { TemplateGallery, TemplateDefinition } from "@/components/order/TemplateGallery";
+import { TemplatePreviewModal } from "@/components/order/TemplatePreviewModal";
+import { LuxuryHotelTemplate } from "@/components/templates/LuxuryHotelTemplate";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -40,7 +45,8 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
-  Crop
+  Crop,
+  LayoutGrid
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -51,7 +57,99 @@ interface DesignFormData extends DesignConfig {
   logoBlendMode: BlendMode;
   logoScale: number;
   isValidated: boolean;
+  selectedTemplate?: string;
 }
+
+// Available templates for the gallery
+const AVAILABLE_TEMPLATES: TemplateDefinition[] = [
+  {
+    id: "luxury-hotel",
+    name: "Luxury Hotel",
+    category: "hotel",
+    description: "Template ultra-premium pour hôtels 5 étoiles avec design noir & or, modules WiFi, carte interactive et avis Google.",
+    features: ["WiFi", "Carte", "WhatsApp", "Avis Google", "Site web", "vCard"],
+    premium: true,
+    new: true,
+    previewComponent: <LuxuryHotelTemplate data={{} as any} isPreview={true} />,
+  },
+  {
+    id: "executive",
+    name: "Executive",
+    category: "business",
+    description: "Design professionnel avec accents dorés pour dirigeants et entrepreneurs.",
+    features: ["vCard", "LinkedIn", "WhatsApp", "Site web"],
+    premium: true,
+    previewComponent: (
+      <div className="w-full max-w-sm bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 text-white">
+        <div className="w-16 h-16 rounded-xl bg-[#d4af37]/20 mx-auto mb-4 flex items-center justify-center">
+          <span className="text-[#d4af37] text-2xl font-serif">E</span>
+        </div>
+        <h3 className="text-center font-semibold">Executive Template</h3>
+        <p className="text-center text-white/50 text-sm mt-1">Directeur • Entreprise</p>
+        <div className="mt-4 space-y-2">
+          <div className="h-10 rounded-lg bg-white/10" />
+          <div className="h-10 rounded-lg bg-[#d4af37]/20" />
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "minimal-white",
+    name: "Minimal Blanc",
+    category: "minimal",
+    description: "Design épuré et moderne avec fond blanc et typographie élégante.",
+    features: ["vCard", "Réseaux sociaux", "Site web"],
+    previewComponent: (
+      <div className="w-full max-w-sm bg-white rounded-2xl p-6 shadow-lg border">
+        <div className="w-16 h-16 rounded-full bg-gray-100 mx-auto mb-4" />
+        <h3 className="text-center font-medium text-gray-900">Prénom Nom</h3>
+        <p className="text-center text-gray-500 text-sm mt-1">Titre • Entreprise</p>
+        <div className="mt-4 space-y-2">
+          <div className="h-10 rounded-lg bg-gray-100" />
+          <div className="h-10 rounded-lg bg-gray-100" />
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "boutique",
+    name: "Boutique Luxe",
+    category: "retail",
+    description: "Template élégant pour boutiques et commerces premium.",
+    features: ["Localisation", "Horaires", "WhatsApp", "Instagram"],
+    previewComponent: (
+      <div className="w-full max-w-sm bg-gradient-to-br from-rose-50 to-amber-50 rounded-2xl p-6 border border-rose-100">
+        <div className="w-14 h-14 rounded-xl bg-rose-100 mx-auto mb-4 flex items-center justify-center">
+          <span className="text-rose-500 text-xl">✦</span>
+        </div>
+        <h3 className="text-center font-serif text-gray-900">Ma Boutique</h3>
+        <p className="text-center text-rose-500 text-sm mt-1">Mode & Accessoires</p>
+        <div className="mt-4 space-y-2">
+          <div className="h-10 rounded-lg bg-white/60" />
+          <div className="h-10 rounded-lg bg-rose-100" />
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "creative",
+    name: "Creative Studio",
+    category: "creative",
+    description: "Design audacieux avec dégradés vibrants pour créatifs et artistes.",
+    features: ["Portfolio", "Réseaux sociaux", "Contact"],
+    previewComponent: (
+      <div className="w-full max-w-sm bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 rounded-2xl p-6 text-white">
+        <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur mx-auto mb-4" />
+        <h3 className="text-center font-bold">Creative Studio</h3>
+        <p className="text-center text-white/70 text-sm mt-1">Designer • Artiste</p>
+        <div className="mt-4 space-y-2">
+          <div className="h-10 rounded-lg bg-white/20" />
+          <div className="h-10 rounded-lg bg-white/10" />
+        </div>
+      </div>
+    ),
+  },
+];
 
 // Locked color palettes
 const COLOR_PALETTES = [
@@ -97,6 +195,11 @@ function OrderDesignContent() {
   const [isValidated, setIsValidated] = useState(false);
   const [showCropper, setShowCropper] = useState(false);
   const [originalLogoUrl, setOriginalLogoUrl] = useState<string | null>(null);
+  
+  // Template selection state
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [previewTemplate, setPreviewTemplate] = useState<TemplateDefinition | null>(null);
+  const [activeTab, setActiveTab] = useState<"templates" | "custom">("templates");
 
   // Logo placement configuration
   const [logoConfig, setLogoConfig] = useState<LogoPlacementConfig>({
@@ -115,7 +218,8 @@ function OrderDesignContent() {
     logoBlendMode: logoConfig.blendMode,
     logoScale: logoConfig.scale,
     isValidated,
-  }), [logoUrl, selectedColor, logoConfig, isValidated]);
+    selectedTemplate: selectedTemplate || undefined,
+  }), [logoUrl, selectedColor, logoConfig, isValidated, selectedTemplate]);
 
   // Auto-save hook
   const { 
@@ -227,12 +331,31 @@ function OrderDesignContent() {
   };
 
   const handleValidateDesign = () => {
-    if (!logoUrl) {
+    // Template mode: just need template selection
+    if (activeTab === "templates" && selectedTemplate) {
+      setIsValidated(true);
+      toast.success("Template sélectionné !");
+      return;
+    }
+    // Custom mode: need logo
+    if (activeTab === "custom" && !logoUrl) {
       toast.error("Veuillez d'abord télécharger votre logo");
       return;
     }
     setIsValidated(true);
     toast.success("Design validé !");
+  };
+
+  const handleSelectTemplate = (templateId: string) => {
+    setSelectedTemplate(templateId);
+    setIsValidated(false);
+  };
+
+  const handlePreviewTemplate = (templateId: string) => {
+    const template = AVAILABLE_TEMPLATES.find(t => t.id === templateId);
+    if (template) {
+      setPreviewTemplate(template);
+    }
   };
 
   const handleContinue = () => {
@@ -244,12 +367,14 @@ function OrderDesignContent() {
     setDesignConfig({
       logoUrl,
       cardColor: selectedColor,
+      template: selectedTemplate || undefined,
     });
     clearSaved(); // Clear draft on successful submit
     nextStep();
   };
 
-  const canContinue = logoUrl && isValidated;
+  const canContinue = (activeTab === "templates" && selectedTemplate && isValidated) || 
+                      (activeTab === "custom" && logoUrl && isValidated);
 
   return (
     <div className="min-h-screen bg-background">
@@ -274,7 +399,7 @@ function OrderDesignContent() {
 
             {/* Header */}
             <motion.div 
-              className="text-center mb-10"
+              className="text-center mb-8"
               variants={contentVariants}
               initial="initial"
               animate="animate"
@@ -283,13 +408,13 @@ function OrderDesignContent() {
                 className="text-3xl md:text-4xl font-display font-bold mb-3"
                 variants={itemVariants}
               >
-                Personnalisez votre carte
+                Choisissez votre design
               </motion.h1>
               <motion.p 
                 className="text-muted-foreground text-lg"
                 variants={itemVariants}
               >
-                Positionnez votre logo et choisissez la couleur
+                Sélectionnez un template ou personnalisez votre carte
               </motion.p>
               {/* Auto-save indicator */}
               <motion.div 
@@ -299,6 +424,72 @@ function OrderDesignContent() {
                 <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
               </motion.div>
             </motion.div>
+
+            {/* Design Mode Tabs */}
+            <Tabs 
+              value={activeTab} 
+              onValueChange={(v) => {
+                setActiveTab(v as "templates" | "custom");
+                setIsValidated(false);
+              }}
+              className="mb-8"
+            >
+              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-12">
+                <TabsTrigger value="templates" className="gap-2 text-sm">
+                  <LayoutGrid size={16} />
+                  Templates
+                </TabsTrigger>
+                <TabsTrigger value="custom" className="gap-2 text-sm">
+                  <Palette size={16} />
+                  Personnalisé
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Templates Tab */}
+              <TabsContent value="templates" className="mt-6">
+                <TemplateGallery
+                  templates={AVAILABLE_TEMPLATES}
+                  selectedTemplateId={selectedTemplate}
+                  onSelectTemplate={handleSelectTemplate}
+                  onPreviewTemplate={handlePreviewTemplate}
+                />
+
+                {/* Template Validation */}
+                {selectedTemplate && !isValidated && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-6"
+                  >
+                    <Button
+                      size="lg"
+                      onClick={handleValidateDesign}
+                      className="w-full max-w-md mx-auto h-14 text-lg rounded-xl bg-gradient-to-r from-[#d4af37] to-amber-500 hover:opacity-90 flex"
+                    >
+                      <CheckCircle2 className="mr-2 h-5 w-5" />
+                      Confirmer ce template
+                    </Button>
+                  </motion.div>
+                )}
+
+                {selectedTemplate && isValidated && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-6"
+                  >
+                    <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20 max-w-md mx-auto">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <AlertDescription className="text-green-700 dark:text-green-400">
+                        Template "{AVAILABLE_TEMPLATES.find(t => t.id === selectedTemplate)?.name}" sélectionné !
+                      </AlertDescription>
+                    </Alert>
+                  </motion.div>
+                )}
+              </TabsContent>
+
+              {/* Custom Design Tab */}
+              <TabsContent value="custom" className="mt-6">
 
           <div className="grid gap-8 lg:grid-cols-2">
             {/* Live Preview with Placement Editor */}
@@ -541,6 +732,8 @@ function OrderDesignContent() {
               )}
             </motion.div>
           </div>
+              </TabsContent>
+            </Tabs>
 
           {/* Navigation */}
           <motion.div 
@@ -580,6 +773,17 @@ function OrderDesignContent() {
           onCropComplete={handleCropComplete}
         />
       )}
+
+      {/* Template Preview Modal */}
+      <TemplatePreviewModal
+        template={previewTemplate}
+        isOpen={!!previewTemplate}
+        onClose={() => setPreviewTemplate(null)}
+        onSelect={(templateId) => {
+          setSelectedTemplate(templateId);
+          setPreviewTemplate(null);
+        }}
+      />
 
       <Footer />
     </div>
