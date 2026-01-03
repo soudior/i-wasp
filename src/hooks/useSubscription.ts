@@ -1,23 +1,26 @@
 /**
  * useSubscription - Hook pour gérer l'abonnement utilisateur
- * Free vs Premium
+ * FREE vs GOLD (2 plans uniquement)
  */
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { SUBSCRIPTION_PLANS, isPremiumPlan } from "@/lib/subscriptionPlans";
+
+export type PlanType = "free" | "gold";
 
 interface Subscription {
   id: string;
   user_id: string;
-  plan: "free" | "premium";
+  plan: string;
   status: "active" | "cancelled" | "expired";
   price_cents: number;
   currency: string;
   started_at: string;
   expires_at: string | null;
   cancelled_at: string | null;
-  payment_method: string;
+  payment_method: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -26,7 +29,7 @@ interface Subscription {
 export function useSubscription() {
   const { user } = useAuth();
 
-  const { data: subscription, isLoading, error } = useQuery({
+  const { data: subscription, isLoading, error, refetch } = useQuery({
     queryKey: ["subscription", user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -61,38 +64,55 @@ export function useSubscription() {
     enabled: !!user?.id,
   });
 
-  const isPremium = subscription?.plan === "premium" && 
-                    subscription?.status === "active" &&
-                    (!subscription?.expires_at || new Date(subscription.expires_at) > new Date());
+  // Normalize plan name (premium -> gold for backwards compatibility)
+  const normalizedPlan = subscription?.plan === "premium" ? "gold" : subscription?.plan || "free";
+  
+  const isGold = isPremiumPlan(subscription?.plan || "") && 
+                 subscription?.status === "active" &&
+                 (!subscription?.expires_at || new Date(subscription.expires_at) > new Date());
+
+  // Alias for backwards compatibility
+  const isPremium = isGold;
 
   return {
     subscription,
     isLoading,
     error,
-    isPremium,
-    plan: subscription?.plan || "free",
+    refetch,
+    isGold,
+    isPremium, // backwards compatibility
+    plan: normalizedPlan as PlanType,
+    planConfig: isGold ? SUBSCRIPTION_PLANS.GOLD : SUBSCRIPTION_PLANS.FREE,
   };
 }
 
 /**
  * Hook pour vérifier si une fonctionnalité est disponible
+ * Basé sur le système FREE / GOLD
  */
 export function useFeatureAccess() {
-  const { isPremium, isLoading } = useSubscription();
-
-  const canUseStories = isPremium;
-  const canUseWifi = isPremium;
-  const canUseAdvancedStats = isPremium;
-  const canUseUnlimitedTemplates = isPremium;
-  const maxSocialLinks = isPremium ? 999 : 3;
+  const { isGold, isLoading, planConfig } = useSubscription();
 
   return {
     isLoading,
-    isPremium,
-    canUseStories,
-    canUseWifi,
-    canUseAdvancedStats,
-    canUseUnlimitedTemplates,
-    maxSocialLinks,
+    isGold,
+    isPremium: isGold, // backwards compatibility
+    
+    // Feature access based on plan
+    canUseStories: isGold,
+    canUseAnalytics: isGold,
+    canUseLeadCapture: isGold,
+    canUsePushNotifications: isGold,
+    canUseAiCoach: isGold,
+    canUseBadge: isGold,
+    canUseAllTemplates: isGold,
+    canUseWifi: isGold,
+    canUseAdvancedStats: isGold,
+    canUseUnlimitedTemplates: isGold,
+    
+    // Limits
+    maxSocialLinks: planConfig.limits.maxSocialLinks,
+    maxStories: planConfig.limits.maxStories,
+    maxTemplates: planConfig.limits.maxTemplates,
   };
 }
