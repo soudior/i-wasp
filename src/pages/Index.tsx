@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreditCard, Sparkles, Clock } from "lucide-react";
+import { CreditCard, Sparkles, Clock, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileOptimizedVideo } from "@/components/MobileOptimizedVideo";
+import { AnimatedIWASPLogo, IWASPSlogan } from "@/components/AnimatedIWASPLogo";
+import { GoldPricingComparison } from "@/components/GoldPricingComparison";
+import { VisionAnimatedIcons, CertifiedBadgeSection } from "@/components/VisionAnimatedIcons";
 import nfcPoster from "@/assets/posters/nfc-demo-poster.webp";
 import nailsPoster from "@/assets/posters/nails-demo-poster.webp";
 
@@ -41,15 +44,21 @@ const Index = () => {
   const content = productContent[mode];
 
   return (
-    <div className="h-screen overflow-y-scroll scrolling-touch bg-black flex flex-col">
+    <div className="min-h-screen overflow-y-auto scrolling-touch bg-black flex flex-col scroll-smooth">
       {/* Hero Section */}
       <section className="flex-1 flex flex-col items-center justify-center px-4 py-12 md:py-20">
         <div className="max-w-xl mx-auto text-center space-y-8">
           
-          {/* Titre Principal - Sans animation */}
+          {/* Logo Animé + Slogan */}
+          <div className="space-y-4">
+            <AnimatedIWASPLogo size="xl" className="justify-center" />
+            <IWASPSlogan className="text-center" />
+          </div>
+          
+          {/* Titre Principal */}
           <div className="space-y-3">
             <h1 className="font-playfair text-3xl md:text-5xl font-bold tracking-tight text-white leading-tight">
-              i-wasp : Connectez-vous
+              Connectez-vous
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500">
                 d'un simple geste.
               </span>
@@ -266,6 +275,33 @@ const Index = () => {
           <div className="w-24 h-0.5 mx-auto bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
         </div>
       </section>
+
+      {/* Section Vision avec Icônes Animées */}
+      <section className="py-20 px-4 bg-gradient-to-b from-black to-zinc-950">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-amber-600/10 border border-amber-500/30 text-amber-400 text-sm font-medium mb-6">
+              <Crown className="w-4 h-4" />
+              Notre Vision
+            </div>
+            <h2 className="font-playfair text-2xl md:text-4xl font-bold text-white mb-4">
+              Dominer le Physique,
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500">
+                Régner sur le Digital
+              </span>
+            </h2>
+            <p className="text-zinc-400 text-base md:text-lg max-w-2xl mx-auto">
+              Nous voyons un monde où chaque professionnel possède la puissance d'une multinationale.
+            </p>
+          </div>
+          
+          <VisionAnimatedIcons className="mb-16" />
+          <CertifiedBadgeSection />
+        </div>
+      </section>
+
+      {/* Section Pricing GOLD Comparatif */}
+      <GoldPricingComparison />
     </div>
   );
 };
