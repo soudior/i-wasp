@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { VCardGoldButton } from "@/components/VCardGoldButton";
 import { StoriesSection, useCardStories } from "@/components/templates/StoriesSection";
+import { IntroVideoSection } from "@/components/templates/IntroVideoSection";
 import { cn } from "@/lib/utils";
 
 // Types
@@ -64,9 +65,9 @@ interface HerbalismData {
   rating?: number;
   reviewCount?: number;
   
-  // Video
-  videoUrl?: string;
-  videoPoster?: string;
+  // Introduction Video
+  introVideoUrl?: string;
+  introVideoPoster?: string;
   
   // vCard
   vcardData?: {
@@ -638,6 +639,19 @@ export function HerbalismEliteTemplate({
             variant="premium"
           />
         </motion.div>
+
+        {/* Introduction Video */}
+        {data.introVideoUrl && (
+          <motion.div variants={itemVariants}>
+            <IntroVideoSection
+              videoUrl={data.introVideoUrl}
+              posterUrl={data.introVideoPoster}
+              title="Notre Savoir-Faire"
+              subtitle="L'art ancestral des plantes"
+            />
+          </motion.div>
+        )}
+
         {/* Header */}
         <motion.header variants={itemVariants} className="text-center space-y-4">
           {/* Logo */}
