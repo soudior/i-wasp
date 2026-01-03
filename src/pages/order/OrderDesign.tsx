@@ -30,6 +30,7 @@ import { TemplateGallery, TemplateDefinition } from "@/components/order/Template
 import { TemplatePreviewModal } from "@/components/order/TemplatePreviewModal";
 import { LuxuryHotelTemplate } from "@/components/templates/LuxuryHotelTemplate";
 import { LuxurySpaTemplate } from "@/components/templates/LuxurySpaTemplate";
+import { HebergementEliteTemplate } from "@/components/templates/HebergementEliteTemplate";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,6 +64,16 @@ interface DesignFormData extends DesignConfig {
 
 // Available templates for the gallery
 const AVAILABLE_TEMPLATES: TemplateDefinition[] = [
+  {
+    id: "hebergement-elite",
+    name: "Hébergement Élite",
+    category: "hotel",
+    description: "Template premium pour Airbnb & Booking avec boutons réservation, code WiFi copiable et check-in automatique.",
+    features: ["Airbnb", "Booking", "WiFi", "Check-in", "Carte", "vCard Gold"],
+    premium: true,
+    new: true,
+    previewComponent: <HebergementEliteTemplate data={{} as any} isPreview={true} />,
+  },
   {
     id: "luxury-hotel",
     name: "Luxury Hotel",

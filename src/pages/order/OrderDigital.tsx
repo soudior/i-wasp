@@ -6,9 +6,10 @@
  * Geolocation: auto + map selection
  */
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useOrderFunnel, OrderFunnelGuard, DigitalInfo } from "@/contexts/OrderFunnelContext";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SmartLocationEditor } from "@/components/SmartLocationEditor";
@@ -34,7 +35,9 @@ import {
   Info,
   Home,
   Building,
-  Store
+  Store,
+  Navigation,
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -98,6 +101,32 @@ function OrderDigitalContent() {
     latitude: formData.latitude,
     longitude: formData.longitude,
     label: "",
+  });
+
+  // Geolocation hook for auto-fill
+  const handleGeoSuccess = useCallback((geoData: any) => {
+    setLocationData({
+      address: geoData.address || "",
+      latitude: geoData.latitude || undefined,
+      longitude: geoData.longitude || undefined,
+      label: "",
+    });
+    setFormData(prev => ({
+      ...prev,
+      address: geoData.address || "",
+      city: geoData.city || prev.city,
+      postalCode: geoData.postalCode || prev.postalCode,
+      country: geoData.country || prev.country || "Maroc",
+      neighborhood: geoData.neighborhood || prev.neighborhood,
+      latitude: geoData.latitude,
+      longitude: geoData.longitude,
+    }));
+  }, []);
+
+  const geolocation = useGeolocation({
+    enableHighAccuracy: true,
+    timeout: 15000,
+    onSuccess: handleGeoSuccess,
   });
 
   // At least one link OR location is required
@@ -335,6 +364,30 @@ function OrderDigitalContent() {
                       ))}
                     </div>
                   </div>
+
+                  {/* Geolocation Auto-fill Button */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => geolocation.getCurrentPosition()}
+                    disabled={geolocation.isLoading}
+                    className="w-full h-12 gap-2 border-2 border-dashed border-amber-400/50 hover:border-amber-400 hover:bg-amber-500/10 transition-all"
+                  >
+                    {geolocation.isLoading ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin text-amber-500" />
+                        <span className="text-amber-600">Localisation en cours...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Navigation className="h-5 w-5 text-amber-500" />
+                        <span className="font-medium">Remplir automatiquement</span>
+                      </>
+                    )}
+                  </Button>
+                  {geolocation.error && (
+                    <p className="text-xs text-destructive">{geolocation.error}</p>
+                  )}
 
                   <SmartLocationEditor
                     value={locationData}

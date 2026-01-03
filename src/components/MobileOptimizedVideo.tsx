@@ -58,7 +58,7 @@ export function MobileOptimizedVideo({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // iOS autoplay: force play on mount with limited retries, fallback to poster
+  // iOS autoplay: force play on mount with 500ms timeout, instant poster fallback
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -66,9 +66,18 @@ export function MobileOptimizedVideo({
     playAttempts.current = 0;
     setShowPosterFallback(false);
     
+    // 500ms timeout - if video doesn't play, show poster immediately
+    const posterTimeout = setTimeout(() => {
+      if (!video.paused) return; // Already playing
+      setShowPosterFallback(true);
+      setShowPlayButton(true);
+      setIsLoading(false);
+    }, 500);
+    
     const tryPlay = async () => {
       if (playAttempts.current >= maxPlayAttempts) {
         // Max attempts reached - show poster fallback
+        clearTimeout(posterTimeout);
         setShowPosterFallback(true);
         setShowPlayButton(true);
         return;
@@ -76,14 +85,23 @@ export function MobileOptimizedVideo({
       
       try {
         video.muted = true;
+        video.playsInline = true;
+        video.autoplay = true;
         await video.play();
+        clearTimeout(posterTimeout);
         setIsPlaying(true);
         setShowPlayButton(false);
         setShowPosterFallback(false);
       } catch {
         playAttempts.current++;
-        // Retry with exponential backoff
-        setTimeout(tryPlay, 300 * playAttempts.current);
+        // Retry quickly for iOS
+        if (playAttempts.current < maxPlayAttempts) {
+          setTimeout(tryPlay, 150 * playAttempts.current);
+        } else {
+          clearTimeout(posterTimeout);
+          setShowPosterFallback(true);
+          setShowPlayButton(true);
+        }
       }
     };
     
@@ -91,6 +109,8 @@ export function MobileOptimizedVideo({
     tryPlay();
     setIsLoading(false);
     setHasError(false);
+    
+    return () => clearTimeout(posterTimeout);
   }, [src]);
 
   const handlePlay = useCallback(async () => {
