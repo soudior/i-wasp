@@ -53,6 +53,21 @@ const serviceLevels = [
       "Support prioritaire",
     ],
   },
+  {
+    id: "elite",
+    title: "Élite",
+    subtitle: "L'excellence",
+    price: "999 DH",
+    features: [
+      "Carte NFC i-Wasp Elite",
+      "Profil digital sur mesure",
+      "Personnalisation avancée",
+      "Gestion accompagnée par i-Wasp",
+      "Mise à jour prise en charge",
+      "Support dédié",
+      "Priorité absolue",
+    ],
+  },
 ];
 
 const productTypes = [
@@ -246,7 +261,7 @@ export default function OrderType() {
                   transition={{ delay: 0.2 }}
                   className="mb-8"
                 >
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid md:grid-cols-3 gap-6">
                     {serviceLevels.map((level, index) => (
                       <motion.div
                         key={level.id}
