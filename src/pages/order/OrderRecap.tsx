@@ -18,6 +18,7 @@ import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from 
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { PhysicalCardPreview } from "@/components/PhysicalCardPreview";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -188,6 +189,16 @@ function OrderRecapContent() {
                   {formatPrice(selectedOffer?.price || 0)}
                 </span>
               </div>
+            </motion.div>
+
+            {/* Physical Card Preview */}
+            <motion.div
+              className="mt-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <PhysicalCardPreview compact />
             </motion.div>
 
             {/* CTA Button */}

@@ -18,6 +18,8 @@ import {
   ASSET_LABELS, 
   BRAND_COLORS 
 } from "@/hooks/useBrandAssets";
+import { EVOLIS_SPECS } from "@/contexts/BrandContext";
+import { PhysicalCardPreview } from "@/components/PhysicalCardPreview";
 import { 
   Upload, 
   Download, 
@@ -27,7 +29,9 @@ import {
   Lock, 
   CheckCircle2,
   AlertTriangle,
-  Package
+  Package,
+  Printer,
+  Info
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -268,12 +272,75 @@ export default function BrandAssets() {
             </motion.div>
           </div>
 
+          {/* Evolis Technical Specs */}
+          <motion.div
+            className="mt-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+          >
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Printer className="h-5 w-5 text-primary" />
+                  Fiche technique imprimante Evolis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="p-3 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground mb-1">Format carte</p>
+                    <p className="font-medium">{EVOLIS_SPECS.format}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground mb-1">Dimensions</p>
+                    <p className="font-medium">{EVOLIS_SPECS.dimensions}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground mb-1">Fond perdu</p>
+                    <p className="font-medium">{EVOLIS_SPECS.bleed}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground mb-1">Marges de sécurité</p>
+                    <p className="font-medium">{EVOLIS_SPECS.safeMargin}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground mb-1">Mode couleur</p>
+                    <p className="font-medium">{EVOLIS_SPECS.colorMode}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground mb-1">Résolution</p>
+                    <p className="font-medium">{EVOLIS_SPECS.resolution}</p>
+                  </div>
+                </div>
+                <div className="mt-4 p-3 rounded-lg bg-secondary/50">
+                  <p className="text-xs text-muted-foreground mb-1">Noir recommandé</p>
+                  <p className="font-medium">{EVOLIS_SPECS.blackRecommended}</p>
+                </div>
+                <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
+                  <Info className="h-4 w-4" />
+                  <span>Ces spécifications sont associées aux fichiers recto/verso pour impression directe</span>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Physical Card Preview */}
+          <motion.div
+            className="mt-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <PhysicalCardPreview showSpecs={false} />
+          </motion.div>
+
           {/* Download Pack Button */}
           <motion.div
             className="mt-10 text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.45 }}
           >
             <Separator className="mb-10" />
             
