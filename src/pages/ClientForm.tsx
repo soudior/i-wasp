@@ -3,11 +3,11 @@
  * Pour collecter les infos et créer une carte digitale
  */
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, 
   Briefcase, 
@@ -20,7 +20,10 @@ import {
   Palette,
   Send,
   CheckCircle2,
-  Sparkles
+  Sparkles,
+  Camera,
+  Upload,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +33,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import iwaspLogo from "@/assets/iwasp-logo.png";
+import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "Prénom requis"),
@@ -58,6 +62,9 @@ const templates = [
 export default function ClientForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("signature");
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -72,6 +79,54 @@ export default function ClientForm() {
   });
 
   const watchedData = watch();
+
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Veuillez sélectionner une image");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'image ne doit pas dépasser 5MB");
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `client-form-${Date.now()}.${fileExt}`;
+      const filePath = `form-photos/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("card-assets")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("card-assets")
+        .getPublicUrl(filePath);
+
+      setPhotoUrl(publicUrl);
+      toast.success("Photo ajoutée !");
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Erreur lors de l'upload");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removePhoto = () => {
+    setPhotoUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const onSubmit = async (data: FormData) => {
     // Construire le message WhatsApp avec toutes les infos
@@ -97,6 +152,7 @@ ${data.website ? `Site web: ${data.website}` : ""}
 ${data.bio ? `📝 *Bio*\n${data.bio}` : ""}
 
 🎨 *Template choisi*: ${templates.find(t => t.id === selectedTemplate)?.name || "Signature"}
+${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
     `.trim();
 
     // Encoder le message pour WhatsApp
@@ -175,6 +231,84 @@ ${data.bio ? `📝 *Bio*\n${data.bio}` : ""}
         </motion.div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Photo Upload */}
+          <Card className="bg-[#1A1A1A] border-[#E5E5E5]/10">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-[#FFC700] mb-4">
+                <Camera className="w-4 h-4" />
+                <span className="font-medium text-sm">Photo de profil</span>
+              </div>
+
+              <div className="flex flex-col items-center gap-4">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+
+                <AnimatePresence mode="wait">
+                  {photoUrl ? (
+                    <motion.div
+                      key="photo"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="relative"
+                    >
+                      <img
+                        src={photoUrl}
+                        alt="Photo de profil"
+                        className="w-24 h-24 rounded-full object-cover border-2 border-[#FFC700]"
+                      />
+                      <button
+                        type="button"
+                        onClick={removePhoto}
+                        className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"
+                      >
+                        <X className="w-3 h-3 text-white" />
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <motion.button
+                      key="upload"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="w-24 h-24 rounded-full bg-[#0B0B0B] border-2 border-dashed border-[#E5E5E5]/30 flex flex-col items-center justify-center gap-1 hover:border-[#FFC700] hover:bg-[#0B0B0B]/80 transition-all"
+                    >
+                      {isUploading ? (
+                        <div className="w-6 h-6 border-2 border-[#FFC700] border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          <Upload className="w-5 h-5 text-[#E5E5E5]/60" />
+                          <span className="text-[10px] text-[#E5E5E5]/60">Ajouter</span>
+                        </>
+                      )}
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+
+                {photoUrl && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-[#FFC700] text-xs"
+                  >
+                    <Camera className="w-3 h-3 mr-1" />
+                    Changer la photo
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Identité */}
           <Card className="bg-[#1A1A1A] border-[#E5E5E5]/10">
             <CardContent className="p-4 space-y-4">
