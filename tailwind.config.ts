@@ -20,13 +20,12 @@ export default {
       },
       colors: {
         /* ═══════════════════════════════════════════════════════════════
-           iWASP SaaS DESIGN SYSTEM — OFFICIAL PALETTE (N1 LEVEL)
+           iWASP DESIGN SYSTEM — LUXURY WHITE EDITION
            
-           - Fond principal : #0B0B0B
-           - Texte principal : #FFFFFF
-           - Accent / CTA / NFC : #FFC700
-           - Cartes & blocs UI : #1F1F1F
-           - Texte secondaire : #E5E5E5
+           - Fond principal : #FFFFFF (Blanc pur)
+           - Texte principal : #000000 (Noir absolu)
+           - Gris subtil : #F2F2F2, #EAEAEA (Séparations)
+           - Accent : Noir uniquement
            ═══════════════════════════════════════════════════════════════ */
         
         /* Semantic tokens */
@@ -82,56 +81,40 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
-           IWASP OFFICIAL COLORS
+           IWASP LUXURY WHITE COLORS
            ══════════════════════════════════════════════════════════════ */
         iwasp: {
-          bg: "#0B0B0B",                   /* Fond principal */
-          card: "#1F1F1F",                 /* Cartes & blocs UI */
-          accent: "#FFC700",               /* Accent/CTA/NFC */
-          white: "#FFFFFF",                /* Texte principal */
-          gray: "#E5E5E5",                 /* Texte secondaire */
+          bg: "#FFFFFF",                   /* Fond principal - Blanc */
+          card: "#FFFFFF",                 /* Cartes - Blanc */
+          secondary: "#F2F2F2",            /* Fond secondaire */
+          border: "#EAEAEA",               /* Bordures subtiles */
+          text: "#000000",                 /* Texte principal - Noir */
+          muted: "#737373",                /* Texte secondaire */
           success: "#22C55E",              /* Succès */
           error: "#EF4444",                /* Erreur */
         },
         
-        /* Gold accent system for CTAs */
-        gold: {
-          DEFAULT: "#FFC700",
-          light: "#FFD21F",
-          dark: "#D6A800",
-          50: "#FFFBEB",
-          100: "#FEF3C7",
-          200: "#FDE68A",
-          300: "#FCD34D",
-          400: "#FBBF24",
-          500: "#FFC700",
-          600: "#D6A800",
-          700: "#B38600",
-          800: "#8A6600",
-          900: "#614900",
-        },
-        
         /* ══════════════════════════════════════════════════════════════
-           PALETTE 2 — "Blanc pur"
+           PALETTE BLANC LUXE
            ══════════════════════════════════════════════════════════════ */
         blanc: {
-          pur: "hsl(var(--blanc-pur))",            /* #FFFFFF */
-          ivoire: "hsl(var(--blanc-ivoire))",      /* #F9FAFB */
-          "gris-clair": "hsl(var(--blanc-gris-clair))",   /* #E5E7EB */
-          "gris-struct": "hsl(var(--blanc-gris-struct))", /* #9CA3AF */
-          noir: "hsl(var(--blanc-noir))",          /* #0E0E11 */
-          accent: "hsl(var(--blanc-accent))",      /* #3CFF6B */
+          pur: "hsl(var(--blanc-pur))",                   /* #FFFFFF */
+          ivoire: "hsl(var(--blanc-ivoire))",             /* #FAFAFA */
+          "gris-clair": "hsl(var(--blanc-gris-clair))",   /* #F2F2F2 */
+          "gris-border": "hsl(var(--blanc-gris-border))", /* #EAEAEA */
+          "gris-struct": "hsl(var(--blanc-gris-struct))", /* #737373 */
+          noir: "hsl(var(--blanc-noir))",                 /* #000000 */
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE 3 — "Carte matière" (carte physique NFC)
+           PALETTE CARTE MATIÈRE (NFC blanche)
            ══════════════════════════════════════════════════════════════ */
         carte: {
-          blanc: "hsl(var(--carte-blanc))",        /* #F9FAFB */
-          chaud: "hsl(var(--carte-chaud))",        /* #F3F4F6 */
-          "gris-leger": "hsl(var(--carte-gris-leger))",   /* #E5E7EB */
-          "gris-struct": "hsl(var(--carte-gris-struct))", /* #9CA3AF */
-          "noir-doux": "hsl(var(--carte-noir-doux))",     /* #15171C */
+          blanc: "hsl(var(--carte-blanc))",               /* #FFFFFF */
+          chaud: "hsl(var(--carte-chaud))",               /* #FAFAFA */
+          "gris-leger": "hsl(var(--carte-gris-leger))",   /* #F2F2F2 */
+          "gris-struct": "hsl(var(--carte-gris-struct))", /* #737373 */
+          "noir-doux": "hsl(var(--carte-noir-doux))",     /* #000000 */
         },
       },
       borderRadius: {
