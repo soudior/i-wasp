@@ -1,6 +1,10 @@
 /**
  * Page Transition wrapper for order funnel steps
- * Provides smooth enter/exit animations between pages
+ * 
+ * OPTIMIZED for mobile:
+ * - Fast, subtle animations that don't block navigation
+ * - No delay on entry - instant content visibility
+ * - Premium feel without sacrificing responsiveness
  */
 
 import { motion } from "framer-motion";
@@ -11,29 +15,26 @@ interface PageTransitionProps {
   className?: string;
 }
 
+// Optimized page variants - faster, no blocking
 const pageVariants = {
   initial: {
-    opacity: 0,
-    x: 20,
-    scale: 0.98,
+    opacity: 0.8,
+    y: 8,
   },
   animate: {
     opacity: 1,
-    x: 0,
-    scale: 1,
+    y: 0,
   },
   exit: {
-    opacity: 0,
-    x: -20,
-    scale: 0.98,
+    opacity: 0.8,
+    y: -8,
   },
 };
 
+// Fast, non-blocking transition
 const pageTransition = {
-  type: "spring" as const,
-  stiffness: 300,
-  damping: 30,
-  mass: 0.8,
+  duration: 0.15,
+  ease: "easeOut" as const,
 };
 
 export function PageTransition({ children, className = "" }: PageTransitionProps) {
@@ -51,20 +52,25 @@ export function PageTransition({ children, className = "" }: PageTransitionProps
   );
 }
 
-// Content transition for staggered children
+// Content transition for staggered children - faster
 export const contentVariants = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 10 },
   animate: { 
     opacity: 1, 
     y: 0,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1,
+      duration: 0.2,
+      staggerChildren: 0.05,
+      delayChildren: 0,
     }
   },
 };
 
 export const itemVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
+  initial: { opacity: 0, y: 10 },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.15 }
+  },
 };

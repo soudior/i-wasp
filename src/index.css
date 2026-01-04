@@ -233,7 +233,8 @@
   }
 
   html {
-    scroll-behavior: smooth;
+    /* CRITICAL: Disable smooth scroll for instant navigation */
+    scroll-behavior: auto !important;
     /* Prevent text size adjustment on iOS */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -258,9 +259,22 @@
   h1 { @apply font-bold; }
   h2, h3 { @apply font-semibold; }
   
-  /* Touch-friendly minimum sizes */
+  /* ══════════════════════════════════════════════════════════════════
+     MOBILE-FIRST TOUCH OPTIMIZATION
+     Minimum 44px touch targets, no double-tap delays
+     ══════════════════════════════════════════════════════════════════ */
   button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
     @apply touch-manipulation;
+    /* Remove 300ms delay on mobile */
+    touch-action: manipulation;
+  }
+  
+  /* Ensure buttons have proper touch targets */
+  button:not(.icon-only), 
+  a:not(.text-link),
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
   }
   
   /* Mobile-friendly inputs */

@@ -64,8 +64,9 @@ export function MobileBottomNav() {
   const visibleItems = navItems.filter(item => !item.requiresAuth || user);
 
   const handleNavClick = (path: string) => {
+    // Instant navigation - no delays
     navigate(path);
-    // Haptic feedback on supported devices
+    // Haptic feedback on supported devices (non-blocking)
     if (navigator.vibrate) {
       navigator.vibrate(10);
     }
@@ -78,7 +79,7 @@ export function MobileBottomNav() {
           initial={{ y: 100 }}
           animate={{ y: 0 }}
           exit={{ y: 100 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
           className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
         >
           {/* Backdrop blur */}
@@ -96,18 +97,19 @@ export function MobileBottomNav() {
                   <button
                     key={item.path}
                     onClick={() => handleNavClick(item.path)}
-                    className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-all duration-200 min-w-[60px] ${
+                    className={`flex flex-col items-center gap-1 py-3 px-5 rounded-xl transition-colors duration-100 min-w-[64px] min-h-[52px] touch-manipulation active:opacity-70 ${
                       isActive 
                         ? "text-amber-400" 
-                        : "text-gray-500 active:text-gray-300"
+                        : "text-gray-500"
                     }`}
                   >
-                    <div className={`relative ${isActive ? "scale-110" : ""} transition-transform`}>
+                    <div className={`relative ${isActive ? "scale-110" : ""} transition-transform duration-100`}>
                       <Icon className="h-5 w-5" />
                       {isActive && (
                         <motion.div
                           layoutId="activeIndicator"
                           className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-amber-400 rounded-full"
+                          transition={{ duration: 0.1 }}
                         />
                       )}
                     </div>

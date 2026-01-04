@@ -11,6 +11,7 @@ import { OrderFunnelProvider, CartGuard } from "@/contexts/OrderFunnelContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
 import { AdminGuard } from "@/components/AdminGuard";
 import { FeatureValidationProvider } from "@/components/FeatureValidationProvider";
+import { ScrollToTop } from "@/components/ScrollToTop";
 // Debug panel removed for production build
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { SplashScreen } from "@/components/SplashScreen";
@@ -116,7 +117,8 @@ const App = () => {
                     )}
                     <Toaster />
                     <Sonner />
-                    <BrowserRouter>
+                <BrowserRouter>
+                      <ScrollToTop />
                       <ErrorBoundary>
                         <OrderFunnelProvider>
                     <Routes>
