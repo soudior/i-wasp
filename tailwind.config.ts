@@ -85,28 +85,31 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
-           COULEURS OFFICIELLES i-WASP — VERROUILLÉES (DARK THEME)
+           COULEURS OFFICIELLES i-WASP — VERROUILLÉES DÉFINITIVEMENT
+           
+           PALETTE UNIQUE — AUCUNE AUTRE COULEUR AUTORISÉE
+           PAS DE THÈME CLAIR — PAS DE BASCULE AUTOMATIQUE
            ══════════════════════════════════════════════════════════════ */
         iwasp: {
           noir: "#0B0B0B",                 /* Fond principal */
+          "noir-elevated": "#121212",      /* Surfaces secondaires */
           blanc: "#FFFFFF",                /* Texte principal */
-          jaune: "#F5C400",                /* Accent signature CTA */
-          "gris-fond": "#1A1A1A",          /* Fond secondaire */
-          "gris-bordure": "#333333",       /* Bordures subtiles */
+          jaune: "#FFC700",                /* Accent unique (CTA, sélection, focus) */
           "gris-texte": "#B3B3B3",         /* Texte secondaire */
+          "gris-bordure": "#333333",       /* Bordures subtiles */
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE CARTE NFC — DARK THEME
+           PALETTE CARTE NFC — DARK THEME VERROUILLÉ
            ══════════════════════════════════════════════════════════════ */
         carte: {
           recto: "#0B0B0B",                /* Fond noir */
-          verso: "#0F0F0F",                /* Noir légèrement plus clair */
-          texture: "#141414",              /* Texture subtile */
+          verso: "#121212",                /* Surface secondaire */
+          texture: "#1A1A1A",              /* Texture subtile */
           logo: "#FFFFFF",                 /* Logo blanc */
           texte: "#FFFFFF",                /* Texte blanc */
           secondaire: "#B3B3B3",           /* Texte secondaire */
-          accent: "#F5C400",               /* Jaune signature */
+          accent: "#FFC700",               /* Jaune signature unique */
         },
       },
       borderRadius: {

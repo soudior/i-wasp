@@ -14,18 +14,16 @@
        VERSION FINALE — NE PAS MODIFIER SANS INSTRUCTION EXPLICITE
        
        ═══════════════════════════════════════════════════════════════════
-       PALETTE OFFICIELLE i-WASP — VERROUILLÉE
+       PALETTE OFFICIELLE i-WASP — VERROUILLÉE DÉFINITIVEMENT
        ═══════════════════════════════════════════════════════════════════
        - Fond principal      : #0B0B0B (Noir profond)
+       - Surfaces secondaires: #121212 (Noir élevé)
        - Texte principal     : #FFFFFF (Blanc pur)
-       - Jaune signature     : #F5C400 (CTA et accents UNIQUEMENT)
+       - Texte secondaire    : #B3B3B3 (Gris clair)
+       - Accent unique       : #FFC700 (Jaune i-Wasp - CTA, sélection, focus)
        
-       RÈGLES STRICTES :
-       - AUCUN fond blanc sur les pages principales
-       - Fond blanc UNIQUEMENT pour champs de formulaire
-       - Headers, sections, tunnels = fond NOIR
-       - Boutons CTA = JAUNE sur fond noir
-       - Boutons secondaires = outline blanc
+       AUCUNE AUTRE COULEUR AUTORISÉE
+       PAS DE THÈME CLAIR — PAS DE BASCULE AUTOMATIQUE
        ═══════════════════════════════════════════════════════════════════ */
     
     /* ══════════════════════════════════════════════════════════════════
@@ -33,47 +31,47 @@
        ══════════════════════════════════════════════════════════════════ */
     
     --iwasp-noir: 0 0% 4%;                /* #0B0B0B - Fond principal */
+    --iwasp-noir-elevated: 0 0% 7%;       /* #121212 - Surfaces secondaires */
     --iwasp-blanc: 0 0% 100%;             /* #FFFFFF - Texte principal */
-    --iwasp-jaune: 49 100% 49%;           /* #F5C400 - Accent signature */
-    --iwasp-gris-fond: 0 0% 10%;          /* #1A1A1A - Fond secondaire */
-    --iwasp-gris-bordure: 0 0% 20%;       /* #333333 - Bordures subtiles */
+    --iwasp-jaune: 48 100% 50%;           /* #FFC700 - Accent unique */
     --iwasp-gris-texte: 0 0% 70%;         /* #B3B3B3 - Texte secondaire */
+    --iwasp-gris-bordure: 0 0% 20%;       /* #333333 - Bordures subtiles */
     
     /* États système */
     --iwasp-erreur: 0 72% 51%;            /* Rouge erreur */
     --iwasp-success: 142 76% 36%;         /* Vert succès */
     
     /* ══════════════════════════════════════════════════════════════════
-       SURFACES — Thème DARK Premium
+       SURFACES — Thème DARK Premium VERROUILLÉ
        ══════════════════════════════════════════════════════════════════ */
-    --surface-bg: var(--iwasp-noir);      /* #0B0B0B - Fond principal */
-    --surface-card: 0 0% 8%;              /* #141414 - Surface carte */
-    --surface-elevated: 0 0% 12%;         /* #1F1F1F - Légère élévation */
-    --surface-overlay: 0 0% 15%;          /* #262626 - Overlay */
+    --surface-bg: var(--iwasp-noir);           /* #0B0B0B - Fond principal */
+    --surface-card: var(--iwasp-noir-elevated);/* #121212 - Surface carte */
+    --surface-elevated: 0 0% 10%;              /* #1A1A1A - Légère élévation */
+    --surface-overlay: 0 0% 12%;               /* #1F1F1F - Overlay */
     
     /* ══════════════════════════════════════════════════════════════════
-       TOKENS SÉMANTIQUES — DARK THEME
+       TOKENS SÉMANTIQUES — DARK THEME VERROUILLÉ
        ══════════════════════════════════════════════════════════════════ */
     --background: var(--iwasp-noir);
     --foreground: var(--iwasp-blanc);
     
-    --card: 0 0% 8%;
+    --card: var(--iwasp-noir-elevated);
     --card-foreground: var(--iwasp-blanc);
     
-    --popover: 0 0% 10%;
+    --popover: var(--iwasp-noir-elevated);
     --popover-foreground: var(--iwasp-blanc);
     
     /* Primary = Jaune signature (pour CTA et boutons principaux) */
     --primary: var(--iwasp-jaune);
     --primary-foreground: var(--iwasp-noir);
     
-    --secondary: var(--iwasp-gris-fond);
+    --secondary: var(--iwasp-noir-elevated);
     --secondary-foreground: var(--iwasp-blanc);
     
-    --muted: var(--iwasp-gris-fond);
+    --muted: var(--iwasp-noir-elevated);
     --muted-foreground: var(--iwasp-gris-texte);
     
-    /* Accent = Jaune signature */
+    /* Accent = Jaune signature UNIQUE */
     --accent: var(--iwasp-jaune);
     --accent-foreground: var(--iwasp-noir);
     
@@ -96,8 +94,8 @@
        PALETTE CARTE NFC PHYSIQUE — Référence
        ══════════════════════════════════════════════════════════════════ */
     --carte-recto: var(--iwasp-noir);     /* Fond noir */
-    --carte-verso: 0 0% 6%;               /* Noir légèrement plus clair */
-    --carte-texture: 0 0% 8%;             /* Texture subtile */
+    --carte-verso: var(--iwasp-noir-elevated);
+    --carte-texture: 0 0% 10%;            /* Texture subtile */
     --carte-logo: var(--iwasp-blanc);     /* Logo blanc */
     --carte-texte: var(--iwasp-blanc);    /* Texte blanc */
     --carte-secondaire: var(--iwasp-gris-texte); /* Texte secondaire */
@@ -105,8 +103,8 @@
 
     /* Surface tokens */
     --surface-0: var(--iwasp-noir);
-    --surface-1: 0 0% 8%;
-    --surface-2: var(--iwasp-gris-fond);
+    --surface-1: var(--iwasp-noir-elevated);
+    --surface-2: 0 0% 10%;
     --surface-3: var(--iwasp-gris-bordure);
     
     /* Glass - Dark theme */
@@ -140,7 +138,7 @@
     --sidebar-foreground: var(--iwasp-blanc);
     --sidebar-primary: var(--iwasp-jaune);
     --sidebar-primary-foreground: var(--iwasp-noir);
-    --sidebar-accent: var(--iwasp-gris-fond);
+    --sidebar-accent: var(--iwasp-noir-elevated);
     --sidebar-accent-foreground: var(--iwasp-blanc);
     --sidebar-border: var(--iwasp-gris-bordure);
     --sidebar-ring: var(--iwasp-jaune);
@@ -161,7 +159,6 @@
 
     /* ══════════════════════════════════════════════════════════════════
        SPACING SYSTEM - 8px base
-       Sections: 24-32px | Modules: 16-20px | Buttons: generous padding
        ══════════════════════════════════════════════════════════════════ */
     --space-xs: 0.25rem;  /* 4px */
     --space-sm: 0.5rem;   /* 8px */
@@ -174,8 +171,6 @@
 
     /* ══════════════════════════════════════════════════════════════════
        ANIMATION TIMING - IWASP PREMIUM
-       Durée : 180-220ms | Easing : ease-in-out
-       Aucune animation gratuite. Rassurer, pas divertir.
        ══════════════════════════════════════════════════════════════════ */
     --duration-fast: 180ms;
     --duration-normal: 200ms;
