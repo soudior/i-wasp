@@ -1,8 +1,8 @@
 /**
- * Step 4: Récapitulatif
+ * Step 4: Récapitulatif Final
  * /order/recap
  * 
- * Résumé complet de la commande avant validation
+ * Affichage épuré : Offre, Prix, Quantité, Paiement, Livraison
  */
 
 import { useState } from "react";
@@ -17,26 +17,14 @@ import { Footer } from "@/components/Footer";
 import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from "@/components/order";
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { 
-  ArrowLeft, 
-  Package,
-  User,
-  MapPin,
-  Edit2,
-  Shield,
-  Truck,
-  Clock,
-  CheckCircle2,
-  Banknote
-} from "lucide-react";
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 function OrderRecapContent() {
   const navigate = useNavigate();
-  const { state, prevStep, goToStep, markComplete, resetFunnel } = useOrderFunnel();
-  const { user, signUp } = useAuth();
+  const { state, prevStep, markComplete } = useOrderFunnel();
+  const { user } = useAuth();
   const createOrder = useCreateOrder();
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -77,7 +65,6 @@ function OrderRecapContent() {
           }
         } catch (authError: any) {
           console.error("Auto signup error:", authError);
-          // Continue without account - will be created later
         }
       }
 
@@ -112,7 +99,6 @@ function OrderRecapContent() {
         payment_method: "cod",
       });
 
-      // Mark funnel complete and navigate to confirmation
       markComplete();
       navigate("/order/confirmation");
     } catch (error) {
@@ -128,230 +114,118 @@ function OrderRecapContent() {
       
       <PageTransition>
         <main className="pt-24 pb-32 px-4">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-lg mx-auto">
             {/* Progress Bar */}
             <OrderProgressBar currentStep={4} />
 
             {/* Header */}
             <motion.div 
-              className="text-center mb-10"
+              className="text-center mb-8"
               variants={contentVariants}
               initial="initial"
               animate="animate"
             >
-              <motion.p 
-                className="text-sm text-primary tracking-widest uppercase mb-3"
-                variants={itemVariants}
-              >
-                Étape 4 sur 5
-              </motion.p>
               <motion.h1 
-                className="text-3xl md:text-4xl font-display font-bold mb-3"
+                className="text-2xl md:text-3xl font-display font-bold mb-2"
                 variants={itemVariants}
               >
                 Récapitulatif
               </motion.h1>
               <motion.p 
-                className="text-muted-foreground text-lg"
+                className="text-muted-foreground"
                 variants={itemVariants}
               >
-                Vérifiez les détails avant de confirmer
+                Vérifiez avant de confirmer
               </motion.p>
             </motion.div>
 
-            <div className="grid gap-6 lg:grid-cols-3">
-              {/* Left Column - Details */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* Offer Summary */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  <Card className="bg-card border-border">
-                    <CardHeader className="flex-row items-center justify-between">
-                      <CardTitle className="flex items-center gap-2 text-lg">
-                        <Package size={20} className="text-[#FFC700]" />
-                        Votre offre
-                      </CardTitle>
-                      <Button variant="ghost" size="sm" onClick={() => goToStep(1)}>
-                        <Edit2 size={14} className="mr-1" />
-                        Modifier
-                      </Button>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-10 rounded-lg bg-[#0B0B0B] flex items-center justify-center">
-                          <span className="text-[#FFC700] text-xs font-bold">NFC</span>
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">Carte i-Wasp {selectedOffer?.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {formatPrice(selectedOffer?.price || 0)}
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                {/* Identity Summary */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <Card className="bg-card border-border">
-                    <CardHeader className="flex-row items-center justify-between">
-                      <CardTitle className="flex items-center gap-2 text-lg">
-                        <User size={20} className="text-[#FFC700]" />
-                        Votre profil
-                      </CardTitle>
-                      <Button variant="ghost" size="sm" onClick={() => goToStep(2)}>
-                        <Edit2 size={14} className="mr-1" />
-                        Modifier
-                      </Button>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid gap-3 sm:grid-cols-2 text-sm">
-                        <div>
-                          <p className="text-muted-foreground">Nom</p>
-                          <p className="font-medium">
-                            {state.digitalIdentity?.firstName} {state.digitalIdentity?.lastName}
-                          </p>
-                        </div>
-                        {state.digitalIdentity?.title && (
-                          <div>
-                            <p className="text-muted-foreground">Fonction</p>
-                            <p className="font-medium">{state.digitalIdentity.title}</p>
-                          </div>
-                        )}
-                        <div>
-                          <p className="text-muted-foreground">Email</p>
-                          <p className="font-medium">{state.digitalIdentity?.email}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Téléphone</p>
-                          <p className="font-medium">{state.digitalIdentity?.phone}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                {/* Shipping Summary */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <Card className="bg-card border-border">
-                    <CardHeader className="flex-row items-center justify-between">
-                      <CardTitle className="flex items-center gap-2 text-lg">
-                        <MapPin size={20} className="text-[#FFC700]" />
-                        Livraison
-                      </CardTitle>
-                      <Button variant="ghost" size="sm" onClick={() => goToStep(3)}>
-                        <Edit2 size={14} className="mr-1" />
-                        Modifier
-                      </Button>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="font-medium">{state.shippingInfo?.address}</p>
-                      <p className="text-muted-foreground">
-                        {state.shippingInfo?.city}, {state.shippingInfo?.country}
-                      </p>
-                      <p className="text-muted-foreground mt-2">
-                        Tél: {state.shippingInfo?.phone}
-                      </p>
-                      <div className="mt-3 flex items-center gap-2 text-sm text-[#FFC700]">
-                        <Banknote size={16} />
-                        <span>Paiement à la livraison</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+            {/* Clean Summary Card */}
+            <motion.div
+              className="bg-secondary/50 rounded-2xl p-6 space-y-5"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              {/* Offre */}
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Offre</span>
+                <span className="font-semibold text-primary">
+                  i-Wasp {selectedOffer?.name}
+                </span>
               </div>
 
-              {/* Right Column - Price Summary */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Card className="sticky top-24 bg-card border-border">
-                  <CardHeader>
-                    <CardTitle>Total</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          Carte NFC i-Wasp {selectedOffer?.name}
-                        </span>
-                        <span>{formatPrice(selectedOffer?.price || 0)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Livraison</span>
-                        <span className="text-green-500 font-medium">Gratuite</span>
-                      </div>
-                    </div>
+              {/* Quantité */}
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Quantité</span>
+                <span className="font-medium">1 carte</span>
+              </div>
 
-                    <Separator />
+              {/* Mode de paiement */}
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Paiement</span>
+                <span className="font-medium">À la livraison</span>
+              </div>
 
-                    <div className="flex justify-between text-lg font-bold">
-                      <span>Total TTC</span>
-                      <span className="text-[#FFC700]">{formatPrice(selectedOffer?.price || 0)}</span>
-                    </div>
+              <Separator className="bg-border/50" />
 
-                    {/* CTA */}
-                    <LoadingButton
-                      size="xl"
-                      onClick={handleConfirmOrder}
-                      isLoading={isProcessing}
-                      loadingText="Traitement..."
-                      disabled={state.isTransitioning}
-                      className="w-full rounded-full bg-[#FFC700] hover:bg-[#FFC700]/90 text-black font-semibold"
-                    >
-                      <CheckCircle2 className="mr-2 h-5 w-5" />
-                      Confirmer ma commande
-                    </LoadingButton>
+              {/* Adresse de livraison */}
+              <div>
+                <p className="text-muted-foreground text-sm mb-1">Livraison</p>
+                <p className="font-medium">{state.shippingInfo?.address}</p>
+                <p className="text-sm text-muted-foreground">
+                  {state.shippingInfo?.city}, {state.shippingInfo?.country}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Tél: {state.shippingInfo?.phone}
+                </p>
+              </div>
 
-                    <p className="text-xs text-center text-muted-foreground">
-                      Vous ne payez rien maintenant. Règlement en espèces à la réception.
-                    </p>
+              <Separator className="bg-border/50" />
 
-                    {/* Trust badges */}
-                    <div className="space-y-2 pt-3 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Shield className="h-4 w-4 text-[#FFC700]" />
-                        <span>Données protégées</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Clock className="h-4 w-4 text-[#FFC700]" />
-                        <span>Production : 2-3 jours</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Truck className="h-4 w-4 text-[#FFC700]" />
-                        <span>Livraison gratuite 48-72h</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </div>
+              {/* Prix Total */}
+              <div className="flex justify-between items-center pt-2">
+                <span className="text-lg font-semibold">Total TTC</span>
+                <span className="text-2xl font-bold text-primary">
+                  {formatPrice(selectedOffer?.price || 0)}
+                </span>
+              </div>
+            </motion.div>
 
-            {/* Navigation */}
+            {/* CTA Button */}
             <motion.div 
-              className="flex justify-start mt-10"
+              className="mt-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.2 }}
+            >
+              <LoadingButton
+                size="xl"
+                onClick={handleConfirmOrder}
+                isLoading={isProcessing}
+                loadingText="Traitement..."
+                disabled={state.isTransitioning}
+                className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-14 text-lg"
+              >
+                <CheckCircle2 className="mr-2 h-5 w-5" />
+                Confirmer ma commande
+              </LoadingButton>
+
+              <p className="text-xs text-center text-muted-foreground mt-3">
+                Règlement en espèces à la réception
+              </p>
+            </motion.div>
+
+            {/* Back Button */}
+            <motion.div 
+              className="flex justify-center mt-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
             >
               <Button 
                 variant="ghost" 
                 onClick={prevStep}
                 disabled={state.isTransitioning || isProcessing}
-                className="gap-2"
+                className="gap-2 text-muted-foreground"
               >
                 <ArrowLeft size={18} />
                 Retour
