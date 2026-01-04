@@ -47,7 +47,7 @@ import {
   LogOut, X, Apple, Smartphone, ShoppingBag,
   Clock, CheckCircle2, Factory, Truck, Package,
   Download, MapPin, ChevronRight, FileText, Loader2, Image,
-  Zap, BarChart3
+  Zap, BarChart3, Palette
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -244,7 +244,13 @@ const Dashboard = () => {
           />
 
           {/* Quick Actions Bar */}
-          <div className="flex items-center justify-end gap-3 mb-8">
+          <div className="flex items-center justify-end gap-3 mb-8 flex-wrap">
+            <Link to="/card-studio">
+              <Button variant="outline" className="gap-2">
+                <Palette size={18} />
+                Card Studio
+              </Button>
+            </Link>
             <Link to="/settings">
               <Button variant="outline" size="icon">
                 <Pencil size={18} />
