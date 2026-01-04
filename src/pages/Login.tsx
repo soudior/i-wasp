@@ -325,7 +325,20 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        {/* Forgot password link */}
+        {mode === "login" && (
+          <div className="mt-4 text-center">
+            <a
+              href="/forgot-password"
+              className="text-sm touch-manipulation active:opacity-70"
+              style={{ color: "#8E8E93" }}
+            >
+              Mot de passe oublié ?
+            </a>
+          </div>
+        )}
+
+        <div className="mt-4 text-center">
           <button
             type="button"
             onClick={() => {

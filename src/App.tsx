@@ -25,6 +25,8 @@ import EvolisPrintPage from "./pages/EvolisPrint";
 import FirstCardSetup from "./pages/FirstCardSetup";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import AdminOrders from "./pages/AdminOrders";
 import Onboarding from "./pages/Onboarding";
@@ -142,6 +144,8 @@ const App = () => {
                             <Route path="/login" element={<Login />} />
                             <Route path="/signup" element={<Signup />} />
                             <Route path="/register" element={<Signup />} />
+                            <Route path="/forgot-password" element={<ForgotPassword />} />
+                            <Route path="/reset-password" element={<ResetPassword />} />
                             
                             {/* Guest card creation */}
                             <Route path="/create" element={<GuestCardCreator />} />
