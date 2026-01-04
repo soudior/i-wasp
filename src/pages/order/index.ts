@@ -1,21 +1,15 @@
 /**
- * Order Funnel Pages - 7 Steps STRICT
+ * Order Funnel Pages - 5 Steps STRICT
  * 
- * 1. /order/type - Customer type selection
- * 2. /order/identity - Personal info
- * 3. /order/digital - Digital links + geolocation
- * 4. /order/design - Card design
- * 5. /order/options - Quantity + promo
- * 6. /order/summary - Order summary
- * 7. /order/payment - Payment (COD for Morocco, Card for Europe)
+ * 1. /order/offre - Offer selection (Essentiel/Signature/Élite)
+ * 2. /order/identite - Digital identity (public profile)
+ * 3. /order/livraison - Shipping + Payment
+ * 4. /order/recap - Order summary
+ * 5. /order/confirmation - Confirmation + account access
  */
 
-export { default as OrderType } from "./OrderType";
-export { default as OrderIdentity } from "./OrderIdentity";
-export { default as OrderDigital } from "./OrderDigital";
-export { default as OrderDesign } from "./OrderDesign";
-export { default as OrderOptions } from "./OrderOptions";
-export { default as OrderSummary } from "./OrderSummary";
-export { default as OrderPreviewFinal } from "./OrderPreviewFinal";
-export { default as OrderPayment } from "./OrderPayment";
-export { default as OrderConfirmation } from "./OrderConfirmation";
+export { default as OrderOffre } from "./OrderOffre";
+export { default as OrderIdentite } from "./OrderIdentite";
+export { default as OrderLivraison } from "./OrderLivraison";
+export { default as OrderRecap } from "./OrderRecap";
+export { default as OrderConfirmationNew } from "./OrderConfirmationNew";
