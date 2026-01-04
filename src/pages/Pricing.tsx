@@ -6,19 +6,19 @@ import { SUBSCRIPTION_PLANS, FEATURE_COMPARISON } from "@/lib/subscriptionPlans"
 const faqs = [
   {
     question: "La carte NFC est-elle incluse ?",
-    answer: "Oui. La carte NFC premium est incluse dans chaque niveau de service. Aucun frais caché.",
+    answer: "Oui. La carte NFC premium est incluse dans chaque niveau de service.",
   },
   {
     question: "Quelle est la différence entre Essentiel et Signature ?",
-    answer: "Essentiel vous donne accès à la conciergerie avec un profil standard. Signature débloque toute l'expérience : mises à jour illimitées, statistiques, capture de contacts, et support prioritaire.",
+    answer: "Essentiel vous donne accès à la conciergerie avec un profil standard. Signature débloque l'expérience complète : mises à jour illimitées, statistiques, capture de contacts, et support prioritaire.",
   },
   {
     question: "Puis-je passer de Essentiel à Signature ?",
-    answer: "Oui. Vous pouvez upgrader à tout moment depuis votre espace. L'activation est instantanée.",
+    answer: "Oui. Vous pouvez upgrader à tout moment depuis votre espace.",
   },
   {
     question: "Comment fonctionne le service Élite ?",
-    answer: "Élite est conçu pour les équipes et entreprises. Contactez-nous pour une offre personnalisée adaptée à vos besoins.",
+    answer: "Élite est conçu pour les équipes et entreprises. Contactez-nous pour une offre adaptée à vos besoins.",
   },
 ];
 
@@ -44,16 +44,15 @@ export default function Pricing() {
           </p>
           
           <h1 className="text-3xl md:text-5xl font-semibold tracking-tight mb-6 text-foreground">
-            Choisissez le niveau de service
-            <span className="block">qui correspond à votre image.</span>
+            Nos services
           </h1>
           
-          <div className="max-w-xl mx-auto space-y-2 mt-8">
-            <p className="text-lg text-foreground font-medium">
-              La carte physique est incluse.
+          <div className="max-w-xl mx-auto space-y-3 mt-8">
+            <p className="text-lg text-muted-foreground">
+              La carte physique est incluse dans chaque service.
             </p>
-            <p className="text-muted-foreground">
-              Le service est ce qui fait la différence.
+            <p className="text-foreground font-medium">
+              Choisissez le niveau d'accompagnement qui vous correspond.
             </p>
           </div>
         </div>
@@ -108,12 +107,12 @@ export default function Pricing() {
               </div>
             </div>
 
-            {/* SIGNATURE - POPULAIRE */}
+            {/* SIGNATURE - RECOMMANDÉ */}
             <div className="relative p-6 rounded-2xl bg-card border-2 border-primary md:-mt-4 md:mb-4">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                 <span className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium flex items-center gap-2">
                   <Crown className="w-3.5 h-3.5" />
-                  POPULAIRE
+                  RECOMMANDÉ
                 </span>
               </div>
               
@@ -124,18 +123,13 @@ export default function Pricing() {
               <h3 className="text-2xl font-semibold text-foreground mb-1">Signature</h3>
               <p className="text-primary font-medium text-sm mb-5">L'expérience conciergerie complète</p>
               
-              <div className="mb-4 space-y-3">
-                <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 relative">
-                  <div className="absolute -top-2 right-3">
-                    <span className="px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-medium">
-                      2 MOIS OFFERTS
-                    </span>
-                  </div>
+              <div className="mb-5 space-y-3">
+                <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
                   <div className="flex items-baseline gap-2">
                     <span className="text-3xl font-semibold text-foreground">490 DH</span>
                     <span className="text-muted-foreground">/an</span>
                   </div>
-                  <p className="text-primary text-sm mt-1">≈ 41 DH/mois</p>
+                  <p className="text-muted-foreground text-sm mt-1">soit 41 DH/mois</p>
                 </div>
                 
                 <div className="p-3 rounded-xl bg-secondary/50 border border-border">
@@ -231,6 +225,11 @@ export default function Pricing() {
               </div>
             </div>
           </div>
+          
+          {/* Note prix */}
+          <p className="text-center text-xs text-muted-foreground mt-8">
+            Tous les prix sont indiqués en dirhams marocains (DH). Service disponible au Maroc.
+          </p>
         </div>
       </section>
 
