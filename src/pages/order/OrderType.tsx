@@ -374,7 +374,7 @@ export default function OrderType() {
                       disabled={!state.customerType}
                       className="px-10 h-14 text-lg rounded-xl font-medium"
                     >
-                      Accéder à ma conciergerie
+                      Choisir Découverte
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                     <p className="text-xs text-muted-foreground">
