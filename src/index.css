@@ -10,10 +10,10 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════════
-       i-WASP DESIGN SYSTEM — SIGNATURE OFFICIELLE
-       VERSION VERROUILLÉE — NE PAS MODIFIER
+       i-WASP DESIGN SYSTEM — SIGNATURE OFFICIELLE VERROUILLÉE
+       VERSION FINALE — NE PAS MODIFIER
        
-       Base visuelle : Carte NFC physique blanche ultra premium
+       Base visuelle : Carte NFC physique i-Wasp Signature
        Cette maquette est la référence absolue pour :
        - Le design global du site
        - Toutes les pages
@@ -21,29 +21,28 @@
        - Toutes les déclinaisons B2B
        
        ═══════════════════════════════════════════════════════════════════
-       PALETTE OFFICIELLE VERROUILLÉE
+       PALETTE OFFICIELLE i-WASP — VERROUILLÉE
        ═══════════════════════════════════════════════════════════════════
-       - Fond principal    : #FFFFFF (Blanc pur)
-       - Texte principal   : #000000 (Noir)
-       - Gris séparation   : #F2F2F2
-       - Gris bordure      : #EAEAEA
-       - AUCUNE AUTRE COULEUR AUTORISÉE
-       - AUCUN ACCENT COLORÉ
+       - Blanc principal     : #FFFFFF
+       - Noir profond        : #000000
+       - Jaune signature     : #F5B400 (accent UNIQUEMENT)
+       - Gris subtil         : #F2F2F2 / #EAEAEA
        ═══════════════════════════════════════════════════════════════════ */
     
     /* ══════════════════════════════════════════════════════════════════
-       COULEURS OFFICIELLES i-WASP — VERROUILLÉES
+       COULEURS OFFICIELLES i-WASP
        ══════════════════════════════════════════════════════════════════ */
     
     --iwasp-blanc: 0 0% 100%;             /* #FFFFFF - Fond principal */
     --iwasp-noir: 0 0% 0%;                /* #000000 - Texte & logo */
+    --iwasp-jaune: 45 100% 48%;           /* #F5B400 - Accent signature */
     --iwasp-gris-fond: 0 0% 95%;          /* #F2F2F2 - Fond secondaire */
     --iwasp-gris-bordure: 0 0% 92%;       /* #EAEAEA - Bordures subtiles */
     --iwasp-gris-texte: 0 0% 55%;         /* #8C8C8C - Texte secondaire */
     
-    /* États système uniquement */
-    --iwasp-erreur: 0 0% 30%;             /* Gris foncé pour erreurs */
-    --iwasp-success: 0 0% 40%;            /* Gris pour succès */
+    /* États système */
+    --iwasp-erreur: 0 72% 51%;            /* Rouge erreur */
+    --iwasp-success: 142 76% 36%;         /* Vert succès */
     
     /* ══════════════════════════════════════════════════════════════════
        SURFACES — Inspirées de la carte physique
@@ -54,7 +53,7 @@
     --surface-overlay: 0 0% 95%;          /* #F2F2F2 - Overlay */
     
     /* ══════════════════════════════════════════════════════════════════
-       TOKENS SÉMANTIQUES — Mono-chromatiques uniquement
+       TOKENS SÉMANTIQUES
        ══════════════════════════════════════════════════════════════════ */
     --background: var(--iwasp-blanc);
     --foreground: var(--iwasp-noir);
@@ -65,8 +64,9 @@
     --popover: var(--iwasp-blanc);
     --popover-foreground: var(--iwasp-noir);
     
-    --primary: var(--iwasp-noir);
-    --primary-foreground: var(--iwasp-blanc);
+    /* Primary = Jaune signature (pour CTA et boutons principaux) */
+    --primary: var(--iwasp-jaune);
+    --primary-foreground: var(--iwasp-noir);
     
     --secondary: var(--iwasp-gris-fond);
     --secondary-foreground: var(--iwasp-noir);
@@ -74,7 +74,8 @@
     --muted: var(--iwasp-gris-fond);
     --muted-foreground: var(--iwasp-gris-texte);
     
-    --accent: var(--iwasp-gris-fond);
+    /* Accent = Jaune signature */
+    --accent: var(--iwasp-jaune);
     --accent-foreground: var(--iwasp-noir);
     
     --destructive: var(--iwasp-erreur);
@@ -82,7 +83,7 @@
     
     --border: var(--iwasp-gris-bordure);
     --input: var(--iwasp-gris-fond);
-    --ring: var(--iwasp-noir);
+    --ring: var(--iwasp-jaune);
     
     /* ══════════════════════════════════════════════════════════════════
        RADIUS — Inspirés des coins de carte bancaire premium
@@ -138,12 +139,12 @@
     /* Sidebar - Light theme */
     --sidebar-background: var(--iwasp-blanc);
     --sidebar-foreground: var(--iwasp-noir);
-    --sidebar-primary: var(--iwasp-noir);
-    --sidebar-primary-foreground: var(--iwasp-blanc);
-    --sidebar-accent: var(--iwasp-gris-light);
+    --sidebar-primary: var(--iwasp-jaune);
+    --sidebar-primary-foreground: var(--iwasp-noir);
+    --sidebar-accent: var(--iwasp-gris-fond);
     --sidebar-accent-foreground: var(--iwasp-noir);
-    --sidebar-border: var(--iwasp-gris-border);
-    --sidebar-ring: var(--iwasp-noir);
+    --sidebar-border: var(--iwasp-gris-bordure);
+    --sidebar-ring: var(--iwasp-jaune);
     
     /* Mobile-first: Safe area insets (Apple notch/Dynamic Island support) */
     --safe-area-top: env(safe-area-inset-top, 0px);
@@ -182,9 +183,6 @@
     --duration-slow: 220ms;
     --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
     --easing-in-out: cubic-bezier(0.42, 0, 0.58, 1);
-
-    /* Background aliases */
-    --background-ivoire: var(--blanc-ivoire);
   }
   
   /* Thème blanc pur = thème par défaut (legacy compatibility) */

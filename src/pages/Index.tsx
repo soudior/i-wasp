@@ -65,7 +65,7 @@ const Index = () => {
                 onClick={() => setMode("carte")}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium transition-all duration-200 ${
                   mode === "carte"
-                    ? "bg-foreground text-background shadow-sm"
+                    ? "bg-primary text-primary-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -77,7 +77,7 @@ const Index = () => {
                 onClick={() => setMode("ongle")}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium transition-all duration-200 ${
                   mode === "ongle"
-                    ? "bg-foreground text-background shadow-sm"
+                    ? "bg-primary text-primary-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -127,7 +127,7 @@ const Index = () => {
             >
               <Button 
                 size="lg" 
-                className="w-full bg-foreground text-background hover:bg-foreground/90 font-medium gap-2 px-8 py-6 text-base rounded-lg transition-colors"
+                className="w-full bg-primary text-primary-foreground hover:brightness-105 font-medium gap-2 px-8 py-6 text-base rounded-lg transition-all"
               >
                 {mode === "carte" ? (
                   <>
@@ -211,7 +211,7 @@ const Index = () => {
             >
               <Button 
                 size="lg" 
-                className="bg-foreground text-background hover:bg-foreground/90 font-medium gap-2 px-8 py-6 text-base rounded-lg"
+                className="bg-primary text-primary-foreground hover:brightness-105 font-medium gap-2 px-8 py-6 text-base rounded-lg"
               >
                 <CreditCard className="w-4 h-4" />
                 Commander ma Carte
@@ -363,7 +363,7 @@ const Index = () => {
             >
               <Button 
                 size="lg"
-                className="bg-background text-foreground hover:bg-background/90 font-medium gap-2 px-8 py-6 rounded-lg"
+                className="bg-primary text-primary-foreground hover:brightness-105 font-medium gap-2 px-8 py-6 rounded-lg"
               >
                 <CreditCard className="w-4 h-4" />
                 Commander maintenant
