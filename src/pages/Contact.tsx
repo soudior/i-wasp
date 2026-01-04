@@ -1,5 +1,6 @@
 /**
  * Contact Page - Enterprise quotes and custom orders
+ * Design: Premium white i-Wasp signature
  */
 
 import { useState } from "react";
@@ -9,8 +10,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,7 +41,8 @@ import {
   MapPin,
   Clock,
   CheckCircle2,
-  Loader2
+  Loader2,
+  ArrowRight
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -67,8 +67,8 @@ const requestTypes = [
 ];
 
 const contactInfo = [
-  { icon: Mail, label: "Email", value: "contact@iwasp.io" },
-  { icon: Phone, label: "Téléphone", value: "+212 6 00 00 00 00" },
+  { icon: Mail, label: "Email", value: "contact@i-wasp.com" },
+  { icon: Phone, label: "Téléphone", value: "+212 6 26 42 43 94" },
   { icon: MapPin, label: "Adresse", value: "Casablanca, Maroc" },
   { icon: Clock, label: "Réponse", value: "Sous 24-48h" },
 ];
@@ -120,7 +120,6 @@ export default function Contact() {
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <main className="pt-24 pb-16">
           <div className="container mx-auto px-4 md:px-6">
             <motion.div
@@ -128,35 +127,32 @@ export default function Contact() {
               animate={{ opacity: 1, scale: 1 }}
               className="max-w-lg mx-auto text-center py-16"
             >
-              <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 className="w-10 h-10 text-green-500" />
+              <div className="w-20 h-20 rounded-full bg-foreground/10 flex items-center justify-center mx-auto mb-6">
+                <CheckCircle2 className="w-10 h-10 text-foreground" />
               </div>
-              <h1 className="text-3xl font-display font-bold mb-4">
+              <h1 className="text-3xl font-bold mb-4 text-foreground tracking-tight">
                 Demande envoyée !
               </h1>
               <p className="text-muted-foreground mb-8">
                 Merci pour votre message. Notre équipe vous contactera dans les plus brefs délais (24-48h ouvrées).
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button onClick={() => navigate("/")} variant="outline">
+                <Button onClick={() => navigate("/")} variant="outline" className="border-border">
                   Retour à l'accueil
                 </Button>
-                <Button onClick={() => navigate("/order")} className="bg-gradient-to-r from-amber-500 to-amber-600 text-background">
+                <Button onClick={() => navigate("/order/type")} className="bg-foreground text-background hover:bg-foreground/90">
                   Commander une carte
                 </Button>
               </div>
             </motion.div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 md:px-6">
           {/* Header */}
@@ -165,7 +161,7 @@ export default function Contact() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-4">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground tracking-tight">
               Contactez-nous
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -181,10 +177,10 @@ export default function Contact() {
               transition={{ delay: 0.1 }}
               className="lg:col-span-2"
             >
-              <Card>
+              <Card className="border-border bg-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Send className="w-5 h-5 text-primary" />
+                  <CardTitle className="flex items-center gap-2 text-foreground">
+                    <Send className="w-5 h-5" />
                     Envoyez-nous votre demande
                   </CardTitle>
                 </CardHeader>
@@ -193,7 +189,7 @@ export default function Contact() {
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                       {/* Request Type Selection */}
                       <div>
-                        <Label className="mb-3 block">Type de demande</Label>
+                        <Label className="mb-3 block text-foreground">Type de demande</Label>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                           {requestTypes.map((type) => {
                             const isSelected = form.watch("requestType") === type.value;
@@ -204,12 +200,12 @@ export default function Contact() {
                                 onClick={() => form.setValue("requestType", type.value as any)}
                                 className={`p-3 rounded-xl border-2 text-left transition-all ${
                                   isSelected
-                                    ? "border-primary bg-primary/5"
-                                    : "border-border hover:border-primary/50"
+                                    ? "border-foreground bg-foreground/5"
+                                    : "border-border hover:border-foreground/50"
                                 }`}
                               >
-                                <type.icon className={`w-5 h-5 mb-2 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
-                                <p className="text-sm font-medium">{type.label}</p>
+                                <type.icon className={`w-5 h-5 mb-2 ${isSelected ? "text-foreground" : "text-muted-foreground"}`} />
+                                <p className="text-sm font-medium text-foreground">{type.label}</p>
                               </button>
                             );
                           })}
@@ -222,9 +218,9 @@ export default function Contact() {
                           name="name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Nom complet *</FormLabel>
+                              <FormLabel className="text-foreground">Nom complet *</FormLabel>
                               <FormControl>
-                                <Input placeholder="Votre nom" {...field} className="h-12" />
+                                <Input placeholder="Votre nom" {...field} className="h-12 bg-background border-border" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -236,9 +232,9 @@ export default function Contact() {
                           name="email"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Email *</FormLabel>
+                              <FormLabel className="text-foreground">Email *</FormLabel>
                               <FormControl>
-                                <Input type="email" placeholder="votre@email.com" {...field} className="h-12" />
+                                <Input type="email" placeholder="votre@email.com" {...field} className="h-12 bg-background border-border" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -252,9 +248,9 @@ export default function Contact() {
                           name="phone"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Téléphone</FormLabel>
+                              <FormLabel className="text-foreground">Téléphone</FormLabel>
                               <FormControl>
-                                <Input type="tel" placeholder="+212 6 00 00 00 00" {...field} className="h-12" />
+                                <Input type="tel" placeholder="+212 6 00 00 00 00" {...field} className="h-12 bg-background border-border" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -266,9 +262,9 @@ export default function Contact() {
                           name="company"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Entreprise</FormLabel>
+                              <FormLabel className="text-foreground">Entreprise</FormLabel>
                               <FormControl>
-                                <Input placeholder="Nom de l'entreprise" {...field} className="h-12" />
+                                <Input placeholder="Nom de l'entreprise" {...field} className="h-12 bg-background border-border" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -282,10 +278,10 @@ export default function Contact() {
                           name="quantity"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Quantité estimée</FormLabel>
+                              <FormLabel className="text-foreground">Quantité estimée</FormLabel>
                               <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="h-12">
+                                  <SelectTrigger className="h-12 bg-background border-border">
                                     <SelectValue placeholder="Sélectionnez une quantité" />
                                   </SelectTrigger>
                                 </FormControl>
@@ -308,11 +304,11 @@ export default function Contact() {
                         name="message"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Votre message *</FormLabel>
+                            <FormLabel className="text-foreground">Votre message *</FormLabel>
                             <FormControl>
                               <Textarea
                                 placeholder="Décrivez votre projet, vos besoins en personnalisation, délais souhaités..."
-                                className="min-h-[150px] resize-none"
+                                className="min-h-[150px] resize-none bg-background border-border"
                                 {...field}
                               />
                             </FormControl>
@@ -324,7 +320,7 @@ export default function Contact() {
                       <Button
                         type="submit"
                         size="lg"
-                        className="w-full h-12 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-background font-semibold"
+                        className="w-full h-12 bg-foreground text-background hover:bg-foreground/90 font-semibold"
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? (
@@ -353,19 +349,19 @@ export default function Contact() {
               className="space-y-6"
             >
               {/* Contact Details */}
-              <Card>
+              <Card className="border-border bg-card">
                 <CardHeader>
-                  <CardTitle className="text-lg">Nos coordonnées</CardTitle>
+                  <CardTitle className="text-lg text-foreground">Nos coordonnées</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {contactInfo.map((item) => (
                     <div key={item.label} className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <item.icon className="w-5 h-5 text-primary" />
+                      <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center flex-shrink-0">
+                        <item.icon className="w-5 h-5 text-foreground" />
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">{item.label}</p>
-                        <p className="font-medium">{item.value}</p>
+                        <p className="font-medium text-foreground">{item.value}</p>
                       </div>
                     </div>
                   ))}
@@ -373,9 +369,9 @@ export default function Contact() {
               </Card>
 
               {/* Why choose us */}
-              <Card className="bg-gradient-to-br from-primary/5 to-amber-500/5 border-primary/20">
+              <Card className="bg-secondary/50 border-border">
                 <CardHeader>
-                  <CardTitle className="text-lg">Pourquoi nous choisir ?</CardTitle>
+                  <CardTitle className="text-lg text-foreground">Pourquoi nous choisir ?</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {[
@@ -386,23 +382,23 @@ export default function Contact() {
                     "Livraison rapide Maroc",
                   ].map((item, i) => (
                     <div key={i} className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                      <span>{item}</span>
+                      <CheckCircle2 className="w-4 h-4 text-foreground flex-shrink-0" />
+                      <span className="text-foreground">{item}</span>
                     </div>
                   ))}
                 </CardContent>
               </Card>
 
               {/* Quick CTA */}
-              <Card>
+              <Card className="border-border bg-card">
                 <CardContent className="p-4">
                   <p className="text-sm text-muted-foreground mb-3">
                     Besoin d'une réponse rapide ?
                   </p>
                   <Button
                     variant="outline"
-                    className="w-full"
-                    onClick={() => window.open("https://wa.me/212600000000", "_blank")}
+                    className="w-full border-border hover:bg-accent"
+                    onClick={() => window.open("https://wa.me/33626424394", "_blank")}
                   >
                     <Phone className="mr-2 h-4 w-4" />
                     WhatsApp
@@ -413,8 +409,6 @@ export default function Contact() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

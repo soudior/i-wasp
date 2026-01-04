@@ -115,14 +115,14 @@ const FAQAccordion = ({ item }: { item: FAQItem }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-b border-[#E5E5E7]">
+    <div className="border-b border-border">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full py-4 flex items-center justify-between text-left"
       >
         <div className="flex items-center gap-3">
-          <span className="text-[#8E8E93]">{item.icon}</span>
-          <span className="text-[#1D1D1F] font-medium text-[15px]">
+          <span className="text-muted-foreground">{item.icon}</span>
+          <span className="text-foreground font-medium text-[15px]">
             {item.question}
           </span>
         </div>
@@ -130,7 +130,7 @@ const FAQAccordion = ({ item }: { item: FAQItem }) => {
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronDown className="w-5 h-5 text-[#8E8E93]" />
+          <ChevronDown className="w-5 h-5 text-muted-foreground" />
         </motion.div>
       </button>
       <AnimatePresence>
@@ -143,15 +143,15 @@ const FAQAccordion = ({ item }: { item: FAQItem }) => {
             className="overflow-hidden"
           >
             <div className="pb-4 pl-9 pr-4">
-              <p className="text-[#8E8E93] text-[14px] leading-relaxed whitespace-pre-line">
+              <p className="text-muted-foreground text-[14px] leading-relaxed whitespace-pre-line">
                 {item.answer}
               </p>
               {item.videoUrl && (
-                <div className="mt-4 rounded-xl overflow-hidden aspect-video bg-[#1D1D1F]">
+                <div className="mt-4 rounded-xl overflow-hidden aspect-video bg-foreground">
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="text-center">
-                      <Play className="w-12 h-12 text-white/50 mx-auto mb-2" />
-                      <p className="text-white/50 text-sm">Tutoriel vidéo</p>
+                      <Play className="w-12 h-12 text-background/50 mx-auto mb-2" />
+                      <p className="text-background/50 text-sm">Tutoriel vidéo</p>
                     </div>
                   </div>
                 </div>
@@ -166,17 +166,17 @@ const FAQAccordion = ({ item }: { item: FAQItem }) => {
 
 const Help = () => {
   return (
-    <div className="min-h-screen bg-[#F5F5F7]">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#F5F5F7]/80 backdrop-blur-xl border-b border-[#E5E5E7]">
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="max-w-lg mx-auto px-4 py-4 flex items-center gap-4">
           <Link 
             to="/" 
-            className="p-2 -ml-2 rounded-full hover:bg-black/5 transition-colors"
+            className="p-2 -ml-2 rounded-full hover:bg-accent transition-colors"
           >
-            <ChevronLeft className="w-6 h-6 text-[#1D1D1F]" />
+            <ChevronLeft className="w-6 h-6 text-foreground" />
           </Link>
-          <h1 className="text-xl font-semibold text-[#1D1D1F] tracking-tight">
+          <h1 className="text-xl font-semibold text-foreground tracking-tight">
             Aide & FAQ
           </h1>
         </div>
@@ -189,13 +189,13 @@ const Help = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <div className="w-16 h-16 bg-[#1D1D1F] rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <HelpCircle className="w-8 h-8 text-[#D4AF37]" />
+          <div className="w-16 h-16 bg-foreground rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <HelpCircle className="w-8 h-8 text-background" />
           </div>
-          <h2 className="text-2xl font-bold text-[#1D1D1F] tracking-tight mb-2">
+          <h2 className="text-2xl font-bold text-foreground tracking-tight mb-2">
             Comment pouvons-nous vous aider ?
           </h2>
-          <p className="text-[#8E8E93] text-[15px]">
+          <p className="text-muted-foreground text-[15px]">
             Trouvez rapidement les réponses à vos questions
           </p>
         </motion.div>
@@ -209,25 +209,25 @@ const Help = () => {
         >
           <Link
             to="/guide"
-            className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-card rounded-2xl p-4 border border-border hover:shadow-md transition-shadow"
           >
-            <CreditCard className="w-6 h-6 text-[#D4AF37] mb-2" />
-            <p className="text-[#1D1D1F] font-medium text-[14px]">
+            <CreditCard className="w-6 h-6 text-foreground mb-2" />
+            <p className="text-foreground font-medium text-[14px]">
               Guide d'utilisation
             </p>
-            <p className="text-[#8E8E93] text-[12px] mt-1">
+            <p className="text-muted-foreground text-[12px] mt-1">
               Étape par étape
             </p>
           </Link>
           <Link
             to="/install"
-            className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-card rounded-2xl p-4 border border-border hover:shadow-md transition-shadow"
           >
-            <Smartphone className="w-6 h-6 text-[#D4AF37] mb-2" />
-            <p className="text-[#1D1D1F] font-medium text-[14px]">
+            <Smartphone className="w-6 h-6 text-foreground mb-2" />
+            <p className="text-foreground font-medium text-[14px]">
               Installer l'app
             </p>
-            <p className="text-[#8E8E93] text-[12px] mt-1">
+            <p className="text-muted-foreground text-[12px] mt-1">
               PWA sur mobile
             </p>
           </Link>
@@ -243,12 +243,12 @@ const Help = () => {
             className="mb-6"
           >
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-[#D4AF37]">{category.icon}</span>
-              <h3 className="text-[17px] font-semibold text-[#1D1D1F]">
+              <span className="text-foreground">{category.icon}</span>
+              <h3 className="text-[17px] font-semibold text-foreground">
                 {category.title}
               </h3>
             </div>
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-card rounded-2xl border border-border overflow-hidden">
               {category.items.map((item, itemIndex) => (
                 <FAQAccordion key={itemIndex} item={item} />
               ))}
@@ -261,27 +261,27 @@ const Help = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-[#1D1D1F] rounded-2xl p-6 text-center"
+          className="bg-foreground rounded-2xl p-6 text-center"
         >
-          <h3 className="text-white font-semibold text-lg mb-2">
+          <h3 className="text-background font-semibold text-lg mb-2">
             Besoin d'aide supplémentaire ?
           </h3>
-          <p className="text-white/60 text-[14px] mb-4">
+          <p className="text-background/60 text-[14px] mb-4">
             Notre équipe est disponible pour vous accompagner
           </p>
           <div className="flex gap-3 justify-center">
             <a
               href="mailto:support@i-wasp.com"
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl transition-colors"
+              className="flex items-center gap-2 bg-background/10 hover:bg-background/20 text-background px-4 py-2.5 rounded-xl transition-colors"
             >
               <Mail className="w-4 h-4" />
               <span className="text-[14px]">Email</span>
             </a>
             <a
-              href="https://wa.me/212600000000"
+              href="https://wa.me/33626424394"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#C9A431] text-[#1D1D1F] px-4 py-2.5 rounded-xl transition-colors font-medium"
+              className="flex items-center gap-2 bg-background text-foreground px-4 py-2.5 rounded-xl transition-colors font-medium hover:bg-background/90"
             >
               <MessageCircle className="w-4 h-4" />
               <span className="text-[14px]">WhatsApp</span>
@@ -290,8 +290,8 @@ const Help = () => {
         </motion.div>
 
         {/* Footer */}
-        <p className="text-center text-[#8E8E93] text-[12px] mt-8">
-          Powered by IWASP
+        <p className="text-center text-muted-foreground text-[12px] mt-8 tracking-widest uppercase">
+          Powered by i-Wasp
         </p>
       </main>
     </div>
