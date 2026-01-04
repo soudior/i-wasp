@@ -300,7 +300,7 @@ export default function OrderType() {
                           variant={level.isPopular ? "default" : "outline"}
                           onClick={handleContinue}
                         >
-                          Choisir {level.title}
+                          {level.id === "elite" ? "Accéder à" : "Choisir"} {level.title}
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                       </motion.div>
