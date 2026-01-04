@@ -20,14 +20,12 @@ import { Button } from "@/components/ui/button";
 import nailsHero from "@/assets/nails/nails-hero.png";
 import cardPreview from "@/assets/cards/card-black-matte.png";
 
-const productTypes = [
+const serviceLevels = [
   {
-    id: "card" as ProductType,
-    icon: CreditCard,
-    title: "Carte NFC Premium",
-    subtitle: "Votre clé d'accès",
-    description: "Une carte élégante qui ouvre les portes de votre conciergerie digitale.",
-    image: cardPreview,
+    id: "decouverte",
+    title: "Découverte",
+    subtitle: "L'essentiel",
+    price: "299 DH",
     features: [
       "Carte NFC i-Wasp blanche",
       "Profil digital essentiel",
@@ -39,6 +37,34 @@ const productTypes = [
     ],
   },
   {
+    id: "signature",
+    title: "Signature",
+    subtitle: "Le plus populaire",
+    price: "599 DH",
+    isPopular: true,
+    features: [
+      "Carte NFC i-Wasp Premium",
+      "Profil digital complet",
+      "Liens illimités",
+      "WhatsApp direct",
+      "Galerie photo / vidéo",
+      "Mise à jour illimitée",
+      "Reprogrammation de la carte",
+      "Support prioritaire",
+    ],
+  },
+];
+
+const productTypes = [
+  {
+    id: "card" as ProductType,
+    icon: CreditCard,
+    title: "Carte NFC i-Wasp",
+    subtitle: "Votre clé d'accès",
+    description: "Une carte élégante qui ouvre les portes de votre conciergerie digitale.",
+    image: cardPreview,
+  },
+  {
     id: "nails" as ProductType,
     icon: Hand,
     title: "Ongles NFC i-Wasp",
@@ -46,11 +72,6 @@ const productTypes = [
     description: "Le networking invisible. La technologie se fond dans votre style.",
     image: nailsHero,
     isNew: true,
-    features: [
-      "Design sur-mesure",
-      "Technologie invisible",
-      "Partage instantané",
-    ],
   },
 ];
 
@@ -209,23 +230,60 @@ export default function OrderType() {
                       </div>
                     </div>
                     
-                    {/* Description + Features */}
+                    {/* Description */}
                     <div className="p-5 bg-card">
-                      <p className="text-sm text-muted-foreground mb-3">{product.description}</p>
-                      {product.features && (
-                        <ul className="space-y-1.5">
-                          {product.features.map((feature, i) => (
-                            <li key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Check size={12} className="text-primary flex-shrink-0" />
-                              {feature}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                      <p className="text-sm text-muted-foreground">{product.description}</p>
                     </div>
                   </motion.button>
                 ))}
               </div>
+
+              {/* Service Levels Selection - After product selection */}
+              {state.productType === "card" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="mb-8"
+                >
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {serviceLevels.map((level, index) => (
+                      <motion.div
+                        key={level.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 + index * 0.1 }}
+                        className={`relative p-6 rounded-2xl border-2 bg-card ${
+                          level.isPopular 
+                            ? "border-primary shadow-lg" 
+                            : "border-border"
+                        }`}
+                      >
+                        {level.isPopular && (
+                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
+                            LE PLUS POPULAIRE
+                          </div>
+                        )}
+                        
+                        <div className="text-center mb-4">
+                          <h3 className="text-xl font-semibold mb-1">{level.title}</h3>
+                          <p className="text-sm text-muted-foreground">{level.subtitle}</p>
+                          <p className="text-2xl font-bold mt-2">{level.price}</p>
+                        </div>
+                        
+                        <ul className="space-y-2">
+                          {level.features.map((feature, i) => (
+                            <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Check size={14} className="text-primary flex-shrink-0" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
 
               {/* i-wasp Magic Import Section - Only for card product */}
               {state.productType === "card" && (
