@@ -10,7 +10,7 @@ export { AutoSaveIndicator } from './AutoSaveIndicator';
 export { RestoreDraftBanner } from './RestoreDraftBanner';
 export { PageTransition, contentVariants, itemVariants } from './PageTransition';
 
-// Premium funnel components - VERROUILLÉ
+// Premium funnel components
 export { PremiumButton } from './PremiumButton';
 export { FunnelStep } from './FunnelStep';
 export { SelectionCard } from './SelectionCard';
@@ -27,8 +27,6 @@ export { LogoCropper } from './LogoCropper';
 export { SmartInput } from './SmartInput';
 export { SmartContinueButton } from './SmartContinueButton';
 export { ValidationSummary, ValidationChecklist } from './ValidationSummary';
-export { ClientPreview } from './ClientPreview';
 export { TemplateGallery, type TemplateDefinition, type TemplateCategory } from './TemplateGallery';
 export { TemplatePreviewModal } from './TemplatePreviewModal';
 export { WebsiteImporter, type ScrapedWebsiteData } from './WebsiteImporter';
-export { ImportedDataPreview } from './ImportedDataPreview';

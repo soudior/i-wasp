@@ -1,145 +1,106 @@
 /**
- * OrderFunnelContext - Manages multi-step order flow state
+ * OrderFunnelContext - Tunnel de commande i-Wasp
  * 
- * STRICT ORDER FLOW (7 steps, no bypass):
- * 1. /order/type - Customer type selection (particulier / pro / équipe)
- * 2. /order/identity - Personal info (name, title, phone, email)
- * 3. /order/digital - Digital links (website, WhatsApp, Instagram, Google Reviews, geolocation)
- * 4. /order/design - Card design (color, logo)
- * 5. /order/options - Quantity + promo code
- * 6. /order/summary - Final review
- * 7. /order/payment - Stripe payment
+ * 5 ÉTAPES STRICTES :
+ * 1. /order/offre - Choix de l'offre (Essentiel / Signature / Élite)
+ * 2. /order/identite - Identité digitale (profil public)
+ * 3. /order/livraison - Livraison + Paiement
+ * 4. /order/recap - Récapitulatif
+ * 5. /order/confirmation - Confirmation + accès compte
  */
 
-import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from "react";
+import { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { scrollToTopInstant } from "@/hooks/useScrollToTop";
 
-// Customer types
-export type CustomerType = "particulier" | "professionnel" | "entreprise";
+// Offer types
+export type OfferType = "essentiel" | "signature" | "elite";
 
-// Product type
-export type ProductType = "card" | "nails";
+// Offer configuration
+export interface OfferConfig {
+  id: OfferType;
+  name: string;
+  price: number; // in centimes (DH)
+  priceCurrency: string;
+}
 
-// Personal information (step 2: Identity)
-export interface PersonalInfo {
+export const OFFERS: OfferConfig[] = [
+  { id: "essentiel", name: "Essentiel", price: 29900, priceCurrency: "MAD" },
+  { id: "signature", name: "Signature", price: 59900, priceCurrency: "MAD" },
+  { id: "elite", name: "Élite", price: 99900, priceCurrency: "MAD" },
+];
+
+// Digital identity (step 2: public profile)
+export interface DigitalIdentity {
   firstName: string;
   lastName: string;
-  email: string;
+  title?: string;           // Fonction
+  company?: string;         // Entreprise
   phone: string;
-  company?: string;
-  title?: string;
-}
-
-// Digital links (step 3: Digital)
-export interface DigitalInfo {
-  website?: string;
+  email: string;
   whatsapp?: string;
   instagram?: string;
-  googleReviews?: string;
-  // Geolocation & Shipping
-  address?: string;
+  linkedin?: string;
+  website?: string;
+  bio?: string;             // Bio courte
+  // Geolocation
   latitude?: number;
   longitude?: number;
-  city?: string;
-  postalCode?: string;
-  country?: string;
-  neighborhood?: string; // Quartier (Maroc)
-}
-
-// Imported website data (auto-génération par URL)
-export interface ImportedWebsiteData {
-  logo?: string;
-  colors?: {
-    primary?: string;
-    secondary?: string;
-    accent?: string;
-    background?: string;
-  };
-  brandName?: string;
-  tagline?: string;
-  phone?: string;
-  whatsapp?: string;
-  email?: string;
-  address?: string;
-  instagram?: string;
-  facebook?: string;
   googleMapsUrl?: string;
-  website?: string;
-  products?: Array<{
-    name: string;
-    image?: string;
-    price?: string;
-    category?: string;
-  }>;
-  storyImages?: string[];
 }
 
-// Design configuration (step 4)
-export interface DesignConfig {
-  logoUrl: string | null;
-  cardColor: string;
-  designPreviewUrl?: string;
-  template?: string; // Selected template ID
-  importedData?: ImportedWebsiteData; // Data from website import
+// Shipping info (step 3: delivery only - NOT on digital card)
+export interface ShippingInfo {
+  addressType: "domicile" | "entreprise" | "hotel";
+  address: string;
+  city: string;
+  country: string;  // Default: Maroc
+  phone: string;
 }
 
-// Order options (step 5)
-export interface OrderOptions {
-  quantity: number;
-  promoCode?: string;
-  promoDiscount?: number;
-  unitPriceCents: number;
-  totalPriceCents: number;
-  paymentMethod?: "cod" | "card"; // Maroc = COD, Europe = Card
+// Payment info
+export interface PaymentInfo {
+  method: "cod"; // Only COD enabled for now
 }
 
 // Complete funnel state
 export interface OrderFunnelState {
   currentStep: number;
-  productType: ProductType | null;
-  customerType: CustomerType | null;
-  personalInfo: PersonalInfo | null;
-  digitalInfo: DigitalInfo | null;
-  designConfig: DesignConfig | null;
-  orderOptions: OrderOptions | null;
+  selectedOffer: OfferType | null;
+  digitalIdentity: DigitalIdentity | null;
+  shippingInfo: ShippingInfo | null;
+  paymentInfo: PaymentInfo | null;
   isComplete: boolean;
+  isTransitioning: boolean; // Block interactions during transitions
 }
 
-// Step paths mapping (7 steps STRICT)
+// Step paths (5 steps)
 const STEP_PATHS = [
-  "/order/type",      // Step 1: Choose customer type
-  "/order/identity",  // Step 2: Personal info
-  "/order/digital",   // Step 3: Digital links + geolocation
-  "/order/design",    // Step 4: Card customization
-  "/order/options",   // Step 5: Quantity + promo
-  "/order/summary",   // Step 6: Review
-  "/order/payment",   // Step 7: Payment
+  "/order/offre",        // Step 1: Offer selection
+  "/order/identite",     // Step 2: Digital identity
+  "/order/livraison",    // Step 3: Shipping + Payment
+  "/order/recap",        // Step 4: Summary
+  "/order/confirmation", // Step 5: Confirmation
 ];
 
 export const STEP_LABELS = [
-  "Type",
+  "Offre",
   "Identité",
-  "Digital",
-  "Design",
-  "Options",
+  "Livraison",
   "Récap",
-  "Paiement"
+  "Confirmation"
 ];
 
-export const TOTAL_STEPS = 7;
+export const TOTAL_STEPS = 5;
 
 // Context interface
 interface OrderFunnelContextType {
   state: OrderFunnelState;
-  setProductType: (type: ProductType) => void;
-  setCustomerType: (type: CustomerType) => void;
-  setPersonalInfo: (info: PersonalInfo) => void;
-  setDigitalInfo: (info: DigitalInfo) => void;
-  setDesignConfig: (config: DesignConfig) => void;
-  setOrderOptions: (options: OrderOptions) => void;
+  setSelectedOffer: (offer: OfferType) => void;
+  setDigitalIdentity: (identity: DigitalIdentity) => void;
+  setShippingInfo: (info: ShippingInfo) => void;
+  setPaymentInfo: (info: PaymentInfo) => void;
   goToStep: (step: number) => void;
-  nextStep: () => void;
+  nextStep: () => Promise<void>;
   prevStep: () => void;
   canAccessStep: (step: number) => boolean;
   getFirstIncompleteStep: () => number;
@@ -147,30 +108,37 @@ interface OrderFunnelContextType {
   validateCurrentStep: () => boolean;
   markComplete: () => void;
   getStepPath: (step: number) => string;
+  getSelectedOfferConfig: () => OfferConfig | null;
 }
 
 const initialState: OrderFunnelState = {
   currentStep: 1,
-  productType: null,
-  customerType: null,
-  personalInfo: null,
-  digitalInfo: null,
-  designConfig: null,
-  orderOptions: null,
+  selectedOffer: null,
+  digitalIdentity: null,
+  shippingInfo: null,
+  paymentInfo: null,
   isComplete: false,
+  isTransitioning: false,
 };
 
 const OrderFunnelContext = createContext<OrderFunnelContextType | null>(null);
 
+// Scroll to top instantly
+const scrollToTopInstant = () => {
+  window.scrollTo({ top: 0, behavior: "auto" });
+};
+
 export function OrderFunnelProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
+  const transitionLock = useRef(false);
   
   // Load state from sessionStorage
   const [state, setState] = useState<OrderFunnelState>(() => {
     try {
-      const saved = sessionStorage.getItem("orderFunnelState");
+      const saved = sessionStorage.getItem("orderFunnelStateV2");
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        return { ...parsed, isTransitioning: false };
       }
     } catch {
       // Ignore
@@ -180,30 +148,27 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
 
   // Persist state to sessionStorage
   useEffect(() => {
-    sessionStorage.setItem("orderFunnelState", JSON.stringify(state));
+    const { isTransitioning, ...stateToSave } = state;
+    sessionStorage.setItem("orderFunnelStateV2", JSON.stringify(stateToSave));
   }, [state]);
 
-  // Check if a step can be accessed (7 steps, STRICT - no bypass)
+  // Check if a step can be accessed (strict - no bypass)
   const canAccessStep = useCallback((step: number): boolean => {
     if (step === 1) return true;
-    if (step === 2) return state.customerType !== null;
-    if (step === 3) return state.customerType !== null && state.personalInfo !== null;
-    if (step === 4) return state.customerType !== null && state.personalInfo !== null && state.digitalInfo !== null;
-    if (step === 5) return state.customerType !== null && state.personalInfo !== null && state.digitalInfo !== null && state.designConfig !== null;
-    if (step === 6) return state.customerType !== null && state.personalInfo !== null && state.digitalInfo !== null && state.designConfig !== null && state.orderOptions !== null;
-    if (step === 7) return state.isComplete;
+    if (step === 2) return state.selectedOffer !== null;
+    if (step === 3) return state.selectedOffer !== null && state.digitalIdentity !== null;
+    if (step === 4) return state.selectedOffer !== null && state.digitalIdentity !== null && state.shippingInfo !== null;
+    if (step === 5) return state.isComplete;
     return false;
   }, [state]);
 
   // Get first incomplete step
   const getFirstIncompleteStep = useCallback((): number => {
-    if (!state.customerType) return 1;
-    if (!state.personalInfo) return 2;
-    if (!state.digitalInfo) return 3;
-    if (!state.designConfig) return 4;
-    if (!state.orderOptions) return 5;
-    if (!state.isComplete) return 6;
-    return 7;
+    if (!state.selectedOffer) return 1;
+    if (!state.digitalIdentity) return 2;
+    if (!state.shippingInfo) return 3;
+    if (!state.isComplete) return 4;
+    return 5;
   }, [state]);
 
   // Get step path
@@ -214,75 +179,73 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     return STEP_PATHS[0];
   }, []);
 
-  // Set product type (step 0/1)
-  const setProductType = useCallback((type: ProductType) => {
-    setState(prev => ({
-      ...prev,
-      productType: type,
-    }));
-  }, []);
+  // Get selected offer config
+  const getSelectedOfferConfig = useCallback((): OfferConfig | null => {
+    if (!state.selectedOffer) return null;
+    return OFFERS.find(o => o.id === state.selectedOffer) || null;
+  }, [state.selectedOffer]);
 
-  // Set customer type (step 1)
-  const setCustomerType = useCallback((type: CustomerType) => {
+  // Set offer (step 1)
+  const setSelectedOffer = useCallback((offer: OfferType) => {
     setState(prev => ({
       ...prev,
-      customerType: type,
+      selectedOffer: offer,
       currentStep: Math.max(prev.currentStep, 1),
     }));
   }, []);
 
-  // Set personal info (step 2)
-  const setPersonalInfo = useCallback((info: PersonalInfo) => {
+  // Set digital identity (step 2)
+  const setDigitalIdentity = useCallback((identity: DigitalIdentity) => {
     setState(prev => ({
       ...prev,
-      personalInfo: info,
+      digitalIdentity: identity,
       currentStep: Math.max(prev.currentStep, 2),
     }));
   }, []);
 
-  // Set digital info (step 3)
-  const setDigitalInfo = useCallback((info: DigitalInfo) => {
+  // Set shipping info (step 3)
+  const setShippingInfo = useCallback((info: ShippingInfo) => {
     setState(prev => ({
       ...prev,
-      digitalInfo: info,
+      shippingInfo: info,
       currentStep: Math.max(prev.currentStep, 3),
     }));
   }, []);
 
-  // Set design config (step 4)
-  const setDesignConfig = useCallback((config: DesignConfig) => {
+  // Set payment info
+  const setPaymentInfo = useCallback((info: PaymentInfo) => {
     setState(prev => ({
       ...prev,
-      designConfig: config,
-      currentStep: Math.max(prev.currentStep, 4),
+      paymentInfo: info,
     }));
   }, []);
 
-  // Set order options (step 5)
-  const setOrderOptions = useCallback((options: OrderOptions) => {
-    setState(prev => ({
-      ...prev,
-      orderOptions: options,
-      currentStep: Math.max(prev.currentStep, 5),
-    }));
-  }, []);
-
-  // Mark as complete (step 6 -> ready for payment)
+  // Mark as complete (step 4 validated -> ready for confirmation)
   const markComplete = useCallback(() => {
     setState(prev => ({
       ...prev,
       isComplete: true,
-      currentStep: 6,
+      currentStep: 5,
     }));
   }, []);
 
   // Navigate to specific step with scroll to top
   const goToStep = useCallback((step: number) => {
+    if (transitionLock.current) return;
+    
     if (step >= 1 && step <= TOTAL_STEPS && canAccessStep(step)) {
-      setState(prev => ({ ...prev, currentStep: step }));
+      transitionLock.current = true;
+      setState(prev => ({ ...prev, currentStep: step, isTransitioning: true }));
+      
+      // Navigate and scroll
       navigate(STEP_PATHS[step - 1]);
-      // Auto scroll to top after navigation
       scrollToTopInstant();
+      
+      // Release lock after transition
+      setTimeout(() => {
+        transitionLock.current = false;
+        setState(prev => ({ ...prev, isTransitioning: false }));
+      }, 300);
     } else {
       // Redirect to first incomplete step
       const firstIncomplete = getFirstIncompleteStep();
@@ -291,38 +254,56 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     }
   }, [canAccessStep, getFirstIncompleteStep, navigate]);
 
-  // Next step
-  const nextStep = useCallback(() => {
+  // Next step with transition
+  const nextStep = useCallback(async () => {
+    if (transitionLock.current || state.isTransitioning) {
+      return;
+    }
+    
     const next = state.currentStep + 1;
     if (next <= TOTAL_STEPS) {
-      goToStep(next);
+      transitionLock.current = true;
+      setState(prev => ({ ...prev, isTransitioning: true }));
+      
+      // Navigate
+      navigate(STEP_PATHS[next - 1]);
+      scrollToTopInstant();
+      
+      // Update state after short delay
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      setState(prev => ({ 
+        ...prev, 
+        currentStep: next,
+        isTransitioning: false 
+      }));
+      
+      transitionLock.current = false;
     }
-  }, [state.currentStep, goToStep]);
+  }, [state.currentStep, state.isTransitioning, navigate]);
 
   // Previous step
   const prevStep = useCallback(() => {
+    if (transitionLock.current || state.isTransitioning) return;
+    
     const prev = state.currentStep - 1;
     if (prev >= 1) {
       goToStep(prev);
     }
-  }, [state.currentStep, goToStep]);
+  }, [state.currentStep, state.isTransitioning, goToStep]);
 
   // Validate current step
   const validateCurrentStep = useCallback((): boolean => {
     switch (state.currentStep) {
       case 1:
-        return state.customerType !== null;
+        return state.selectedOffer !== null;
       case 2:
-        return state.personalInfo !== null;
+        return state.digitalIdentity !== null;
       case 3:
-        return state.digitalInfo !== null;
+        return state.shippingInfo !== null;
       case 4:
-        return state.designConfig !== null;
+        return state.shippingInfo !== null;
       case 5:
-        return state.orderOptions !== null;
-      case 6:
-        return state.orderOptions !== null && state.isComplete;
-      case 7:
         return state.isComplete;
       default:
         return false;
@@ -332,19 +313,17 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
   // Reset funnel
   const resetFunnel = useCallback(() => {
     setState(initialState);
-    sessionStorage.removeItem("orderFunnelState");
+    sessionStorage.removeItem("orderFunnelStateV2");
   }, []);
 
   return (
     <OrderFunnelContext.Provider
       value={{
         state,
-        setProductType,
-        setCustomerType,
-        setPersonalInfo,
-        setDigitalInfo,
-        setDesignConfig,
-        setOrderOptions,
+        setSelectedOffer,
+        setDigitalIdentity,
+        setShippingInfo,
+        setPaymentInfo,
         goToStep,
         nextStep,
         prevStep,
@@ -354,6 +333,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
         validateCurrentStep,
         markComplete,
         getStepPath,
+        getSelectedOfferConfig,
       }}
     >
       {children}
@@ -378,7 +358,7 @@ export function OrderFunnelGuard({
   children: ReactNode;
 }) {
   const navigate = useNavigate();
-  const { canAccessStep, getFirstIncompleteStep, getStepPath } = useOrderFunnel();
+  const { canAccessStep, getFirstIncompleteStep, getStepPath, state } = useOrderFunnel();
 
   useEffect(() => {
     if (!canAccessStep(step)) {
@@ -387,28 +367,13 @@ export function OrderFunnelGuard({
     }
   }, [step, canAccessStep, getFirstIncompleteStep, navigate, getStepPath]);
 
-  if (!canAccessStep(step)) {
-    return null;
-  }
-
-  return <>{children}</>;
-}
-
-// Cart guard - redirect to order funnel if not configured
-export function CartGuard({ children }: { children: ReactNode }) {
-  const navigate = useNavigate();
-  const { state, getFirstIncompleteStep, getStepPath } = useOrderFunnel();
-
-  useEffect(() => {
-    // Cart only accessible after complete configuration
-    if (!state.isComplete) {
-      const firstIncomplete = getFirstIncompleteStep();
-      navigate(getStepPath(firstIncomplete), { replace: true });
-    }
-  }, [state.isComplete, getFirstIncompleteStep, navigate, getStepPath]);
-
-  if (!state.isComplete) {
-    return null;
+  // Block rendering during transition or if can't access
+  if (state.isTransitioning || !canAccessStep(step)) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return <>{children}</>;
