@@ -401,16 +401,39 @@ export function OrderFunnelGuard({
 }) {
   const navigate = useNavigate();
   const { canAccessStep, getFirstIncompleteStep, getStepPath, state } = useOrderFunnel();
+  const [isReady, setIsReady] = useState(false);
+  const hasChecked = useRef(false);
 
   useEffect(() => {
+    // Give a short delay to allow state to hydrate from sessionStorage
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!isReady || hasChecked.current) return;
+    
+    hasChecked.current = true;
+    
     if (!canAccessStep(step)) {
       const firstIncomplete = getFirstIncompleteStep();
       navigate(getStepPath(firstIncomplete), { replace: true });
     }
-  }, [step, canAccessStep, getFirstIncompleteStep, navigate, getStepPath]);
+  }, [isReady, step, canAccessStep, getFirstIncompleteStep, navigate, getStepPath]);
 
-  // Block rendering during transition or if can't access
-  if (state.isTransitioning || !canAccessStep(step)) {
+  // Block rendering during transition or if not ready yet
+  if (!isReady || state.isTransitioning) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // If can't access after ready, show loading while redirecting
+  if (!canAccessStep(step)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />

@@ -2,270 +2,94 @@
  * Step 3: Personnalisation carte physique
  * /order/carte
  * 
- * Grille de templates cliquable + Aperçu temps réel
+ * Official i-Wasp Card Design Editor with fixed branding
  */
 
-import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useOrderFunnel, OrderFunnelGuard, CardPersonalization, CardVisualType } from "@/contexts/OrderFunnelContext";
-import { useBrand, OFFICIAL_COLORS } from "@/contexts/BrandContext";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { useOrderFunnel, OrderFunnelGuard, CardPersonalization } from "@/contexts/OrderFunnelContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from "@/components/order";
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PrintCardTemplate } from "@/components/print/PrintCardTemplate";
-import { PRINT_TEMPLATES, PrintTemplateType, PrintColor } from "@/lib/printTypes";
+import { CardDesignEditor, CardDesignConfig, defaultCardDesignConfig } from "@/components/order/CardDesignEditor";
 import { 
-  Image, 
-  User, 
-  Upload, 
-  Check, 
   ArrowRight, 
   ArrowLeft,
-  RotateCcw,
-  ZoomIn,
   Lock,
-  AlertCircle,
   Sparkles,
-  Crown,
+  Eye,
   FlipHorizontal,
-  Wifi
 } from "lucide-react";
-import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
-// Template grid data with preview colors
-const TEMPLATE_OPTIONS = [
-  { 
-    id: "iwasp-signature" as PrintTemplateType, 
-    color: "white" as PrintColor,
-    name: "Signature Blanc",
-    badge: "Premium",
-    description: "Logo centré sur fond blanc premium"
-  },
-  { 
-    id: "iwasp-signature" as PrintTemplateType, 
-    color: "black" as PrintColor,
-    name: "Signature Noir",
-    badge: "Luxe",
-    description: "Logo centré sur fond noir élégant"
-  },
-  { 
-    id: "iwasp-signature" as PrintTemplateType, 
-    color: "navy" as PrintColor,
-    name: "Signature Navy",
-    badge: null,
-    description: "Logo sur fond bleu corporate"
-  },
-  { 
-    id: "iwasp-signature" as PrintTemplateType, 
-    color: "burgundy" as PrintColor,
-    name: "Signature Bordeaux",
-    badge: "New",
-    description: "Élégance française raffinée"
-  },
-  { 
-    id: "iwasp-signature" as PrintTemplateType, 
-    color: "gold" as PrintColor,
-    name: "Signature Or",
-    badge: "VIP",
-    description: "Prestige et distinction absolue"
-  },
-  { 
-    id: "iwasp-signature" as PrintTemplateType, 
-    color: "forest" as PrintColor,
-    name: "Signature Forêt",
-    badge: null,
-    description: "Élégance naturelle et durable"
-  },
-  { 
-    id: "iwasp-black" as PrintTemplateType, 
-    color: "black" as PrintColor,
-    name: "Black Premium",
-    badge: "Top",
-    description: "Design minimaliste haut de gamme"
-  },
-  { 
-    id: "iwasp-black" as PrintTemplateType, 
-    color: "burgundy" as PrintColor,
-    name: "Burgundy Elite",
-    badge: null,
-    description: "Sophistication et caractère"
-  },
-  { 
-    id: "iwasp-pure" as PrintTemplateType, 
-    color: "white" as PrintColor,
-    name: "Pure White",
-    badge: null,
-    description: "Esthétique épurée style Apple"
-  },
-  { 
-    id: "iwasp-pure" as PrintTemplateType, 
-    color: "gold" as PrintColor,
-    name: "Pure Gold",
-    badge: "Exclusif",
-    description: "Minimalisme doré luxueux"
-  },
-  { 
-    id: "iwasp-corporate" as PrintTemplateType, 
-    color: "navy" as PrintColor,
-    name: "Corporate Navy",
-    badge: null,
-    description: "Design B2B professionnel"
-  },
-  { 
-    id: "iwasp-corporate" as PrintTemplateType, 
-    color: "charcoal" as PrintColor,
-    name: "Corporate Charcoal",
-    badge: null,
-    description: "Sobriété executive moderne"
-  },
-];
+// Import official i-Wasp logo for back preview
+import iwaspLogo from "@/assets/iwasp-logo.png";
 
 function OrderCarteContent() {
   const { state, setCardPersonalization, nextStep, prevStep } = useOrderFunnel();
-  const { cardFront, cardBack } = useBrand();
   const [isNavigating, setIsNavigating] = useState(false);
-  
-  // Template selection
-  const [selectedTemplate, setSelectedTemplate] = useState<{ id: PrintTemplateType; color: PrintColor } | null>(
-    state.cardPersonalization?.visualType === "logo" 
-      ? { id: "iwasp-signature", color: "white" }
-      : null
-  );
-  
-  // Visual type for image upload
-  const [visualType, setVisualType] = useState<CardVisualType | null>(
-    state.cardPersonalization?.visualType || null
-  );
-  const [uploadedImage, setUploadedImage] = useState<string | null>(
-    state.cardPersonalization?.imageUrl || null
-  );
-  const [fileName, setFileName] = useState<string>(
-    state.cardPersonalization?.fileName || ""
-  );
-  const [uploading, setUploading] = useState(false);
   const [showBack, setShowBack] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleSelectTemplate = (template: { id: PrintTemplateType; color: PrintColor }) => {
-    setSelectedTemplate(template);
-    setVisualType("logo"); // Template = logo-based card
-  };
-
-  const handleFileUpload = async (file: File) => {
-    if (!file) return;
-
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-      toast.error("Fichier trop volumineux (max 5MB)");
-      return;
+  
+  // Card design config
+  const [cardDesign, setCardDesign] = useState<CardDesignConfig>(() => {
+    if (state.cardPersonalization?.imageUrl) {
+      return {
+        logoUrl: state.cardPersonalization.imageUrl,
+        logoX: 50,
+        logoY: 50,
+        logoScale: 1,
+        isFullBleed: false,
+        fileName: state.cardPersonalization.fileName || "",
+      };
     }
-
-    const validTypes = ["image/png", "image/jpeg", "image/svg+xml", "image/webp"];
-    if (!validTypes.includes(file.type)) {
-      toast.error("Format non supporté. Utilisez PNG, JPG ou SVG");
-      return;
-    }
-
-    setUploading(true);
-
-    try {
-      const objectUrl = URL.createObjectURL(file);
-      setUploadedImage(objectUrl);
-      setFileName(file.name);
-      toast.success("Logo prêt pour l'impression");
-    } catch (error) {
-      console.error("Upload error:", error);
-      toast.error("Erreur lors de l'upload");
-    } finally {
-      setUploading(false);
-    }
-  };
+    return defaultCardDesignConfig;
+  });
 
   const handleContinue = async () => {
-    if (!selectedTemplate || !uploadedImage || isNavigating || state.isTransitioning) return;
+    if (!cardDesign.logoUrl || isNavigating || state.isTransitioning) return;
     
     setIsNavigating(true);
     
     const cardData: CardPersonalization = {
-      visualType: visualType || "logo",
-      imageUrl: uploadedImage,
-      fileName,
+      visualType: "logo",
+      imageUrl: cardDesign.logoUrl,
+      fileName: cardDesign.fileName,
     };
     
     setCardPersonalization(cardData);
     await nextStep();
   };
 
-  const canContinue = selectedTemplate !== null && uploadedImage !== null;
+  const canContinue = cardDesign.logoUrl !== null;
 
-  // Template Card Component
-  const TemplateCard = ({ 
-    template, 
-    isSelected, 
-    onClick 
-  }: { 
-    template: typeof TEMPLATE_OPTIONS[0]; 
-    isSelected: boolean; 
-    onClick: () => void;
-  }) => (
-    <motion.button
-      onClick={onClick}
-      className={`relative w-full rounded-xl overflow-hidden border-2 transition-all ${
-        isSelected 
-          ? "border-primary ring-2 ring-primary/30 scale-[1.02]" 
-          : "border-border hover:border-primary/50"
-      }`}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+  // Card back preview component
+  const CardBackPreview = () => (
+    <div
+      className="relative rounded-xl overflow-hidden shadow-2xl"
+      style={{
+        aspectRatio: 85.6 / 54,
+        backgroundColor: "#FFFFFF",
+      }}
     >
-      {/* Template preview */}
-      <div className="aspect-[1.586] w-full overflow-hidden bg-muted">
-        <div className="scale-[0.4] origin-top-left w-[250%] h-[250%]">
-          <PrintCardTemplate
-            printedName={state.digitalIdentity?.firstName || "Prénom"}
-            printedTitle={state.digitalIdentity?.title || "Titre"}
-            printedCompany={state.digitalIdentity?.company || "Entreprise"}
-            logoUrl={uploadedImage || undefined}
-            color={template.color}
-            template={template.id}
-          />
-        </div>
+      {/* Centered i-Wasp logo */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <img
+          src={iwaspLogo}
+          alt="i-Wasp"
+          className="w-1/2 h-auto object-contain opacity-90"
+        />
       </div>
       
-      {/* Info overlay */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-        <div className="flex items-center justify-between">
-          <div className="text-left">
-            <p className="text-white font-medium text-sm">{template.name}</p>
-            <p className="text-white/60 text-xs">{template.description}</p>
-          </div>
-          {isSelected && (
-            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-              <Check className="w-4 h-4 text-primary-foreground" />
-            </div>
-          )}
-        </div>
+      {/* NFC indicator */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+        <Badge variant="secondary" className="text-[10px] bg-gray-100 text-gray-600 border-none">
+          NFC activé
+        </Badge>
       </div>
-      
-      {/* Badge */}
-      {template.badge && (
-        <div className="absolute top-2 right-2">
-          <Badge 
-            variant="secondary" 
-            className="text-[10px] bg-primary text-primary-foreground border-none"
-          >
-            {template.badge === "Premium" && <Crown className="w-3 h-3 mr-1" />}
-            {template.badge === "Luxe" && <Sparkles className="w-3 h-3 mr-1" />}
-            {template.badge}
-          </Badge>
-        </div>
-      )}
-    </motion.button>
+    </div>
   );
 
   return (
@@ -274,7 +98,7 @@ function OrderCarteContent() {
       
       <PageTransition>
         <main className="pt-24 pb-32 px-4">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             {/* Progress Bar */}
             <OrderProgressBar currentStep={3} />
 
@@ -295,146 +119,69 @@ function OrderCarteContent() {
                 className="text-2xl md:text-3xl font-display font-bold mb-2"
                 variants={itemVariants}
               >
-                Choisissez votre design
+                Personnalisez votre carte
               </motion.h1>
               <motion.p 
-                className="text-muted-foreground"
+                className="text-muted-foreground max-w-md mx-auto"
                 variants={itemVariants}
               >
-                Sélectionnez un template et uploadez votre logo
+                Uploadez votre logo et positionnez-le sur la carte officielle i-Wasp
               </motion.p>
             </motion.div>
 
-            <div className="grid lg:grid-cols-5 gap-8">
-              {/* Left: Template Grid + Upload */}
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Left: Card Design Editor */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className="lg:col-span-3 space-y-6"
+                className="space-y-4"
               >
-                {/* Upload Section - Always visible */}
-                <div className="bg-secondary/30 rounded-xl p-4">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Image className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">1. Uploadez votre logo</p>
-                      <p className="text-xs text-muted-foreground">PNG, JPG ou SVG (max 5MB)</p>
-                    </div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-primary" />
                   </div>
-                  
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    accept="image/png,image/jpeg,image/svg+xml,image/webp"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleFileUpload(file);
-                    }}
-                  />
-
-                  {!uploadedImage ? (
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploading}
-                      className="w-full p-6 border-2 border-dashed border-border rounded-lg hover:border-primary/50 transition-colors"
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        {uploading ? (
-                          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <Upload className="w-6 h-6 text-muted-foreground" />
-                        )}
-                        <p className="text-sm text-muted-foreground">Cliquez pour uploader</p>
-                      </div>
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-3 p-3 bg-background rounded-lg">
-                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted">
-                        <img 
-                          src={uploadedImage} 
-                          alt="Logo"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{fileName}</p>
-                        <p className="text-xs text-green-600 flex items-center gap-1">
-                          <Check className="w-3 h-3" /> Logo prêt
-                        </p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        Changer
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Template Grid */}
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">2. Choisissez un template</p>
-                      <p className="text-xs text-muted-foreground">Cliquez pour sélectionner</p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {TEMPLATE_OPTIONS.map((template, index) => (
-                      <TemplateCard
-                        key={`${template.id}-${template.color}-${index}`}
-                        template={template}
-                        isSelected={
-                          selectedTemplate?.id === template.id && 
-                          selectedTemplate?.color === template.color
-                        }
-                        onClick={() => handleSelectTemplate(template)}
-                      />
-                    ))}
+                  <div>
+                    <p className="font-semibold text-sm">Éditeur de carte</p>
+                    <p className="text-xs text-muted-foreground">
+                      Glissez pour positionner votre logo
+                    </p>
                   </div>
                 </div>
 
-                {/* Lock notice */}
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Lock className="w-3 h-3" />
-                  <span>Qualité impression garantie • Design IWASP exclusif</span>
-                </div>
+                <CardDesignEditor
+                  value={cardDesign}
+                  onChange={setCardDesign}
+                />
               </motion.div>
 
-              {/* Right: Live Preview */}
+              {/* Right: Preview & Info */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="lg:col-span-2 space-y-4"
+                className="space-y-6"
               >
+                {/* Preview Section */}
                 <div className="bg-secondary/30 rounded-2xl p-6 sticky top-24">
                   <div className="flex items-center justify-between mb-4">
                     <Badge variant="outline" className="border-primary/50 text-primary text-xs">
-                      Aperçu fidèle 100%
+                      {showBack ? "Verso" : "Recto"} • Aperçu fidèle
                     </Badge>
-                    {selectedTemplate && (
-                      <Badge variant="secondary" className="text-xs">
-                        {TEMPLATE_OPTIONS.find(
-                          t => t.id === selectedTemplate.id && t.color === selectedTemplate.color
-                        )?.name}
-                      </Badge>
-                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowBack(!showBack)}
+                      className="h-8 gap-1 text-xs"
+                    >
+                      <FlipHorizontal className="w-3 h-3" />
+                      {showBack ? "Voir recto" : "Voir verso"}
+                    </Button>
                   </div>
 
-                  {/* Live Card Preview with 3D Flip */}
+                  {/* Card Preview with 3D Flip */}
                   <div 
-                    className="relative perspective-1000"
+                    className="relative"
                     style={{ perspective: "1000px" }}
                   >
                     <motion.div
@@ -444,162 +191,177 @@ function OrderCarteContent() {
                       style={{ transformStyle: "preserve-3d" }}
                     >
                       {/* Front Side */}
-                      <div 
-                        className="w-full"
-                        style={{ backfaceVisibility: "hidden" }}
-                      >
-                        <AnimatePresence mode="wait">
-                          <motion.div
-                            key={`${selectedTemplate?.id}-${selectedTemplate?.color}-front`}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ duration: 0.2 }}
+                      <div style={{ backfaceVisibility: "hidden" }}>
+                        {!showBack && (
+                          <div
+                            className="relative rounded-xl overflow-hidden shadow-2xl"
+                            style={{
+                              aspectRatio: 85.6 / 54,
+                              backgroundColor: "#FFFFFF",
+                            }}
                           >
-                            {selectedTemplate ? (
-                              <div className="rounded-xl overflow-hidden shadow-2xl">
-                                <PrintCardTemplate
-                                  printedName={state.digitalIdentity?.firstName 
-                                    ? `${state.digitalIdentity.firstName} ${state.digitalIdentity.lastName}`
-                                    : "Votre Nom"
-                                  }
-                                  printedTitle={state.digitalIdentity?.title || "Votre Titre"}
-                                  printedCompany={state.digitalIdentity?.company || "Votre Entreprise"}
-                                  logoUrl={uploadedImage || undefined}
-                                  color={selectedTemplate.color}
-                                  template={selectedTemplate.id}
-                                />
-                              </div>
-                            ) : (
-                              <div 
-                                className="aspect-[1.586] rounded-xl bg-muted flex items-center justify-center border-2 border-dashed border-border"
-                              >
-                                <div className="text-center p-6">
-                                  <Sparkles className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                                  <p className="text-sm text-muted-foreground">
-                                    Sélectionnez un template
-                                  </p>
-                                </div>
-                              </div>
-                            )}
-                          </motion.div>
-                        </AnimatePresence>
-                      </div>
-
-                      {/* Back Side - NFC Card Back */}
-                      <div 
-                        className="absolute inset-0 w-full"
-                        style={{ 
-                          backfaceVisibility: "hidden",
-                          transform: "rotateY(180deg)"
-                        }}
-                      >
-                        <div className="aspect-[1.586] rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 flex items-center justify-center relative">
-                          {/* NFC Chip visual */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="relative">
-                              {/* NFC Icon with pulse */}
-                              <motion.div
-                                className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center"
-                                animate={{ scale: [1, 1.1, 1] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                              >
-                                <Wifi className="w-8 h-8 text-amber-400/80 rotate-45" />
-                              </motion.div>
-                              
-                              {/* Pulse rings */}
-                              <motion.div
-                                className="absolute inset-0 rounded-full border-2 border-amber-400/30"
-                                animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
-                                transition={{ duration: 1.5, repeat: Infinity }}
-                              />
-                              <motion.div
-                                className="absolute inset-0 rounded-full border-2 border-amber-400/20"
-                                animate={{ scale: [1, 2], opacity: [0.3, 0] }}
-                                transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                            {/* Fixed i-Wasp Logo */}
+                            <div
+                              className="absolute z-30 pointer-events-none"
+                              style={{
+                                top: "8%",
+                                right: "5%",
+                                width: "18%",
+                              }}
+                            >
+                              <img
+                                src={iwaspLogo}
+                                alt="i-Wasp"
+                                className="w-full h-auto object-contain"
+                                style={{ opacity: 0.9 }}
                               />
                             </div>
-                          </div>
-                          
-                          {/* NFC Text */}
-                          <div className="absolute bottom-4 left-0 right-0 text-center">
-                            <p className="text-xs text-zinc-500 uppercase tracking-widest">NFC Enabled</p>
-                            <p className="text-[10px] text-zinc-600 mt-1">Tap to connect</p>
-                          </div>
 
-                          {/* IWASP branding */}
-                          <div className="absolute top-4 right-4">
-                            <p className="text-[10px] text-zinc-600 font-medium tracking-wider">IWASP</p>
-                          </div>
+                            {/* User Logo */}
+                            {cardDesign.logoUrl && (
+                              cardDesign.isFullBleed ? (
+                                <img
+                                  src={cardDesign.logoUrl}
+                                  alt="Votre logo"
+                                  className="absolute inset-0 w-full h-full object-cover"
+                                  style={{ zIndex: 5 }}
+                                />
+                              ) : (
+                                <div
+                                  className="absolute"
+                                  style={{
+                                    left: `${cardDesign.logoX}%`,
+                                    top: `${cardDesign.logoY}%`,
+                                    transform: "translate(-50%, -50%)",
+                                    zIndex: 5,
+                                    maxWidth: `${40 * cardDesign.logoScale}%`,
+                                    maxHeight: `${40 * cardDesign.logoScale}%`,
+                                  }}
+                                >
+                                  <img
+                                    src={cardDesign.logoUrl}
+                                    alt="Votre logo"
+                                    className="max-w-full max-h-full object-contain drop-shadow-lg"
+                                  />
+                                </div>
+                              )
+                            )}
 
-                          {/* Subtle pattern overlay */}
-                          <div 
-                            className="absolute inset-0 opacity-5"
-                            style={{
-                              backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0)`,
-                              backgroundSize: "20px 20px"
-                            }}
-                          />
-                        </div>
+                            {/* Placeholder if no logo */}
+                            {!cardDesign.logoUrl && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <p className="text-gray-400 text-sm">
+                                  Uploadez votre logo
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Back Side */}
+                      <div 
+                        className="absolute inset-0"
+                        style={{ 
+                          backfaceVisibility: "hidden",
+                          transform: "rotateY(180deg)",
+                        }}
+                      >
+                        {showBack && <CardBackPreview />}
                       </div>
                     </motion.div>
                   </div>
 
-                  {/* Preview controls */}
-                  {selectedTemplate && (
-                    <div className="flex justify-center gap-3 mt-4">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="gap-2"
-                        onClick={() => setShowBack(!showBack)}
-                      >
-                        <FlipHorizontal className="h-4 w-4" />
-                        {showBack ? "Voir recto" : "Voir verso"}
-                      </Button>
-                      <Dialog open={isZoomed} onOpenChange={setIsZoomed}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="gap-2">
-                            <ZoomIn className="h-4 w-4" />
-                            Agrandir
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl bg-background border-border">
-                          <div className="p-4">
-                            <div className="rounded-xl overflow-hidden shadow-2xl">
-                              <PrintCardTemplate
-                                printedName={state.digitalIdentity?.firstName 
-                                  ? `${state.digitalIdentity.firstName} ${state.digitalIdentity.lastName}`
-                                  : "Votre Nom"
-                                }
-                                printedTitle={state.digitalIdentity?.title || "Votre Titre"}
-                                printedCompany={state.digitalIdentity?.company || "Votre Entreprise"}
-                                logoUrl={uploadedImage || undefined}
-                                color={selectedTemplate.color}
-                                template={selectedTemplate.id}
+                  {/* Info badges */}
+                  <div className="flex flex-wrap gap-2 mt-4 justify-center">
+                    <Badge variant="secondary" className="text-[10px]">
+                      <Lock className="w-2.5 h-2.5 mr-1" />
+                      i-Wasp protégé
+                    </Badge>
+                    <Badge variant="secondary" className="text-[10px]">
+                      Format carte de crédit
+                    </Badge>
+                    <Badge variant="secondary" className="text-[10px]">
+                      PVC premium
+                    </Badge>
+                  </div>
+
+                  {/* Zoom preview */}
+                  {cardDesign.logoUrl && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="w-full mt-4 gap-2">
+                          <Eye className="w-4 h-4" />
+                          Aperçu grande taille
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl p-6">
+                        <div
+                          className="relative rounded-xl overflow-hidden shadow-2xl"
+                          style={{
+                            aspectRatio: 85.6 / 54,
+                            backgroundColor: "#FFFFFF",
+                          }}
+                        >
+                          {/* Fixed i-Wasp Logo */}
+                          <div
+                            className="absolute z-30"
+                            style={{
+                              top: "8%",
+                              right: "5%",
+                              width: "18%",
+                            }}
+                          >
+                            <img
+                              src={iwaspLogo}
+                              alt="i-Wasp"
+                              className="w-full h-auto object-contain"
+                              style={{ opacity: 0.9 }}
+                            />
+                          </div>
+
+                          {/* User Logo */}
+                          {cardDesign.isFullBleed ? (
+                            <img
+                              src={cardDesign.logoUrl}
+                              alt="Votre logo"
+                              className="absolute inset-0 w-full h-full object-cover"
+                              style={{ zIndex: 5 }}
+                            />
+                          ) : (
+                            <div
+                              className="absolute"
+                              style={{
+                                left: `${cardDesign.logoX}%`,
+                                top: `${cardDesign.logoY}%`,
+                                transform: "translate(-50%, -50%)",
+                                zIndex: 5,
+                                maxWidth: `${40 * cardDesign.logoScale}%`,
+                                maxHeight: `${40 * cardDesign.logoScale}%`,
+                              }}
+                            >
+                              <img
+                                src={cardDesign.logoUrl}
+                                alt="Votre logo"
+                                className="max-w-full max-h-full object-contain drop-shadow-lg"
                               />
                             </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  )}
-
-                  {/* Validation message */}
-                  {!canContinue && (
-                    <div className="mt-4 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
-                      <div className="flex items-start gap-2">
-                        <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                        <p className="text-xs text-amber-600">
-                          {!uploadedImage 
-                            ? "Uploadez votre logo pour continuer"
-                            : "Sélectionnez un template pour continuer"
-                          }
+                          )}
+                        </div>
+                        <p className="text-center text-sm text-muted-foreground mt-4">
+                          Voici exactement la carte que vous recevrez
                         </p>
-                      </div>
-                    </div>
+                      </DialogContent>
+                    </Dialog>
                   )}
                 </div>
+
+                {/* Validation message */}
+                {!canContinue && (
+                  <div className="text-center text-sm text-muted-foreground bg-muted/50 p-4 rounded-xl">
+                    <p>Uploadez votre logo pour continuer</p>
+                  </div>
+                )}
               </motion.div>
             </div>
 
