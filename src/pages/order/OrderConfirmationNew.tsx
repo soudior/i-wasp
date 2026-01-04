@@ -25,7 +25,9 @@ import {
   User,
   CreditCard,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Smartphone,
+  Truck
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -105,11 +107,23 @@ function OrderConfirmationContent() {
               >
                 Commande confirmée ! 🎉
               </motion.h1>
+              
+              {/* Immediate Access Banner */}
+              <motion.div
+                variants={itemVariants}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 mb-4"
+              >
+                <Sparkles className="w-4 h-4 text-green-500" />
+                <span className="text-sm font-medium text-green-400">
+                  Votre carte digitale est active immédiatement
+                </span>
+              </motion.div>
+              
               <motion.p 
                 className="text-muted-foreground text-lg mb-8"
                 variants={itemVariants}
               >
-                Votre carte i-Wasp est en cours de fabrication
+                Votre carte physique est en cours de fabrication
               </motion.p>
             </motion.div>
 
@@ -161,11 +175,26 @@ function OrderConfirmationContent() {
               transition={{ delay: 0.4 }}
               className="mb-8"
             >
-              <h2 className="text-xl font-semibold mb-4">Prochaines étapes</h2>
+              <h2 className="text-xl font-semibold mb-4">Ce qui se passe maintenant</h2>
               <div className="space-y-3 text-left">
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-card border border-border">
+                {/* Step 1 - Digital card active NOW */}
+                <div className="flex items-start gap-3 p-4 rounded-xl bg-green-500/10 border border-green-500/30">
+                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-4 h-4 text-black" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-green-400">Votre carte digitale est active</p>
+                    <p className="text-sm text-muted-foreground">
+                      Partagez-la dès maintenant via lien, QR code ou WhatsApp
+                    </p>
+                  </div>
+                  <Smartphone className="w-5 h-5 text-green-500 flex-shrink-0" />
+                </div>
+                
+                {/* Step 2 - Account created */}
+                <div className="flex items-start gap-3 p-4 rounded-xl bg-[#FFC700]/10 border border-[#FFC700]/30">
                   <div className="w-6 h-6 rounded-full bg-[#FFC700] flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-bold text-black">1</span>
+                    <span className="text-xs font-bold text-black">✓</span>
                   </div>
                   <div>
                     <p className="font-medium">Votre compte a été créé</p>
@@ -174,25 +203,16 @@ function OrderConfirmationContent() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-card border border-border">
-                  <div className="w-6 h-6 rounded-full bg-[#FFC700] flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-bold text-black">2</span>
-                  </div>
-                  <div>
-                    <p className="font-medium">Partagez votre profil</p>
-                    <p className="text-sm text-muted-foreground">
-                      Commencez à partager votre carte digitale via WhatsApp ou QR code
-                    </p>
-                  </div>
-                </div>
+                
+                {/* Step 3 - Physical card in production */}
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-card border border-border">
                   <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-bold text-muted-foreground">3</span>
+                    <Truck className="w-3 h-3 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="font-medium text-muted-foreground">Recevez votre carte NFC</p>
+                    <p className="font-medium text-muted-foreground">Carte physique en fabrication</p>
                     <p className="text-sm text-muted-foreground">
-                      Elle sera automatiquement liée à votre profil digital
+                      Livraison sous 48-72h · Paiement à la réception
                     </p>
                   </div>
                 </div>
