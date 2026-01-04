@@ -6,14 +6,78 @@
  * NEVER uses client-side storage for admin verification
  */
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useIsAdmin } from "@/hooks/useAdmin";
-import { Shield, Loader2, ArrowLeft } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { Shield, Loader2, ArrowLeft, Bug, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface AdminGuardProps {
   children: ReactNode;
+}
+
+// Debug button only visible in development
+function DevBootstrapButton() {
+  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  // Only show in development
+  if (import.meta.env.PROD) return null;
+
+  const handleBootstrap = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("bootstrap-admin", {
+        body: { action: "ensure" }
+      });
+
+      if (error) {
+        console.error("Bootstrap error:", error);
+        toast.error(`Erreur: ${error.message}`);
+        return;
+      }
+
+      console.log("Bootstrap result:", data);
+      
+      if (data?.isAdmin) {
+        toast.success("✅ Rôle admin activé ! Rechargement...");
+        queryClient.invalidateQueries({ queryKey: ["isAdmin", user?.id] });
+        // Force page reload after short delay
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        toast.info("Email non reconnu comme fondateur. Vérifiez ADMIN_EMAIL.");
+      }
+    } catch (err) {
+      console.error("Bootstrap failed:", err);
+      toast.error("Échec de l'appel bootstrap-admin");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50">
+      <Button
+        onClick={handleBootstrap}
+        disabled={loading}
+        size="sm"
+        variant="outline"
+        className="gap-2 bg-yellow-500/10 border-yellow-500/30 text-yellow-500 hover:bg-yellow-500/20"
+      >
+        {loading ? (
+          <RefreshCw className="h-4 w-4 animate-spin" />
+        ) : (
+          <Bug className="h-4 w-4" />
+        )}
+        {loading ? "Bootstrap..." : "Force Admin"}
+      </Button>
+    </div>
+  );
 }
 
 export function AdminGuard({ children }: AdminGuardProps) {
@@ -29,6 +93,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
           <Loader2 className="h-6 w-6 animate-spin absolute -bottom-1 -right-1 text-accent" />
         </div>
         <p className="text-muted-foreground text-sm">Vérification des accès...</p>
+        <DevBootstrapButton />
       </div>
     );
   }
@@ -53,6 +118,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
             Retour à l'accueil
           </Button>
         </div>
+        <DevBootstrapButton />
       </div>
     );
   }
