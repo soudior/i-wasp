@@ -101,7 +101,7 @@ ${data.bio ? `📝 *Bio*\n${data.bio}` : ""}
 
     // Encoder le message pour WhatsApp
     const encodedMessage = encodeURIComponent(message);
-    const whatsappNumber = "212600000000"; // Numéro IWASP
+    const whatsappNumber = "33626424394"; // Numéro IWASP
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
     // Afficher confetti
