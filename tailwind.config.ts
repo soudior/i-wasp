@@ -20,13 +20,16 @@ export default {
       },
       colors: {
         /* ═══════════════════════════════════════════════════════════════
-           i-WASP DESIGN SYSTEM — SIGNATURE OFFICIELLE VERROUILLÉE
+           i-WASP DESIGN SYSTEM — THÈME DARK PREMIUM VERROUILLÉ
            
-           Référence : Carte NFC physique i-Wasp Signature
-           - Blanc principal   : #FFFFFF
-           - Noir profond      : #000000
-           - Jaune signature   : #F5B400 (accent UNIQUEMENT)
-           - Gris subtil       : #F2F2F2 / #EAEAEA
+           PALETTE OFFICIELLE VERROUILLÉE :
+           - Fond principal      : #0B0B0B (Noir profond)
+           - Texte principal     : #FFFFFF (Blanc pur)
+           - Jaune signature     : #F5C400 (CTA et accents UNIQUEMENT)
+           
+           RÈGLES STRICTES :
+           - AUCUN fond blanc sur les pages principales
+           - Fond blanc UNIQUEMENT pour champs de formulaire
            ═══════════════════════════════════════════════════════════════ */
         
         /* Semantic tokens */
@@ -82,28 +85,28 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
-           COULEURS OFFICIELLES i-WASP — VERROUILLÉES
+           COULEURS OFFICIELLES i-WASP — VERROUILLÉES (DARK THEME)
            ══════════════════════════════════════════════════════════════ */
         iwasp: {
-          blanc: "#FFFFFF",                /* Fond principal */
-          noir: "#000000",                 /* Texte & logo */
-          jaune: "#F5B400",                /* Accent signature */
-          "gris-fond": "#F2F2F2",          /* Fond secondaire */
-          "gris-bordure": "#EAEAEA",       /* Bordures subtiles */
-          "gris-texte": "#8C8C8C",         /* Texte secondaire */
+          noir: "#0B0B0B",                 /* Fond principal */
+          blanc: "#FFFFFF",                /* Texte principal */
+          jaune: "#F5C400",                /* Accent signature CTA */
+          "gris-fond": "#1A1A1A",          /* Fond secondaire */
+          "gris-bordure": "#333333",       /* Bordures subtiles */
+          "gris-texte": "#B3B3B3",         /* Texte secondaire */
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE CARTE NFC PHYSIQUE — Référence absolue
+           PALETTE CARTE NFC — DARK THEME
            ══════════════════════════════════════════════════════════════ */
         carte: {
-          recto: "#FFFFFF",                /* Blanc pur - face avant */
-          verso: "#FAFAFA",                /* Blanc légèrement chaud */
-          texture: "#F5F5F5",              /* Texture nid d'abeille */
-          logo: "#000000",                 /* Logo noir */
-          texte: "#000000",                /* Texte noir */
-          secondaire: "#8C8C8C",           /* Texte secondaire */
-          accent: "#F5B400",               /* Jaune signature */
+          recto: "#0B0B0B",                /* Fond noir */
+          verso: "#0F0F0F",                /* Noir légèrement plus clair */
+          texture: "#141414",              /* Texture subtile */
+          logo: "#FFFFFF",                 /* Logo blanc */
+          texte: "#FFFFFF",                /* Texte blanc */
+          secondaire: "#B3B3B3",           /* Texte secondaire */
+          accent: "#F5C400",               /* Jaune signature */
         },
       },
       borderRadius: {

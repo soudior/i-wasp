@@ -10,66 +10,65 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════════
-       i-WASP DESIGN SYSTEM — SIGNATURE OFFICIELLE VERROUILLÉE
-       VERSION FINALE — NE PAS MODIFIER
-       
-       Base visuelle : Carte NFC physique i-Wasp Signature
-       Cette maquette est la référence absolue pour :
-       - Le design global du site
-       - Toutes les pages
-       - Tous les templates clients
-       - Toutes les déclinaisons B2B
+       i-WASP DESIGN SYSTEM — THÈME DARK PREMIUM VERROUILLÉ
+       VERSION FINALE — NE PAS MODIFIER SANS INSTRUCTION EXPLICITE
        
        ═══════════════════════════════════════════════════════════════════
        PALETTE OFFICIELLE i-WASP — VERROUILLÉE
        ═══════════════════════════════════════════════════════════════════
-       - Blanc principal     : #FFFFFF
-       - Noir profond        : #000000
-       - Jaune signature     : #F5B400 (accent UNIQUEMENT)
-       - Gris subtil         : #F2F2F2 / #EAEAEA
+       - Fond principal      : #0B0B0B (Noir profond)
+       - Texte principal     : #FFFFFF (Blanc pur)
+       - Jaune signature     : #F5C400 (CTA et accents UNIQUEMENT)
+       
+       RÈGLES STRICTES :
+       - AUCUN fond blanc sur les pages principales
+       - Fond blanc UNIQUEMENT pour champs de formulaire
+       - Headers, sections, tunnels = fond NOIR
+       - Boutons CTA = JAUNE sur fond noir
+       - Boutons secondaires = outline blanc
        ═══════════════════════════════════════════════════════════════════ */
     
     /* ══════════════════════════════════════════════════════════════════
-       COULEURS OFFICIELLES i-WASP
+       COULEURS OFFICIELLES i-WASP — VERROUILLÉES
        ══════════════════════════════════════════════════════════════════ */
     
-    --iwasp-blanc: 0 0% 100%;             /* #FFFFFF - Fond principal */
-    --iwasp-noir: 0 0% 0%;                /* #000000 - Texte & logo */
-    --iwasp-jaune: 45 100% 48%;           /* #F5B400 - Accent signature */
-    --iwasp-gris-fond: 0 0% 95%;          /* #F2F2F2 - Fond secondaire */
-    --iwasp-gris-bordure: 0 0% 92%;       /* #EAEAEA - Bordures subtiles */
-    --iwasp-gris-texte: 0 0% 55%;         /* #8C8C8C - Texte secondaire */
+    --iwasp-noir: 0 0% 4%;                /* #0B0B0B - Fond principal */
+    --iwasp-blanc: 0 0% 100%;             /* #FFFFFF - Texte principal */
+    --iwasp-jaune: 49 100% 49%;           /* #F5C400 - Accent signature */
+    --iwasp-gris-fond: 0 0% 10%;          /* #1A1A1A - Fond secondaire */
+    --iwasp-gris-bordure: 0 0% 20%;       /* #333333 - Bordures subtiles */
+    --iwasp-gris-texte: 0 0% 70%;         /* #B3B3B3 - Texte secondaire */
     
     /* États système */
     --iwasp-erreur: 0 72% 51%;            /* Rouge erreur */
     --iwasp-success: 142 76% 36%;         /* Vert succès */
     
     /* ══════════════════════════════════════════════════════════════════
-       SURFACES — Inspirées de la carte physique
+       SURFACES — Thème DARK Premium
        ══════════════════════════════════════════════════════════════════ */
-    --surface-bg: 0 0% 100%;              /* #FFFFFF - Recto carte */
-    --surface-card: 0 0% 100%;            /* #FFFFFF - Surface carte */
-    --surface-elevated: 0 0% 99%;         /* #FCFCFC - Légère élévation */
-    --surface-overlay: 0 0% 95%;          /* #F2F2F2 - Overlay */
+    --surface-bg: var(--iwasp-noir);      /* #0B0B0B - Fond principal */
+    --surface-card: 0 0% 8%;              /* #141414 - Surface carte */
+    --surface-elevated: 0 0% 12%;         /* #1F1F1F - Légère élévation */
+    --surface-overlay: 0 0% 15%;          /* #262626 - Overlay */
     
     /* ══════════════════════════════════════════════════════════════════
-       TOKENS SÉMANTIQUES
+       TOKENS SÉMANTIQUES — DARK THEME
        ══════════════════════════════════════════════════════════════════ */
-    --background: var(--iwasp-blanc);
-    --foreground: var(--iwasp-noir);
+    --background: var(--iwasp-noir);
+    --foreground: var(--iwasp-blanc);
     
-    --card: var(--iwasp-blanc);
-    --card-foreground: var(--iwasp-noir);
+    --card: 0 0% 8%;
+    --card-foreground: var(--iwasp-blanc);
     
-    --popover: var(--iwasp-blanc);
-    --popover-foreground: var(--iwasp-noir);
+    --popover: 0 0% 10%;
+    --popover-foreground: var(--iwasp-blanc);
     
     /* Primary = Jaune signature (pour CTA et boutons principaux) */
     --primary: var(--iwasp-jaune);
     --primary-foreground: var(--iwasp-noir);
     
     --secondary: var(--iwasp-gris-fond);
-    --secondary-foreground: var(--iwasp-noir);
+    --secondary-foreground: var(--iwasp-blanc);
     
     --muted: var(--iwasp-gris-fond);
     --muted-foreground: var(--iwasp-gris-texte);
@@ -82,67 +81,67 @@
     --destructive-foreground: var(--iwasp-blanc);
     
     --border: var(--iwasp-gris-bordure);
-    --input: var(--iwasp-gris-fond);
+    --input: 0 0% 100%;                   /* Champs de formulaire = blanc */
+    --input-foreground: var(--iwasp-noir);
     --ring: var(--iwasp-jaune);
     
     /* ══════════════════════════════════════════════════════════════════
-       RADIUS — Inspirés des coins de carte bancaire premium
+       RADIUS — Premium
        ══════════════════════════════════════════════════════════════════ */
     --radius: 0.75rem;        /* 12px - standard */
     --radius-card: 1rem;      /* 16px - cartes */
     --radius-btn: 0.5rem;     /* 8px - boutons */
     
     /* ══════════════════════════════════════════════════════════════════
-       PALETTE CARTE NFC PHYSIQUE
-       Référence pour tous les templates clients
+       PALETTE CARTE NFC PHYSIQUE — Référence
        ══════════════════════════════════════════════════════════════════ */
-    --carte-recto: 0 0% 100%;             /* Blanc pur - face avant */
-    --carte-verso: 0 0% 98%;              /* Blanc légèrement chaud */
-    --carte-texture: 0 0% 96%;            /* Texture nid d'abeille */
-    --carte-logo: 0 0% 0%;                /* Logo noir */
-    --carte-texte: 0 0% 0%;               /* Texte noir */
-    --carte-secondaire: 0 0% 55%;         /* Texte secondaire */
+    --carte-recto: var(--iwasp-noir);     /* Fond noir */
+    --carte-verso: 0 0% 6%;               /* Noir légèrement plus clair */
+    --carte-texture: 0 0% 8%;             /* Texture subtile */
+    --carte-logo: var(--iwasp-blanc);     /* Logo blanc */
+    --carte-texte: var(--iwasp-blanc);    /* Texte blanc */
+    --carte-secondaire: var(--iwasp-gris-texte); /* Texte secondaire */
+    --carte-accent: var(--iwasp-jaune);   /* Jaune signature */
 
     /* Surface tokens */
-    --surface-0: var(--iwasp-blanc);
-    --surface-1: 0 0% 99%;
+    --surface-0: var(--iwasp-noir);
+    --surface-1: 0 0% 8%;
     --surface-2: var(--iwasp-gris-fond);
     --surface-3: var(--iwasp-gris-bordure);
     
-    /* Glass - Très subtil */
-    --glass: 0 0% 0%;
-    --glass-opacity: 0.01;
-    --glass-border: 0 0% 0%;
+    /* Glass - Dark theme */
+    --glass: 0 0% 100%;
+    --glass-opacity: 0.05;
+    --glass-border: 0 0% 100%;
 
     /* ══════════════════════════════════════════════════════════════════
-       OMBRES — Ultra-douces, luxe silencieux
-       Inspirées de l'ombre naturelle d'une carte posée sur une table
+       OMBRES — Dark theme
        ══════════════════════════════════════════════════════════════════ */
-    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.03);
-    --shadow-md: 0 4px 8px hsl(0 0% 0% / 0.04);
-    --shadow-lg: 0 8px 16px hsl(0 0% 0% / 0.05);
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 8px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 8px 16px hsl(0 0% 0% / 0.5);
     --shadow-card: 
-      0 2px 4px hsl(0 0% 0% / 0.02),
-      0 0 0 1px hsl(0 0% 0% / 0.02);
+      0 2px 4px hsl(0 0% 0% / 0.3),
+      0 0 0 1px hsl(0 0% 100% / 0.05);
     --shadow-elevated:
-      0 4px 12px hsl(0 0% 0% / 0.04),
-      0 0 0 1px hsl(0 0% 0% / 0.02);
+      0 4px 12px hsl(0 0% 0% / 0.4),
+      0 0 0 1px hsl(0 0% 100% / 0.05);
 
     /* ══════════════════════════════════════════════════════════════════
-       TYPOGRAPHIE — Luxe discret
+       TYPOGRAPHIE — Luxe premium
        ══════════════════════════════════════════════════════════════════ */
     --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
     --tracking-tight: -0.02em;
     --tracking-wide: 0.05em;
 
-    /* Sidebar - Light theme */
-    --sidebar-background: var(--iwasp-blanc);
-    --sidebar-foreground: var(--iwasp-noir);
+    /* Sidebar - Dark theme */
+    --sidebar-background: var(--iwasp-noir);
+    --sidebar-foreground: var(--iwasp-blanc);
     --sidebar-primary: var(--iwasp-jaune);
     --sidebar-primary-foreground: var(--iwasp-noir);
     --sidebar-accent: var(--iwasp-gris-fond);
-    --sidebar-accent-foreground: var(--iwasp-noir);
+    --sidebar-accent-foreground: var(--iwasp-blanc);
     --sidebar-border: var(--iwasp-gris-bordure);
     --sidebar-ring: var(--iwasp-jaune);
     
@@ -185,44 +184,12 @@
     --easing-in-out: cubic-bezier(0.42, 0, 0.58, 1);
   }
   
-  /* Thème blanc pur = thème par défaut (legacy compatibility) */
-  
   /* ══════════════════════════════════════════════════════════════════
-     THÈME: Carte matière (carte physique NFC)
-     Appliquer avec data-theme="carte" sur le conteneur de la carte
+     THÈME i-WASP DARK — VERROUILLÉ
+     
+     PAS DE THÈME CLAIR. PAS DE CHANGEMENT AUTOMATIQUE.
+     Cette configuration est définitive.
      ══════════════════════════════════════════════════════════════════ */
-  [data-theme="carte"] {
-    --background: var(--carte-blanc);
-    --foreground: var(--carte-noir-doux);
-    
-    --card: var(--carte-chaud);
-    --card-foreground: var(--carte-noir-doux);
-    
-    --primary: var(--carte-noir-doux);
-    --primary-foreground: var(--carte-blanc);
-    
-    --secondary: var(--carte-gris-leger);
-    --secondary-foreground: var(--carte-gris-struct);
-    
-    --muted: var(--carte-gris-leger);
-    --muted-foreground: var(--carte-gris-struct);
-    
-    --accent: var(--carte-chaud);
-    --accent-foreground: var(--carte-noir-doux);
-    
-    --border: var(--carte-gris-leger);
-    --input: var(--carte-chaud);
-    --ring: var(--carte-noir-doux);
-    
-    --surface-0: var(--carte-blanc);
-    --surface-1: var(--carte-chaud);
-    --surface-2: var(--carte-gris-leger);
-    --surface-3: var(--carte-gris-struct);
-    
-    --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.05);
-    --shadow-md: 0 8px 24px hsl(0 0% 0% / 0.08);
-    --shadow-lg: 0 16px 48px hsl(0 0% 0% / 0.1);
-  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
