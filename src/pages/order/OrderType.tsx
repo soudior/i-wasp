@@ -28,6 +28,15 @@ const productTypes = [
     subtitle: "Votre clé d'accès",
     description: "Une carte élégante qui ouvre les portes de votre conciergerie digitale.",
     image: cardPreview,
+    features: [
+      "Carte NFC i-Wasp blanche",
+      "Profil digital essentiel",
+      "Nom, poste, entreprise",
+      "Téléphone & WhatsApp",
+      "Jusqu'à 3 liens",
+      "QR Code intelligent",
+      "Accès conciergerie i-Wasp",
+    ],
   },
   {
     id: "nails" as ProductType,
@@ -37,6 +46,11 @@ const productTypes = [
     description: "Le networking invisible. La technologie se fond dans votre style.",
     image: nailsHero,
     isNew: true,
+    features: [
+      "Design sur-mesure",
+      "Technologie invisible",
+      "Partage instantané",
+    ],
   },
 ];
 
@@ -195,9 +209,19 @@ export default function OrderType() {
                       </div>
                     </div>
                     
-                    {/* Description */}
+                    {/* Description + Features */}
                     <div className="p-5 bg-card">
-                      <p className="text-sm text-muted-foreground">{product.description}</p>
+                      <p className="text-sm text-muted-foreground mb-3">{product.description}</p>
+                      {product.features && (
+                        <ul className="space-y-1.5">
+                          {product.features.map((feature, i) => (
+                            <li key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <Check size={12} className="text-primary flex-shrink-0" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   </motion.button>
                 ))}
