@@ -225,17 +225,31 @@
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPORTEMENTS NAVIGATION — VERROUILLÉS
+   ═══════════════════════════════════════════════════════════════════════════
+   
+   NE PAS MODIFIER SANS INSTRUCTION EXPLICITE
+   
+   Règles garanties :
+   1. Scroll TOUJOURS réinitialisé en haut à chaque page
+   2. UN SEUL TAP par action (pas de double-tap, pas de délai)
+   3. PRIORITÉ ABSOLUE à l'expérience mobile
+   4. Zones tactiles minimum 44px (standard Apple HIG)
+   
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 @layer base {
   * {
     @apply border-border;
-    /* iOS: Disable tap highlight */
+    /* iOS: Désactiver le highlight au tap */
     -webkit-tap-highlight-color: transparent;
   }
 
   html {
-    /* CRITICAL: Disable smooth scroll for instant navigation */
+    /* VERROUILLÉ: Scroll instantané, pas de smooth scroll */
     scroll-behavior: auto !important;
-    /* Prevent text size adjustment on iOS */
+    /* Empêcher le redimensionnement texte iOS */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
@@ -243,9 +257,9 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
-    /* Use dvh for proper mobile viewport */
+    /* Viewport mobile dynamique */
     min-height: 100dvh;
-    /* Prevent overscroll bounce */
+    /* Empêcher le bounce overscroll */
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
   }
@@ -259,17 +273,20 @@
   h1 { @apply font-bold; }
   h2, h3 { @apply font-semibold; }
   
-  /* ══════════════════════════════════════════════════════════════════
-     MOBILE-FIRST TOUCH OPTIMIZATION
-     Minimum 44px touch targets, no double-tap delays
-     ══════════════════════════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════════════════════════════
+     TOUCH MOBILE — VERROUILLÉ
+     ═══════════════════════════════════════════════════════════════════════
+     - UN SEUL TAP déclenche l'action
+     - Pas de délai 300ms
+     - Zones tactiles minimum 44px
+     ═══════════════════════════════════════════════════════════════════════ */
   button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
     @apply touch-manipulation;
-    /* Remove 300ms delay on mobile */
+    /* VERROUILLÉ: Suppression délai 300ms mobile */
     touch-action: manipulation;
   }
   
-  /* Ensure buttons have proper touch targets */
+  /* VERROUILLÉ: Zones tactiles Apple HIG 44px minimum */
   button:not(.icon-only), 
   a:not(.text-link),
   [role="button"] {
@@ -277,9 +294,9 @@
     min-width: 44px;
   }
   
-  /* Mobile-friendly inputs */
+  /* Inputs mobile-friendly (empêche zoom iOS) */
   input, textarea, select {
-    font-size: 16px; /* Prevents iOS zoom on focus */
+    font-size: 16px;
   }
 }
 

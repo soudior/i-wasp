@@ -1,10 +1,17 @@
 /**
- * ScrollToTop - Global component for automatic scroll to top on route changes
+ * ═══════════════════════════════════════════════════════════════════════════
+ * SCROLL TO TOP — COMPORTEMENT VERROUILLÉ
+ * ═══════════════════════════════════════════════════════════════════════════
  * 
- * CRITICAL for mobile UX:
- * - Forces scroll to top on EVERY route change
- * - Works on all pages, all devices
- * - No animation delay - instant reset
+ * NE PAS MODIFIER SANS INSTRUCTION EXPLICITE
+ * 
+ * Comportement garanti :
+ * - Scroll TOUJOURS réinitialisé en haut à chaque changement de route
+ * - Aucune animation de scroll (instantané)
+ * - Fonctionne sur tous les appareils (iOS, Android, Desktop)
+ * 
+ * Ce composant est intégré dans App.tsx et s'exécute automatiquement.
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import { useEffect } from "react";
@@ -14,26 +21,26 @@ export function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Force immediate scroll to top on route change
-    // Multiple methods for maximum compatibility across devices
+    // VERROUILLÉ: Reset instantané du scroll à chaque changement de route
+    // Multiple méthodes pour compatibilité maximale
     
-    // Method 1: Standard scroll
+    // Méthode 1: Standard
     window.scrollTo(0, 0);
     
-    // Method 2: Document element (Firefox/Safari)
+    // Méthode 2: Document element (Firefox/Safari)
     document.documentElement.scrollTop = 0;
     
-    // Method 3: Body scroll (legacy browsers)
+    // Méthode 3: Body (legacy)
     document.body.scrollTop = 0;
     
-    // Method 4: Delayed fallback for iOS momentum scroll
+    // Méthode 4: Fallback iOS momentum scroll
     const timeoutId = setTimeout(() => {
       window.scrollTo(0, 0);
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
     }, 0);
     
-    // Method 5: RAF for smooth paint cycle
+    // Méthode 5: RAF pour cycle de rendu
     requestAnimationFrame(() => {
       window.scrollTo(0, 0);
     });
