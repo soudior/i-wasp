@@ -19,6 +19,7 @@ import {
   itemVariants 
 } from "@/components/order";
 import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,6 +40,7 @@ const validatePhone = (phone: string): boolean => {
 function OrderIdentityContent() {
   const { state, setPersonalInfo, nextStep, prevStep } = useOrderFunnel();
   const { user } = useAuth();
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const [formData, setFormData] = useState<PersonalInfo>(
     state.personalInfo || {
@@ -93,6 +95,8 @@ function OrderIdentityContent() {
   };
 
   const handleContinue = () => {
+    if (isNavigating) return;
+    
     if (!isValid) {
       // Mark all as touched to show errors
       setTouched({
@@ -105,6 +109,8 @@ function OrderIdentityContent() {
       toast.error("Veuillez corriger les erreurs");
       return;
     }
+
+    setIsNavigating(true);
 
     // Normalize data
     const normalizedData: PersonalInfo = {
@@ -336,15 +342,16 @@ function OrderIdentityContent() {
                 <ArrowLeft size={18} />
                 Retour
               </Button>
-              <Button
-                size="lg"
+              <LoadingButton
+                size="xl"
                 onClick={handleContinue}
                 disabled={!isValid}
-                className="btn-iwasp px-8"
+                isLoading={isNavigating}
+                className="px-8 rounded-full bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90 disabled:opacity-50"
               >
                 Continuer
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              </LoadingButton>
             </motion.div>
           </div>
         </main>

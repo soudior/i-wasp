@@ -23,6 +23,7 @@ import {
 } from "@/components/order";
 import { formatPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -401,19 +402,15 @@ function OrderPaymentContent() {
                     <span>Vos données sont protégées</span>
                   </div>
 
-                  {/* Submit Button */}
-                  <Button
-                    size="lg"
+                  {/* Submit Button - LoadingButton for single-tap UX */}
+                  <LoadingButton
+                    size="xl"
                     onClick={handlePayment}
-                    disabled={isProcessing}
-                    className="w-full h-16 text-lg rounded-full bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90"
+                    isLoading={isProcessing}
+                    loadingText="Traitement en cours..."
+                    className="w-full rounded-full bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90"
                   >
-                    {isProcessing ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Traitement en cours...
-                      </>
-                    ) : paymentMethod === "cod" ? (
+                    {paymentMethod === "cod" ? (
                       <>
                         <CheckCircle2 className="mr-2 h-5 w-5" />
                         Confirmer ma commande
@@ -424,7 +421,7 @@ function OrderPaymentContent() {
                         Payer {formatPrice(state.orderOptions?.totalPriceCents || 0, countryInfo.isMorocco ? "MAD" : "EUR")}
                       </>
                     )}
-                  </Button>
+                  </LoadingButton>
 
                   {/* Trust info for COD */}
                   {paymentMethod === "cod" && (
