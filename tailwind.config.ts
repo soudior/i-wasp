@@ -20,12 +20,14 @@ export default {
       },
       colors: {
         /* ═══════════════════════════════════════════════════════════════
-           iWASP DESIGN SYSTEM — LUXURY WHITE EDITION
+           i-WASP DESIGN SYSTEM — SIGNATURE OFFICIELLE VERROUILLÉE
            
-           - Fond principal : #FFFFFF (Blanc pur)
-           - Texte principal : #000000 (Noir absolu)
-           - Gris subtil : #F2F2F2, #EAEAEA (Séparations)
-           - Accent : Noir uniquement
+           Référence : Carte NFC physique blanche ultra premium
+           - Fond principal : #FFFFFF
+           - Texte principal : #000000
+           - Gris séparation : #F2F2F2
+           - Gris bordure    : #EAEAEA
+           - AUCUNE AUTRE COULEUR AUTORISÉE
            ═══════════════════════════════════════════════════════════════ */
         
         /* Semantic tokens */
@@ -81,41 +83,26 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
-           IWASP LUXURY WHITE COLORS (Soft Contrast)
+           COULEURS OFFICIELLES i-WASP — VERROUILLÉES
            ══════════════════════════════════════════════════════════════ */
         iwasp: {
-          bg: "#FFFFFF",                   /* Fond principal - Blanc */
-          card: "#FFFFFF",                 /* Cartes - Blanc */
-          secondary: "#F5F5F5",            /* Fond secondaire (doux) */
-          border: "#EBEBEB",               /* Bordures subtiles */
-          text: "#1A1A1A",                 /* Texte principal - Noir doux */
-          "text-bold": "#000000",          /* Titres & emphase - Noir pur */
-          muted: "#808080",                /* Texte secondaire */
-          success: "#22C55E",              /* Succès */
-          error: "#EF4444",                /* Erreur */
+          blanc: "#FFFFFF",                /* Fond principal */
+          noir: "#000000",                 /* Texte & logo */
+          "gris-fond": "#F2F2F2",          /* Fond secondaire */
+          "gris-bordure": "#EAEAEA",       /* Bordures subtiles */
+          "gris-texte": "#8C8C8C",         /* Texte secondaire */
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE BLANC LUXE (Soft Contrast)
-           ══════════════════════════════════════════════════════════════ */
-        blanc: {
-          pur: "hsl(var(--blanc-pur))",                   /* #FFFFFF */
-          ivoire: "hsl(var(--blanc-ivoire))",             /* #FCFCFC */
-          "gris-clair": "hsl(var(--blanc-gris-clair))",   /* #F5F5F5 */
-          "gris-border": "hsl(var(--blanc-gris-border))", /* #EBEBEB */
-          "gris-struct": "hsl(var(--blanc-gris-struct))", /* #808080 */
-          noir: "hsl(var(--blanc-noir))",                 /* #000000 */
-        },
-        
-        /* ══════════════════════════════════════════════════════════════
-           PALETTE CARTE MATIÈRE (NFC blanche)
+           PALETTE CARTE NFC PHYSIQUE — Référence absolue
            ══════════════════════════════════════════════════════════════ */
         carte: {
-          blanc: "hsl(var(--carte-blanc))",               /* #FFFFFF */
-          chaud: "hsl(var(--carte-chaud))",               /* #FAFAFA */
-          "gris-leger": "hsl(var(--carte-gris-leger))",   /* #F2F2F2 */
-          "gris-struct": "hsl(var(--carte-gris-struct))", /* #737373 */
-          "noir-doux": "hsl(var(--carte-noir-doux))",     /* #000000 */
+          recto: "#FFFFFF",                /* Blanc pur - face avant */
+          verso: "#FAFAFA",                /* Blanc légèrement chaud */
+          texture: "#F5F5F5",              /* Texture nid d'abeille */
+          logo: "#000000",                 /* Logo noir */
+          texte: "#000000",                /* Texte noir */
+          secondaire: "#8C8C8C",           /* Texte secondaire */
         },
       },
       borderRadius: {
