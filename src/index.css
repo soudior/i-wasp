@@ -31,10 +31,11 @@
        ══════════════════════════════════════════════════════════════════ */
     
     --iwasp-noir: 0 0% 4%;                /* #0B0B0B - Fond principal */
-    --iwasp-noir-elevated: 0 0% 7%;       /* #121212 - Surfaces secondaires */
-    --iwasp-blanc: 0 0% 100%;             /* #FFFFFF - Texte principal */
-    --iwasp-jaune: 48 100% 50%;           /* #FFC700 - Accent unique */
-    --iwasp-gris-texte: 0 0% 70%;         /* #B3B3B3 - Texte secondaire */
+    --iwasp-noir-elevated: 0 0% 7%;       /* #121212 - Surfaces secondaires (charbon) */
+    --iwasp-blanc: 0 0% 96%;              /* #F5F5F5 - Texte principal blanc cassé */
+    --iwasp-blanc-pur: 0 0% 100%;         /* #FFFFFF - Blanc pur (champs input) */
+    --iwasp-jaune: 48 100% 50%;           /* #FFC700 - Accent UNIQUE (CTA, actif, étape) */
+    --iwasp-gris-texte: 0 0% 71%;         /* #B5B5B5 - Texte secondaire */
     --iwasp-gris-bordure: 0 0% 20%;       /* #333333 - Bordures subtiles */
     
     /* États système */
@@ -79,7 +80,7 @@
     --destructive-foreground: var(--iwasp-blanc);
     
     --border: var(--iwasp-gris-bordure);
-    --input: 0 0% 100%;                   /* Champs de formulaire = blanc */
+    --input: var(--iwasp-blanc-pur);      /* Champs de formulaire = blanc pur */
     --input-foreground: var(--iwasp-noir);
     --ring: var(--iwasp-jaune);
     
