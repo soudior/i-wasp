@@ -26,6 +26,8 @@ type ProductMode = "carte" | "ongle";
 
 const Index = () => {
   const [mode, setMode] = useState<ProductMode>("carte");
+  const [cardName, setCardName] = useState("");
+  const [cardTitle, setCardTitle] = useState("");
 
   return (
     <div className="min-h-screen bg-background">
@@ -161,13 +163,43 @@ const Index = () => {
               La Carte. Votre signature.
             </h2>
             <p className="text-muted-foreground text-lg max-w-lg mx-auto">
-              Design ultra-premium, finition impeccable, technologie invisible.
+              Personnalisez votre aperçu en temps réel.
             </p>
           </div>
 
+          {/* Inputs de personnalisation */}
+          <div className="max-w-sm mx-auto mb-10 space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="cardName" className="text-sm font-medium text-foreground">
+                Votre nom
+              </label>
+              <input
+                id="cardName"
+                type="text"
+                value={cardName}
+                onChange={(e) => setCardName(e.target.value)}
+                placeholder="Prénom Nom"
+                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="cardTitle" className="text-sm font-medium text-foreground">
+                Votre titre
+              </label>
+              <input
+                id="cardTitle"
+                type="text"
+                value={cardTitle}
+                onChange={(e) => setCardTitle(e.target.value)}
+                placeholder="CEO · Votre Entreprise"
+                className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all"
+              />
+            </div>
+          </div>
+
           <NFCCardPreview 
-            name="Votre Nom" 
-            title="Votre Titre · i-Wasp"
+            name={cardName || "Votre Nom"} 
+            title={cardTitle || "Votre Titre · i-Wasp"}
             showFlipHint={true}
           />
           
