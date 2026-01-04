@@ -6,6 +6,7 @@
  * - Bouton "Procéder au paiement" uniquement ici
  */
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
@@ -21,6 +22,7 @@ import {
 } from "@/components/order";
 import { formatPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { 
@@ -41,8 +43,11 @@ import iwaspLogo from "@/assets/iwasp-logo-white.png";
 function OrderSummaryContent() {
   const navigate = useNavigate();
   const { state, prevStep, goToStep, markComplete } = useOrderFunnel();
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const handleProceedToPayment = () => {
+    if (isNavigating) return;
+    setIsNavigating(true);
     markComplete();
     navigate("/order/payment");
   };
@@ -279,15 +284,17 @@ function OrderSummaryContent() {
                   {/* Client Preview Button */}
                   <ClientPreview />
 
-                  {/* CTA */}
-                  <Button
-                    size="lg"
+                  {/* CTA - LoadingButton for single-tap UX */}
+                  <LoadingButton
+                    size="xl"
                     onClick={handleProceedToPayment}
-                    className="w-full h-14 text-lg rounded-full bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90"
+                    isLoading={isNavigating}
+                    loadingText="Chargement..."
+                    className="w-full rounded-full bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90"
                   >
                     Procéder au paiement
                     <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
+                  </LoadingButton>
 
                   {/* NFC Trust badges */}
                   <div className="pt-2">

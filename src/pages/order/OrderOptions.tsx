@@ -20,6 +20,7 @@ import {
 } from "@/components/order";
 import { formatPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -66,6 +67,7 @@ function getDiscount(quantity: number): number {
 
 function OrderOptionsContent() {
   const { state, setOrderOptions, nextStep, prevStep } = useOrderFunnel();
+  const [isNavigating, setIsNavigating] = useState(false);
   
   const [selectedQuantity, setSelectedQuantity] = useState(state.orderOptions?.quantity || 1);
   const [promoCode, setPromoCode] = useState(state.orderOptions?.promoCode || "");
@@ -119,6 +121,9 @@ function OrderOptionsContent() {
   };
 
   const handleContinue = () => {
+    if (isNavigating) return;
+    setIsNavigating(true);
+    
     const options: OrderOptionsType = {
       quantity: selectedQuantity,
       promoCode: appliedPromo?.code,
@@ -355,14 +360,15 @@ function OrderOptionsContent() {
               <ArrowLeft size={18} />
               Retour
             </Button>
-            <Button
-              size="lg"
+            <LoadingButton
+              size="xl"
               onClick={handleContinue}
-              className="px-8 h-14 text-lg rounded-full bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90"
+              isLoading={isNavigating}
+              className="px-8 rounded-full bg-gradient-to-r from-primary to-amber-500 hover:from-primary/90 hover:to-amber-500/90"
             >
               Continuer
               <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            </LoadingButton>
           </motion.div>
           </div>
         </main>
