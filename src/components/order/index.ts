@@ -1,9 +1,22 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ORDER COMPONENTS — BARREL EXPORT
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Core components
 export { OrderTrustBadges } from './OrderTrustBadges';
 export { LinkedCardPreview } from './LinkedCardPreview';
 export { OrderProgressBar } from './OrderProgressBar';
 export { AutoSaveIndicator } from './AutoSaveIndicator';
 export { RestoreDraftBanner } from './RestoreDraftBanner';
 export { PageTransition, contentVariants, itemVariants } from './PageTransition';
+
+// Premium funnel components - VERROUILLÉ
+export { PremiumButton } from './PremiumButton';
+export { FunnelStep } from './FunnelStep';
+export { SelectionCard } from './SelectionCard';
+export { FormField } from './FormField';
+
+// Customization components
 export { 
   LogoPlacementEditor,
   type LogoPlacementConfig,

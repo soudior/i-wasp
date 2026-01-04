@@ -1,10 +1,15 @@
 /**
- * SmartContinueButton - Disabled until form is valid
+ * ═══════════════════════════════════════════════════════════════════════════
+ * SMART CONTINUE BUTTON — VERROUILLÉ
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * NOTE: Préférer PremiumButton pour les nouveaux développements.
+ * Ce composant est maintenu pour compatibilité.
  * 
  * Features:
  * - Disabled when form is invalid
  * - Shows blocking message
- * - Premium animation
+ * - Un seul tap = action immédiate
  * - Human-friendly feedback
  */
 
@@ -48,13 +53,15 @@ export function SmartContinueButton({
         )}
       </AnimatePresence>
 
-      {/* Button */}
+      {/* Button - Optimisé mobile */}
       <Button
         size="lg"
         onClick={onClick}
         disabled={!canProceed || isLoading}
         className={cn(
-          "px-8 h-14 text-lg rounded-full transition-all duration-300",
+          "px-8 h-14 text-lg rounded-full transition-all duration-200",
+          "touch-manipulation select-none",
+          "active:scale-[0.98]",
           canProceed
             ? "bg-gradient-to-r from-primary to-amber-500 hover:shadow-lg hover:shadow-primary/25"
             : "bg-muted text-muted-foreground cursor-not-allowed",
