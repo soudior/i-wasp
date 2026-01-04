@@ -1,43 +1,57 @@
 /**
- * Page Transition wrapper for order funnel steps
+ * ═══════════════════════════════════════════════════════════════════════════
+ * PAGE TRANSITION — VERROUILLÉ
+ * ═══════════════════════════════════════════════════════════════════════════
  * 
- * OPTIMIZED for mobile:
- * - Fast, subtle animations that don't block navigation
- * - No delay on entry - instant content visibility
- * - Premium feel without sacrificing responsiveness
+ * NE PAS MODIFIER SANS INSTRUCTION EXPLICITE
+ * 
+ * Comportement garanti :
+ * - Transitions ULTRA-RAPIDES (100ms max)
+ * - Aucune animation bloquante
+ * - Aucun délai avant affichage du contenu
+ * - UX fluide et instantanée
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 interface PageTransitionProps {
   children: ReactNode;
   className?: string;
 }
 
-// Optimized page variants - faster, no blocking
+// VERROUILLÉ: Transitions ultra-rapides, non-bloquantes
 const pageVariants = {
   initial: {
-    opacity: 0.8,
-    y: 8,
+    opacity: 0.9,
+    y: 4,
   },
   animate: {
     opacity: 1,
     y: 0,
   },
   exit: {
-    opacity: 0.8,
-    y: -8,
+    opacity: 0.9,
+    y: -4,
   },
 };
 
-// Fast, non-blocking transition
+// VERROUILLÉ: Transition instantanée
 const pageTransition = {
-  duration: 0.15,
+  duration: 0.1,
   ease: "easeOut" as const,
 };
 
 export function PageTransition({ children, className = "" }: PageTransitionProps) {
+  // VERROUILLÉ: Scroll to top sur chaque transition
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, []);
+
   return (
     <motion.div
       initial="initial"
@@ -52,25 +66,25 @@ export function PageTransition({ children, className = "" }: PageTransitionProps
   );
 }
 
-// Content transition for staggered children - faster
+// VERROUILLÉ: Animations de contenu ultra-rapides
 export const contentVariants = {
-  initial: { opacity: 0, y: 10 },
+  initial: { opacity: 0, y: 6 },
   animate: { 
     opacity: 1, 
     y: 0,
     transition: {
-      duration: 0.2,
-      staggerChildren: 0.05,
+      duration: 0.12,
+      staggerChildren: 0.03,
       delayChildren: 0,
     }
   },
 };
 
 export const itemVariants = {
-  initial: { opacity: 0, y: 10 },
+  initial: { opacity: 0, y: 6 },
   animate: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.15 }
+    transition: { duration: 0.1 }
   },
 };
