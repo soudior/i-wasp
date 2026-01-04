@@ -212,21 +212,24 @@ const Index = () => {
          ════════════════════════════════════════════════════════════════ */}
       <section className="py-24 px-6 bg-card border-t border-border">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">
               La carte que vous aurez réellement en main.
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mb-2">
               Impression premium – carte NFC professionnelle
+            </p>
+            <p className="text-xs text-muted-foreground/70">
+              Aucun visuel marketing. Uniquement l'aperçu réel de production.
             </p>
           </div>
           
-          <PhysicalCardPreview />
+          <PhysicalCardPreview showSpecs />
           
           <div className="text-center mt-12">
             <Link to="/pricing">
               <Button 
-                variant="outline" 
+                variant="outline"
                 size="lg"
                 className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 rounded-lg font-medium"
               >
