@@ -136,7 +136,7 @@ export default function OrderType() {
                   Conciergerie digitale
                 </p>
                 <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
-                  Votre identité, notre service.
+                  Choisissez votre niveau de conciergerie digitale
                 </h1>
                 <p className="text-muted-foreground max-w-md mx-auto">
                   Choisissez votre clé d'accès à la conciergerie i-Wasp.
