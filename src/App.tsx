@@ -212,11 +212,15 @@ const App = () => {
                             <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
                             <Route path="/admin/clients" element={<AdminGuard><AdminClients /></AdminGuard>} />
                             <Route path="/admin/creator" element={<AdminGuard><AdminCreator /></AdminGuard>} />
+                            <Route path="/admin/cards" element={<AdminGuard><AdminCreator /></AdminGuard>} />
                             <Route path="/admin/instant" element={<AdminGuard><AdminInstantCard /></AdminGuard>} />
+                            <Route path="/admin/vcard/create" element={<Navigate to="/admin/instant" replace />} />
+                            <Route path="/admin/vcard/edit" element={<Navigate to="/admin/instant" replace />} />
                             <Route path="/admin/evolis" element={<AdminGuard><EvolisPrintPage /></AdminGuard>} />
                             <Route path="/admin/print" element={<AdminGuard><EvolisPrintPage /></AdminGuard>} />
+                            <Route path="/admin/print-evolis" element={<AdminGuard><EvolisPrintPage /></AdminGuard>} />
                             <Route path="/admin/brand-assets" element={<AdminGuard><BrandAssets /></AdminGuard>} />
-                            <Route path="/brand-assets" element={<BrandAssets />} />
+                            <Route path="/brand-assets" element={<AdminGuard><BrandAssets /></AdminGuard>} />
                             
                             {/* 404 */}
                             <Route path="*" element={<NotFound />} />
