@@ -256,18 +256,41 @@ const PublicCard = () => {
 
   const fullName = `${card.first_name} ${card.last_name}`;
   const subtitle = [card.title, card.company].filter(Boolean).join(" · ");
+  
+  // Get custom styles or use defaults
+  const customStyles = (card as any).custom_styles;
+  const bgColor = customStyles?.backgroundColor || "#F5F5F7";
+  const cardBgColor = customStyles?.theme === "dark" ? "#1D1D1F" : "#FFFFFF";
+  const textColor = customStyles?.textColor || (customStyles?.theme === "dark" ? "#FFFFFF" : "#1D1D1F");
+  const secondaryTextColor = customStyles?.secondaryTextColor || "#8E8E93";
+  const accentColor = customStyles?.accentColor || "#007AFF";
+  const borderRadius = customStyles?.borderRadius ?? 24;
+  
+  // Shadow mapping
+  const shadowMap: Record<string, string> = {
+    none: "none",
+    subtle: "0 2px 8px rgba(0, 0, 0, 0.04)",
+    medium: "0 4px 16px rgba(0, 0, 0, 0.08)",
+    strong: "0 8px 32px rgba(0, 0, 0, 0.12)",
+    glow: `0 0 30px ${accentColor}20`,
+  };
+  const boxShadow = shadowMap[customStyles?.shadowPreset || "subtle"] || shadowMap.subtle;
 
   return (
     <div 
       className="min-h-dvh flex flex-col items-center justify-center p-4"
-      style={{ backgroundColor: "#F5F5F7" }}
+      style={{ backgroundColor: bgColor }}
     >
       {/* Card */}
       <div 
-        className="w-full max-w-sm rounded-3xl p-6 shadow-sm"
+        className="w-full max-w-sm p-6"
         style={{ 
-          backgroundColor: "#FFFFFF",
-          boxShadow: "0 2px 12px rgba(0, 0, 0, 0.04)"
+          backgroundColor: cardBgColor,
+          borderRadius: `${borderRadius}px`,
+          boxShadow: boxShadow,
+          border: customStyles?.borderWidth > 0 
+            ? `${customStyles.borderWidth}px solid ${customStyles.borderColor || "#374151"}` 
+            : undefined,
         }}
       >
         {/* Profile Section */}
@@ -287,14 +310,14 @@ const PublicCard = () => {
           {/* Name */}
           <h1 
             className="text-xl font-semibold tracking-tight"
-            style={{ color: "#1D1D1F" }}
+            style={{ color: textColor }}
           >
             {fullName}
           </h1>
 
           {/* Role / Company */}
           {subtitle && (
-            <p className="text-sm mt-1" style={{ color: "#8E8E93" }}>
+            <p className="text-sm mt-1" style={{ color: secondaryTextColor }}>
               {subtitle}
             </p>
           )}
@@ -309,10 +332,10 @@ const PublicCard = () => {
               <button
                 onClick={handleCall}
                 className="flex items-center justify-center gap-2 py-3.5 rounded-xl transition-all active:scale-[0.98]"
-                style={{ backgroundColor: "#F5F5F7" }}
+                style={{ backgroundColor: customStyles?.theme === "dark" ? "#2D2D2D" : "#F5F5F7" }}
               >
-                <Phone size={18} style={{ color: "#007AFF" }} />
-                <span className="text-sm font-medium" style={{ color: "#1D1D1F" }}>
+                <Phone size={18} style={{ color: accentColor }} />
+                <span className="text-sm font-medium" style={{ color: textColor }}>
                   Appeler
                 </span>
               </button>
@@ -323,10 +346,10 @@ const PublicCard = () => {
               <button
                 onClick={handleEmail}
                 className="flex items-center justify-center gap-2 py-3.5 rounded-xl transition-all active:scale-[0.98]"
-                style={{ backgroundColor: "#F5F5F7" }}
+                style={{ backgroundColor: customStyles?.theme === "dark" ? "#2D2D2D" : "#F5F5F7" }}
               >
-                <Mail size={18} style={{ color: "#007AFF" }} />
-                <span className="text-sm font-medium" style={{ color: "#1D1D1F" }}>
+                <Mail size={18} style={{ color: accentColor }} />
+                <span className="text-sm font-medium" style={{ color: textColor }}>
                   Email
                 </span>
               </button>
@@ -340,10 +363,10 @@ const PublicCard = () => {
               <button
                 onClick={handleLinkedIn}
                 className="flex items-center justify-center gap-2 py-3.5 rounded-xl transition-all active:scale-[0.98]"
-                style={{ backgroundColor: "#F5F5F7" }}
+                style={{ backgroundColor: customStyles?.theme === "dark" ? "#2D2D2D" : "#F5F5F7" }}
               >
                 <Linkedin size={18} style={{ color: "#0A66C2" }} />
-                <span className="text-sm font-medium" style={{ color: "#1D1D1F" }}>
+                <span className="text-sm font-medium" style={{ color: textColor }}>
                   LinkedIn
                 </span>
               </button>
@@ -354,10 +377,10 @@ const PublicCard = () => {
               <button
                 onClick={handleWhatsApp}
                 className="flex items-center justify-center gap-2 py-3.5 rounded-xl transition-all active:scale-[0.98]"
-                style={{ backgroundColor: "#F5F5F7" }}
+                style={{ backgroundColor: customStyles?.theme === "dark" ? "#2D2D2D" : "#F5F5F7" }}
               >
                 <MessageCircle size={18} style={{ color: "#25D366" }} />
-                <span className="text-sm font-medium" style={{ color: "#1D1D1F" }}>
+                <span className="text-sm font-medium" style={{ color: textColor }}>
                   WhatsApp
                 </span>
               </button>
@@ -368,7 +391,7 @@ const PublicCard = () => {
           <button
             onClick={handleAddContact}
             className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-medium transition-all active:scale-[0.98]"
-            style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
+            style={{ backgroundColor: accentColor, color: "#FFFFFF" }}
           >
             <UserPlus size={18} />
             Ajouter au contact
@@ -377,7 +400,7 @@ const PublicCard = () => {
       </div>
       
       {/* Global IWASP Branding Footer */}
-      <IWASPBrandingFooter variant="light" />
+      <IWASPBrandingFooter variant={customStyles?.theme === "dark" ? "dark" : "light"} />
     </div>
   );
 };
