@@ -142,6 +142,16 @@ export const TEMPLATE_REGISTRY: TemplateRegistryEntry[] = [
 
   // ===== PRIVATE TEMPLATES (Admin Only) =====
   {
+    id: "dark-luxury-business",
+    name: "Dark Luxury Business",
+    visibility: "private",
+    component: "DarkLuxuryBusinessTemplate",
+    category: "business",
+    description: "Thème noir luxueux (#0B0B0B) avec accent jaune i-Wasp (#FFC700). Géolocalisation et actions rapides.",
+    createdAt: "2025-01-04",
+    hideBranding: false,
+  },
+  {
     id: "autoschluessel",
     name: "Autoschlüssel Service",
     visibility: "private",

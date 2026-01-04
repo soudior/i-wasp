@@ -18,6 +18,7 @@ import { StoryRing } from "@/components/StoryRing";
 import { AutoschluesselTemplate } from "@/components/templates/AutoschluesselTemplate";
 import HerbalismEliteTemplate from "@/components/templates/HerbalismEliteTemplate";
 import VCardAirbnbBookingTemplate from "@/components/templates/VCardAirbnbBookingTemplate";
+import { DarkLuxuryBusinessTemplate } from "@/components/templates/DarkLuxuryBusinessTemplate";
 import { IWASPBrandBadgeMinimal } from "@/components/templates/IWASPBrandBadge";
 import { IWASPBrandingFooter } from "@/components/IWASPBrandingFooter";
 
@@ -221,6 +222,33 @@ const PublicCard = () => {
           whatsapp: card.has_whatsapp ? undefined : undefined,
           email: card.has_email ? undefined : undefined,
           website: card.website || undefined,
+        }}
+      />
+    );
+  }
+
+  // Use DarkLuxuryBusinessTemplate for dark-luxury-business template
+  if (template === 'dark-luxury-business') {
+    return (
+      <DarkLuxuryBusinessTemplate
+        card={{
+          id: card.id,
+          slug: card.slug,
+          first_name: card.first_name,
+          last_name: card.last_name,
+          title: card.title,
+          company: card.company,
+          location: (card as any).location,
+          website: card.website,
+          tagline: card.tagline,
+          photo_url: card.photo_url,
+          logo_url: card.logo_url,
+          has_phone: card.has_phone,
+          has_whatsapp: card.has_whatsapp,
+          has_email: card.has_email,
+          has_instagram: card.has_instagram,
+          social_links: card.social_links,
+          blocks: card.blocks,
         }}
       />
     );
