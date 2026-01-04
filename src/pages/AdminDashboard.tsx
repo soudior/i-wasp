@@ -1,13 +1,18 @@
 /**
  * Admin Dashboard - Unified control panel for IWASP Admin
  * Quick access to all admin tools
+ * Real-time notifications for new orders
  */
 
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { AdminGuard } from "@/components/AdminGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAllOrders } from "@/hooks/useAdmin";
-import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import {
   Zap,
   Printer,
@@ -20,10 +25,12 @@ import {
   Clock,
   CheckCircle2,
   Truck,
-  AlertCircle
+  AlertCircle,
+  Bell
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface QuickAction {
   title: string;
@@ -168,12 +175,61 @@ function OrderStats() {
 function AdminDashboardContent() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Real-time subscription for new orders
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-orders-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'orders'
+        },
+        (payload) => {
+          const newOrder = payload.new as { order_number: string; shipping_name?: string; total_price_cents: number };
+          
+          // Play notification sound (optional)
+          if (audioRef.current) {
+            audioRef.current.play().catch(() => {});
+          }
+
+          // Show toast notification
+          toast.success(
+            `🔔 Nouvelle commande #${newOrder.order_number}`,
+            {
+              description: `${newOrder.shipping_name || 'Client'} • ${(newOrder.total_price_cents / 100).toFixed(2)} €`,
+              duration: 8000,
+              action: {
+                label: "Voir",
+                onClick: () => navigate("/admin/orders")
+              }
+            }
+          );
+
+          // Invalidate orders query to refresh stats
+          queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [navigate, queryClient]);
 
   return (
     <div 
       className="min-h-dvh w-full"
       style={{ backgroundColor: '#0B0B0B' }}
     >
+      {/* Hidden audio element for notification sound */}
+      <audio ref={audioRef} preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleOk7A5TJ1X1pq0sjOKLa0aFtNxUtnMvWoHRNJSCexMmqb2AnNqHEwJ5lVEc4m7qmkWdhUXOVr6iZbGpPaJOxqqiUe3Fqa46rrJ6Ji3xqbpWnoZ2HhXdmZZOknpyJg3FdYZaioJqIgG5aY5yinZeHfGlba56gmJODdWBWYqGglpOBb1ZWaqGel5J9Z09QbKWdlpN7Y0xMdaqckZJ4X0hFfq+bjpN0WkJBh7SZi491UzxAlrqXiI9vTDlGnr6UhY1oRDhMpcGSgopjQDlUpMSQgIdcPz1apsOPfYRWPUJppsSMeYFPQUpvq8aJdX1LQ1J1ssWGcXhIR1x8t8aDa3RHSml/usKBZW9IS3SEx8B8YGlOT4CJysF3WmJWU4qQz8FxUVpfV5WW0sJqR1JoWqCa1MNkO0tzXKeez8JdLkV9YKyf0L9XJD2JZLGez7xSGzWWaa6dz7dOEi2jaLOez7RLCiexareezbJJBSW4a7yczbBIAx/Ba76czK5HAhvJbsGbzKxGABbRb8Sby6tEABLYcMWby6lD" type="audio/wav" />
+      </audio>
       {/* Header */}
       <header 
         className="sticky top-0 z-10 backdrop-blur border-b px-4 py-4"
