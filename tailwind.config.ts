@@ -81,28 +81,29 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
-           IWASP LUXURY WHITE COLORS
+           IWASP LUXURY WHITE COLORS (Soft Contrast)
            ══════════════════════════════════════════════════════════════ */
         iwasp: {
           bg: "#FFFFFF",                   /* Fond principal - Blanc */
           card: "#FFFFFF",                 /* Cartes - Blanc */
-          secondary: "#F2F2F2",            /* Fond secondaire */
-          border: "#EAEAEA",               /* Bordures subtiles */
-          text: "#000000",                 /* Texte principal - Noir */
-          muted: "#737373",                /* Texte secondaire */
+          secondary: "#F5F5F5",            /* Fond secondaire (doux) */
+          border: "#EBEBEB",               /* Bordures subtiles */
+          text: "#1A1A1A",                 /* Texte principal - Noir doux */
+          "text-bold": "#000000",          /* Titres & emphase - Noir pur */
+          muted: "#808080",                /* Texte secondaire */
           success: "#22C55E",              /* Succès */
           error: "#EF4444",                /* Erreur */
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE BLANC LUXE
+           PALETTE BLANC LUXE (Soft Contrast)
            ══════════════════════════════════════════════════════════════ */
         blanc: {
           pur: "hsl(var(--blanc-pur))",                   /* #FFFFFF */
-          ivoire: "hsl(var(--blanc-ivoire))",             /* #FAFAFA */
-          "gris-clair": "hsl(var(--blanc-gris-clair))",   /* #F2F2F2 */
-          "gris-border": "hsl(var(--blanc-gris-border))", /* #EAEAEA */
-          "gris-struct": "hsl(var(--blanc-gris-struct))", /* #737373 */
+          ivoire: "hsl(var(--blanc-ivoire))",             /* #FCFCFC */
+          "gris-clair": "hsl(var(--blanc-gris-clair))",   /* #F5F5F5 */
+          "gris-border": "hsl(var(--blanc-gris-border))", /* #EBEBEB */
+          "gris-struct": "hsl(var(--blanc-gris-struct))", /* #808080 */
           noir: "hsl(var(--blanc-noir))",                 /* #000000 */
         },
         

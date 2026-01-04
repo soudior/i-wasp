@@ -14,58 +14,60 @@
        
        Palette officielle - Carte NFC blanche haut de gamme
        - Fond principal : #FFFFFF (Blanc pur)
-       - Texte principal : #000000 (Noir absolu)
-       - Gris subtil : #F2F2F2, #EAEAEA (Séparations)
-       - Accent : Noir uniquement (pas de couleur)
+       - Texte principal : #1A1A1A (Noir doux, lisible)
+       - Titres & emphase : #000000 (Noir pur, ponctuel)
+       - Gris subtil : #F5F5F5, #EBEBEB (Séparations douces)
+       - Noir plein réservé : hero, footer, sections techniques
        ═══════════════════════════════════════════════════════════════════ */
     
     /* ══════════════════════════════════════════════════════════════════
-       CORE COLORS - LUXURY WHITE PALETTE
+       CORE COLORS - LUXURY WHITE PALETTE (Soft Contrast)
        ══════════════════════════════════════════════════════════════════ */
     
     /* Couleurs principales iWASP Luxe Blanc */
     --iwasp-blanc: 0 0% 100%;             /* #FFFFFF - Fond principal */
-    --iwasp-noir: 0 0% 0%;                /* #000000 - Texte principal */
-    --iwasp-gris-light: 0 0% 95%;         /* #F2F2F2 - Fond secondaire */
-    --iwasp-gris-border: 0 0% 92%;        /* #EAEAEA - Bordures subtiles */
-    --iwasp-gris-text: 0 0% 45%;          /* #737373 - Texte secondaire */
+    --iwasp-noir-doux: 0 0% 10%;          /* #1A1A1A - Texte courant (doux) */
+    --iwasp-noir-pur: 0 0% 0%;            /* #000000 - Titres & emphase (ponctuel) */
+    --iwasp-gris-light: 0 0% 96%;         /* #F5F5F5 - Fond secondaire */
+    --iwasp-gris-border: 0 0% 92%;        /* #EBEBEB - Bordures subtiles */
+    --iwasp-gris-text: 0 0% 50%;          /* #808080 - Texte secondaire */
     --iwasp-erreur: 0 65% 50%;            /* Rouge erreur */
     --iwasp-success: 142 70% 45%;         /* Vert succès */
     
     /* Surface layers - Light theme */
     --surface-bg: 0 0% 100%;              /* #FFFFFF */
     --surface-card: 0 0% 100%;            /* #FFFFFF */
-    --surface-elevated: 0 0% 98%;         /* #FAFAFA */
-    --surface-overlay: 0 0% 95%;          /* #F2F2F2 */
+    --surface-elevated: 0 0% 99%;         /* #FCFCFC */
+    --surface-overlay: 0 0% 96%;          /* #F5F5F5 */
     
-    /* Semantic tokens */
+    /* Semantic tokens - Contraste doux */
     --background: var(--iwasp-blanc);
-    --foreground: var(--iwasp-noir);
+    --foreground: var(--iwasp-noir-doux);
     
     --card: var(--iwasp-blanc);
-    --card-foreground: var(--iwasp-noir);
+    --card-foreground: var(--iwasp-noir-doux);
     
     --popover: var(--iwasp-blanc);
-    --popover-foreground: var(--iwasp-noir);
+    --popover-foreground: var(--iwasp-noir-doux);
     
-    --primary: var(--iwasp-noir);
+    --primary: var(--iwasp-noir-doux);
     --primary-foreground: var(--iwasp-blanc);
     
     --secondary: var(--iwasp-gris-light);
-    --secondary-foreground: var(--iwasp-noir);
+    --secondary-foreground: var(--iwasp-noir-doux);
     
     --muted: var(--iwasp-gris-light);
     --muted-foreground: var(--iwasp-gris-text);
     
     --accent: var(--iwasp-gris-light);
-    --accent-foreground: var(--iwasp-noir);
+    --accent-foreground: var(--iwasp-noir-doux);
     
     --destructive: var(--iwasp-erreur);
     --destructive-foreground: var(--iwasp-blanc);
     
     --border: var(--iwasp-gris-border);
     --input: var(--iwasp-gris-light);
-    --ring: var(--iwasp-noir);
+    --ring: var(--iwasp-noir-doux);
     
     /* ══════════════════════════════════════════════════════════════════
        RADIUS - FORMES IWASP LUXE
@@ -76,24 +78,25 @@
     --radius-btn: 0.5rem;     /* 8px - boutons élégants */
     
     /* ══════════════════════════════════════════════════════════════════
-       PALETTE BLANC LUXE
+       PALETTE BLANC LUXE (Contraste doux)
        Usage : interface épurée, carte NFC blanche
        ══════════════════════════════════════════════════════════════════ */
     --blanc-pur: 0 0% 100%;           /* #FFFFFF - Blanc pur */
-    --blanc-ivoire: 0 0% 98%;         /* #FAFAFA - Blanc très léger */
-    --blanc-gris-clair: 0 0% 95%;     /* #F2F2F2 - Gris clair */
-    --blanc-gris-border: 0 0% 92%;    /* #EAEAEA - Bordures */
-    --blanc-gris-struct: 0 0% 45%;    /* #737373 - Gris structurel */
-    --blanc-noir: 0 0% 0%;            /* #000000 - Noir absolu */
+    --blanc-ivoire: 0 0% 99%;         /* #FCFCFC - Blanc très léger */
+    --blanc-gris-clair: 0 0% 96%;     /* #F5F5F5 - Gris clair */
+    --blanc-gris-border: 0 0% 92%;    /* #EBEBEB - Bordures */
+    --blanc-gris-struct: 0 0% 50%;    /* #808080 - Gris structurel */
+    --blanc-noir-doux: 0 0% 10%;      /* #1A1A1A - Noir doux (texte) */
+    --blanc-noir-pur: 0 0% 0%;        /* #000000 - Noir pur (emphase) */
     
     /* ══════════════════════════════════════════════════════════════════
        PALETTE "Carte matière" (carte physique NFC blanche)
        ══════════════════════════════════════════════════════════════════ */
     --carte-blanc: 0 0% 100%;         /* #FFFFFF - Blanc carte */
-    --carte-chaud: 0 0% 98%;          /* #FAFAFA - Blanc chaud */
-    --carte-gris-leger: 0 0% 95%;     /* #F2F2F2 - Gris très léger */
-    --carte-gris-struct: 0 0% 45%;    /* #737373 - Gris structurel */
-    --carte-noir-doux: 0 0% 0%;       /* #000000 - Noir */
+    --carte-chaud: 0 0% 99%;          /* #FCFCFC - Blanc chaud */
+    --carte-gris-leger: 0 0% 96%;     /* #F5F5F5 - Gris très léger */
+    --carte-gris-struct: 0 0% 50%;    /* #808080 - Gris structurel */
+    --carte-noir-doux: 0 0% 10%;      /* #1A1A1A - Noir doux */
 
     /* Surface tokens */
     --surface-0: var(--iwasp-blanc);
