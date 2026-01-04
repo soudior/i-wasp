@@ -111,9 +111,9 @@ const App = () => {
               <CartProvider>
                 <TooltipProvider>
                   <FeatureValidationProvider showOverlay={true}>
-                    {/* Splash Screen - Premium gold & black loading */}
+                    {/* Splash Screen - Fast 800ms startup */}
                     {showSplash && (
-                      <SplashScreen onComplete={handleSplashComplete} minDuration={2000} />
+                      <SplashScreen onComplete={handleSplashComplete} minDuration={800} />
                     )}
                     <Toaster />
                     <Sonner />

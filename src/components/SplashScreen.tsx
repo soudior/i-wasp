@@ -10,8 +10,9 @@ interface SplashScreenProps {
 /**
  * SplashScreen Premium IWASP
  * Style SaaS Professional - Clean, minimal
+ * Optimized: 800ms for fast startup while maintaining premium feel
  */
-export function SplashScreen({ onComplete, minDuration = 1500 }: SplashScreenProps) {
+export function SplashScreen({ onComplete, minDuration = 800 }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -37,14 +38,14 @@ export function SplashScreen({ onComplete, minDuration = 1500 }: SplashScreenPro
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
         >
           {/* Logo */}
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
+            initial={{ scale: 0.98, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
             className="relative z-10"
           >
             <img 
@@ -56,19 +57,19 @@ export function SplashScreen({ onComplete, minDuration = 1500 }: SplashScreenPro
 
           {/* Tagline */}
           <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.3, ease: "easeOut" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.2, ease: "easeOut" }}
             className="mt-6 text-xs tracking-[0.2em] uppercase font-medium text-muted-foreground"
           >
             Tap. Connect. Empower.
           </motion.p>
 
-          {/* Loading indicator */}
+          {/* Loading indicator - simplified */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.15 }}
             className="absolute bottom-16 flex gap-1.5"
           >
             {[0, 1, 2].map((i) => (
@@ -76,9 +77,9 @@ export function SplashScreen({ onComplete, minDuration = 1500 }: SplashScreenPro
                 key={i}
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{
-                  duration: 1,
+                  duration: 0.6,
                   repeat: Infinity,
-                  delay: i * 0.15,
+                  delay: i * 0.1,
                   ease: "easeInOut"
                 }}
                 className="w-1.5 h-1.5 rounded-full bg-primary"
