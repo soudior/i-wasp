@@ -58,11 +58,39 @@ const TEMPLATE_OPTIONS = [
     description: "Logo sur fond bleu corporate"
   },
   { 
+    id: "iwasp-signature" as PrintTemplateType, 
+    color: "burgundy" as PrintColor,
+    name: "Signature Bordeaux",
+    badge: "New",
+    description: "Élégance française raffinée"
+  },
+  { 
+    id: "iwasp-signature" as PrintTemplateType, 
+    color: "gold" as PrintColor,
+    name: "Signature Or",
+    badge: "VIP",
+    description: "Prestige et distinction absolue"
+  },
+  { 
+    id: "iwasp-signature" as PrintTemplateType, 
+    color: "forest" as PrintColor,
+    name: "Signature Forêt",
+    badge: null,
+    description: "Élégance naturelle et durable"
+  },
+  { 
     id: "iwasp-black" as PrintTemplateType, 
     color: "black" as PrintColor,
     name: "Black Premium",
     badge: "Top",
     description: "Design minimaliste haut de gamme"
+  },
+  { 
+    id: "iwasp-black" as PrintTemplateType, 
+    color: "burgundy" as PrintColor,
+    name: "Burgundy Elite",
+    badge: null,
+    description: "Sophistication et caractère"
   },
   { 
     id: "iwasp-pure" as PrintTemplateType, 
@@ -72,11 +100,25 @@ const TEMPLATE_OPTIONS = [
     description: "Esthétique épurée style Apple"
   },
   { 
+    id: "iwasp-pure" as PrintTemplateType, 
+    color: "gold" as PrintColor,
+    name: "Pure Gold",
+    badge: "Exclusif",
+    description: "Minimalisme doré luxueux"
+  },
+  { 
     id: "iwasp-corporate" as PrintTemplateType, 
     color: "navy" as PrintColor,
     name: "Corporate Navy",
     badge: null,
     description: "Design B2B professionnel"
+  },
+  { 
+    id: "iwasp-corporate" as PrintTemplateType, 
+    color: "charcoal" as PrintColor,
+    name: "Corporate Charcoal",
+    badge: null,
+    description: "Sobriété executive moderne"
   },
 ];
 
