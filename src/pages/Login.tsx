@@ -1,7 +1,15 @@
 /**
- * Login - Apple Cupertino style
- * Minimal, functional authentication with Google OAuth
- * Supports returnTo parameter for seamless flow continuation
+ * ═══════════════════════════════════════════════════════════════════════════
+ * LOGIN — CONNEXION PREMIUM i-WASP
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * Comportements VERROUILLÉS :
+ * - UN SEUL TAP déclenche l'action
+ * - Google OAuth avec redirection correcte
+ * - Gestion du paramètre redirect pour continuité du tunnel
+ * - Messages d'erreur clairs et visibles
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 import { useState, useEffect } from "react";
@@ -9,7 +17,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGuestCard } from "@/contexts/GuestCardContext";
 import { toast } from "sonner";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function Login() {
@@ -18,16 +26,30 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [mode, setMode] = useState<"login" | "signup">("login");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { signIn, signUp, user, loading } = useAuth();
   const { hasGuestCard } = useGuestCard();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const returnTo = searchParams.get("returnTo") || "/dashboard";
+  // Support both "returnTo" and "redirect" params
+  const returnTo = searchParams.get("returnTo") || searchParams.get("redirect") || "/dashboard";
+
+  // Show message if redirected from protected route
+  useEffect(() => {
+    const redirect = searchParams.get("redirect");
+    if (redirect) {
+      setErrorMessage("Veuillez vous connecter pour continuer");
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!loading && user) {
+      // Clear error and redirect
+      setErrorMessage(null);
       if (hasGuestCard && returnTo.includes("finalize")) {
+        navigate(returnTo, { replace: true });
+      } else if (returnTo && returnTo !== "/dashboard") {
         navigate(returnTo, { replace: true });
       } else {
         navigate("/dashboard", { replace: true });
@@ -36,18 +58,39 @@ export default function Login() {
   }, [user, loading, navigate, hasGuestCard, returnTo]);
 
   const handleGoogleLogin = async () => {
+    // Prevent double-tap
+    if (isGoogleLoading || isLoading) return;
+    
     setIsGoogleLoading(true);
+    setErrorMessage(null);
+    
     try {
+      // Build redirect URL - use the current origin + returnTo path
+      const redirectUrl = `${window.location.origin}${returnTo}`;
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: redirectUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
+      
       if (error) {
+        console.error("Google OAuth error:", error);
+        if (error.message.includes("403")) {
+          setErrorMessage("Erreur 403 : Vérifiez la configuration Google OAuth dans le backend Lovable Cloud");
+        } else {
+          setErrorMessage(`Erreur de connexion Google: ${error.message}`);
+        }
         toast.error("Erreur de connexion Google");
       }
-    } catch {
+    } catch (err) {
+      console.error("Google login error:", err);
+      setErrorMessage("Erreur inattendue lors de la connexion Google");
       toast.error("Erreur de connexion");
     } finally {
       setIsGoogleLoading(false);
@@ -57,12 +100,19 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Prevent double submission
+    if (isLoading || isGoogleLoading) return;
+    
+    setErrorMessage(null);
+    
     if (!email || !password) {
+      setErrorMessage("Veuillez remplir tous les champs");
       toast.error("Veuillez remplir tous les champs");
       return;
     }
 
     if (password.length < 6) {
+      setErrorMessage("Le mot de passe doit contenir au moins 6 caractères");
       toast.error("Le mot de passe doit contenir au moins 6 caractères");
       return;
     }
@@ -75,29 +125,34 @@ export default function Login() {
 
       if (error) {
         if (error.message.includes("already registered")) {
+          setErrorMessage("Cet email est déjà utilisé. Essayez de vous connecter.");
           toast.error("Cet email est déjà utilisé");
         } else {
+          setErrorMessage(`Erreur: ${error.message}`);
           toast.error("Erreur lors de la création du compte");
         }
         return;
       }
 
-      toast.success("Compte créé !");
+      toast.success("Compte créé avec succès !");
+      // Auto-redirect handled by useEffect
     } else {
       const { error } = await signIn(email, password);
       setIsLoading(false);
 
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
+          setErrorMessage("Email ou mot de passe incorrect");
           toast.error("Email ou mot de passe incorrect");
         } else {
+          setErrorMessage(`Erreur: ${error.message}`);
           toast.error("Erreur de connexion");
         }
         return;
       }
 
       toast.success("Connexion réussie");
-      navigate(returnTo);
+      // Redirect handled by useEffect
     }
   };
 
@@ -118,7 +173,7 @@ export default function Login() {
         <div className="w-full max-w-sm mb-4">
           <button
             onClick={() => navigate("/create")}
-            className="flex items-center gap-2 text-sm"
+            className="flex items-center gap-2 text-sm touch-manipulation active:opacity-70"
             style={{ color: "#007AFF" }}
           >
             <ArrowLeft size={16} />
@@ -131,7 +186,7 @@ export default function Login() {
         className="w-full max-w-sm rounded-2xl p-8 shadow-sm"
         style={{ backgroundColor: "#FFFFFF" }}
       >
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h1 
             className="text-2xl font-semibold tracking-tight"
             style={{ color: "#1D1D1F" }}
@@ -148,12 +203,25 @@ export default function Login() {
           )}
         </div>
 
-        {/* Google OAuth Button - Glassmorphism Premium */}
+        {/* Error Message - Visible and Clear */}
+        {errorMessage && (
+          <div 
+            className="mb-6 p-4 rounded-xl flex items-start gap-3"
+            style={{ backgroundColor: "#FEF2F2", border: "1px solid #FCA5A5" }}
+          >
+            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#DC2626" }} />
+            <p className="text-sm" style={{ color: "#DC2626" }}>
+              {errorMessage}
+            </p>
+          </div>
+        )}
+
+        {/* Google OAuth Button - Single tap, no delay */}
         <button
           type="button"
           onClick={handleGoogleLogin}
           disabled={isGoogleLoading || isLoading}
-          className="w-full py-3.5 rounded-xl font-medium text-sm flex items-center justify-center gap-3 mb-6 disabled:opacity-50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+          className="w-full py-3.5 rounded-xl font-medium text-sm flex items-center justify-center gap-3 mb-6 disabled:opacity-50 touch-manipulation active:scale-[0.98] transition-transform duration-75"
           style={{
             background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)",
             backdropFilter: "blur(10px)",
@@ -202,7 +270,8 @@ export default function Login() {
               placeholder="vous@exemple.com"
               required
               disabled={isLoading}
-              className="w-full px-4 py-3 rounded-xl text-sm outline-none"
+              autoComplete="email"
+              className="w-full px-4 py-3 rounded-xl text-sm outline-none touch-manipulation"
               style={{ 
                 backgroundColor: "#F5F5F7",
                 color: "#1D1D1F",
@@ -227,7 +296,8 @@ export default function Login() {
               placeholder="••••••••"
               required
               disabled={isLoading}
-              className="w-full px-4 py-3 rounded-xl text-sm outline-none"
+              autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              className="w-full px-4 py-3 rounded-xl text-sm outline-none touch-manipulation"
               style={{ 
                 backgroundColor: "#F5F5F7",
                 color: "#1D1D1F",
@@ -238,8 +308,8 @@ export default function Login() {
 
           <button
             type="submit"
-            disabled={isLoading}
-            className="w-full py-3.5 rounded-xl font-medium text-sm disabled:opacity-50"
+            disabled={isLoading || isGoogleLoading}
+            className="w-full py-3.5 rounded-xl font-medium text-sm disabled:opacity-50 touch-manipulation active:scale-[0.98] transition-transform duration-75"
             style={{
               backgroundColor: "#007AFF",
               color: "#FFFFFF",
@@ -258,14 +328,22 @@ export default function Login() {
         <div className="mt-6 text-center">
           <button
             type="button"
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
-            className="text-sm"
+            onClick={() => {
+              setMode(mode === "login" ? "signup" : "login");
+              setErrorMessage(null);
+            }}
+            className="text-sm touch-manipulation active:opacity-70"
             style={{ color: "#007AFF" }}
           >
             {mode === "login" ? "Pas encore de compte ? Créer un compte" : "Déjà un compte ? Se connecter"}
           </button>
         </div>
       </div>
+
+      {/* Help text for OAuth */}
+      <p className="mt-6 text-xs text-center max-w-sm" style={{ color: "#8E8E93" }}>
+        En continuant, vous acceptez nos conditions d'utilisation et notre politique de confidentialité.
+      </p>
     </div>
   );
 }
