@@ -279,6 +279,15 @@ export default function OrderType() {
                             </li>
                           ))}
                         </ul>
+                        
+                        <Button
+                          className={`w-full mt-6 ${level.isPopular ? "" : "variant-outline"}`}
+                          variant={level.isPopular ? "default" : "outline"}
+                          onClick={handleContinue}
+                        >
+                          Choisir {level.title}
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
                       </motion.div>
                     ))}
                   </div>
