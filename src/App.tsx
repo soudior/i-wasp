@@ -65,6 +65,7 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import BrandAssets from "./pages/BrandAssets";
 import CardStudio from "./pages/CardStudio";
+import NFCDemo3D from "./pages/NFCDemo3D";
 
 // NEW Order funnel pages - 7 steps strict flow
 import OrderType from "./pages/order/OrderType";
@@ -176,6 +177,8 @@ const App = () => {
                             <Route path="/rental-demo" element={<RentalDemo />} />
                             <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
                             <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
+                            <Route path="/demo/nfc-3d" element={<NFCDemo3D />} />
+                            <Route path="/nfc-animation" element={<NFCDemo3D />} />
                             
                             {/* Client Form */}
                             <Route path="/form" element={<ClientForm />} />
