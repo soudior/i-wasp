@@ -29,7 +29,9 @@ import {
   Lock,
   AlertCircle,
   Sparkles,
-  Crown
+  Crown,
+  FlipHorizontal,
+  Wifi
 } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -430,48 +432,131 @@ function OrderCarteContent() {
                     )}
                   </div>
 
-                  {/* Live Card Preview */}
-                  <AnimatePresence mode="wait">
+                  {/* Live Card Preview with 3D Flip */}
+                  <div 
+                    className="relative perspective-1000"
+                    style={{ perspective: "1000px" }}
+                  >
                     <motion.div
-                      key={`${selectedTemplate?.id}-${selectedTemplate?.color}`}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
-                      className="relative"
+                      className="relative w-full"
+                      animate={{ rotateY: showBack ? 180 : 0 }}
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                      style={{ transformStyle: "preserve-3d" }}
                     >
-                      {selectedTemplate ? (
-                        <div className="rounded-xl overflow-hidden shadow-2xl">
-                          <PrintCardTemplate
-                            printedName={state.digitalIdentity?.firstName 
-                              ? `${state.digitalIdentity.firstName} ${state.digitalIdentity.lastName}`
-                              : "Votre Nom"
-                            }
-                            printedTitle={state.digitalIdentity?.title || "Votre Titre"}
-                            printedCompany={state.digitalIdentity?.company || "Votre Entreprise"}
-                            logoUrl={uploadedImage || undefined}
-                            color={selectedTemplate.color}
-                            template={selectedTemplate.id}
+                      {/* Front Side */}
+                      <div 
+                        className="w-full"
+                        style={{ backfaceVisibility: "hidden" }}
+                      >
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={`${selectedTemplate?.id}-${selectedTemplate?.color}-front`}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            {selectedTemplate ? (
+                              <div className="rounded-xl overflow-hidden shadow-2xl">
+                                <PrintCardTemplate
+                                  printedName={state.digitalIdentity?.firstName 
+                                    ? `${state.digitalIdentity.firstName} ${state.digitalIdentity.lastName}`
+                                    : "Votre Nom"
+                                  }
+                                  printedTitle={state.digitalIdentity?.title || "Votre Titre"}
+                                  printedCompany={state.digitalIdentity?.company || "Votre Entreprise"}
+                                  logoUrl={uploadedImage || undefined}
+                                  color={selectedTemplate.color}
+                                  template={selectedTemplate.id}
+                                />
+                              </div>
+                            ) : (
+                              <div 
+                                className="aspect-[1.586] rounded-xl bg-muted flex items-center justify-center border-2 border-dashed border-border"
+                              >
+                                <div className="text-center p-6">
+                                  <Sparkles className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                                  <p className="text-sm text-muted-foreground">
+                                    Sélectionnez un template
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          </motion.div>
+                        </AnimatePresence>
+                      </div>
+
+                      {/* Back Side - NFC Card Back */}
+                      <div 
+                        className="absolute inset-0 w-full"
+                        style={{ 
+                          backfaceVisibility: "hidden",
+                          transform: "rotateY(180deg)"
+                        }}
+                      >
+                        <div className="aspect-[1.586] rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 flex items-center justify-center relative">
+                          {/* NFC Chip visual */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="relative">
+                              {/* NFC Icon with pulse */}
+                              <motion.div
+                                className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center"
+                                animate={{ scale: [1, 1.1, 1] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                              >
+                                <Wifi className="w-8 h-8 text-amber-400/80 rotate-45" />
+                              </motion.div>
+                              
+                              {/* Pulse rings */}
+                              <motion.div
+                                className="absolute inset-0 rounded-full border-2 border-amber-400/30"
+                                animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+                                transition={{ duration: 1.5, repeat: Infinity }}
+                              />
+                              <motion.div
+                                className="absolute inset-0 rounded-full border-2 border-amber-400/20"
+                                animate={{ scale: [1, 2], opacity: [0.3, 0] }}
+                                transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                              />
+                            </div>
+                          </div>
+                          
+                          {/* NFC Text */}
+                          <div className="absolute bottom-4 left-0 right-0 text-center">
+                            <p className="text-xs text-zinc-500 uppercase tracking-widest">NFC Enabled</p>
+                            <p className="text-[10px] text-zinc-600 mt-1">Tap to connect</p>
+                          </div>
+
+                          {/* IWASP branding */}
+                          <div className="absolute top-4 right-4">
+                            <p className="text-[10px] text-zinc-600 font-medium tracking-wider">IWASP</p>
+                          </div>
+
+                          {/* Subtle pattern overlay */}
+                          <div 
+                            className="absolute inset-0 opacity-5"
+                            style={{
+                              backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+                              backgroundSize: "20px 20px"
+                            }}
                           />
                         </div>
-                      ) : (
-                        <div 
-                          className="aspect-[1.586] rounded-xl bg-muted flex items-center justify-center border-2 border-dashed border-border"
-                        >
-                          <div className="text-center p-6">
-                            <Sparkles className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                            <p className="text-sm text-muted-foreground">
-                              Sélectionnez un template
-                            </p>
-                          </div>
-                        </div>
-                      )}
+                      </div>
                     </motion.div>
-                  </AnimatePresence>
+                  </div>
 
                   {/* Preview controls */}
                   {selectedTemplate && (
                     <div className="flex justify-center gap-3 mt-4">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="gap-2"
+                        onClick={() => setShowBack(!showBack)}
+                      >
+                        <FlipHorizontal className="h-4 w-4" />
+                        {showBack ? "Voir recto" : "Voir verso"}
+                      </Button>
                       <Dialog open={isZoomed} onOpenChange={setIsZoomed}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" className="gap-2">
