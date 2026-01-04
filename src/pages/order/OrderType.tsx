@@ -2,8 +2,7 @@
  * Step 1: Product & Profile Selection (Discovery)
  * /order/type
  * 
- * Choix du produit (Carte NFC / Ongles NFC) + profil utilisateur
- * + Importation de site web pour auto-génération
+ * i-Wasp : La conciergerie digitale de votre identité professionnelle.
  * Flow: Découverte → Prévisualisation → Personnalisation → Validation → Prix → Achat
  */
 
@@ -26,19 +25,17 @@ const productTypes = [
     id: "card" as ProductType,
     icon: CreditCard,
     title: "Carte NFC Premium",
-    subtitle: "Le classique réinventé",
-    description: "Une carte de visite élégante en PVC premium avec puce NFC intégrée.",
+    subtitle: "Votre clé d'accès",
+    description: "Une carte élégante qui ouvre les portes de votre conciergerie digitale.",
     image: cardPreview,
-    color: "from-amber-500 to-amber-600",
   },
   {
     id: "nails" as ProductType,
     icon: Hand,
-    title: "Ongles NFC i-wasp",
-    subtitle: "Innovation mode",
-    description: "Le networking discret. Un accessoire mode qui cache une technologie révolutionnaire.",
+    title: "Ongles NFC i-Wasp",
+    subtitle: "L'accessoire signature",
+    description: "Le networking invisible. La technologie se fond dans votre style.",
     image: nailsHero,
-    color: "from-rose-500 to-pink-500",
     isNew: true,
   },
 ];
@@ -49,27 +46,24 @@ const customerTypes = [
     icon: User,
     title: "Particulier",
     subtitle: "Usage personnel",
-    description: "Créez votre carte de visite digitale unique pour développer votre réseau.",
-    benefits: ["Design sur mesure", "Partage instantané NFC", "Profil digital complet"],
-    gradient: "from-amber-400 to-amber-600",
+    description: "Votre identité digitale, élégante et toujours à jour.",
+    benefits: ["Design sur mesure", "Partage instantané", "Profil complet"],
   },
   {
     id: "professionnel" as CustomerType,
     icon: Briefcase,
     title: "Professionnel",
-    subtitle: "Indépendant & freelance",
-    description: "Solution idéale pour les entrepreneurs qui veulent marquer les esprits.",
-    benefits: ["Logo personnalisé", "Liens vers vos réseaux", "Géolocalisation"],
-    gradient: "from-amber-500 to-yellow-500",
+    subtitle: "Indépendant",
+    description: "Une présence professionnelle qui marque les esprits.",
+    benefits: ["Logo personnalisé", "Réseaux intégrés", "Géolocalisation"],
   },
   {
     id: "entreprise" as CustomerType,
     icon: Building2,
     title: "Équipe",
     subtitle: "PME & entreprises",
-    description: "Équipez votre équipe avec des cartes professionnelles cohérentes.",
-    benefits: ["Design unifié", "Quantités flexibles", "Gestion centralisée"],
-    gradient: "from-yellow-400 to-amber-500",
+    description: "Une identité cohérente pour toute votre équipe.",
+    benefits: ["Design unifié", "Gestion centralisée", "Quantités flexibles"],
   },
 ];
 
@@ -137,14 +131,16 @@ export default function OrderType() {
               initial="initial"
               animate="animate"
             >
-              <motion.div className="text-center mb-8" variants={itemVariants}>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-                  <Sparkles size={16} />
-                  Étape 1 : Choisissez votre produit
-                </div>
-                <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">
-                  Que souhaitez-vous créer ?
+              <motion.div className="text-center mb-10" variants={itemVariants}>
+                <p className="text-sm text-muted-foreground tracking-widest uppercase mb-3">
+                  Conciergerie digitale
+                </p>
+                <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
+                  Votre identité, notre service.
                 </h1>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Choisissez votre clé d'accès à la conciergerie i-Wasp.
+                </p>
               </motion.div>
 
               {/* Product Cards - Visual Selection */}
@@ -156,24 +152,24 @@ export default function OrderType() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.15 }}
                     onClick={() => handleSelectProduct(product.id)}
-                    className={`relative overflow-hidden rounded-3xl border-2 text-left transition-all duration-300 hover:scale-[1.02] group ${
+                    className={`relative overflow-hidden rounded-2xl border text-left transition-all duration-300 group ${
                       state.productType === product.id
-                        ? "border-primary shadow-xl shadow-primary/20"
+                        ? "border-primary shadow-lg"
                         : "border-border hover:border-primary/50"
                     }`}
                   >
                     {/* Product Image */}
-                    <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-zinc-900 to-black">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
                       <img 
                         src={product.image} 
                         alt={product.title}
-                        className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                       
                       {/* NEW Badge */}
                       {product.isNew && (
-                        <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white text-xs font-bold">
+                        <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
                           NOUVEAU
                         </div>
                       )}
@@ -191,11 +187,11 @@ export default function OrderType() {
 
                       {/* Content Overlay */}
                       <div className="absolute bottom-0 left-0 right-0 p-6">
-                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${product.color} flex items-center justify-center mb-3`}>
+                        <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center mb-3">
                           <product.icon className="w-6 h-6 text-white" />
                         </div>
-                        <h3 className="font-bold text-xl text-white mb-1">{product.title}</h3>
-                        <p className="text-white/60 text-sm">{product.subtitle}</p>
+                        <h3 className="font-semibold text-xl text-white mb-1">{product.title}</h3>
+                        <p className="text-white/70 text-sm">{product.subtitle}</p>
                       </div>
                     </div>
                     
@@ -279,15 +275,15 @@ export default function OrderType() {
                   transition={{ duration: 0.4 }}
                 >
                   <motion.div className="text-center mb-8" variants={itemVariants}>
-                    <h2 className="text-2xl md:text-3xl font-display font-bold mb-3">
+                    <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-3">
                       Qui êtes-vous ?
                     </h2>
                     <p className="text-muted-foreground">
-                      Nous adapterons l'expérience à votre profil
+                      Nous adapterons le service à votre profil.
                     </p>
                   </motion.div>
 
-                  {/* Customer Type Options with Gold Icons */}
+                  {/* Customer Type Options */}
                   <div className="grid gap-4 md:grid-cols-3 mb-12">
                     {customerTypes.map((type, index) => (
                       <motion.button
@@ -296,39 +292,43 @@ export default function OrderType() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 + index * 0.1 }}
                         onClick={() => handleSelectCustomer(type.id)}
-                        className={`relative p-5 rounded-2xl border-2 text-left transition-all duration-300 hover:scale-[1.02] group ${
+                        className={`relative p-5 rounded-xl border text-left transition-all duration-300 group ${
                           state.customerType === type.id
-                            ? "border-amber-400 bg-amber-500/5 shadow-lg shadow-amber-500/10"
-                            : "border-border hover:border-amber-400/50 bg-card"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50 bg-card"
                         }`}
                       >
                         {state.customerType === type.id && (
                           <motion.div 
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="absolute top-3 right-3 w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg"
+                            className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center"
                           >
-                            <Check size={14} className="text-black" />
+                            <Check size={14} className="text-primary-foreground" />
                           </motion.div>
                         )}
                         
-                        {/* Gold gradient icon */}
-                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-3 transition-all shadow-lg ${
+                        {/* Icon */}
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-all ${
                           state.customerType === type.id 
-                            ? `bg-gradient-to-br ${type.gradient}` 
-                            : `bg-gradient-to-br ${type.gradient} opacity-80`
+                            ? "bg-primary" 
+                            : "bg-secondary"
                         }`}>
-                          <type.icon className="w-7 h-7 text-black" />
+                          <type.icon className={`w-6 h-6 ${
+                            state.customerType === type.id 
+                              ? "text-primary-foreground" 
+                              : "text-foreground"
+                          }`} />
                         </div>
                         
                         <h3 className="font-semibold text-lg mb-1">{type.title}</h3>
-                        <p className="text-xs text-amber-500/80 uppercase tracking-wide font-medium mb-2">{type.subtitle}</p>
-                        <p className="text-xs text-muted-foreground">{type.description}</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">{type.subtitle}</p>
+                        <p className="text-sm text-muted-foreground">{type.description}</p>
                         
                         {/* Benefits chips */}
                         <div className="flex flex-wrap gap-1 mt-3">
                           {type.benefits.slice(0, 2).map((benefit, i) => (
-                            <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                            <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">
                               {benefit}
                             </span>
                           ))}
@@ -348,17 +348,13 @@ export default function OrderType() {
                       size="lg"
                       onClick={handleContinue}
                       disabled={!state.customerType}
-                      className={`px-10 h-14 text-lg rounded-full font-medium shadow-lg ${
-                        state.productType === "nails" 
-                          ? "bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600" 
-                          : ""
-                      }`}
+                      className="px-10 h-14 text-lg rounded-xl font-medium"
                     >
-                      {state.productType === "nails" ? "Créer mes ongles NFC" : "Créer ma carte"}
+                      Accéder à ma conciergerie
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                     <p className="text-xs text-muted-foreground">
-                      Vous pourrez visualiser votre {state.productType === "nails" ? "création" : "carte"} avant toute décision
+                      Visualisez votre profil avant toute décision.
                     </p>
                   </motion.div>
                 </motion.div>

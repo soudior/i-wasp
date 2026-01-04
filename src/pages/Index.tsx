@@ -16,10 +16,10 @@ const WHATSAPP_CARTE = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20sou
 const WHATSAPP_NAILS = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20un%20Pack%20Nails%20i-wasp.";
 
 /**
- * Index - Page d'accueil i-wasp
+ * Index - Page d'accueil i-Wasp
  * 
- * Design : Signature carte NFC blanche ultra premium
- * Style : Minimaliste, luxe discret, silencieux
+ * i-Wasp : La conciergerie digitale de votre identité professionnelle.
+ * Style : Luxe discret, calme, premium, silencieux.
  */
 
 type ProductMode = "carte" | "ongle";
@@ -49,12 +49,15 @@ const Index = () => {
           
           {/* Titre Principal */}
           <div className="space-y-4">
-            <h1 className="text-4xl md:text-6xl font-semibold tracking-tight text-foreground leading-[1.1]">
-              Connectez-vous
-              <span className="block">d'un simple geste.</span>
+            <p className="text-sm text-muted-foreground tracking-widest uppercase">
+              Conciergerie digitale
+            </p>
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-foreground leading-[1.1]">
+              Votre identité,
+              <span className="block">notre service.</span>
             </h1>
-            <p className="text-muted-foreground text-lg md:text-xl font-light max-w-md mx-auto">
-              Technologie NFC invisible. Élégance absolue.
+            <p className="text-muted-foreground text-lg font-light max-w-md mx-auto">
+              Un simple geste. Votre profil complet partagé.
             </p>
           </div>
 
@@ -147,7 +150,7 @@ const Index = () => {
 
           {/* Signature */}
           <p className="text-muted-foreground text-xs font-light tracking-[0.2em] uppercase pt-8">
-            Tap · Connect · Empower
+            La conciergerie de votre identité.
           </p>
         </div>
       </section>
@@ -159,8 +162,11 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           
           <div className="text-center mb-12">
+            <p className="text-sm text-muted-foreground tracking-widest uppercase mb-3">
+              Aperçu
+            </p>
             <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-4">
-              La Carte. Votre signature.
+              La Carte. Votre clé d'accès.
             </h2>
             <p className="text-muted-foreground text-lg max-w-lg mx-auto">
               Personnalisez votre aperçu en temps réel.
@@ -229,11 +235,14 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           
           <div className="text-center mb-16">
+            <p className="text-sm text-muted-foreground tracking-widest uppercase mb-3">
+              Nos services
+            </p>
             <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-4">
-              Deux innovations, une signature.
+              Une conciergerie. Deux accès.
             </h2>
             <p className="text-muted-foreground text-lg max-w-lg mx-auto">
-              Technologie NFC premium, conçue pour les professionnels exigeants.
+              Choisissez votre clé d'entrée vers le networking premium.
             </p>
           </div>
 
@@ -241,14 +250,14 @@ const Index = () => {
             
             {/* Carte NFC */}
             <div className="group card-iwasp p-8 hover:shadow-lg transition-shadow duration-300">
-              <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center mb-6">
-                <CreditCard className="w-6 h-6 text-foreground" />
+              <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center mb-6">
+                <CreditCard className="w-6 h-6 text-primary-foreground" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-3">
-                La Carte i-wasp
+                La Carte i-Wasp
               </h3>
               <p className="text-muted-foreground mb-6">
-                Carte de visite NFC ultra-premium. Un simple contact transmet votre profil complet.
+                Votre clé d'accès physique. Un contact suffit pour partager votre identité complète.
               </p>
               <a 
                 href={WHATSAPP_CARTE}
@@ -256,7 +265,7 @@ const Index = () => {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-foreground font-medium hover:gap-3 transition-all"
               >
-                Commander
+                Accéder au service
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>
@@ -270,7 +279,7 @@ const Index = () => {
                 L'Ongle NFC
               </h3>
               <p className="text-muted-foreground mb-6">
-                Innovation mondiale. La technologie NFC invisible sous votre vernis.
+                Le networking invisible. La technologie se fond dans votre style.
               </p>
               <a 
                 href={WHATSAPP_NAILS}
@@ -278,7 +287,7 @@ const Index = () => {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-foreground font-medium hover:gap-3 transition-all"
               >
-                Commander
+                Accéder au service
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>
@@ -292,24 +301,27 @@ const Index = () => {
       <section className="py-24 px-6">
         <div className="max-w-3xl mx-auto text-center">
           
+          <p className="text-sm text-muted-foreground tracking-widest uppercase mb-4">
+            Notre philosophie
+          </p>
+          
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-6">
-            L'innovation qui ne se voit pas,
-            <span className="block text-muted-foreground">mais qui change tout.</span>
+            Quelqu'un s'occupe de vous.
           </h2>
 
           <p className="text-muted-foreground text-lg leading-relaxed mb-12 max-w-2xl mx-auto">
-            Né à l'intersection du luxe et de la technologie, i-wasp redéfinit le networking. 
-            Une connexion fluide, élégante et instantanée.
+            i-Wasp est à l'identité professionnelle ce qu'Uber est à la mobilité. 
+            Une plateforme silencieuse, élégante, toujours prête.
           </p>
 
           <div className="grid md:grid-cols-3 gap-8 text-left">
             <div className="space-y-3">
-              <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
-                <span className="text-foreground font-semibold">01</span>
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <span className="text-primary-foreground font-semibold">01</span>
               </div>
-              <h3 className="font-semibold text-foreground">Minimaliste</h3>
+              <h3 className="font-semibold text-foreground">Centraliser</h3>
               <p className="text-muted-foreground text-sm">
-                Design épuré. Aucun superflu. Chaque détail a une raison d'être.
+                Toute votre identité professionnelle en un seul endroit.
               </p>
             </div>
             
@@ -317,9 +329,9 @@ const Index = () => {
               <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
                 <span className="text-foreground font-semibold">02</span>
               </div>
-              <h3 className="font-semibold text-foreground">Premium</h3>
+              <h3 className="font-semibold text-foreground">Présenter</h3>
               <p className="text-muted-foreground text-sm">
-                Matériaux nobles. Finitions soignées. Qualité sans compromis.
+                Une mise en forme élégante, toujours à jour.
               </p>
             </div>
             
@@ -327,9 +339,9 @@ const Index = () => {
               <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
                 <span className="text-foreground font-semibold">03</span>
               </div>
-              <h3 className="font-semibold text-foreground">Instantané</h3>
+              <h3 className="font-semibold text-foreground">Partager</h3>
               <p className="text-muted-foreground text-sm">
-                Un geste suffit. Votre profil complet transmis en une seconde.
+                Un geste suffit. Votre profil transmis instantanément.
               </p>
             </div>
           </div>
@@ -345,14 +357,16 @@ const Index = () => {
       <section className="py-24 px-6 bg-foreground text-background">
         <div className="max-w-2xl mx-auto text-center">
           
-          <IWASPLogo size="lg" className="justify-center mb-8 [&_*]:text-background" />
+          <p className="text-background/60 text-xs tracking-widest uppercase mb-8">
+            Conciergerie digitale
+          </p>
           
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-6">
-            Prêt à vous connecter ?
+            Prêt à nous confier votre image ?
           </h2>
           
           <p className="text-background/70 text-lg mb-10">
-            Rejoignez les professionnels qui font la différence.
+            Rejoignez les professionnels qui font confiance à i-Wasp.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
