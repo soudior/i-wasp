@@ -31,13 +31,17 @@ import {
   AlertTriangle,
   Package,
   Printer,
-  Info
+  Info,
+  FileDown,
+  ArrowRight
 } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const ASSET_TYPES = ["logo_svg", "logo_png", "logo_pdf", "card_front", "card_back"];
 
 export default function BrandAssets() {
+  const navigate = useNavigate();
   const { data: isAdmin } = useIsAdmin();
   const { data: assets, isLoading } = useBrandAssets();
   const uploadMutation = useUploadBrandAsset();
@@ -321,6 +325,20 @@ export default function BrandAssets() {
                   <Info className="h-4 w-4" />
                   <span>Ces spécifications sont associées aux fichiers recto/verso pour impression directe</span>
                 </div>
+
+                {/* Evolis Generator Link */}
+                {isAdmin && (
+                  <div className="mt-6 pt-4 border-t border-border">
+                    <Button
+                      onClick={() => navigate("/admin/evolis")}
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+                    >
+                      <FileDown className="h-4 w-4" />
+                      Ouvrir le générateur PDF Evolis
+                      <ArrowRight className="h-4 w-4 ml-auto" />
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>
