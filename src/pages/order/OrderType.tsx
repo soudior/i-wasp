@@ -188,9 +188,14 @@ export default function OrderType() {
                 <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
                   Choisissez votre niveau de conciergerie digitale
                 </h1>
-                <p className="text-muted-foreground max-w-md mx-auto">
+                <p className="text-muted-foreground max-w-md mx-auto mb-6">
                   La carte physique est incluse. Le service fait toute la différence.
                 </p>
+                <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
+                  <p>i-Wasp est un service de conciergerie digitale.</p>
+                  <p>La carte est une clé d'accès.</p>
+                  <p className="font-medium text-foreground">Votre image est notre responsabilité.</p>
+                </div>
               </motion.div>
 
               {/* Product Cards - Visual Selection */}
