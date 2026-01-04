@@ -2,7 +2,9 @@
  * Step 5: Récapitulatif Final
  * /order/recap
  * 
- * Affichage épuré : Offre, Prix, Quantité, Paiement, Livraison, Carte
+ * - Création automatique compte client
+ * - Création automatique carte digitale ACTIVE
+ * - Création commande
  */
 
 import { useState } from "react";
@@ -19,7 +21,7 @@ import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { PhysicalCardPreview } from "@/components/PhysicalCardPreview";
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 function OrderRecapContent() {
@@ -35,6 +37,14 @@ function OrderRecapContent() {
     return `${(cents / 100).toFixed(0)} MAD`;
   };
 
+  // Generate unique slug from name
+  const generateSlug = (firstName: string, lastName: string): string => {
+    const base = `${firstName}-${lastName}`.toLowerCase()
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-+/g, '-');
+    return `${base}-${Date.now().toString(36)}`;
+  };
+
   const handleConfirmOrder = async () => {
     if (isProcessing || state.isTransitioning) return;
     
@@ -42,42 +52,81 @@ function OrderRecapContent() {
 
     try {
       let userId = user?.id;
+      let userEmail = user?.email;
+      const { firstName, lastName, email, phone, title, company, whatsapp, instagram, linkedin, website, bio } = state.digitalIdentity || {};
 
-      // Auto-create account if not logged in
-      if (!user && state.digitalIdentity) {
-        const { email, firstName, lastName } = state.digitalIdentity;
-        const tempPassword = `iwasp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      // 1. Auto-create account if not logged in
+      if (!user && email) {
+        const tempPassword = `iwasp_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
         
-        try {
-          const { data: authData, error: authError } = await supabase.auth.signUp({
-            email,
-            password: tempPassword,
-            options: {
-              data: {
-                first_name: firstName,
-                last_name: lastName,
-              }
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email,
+          password: tempPassword,
+          options: {
+            emailRedirectTo: `${window.location.origin}/dashboard`,
+            data: {
+              first_name: firstName,
+              last_name: lastName,
             }
-          });
-
-          if (authError) throw authError;
-          if (authData.user) {
-            userId = authData.user.id;
           }
-        } catch (authError: any) {
+        });
+
+        if (authError) {
           console.error("Auto signup error:", authError);
+          // If user already exists, try to continue without account creation
+          if (!authError.message.includes("already registered")) {
+            throw authError;
+          }
+        } else if (authData.user) {
+          userId = authData.user.id;
+          userEmail = authData.user.email;
+          toast.success("Compte créé avec succès !");
         }
       }
 
-      // Create order
+      // 2. Create digital card (ACTIVE immediately)
+      if (userId && firstName && lastName) {
+        const slug = generateSlug(firstName, lastName);
+        
+        const { error: cardError } = await supabase
+          .from('digital_cards')
+          .insert({
+            user_id: userId,
+            slug,
+            first_name: firstName,
+            last_name: lastName,
+            title: title || null,
+            company: company || null,
+            email: email || null,
+            phone: phone || null,
+            whatsapp: whatsapp || null,
+            instagram: instagram || null,
+            linkedin: linkedin || null,
+            website: website || null,
+            tagline: bio || null,
+            template: 'iwasp-signature',
+            is_active: true, // CARTE DIGITALE ACTIVE IMMÉDIATEMENT
+            nfc_enabled: true,
+            wallet_enabled: true,
+          });
+
+        if (cardError) {
+          console.error("Card creation error:", cardError);
+          // Continue with order even if card creation fails
+        } else {
+          toast.success("Carte digitale activée !");
+        }
+      }
+
+      // 3. Create order
       const orderItem: OrderItem = {
         id: crypto.randomUUID(),
         templateId: "iwasp-signature",
         templateName: `Carte NFC i-Wasp ${selectedOffer?.name || ""}`,
-        cardName: `${state.digitalIdentity?.firstName} ${state.digitalIdentity?.lastName}`,
+        cardName: `${firstName} ${lastName}`,
         quantity: 1,
         unitPriceCents: selectedOffer?.price || 59900,
-        logoUrl: null,
+        logoUrl: state.cardPersonalization?.imageUrl || null,
       };
 
       await createOrder.mutateAsync({
@@ -88,15 +137,15 @@ function OrderRecapContent() {
         order_type: "personalized",
         template: "iwasp-signature",
         card_color: "#0B0B0B",
-        logo_url: null,
+        logo_url: state.cardPersonalization?.imageUrl || null,
         currency: "MAD",
-        shipping_name: `${state.digitalIdentity?.firstName} ${state.digitalIdentity?.lastName}`,
-        shipping_phone: state.shippingInfo?.phone || state.digitalIdentity?.phone,
+        shipping_name: `${firstName} ${lastName}`,
+        shipping_phone: state.shippingInfo?.phone || phone,
         shipping_address: state.shippingInfo?.address,
         shipping_city: state.shippingInfo?.city,
         shipping_postal_code: "",
         shipping_country: "MA",
-        customer_email: state.digitalIdentity?.email,
+        customer_email: email,
         payment_method: "cod",
       });
 
