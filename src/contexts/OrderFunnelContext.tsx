@@ -75,6 +75,7 @@ export interface PaymentInfo {
 // Complete funnel state
 export interface OrderFunnelState {
   currentStep: number;
+  productType: string | null;  // NEW: pvc, nails, metal
   selectedOffer: OfferType | null;
   digitalIdentity: DigitalIdentity | null;
   cardPersonalization: CardPersonalization | null;
@@ -108,6 +109,7 @@ export const TOTAL_STEPS = 6;
 // Context interface
 interface OrderFunnelContextType {
   state: OrderFunnelState;
+  setProductType: (type: string) => void;
   setSelectedOffer: (offer: OfferType) => void;
   setDigitalIdentity: (identity: DigitalIdentity) => void;
   setCardPersonalization: (card: CardPersonalization) => void;
@@ -126,7 +128,8 @@ interface OrderFunnelContextType {
 }
 
 const initialState: OrderFunnelState = {
-  currentStep: 1,
+  currentStep: 0,
+  productType: null,
   selectedOffer: null,
   digitalIdentity: null,
   cardPersonalization: null,
@@ -201,6 +204,15 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     if (!state.selectedOffer) return null;
     return OFFERS.find(o => o.id === state.selectedOffer) || null;
   }, [state.selectedOffer]);
+
+  // Set product type (step 0)
+  const setProductType = useCallback((type: string) => {
+    setState(prev => ({
+      ...prev,
+      productType: type,
+      currentStep: Math.max(prev.currentStep, 0),
+    }));
+  }, []);
 
   // Set offer (step 1)
   const setSelectedOffer = useCallback((offer: OfferType) => {
@@ -348,6 +360,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     <OrderFunnelContext.Provider
       value={{
         state,
+        setProductType,
         setSelectedOffer,
         setDigitalIdentity,
         setCardPersonalization,
