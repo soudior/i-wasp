@@ -19,6 +19,7 @@ import { NetworkProvider } from "@/components/NetworkProvider";
 import PublicCard from "./pages/PublicCard";
 import AdminClients from "./pages/AdminClients";
 import AdminCreator from "./pages/AdminCreator";
+import AdminDashboard from "./pages/AdminDashboard";
 import AdminInstantCard from "./pages/AdminInstantCard";
 import EvolisPrintPage from "./pages/EvolisPrint";
 import FirstCardSetup from "./pages/FirstCardSetup";
@@ -207,8 +208,9 @@ const App = () => {
                             <Route path="/cart" element={<Cart />} />
                             
                             {/* Admin */}
-                            <Route path="/admin" element={<AdminGuard><AdminOrders /></AdminGuard>} />
-                            <Route path="/admin-iwasp" element={<AdminGuard><AdminOrders /></AdminGuard>} />
+                            <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+                            <Route path="/admin/dashboard" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+                            <Route path="/admin-iwasp" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
                             <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
                             <Route path="/admin/clients" element={<AdminGuard><AdminClients /></AdminGuard>} />
                             <Route path="/admin/creator" element={<AdminGuard><AdminCreator /></AdminGuard>} />
