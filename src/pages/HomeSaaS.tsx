@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { NFCTapAnimation3D } from "@/components/NFCTapAnimation3D";
 import { 
   Wifi, 
   RefreshCw, 
@@ -67,59 +68,82 @@ const stats = [
 export default function HomeSaaS() {
   return (
     <div className="min-h-screen bg-iwasp-bg">
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 px-4 overflow-hidden">
+      {/* Hero Section with 3D Animation */}
+      <section className="relative pt-24 pb-12 md:pt-32 md:pb-20 px-4 overflow-hidden">
         {/* Background effects */}
         <div className="absolute inset-0 bg-gradient-to-b from-gold-500/5 via-transparent to-transparent" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gold-500/10 rounded-full blur-[120px]" />
         
-        <div className="relative max-w-5xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-iwasp-card border border-gold-500/20 mb-8">
-            <Zap className="w-4 h-4 text-gold-500" />
-            <span className="text-sm font-medium text-gold-500">La carte de visite du futur</span>
-          </div>
-          
-          {/* Headline */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-white leading-tight">
-            Une carte NFC.
-            <span className="block text-gold-500">Un profil qui évolue.</span>
-          </h1>
-          
-          {/* Subheadline */}
-          <p className="text-xl md:text-2xl text-iwasp-gray max-w-2xl mx-auto mb-10">
-            Créez votre carte de visite NFC intelligente. Mettez à jour votre profil en temps réel, 
-            sans jamais réimprimer.
-          </p>
-          
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <Link to="/order/type">
-              <Button size="lg" className="bg-gold-500 hover:bg-gold-600 text-black font-semibold px-8 py-6 text-lg gap-2">
-                Créer ma Carte NFC
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </Link>
-            <Link to="/demo">
-              <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/5 px-8 py-6 text-lg">
-                Voir une démo
-              </Button>
-            </Link>
-          </div>
-          
-          {/* Trust badges */}
-          <div className="flex flex-wrap items-center justify-center gap-6 text-iwasp-gray text-sm">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-green-500" />
-              <span>Compatible iPhone & Android</span>
+        <div className="relative max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            {/* Left: Text content */}
+            <div className="text-center lg:text-left">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-iwasp-card border border-gold-500/20 mb-6">
+                <Zap className="w-4 h-4 text-gold-500" />
+                <span className="text-sm font-medium text-gold-500">La carte de visite du futur</span>
+              </div>
+              
+              {/* Headline */}
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-5 text-white leading-tight">
+                Une carte NFC.
+                <span className="block text-gold-500">Un profil qui évolue.</span>
+              </h1>
+              
+              {/* Subheadline */}
+              <p className="text-lg md:text-xl text-iwasp-gray max-w-lg mx-auto lg:mx-0 mb-8">
+                Créez votre carte de visite NFC intelligente. Mettez à jour votre profil en temps réel, 
+                sans jamais réimprimer.
+              </p>
+              
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-8">
+                <Link to="/order/type">
+                  <Button size="lg" className="bg-gold-500 hover:bg-gold-600 text-black font-semibold px-8 py-6 text-lg gap-2">
+                    Créer ma Carte NFC
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </Link>
+                <Link to="/demo">
+                  <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/5 px-8 py-6 text-lg">
+                    Voir une démo
+                  </Button>
+                </Link>
+              </div>
+              
+              {/* Trust badges */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-iwasp-gray text-sm">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <span>Compatible iPhone & Android</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <span>Livraison rapide</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <span>Satisfait ou remboursé</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-green-500" />
-              <span>Livraison rapide</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-green-500" />
-              <span>Satisfait ou remboursé</span>
+
+            {/* Right: 3D NFC Animation */}
+            <div className="relative h-[350px] md:h-[450px] lg:h-[500px]">
+              <NFCTapAnimation3D 
+                cardColor="#0a0a0a"
+                accentColor="#D4AF37"
+                className="w-full h-full"
+                autoPlay={true}
+              />
+              
+              {/* Floating badge */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 lg:left-auto lg:right-4 lg:translate-x-0">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-iwasp-card/80 backdrop-blur-sm border border-gold-500/20 text-xs text-gold-400">
+                  <Wifi className="w-3 h-3" />
+                  <span>Animation 3D interactive</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
