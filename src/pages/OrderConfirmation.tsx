@@ -10,14 +10,55 @@ import {
   CreditCard,
   ArrowRight,
   Clock,
-  Shield
+  Shield,
+  Sparkles
 } from "lucide-react";
 import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
 
 export default function OrderConfirmation() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const orderNumber = searchParams.get("order");
+
+  // Confetti celebration on mount
+  useEffect(() => {
+    if (!orderNumber) return;
+    
+    const duration = 2500;
+    const end = Date.now() + duration;
+
+    const frame = () => {
+      confetti({
+        particleCount: 4,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.8 },
+        colors: ["#22c55e", "#10b981", "#FFD700", "#FFFFFF"],
+      });
+      confetti({
+        particleCount: 4,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.8 },
+        colors: ["#22c55e", "#10b981", "#FFD700", "#FFFFFF"],
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+
+    // Initial burst
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ["#22c55e", "#10b981", "#FFD700"],
+    });
+
+    frame();
+  }, [orderNumber]);
 
   // Redirect if no order number
   useEffect(() => {
@@ -43,22 +84,61 @@ export default function OrderConfirmation() {
       >
         <Card className="overflow-hidden">
           {/* Success header */}
-          <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-8 text-center text-white">
+          <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-8 text-center text-white relative overflow-hidden">
+            {/* Animated sparkles */}
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="absolute top-4 left-4"
+              animate={{ rotate: 360, scale: [1, 1.2, 1] }}
+              transition={{ duration: 3, repeat: Infinity }}
             >
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <CheckCircle2 className="h-12 w-12" />
+              <Sparkles className="h-6 w-6 text-white/50" />
+            </motion.div>
+            <motion.div
+              className="absolute bottom-4 right-4"
+              animate={{ rotate: -360, scale: [1, 1.3, 1] }}
+              transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
+            >
+              <Sparkles className="h-5 w-5 text-white/40" />
+            </motion.div>
+
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
+            >
+              <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center relative">
+                <motion.div
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ delay: 0.5, duration: 0.5 }}
+                >
+                  <CheckCircle2 className="h-14 w-14" />
+                </motion.div>
+                {/* Pulse ring */}
+                <motion.div
+                  className="absolute inset-0 rounded-full border-4 border-white/30"
+                  initial={{ scale: 1, opacity: 1 }}
+                  animate={{ scale: 1.5, opacity: 0 }}
+                  transition={{ duration: 1, repeat: Infinity, repeatDelay: 0.5 }}
+                />
               </div>
             </motion.div>
-            <h1 className="text-2xl font-bold mb-2">
-              Commande confirmée !
-            </h1>
-            <p className="text-white/90">
+            <motion.h1 
+              className="text-2xl font-bold mb-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              Commande confirmée ! 🎉
+            </motion.h1>
+            <motion.p 
+              className="text-white/90"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
               Merci pour votre confiance
-            </p>
+            </motion.p>
           </div>
 
           <CardContent className="p-6 space-y-6">
