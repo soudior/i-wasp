@@ -30,3 +30,4 @@ export { ValidationSummary, ValidationChecklist } from './ValidationSummary';
 export { TemplateGallery, type TemplateDefinition, type TemplateCategory } from './TemplateGallery';
 export { TemplatePreviewModal } from './TemplatePreviewModal';
 export { WebsiteImporter, type ScrapedWebsiteData } from './WebsiteImporter';
+export { CardDesignEditor, defaultCardDesignConfig, type CardDesignConfig } from './CardDesignEditor';
