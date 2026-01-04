@@ -2,11 +2,11 @@
  * Step 3: Personnalisation carte physique
  * /order/carte
  * 
- * Choix Logo ou Photo + Aperçu temps réel
+ * Grille de templates cliquable + Aperçu temps réel
  */
 
 import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useOrderFunnel, OrderFunnelGuard, CardPersonalization, CardVisualType } from "@/contexts/OrderFunnelContext";
 import { useBrand, OFFICIAL_COLORS } from "@/contexts/BrandContext";
 import { Navbar } from "@/components/Navbar";
@@ -15,7 +15,8 @@ import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from 
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { PrintCardTemplate } from "@/components/print/PrintCardTemplate";
+import { PRINT_TEMPLATES, PrintTemplateType, PrintColor } from "@/lib/printTypes";
 import { 
   Image, 
   User, 
@@ -26,15 +27,72 @@ import {
   RotateCcw,
   ZoomIn,
   Lock,
-  AlertCircle
+  AlertCircle,
+  Sparkles,
+  Crown
 } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
+// Template grid data with preview colors
+const TEMPLATE_OPTIONS = [
+  { 
+    id: "iwasp-signature" as PrintTemplateType, 
+    color: "white" as PrintColor,
+    name: "Signature Blanc",
+    badge: "Premium",
+    description: "Logo centré sur fond blanc premium"
+  },
+  { 
+    id: "iwasp-signature" as PrintTemplateType, 
+    color: "black" as PrintColor,
+    name: "Signature Noir",
+    badge: "Luxe",
+    description: "Logo centré sur fond noir élégant"
+  },
+  { 
+    id: "iwasp-signature" as PrintTemplateType, 
+    color: "navy" as PrintColor,
+    name: "Signature Navy",
+    badge: null,
+    description: "Logo sur fond bleu corporate"
+  },
+  { 
+    id: "iwasp-black" as PrintTemplateType, 
+    color: "black" as PrintColor,
+    name: "Black Premium",
+    badge: "Top",
+    description: "Design minimaliste haut de gamme"
+  },
+  { 
+    id: "iwasp-pure" as PrintTemplateType, 
+    color: "white" as PrintColor,
+    name: "Pure White",
+    badge: null,
+    description: "Esthétique épurée style Apple"
+  },
+  { 
+    id: "iwasp-corporate" as PrintTemplateType, 
+    color: "navy" as PrintColor,
+    name: "Corporate Navy",
+    badge: null,
+    description: "Design B2B professionnel"
+  },
+];
 
 function OrderCarteContent() {
   const { state, setCardPersonalization, nextStep, prevStep } = useOrderFunnel();
   const { cardFront, cardBack } = useBrand();
   const [isNavigating, setIsNavigating] = useState(false);
+  
+  // Template selection
+  const [selectedTemplate, setSelectedTemplate] = useState<{ id: PrintTemplateType; color: PrintColor } | null>(
+    state.cardPersonalization?.visualType === "logo" 
+      ? { id: "iwasp-signature", color: "white" }
+      : null
+  );
+  
+  // Visual type for image upload
   const [visualType, setVisualType] = useState<CardVisualType | null>(
     state.cardPersonalization?.visualType || null
   );
@@ -49,17 +107,13 @@ function OrderCarteContent() {
   const [isZoomed, setIsZoomed] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSelectType = (type: CardVisualType) => {
-    setVisualType(type);
-    // Reset image when changing type
-    if (type !== visualType) {
-      setUploadedImage(null);
-      setFileName("");
-    }
+  const handleSelectTemplate = (template: { id: PrintTemplateType; color: PrintColor }) => {
+    setSelectedTemplate(template);
+    setVisualType("logo"); // Template = logo-based card
   };
 
   const handleFileUpload = async (file: File) => {
-    if (!file || !visualType) return;
+    if (!file) return;
 
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
@@ -76,15 +130,10 @@ function OrderCarteContent() {
     setUploading(true);
 
     try {
-      // Create object URL for preview
       const objectUrl = URL.createObjectURL(file);
       setUploadedImage(objectUrl);
       setFileName(file.name);
-      
-      toast.success(visualType === "logo" 
-        ? "Logo prêt pour l'impression" 
-        : "Photo prête pour l'impression"
-      );
+      toast.success("Logo prêt pour l'impression");
     } catch (error) {
       console.error("Upload error:", error);
       toast.error("Erreur lors de l'upload");
@@ -94,12 +143,12 @@ function OrderCarteContent() {
   };
 
   const handleContinue = async () => {
-    if (!visualType || !uploadedImage || isNavigating || state.isTransitioning) return;
+    if (!selectedTemplate || !uploadedImage || isNavigating || state.isTransitioning) return;
     
     setIsNavigating(true);
     
     const cardData: CardPersonalization = {
-      visualType,
+      visualType: visualType || "logo",
       imageUrl: uploadedImage,
       fileName,
     };
@@ -108,100 +157,71 @@ function OrderCarteContent() {
     await nextStep();
   };
 
-  const canContinue = visualType !== null && uploadedImage !== null;
+  const canContinue = selectedTemplate !== null && uploadedImage !== null;
 
-  // Card Preview Component
-  const CardPreview = () => (
-    <div className="relative">
-      <motion.div
-        className="relative w-full max-w-sm mx-auto"
-        animate={{ rotateY: showBack ? 180 : 0 }}
-        transition={{ duration: 0.6 }}
-        style={{ transformStyle: "preserve-3d" }}
-      >
-        {/* Front */}
-        <div 
-          className="w-full aspect-[1.586] rounded-xl overflow-hidden shadow-2xl"
-          style={{ 
-            backgroundColor: OFFICIAL_COLORS.primary,
-            backfaceVisibility: "hidden"
-          }}
-        >
-          {cardFront ? (
-            <img 
-              src={cardFront} 
-              alt="Carte recto"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center p-6">
-              {/* Logo i-Wasp placeholder */}
-              <div 
-                className="text-2xl font-display font-bold mb-4"
-                style={{ color: OFFICIAL_COLORS.accent }}
-              >
-                i-Wasp
-              </div>
-              
-              {/* User visual */}
-              {uploadedImage && (
-                <div className="w-20 h-20 rounded-full overflow-hidden border-2 mb-3"
-                  style={{ borderColor: OFFICIAL_COLORS.accent }}
-                >
-                  <img 
-                    src={uploadedImage} 
-                    alt={visualType === "logo" ? "Logo" : "Photo"}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-              
-              {/* User name from identity */}
-              {state.digitalIdentity && (
-                <p className="text-white text-center font-medium">
-                  {state.digitalIdentity.firstName} {state.digitalIdentity.lastName}
-                </p>
-              )}
-              {state.digitalIdentity?.title && (
-                <p className="text-white/70 text-sm text-center">
-                  {state.digitalIdentity.title}
-                </p>
-              )}
+  // Template Card Component
+  const TemplateCard = ({ 
+    template, 
+    isSelected, 
+    onClick 
+  }: { 
+    template: typeof TEMPLATE_OPTIONS[0]; 
+    isSelected: boolean; 
+    onClick: () => void;
+  }) => (
+    <motion.button
+      onClick={onClick}
+      className={`relative w-full rounded-xl overflow-hidden border-2 transition-all ${
+        isSelected 
+          ? "border-primary ring-2 ring-primary/30 scale-[1.02]" 
+          : "border-border hover:border-primary/50"
+      }`}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      {/* Template preview */}
+      <div className="aspect-[1.586] w-full overflow-hidden bg-muted">
+        <div className="scale-[0.4] origin-top-left w-[250%] h-[250%]">
+          <PrintCardTemplate
+            printedName={state.digitalIdentity?.firstName || "Prénom"}
+            printedTitle={state.digitalIdentity?.title || "Titre"}
+            printedCompany={state.digitalIdentity?.company || "Entreprise"}
+            logoUrl={uploadedImage || undefined}
+            color={template.color}
+            template={template.id}
+          />
+        </div>
+      </div>
+      
+      {/* Info overlay */}
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+        <div className="flex items-center justify-between">
+          <div className="text-left">
+            <p className="text-white font-medium text-sm">{template.name}</p>
+            <p className="text-white/60 text-xs">{template.description}</p>
+          </div>
+          {isSelected && (
+            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+              <Check className="w-4 h-4 text-primary-foreground" />
             </div>
           )}
         </div>
-
-        {/* Back */}
-        <div 
-          className="absolute inset-0 w-full aspect-[1.586] rounded-xl overflow-hidden shadow-2xl"
-          style={{ 
-            backgroundColor: OFFICIAL_COLORS.primary,
-            backfaceVisibility: "hidden",
-            transform: "rotateY(180deg)"
-          }}
-        >
-          {cardBack ? (
-            <img 
-              src={cardBack} 
-              alt="Carte verso"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-center">
-                <div 
-                  className="text-lg font-bold"
-                  style={{ color: OFFICIAL_COLORS.accent }}
-                >
-                  NFC
-                </div>
-                <p className="text-white/50 text-xs mt-1">Tap to connect</p>
-              </div>
-            </div>
-          )}
+      </div>
+      
+      {/* Badge */}
+      {template.badge && (
+        <div className="absolute top-2 right-2">
+          <Badge 
+            variant="secondary" 
+            className="text-[10px] bg-primary text-primary-foreground border-none"
+          >
+            {template.badge === "Premium" && <Crown className="w-3 h-3 mr-1" />}
+            {template.badge === "Luxe" && <Sparkles className="w-3 h-3 mr-1" />}
+            {template.badge}
+          </Badge>
         </div>
-      </motion.div>
-    </div>
+      )}
+    </motion.button>
   );
 
   return (
@@ -210,7 +230,7 @@ function OrderCarteContent() {
       
       <PageTransition>
         <main className="pt-24 pb-32 px-4">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             {/* Progress Bar */}
             <OrderProgressBar currentStep={3} />
 
@@ -231,271 +251,255 @@ function OrderCarteContent() {
                 className="text-2xl md:text-3xl font-display font-bold mb-2"
                 variants={itemVariants}
               >
-                Votre carte de visite
+                Choisissez votre design
               </motion.h1>
               <motion.p 
                 className="text-muted-foreground"
                 variants={itemVariants}
               >
-                Choisissez le visuel principal de votre carte physique
+                Sélectionnez un template et uploadez votre logo
               </motion.p>
             </motion.div>
 
-            <div className="grid lg:grid-cols-2 gap-8">
-              {/* Left: Options */}
+            <div className="grid lg:grid-cols-5 gap-8">
+              {/* Left: Template Grid + Upload */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className="space-y-6"
+                className="lg:col-span-3 space-y-6"
               >
-                {/* Choice: Logo or Photo */}
-                <div className="space-y-4">
-                  <p className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-                    Visuel principal (obligatoire)
-                  </p>
+                {/* Upload Section - Always visible */}
+                <div className="bg-secondary/30 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Image className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">1. Uploadez votre logo</p>
+                      <p className="text-xs text-muted-foreground">PNG, JPG ou SVG (max 5MB)</p>
+                    </div>
+                  </div>
+                  
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file);
+                    }}
+                  />
 
-                  {/* Logo Option */}
-                  <button
-                    onClick={() => handleSelectType("logo")}
-                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
-                      visualType === "logo"
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                        visualType === "logo" ? "bg-primary" : "bg-muted"
-                      }`}>
-                        <Image className={`w-6 h-6 ${
-                          visualType === "logo" ? "text-black" : "text-muted-foreground"
-                        }`} />
+                  {!uploadedImage ? (
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="w-full p-6 border-2 border-dashed border-border rounded-lg hover:border-primary/50 transition-colors"
+                    >
+                      <div className="flex flex-col items-center gap-2">
+                        {uploading ? (
+                          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Upload className="w-6 h-6 text-muted-foreground" />
+                        )}
+                        <p className="text-sm text-muted-foreground">Cliquez pour uploader</p>
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">Utiliser mon LOGO</span>
-                          {visualType === "logo" && (
-                            <Check className="w-4 h-4 text-primary" />
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Idéal pour les professionnels et entreprises
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-3 p-3 bg-background rounded-lg">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted">
+                        <img 
+                          src={uploadedImage} 
+                          alt="Logo"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{fileName}</p>
+                        <p className="text-xs text-green-600 flex items-center gap-1">
+                          <Check className="w-3 h-3" /> Logo prêt
                         </p>
                       </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        Changer
+                      </Button>
                     </div>
-                  </button>
-
-                  {/* Photo Option */}
-                  <button
-                    onClick={() => handleSelectType("photo")}
-                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
-                      visualType === "photo"
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                        visualType === "photo" ? "bg-primary" : "bg-muted"
-                      }`}>
-                        <User className={`w-6 h-6 ${
-                          visualType === "photo" ? "text-black" : "text-muted-foreground"
-                        }`} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">Utiliser ma PHOTO</span>
-                          {visualType === "photo" && (
-                            <Check className="w-4 h-4 text-primary" />
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Parfait pour un contact personnel et mémorable
-                        </p>
-                      </div>
-                    </div>
-                  </button>
+                  )}
                 </div>
 
-                {/* Upload Section */}
-                {visualType && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="space-y-4"
-                  >
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      className="hidden"
-                      accept="image/png,image/jpeg,image/svg+xml,image/webp"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleFileUpload(file);
-                      }}
-                    />
-
-                    {!uploadedImage ? (
-                      <button
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploading}
-                        className="w-full p-8 border-2 border-dashed border-border rounded-xl hover:border-primary/50 transition-colors"
-                      >
-                        <div className="flex flex-col items-center gap-3">
-                          {uploading ? (
-                            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            <Upload className="w-8 h-8 text-muted-foreground" />
-                          )}
-                          <div className="text-center">
-                            <p className="font-medium">
-                              {visualType === "logo" ? "Uploader votre logo" : "Uploader votre photo"}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              PNG, JPG ou SVG (max 5MB)
-                            </p>
-                          </div>
-                        </div>
-                      </button>
-                    ) : (
-                      <div className="p-4 bg-secondary/50 rounded-xl">
-                        <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-background">
-                            <img 
-                              src={uploadedImage} 
-                              alt="Preview"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium text-sm truncate">{fileName}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {visualType === "logo" ? "Logo" : "Photo"} prêt pour impression
-                            </p>
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => fileInputRef.current?.click()}
-                          >
-                            Changer
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Info message */}
-                    <div className="flex items-start gap-2 p-3 bg-primary/10 rounded-lg">
-                      <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                      <p className="text-xs text-primary">
-                        {visualType === "logo" 
-                          ? "Le logo sera imprimé tel quel sur votre carte physique"
-                          : "Votre photo sera imprimée sur la carte physique"
-                        }
-                      </p>
+                {/* Template Grid */}
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-primary" />
                     </div>
-                  </motion.div>
-                )}
+                    <div>
+                      <p className="font-semibold text-sm">2. Choisissez un template</p>
+                      <p className="text-xs text-muted-foreground">Cliquez pour sélectionner</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {TEMPLATE_OPTIONS.map((template, index) => (
+                      <TemplateCard
+                        key={`${template.id}-${template.color}-${index}`}
+                        template={template}
+                        isSelected={
+                          selectedTemplate?.id === template.id && 
+                          selectedTemplate?.color === template.color
+                        }
+                        onClick={() => handleSelectTemplate(template)}
+                      />
+                    ))}
+                  </div>
+                </div>
 
                 {/* Lock notice */}
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Lock className="w-3 h-3" />
-                  <span>Couleurs et design verrouillés selon la charte i-Wasp</span>
+                  <span>Qualité impression garantie • Design IWASP exclusif</span>
                 </div>
               </motion.div>
 
-              {/* Right: Card Preview */}
+              {/* Right: Live Preview */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="space-y-4"
+                className="lg:col-span-2 space-y-4"
               >
-                <div className="bg-secondary/30 rounded-2xl p-6">
+                <div className="bg-secondary/30 rounded-2xl p-6 sticky top-24">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="border-primary/50 text-primary text-xs">
-                        Aperçu fidèle 100%
+                    <Badge variant="outline" className="border-primary/50 text-primary text-xs">
+                      Aperçu fidèle 100%
+                    </Badge>
+                    {selectedTemplate && (
+                      <Badge variant="secondary" className="text-xs">
+                        {TEMPLATE_OPTIONS.find(
+                          t => t.id === selectedTemplate.id && t.color === selectedTemplate.color
+                        )?.name}
                       </Badge>
-                    </div>
+                    )}
                   </div>
 
-                  {/* Card Preview */}
-                  <CardPreview />
-
-                  {/* Controls */}
-                  <div className="flex justify-center gap-3 mt-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowBack(!showBack)}
-                      className="gap-2"
+                  {/* Live Card Preview */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`${selectedTemplate?.id}-${selectedTemplate?.color}`}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="relative"
                     >
-                      <RotateCcw className="h-4 w-4" />
-                      {showBack ? "Voir recto" : "Voir verso"}
-                    </Button>
-
-                    <Dialog open={isZoomed} onOpenChange={setIsZoomed}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <ZoomIn className="h-4 w-4" />
-                          Plein écran
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl bg-background border-border">
-                        <div className="p-4">
-                          <CardPreview />
-                          <div className="flex justify-center gap-3 mt-6">
-                            <Button
-                              variant="outline"
-                              onClick={() => setShowBack(!showBack)}
-                              className="gap-2"
-                            >
-                              <RotateCcw className="h-4 w-4" />
-                              {showBack ? "Voir recto" : "Voir verso"}
-                            </Button>
+                      {selectedTemplate ? (
+                        <div className="rounded-xl overflow-hidden shadow-2xl">
+                          <PrintCardTemplate
+                            printedName={state.digitalIdentity?.firstName 
+                              ? `${state.digitalIdentity.firstName} ${state.digitalIdentity.lastName}`
+                              : "Votre Nom"
+                            }
+                            printedTitle={state.digitalIdentity?.title || "Votre Titre"}
+                            printedCompany={state.digitalIdentity?.company || "Votre Entreprise"}
+                            logoUrl={uploadedImage || undefined}
+                            color={selectedTemplate.color}
+                            template={selectedTemplate.id}
+                          />
+                        </div>
+                      ) : (
+                        <div 
+                          className="aspect-[1.586] rounded-xl bg-muted flex items-center justify-center border-2 border-dashed border-border"
+                        >
+                          <div className="text-center p-6">
+                            <Sparkles className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                            <p className="text-sm text-muted-foreground">
+                              Sélectionnez un template
+                            </p>
                           </div>
                         </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
 
-                  {/* Tech mention */}
-                  <p className="text-xs text-center text-muted-foreground mt-4">
-                    Carte imprimée en CR80, finition premium, impression Evolis
-                  </p>
+                  {/* Preview controls */}
+                  {selectedTemplate && (
+                    <div className="flex justify-center gap-3 mt-4">
+                      <Dialog open={isZoomed} onOpenChange={setIsZoomed}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="gap-2">
+                            <ZoomIn className="h-4 w-4" />
+                            Agrandir
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl bg-background border-border">
+                          <div className="p-4">
+                            <div className="rounded-xl overflow-hidden shadow-2xl">
+                              <PrintCardTemplate
+                                printedName={state.digitalIdentity?.firstName 
+                                  ? `${state.digitalIdentity.firstName} ${state.digitalIdentity.lastName}`
+                                  : "Votre Nom"
+                                }
+                                printedTitle={state.digitalIdentity?.title || "Votre Titre"}
+                                printedCompany={state.digitalIdentity?.company || "Votre Entreprise"}
+                                logoUrl={uploadedImage || undefined}
+                                color={selectedTemplate.color}
+                                template={selectedTemplate.id}
+                              />
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  )}
+
+                  {/* Validation message */}
+                  {!canContinue && (
+                    <div className="mt-4 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-amber-600">
+                          {!uploadedImage 
+                            ? "Uploadez votre logo pour continuer"
+                            : "Sélectionnez un template pour continuer"
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </div>
 
-            {/* Navigation */}
+            {/* Navigation Buttons */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="flex items-center justify-between mt-10"
+              className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-8 max-w-4xl mx-auto"
             >
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="outline"
                 onClick={prevStep}
-                disabled={state.isTransitioning || isNavigating}
-                className="gap-2"
+                className="w-full sm:w-auto gap-2"
               >
-                <ArrowLeft size={18} />
+                <ArrowLeft className="w-4 h-4" />
                 Retour
               </Button>
 
               <LoadingButton
-                size="lg"
                 onClick={handleContinue}
-                disabled={!canContinue || state.isTransitioning}
+                disabled={!canContinue}
                 isLoading={isNavigating}
-                loadingText="Chargement..."
-                className="px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                className="w-full sm:w-auto gap-2"
               >
                 Continuer
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="w-4 h-4" />
               </LoadingButton>
             </motion.div>
           </div>
