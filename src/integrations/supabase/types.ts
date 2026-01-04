@@ -239,6 +239,7 @@ export type Database = {
           blocks: Json | null
           company: string | null
           created_at: string
+          custom_styles: Json | null
           email: string | null
           first_name: string
           hide_branding: boolean
@@ -269,6 +270,7 @@ export type Database = {
           blocks?: Json | null
           company?: string | null
           created_at?: string
+          custom_styles?: Json | null
           email?: string | null
           first_name: string
           hide_branding?: boolean
@@ -299,6 +301,7 @@ export type Database = {
           blocks?: Json | null
           company?: string | null
           created_at?: string
+          custom_styles?: Json | null
           email?: string | null
           first_name?: string
           hide_branding?: boolean
