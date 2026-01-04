@@ -10,164 +10,130 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════════
-       iWASP DESIGN SYSTEM — SAAS PREMIUM (N1 LEVEL)
+       iWASP DESIGN SYSTEM — LUXURY WHITE EDITION
        
-       Palette officielle - NE PAS MODIFIER
-       - Fond principal : #0B0B0B
-       - Texte principal : #FFFFFF
-       - Accent / CTA / NFC : #FFC700
-       - Cartes & blocs UI : #1F1F1F
-       - Texte secondaire : #E5E5E5
+       Palette officielle - Carte NFC blanche haut de gamme
+       - Fond principal : #FFFFFF (Blanc pur)
+       - Texte principal : #000000 (Noir absolu)
+       - Gris subtil : #F2F2F2, #EAEAEA (Séparations)
+       - Accent : Noir uniquement (pas de couleur)
        ═══════════════════════════════════════════════════════════════════ */
     
     /* ══════════════════════════════════════════════════════════════════
-       CORE COLORS - OFFICIAL PALETTE
+       CORE COLORS - LUXURY WHITE PALETTE
        ══════════════════════════════════════════════════════════════════ */
     
-    /* Couleurs principales iWASP SaaS */
-    --iwasp-noir: 0 0% 4%;                /* #0B0B0B - Fond principal */
-    --iwasp-charbon: 0 0% 12%;            /* #1F1F1F - Cartes & blocs UI */
-    --iwasp-accent: 45 100% 50%;          /* #FFC700 - Accent/CTA/NFC */
-    --iwasp-blanc: 0 0% 100%;             /* #FFFFFF - Texte principal */
-    --iwasp-gris: 0 0% 90%;               /* #E5E5E5 - Texte secondaire */
+    /* Couleurs principales iWASP Luxe Blanc */
+    --iwasp-blanc: 0 0% 100%;             /* #FFFFFF - Fond principal */
+    --iwasp-noir: 0 0% 0%;                /* #000000 - Texte principal */
+    --iwasp-gris-light: 0 0% 95%;         /* #F2F2F2 - Fond secondaire */
+    --iwasp-gris-border: 0 0% 92%;        /* #EAEAEA - Bordures subtiles */
+    --iwasp-gris-text: 0 0% 45%;          /* #737373 - Texte secondaire */
     --iwasp-erreur: 0 65% 50%;            /* Rouge erreur */
     --iwasp-success: 142 70% 45%;         /* Vert succès */
     
-    /* ══════════════════════════════════════════════════════════════════
-       GOLD/YELLOW ACCENT SYSTEM
-       ══════════════════════════════════════════════════════════════════ */
-    --gold-primary: 45 100% 50%;          /* #FFC700 - CTA principal */
-    --gold-light: 48 100% 55%;            /* #FFD21F - Hover state */
-    --gold-dark: 43 100% 42%;             /* #D6A800 - Active state */
-    --gold-glow: 45 100% 50%;             /* Glow effect */
-    
-    /* Surface layers */
-    --surface-bg: 0 0% 4%;                /* #0B0B0B */
-    --surface-card: 0 0% 12%;             /* #1F1F1F */
-    --surface-elevated: 0 0% 16%;         /* #292929 */
-    --surface-overlay: 0 0% 20%;          /* #333333 */
-    
-    /* Legacy compatibility */
-    --nuit-noir: var(--iwasp-noir);
-    --nuit-gris-profond: var(--iwasp-charbon);
-    --nuit-gris-struct: var(--iwasp-gris);
-    --nuit-blanc: var(--iwasp-blanc);
-    --nuit-accent: var(--iwasp-accent);
+    /* Surface layers - Light theme */
+    --surface-bg: 0 0% 100%;              /* #FFFFFF */
+    --surface-card: 0 0% 100%;            /* #FFFFFF */
+    --surface-elevated: 0 0% 98%;         /* #FAFAFA */
+    --surface-overlay: 0 0% 95%;          /* #F2F2F2 */
     
     /* Semantic tokens */
-    --background: var(--iwasp-noir);
-    --foreground: var(--iwasp-blanc);
+    --background: var(--iwasp-blanc);
+    --foreground: var(--iwasp-noir);
     
-    --card: var(--iwasp-charbon);
-    --card-foreground: var(--iwasp-blanc);
+    --card: var(--iwasp-blanc);
+    --card-foreground: var(--iwasp-noir);
     
-    --popover: var(--iwasp-charbon);
-    --popover-foreground: var(--iwasp-blanc);
+    --popover: var(--iwasp-blanc);
+    --popover-foreground: var(--iwasp-noir);
     
-    --primary: var(--iwasp-accent);
-    --primary-foreground: 0 0% 0%;
+    --primary: var(--iwasp-noir);
+    --primary-foreground: var(--iwasp-blanc);
     
-    --secondary: var(--iwasp-charbon);
-    --secondary-foreground: var(--iwasp-gris);
+    --secondary: var(--iwasp-gris-light);
+    --secondary-foreground: var(--iwasp-noir);
     
-    --muted: 0 0% 16%;
-    --muted-foreground: var(--iwasp-gris);
+    --muted: var(--iwasp-gris-light);
+    --muted-foreground: var(--iwasp-gris-text);
     
-    /* Accent = CTA Yellow */
-    --accent: var(--iwasp-accent);
-    --accent-foreground: 0 0% 0%;
+    --accent: var(--iwasp-gris-light);
+    --accent-foreground: var(--iwasp-noir);
     
     --destructive: var(--iwasp-erreur);
     --destructive-foreground: var(--iwasp-blanc);
     
-    --border: 0 0% 18%;
-    --input: 0 0% 14%;
-    --ring: var(--iwasp-accent);
+    --border: var(--iwasp-gris-border);
+    --input: var(--iwasp-gris-light);
+    --ring: var(--iwasp-noir);
     
     /* ══════════════════════════════════════════════════════════════════
-       RADIUS - FORMES IWASP
-       Standard : 14-18px | Boutons : pill shape
+       RADIUS - FORMES IWASP LUXE
+       Arrondi généreux, premium, élégant
        ══════════════════════════════════════════════════════════════════ */
-    --radius: 1rem;           /* 16px - arrondi standard */
-    --radius-card: 1.125rem;  /* 18px - cartes premium */
-    --radius-btn: 9999px;     /* Pill shape pour boutons */
+    --radius: 0.75rem;        /* 12px - arrondi standard */
+    --radius-card: 1rem;      /* 16px - cartes premium */
+    --radius-btn: 0.5rem;     /* 8px - boutons élégants */
     
     /* ══════════════════════════════════════════════════════════════════
-       PALETTE "Blanc pur"
-       Usage : interface claire, cartes digitales
+       PALETTE BLANC LUXE
+       Usage : interface épurée, carte NFC blanche
        ══════════════════════════════════════════════════════════════════ */
     --blanc-pur: 0 0% 100%;           /* #FFFFFF - Blanc pur */
-    --blanc-ivoire: 210 20% 98%;      /* #F9FAFB - Blanc très léger */
-    --blanc-gris-clair: 210 16% 93%;  /* #E5E7EB - Gris clair */
-    --blanc-gris-struct: 217 10% 64%; /* #9CA3AF - Gris structurel */
-    --blanc-noir: var(--iwasp-noir);
-    --blanc-accent: var(--iwasp-vert);
+    --blanc-ivoire: 0 0% 98%;         /* #FAFAFA - Blanc très léger */
+    --blanc-gris-clair: 0 0% 95%;     /* #F2F2F2 - Gris clair */
+    --blanc-gris-border: 0 0% 92%;    /* #EAEAEA - Bordures */
+    --blanc-gris-struct: 0 0% 45%;    /* #737373 - Gris structurel */
+    --blanc-noir: 0 0% 0%;            /* #000000 - Noir absolu */
     
     /* ══════════════════════════════════════════════════════════════════
-       PALETTE "Carte matière" (carte physique NFC)
+       PALETTE "Carte matière" (carte physique NFC blanche)
        ══════════════════════════════════════════════════════════════════ */
-    --carte-blanc: 210 17% 98%;       /* #F9FAFB - Blanc carte */
-    --carte-chaud: 210 11% 96%;       /* #F3F4F6 - Blanc chaud */
-    --carte-gris-leger: 210 14% 89%;  /* #E5E7EB - Gris très léger */
-    --carte-gris-struct: 217 10% 64%; /* #9CA3AF - Gris structurel */
-    --carte-noir-doux: var(--iwasp-charbon);
+    --carte-blanc: 0 0% 100%;         /* #FFFFFF - Blanc carte */
+    --carte-chaud: 0 0% 98%;          /* #FAFAFA - Blanc chaud */
+    --carte-gris-leger: 0 0% 95%;     /* #F2F2F2 - Gris très léger */
+    --carte-gris-struct: 0 0% 45%;    /* #737373 - Gris structurel */
+    --carte-noir-doux: 0 0% 0%;       /* #000000 - Noir */
 
     /* Surface tokens */
-    --surface-0: var(--iwasp-noir);
-    --surface-1: 225 10% 7%;
-    --surface-2: var(--iwasp-charbon);
-    --surface-3: 225 10% 14%;
+    --surface-0: var(--iwasp-blanc);
+    --surface-1: 0 0% 98%;
+    --surface-2: var(--iwasp-gris-light);
+    --surface-3: var(--iwasp-gris-border);
     
-    /* Glass effects */
-    --glass: 0 0% 100%;
-    --glass-opacity: 0.05;
-    --glass-border: 0 0% 100%;
+    /* Glass effects - Light version */
+    --glass: 0 0% 0%;
+    --glass-opacity: 0.02;
+    --glass-border: 0 0% 0%;
 
     /* ══════════════════════════════════════════════════════════════════
-       SHADOWS - IWASP PREMIUM
-       Soft & réalistes uniquement. Jamais d'ombre dure.
+       SHADOWS - LUXURY SOFT
+       Ultra-douces, presque invisibles, élégantes
        ══════════════════════════════════════════════════════════════════ */
-    --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.25);
-    --shadow-md: 0 4px 20px hsl(0 0% 0% / 0.35);
-    --shadow-lg: 0 8px 32px hsl(0 0% 0% / 0.45);
+    --shadow-sm: 0 1px 3px hsl(0 0% 0% / 0.04);
+    --shadow-md: 0 4px 12px hsl(0 0% 0% / 0.06);
+    --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.08);
     --shadow-card: 
-      0 4px 20px hsl(0 0% 0% / 0.35),
-      0 0 0 1px hsl(0 0% 100% / 0.03);
+      0 2px 8px hsl(0 0% 0% / 0.04),
+      0 0 0 1px hsl(0 0% 0% / 0.03);
     --shadow-elevated:
-      0 8px 32px hsl(0 0% 0% / 0.4),
-      0 0 0 1px hsl(0 0% 100% / 0.05);
-
-    /* Gradients */
-    --gradient-glass: linear-gradient(
-      135deg,
-      hsl(0 0% 100% / 0.06) 0%,
-      hsl(0 0% 100% / 0.02) 100%
-    );
-    --gradient-glass-strong: linear-gradient(
-      135deg,
-      hsl(0 0% 100% / 0.12) 0%,
-      hsl(0 0% 100% / 0.04) 100%
-    );
-    --gradient-accent: linear-gradient(
-      135deg,
-      hsl(var(--iwasp-vert)) 0%,
-      hsl(138 100% 55%) 100%
-    );
+      0 4px 16px hsl(0 0% 0% / 0.06),
+      0 0 0 1px hsl(0 0% 0% / 0.04);
 
     /* Typography */
     --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
     --tracking-tight: -0.01em;
 
-    /* Sidebar */
-    --sidebar-background: var(--iwasp-noir);
-    --sidebar-foreground: var(--iwasp-blanc);
-    --sidebar-primary: var(--iwasp-blanc);
-    --sidebar-primary-foreground: var(--iwasp-noir);
-    --sidebar-accent: var(--iwasp-charbon);
-    --sidebar-accent-foreground: var(--iwasp-blanc);
-    --sidebar-border: 225 10% 14%;
-    --sidebar-ring: var(--iwasp-vert);
+    /* Sidebar - Light theme */
+    --sidebar-background: var(--iwasp-blanc);
+    --sidebar-foreground: var(--iwasp-noir);
+    --sidebar-primary: var(--iwasp-noir);
+    --sidebar-primary-foreground: var(--iwasp-blanc);
+    --sidebar-accent: var(--iwasp-gris-light);
+    --sidebar-accent-foreground: var(--iwasp-noir);
+    --sidebar-border: var(--iwasp-gris-border);
+    --sidebar-ring: var(--iwasp-noir);
     
     /* Mobile-first: Safe area insets (Apple notch/Dynamic Island support) */
     --safe-area-top: env(safe-area-inset-top, 0px);
@@ -211,61 +177,7 @@
     --background-ivoire: var(--blanc-ivoire);
   }
   
-  /* ══════════════════════════════════════════════════════════════════
-     THÈME: Blanc pur
-     Appliquer avec data-theme="blanc" sur le html ou un conteneur
-     ══════════════════════════════════════════════════════════════════ */
-  [data-theme="blanc"] {
-    --background: var(--blanc-pur);
-    --foreground: var(--blanc-noir);
-    
-    --card: var(--blanc-ivoire);
-    --card-foreground: var(--blanc-noir);
-    
-    --popover: var(--blanc-pur);
-    --popover-foreground: var(--blanc-noir);
-    
-    --primary: var(--blanc-noir);
-    --primary-foreground: var(--blanc-pur);
-    
-    --secondary: var(--blanc-ivoire);
-    --secondary-foreground: var(--blanc-gris-struct);
-    
-    --muted: var(--blanc-gris-clair);
-    --muted-foreground: var(--blanc-gris-struct);
-    
-    --accent: var(--blanc-ivoire);
-    --accent-foreground: var(--blanc-noir);
-    
-    --destructive: var(--blanc-accent);
-    --destructive-foreground: var(--blanc-pur);
-    
-    --border: var(--blanc-gris-clair);
-    --input: var(--blanc-ivoire);
-    --ring: var(--blanc-noir);
-    
-    --surface-0: var(--blanc-pur);
-    --surface-1: var(--blanc-ivoire);
-    --surface-2: var(--blanc-gris-clair);
-    --surface-3: var(--blanc-gris-struct);
-    
-    --glass: 0 0% 0%;
-    --glass-opacity: 0.03;
-    --glass-border: 0 0% 0%;
-    
-    --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.08);
-    --shadow-md: 0 8px 24px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 16px 48px hsl(0 0% 0% / 0.15);
-    
-    --sidebar-background: var(--blanc-pur);
-    --sidebar-foreground: var(--blanc-noir);
-    --sidebar-primary: var(--blanc-noir);
-    --sidebar-primary-foreground: var(--blanc-pur);
-    --sidebar-accent: var(--blanc-ivoire);
-    --sidebar-accent-foreground: var(--blanc-noir);
-    --sidebar-border: var(--blanc-gris-clair);
-    --sidebar-ring: var(--blanc-noir);
-  }
+  /* Thème blanc pur = thème par défaut (legacy compatibility) */
   
   /* ══════════════════════════════════════════════════════════════════
      THÈME: Carte matière (carte physique NFC)
@@ -358,92 +270,90 @@
 
 @layer components {
   /* ══════════════════════════════════════════════════════════════════
-     IWASP SAAS PREMIUM COMPONENTS
-     Clean, minimal, professional. No decorative effects.
-     Type: Uber / Stripe / Linear aesthetic.
+     IWASP LUXURY WHITE COMPONENTS
+     Clean, minimal, elegant. Inspired by luxury hospitality.
+     Type: Apple / Aesop / Luxury Hotel aesthetic.
      ══════════════════════════════════════════════════════════════════ */
   
   /* Simple card with subtle border */
   .glass {
-    background: hsl(var(--iwasp-charbon));
-    border: 1px solid hsl(0 0% 100% / 0.06);
+    background: hsl(var(--iwasp-blanc));
+    border: 1px solid hsl(var(--iwasp-gris-border));
   }
   
   .glass-strong {
     background: hsl(var(--surface-elevated));
-    border: 1px solid hsl(0 0% 100% / 0.08);
+    border: 1px solid hsl(var(--iwasp-gris-border));
   }
   
-  /* Clean card - no glow, no gradient border */
+  /* Clean card - elegant */
   .glass-futuristic {
-    background: hsl(var(--iwasp-charbon));
-    border: 1px solid hsl(0 0% 100% / 0.08);
-    box-shadow: 0 4px 12px hsl(0 0% 0% / 0.4);
+    background: hsl(var(--iwasp-blanc));
+    border: 1px solid hsl(var(--iwasp-gris-border));
+    box-shadow: var(--shadow-md);
   }
   
   .glass-futuristic:hover {
-    border-color: hsl(0 0% 100% / 0.12);
-    box-shadow: 0 6px 16px hsl(0 0% 0% / 0.5);
+    border-color: hsl(var(--iwasp-gris-text));
+    box-shadow: var(--shadow-lg);
   }
-  
-  /* REMOVED: glow-border, animated-border, floating-glow */
-  /* These decorative effects are disabled for SaaS premium look */
   
   /* Sector badge - minimal style */
   .sector-badge {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium;
-    background: hsl(0 0% 100% / 0.04);
-    border: 1px solid hsl(0 0% 100% / 0.08);
+    background: hsl(var(--iwasp-gris-light));
+    border: 1px solid hsl(var(--iwasp-gris-border));
+    color: hsl(var(--iwasp-noir));
     transition: all var(--duration-normal) var(--easing-in-out);
   }
   
   .sector-badge:hover,
   .sector-badge.active {
-    background: hsl(0 0% 100% / 0.08);
-    border-color: hsl(0 0% 100% / 0.12);
+    background: hsl(var(--iwasp-gris-border));
+    border-color: hsl(var(--iwasp-gris-text));
   }
   
   .sector-badge.active {
-    background: hsl(var(--iwasp-accent));
-    color: hsl(0 0% 0%);
-    border-color: hsl(var(--iwasp-accent));
+    background: hsl(var(--iwasp-noir));
+    color: hsl(var(--iwasp-blanc));
+    border-color: hsl(var(--iwasp-noir));
   }
   
-  /* IWASP Premium Card - Clean, no gold glow */
+  /* IWASP Premium Card - Clean, elegant */
   .card-iwasp {
     @apply relative overflow-hidden;
-    background: hsl(var(--iwasp-charbon));
+    background: hsl(var(--iwasp-blanc));
     border-radius: var(--radius-card);
-    box-shadow: 0 2px 8px hsl(0 0% 0% / 0.3);
-    border: 1px solid hsl(0 0% 100% / 0.04);
+    box-shadow: var(--shadow-card);
+    border: 1px solid hsl(var(--iwasp-gris-border));
   }
   
   /* ══════════════════════════════════════════════════════════════════
-     SAAS CARD SYSTEM - No decorative borders
-     Clean surfaces with subtle depth
+     LUXURY CARD SYSTEM - Subtle elegance
+     Clean surfaces with refined depth
      ══════════════════════════════════════════════════════════════════ */
   
-  /* Product card - professional, no gold glow */
+  /* Product card - professional, elegant */
   .card-product-premium {
     @apply relative overflow-hidden;
-    background: hsl(var(--iwasp-charbon));
+    background: hsl(var(--iwasp-blanc));
     border-radius: var(--radius-card);
-    border: 1px solid hsl(0 0% 100% / 0.06);
-    box-shadow: 0 4px 12px hsl(0 0% 0% / 0.4);
+    border: 1px solid hsl(var(--iwasp-gris-border));
+    box-shadow: var(--shadow-md);
     transition: all var(--duration-normal) var(--easing-in-out);
   }
   
   .card-product-premium:hover {
-    border-color: hsl(0 0% 100% / 0.1);
-    box-shadow: 0 8px 24px hsl(0 0% 0% / 0.5);
+    border-color: hsl(var(--iwasp-gris-text));
+    box-shadow: var(--shadow-lg);
     transform: translateY(-2px);
   }
   
-  /* Primary CTA Button - Yellow accent */
+  /* Primary CTA Button - Black accent (luxury) */
   .btn-iwasp {
     @apply relative overflow-hidden font-medium;
-    background: hsl(var(--iwasp-accent));
-    color: hsl(0 0% 0%);
+    background: hsl(var(--iwasp-noir));
+    color: hsl(var(--iwasp-blanc));
     border-radius: var(--radius-btn);
     padding: 0.875rem 2rem;
     box-shadow: none;
@@ -451,7 +361,7 @@
   }
   
   .btn-iwasp:hover {
-    background: hsl(var(--gold-light));
+    background: hsl(0 0% 15%);
     transform: translateY(-1px);
   }
   
@@ -464,20 +374,20 @@
     pointer-events: none;
   }
   
-  /* Secondary/Ghost Button */
+  /* Secondary/Ghost Button - Elegant outline */
   .btn-iwasp-ghost {
     @apply relative font-medium;
     background: transparent;
-    color: hsl(var(--iwasp-blanc));
-    border: 1px solid hsl(0 0% 100% / 0.12);
+    color: hsl(var(--iwasp-noir));
+    border: 1px solid hsl(var(--iwasp-gris-border));
     border-radius: var(--radius-btn);
     padding: 0.875rem 2rem;
     transition: all var(--duration-normal) var(--easing-in-out);
   }
   
   .btn-iwasp-ghost:hover {
-    background: hsl(0 0% 100% / 0.04);
-    border-color: hsl(0 0% 100% / 0.2);
+    background: hsl(var(--iwasp-gris-light));
+    border-color: hsl(var(--iwasp-gris-text));
   }
   
   .btn-iwasp-ghost:disabled {
@@ -488,47 +398,45 @@
   /* Module Container - Minimal */
   .module-iwasp {
     @apply relative;
-    background: hsl(var(--iwasp-charbon));
+    background: hsl(var(--iwasp-blanc));
     border-radius: var(--radius-card);
     padding: var(--space-lg);
-    border: 1px solid hsl(0 0% 100% / 0.04);
+    border: 1px solid hsl(var(--iwasp-gris-border));
     transition: all var(--duration-normal) var(--easing-in-out);
   }
   
   .module-iwasp:hover {
-    border-color: hsl(0 0% 100% / 0.08);
+    border-color: hsl(var(--iwasp-gris-text));
   }
   
-  /* States - Clean, no glow */
+  /* States - Clean */
   .state-disabled {
     opacity: 0.4;
     pointer-events: none;
   }
   
   .state-active {
-    border-color: hsl(var(--iwasp-accent));
+    border-color: hsl(var(--iwasp-noir));
   }
   
   .state-error {
     border-color: hsl(var(--iwasp-erreur));
   }
   
-  /* Text accent */
+  /* Text accent - now black */
   .text-iwasp-vert {
-    color: hsl(var(--iwasp-accent));
+    color: hsl(var(--iwasp-noir));
   }
 
-  /* Chrome text gradient - subtle */
+  /* Chrome text gradient - subtle dark */
   .text-chrome {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(
       180deg,
-      hsl(0 0% 100%) 0%,
-      hsl(0 0% 75%) 100%
+      hsl(0 0% 0%) 0%,
+      hsl(0 0% 30%) 100%
     );
   }
-
-  /* REMOVED: text-glow - no text shadows */
 
   /* Premium card styles - clean */
   .card-3d {
