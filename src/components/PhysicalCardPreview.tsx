@@ -208,9 +208,14 @@ export function PhysicalCardPreview({
       )}
 
       {/* Legal mention */}
-      <p className="text-xs text-center text-muted-foreground mt-4">
-        Carte imprimée en CR80, finition premium, impression Evolis
-      </p>
+      <div className="text-center mt-4 space-y-1">
+        <p className="text-xs text-primary font-medium">
+          Aperçu fidèle à 100 % à la carte imprimée Evolis
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Carte imprimée en CR80, finition premium, impression Evolis
+        </p>
+      </div>
     </div>
   );
 }
