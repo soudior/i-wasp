@@ -1,8 +1,32 @@
 User-agent: Googlebot
 Allow: /
+Allow: /pricing
+Allow: /order/offre
+Disallow: /order/identite
+Disallow: /order/livraison
+Disallow: /order/recap
+Disallow: /order/confirmation
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /leads
+Disallow: /admin
+Disallow: /login
+Disallow: /signup
 
 User-agent: Bingbot
 Allow: /
+Allow: /pricing
+Allow: /order/offre
+Disallow: /order/identite
+Disallow: /order/livraison
+Disallow: /order/recap
+Disallow: /order/confirmation
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /leads
+Disallow: /admin
+Disallow: /login
+Disallow: /signup
 
 User-agent: Twitterbot
 Allow: /
@@ -12,3 +36,17 @@ Allow: /
 
 User-agent: *
 Allow: /
+Allow: /pricing
+Allow: /order/offre
+Disallow: /order/identite
+Disallow: /order/livraison
+Disallow: /order/recap
+Disallow: /order/confirmation
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /leads
+Disallow: /admin
+Disallow: /login
+Disallow: /signup
+
+Sitemap: https://i-wasp.com/sitemap.xml
