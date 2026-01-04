@@ -104,7 +104,7 @@ function OrderOffreContent() {
                 className="text-sm text-primary tracking-widest uppercase mb-3"
                 variants={itemVariants}
               >
-                Étape 1 sur 5
+                Étape 1 sur 6
               </motion.p>
               <motion.h1 
                 className="text-3xl md:text-4xl font-display font-bold mb-3"

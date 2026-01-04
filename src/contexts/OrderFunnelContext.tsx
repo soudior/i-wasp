@@ -1,12 +1,13 @@
 /**
  * OrderFunnelContext - Tunnel de commande i-Wasp
  * 
- * 5 ÉTAPES STRICTES :
+ * 6 ÉTAPES STRICTES :
  * 1. /order/offre - Choix de l'offre (Essentiel / Signature / Élite)
  * 2. /order/identite - Identité digitale (profil public)
- * 3. /order/livraison - Livraison + Paiement
- * 4. /order/recap - Récapitulatif
- * 5. /order/confirmation - Confirmation + accès compte
+ * 3. /order/carte - Personnalisation carte physique (logo ou photo)
+ * 4. /order/livraison - Livraison + Paiement
+ * 5. /order/recap - Récapitulatif
+ * 6. /order/confirmation - Confirmation + accès compte
  */
 
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from "react";
@@ -48,7 +49,16 @@ export interface DigitalIdentity {
   googleMapsUrl?: string;
 }
 
-// Shipping info (step 3: delivery only - NOT on digital card)
+// Card personalization (step 3: physical card visual)
+export type CardVisualType = "logo" | "photo";
+
+export interface CardPersonalization {
+  visualType: CardVisualType;
+  imageUrl: string;         // URL of uploaded logo or photo
+  fileName: string;         // Original file name
+}
+
+// Shipping info (step 4: delivery only - NOT on digital card)
 export interface ShippingInfo {
   addressType: "domicile" | "entreprise" | "hotel";
   address: string;
@@ -67,36 +77,40 @@ export interface OrderFunnelState {
   currentStep: number;
   selectedOffer: OfferType | null;
   digitalIdentity: DigitalIdentity | null;
+  cardPersonalization: CardPersonalization | null;
   shippingInfo: ShippingInfo | null;
   paymentInfo: PaymentInfo | null;
   isComplete: boolean;
   isTransitioning: boolean; // Block interactions during transitions
 }
 
-// Step paths (5 steps)
+// Step paths (6 steps)
 const STEP_PATHS = [
   "/order/offre",        // Step 1: Offer selection
   "/order/identite",     // Step 2: Digital identity
-  "/order/livraison",    // Step 3: Shipping + Payment
-  "/order/recap",        // Step 4: Summary
-  "/order/confirmation", // Step 5: Confirmation
+  "/order/carte",        // Step 3: Card personalization (NEW)
+  "/order/livraison",    // Step 4: Shipping + Payment
+  "/order/recap",        // Step 5: Summary
+  "/order/confirmation", // Step 6: Confirmation
 ];
 
 export const STEP_LABELS = [
   "Offre",
   "Identité",
+  "Carte",
   "Livraison",
   "Récap",
   "Confirmation"
 ];
 
-export const TOTAL_STEPS = 5;
+export const TOTAL_STEPS = 6;
 
 // Context interface
 interface OrderFunnelContextType {
   state: OrderFunnelState;
   setSelectedOffer: (offer: OfferType) => void;
   setDigitalIdentity: (identity: DigitalIdentity) => void;
+  setCardPersonalization: (card: CardPersonalization) => void;
   setShippingInfo: (info: ShippingInfo) => void;
   setPaymentInfo: (info: PaymentInfo) => void;
   goToStep: (step: number) => void;
@@ -115,6 +129,7 @@ const initialState: OrderFunnelState = {
   currentStep: 1,
   selectedOffer: null,
   digitalIdentity: null,
+  cardPersonalization: null,
   shippingInfo: null,
   paymentInfo: null,
   isComplete: false,
@@ -157,8 +172,9 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     if (step === 1) return true;
     if (step === 2) return state.selectedOffer !== null;
     if (step === 3) return state.selectedOffer !== null && state.digitalIdentity !== null;
-    if (step === 4) return state.selectedOffer !== null && state.digitalIdentity !== null && state.shippingInfo !== null;
-    if (step === 5) return state.isComplete;
+    if (step === 4) return state.selectedOffer !== null && state.digitalIdentity !== null && state.cardPersonalization !== null;
+    if (step === 5) return state.selectedOffer !== null && state.digitalIdentity !== null && state.cardPersonalization !== null && state.shippingInfo !== null;
+    if (step === 6) return state.isComplete;
     return false;
   }, [state]);
 
@@ -166,9 +182,10 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
   const getFirstIncompleteStep = useCallback((): number => {
     if (!state.selectedOffer) return 1;
     if (!state.digitalIdentity) return 2;
-    if (!state.shippingInfo) return 3;
-    if (!state.isComplete) return 4;
-    return 5;
+    if (!state.cardPersonalization) return 3;
+    if (!state.shippingInfo) return 4;
+    if (!state.isComplete) return 5;
+    return 6;
   }, [state]);
 
   // Get step path
@@ -203,12 +220,21 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  // Set shipping info (step 3)
+  // Set card personalization (step 3)
+  const setCardPersonalization = useCallback((card: CardPersonalization) => {
+    setState(prev => ({
+      ...prev,
+      cardPersonalization: card,
+      currentStep: Math.max(prev.currentStep, 3),
+    }));
+  }, []);
+
+  // Set shipping info (step 4)
   const setShippingInfo = useCallback((info: ShippingInfo) => {
     setState(prev => ({
       ...prev,
       shippingInfo: info,
-      currentStep: Math.max(prev.currentStep, 3),
+      currentStep: Math.max(prev.currentStep, 4),
     }));
   }, []);
 
@@ -220,12 +246,12 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  // Mark as complete (step 4 validated -> ready for confirmation)
+  // Mark as complete (step 5 validated -> ready for confirmation)
   const markComplete = useCallback(() => {
     setState(prev => ({
       ...prev,
       isComplete: true,
-      currentStep: 5,
+      currentStep: 6,
     }));
   }, []);
 
@@ -300,10 +326,12 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
       case 2:
         return state.digitalIdentity !== null;
       case 3:
-        return state.shippingInfo !== null;
+        return state.cardPersonalization !== null;
       case 4:
         return state.shippingInfo !== null;
       case 5:
+        return state.shippingInfo !== null;
+      case 6:
         return state.isComplete;
       default:
         return false;
@@ -322,6 +350,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
         state,
         setSelectedOffer,
         setDigitalIdentity,
+        setCardPersonalization,
         setShippingInfo,
         setPaymentInfo,
         goToStep,

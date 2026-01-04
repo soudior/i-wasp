@@ -1,5 +1,5 @@
 /**
- * Step 3: Livraison + Paiement
+ * Step 4: Livraison + Paiement
  * /order/livraison
  * 
  * Champs livraison (NE PAS afficher sur carte digitale):
@@ -122,7 +122,7 @@ function OrderLivraisonContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-2xl mx-auto">
             {/* Progress Bar */}
-            <OrderProgressBar currentStep={3} />
+            <OrderProgressBar currentStep={4} />
 
             {/* Header */}
             <motion.div 
@@ -135,7 +135,7 @@ function OrderLivraisonContent() {
                 className="text-sm text-primary tracking-widest uppercase mb-3"
                 variants={itemVariants}
               >
-                Étape 3 sur 5
+                Étape 4 sur 6
               </motion.p>
               <motion.h1 
                 className="text-3xl md:text-4xl font-display font-bold mb-3"
@@ -384,7 +384,7 @@ function OrderLivraisonContent() {
 
 export default function OrderLivraison() {
   return (
-    <OrderFunnelGuard step={3}>
+    <OrderFunnelGuard step={4}>
       <OrderLivraisonContent />
     </OrderFunnelGuard>
   );

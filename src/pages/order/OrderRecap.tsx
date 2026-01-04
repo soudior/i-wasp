@@ -1,8 +1,8 @@
 /**
- * Step 4: Récapitulatif Final
+ * Step 5: Récapitulatif Final
  * /order/recap
  * 
- * Affichage épuré : Offre, Prix, Quantité, Paiement, Livraison
+ * Affichage épuré : Offre, Prix, Quantité, Paiement, Livraison, Carte
  */
 
 import { useState } from "react";
@@ -117,7 +117,7 @@ function OrderRecapContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-lg mx-auto">
             {/* Progress Bar */}
-            <OrderProgressBar currentStep={4} />
+            <OrderProgressBar currentStep={5} />
 
             {/* Header */}
             <motion.div 
@@ -165,6 +165,16 @@ function OrderRecapContent() {
                 <span className="text-muted-foreground">Paiement</span>
                 <span className="font-medium">À la livraison</span>
               </div>
+
+              {/* Visuel carte */}
+              {state.cardPersonalization && (
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Visuel carte</span>
+                  <span className="font-medium capitalize">
+                    {state.cardPersonalization.visualType === "logo" ? "Logo" : "Photo"}
+                  </span>
+                </div>
+              )}
 
               <Separator className="bg-border/50" />
 
@@ -253,7 +263,7 @@ function OrderRecapContent() {
 
 export default function OrderRecap() {
   return (
-    <OrderFunnelGuard step={4}>
+    <OrderFunnelGuard step={5}>
       <OrderRecapContent />
     </OrderFunnelGuard>
   );
