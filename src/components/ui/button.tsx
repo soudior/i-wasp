@@ -1,3 +1,17 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * BUTTON — COMPOSANT MOBILE-FIRST
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * Comportements VERROUILLÉS :
+ * - UN SEUL TAP déclenche l'action
+ * - Zones tactiles minimum 44px (Apple HIG)
+ * - Touch-manipulation pour supprimer délai 300ms
+ * - Active:scale pour feedback visuel instantané
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -5,7 +19,8 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 font-body touch-manipulation active:scale-[0.97] active:transition-transform active:duration-75",
+  // Base styles - VERROUILLÉ pour mobile
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 font-body touch-manipulation active:scale-[0.97] active:transition-transform active:duration-75",
   {
     variants: {
       variant: {
@@ -31,11 +46,12 @@ const buttonVariants = cva(
         noir: "bg-foreground text-background shadow-lg hover:bg-foreground/90",
       },
       size: {
-        default: "h-11 px-5 py-2.5 min-h-[48px]",
-        sm: "h-9 rounded-lg px-4 text-xs min-h-[44px]",
+        // Tailles avec minimum 44px pour touch targets
+        default: "h-11 px-5 py-2.5 min-h-[44px]",
+        sm: "h-10 rounded-lg px-4 text-xs min-h-[44px]",
         lg: "h-12 rounded-xl px-8 text-base min-h-[48px]",
         xl: "h-14 rounded-2xl px-10 text-lg min-h-[56px]",
-        icon: "h-11 w-11 min-h-[48px] min-w-[48px]",
+        icon: "h-11 w-11 min-h-[44px] min-w-[44px]",
       },
     },
     defaultVariants: {

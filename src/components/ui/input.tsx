@@ -1,3 +1,16 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * INPUT — COMPOSANT MOBILE-FIRST
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * Optimisations :
+ * - Font-size 16px pour éviter le zoom iOS
+ * - Touch manipulation pour réponse instantanée
+ * - Hauteur minimum 44px (standard Apple HIG)
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -8,7 +21,18 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
       <input
         type={type}
         className={cn(
-          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+          // Base styles
+          "flex h-11 w-full rounded-xl border border-input bg-background px-4 py-3 ring-offset-background",
+          // Typography - 16px to prevent iOS zoom
+          "text-base placeholder:text-muted-foreground",
+          // Focus states
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          // Disabled state
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          // Mobile optimization - VERROUILLÉ
+          "touch-manipulation",
+          // File input styles
+          "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
           className,
         )}
         ref={ref}
