@@ -15,6 +15,7 @@ export interface DigitalCard {
   company: string | null;
   email: string | null;
   phone: string | null;
+  whatsapp: string | null;
   location: string | null;
   website: string | null;
   linkedin: string | null;
@@ -41,6 +42,7 @@ export interface CreateCardData {
   company?: string;
   email?: string;
   phone?: string;
+  whatsapp?: string;
   location?: string;
   website?: string;
   linkedin?: string;
@@ -52,6 +54,21 @@ export interface CreateCardData {
   template?: string;
   social_links?: SocialLink[];
   blocks?: CardBlock[];
+}
+
+// Generate a URL-safe slug from name
+function generateSlug(firstName: string, lastName: string): string {
+  const base = `${firstName}-${lastName}`
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove accents
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  
+  // Add random suffix for uniqueness
+  const suffix = Math.random().toString(36).substring(2, 8);
+  return `${base}-${suffix}`;
 }
 
 export function useCards() {
@@ -101,11 +118,16 @@ export function useCreateCard() {
     mutationFn: async (data: CreateCardData): Promise<DigitalCard> => {
       if (!user) throw new Error("User not authenticated");
 
+      // Generate slug from name
+      const slug = generateSlug(data.first_name, data.last_name);
+
       const { data: card, error } = await supabase
         .from("digital_cards" as any)
         .insert({
           ...data,
           user_id: user.id,
+          slug: slug,
+          is_active: true, // Explicitly set active
         } as any)
         .select()
         .single();

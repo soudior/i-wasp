@@ -113,6 +113,7 @@ export function CardWizard({ editId, initialData, onComplete }: CardWizardProps)
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [savedCardId, setSavedCardId] = useState<string | null>(editId || null);
+  const [savedCardSlug, setSavedCardSlug] = useState<string | null>(null);
   
   const [formData, setFormData] = useState<CardFormData>({
     firstName: initialData?.firstName || "",
@@ -229,9 +230,11 @@ export function CardWizard({ editId, initialData, onComplete }: CardWizardProps)
           data: cardData as any,
         });
         resultId = editId;
+        // For edit, we need to fetch the slug separately if not cached
       } else {
         const result = await createCard.mutateAsync(cardData);
         resultId = result.id;
+        setSavedCardSlug(result.slug); // Store the slug for the public URL
       }
 
       setSavedCardId(resultId);
@@ -354,6 +357,7 @@ export function CardWizard({ editId, initialData, onComplete }: CardWizardProps)
                   {currentStepId === "complete" && (
                     <StepComplete 
                       cardId={savedCardId}
+                      cardSlug={savedCardSlug}
                       data={formData}
                     />
                   )}
