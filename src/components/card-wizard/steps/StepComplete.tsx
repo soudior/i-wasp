@@ -21,16 +21,17 @@ import { toast } from "sonner";
 
 interface StepCompleteProps {
   cardId: string | null;
+  cardSlug: string | null;
   data: CardFormData;
 }
 
-export function StepComplete({ cardId, data }: StepCompleteProps) {
+export function StepComplete({ cardId, cardSlug, data }: StepCompleteProps) {
   const navigate = useNavigate();
 
   const handleCopyLink = () => {
-    if (cardId) {
-      // Generate a slug or use the ID
-      const cardUrl = `${window.location.origin}/c/${cardId}`;
+    if (cardSlug) {
+      // Use slug for the public URL
+      const cardUrl = `${window.location.origin}/card/${cardSlug}`;
       navigator.clipboard.writeText(cardUrl);
       toast.success("Lien copié !");
     }
@@ -44,8 +45,9 @@ export function StepComplete({ cardId, data }: StepCompleteProps) {
   };
 
   const handleViewCard = () => {
-    if (cardId) {
-      navigate(`/c/${cardId}`);
+    if (cardSlug) {
+      // Use slug for the public card view
+      window.open(`/card/${cardSlug}`, "_blank");
     }
   };
 
@@ -119,15 +121,17 @@ export function StepComplete({ cardId, data }: StepCompleteProps) {
           <Button
             variant="outline"
             onClick={handleViewCard}
+            disabled={!cardSlug}
             className="h-12 rounded-xl gap-2"
           >
             <ExternalLink size={16} />
-            Voir la carte
+            Tester mon lien
           </Button>
           
           <Button
             variant="outline"
             onClick={handleCopyLink}
+            disabled={!cardSlug}
             className="h-12 rounded-xl gap-2"
           >
             <Copy size={16} />
