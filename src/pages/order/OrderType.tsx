@@ -139,7 +139,7 @@ export default function OrderType() {
                   Choisissez votre niveau de conciergerie digitale
                 </h1>
                 <p className="text-muted-foreground max-w-md mx-auto">
-                  Choisissez votre clé d'accès à la conciergerie i-Wasp.
+                  La carte physique est incluse. Le service fait toute la différence.
                 </p>
               </motion.div>
 
