@@ -24,6 +24,7 @@ import AdminInstantCard from "./pages/AdminInstantCard";
 import EvolisPrintPage from "./pages/EvolisPrint";
 import FirstCardSetup from "./pages/FirstCardSetup";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import AdminOrders from "./pages/AdminOrders";
 import Onboarding from "./pages/Onboarding";
@@ -139,6 +140,8 @@ const App = () => {
                             
                             {/* Auth */}
                             <Route path="/login" element={<Login />} />
+                            <Route path="/signup" element={<Signup />} />
+                            <Route path="/register" element={<Signup />} />
                             
                             {/* Guest card creation */}
                             <Route path="/create" element={<GuestCardCreator />} />
