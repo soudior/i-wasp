@@ -311,6 +311,11 @@ export default function OrderType() {
                       </motion.div>
                     ))}
                   </div>
+                  
+                  {/* Note prix */}
+                  <p className="text-center text-xs text-muted-foreground mt-6">
+                    Tous les prix sont indiqués en dirhams marocains (DH). Service disponible au Maroc.
+                  </p>
                 </motion.div>
               )}
 
