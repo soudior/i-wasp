@@ -1,47 +1,42 @@
 /**
- * Subscription Plans Configuration
- * ONLY 2 plans: FREE (discovery) and GOLD (premium)
+ * i-Wasp Concierge Services
  * 
- * FREE = Découverte fonctionnelle mais limitée
- * GOLD = Solution premium complète
+ * 3 niveaux de service de conciergerie digitale :
+ * - ESSENTIEL : Accès de base à la conciergerie
+ * - SIGNATURE : L'expérience complète (POPULAIRE)
+ * - ÉLITE : Service sur-mesure entreprises
+ * 
+ * Tous les prix en Dirhams Marocains (DH)
+ * La carte physique est INCLUSE dans chaque service.
  */
 
 export const SUBSCRIPTION_PLANS = {
-  FREE: {
-    id: "free",
-    name: "FREE",
-    tagline: "Découverte",
-    description: "Testez iWasp gratuitement avec les fonctionnalités essentielles",
-    price: 0,
+  ESSENTIEL: {
+    id: "essentiel",
+    name: "Essentiel",
+    tagline: "Votre entrée dans la conciergerie",
+    description: "L'accès à notre service de gestion d'identité digitale.",
     priceMonthly: 0,
     priceAnnual: 0,
-    currency: "MAD",
-    period: "/mois",
-    color: "zinc",
+    setupFee: 290, // Frais de mise en service unique (carte incluse)
+    currency: "DH",
+    period: "",
+    isPopular: false,
     
-    // Ce qui est INCLUS dans FREE
     included: [
-      "1 carte NFC active",
-      "1 profil digital basique",
-      "Informations essentielles (nom, poste, entreprise)",
-      "Photo de profil",
-      "Jusqu'à 3 liens",
-      "QR code basique",
-      "Accès à l'application",
+      "Carte NFC premium incluse",
+      "Profil digital personnalisé",
+      "Photo et informations essentielles",
+      "3 liens de contact",
+      "QR code de partage",
+      "Accès à votre espace",
     ],
     
-    // Ce qui N'EST PAS inclus dans FREE
     excluded: [
+      "Mise à jour illimitée du profil",
       "Templates premium",
-      "Statistiques de scans",
-      "Options dynamiques",
-      "Personnalisation avancée",
-      "Suppression du branding iWasp",
-      "Stories 24h",
-      "Capture de leads",
-      "Push notifications",
-      "Badge certifié",
-      "Coach IA",
+      "Statistiques de visites",
+      "Capture de contacts",
       "Support prioritaire",
     ],
     
@@ -49,7 +44,7 @@ export const SUBSCRIPTION_PLANS = {
       nfcCards: 1,
       digitalProfile: "basic",
       profilePhoto: true,
-      essentialInfo: true, // nom, poste, entreprise
+      essentialInfo: true,
       socialLinks: 3,
       qrCode: "basic",
       appAccess: true,
@@ -71,82 +66,68 @@ export const SUBSCRIPTION_PLANS = {
       maxNfcCards: 1,
       maxSocialLinks: 3,
       maxStories: 0,
-      maxTemplates: 1, // template basique uniquement
+      maxTemplates: 1,
     },
   },
   
-  GOLD: {
-    id: "gold",
-    name: "GOLD",
-    tagline: "Solution Business",
-    description: "La solution business complète pour les professionnels",
+  SIGNATURE: {
+    id: "signature",
+    name: "Signature",
+    tagline: "L'expérience conciergerie complète",
+    description: "Nous gérons votre identité professionnelle. Vous vous concentrez sur l'essentiel.",
     priceMonthly: 49,
-    priceAnnual: 499,
-    savingsAnnual: 2, // 2 mois offerts
-    currency: "MAD",
+    priceAnnual: 490,
+    setupFee: 0, // Inclus
+    savingsAnnual: 2,
+    currency: "DH",
     periodMonthly: "/mois",
     periodAnnual: "/an",
-    color: "gold",
+    isPopular: true, // MISE EN AVANT
     
-    // Fonctionnalités GOLD - Solution Business Premium
     included: [
-      "Carte NFC avec profil 100% dynamique",
-      "Liens illimités",
-      "Sections dynamiques (boutons, CTA)",
-      "Templates premium (Business, Tech, Immobilier, Creator)",
-      "Personnalisation complète du profil",
-      "Statistiques de scans (vues, clics)",
-      "Mise à jour en temps réel",
-      "QR code personnalisé",
-      "Suppression du branding iWasp",
+      "Carte NFC premium incluse",
+      "Profil 100% dynamique",
+      "Mises à jour illimitées",
+      "Liens et sections illimités",
+      "Templates premium au choix",
+      "Statistiques de visites",
+      "Capture automatique de contacts",
+      "Export de vos contacts",
       "Support prioritaire",
+      "Sans branding i-Wasp",
     ],
     
-    // Avantages business additionnels
     businessFeatures: [
-      "Capture de leads automatique",
-      "Dashboard analytics avancé",
-      "Export Excel des contacts",
-      "Push notifications",
-      "Badge Certifié GOLD",
-      "Coach IA personnalisé",
+      "Dashboard de suivi",
+      "Notifications de visite",
+      "Badge Signature",
+      "Conseiller IA dédié",
       "Intégration CRM",
     ],
     
-    excluded: [], // GOLD a tout
+    excluded: [],
     
     features: {
-      // Profil dynamique
       nfcCards: Infinity,
-      digitalProfile: "dynamic", // 100% dynamique
+      digitalProfile: "dynamic",
       profilePhoto: true,
       essentialInfo: true,
-      socialLinks: Infinity, // Illimités
-      dynamicSections: true, // Boutons, CTA
-      realTimeUpdate: true, // Mise à jour en temps réel
-      
-      // Templates & Personnalisation
-      premiumTemplates: true, // Business, Tech, Immobilier, Creator
-      advancedCustomization: true, // Personnalisation complète
-      qrCode: "custom", // QR code personnalisé
-      removeBranding: true, // Sans branding iWasp
-      
-      // Analytics & Stats
-      scanStats: true, // Vues, clics
+      socialLinks: Infinity,
+      dynamicSections: true,
+      realTimeUpdate: true,
+      premiumTemplates: true,
+      advancedCustomization: true,
+      qrCode: "custom",
+      removeBranding: true,
+      scanStats: true,
       analytics: true,
-      
-      // Business Features
       leadCapture: true,
       pushNotifications: true,
       badge: true,
       aiCoach: true,
       crmIntegration: true,
       excelExport: true,
-      
-      // Support
       prioritySupport: true,
-      
-      // Legacy compatibility
       appAccess: true,
       stories: true,
       dynamicOptions: true,
@@ -160,7 +141,6 @@ export const SUBSCRIPTION_PLANS = {
       maxDynamicSections: Infinity,
     },
     
-    // Templates disponibles avec GOLD
     availableTemplates: [
       "Business",
       "Tech",
@@ -171,48 +151,143 @@ export const SUBSCRIPTION_PLANS = {
       "Corporate",
     ],
   },
+  
+  ELITE: {
+    id: "elite",
+    name: "Élite",
+    tagline: "Service sur-mesure",
+    description: "Une conciergerie dédiée pour votre équipe ou votre entreprise.",
+    priceCustom: true,
+    currency: "DH",
+    isPopular: false,
+    
+    included: [
+      "Tout Signature inclus",
+      "Cartes pour toute l'équipe",
+      "Design unifié entreprise",
+      "Gestion centralisée",
+      "Interlocuteur dédié",
+      "Formation incluse",
+      "SLA personnalisé",
+    ],
+    
+    features: {
+      everything: true,
+      teamManagement: true,
+      dedicatedSupport: true,
+      customBranding: true,
+      slaGuarantee: true,
+    },
+  },
+  
+  // Legacy aliases for compatibility
+  FREE: {
+    id: "free",
+    name: "Essentiel",
+    tagline: "Votre entrée dans la conciergerie",
+    priceMonthly: 0,
+    priceAnnual: 0,
+    currency: "DH",
+    period: "",
+    included: [
+      "Carte NFC premium incluse",
+      "Profil digital personnalisé",
+      "3 liens de contact",
+      "QR code de partage",
+    ],
+    features: {
+      nfcCards: 1,
+      socialLinks: 3,
+      premiumTemplates: false,
+      scanStats: false,
+      leadCapture: false,
+      prioritySupport: false,
+    },
+    limits: {
+      maxSocialLinks: 3,
+      maxStories: 0,
+      maxTemplates: 1,
+    },
+  },
+  
+  GOLD: {
+    id: "gold",
+    name: "Signature",
+    tagline: "L'expérience conciergerie complète",
+    priceMonthly: 49,
+    priceAnnual: 490,
+    savingsAnnual: 2,
+    currency: "DH",
+    periodMonthly: "/mois",
+    periodAnnual: "/an",
+    included: [
+      "Carte NFC premium incluse",
+      "Profil 100% dynamique",
+      "Mises à jour illimitées",
+      "Templates premium",
+      "Statistiques de visites",
+      "Capture de contacts",
+      "Support prioritaire",
+    ],
+    businessFeatures: [
+      "Dashboard de suivi",
+      "Notifications de visite",
+      "Badge Signature",
+      "Conseiller IA",
+    ],
+    features: {
+      nfcCards: Infinity,
+      socialLinks: Infinity,
+      premiumTemplates: true,
+      scanStats: true,
+      leadCapture: true,
+      prioritySupport: true,
+      analytics: true,
+      removeBranding: true,
+    },
+    limits: {
+      maxSocialLinks: Infinity,
+      maxStories: Infinity,
+      maxTemplates: Infinity,
+    },
+  },
 } as const;
 
-export type PlanId = "free" | "gold";
-export type Plan = typeof SUBSCRIPTION_PLANS.FREE | typeof SUBSCRIPTION_PLANS.GOLD;
+export type PlanId = "essentiel" | "signature" | "elite" | "free" | "gold";
+export type Plan = typeof SUBSCRIPTION_PLANS.ESSENTIEL | typeof SUBSCRIPTION_PLANS.SIGNATURE;
 
 export function getPlan(planId: PlanId): Plan {
-  return planId === "gold" ? SUBSCRIPTION_PLANS.GOLD : SUBSCRIPTION_PLANS.FREE;
+  if (planId === "signature" || planId === "gold") {
+    return SUBSCRIPTION_PLANS.SIGNATURE;
+  }
+  return SUBSCRIPTION_PLANS.ESSENTIEL;
 }
 
 export function isPremiumPlan(planId: string): boolean {
-  return planId === "gold" || planId === "premium";
+  return planId === "signature" || planId === "gold" || planId === "elite";
 }
 
 // Feature comparison pour affichage tableau
 export const FEATURE_COMPARISON = [
-  // Inclus dans FREE
-  { name: "Carte NFC active", free: "1 carte", gold: "Illimité", category: "base" },
-  { name: "Profil digital", free: "Basique", gold: "Illimité", category: "profile" },
-  { name: "Photo de profil", free: true, gold: true, category: "profile" },
-  { name: "Infos essentielles", free: true, gold: true, category: "profile" },
-  { name: "Liens sociaux", free: "3 maximum", gold: "Illimités", category: "profile" },
-  { name: "QR code", free: "Basique", gold: "Avancé", category: "base" },
-  { name: "Accès application", free: true, gold: true, category: "base" },
-  
-  // Exclusif GOLD
-  { name: "Templates premium", free: false, gold: "Tous", category: "design" },
-  { name: "Statistiques de scans", free: false, gold: true, category: "analytics" },
-  { name: "Options dynamiques", free: false, gold: true, category: "features" },
-  { name: "Personnalisation avancée", free: false, gold: true, category: "design" },
-  { name: "Sans branding iWasp", free: false, gold: true, category: "branding" },
-  { name: "Stories 24h", free: false, gold: "Illimitées", category: "engagement" },
-  { name: "Capture de Leads + CRM", free: false, gold: true, category: "business" },
-  { name: "Push Notifications", free: false, gold: true, category: "engagement" },
-  { name: "Badge Certifié GOLD", free: false, gold: true, category: "trust" },
-  { name: "Coach IA personnalisé", free: false, gold: true, category: "support" },
-  { name: "Support", free: "Email", gold: "Prioritaire 24/7", category: "support" },
+  { name: "Carte NFC premium", free: "Incluse", gold: "Incluse", category: "base" },
+  { name: "Profil digital", free: "Standard", gold: "Dynamique", category: "profile" },
+  { name: "Mises à jour", free: "Limitées", gold: "Illimitées", category: "profile" },
+  { name: "Liens de contact", free: "3 maximum", gold: "Illimités", category: "profile" },
+  { name: "QR code", free: "Standard", gold: "Personnalisé", category: "base" },
+  { name: "Templates", free: "1", gold: "Tous premium", category: "design" },
+  { name: "Statistiques de visites", free: false, gold: true, category: "analytics" },
+  { name: "Capture de contacts", free: false, gold: true, category: "business" },
+  { name: "Export des contacts", free: false, gold: true, category: "business" },
+  { name: "Notifications", free: false, gold: true, category: "engagement" },
+  { name: "Sans branding i-Wasp", free: false, gold: true, category: "branding" },
+  { name: "Badge Signature", free: false, gold: true, category: "trust" },
+  { name: "Conseiller IA", free: false, gold: true, category: "support" },
+  { name: "Support", free: "Standard", gold: "Prioritaire", category: "support" },
 ] as const;
 
-// Helper pour vérifier si une feature est disponible selon le plan
-export function hasFeature(planId: PlanId, feature: keyof typeof SUBSCRIPTION_PLANS.FREE.features): boolean {
+export function hasFeature(planId: PlanId, feature: string): boolean {
   const plan = getPlan(planId);
-  const value = plan.features[feature as keyof typeof plan.features];
+  const value = (plan.features as Record<string, unknown>)[feature];
   if (value === true || value === Infinity) return true;
   if (typeof value === "string" && value !== "basic") return true;
   return false;
