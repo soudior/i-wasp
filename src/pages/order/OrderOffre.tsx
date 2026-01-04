@@ -13,6 +13,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from "@/components/order";
 import { LoadingButton } from "@/components/ui/LoadingButton";
+import { PhysicalCardPreview } from "@/components/PhysicalCardPreview";
 import { Check, ArrowRight, Star, Sparkles, Crown } from "lucide-react";
 
 const offerDetails = [
@@ -208,11 +209,21 @@ function OrderOffreContent() {
               </LoadingButton>
             </motion.div>
 
+            {/* Physical Card Preview */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="mt-10"
+            >
+              <PhysicalCardPreview compact />
+            </motion.div>
+
             {/* Price Note */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.7 }}
               className="text-center text-xs text-muted-foreground mt-6"
             >
               Prix en dirhams marocains (DH). Livraison gratuite au Maroc.

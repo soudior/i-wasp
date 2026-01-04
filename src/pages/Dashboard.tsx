@@ -27,6 +27,7 @@ import {
 } from "@/lib/wallet";
 import { PhysicalCardStudio } from "@/components/print/PhysicalCardStudio";
 import { DashboardCustomization } from "@/components/DashboardCustomization";
+import { BrandSyncReminder } from "@/components/BrandSyncReminder";
 import { GoldVerificationBadge } from "@/components/GoldFeatureCard";
 import { 
   AICoachPanel, 
@@ -326,6 +327,11 @@ const Dashboard = () => {
           {/* Customization Section - Noir & Or */}
           <div className="mb-12">
             <DashboardCustomization />
+          </div>
+
+          {/* Brand Sync Reminder */}
+          <div className="mb-12">
+            <BrandSyncReminder />
           </div>
 
           {/* Orders Section - Premium Glassmorphism */}

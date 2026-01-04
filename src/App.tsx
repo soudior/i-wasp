@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { GuestCardProvider } from "@/contexts/GuestCardContext";
+import { BrandProvider } from "@/contexts/BrandContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { OrderFunnelProvider } from "@/contexts/OrderFunnelContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
@@ -103,8 +104,9 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <NetworkProvider>
           <AuthProvider>
-            <GuestCardProvider>
-              <CartProvider>
+            <BrandProvider>
+              <GuestCardProvider>
+                <CartProvider>
                 <TooltipProvider>
                   <FeatureValidationProvider showOverlay={true}>
                     {showSplash && (
@@ -220,10 +222,11 @@ const App = () => {
                 </TooltipProvider>
               </CartProvider>
             </GuestCardProvider>
-          </AuthProvider>
-        </NetworkProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+          </BrandProvider>
+        </AuthProvider>
+      </NetworkProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
   );
 };
 
