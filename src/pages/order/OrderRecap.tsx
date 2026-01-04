@@ -32,7 +32,7 @@ function OrderRecapContent() {
   const selectedOffer = OFFERS.find(o => o.id === state.selectedOffer);
 
   const formatPrice = (cents: number): string => {
-    return `${(cents / 100).toFixed(0)} DH`;
+    return `${(cents / 100).toFixed(0)} MAD`;
   };
 
   const handleConfirmOrder = async () => {

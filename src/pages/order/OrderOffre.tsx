@@ -22,7 +22,7 @@ const offerDetails = [
     icon: Star,
     title: "Essentiel",
     subtitle: "L'essentiel pour démarrer",
-    price: "299 DH",
+    price: "299 MAD",
     features: [
       "Carte NFC i-Wasp blanche",
       "Profil digital essentiel",
@@ -37,7 +37,7 @@ const offerDetails = [
     icon: Sparkles,
     title: "Signature",
     subtitle: "Le plus populaire",
-    price: "599 DH",
+    price: "599 MAD",
     isPopular: true,
     features: [
       "Carte NFC i-Wasp Premium",
@@ -55,7 +55,7 @@ const offerDetails = [
     icon: Crown,
     title: "Élite",
     subtitle: "L'excellence i-Wasp",
-    price: "999 DH",
+    price: "999 MAD",
     features: [
       "Carte NFC i-Wasp Elite",
       "Profil digital sur mesure",
@@ -226,8 +226,21 @@ function OrderOffreContent() {
               transition={{ delay: 0.7 }}
               className="text-center text-xs text-muted-foreground mt-6"
             >
-              Prix en dirhams marocains (DH). Livraison gratuite au Maroc.
+              Prix en dirhams marocains (MAD). Livraison gratuite au Maroc.
             </motion.p>
+            
+            {/* Payment notice */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.75 }}
+              className="flex justify-center mt-4"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-xs text-muted-foreground">
+                <span className="text-primary">💳</span>
+                <span>Paiement en ligne bientôt disponible · Paiement à la livraison activé</span>
+              </div>
+            </motion.div>
           </div>
         </main>
       </PageTransition>
