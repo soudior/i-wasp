@@ -3,24 +3,25 @@
  * 
  * Interactive 3D preview of the NFC card using React Three Fiber
  * Shows a realistic card that can be rotated and viewed from all angles
+ * Includes PNG export functionality for social media sharing
  */
 
-import { useRef, useState, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { useRef, useState, Suspense, useCallback } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { 
   RoundedBox, 
   Text, 
   Environment, 
   ContactShadows,
   PresentationControls,
-  Html,
-  useTexture
+  Html
 } from "@react-three/drei";
 import * as THREE from "three";
 import { motion } from "framer-motion";
-import { RotateCcw, Maximize2, Minimize2, Camera } from "lucide-react";
+import { RotateCcw, Maximize2, Minimize2, Camera, Download, Share2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 // ============================================================
 // TYPES
@@ -41,6 +42,7 @@ export interface Card3DData {
 interface Card3DPreviewProps {
   data: Card3DData;
   className?: string;
+  onExport?: (dataUrl: string) => void;
 }
 
 // ============================================================
@@ -201,12 +203,185 @@ function LoadingCard() {
 }
 
 // ============================================================
+// EXPORT HELPER COMPONENT
+// ============================================================
+
+function ExportHelper({ onCapture }: { onCapture: (gl: THREE.WebGLRenderer) => void }) {
+  const { gl } = useThree();
+  
+  // Expose the gl renderer to parent
+  useFrame(() => {
+    // This runs every frame, but we only capture when explicitly triggered
+  });
+
+  // Make gl available via ref callback
+  if (onCapture) {
+    (window as any).__three_gl = gl;
+  }
+
+  return null;
+}
+
+// ============================================================
 // MAIN COMPONENT
 // ============================================================
 
-export function Card3DPreview({ data, className }: Card3DPreviewProps) {
+export function Card3DPreview({ data, className, onExport }: Card3DPreviewProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [autoRotate, setAutoRotate] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportSuccess, setExportSuccess] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const handleExportPNG = useCallback(async () => {
+    setIsExporting(true);
+    
+    try {
+      // Get the canvas element from the Three.js renderer
+      const gl = (window as any).__three_gl as THREE.WebGLRenderer;
+      
+      if (!gl) {
+        throw new Error("Renderer not available");
+      }
+
+      // Render one more frame to ensure latest state
+      gl.render(gl.info as any, gl.info as any);
+      
+      // Get the canvas and create a high-res export
+      const canvas = gl.domElement;
+      
+      // Create a new canvas for export with padding and branding
+      const exportCanvas = document.createElement("canvas");
+      const padding = 60;
+      const brandingHeight = 40;
+      exportCanvas.width = canvas.width + padding * 2;
+      exportCanvas.height = canvas.height + padding * 2 + brandingHeight;
+      
+      const ctx = exportCanvas.getContext("2d");
+      if (!ctx) throw new Error("Could not get canvas context");
+      
+      // Fill background with gradient
+      const gradient = ctx.createLinearGradient(0, 0, exportCanvas.width, exportCanvas.height);
+      gradient.addColorStop(0, "#1a1a2e");
+      gradient.addColorStop(1, "#16213e");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+      
+      // Draw the 3D render
+      ctx.drawImage(canvas, padding, padding);
+      
+      // Add branding
+      ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+      ctx.font = "14px -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Créé avec IWASP • iwasp.ma", exportCanvas.width / 2, exportCanvas.height - 15);
+      
+      // Convert to blob and download
+      exportCanvas.toBlob((blob) => {
+        if (!blob) {
+          throw new Error("Could not create image blob");
+        }
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        const fileName = `iwasp-card-${data.firstName || "preview"}-${Date.now()}.png`;
+        link.download = fileName;
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+        // Callback for parent
+        if (onExport) {
+          onExport(url);
+        }
+        
+        setExportSuccess(true);
+        toast.success("Image exportée avec succès !");
+        
+        setTimeout(() => setExportSuccess(false), 2000);
+      }, "image/png", 1.0);
+      
+    } catch (error) {
+      console.error("Export failed:", error);
+      toast.error("Erreur lors de l'export de l'image");
+    } finally {
+      setIsExporting(false);
+    }
+  }, [data.firstName, onExport]);
+
+  const handleShare = useCallback(async () => {
+    setIsExporting(true);
+    
+    try {
+      const gl = (window as any).__three_gl as THREE.WebGLRenderer;
+      
+      if (!gl) {
+        throw new Error("Renderer not available");
+      }
+
+      const canvas = gl.domElement;
+      
+      // Create export canvas
+      const exportCanvas = document.createElement("canvas");
+      const padding = 60;
+      const brandingHeight = 40;
+      exportCanvas.width = canvas.width + padding * 2;
+      exportCanvas.height = canvas.height + padding * 2 + brandingHeight;
+      
+      const ctx = exportCanvas.getContext("2d");
+      if (!ctx) throw new Error("Could not get canvas context");
+      
+      const gradient = ctx.createLinearGradient(0, 0, exportCanvas.width, exportCanvas.height);
+      gradient.addColorStop(0, "#1a1a2e");
+      gradient.addColorStop(1, "#16213e");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+      ctx.drawImage(canvas, padding, padding);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+      ctx.font = "14px -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Créé avec IWASP • iwasp.ma", exportCanvas.width / 2, exportCanvas.height - 15);
+      
+      // Convert to blob for sharing
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        exportCanvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error("Could not create blob"));
+        }, "image/png", 1.0);
+      });
+      
+      const file = new File([blob], `iwasp-card-${data.firstName || "preview"}.png`, { type: "image/png" });
+      
+      // Check if Web Share API is available
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: "Ma carte IWASP",
+          text: `Découvrez ma carte de visite digitale IWASP - ${data.firstName || ""} ${data.lastName || ""}`,
+          files: [file]
+        });
+        toast.success("Partagé avec succès !");
+      } else {
+        // Fallback: copy to clipboard or download
+        if (navigator.clipboard && (navigator.clipboard as any).write) {
+          await (navigator.clipboard as any).write([
+            new ClipboardItem({ "image/png": blob })
+          ]);
+          toast.success("Image copiée dans le presse-papiers !");
+        } else {
+          // Final fallback: download
+          handleExportPNG();
+        }
+      }
+      
+    } catch (error) {
+      console.error("Share failed:", error);
+      if ((error as Error).name !== "AbortError") {
+        toast.error("Erreur lors du partage");
+      }
+    } finally {
+      setIsExporting(false);
+    }
+  }, [data.firstName, data.lastName, handleExportPNG]);
 
   return (
     <motion.div
@@ -220,6 +395,32 @@ export function Card3DPreview({ data, className }: Card3DPreviewProps) {
     >
       {/* Controls */}
       <div className="absolute top-3 right-3 z-10 flex gap-2">
+        <Button
+          variant="secondary"
+          size="icon"
+          className="h-8 w-8 bg-background/80 backdrop-blur-sm"
+          onClick={handleShare}
+          disabled={isExporting}
+          title="Partager"
+        >
+          <Share2 size={14} />
+        </Button>
+        <Button
+          variant="secondary"
+          size="icon"
+          className="h-8 w-8 bg-background/80 backdrop-blur-sm"
+          onClick={handleExportPNG}
+          disabled={isExporting}
+          title="Exporter en PNG"
+        >
+          {exportSuccess ? (
+            <Check size={14} className="text-green-500" />
+          ) : isExporting ? (
+            <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Download size={14} />
+          )}
+        </Button>
         <Button
           variant="secondary"
           size="icon"
@@ -246,11 +447,15 @@ export function Card3DPreview({ data, className }: Card3DPreviewProps) {
 
       {/* 3D Canvas */}
       <Canvas
+        ref={canvasRef}
         camera={{ position: [0, 0, 4.5], fov: 45 }}
         dpr={[1, 2]}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
       >
         <Suspense fallback={<LoadingCard />}>
+          {/* Export helper */}
+          <ExportHelper onCapture={() => {}} />
+          
           {/* Lighting */}
           <ambientLight intensity={0.4} />
           <spotLight
