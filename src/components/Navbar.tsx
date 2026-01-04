@@ -16,14 +16,12 @@ export function Navbar() {
   const { user, signOut, loading } = useAuth();
   const { totalItems } = useCart();
 
-  const WHATSAPP_COMMANDER = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20une%20carte%20NFC%20i-wasp.";
-  
   const navLinks = [
     { href: "/", label: "Accueil", isExternal: false },
     { href: "/features", label: "Fonctionnalités", isExternal: false },
     { href: "/pricing", label: "Tarifs", isExternal: false },
     { href: "/enterprise", label: "Entreprises", isExternal: false },
-    { href: WHATSAPP_COMMANDER, label: "Commander", highlight: true, isExternal: true },
+    { href: "/order/type", label: "Commander", highlight: true, isExternal: false },
   ];
 
   useEffect(() => {
