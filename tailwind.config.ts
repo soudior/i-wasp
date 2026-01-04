@@ -22,12 +22,11 @@ export default {
         /* ═══════════════════════════════════════════════════════════════
            i-WASP DESIGN SYSTEM — SIGNATURE OFFICIELLE VERROUILLÉE
            
-           Référence : Carte NFC physique blanche ultra premium
-           - Fond principal : #FFFFFF
-           - Texte principal : #000000
-           - Gris séparation : #F2F2F2
-           - Gris bordure    : #EAEAEA
-           - AUCUNE AUTRE COULEUR AUTORISÉE
+           Référence : Carte NFC physique i-Wasp Signature
+           - Blanc principal   : #FFFFFF
+           - Noir profond      : #000000
+           - Jaune signature   : #F5B400 (accent UNIQUEMENT)
+           - Gris subtil       : #F2F2F2 / #EAEAEA
            ═══════════════════════════════════════════════════════════════ */
         
         /* Semantic tokens */
@@ -88,6 +87,7 @@ export default {
         iwasp: {
           blanc: "#FFFFFF",                /* Fond principal */
           noir: "#000000",                 /* Texte & logo */
+          jaune: "#F5B400",                /* Accent signature */
           "gris-fond": "#F2F2F2",          /* Fond secondaire */
           "gris-bordure": "#EAEAEA",       /* Bordures subtiles */
           "gris-texte": "#8C8C8C",         /* Texte secondaire */
@@ -103,6 +103,7 @@ export default {
           logo: "#000000",                 /* Logo noir */
           texte: "#000000",                /* Texte noir */
           secondaire: "#8C8C8C",           /* Texte secondaire */
+          accent: "#F5B400",               /* Jaune signature */
         },
       },
       borderRadius: {

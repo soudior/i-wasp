@@ -68,7 +68,7 @@ export function Navbar() {
                   rel="noopener noreferrer"
                   className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                     link.highlight
-                      ? "bg-foreground text-background hover:bg-foreground/90"
+                      ? "bg-primary text-primary-foreground hover:brightness-105"
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                   }`}
                 >
@@ -80,7 +80,7 @@ export function Navbar() {
                   to={link.href}
                   className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                     link.highlight
-                      ? "bg-foreground text-background hover:bg-foreground/90"
+                      ? "bg-primary text-primary-foreground hover:brightness-105"
                       : location.pathname === link.href
                       ? "text-foreground bg-secondary"
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -169,7 +169,7 @@ export function Navbar() {
                   rel="noopener noreferrer"
                   className={`block text-lg font-medium transition-colors ${
                     link.highlight
-                      ? "inline-flex px-4 py-2 rounded-lg bg-foreground text-background font-semibold"
+                      ? "inline-flex px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -182,7 +182,7 @@ export function Navbar() {
                   to={link.href}
                   className={`block text-lg font-medium transition-colors ${
                     link.highlight
-                      ? "inline-flex px-4 py-2 rounded-lg bg-foreground text-background font-semibold"
+                      ? "inline-flex px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}

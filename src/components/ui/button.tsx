@@ -9,23 +9,26 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        // Primary = Jaune signature i-Wasp #F5B400
         default:
-          "bg-foreground text-background shadow-lg",
+          "bg-primary text-primary-foreground shadow-lg hover:brightness-105",
         destructive:
           "bg-destructive text-destructive-foreground",
         outline:
-          "border border-border bg-transparent text-foreground",
+          "border border-border bg-transparent text-foreground hover:bg-secondary",
         secondary:
-          "bg-secondary text-secondary-foreground",
-        ghost: "text-foreground",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "text-foreground hover:bg-secondary",
         link: "text-foreground underline-offset-4 hover:underline",
-        // Premium variants - visionOS inspired
-        glass: "btn-glass text-foreground",
-        chrome: "btn-chrome font-semibold transition-transform",
-        hero: "btn-chrome font-semibold text-base px-8 py-4 rounded-2xl transition-transform shadow-lg",
-        heroOutline: "border border-foreground/20 bg-transparent text-foreground font-medium text-base px-8 py-4 rounded-2xl transition-all duration-200",
-        wallet: "wallet-btn text-foreground flex items-center gap-3",
-        minimal: "text-muted-foreground transition-colors",
+        // Premium variants
+        glass: "bg-white/90 border border-border text-foreground shadow-sm",
+        chrome: "bg-primary text-primary-foreground font-semibold shadow-lg hover:brightness-105",
+        hero: "bg-primary text-primary-foreground font-semibold text-base px-8 py-4 rounded-2xl shadow-lg hover:brightness-105",
+        heroOutline: "border border-foreground/20 bg-transparent text-foreground font-medium text-base px-8 py-4 rounded-2xl hover:bg-secondary",
+        wallet: "bg-foreground text-background flex items-center gap-3",
+        minimal: "text-muted-foreground hover:text-foreground transition-colors",
+        // Noir pour CTAs secondaires
+        noir: "bg-foreground text-background shadow-lg hover:bg-foreground/90",
       },
       size: {
         default: "h-11 px-5 py-2.5 min-h-[48px]",
