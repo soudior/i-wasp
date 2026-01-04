@@ -93,6 +93,35 @@ const Index = () => {
       </section>
 
       {/* ════════════════════════════════════════════════════════════════
+         HERO VIDEO — Démonstration NFC pleine largeur
+         Carte passant devant téléphone, geste évident
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="py-12 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}>
+            {/* Video avec aspect ratio responsive */}
+            <div className="relative aspect-video md:aspect-video">
+              <video
+                src="/nfc-demo-video.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ backgroundColor: '#0B0B0B' }}
+              />
+            </div>
+            {/* Overlay dégradé subtil bas */}
+            <div 
+              className="absolute inset-x-0 bottom-0 h-20 pointer-events-none"
+              style={{ background: 'linear-gradient(to top, rgba(11,11,11,0.6) 0%, transparent 100%)' }}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
          SECTION PRODUITS NFC — Choix des supports
          ════════════════════════════════════════════════════════════════ */}
       <section id="produits-nfc" className="py-20 px-6 border-t border-border scroll-mt-20">
