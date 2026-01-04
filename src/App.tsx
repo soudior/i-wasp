@@ -55,6 +55,7 @@ import Pricing from "./pages/Pricing";
 import Enterprise from "./pages/Enterprise";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
+import BrandAssets from "./pages/BrandAssets";
 
 // NEW Order funnel pages - 5 steps strict flow
 import OrderOffre from "./pages/order/OrderOffre";
@@ -203,6 +204,8 @@ const App = () => {
                             <Route path="/admin-iwasp" element={<AdminGuard><AdminOrders /></AdminGuard>} />
                             <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
                             <Route path="/admin/clients" element={<AdminGuard><AdminClients /></AdminGuard>} />
+                            <Route path="/admin/brand-assets" element={<AdminGuard><BrandAssets /></AdminGuard>} />
+                            <Route path="/brand-assets" element={<BrandAssets />} />
                             
                             {/* 404 */}
                             <Route path="*" element={<NotFound />} />

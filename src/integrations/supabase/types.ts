@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      brand_assets: {
+        Row: {
+          asset_type: string
+          created_at: string
+          file_name: string
+          file_url: string
+          id: string
+          is_locked: boolean
+          notes: string | null
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          asset_type: string
+          created_at?: string
+          file_name: string
+          file_url: string
+          id?: string
+          is_locked?: boolean
+          notes?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          asset_type?: string
+          created_at?: string
+          file_name?: string
+          file_url?: string
+          id?: string
+          is_locked?: boolean
+          notes?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       card_properties: {
         Row: {
           card_id: string
