@@ -1,5 +1,5 @@
 /**
- * Step 5: Confirmation
+ * Step 6: Confirmation
  * /order/confirmation
  * 
  * - Compte créé automatiquement
@@ -261,7 +261,7 @@ function OrderConfirmationContent() {
 
 export default function OrderConfirmationNew() {
   return (
-    <OrderFunnelGuard step={5}>
+    <OrderFunnelGuard step={6}>
       <OrderConfirmationContent />
     </OrderFunnelGuard>
   );
