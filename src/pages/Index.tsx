@@ -3,6 +3,7 @@ import { CreditCard, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileOptimizedVideo } from "@/components/MobileOptimizedVideo";
 import { IWASPLogo } from "@/components/IWASPLogo";
+import { NFCCardPreview } from "@/components/NFCCardPreview";
 import nfcPoster from "@/assets/posters/nfc-demo-poster.webp";
 import nailsPoster from "@/assets/posters/nails-demo-poster.webp";
 
@@ -150,9 +151,49 @@ const Index = () => {
       </section>
 
       {/* ════════════════════════════════════════════════════════════════
-         SECTION PRODUITS — Grille minimaliste
+         SECTION CARTE PHYSIQUE — Prévisualisation 3D
          ════════════════════════════════════════════════════════════════ */}
       <section className="py-24 px-6 bg-secondary/30">
+        <div className="max-w-4xl mx-auto">
+          
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-4">
+              La Carte. Votre signature.
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-lg mx-auto">
+              Design ultra-premium, finition impeccable, technologie invisible.
+            </p>
+          </div>
+
+          <NFCCardPreview 
+            name="Votre Nom" 
+            title="Votre Titre · i-Wasp"
+            showFlipHint={true}
+          />
+          
+          <div className="text-center mt-12">
+            <a 
+              href={WHATSAPP_CARTE}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button 
+                size="lg" 
+                className="bg-foreground text-background hover:bg-foreground/90 font-medium gap-2 px-8 py-6 text-base rounded-lg"
+              >
+                <CreditCard className="w-4 h-4" />
+                Commander ma Carte
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SECTION PRODUITS — Grille minimaliste
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="py-24 px-6">
         <div className="max-w-4xl mx-auto">
           
           <div className="text-center mb-16">
