@@ -25,7 +25,8 @@ import {
   Monitor, ChevronLeft, ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { VisualBlockEditor, TemplatePicker } from "@/components/editor";
+import { VisualBlockEditor, TemplatePicker, StyleCustomizer, defaultCardStyle } from "@/components/editor";
+import type { CardStyle } from "@/components/editor";
 import { DynamicCardRenderer } from "@/components/DynamicCardRenderer";
 import {
   CardBlock,
@@ -62,6 +63,7 @@ export default function CardStudio() {
   const [isSaving, setIsSaving] = useState(false);
   const [editingCardId, setEditingCardId] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [cardStyle, setCardStyle] = useState<CardStyle>(defaultCardStyle);
 
   // Load existing card if editing
   useEffect(() => {
@@ -108,7 +110,7 @@ export default function CardStudio() {
     if (blocks.length > 0) {
       setHasUnsavedChanges(true);
     }
-  }, [blocks, selectedTemplate]);
+  }, [blocks, selectedTemplate, cardStyle]);
 
   // Handle save
   const handleSave = useCallback(async () => {
@@ -261,17 +263,10 @@ export default function CardStudio() {
                 </TabsContent>
 
                 <TabsContent value="style" className="mt-0">
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
-                      <Palette size={24} className="text-muted-foreground" />
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-1">
-                      Personnalisation avancée
-                    </p>
-                    <p className="text-xs text-muted-foreground/70">
-                      Bientôt disponible
-                    </p>
-                  </div>
+                  <StyleCustomizer
+                    style={cardStyle}
+                    onChange={setCardStyle}
+                  />
                 </TabsContent>
               </Tabs>
             </Card>
@@ -321,10 +316,16 @@ export default function CardStudio() {
                           : "max-w-full"
                       )}
                     >
-                      <div className="bg-muted/30 rounded-2xl p-4 min-h-[500px]">
+                      <div 
+                        className="rounded-2xl p-4 min-h-[500px] transition-all duration-300"
+                        style={{
+                          backgroundColor: cardStyle.backgroundColor + "20",
+                          borderRadius: `${cardStyle.borderRadius}px`,
+                        }}
+                      >
                         <DynamicCardRenderer
                           blocks={blocks}
-                          theme="dark"
+                          theme={cardStyle.theme === "auto" ? "dark" : cardStyle.theme}
                           showWalletButtons={false}
                         />
                       </div>
