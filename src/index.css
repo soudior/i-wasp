@@ -280,23 +280,43 @@
      - Pas de délai 300ms
      - Zones tactiles minimum 44px
      ═══════════════════════════════════════════════════════════════════════ */
-  button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
+  button, a, [role="button"], input[type="checkbox"], input[type="radio"], .clickable {
     @apply touch-manipulation;
     /* VERROUILLÉ: Suppression délai 300ms mobile */
     touch-action: manipulation;
+    /* VERROUILLÉ: Pas de highlight iOS */
+    -webkit-tap-highlight-color: transparent;
+    /* VERROUILLÉ: Empêcher sélection texte accidentelle */
+    user-select: none;
+    -webkit-user-select: none;
   }
   
   /* VERROUILLÉ: Zones tactiles Apple HIG 44px minimum */
-  button:not(.icon-only), 
-  a:not(.text-link),
+  button:not(.icon-only):not(.text-button), 
+  a:not(.text-link):not(.inline-link),
   [role="button"] {
     min-height: 44px;
     min-width: 44px;
   }
   
+  /* CTA buttons - zones tactiles 48px minimum */
+  button.cta, .btn-cta, [data-cta="true"] {
+    min-height: 48px;
+  }
+  
   /* Inputs mobile-friendly (empêche zoom iOS) */
   input, textarea, select {
     font-size: 16px;
+    /* VERROUILLÉ: Pas de highlight */
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* VERROUILLÉ: Feedback visuel instantané sur tap */
+  button:active:not(:disabled),
+  a:active,
+  [role="button"]:active:not(:disabled) {
+    transform: scale(0.97);
+    transition: transform 50ms ease-out;
   }
 }
 

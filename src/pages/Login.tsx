@@ -216,12 +216,12 @@ export default function Login() {
           </div>
         )}
 
-        {/* Google OAuth Button - Single tap, no delay */}
+        {/* Google OAuth Button - Single tap, min 48px height, disabled during loading */}
         <button
           type="button"
           onClick={handleGoogleLogin}
           disabled={isGoogleLoading || isLoading}
-          className="w-full py-3.5 rounded-xl font-medium text-sm flex items-center justify-center gap-3 mb-6 disabled:opacity-50 touch-manipulation active:scale-[0.98] transition-transform duration-75"
+          className="w-full py-3.5 min-h-[48px] rounded-xl font-medium text-sm flex items-center justify-center gap-3 mb-6 disabled:opacity-50 disabled:pointer-events-none touch-manipulation select-none active:scale-[0.98] transition-transform duration-75"
           style={{
             background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)",
             backdropFilter: "blur(10px)",
@@ -309,7 +309,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isLoading || isGoogleLoading}
-            className="w-full py-3.5 rounded-xl font-medium text-sm disabled:opacity-50 touch-manipulation active:scale-[0.98] transition-transform duration-75"
+            className="w-full py-3.5 min-h-[48px] rounded-xl font-medium text-sm disabled:opacity-50 disabled:pointer-events-none touch-manipulation select-none active:scale-[0.98] transition-transform duration-75"
             style={{
               backgroundColor: "#007AFF",
               color: "#FFFFFF",
