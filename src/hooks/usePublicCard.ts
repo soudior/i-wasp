@@ -7,6 +7,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+export interface CardCustomStyles {
+  backgroundColor?: string;
+  accentColor?: string;
+  textColor?: string;
+  secondaryTextColor?: string;
+  headingFont?: string;
+  bodyFont?: string;
+  borderRadius?: number;
+  borderWidth?: number;
+  borderColor?: string;
+  shadowPreset?: "none" | "subtle" | "medium" | "strong" | "glow";
+  theme?: "dark" | "light" | "auto";
+}
+
 export interface PublicCardData {
   id: string;
   slug: string;
@@ -22,6 +36,7 @@ export interface PublicCardData {
   template: string;
   social_links: any[] | null;
   blocks: any[] | null;
+  custom_styles: CardCustomStyles | null;
   // Boolean flags - never expose raw contact data
   has_email: boolean;
   has_phone: boolean;

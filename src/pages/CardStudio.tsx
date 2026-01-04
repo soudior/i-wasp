@@ -64,6 +64,7 @@ export default function CardStudio() {
   const [editingCardId, setEditingCardId] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [cardStyle, setCardStyle] = useState<CardStyle>(defaultCardStyle);
+  const [styleLoaded, setStyleLoaded] = useState(false);
 
   // Load existing card if editing
   useEffect(() => {
@@ -73,6 +74,25 @@ export default function CardStudio() {
       if (existingCard) {
         setEditingCardId(cardId);
         setSelectedTemplate(existingCard.template || "signature");
+        
+        // Load custom styles if available
+        const savedStyles = (existingCard as any).custom_styles;
+        if (savedStyles && !styleLoaded) {
+          setCardStyle({
+            backgroundColor: savedStyles.backgroundColor || defaultCardStyle.backgroundColor,
+            accentColor: savedStyles.accentColor || defaultCardStyle.accentColor,
+            textColor: savedStyles.textColor || defaultCardStyle.textColor,
+            secondaryTextColor: savedStyles.secondaryTextColor || defaultCardStyle.secondaryTextColor,
+            headingFont: savedStyles.headingFont || defaultCardStyle.headingFont,
+            bodyFont: savedStyles.bodyFont || defaultCardStyle.bodyFont,
+            borderRadius: savedStyles.borderRadius ?? defaultCardStyle.borderRadius,
+            borderWidth: savedStyles.borderWidth ?? defaultCardStyle.borderWidth,
+            borderColor: savedStyles.borderColor || defaultCardStyle.borderColor,
+            shadowPreset: savedStyles.shadowPreset || defaultCardStyle.shadowPreset,
+            theme: savedStyles.theme || defaultCardStyle.theme,
+          });
+          setStyleLoaded(true);
+        }
         
         // Convert legacy data to blocks if needed
         if (existingCard.blocks && Array.isArray(existingCard.blocks)) {
@@ -103,7 +123,7 @@ export default function CardStudio() {
       // New card - add default identity block
       setBlocks([createIdentityBlock()]);
     }
-  }, [searchParams, cards, cardsLoading]);
+  }, [searchParams, cards, cardsLoading, styleLoaded]);
 
   // Track unsaved changes
   useEffect(() => {
@@ -143,13 +163,14 @@ export default function CardStudio() {
         template: selectedTemplate,
         blocks: blocks,
         social_links: legacyData.socialLinks,
+        custom_styles: cardStyle,
       };
 
       if (editingCardId) {
         await updateCard.mutateAsync({ id: editingCardId, data: cardData });
         toast.success("Carte mise à jour !");
       } else {
-        const newCard = await createCard.mutateAsync(cardData);
+        const newCard = await createCard.mutateAsync(cardData as any);
         setEditingCardId(newCard.id);
         toast.success("Carte créée !");
       }
