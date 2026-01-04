@@ -1,15 +1,13 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Zap, RefreshCw, Shield, Briefcase, Building2, Palette, Users, Crown } from "lucide-react";
+import { ArrowRight, Zap, RefreshCw, Shield, Briefcase, Building2, Palette, Users, Crown, CreditCard, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhysicalCardPreview } from "@/components/PhysicalCardPreview";
 import phonePreview from "@/assets/phone-preview.png";
 import nfcCardWaxSeal from "@/assets/nfc-card-wax-seal.png";
 
-const WHATSAPP_CREATE = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20créer%20ma%20carte%20i-wasp.";
-
 /**
  * Index - Page d'accueil i-Wasp
- * Positionnement mondial, premium, direct
+ * Dark Luxury Theme - Fond noir, accent jaune unique
  */
 
 const Index = () => {
@@ -17,7 +15,8 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       
       {/* ════════════════════════════════════════════════════════════════
-         HERO SECTION — ÉCRAN 1
+         HERO SECTION — Dark Luxury
+         Fond noir, pas de dégradé
          ════════════════════════════════════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center justify-center px-6 py-20">
         <div className="max-w-6xl mx-auto">
@@ -26,13 +25,13 @@ const Index = () => {
             {/* Contenu texte */}
             <div className="space-y-8 text-center lg:text-left">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-                Votre carte de visite.
-                <span className="block text-primary">En un seul geste.</span>
+                Une carte NFC.
+                <span className="block text-foreground">Un profil qui évolue.</span>
               </h1>
               
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto lg:mx-0">
-                La conciergerie digitale qui transforme un simple contact
-                en une expérience professionnelle complète.
+                Carte physique premium. Identité digitale vivante.
+                <span className="block mt-1">Zéro réimpression.</span>
               </p>
               
               <div className="flex flex-col sm:flex-row items-center gap-4 pt-4 justify-center lg:justify-start">
@@ -41,20 +40,20 @@ const Index = () => {
                     size="lg" 
                     className="bg-primary text-primary-foreground hover:brightness-110 font-semibold gap-2 px-8 py-6 text-base rounded-lg transition-all"
                   >
-                    Créer ma carte
+                    Commander
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
                 
-                <Link to="/demo">
+                <a href="#carte-reelle">
                   <Button 
                     variant="outline" 
                     size="lg"
                     className="border-border text-foreground hover:bg-secondary px-8 py-6 text-base rounded-lg font-medium"
                   >
-                    Voir comment ça marche
+                    Voir la carte réelle
                   </Button>
-                </Link>
+                </a>
               </div>
             </div>
             
@@ -85,58 +84,116 @@ const Index = () => {
       </section>
 
       {/* ════════════════════════════════════════════════════════════════
-         SECTION 2 — PROMESSE DE LEADERSHIP
+         SECTION — CARTE PHYSIQUE vs CARTE DIGITALE
+         Deux blocs distincts
          ════════════════════════════════════════════════════════════════ */}
       <section className="py-24 px-6 border-t border-border">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-6">
-            Pensée pour être numéro 1 mondial.
-          </h2>
-          
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-16">
-            i-Wasp ne vend pas une carte.
-            <span className="block mt-2">
-              i-Wasp crée un standard mondial de l'identité professionnelle digitale.
-            </span>
-          </p>
-          
-          {/* 3 Piliers */}
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-6 rounded-xl bg-card border border-border">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-6 h-6 text-primary" />
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Carte Physique */}
+            <div className="p-8 rounded-xl bg-card border border-border">
+              <div className="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+                <CreditCard className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="font-semibold text-foreground mb-2">Un tap universel</h3>
-              <p className="text-sm text-muted-foreground">
-                Compatible tous smartphones, sans application.
+              <h3 className="text-2xl font-bold text-foreground mb-3">Carte physique</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Support PVC premium avec puce NFC intégrée. Impression Evolis haute définition.
+                Design verrouillé, qualité professionnelle.
               </p>
+              <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                <li>• Format CR80 standard</li>
+                <li>• Finition mat premium</li>
+                <li>• Puce NFC NTAG intégrée</li>
+              </ul>
             </div>
             
-            <div className="p-6 rounded-xl bg-card border border-border">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <RefreshCw className="w-6 h-6 text-primary" />
+            {/* Carte Digitale */}
+            <div className="p-8 rounded-xl bg-card border border-border">
+              <div className="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+                <Smartphone className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="font-semibold text-foreground mb-2">Une identité toujours à jour</h3>
-              <p className="text-sm text-muted-foreground">
-                Modifiez vos informations en temps réel.
+              <h3 className="text-2xl font-bold text-foreground mb-3">Carte digitale</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                Profil en ligne modifiable à tout moment. Évoluez sans réimprimer.
+                Accessible via tap NFC ou lien direct.
               </p>
-            </div>
-            
-            <div className="p-6 rounded-xl bg-card border border-border">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">Une expérience maîtrisée</h3>
-              <p className="text-sm text-muted-foreground">
-                Design premium, données protégées.
-              </p>
+              <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                <li>• Modifiable en temps réel</li>
+                <li>• Réseaux sociaux intégrés</li>
+                <li>• vCard automatique</li>
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
       {/* ════════════════════════════════════════════════════════════════
-         SECTION 3 — COMMENT ÇA MARCHE
+         SECTION — CARTE RÉELLE
+         Rendu 1:1
+         ════════════════════════════════════════════════════════════════ */}
+      <section id="carte-reelle" className="py-24 px-6 bg-card border-t border-border scroll-mt-20">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">
+              La carte que vous aurez réellement en main.
+            </h2>
+            <p className="text-primary font-medium mb-2">
+              Rendu réel — impression Evolis haute définition.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Aucun visuel marketing. Uniquement l'aperçu de production.
+            </p>
+          </div>
+          
+          <PhysicalCardPreview showSpecs />
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SECTION — VIDÉOS NFC
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="py-24 px-6 border-t border-border">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground text-center mb-12">
+            Voyez la technologie en action
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Vidéo carte NFC */}
+            <div className="rounded-xl overflow-hidden bg-card border border-border">
+              <video
+                src="/nfc-demo-video.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-4">
+                <p className="text-sm text-muted-foreground">Carte NFC en main</p>
+              </div>
+            </div>
+            
+            {/* Vidéo ongles NFC */}
+            <div className="rounded-xl overflow-hidden bg-card border border-border">
+              <video
+                src="/nails-demo-video.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-4">
+                <p className="text-sm text-muted-foreground">NFC en usage réel</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SECTION — COMMENT ÇA MARCHE
          ════════════════════════════════════════════════════════════════ */}
       <section className="py-24 px-6 bg-card border-t border-border">
         <div className="max-w-4xl mx-auto">
@@ -169,9 +226,9 @@ const Index = () => {
               <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                 3
               </div>
-              <h3 className="font-semibold text-foreground text-lg mb-2">Votre contact est enregistré</h3>
+              <h3 className="font-semibold text-foreground text-lg mb-2">Contact enregistré</h3>
               <p className="text-muted-foreground text-sm">
-                Instantanément dans le répertoire de votre interlocuteur.
+                Instantanément dans le répertoire.
               </p>
             </div>
           </div>
@@ -179,7 +236,7 @@ const Index = () => {
       </section>
 
       {/* ════════════════════════════════════════════════════════════════
-         SECTION 4 — POUR QUI
+         SECTION — POUR QUI
          ════════════════════════════════════════════════════════════════ */}
       <section className="py-24 px-6 border-t border-border">
         <div className="max-w-5xl mx-auto">
@@ -208,52 +265,7 @@ const Index = () => {
       </section>
 
       {/* ════════════════════════════════════════════════════════════════
-         SECTION 5 — APERÇU CARTE RÉELLE
-         ════════════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-6 bg-card border-t border-border">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">
-              La carte que vous aurez réellement en main.
-            </h2>
-            <p className="text-muted-foreground mb-2">
-              Impression premium – carte NFC professionnelle
-            </p>
-            <p className="text-xs text-muted-foreground/70">
-              Aucun visuel marketing. Uniquement l'aperçu réel de production.
-            </p>
-          </div>
-          
-          <PhysicalCardPreview showSpecs />
-          
-          <div className="text-center mt-12">
-            <Link to="/pricing">
-              <Button 
-                variant="outline"
-                size="lg"
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 rounded-lg font-medium"
-              >
-                Voir les offres
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════
-         SECTION 6 — PREUVE DE SÉRIEUX
-         ════════════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-6 border-t border-border">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-lg text-muted-foreground">
-            Utilisée par des professionnels, marques et établissements premium.
-          </p>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════
-         SECTION 7 — CTA FINAL
+         SECTION — CTA FINAL
          ════════════════════════════════════════════════════════════════ */}
       <section className="py-24 px-6 bg-card border-t border-border">
         <div className="max-w-2xl mx-auto text-center">
@@ -266,7 +278,7 @@ const Index = () => {
               size="lg" 
               className="bg-primary text-primary-foreground hover:brightness-110 font-semibold gap-2 px-10 py-6 text-lg rounded-lg transition-all"
             >
-              Créer ma carte i-Wasp
+              Commander
               <ArrowRight className="w-5 h-5" />
             </Button>
           </Link>
