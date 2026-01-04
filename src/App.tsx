@@ -46,6 +46,7 @@ import CertificatPartenaire from "./pages/CertificatPartenaire";
 import RentalDemo from "./pages/RentalDemo";
 import UltraLuxeDemo from "./pages/UltraLuxeDemo";
 import VCardAirbnbBookingDemo from "./pages/VCardAirbnbBookingDemo";
+import ClientForm from "./pages/ClientForm";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import About from "./pages/About";
@@ -167,6 +168,11 @@ const App = () => {
                       <Route path="/rental-demo" element={<RentalDemo />} />
                       <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
                       <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
+                      
+                      {/* Client Form - Shareable via WhatsApp */}
+                      <Route path="/form" element={<ClientForm />} />
+                      <Route path="/formulaire" element={<ClientForm />} />
+                      
                       {/* Finalize card after auth */}
                       <Route path="/onboarding/finalize" element={<FinalizeCard />} />
                       
