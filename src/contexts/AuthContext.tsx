@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -15,9 +16,11 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const bootstrappedForUserId = useRef<string | null>(null);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -50,9 +53,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Server-side bootstrap: if the logged-in user is the founder (ADMIN_EMAIL), grant admin role automatically.
+  useEffect(() => {
+    const uid = session?.user?.id;
+    if (!uid) return;
+
+    if (bootstrappedForUserId.current === uid) return;
+    bootstrappedForUserId.current = uid;
+
+    supabase.functions
+      .invoke("bootstrap-admin", { body: { action: "ensure" } })
+      .then(({ error }) => {
+        if (error) {
+          console.warn("bootstrap-admin error", error);
+          return;
+        }
+        queryClient.invalidateQueries({ queryKey: ["isAdmin", uid] });
+      })
+      .catch((e) => console.warn("bootstrap-admin invoke failed", e));
+  }, [session?.user?.id, queryClient]);
+
   const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
     const redirectUrl = `${window.location.origin}/dashboard`;
-    
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -64,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
     });
-    
+
     return { error: error as Error | null };
   };
 
@@ -73,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email,
       password,
     });
-    
+
     return { error: error as Error | null };
   };
 

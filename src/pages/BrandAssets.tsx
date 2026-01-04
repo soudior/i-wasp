@@ -328,14 +328,23 @@ export default function BrandAssets() {
 
                 {/* Evolis Generator Link */}
                 {isAdmin && (
-                  <div className="mt-6 pt-4 border-t border-border">
+                  <div className="mt-6 pt-4 border-t border-border space-y-3">
                     <Button
                       onClick={() => navigate("/admin/evolis")}
                       className="w-full bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
                     >
                       <FileDown className="h-4 w-4" />
-                      Ouvrir le générateur PDF Evolis
+                      Générer PDF Evolis
                       <ArrowRight className="h-4 w-4 ml-auto" />
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate("/admin/instant")}
+                      className="w-full gap-2"
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                      Créer vCard instantanément
                     </Button>
                   </div>
                 )}
