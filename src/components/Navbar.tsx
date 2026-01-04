@@ -6,7 +6,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import { AnimatedIWASPLogo } from "@/components/AnimatedIWASPLogo";
 
 export function Navbar() {
   const { t } = useTranslation();
@@ -43,17 +42,19 @@ export function Navbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-iwasp-bg/95 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
+        isScrolled 
+          ? "bg-background/95 backdrop-blur-xl border-b border-border shadow-sm" 
+          : "bg-background/80 backdrop-blur-md"
       }`}
     >
       <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo iWasp */}
+          {/* Logo iWasp - Style carte NFC blanche */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 rounded-lg bg-gold-500 flex items-center justify-center">
-              <span className="text-black font-bold text-sm">iW</span>
+            <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
+              <span className="text-background font-bold text-sm">iW</span>
             </div>
-            <span className="text-white font-semibold text-lg tracking-tight">iWasp</span>
+            <span className="text-foreground font-semibold text-lg tracking-tight">iWasp</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -67,8 +68,8 @@ export function Navbar() {
                   rel="noopener noreferrer"
                   className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                     link.highlight
-                      ? "bg-gold-500 text-black hover:bg-gold-400"
-                      : "text-iwasp-gray hover:text-white hover:bg-white/5"
+                      ? "bg-foreground text-background hover:bg-foreground/90"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                   }`}
                 >
                   {link.label}
@@ -79,10 +80,10 @@ export function Navbar() {
                   to={link.href}
                   className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                     link.highlight
-                      ? "bg-gold-500 text-black hover:bg-gold-400"
+                      ? "bg-foreground text-background hover:bg-foreground/90"
                       : location.pathname === link.href
-                      ? "text-white bg-white/10"
-                      : "text-iwasp-gray hover:text-white hover:bg-white/5"
+                      ? "text-foreground bg-secondary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                   }`}
                 >
                   {link.label}
@@ -100,7 +101,7 @@ export function Navbar() {
             <Link to="/cart" className="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
               <ShoppingCart size={20} />
               {totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-amber-500 text-background text-xs font-semibold flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-foreground text-background text-xs font-semibold flex items-center justify-center">
                   {totalItems > 9 ? "9+" : totalItems}
                 </span>
               )}
@@ -128,7 +129,7 @@ export function Navbar() {
                     </Button>
                   </Link>
                   <Link to="/signup">
-                    <Button variant="chrome" size="sm">
+                    <Button size="sm" className="bg-foreground text-background hover:bg-foreground/90">
                       {t("nav.signup")}
                     </Button>
                   </Link>
@@ -149,7 +150,7 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu (CSS-only, kept mounted to avoid DOM reconciliation edge-cases) */}
+        {/* Mobile Menu */}
         <div
           className={`md:hidden overflow-hidden transition-all duration-300 ease-out transform-gpu ${
             isMobileMenuOpen
@@ -168,7 +169,7 @@ export function Navbar() {
                   rel="noopener noreferrer"
                   className={`block text-lg font-medium transition-colors ${
                     link.highlight
-                      ? "inline-flex px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-background font-semibold"
+                      ? "inline-flex px-4 py-2 rounded-lg bg-foreground text-background font-semibold"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -181,7 +182,7 @@ export function Navbar() {
                   to={link.href}
                   className={`block text-lg font-medium transition-colors ${
                     link.highlight
-                      ? "inline-flex px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-background font-semibold"
+                      ? "inline-flex px-4 py-2 rounded-lg bg-foreground text-background font-semibold"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -194,7 +195,7 @@ export function Navbar() {
               {user ? (
                 <>
                   <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="chrome" className="w-full gap-2">
+                    <Button className="w-full gap-2 bg-foreground text-background hover:bg-foreground/90">
                       <LayoutDashboard size={16} />
                       {t("nav.dashboard")}
                     </Button>
@@ -219,7 +220,7 @@ export function Navbar() {
                     </Button>
                   </Link>
                   <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="chrome" className="w-full">
+                    <Button className="w-full bg-foreground text-background hover:bg-foreground/90">
                       {t("nav.signup")}
                     </Button>
                   </Link>
