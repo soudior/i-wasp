@@ -40,6 +40,7 @@ import {
   PRINT_COLORS,
   PrintColor
 } from "@/lib/printTypes";
+import { LogoUploadValidator } from "./LogoUploadValidator";
 
 // Evolis-specific constants
 const EVOLIS_SPECS = {
@@ -86,8 +87,15 @@ export function EvolisPDFGenerator({
   const [exportProgress, setExportProgress] = useState(0);
   const [previewSide, setPreviewSide] = useState<"front" | "back">("front");
   const [selectedColor, setSelectedColor] = useState<PrintColor>(design?.backgroundColor || "black");
+  const [logoUrl, setLogoUrl] = useState<string | undefined>(design?.logoUrl);
+  const [logoDimensions, setLogoDimensions] = useState<{ width: number; height: number } | null>(null);
 
   const colorConfig = PRINT_COLORS[selectedColor];
+
+  const handleLogoUploaded = (url: string, dimensions: { width: number; height: number }) => {
+    setLogoUrl(url);
+    setLogoDimensions(dimensions);
+  };
 
   // Generate print-ready PDF for Evolis
   const generateEvolisPDF = async () => {
@@ -279,6 +287,31 @@ export function EvolisPDFGenerator({
           </CardContent>
         </Card>
 
+        {/* Logo Upload Section */}
+        <Card 
+          className="border"
+          style={{ 
+            backgroundColor: 'rgba(255, 255, 255, 0.02)',
+            borderColor: 'rgba(245, 245, 245, 0.1)'
+          }}
+        >
+          <CardHeader className="pb-3">
+            <CardTitle 
+              className="text-sm flex items-center gap-2"
+              style={{ color: '#F5F5F5' }}
+            >
+              <Download size={16} />
+              Logo pour impression
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LogoUploadValidator
+              onLogoUploaded={handleLogoUploaded}
+              currentLogoUrl={logoUrl}
+            />
+          </CardContent>
+        </Card>
+
         {/* Preview Section */}
         <Card 
           className="border overflow-hidden"
@@ -353,9 +386,9 @@ export function EvolisPDFGenerator({
                       border: '2px dashed rgba(255, 199, 0, 0.3)'
                     }}
                   >
-                    {design?.logoUrl ? (
+                    {logoUrl ? (
                       <img 
-                        src={design.logoUrl} 
+                        src={logoUrl} 
                         alt="Logo" 
                         className="max-w-full max-h-full object-contain"
                       />
