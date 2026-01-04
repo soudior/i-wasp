@@ -19,6 +19,7 @@ import { NetworkProvider } from "@/components/NetworkProvider";
 import PublicCard from "./pages/PublicCard";
 import AdminClients from "./pages/AdminClients";
 import AdminCreator from "./pages/AdminCreator";
+import AdminInstantCard from "./pages/AdminInstantCard";
 import FirstCardSetup from "./pages/FirstCardSetup";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -210,6 +211,7 @@ const App = () => {
                             <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
                             <Route path="/admin/clients" element={<AdminGuard><AdminClients /></AdminGuard>} />
                             <Route path="/admin/creator" element={<AdminGuard><AdminCreator /></AdminGuard>} />
+                            <Route path="/admin/instant" element={<AdminGuard><AdminInstantCard /></AdminGuard>} />
                             <Route path="/admin/brand-assets" element={<AdminGuard><BrandAssets /></AdminGuard>} />
                             <Route path="/brand-assets" element={<BrandAssets />} />
                             
