@@ -315,20 +315,32 @@ function OrderLivraisonContent() {
                       <CheckCircle2 className="h-5 w-5 text-[#FFC700]" />
                     </div>
 
-                    {/* Card - Disabled */}
+                    {/* Card - Disabled with "Coming soon" message */}
                     <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-muted/30 opacity-60">
                       <RadioGroupItem value="card" id="card" disabled className="mt-1" />
                       <div className="flex-1">
                         <Label htmlFor="card" className="flex items-center gap-2 font-semibold text-base text-muted-foreground">
                           <CreditCard className="h-5 w-5" />
                           Carte bancaire
+                          <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
+                            Bientôt
+                          </span>
                         </Label>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Paiement par carte bientôt disponible
+                          Paiement en ligne bientôt disponible
                         </p>
                       </div>
                     </div>
                   </RadioGroup>
+                  
+                  {/* Online payment notice */}
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card border border-border">
+                    <Info className="h-4 w-4 text-primary flex-shrink-0" />
+                    <p className="text-xs text-muted-foreground">
+                      <span className="text-primary font-medium">Paiement en ligne bientôt disponible.</span>
+                      {" "}Pour l'instant, payez à la livraison.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
 
