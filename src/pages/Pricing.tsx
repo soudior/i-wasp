@@ -39,18 +39,23 @@ export default function Pricing() {
       {/* Hero */}
       <section className="relative py-20 md:py-28 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border mb-8">
-            <Crown className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-muted-foreground">2 plans simples</span>
-          </div>
+          <p className="text-sm text-muted-foreground tracking-widest uppercase mb-6">
+            Conciergerie digitale
+          </p>
           
-          <h1 className="text-4xl md:text-6xl font-semibold mb-6 text-foreground">
-            FREE ou <span className="text-primary">GOLD</span>
+          <h1 className="text-3xl md:text-5xl font-semibold tracking-tight mb-6 text-foreground">
+            Choisissez le niveau de service
+            <span className="block">qui correspond à votre image.</span>
           </h1>
           
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Commencez gratuitement. Passez GOLD quand vous voulez tout débloquer.
-          </p>
+          <div className="max-w-xl mx-auto space-y-2 mt-8">
+            <p className="text-lg text-foreground font-medium">
+              La carte physique est incluse.
+            </p>
+            <p className="text-muted-foreground">
+              Le service est ce qui fait la différence.
+            </p>
+          </div>
         </div>
       </section>
 
