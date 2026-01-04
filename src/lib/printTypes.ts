@@ -220,6 +220,13 @@ export const PRINT_COLORS = {
     textColor: "#ffffff",
     accentColor: "#a8d5c5",
   },
+  gold: { 
+    name: "Or Premium", 
+    hex: "#b8860b", 
+    cmyk: "0,27,90,28",
+    textColor: "#1a1a1a",
+    accentColor: "#d4af37",
+  },
   lightGrey: { 
     name: "Gris Clair", 
     hex: "#f0f0f0", 
@@ -296,7 +303,7 @@ export const PRINT_TEMPLATES: Record<PrintTemplateType, TemplateConfig> = {
     name: "IWASP Signature",
     tagline: "Logo Premium",
     description: "Carte signature avec logo dominant",
-    allowedColors: ["white", "black", "navy", "burgundy", "lightGrey"],
+    allowedColors: ["white", "black", "navy", "burgundy", "lightGrey", "gold", "forest"],
     defaultColor: "white",
     isSignature: true,
     typography: {
@@ -334,7 +341,7 @@ export const PRINT_TEMPLATES: Record<PrintTemplateType, TemplateConfig> = {
     name: "IWASP Black",
     tagline: "Luxury Premium",
     description: "Design minimaliste haut de gamme",
-    allowedColors: ["black", "charcoal"],
+    allowedColors: ["black", "charcoal", "burgundy"],
     defaultColor: "black",
     typography: {
       nameSize: 3.8,
@@ -362,7 +369,7 @@ export const PRINT_TEMPLATES: Record<PrintTemplateType, TemplateConfig> = {
     name: "IWASP Pure",
     tagline: "Clean Tech",
     description: "Esthétique épurée style Apple",
-    allowedColors: ["white", "silver"],
+    allowedColors: ["white", "silver", "gold"],
     defaultColor: "white",
     typography: {
       nameSize: 4.2,
