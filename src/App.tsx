@@ -62,7 +62,8 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import BrandAssets from "./pages/BrandAssets";
 
-// NEW Order funnel pages - 6 steps strict flow
+// NEW Order funnel pages - 7 steps strict flow
+import OrderType from "./pages/order/OrderType";
 import OrderOffre from "./pages/order/OrderOffre";
 import OrderIdentite from "./pages/order/OrderIdentite";
 import OrderCarte from "./pages/order/OrderCarte";
@@ -186,8 +187,9 @@ const App = () => {
                             {/* First card setup */}
                             <Route path="/setup" element={<FirstCardSetup />} />
                             
-                            {/* NEW ORDER FUNNEL - 6 steps STRICT */}
-                            <Route path="/order" element={<OrderRedirect />} />
+                            {/* NEW ORDER FUNNEL - 7 steps STRICT */}
+                            <Route path="/order" element={<Navigate to="/order/type" replace />} />
+                            <Route path="/order/type" element={<OrderType />} />
                             <Route path="/order/offre" element={<OrderOffre />} />
                             <Route path="/order/identite" element={<OrderIdentite />} />
                             <Route path="/order/carte" element={<OrderCarte />} />
@@ -196,7 +198,6 @@ const App = () => {
                             <Route path="/order/confirmation" element={<OrderConfirmationNew />} />
                             
                             {/* Legacy order routes - redirect to new funnel */}
-                            <Route path="/order/type" element={<Navigate to="/order/offre" replace />} />
                             <Route path="/order/identity" element={<Navigate to="/order/identite" replace />} />
                             <Route path="/order/digital" element={<Navigate to="/order/identite" replace />} />
                             <Route path="/order/design" element={<Navigate to="/order/carte" replace />} />
