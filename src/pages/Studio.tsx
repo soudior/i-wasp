@@ -53,7 +53,11 @@ import {
   Wine,
   Link2,
   Award,
-  Boxes
+  Boxes,
+  ScanLine,
+  Cpu,
+  Wifi,
+  Camera
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -171,13 +175,43 @@ const mockNFTAssets: NFTAsset[] = [
   { id: "2", name: "Pochette Monaco", type: "accessory", brand: "i-WASP Couture", tokenId: "0x8b4...5e1", authenticatedAt: "2025-11-20" },
 ];
 
+// Mock Alliance Data for Cercle Privé
+interface Alliance {
+  id: string;
+  name: string;
+  location: string;
+  time: string;
+  avatar?: string;
+}
+
+const mockAlliances: Alliance[] = [
+  { id: "1", name: "Villa G.", location: "Monaco", time: "10 min" },
+  { id: "2", name: "Club 55", location: "St-Tropez", time: "1h" },
+  { id: "3", name: "Le Bristol", location: "Paris", time: "1D" },
+];
+
+// Mock Nearby Elite Members for Radar
+interface EliteMember {
+  id: string;
+  initials: string;
+  distance: number; // in meters
+  angle: number; // degrees for radar positioning
+}
+
+const mockNearbyElite: EliteMember[] = [
+  { id: "1", initials: "VG", distance: 45, angle: 30 },
+  { id: "2", initials: "AM", distance: 120, angle: 150 },
+  { id: "3", initials: "SC", distance: 80, angle: 270 },
+];
+
 // Tabs configuration - Updated with new sections
 const tabs = [
   { id: "identity", label: "Identité", icon: User },
+  { id: "cercle", label: "Cercle Privé", icon: Users },
+  { id: "scanner", label: "Scanner", icon: ScanLine },
+  { id: "storylab", label: "Story Lab", icon: Camera },
   { id: "manufacture", label: "Manufacture", icon: Gem },
-  { id: "coffre", label: "Le Coffre (NFT)", icon: BadgeCheck },
-  { id: "world", label: "Intelligence", icon: Globe },
-  { id: "leads", label: "Récoltes", icon: Users },
+  { id: "coffre", label: "Le Coffre", icon: BadgeCheck },
   { id: "concierge", label: "Conciergerie", icon: Headphones },
 ];
 
@@ -209,13 +243,15 @@ const activityFeed = [
 ];
 
 const Studio = () => {
-  const [activeTab, setActiveTab] = useState("manufacture");
+  const [activeTab, setActiveTab] = useState("cercle");
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [fleet, setFleet] = useState<NFCCard[]>(mockFleet);
   const [stories, setStories] = useState<Story[]>(mockStories);
   const [activeChameleonMode, setActiveChameleonMode] = useState<string>("business");
   const [nftAssets, setNftAssets] = useState<NFTAsset[]>(mockNFTAssets);
+  const [allianceTapActive, setAllianceTapActive] = useState(false);
+  const [activeCluster, setActiveCluster] = useState("Monaco Yacht Show");
   
   // Profile form state
   const [profile, setProfile] = useState({
@@ -344,6 +380,14 @@ const Studio = () => {
               </div>
             </div>
             
+            {/* Cluster Badge */}
+            <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-iwasp-midnight-elevated border border-iwasp-bronze/20">
+              <Radio className="w-3 h-3 text-iwasp-bronze" />
+              <span className="text-xs text-iwasp-cream tracking-wider font-medium">
+                Cercle : {activeCluster}
+              </span>
+            </div>
+            
             <div className="flex items-center gap-4">
               {lastSaved && (
                 <span className="text-xs text-iwasp-silver flex items-center gap-2">
@@ -420,6 +464,327 @@ const Studio = () => {
 
             {/* Tab content */}
             <AnimatePresence mode="wait">
+              {/* CERCLE PRIVÉ TAB - Radar d'Influence */}
+              {activeTab === "cercle" && (
+                <motion.div
+                  key="cercle"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-8"
+                >
+                  {/* Header */}
+                  <div className="flex items-start justify-between flex-wrap gap-4">
+                    <div>
+                      <h3 className="font-display text-4xl md:text-5xl text-iwasp-cream">
+                        Le <span className="italic text-iwasp-bronze">Cercle</span>
+                        <br />Privé.
+                      </h3>
+                      <p className="text-sm text-iwasp-silver mt-3">
+                        L'influence n'est plus solitaire, elle est collective.
+                      </p>
+                    </div>
+                    <div className="flex gap-3">
+                      <Button 
+                        variant="outline"
+                        className="border-iwasp-emerald/30 text-iwasp-cream hover:bg-iwasp-emerald/10 rounded-xl text-xs gap-2"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Créer un Cluster
+                      </Button>
+                      <Button 
+                        onClick={() => setAllianceTapActive(!allianceTapActive)}
+                        className={cn(
+                          "rounded-xl text-xs gap-2 font-medium",
+                          allianceTapActive 
+                            ? "bg-iwasp-bronze text-iwasp-midnight hover:bg-iwasp-bronze-light" 
+                            : "bg-iwasp-midnight-elevated border border-iwasp-bronze/30 text-iwasp-cream hover:border-iwasp-bronze"
+                        )}
+                      >
+                        <Radio className="w-3 h-3" />
+                        Alliance Tap {allianceTapActive ? "Active" : ""}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Main Radar + Alliances Grid */}
+                  <div className="grid lg:grid-cols-[1fr,280px] gap-6">
+                    {/* Radar d'Influence */}
+                    <div className="rounded-3xl bg-iwasp-midnight-elevated border border-iwasp-bronze/10 p-6 relative overflow-hidden">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h4 className="font-display text-xl text-iwasp-cream italic">Radar d'Influence</h4>
+                          <p className="text-xs text-iwasp-silver mt-1 uppercase tracking-wider">
+                            Localisation : <span className="text-iwasp-bronze">Carré d'Or, Monaco</span>
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Radar Circle */}
+                      <div className="relative aspect-square max-w-[320px] mx-auto">
+                        {/* Radar Rings */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="absolute w-full h-full rounded-full border border-iwasp-bronze/10" />
+                          <div className="absolute w-3/4 h-3/4 rounded-full border border-iwasp-bronze/15" />
+                          <div className="absolute w-1/2 h-1/2 rounded-full border border-iwasp-bronze/20" />
+                          <div className="absolute w-1/4 h-1/4 rounded-full border border-iwasp-bronze/30" />
+                        </div>
+                        
+                        {/* Cross Lines */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="absolute w-full h-px bg-iwasp-bronze/10" />
+                          <div className="absolute w-px h-full bg-iwasp-bronze/10" />
+                        </div>
+
+                        {/* Sweep Animation */}
+                        <motion.div
+                          className="absolute inset-0"
+                          style={{ transformOrigin: 'center center' }}
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                        >
+                          <div className="absolute top-1/2 left-1/2 w-1/2 h-px bg-gradient-to-r from-iwasp-bronze/60 to-transparent origin-left" />
+                        </motion.div>
+
+                        {/* Center Point - User */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-iwasp-bronze/20 flex items-center justify-center border-2 border-iwasp-bronze">
+                          <User className="w-5 h-5 text-iwasp-bronze" />
+                        </div>
+
+                        {/* Nearby Elite Members */}
+                        {mockNearbyElite.map((member, index) => {
+                          const radius = (member.distance / 150) * 45; // percentage from center
+                          const x = 50 + radius * Math.cos((member.angle - 90) * (Math.PI / 180));
+                          const y = 50 + radius * Math.sin((member.angle - 90) * (Math.PI / 180));
+                          return (
+                            <motion.div
+                              key={member.id}
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ delay: index * 0.3 }}
+                              className="absolute w-8 h-8 rounded-full bg-iwasp-midnight border border-iwasp-bronze/50 flex items-center justify-center cursor-pointer hover:border-iwasp-bronze hover:scale-110 transition-all group"
+                              style={{
+                                left: `${x}%`,
+                                top: `${y}%`,
+                                transform: 'translate(-50%, -50%)'
+                              }}
+                            >
+                              <span className="text-[10px] font-medium text-iwasp-cream">{member.initials}</span>
+                              {/* Pulse */}
+                              <div className="absolute inset-0 rounded-full border border-iwasp-bronze/30 animate-ping" style={{ animationDuration: '2s' }} />
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Cluster VIP Badge */}
+                      <motion.div 
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        className="absolute bottom-4 left-1/2 -translate-x-1/2"
+                      >
+                        <div className="px-4 py-2 rounded-xl bg-iwasp-bronze/10 border border-iwasp-bronze/30 flex items-center gap-2">
+                          <Radio className="w-4 h-4 text-iwasp-bronze" />
+                          <span className="text-xs text-iwasp-cream font-medium tracking-wider">CLUSTER VIP</span>
+                        </div>
+                      </motion.div>
+                    </div>
+
+                    {/* Alliances Récentes */}
+                    <div className="rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 p-5">
+                      <h4 className="text-xs text-iwasp-bronze tracking-[0.2em] uppercase mb-4">Alliances Récentes</h4>
+                      
+                      <div className="space-y-4">
+                        {mockAlliances.map((alliance, index) => (
+                          <motion.div
+                            key={alliance.id}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.15 }}
+                            className="flex items-center gap-3"
+                          >
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-iwasp-bronze/20 to-iwasp-emerald/10 flex items-center justify-center border border-iwasp-bronze/20">
+                              <span className="font-display text-sm text-iwasp-bronze">{alliance.name.charAt(0)}</span>
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium text-iwasp-cream text-sm">{alliance.name}</div>
+                              <div className="text-xs text-iwasp-silver">{alliance.location} · {alliance.time}</div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* SCANNER DE PRESTIGE TAB */}
+              {activeTab === "scanner" && (
+                <motion.div
+                  key="scanner"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-8"
+                >
+                  {/* Header */}
+                  <div className="flex items-start justify-between flex-wrap gap-4">
+                    <div>
+                      <h3 className="font-display text-4xl md:text-5xl text-iwasp-cream">
+                        Scanner de
+                        <br /><span className="italic text-iwasp-bronze">Prestige.</span>
+                      </h3>
+                      <p className="text-sm text-iwasp-silver mt-3">
+                        Vérifiez l'authenticité d'une pièce textile d'un simple geste.
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-bronze/20">
+                      <div className="text-xs text-iwasp-bronze uppercase tracking-wider mb-1">Liaison Blockchain</div>
+                      <div className="text-sm text-iwasp-cream">Sécurisée & Infalsifiable</div>
+                    </div>
+                  </div>
+
+                  {/* Main Grid */}
+                  <div className="grid lg:grid-cols-[1fr,320px] gap-8">
+                    {/* Scanner Interface */}
+                    <div className="flex flex-col items-center">
+                      {/* Scanner Box */}
+                      <div className="relative w-full max-w-sm aspect-square rounded-3xl bg-iwasp-midnight border-2 border-iwasp-bronze/20 flex items-center justify-center">
+                        {/* Corner Brackets */}
+                        <div className="absolute top-6 left-6 w-10 h-10 border-l-2 border-t-2 border-iwasp-bronze/50" />
+                        <div className="absolute top-6 right-6 w-10 h-10 border-r-2 border-t-2 border-iwasp-bronze/50" />
+                        <div className="absolute bottom-6 left-6 w-10 h-10 border-l-2 border-b-2 border-iwasp-bronze/50" />
+                        <div className="absolute bottom-6 right-6 w-10 h-10 border-r-2 border-b-2 border-iwasp-bronze/50" />
+
+                        {/* Scan Line Animation */}
+                        <motion.div
+                          className="absolute left-6 right-6 h-0.5 bg-gradient-to-r from-transparent via-iwasp-bronze to-transparent"
+                          animate={{ top: ['15%', '85%', '15%'] }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        />
+
+                        {/* Central Content */}
+                        <div className="text-center z-10">
+                          <div className="w-16 h-16 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-bronze/30 flex items-center justify-center mx-auto mb-4">
+                            <ScanLine className="w-8 h-8 text-iwasp-bronze" />
+                          </div>
+                          <h4 className="font-display text-xl text-iwasp-cream italic mb-2">Prêt à Scanner</h4>
+                          <p className="text-xs text-iwasp-silver max-w-[200px]">
+                            Approchez votre téléphone du label thermocollé sur le vêtement.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Action Button */}
+                      <Button className="mt-6 bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2 rounded-xl px-8">
+                        <Camera className="w-4 h-4" />
+                        Lancer le Scan
+                      </Button>
+                    </div>
+
+                    {/* Right Panel */}
+                    <div className="space-y-6">
+                      {/* Authenticité Info */}
+                      <div className="p-6 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
+                        <h4 className="font-display text-xl text-iwasp-cream mb-2">
+                          L'Authenticité
+                          <br /><span className="italic text-iwasp-bronze">Augmentée.</span>
+                        </h4>
+                        <p className="text-sm text-iwasp-silver leading-relaxed">
+                          En scannant un vêtement i-Wasp, vous accédez à l'âme de l'article. C'est l'assurance d'une pièce unique et la preuve sociale immédiate de votre appartenance à l'élite.
+                        </p>
+                      </div>
+
+                      {/* Tech Card */}
+                      <div className="p-5 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10 flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-iwasp-emerald/10 flex items-center justify-center shrink-0">
+                          <Cpu className="w-6 h-6 text-iwasp-silver" />
+                        </div>
+                        <div>
+                          <h5 className="font-medium text-iwasp-cream text-sm mb-1">Puce NFC Sub-Nanos</h5>
+                          <p className="text-xs text-iwasp-silver leading-relaxed">
+                            Technologie invisible résistante aux lavages intensifs et à la pression thermique.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* STORY LAB TAB */}
+              {activeTab === "storylab" && (
+                <motion.div
+                  key="storylab"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-8"
+                >
+                  {/* Header */}
+                  <div>
+                    <h3 className="font-display text-4xl md:text-5xl text-iwasp-cream">
+                      Story <span className="italic text-iwasp-bronze">Lab.</span>
+                    </h3>
+                    <p className="text-sm text-iwasp-silver mt-3">
+                      Créez des visuels dignes des plus grands magazines directement dans l'application.
+                    </p>
+                  </div>
+
+                  {/* Style Options */}
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    {[
+                      { name: "Magazine", desc: "Style éditorial premium", active: true },
+                      { name: "Minimal", desc: "Épuré et moderne", active: false },
+                      { name: "Aura", desc: "Éclats dorés luxueux", active: false },
+                    ].map((style) => (
+                      <div 
+                        key={style.name}
+                        className={cn(
+                          "p-5 rounded-2xl border cursor-pointer transition-all",
+                          style.active 
+                            ? "bg-iwasp-bronze/10 border-iwasp-bronze text-iwasp-cream" 
+                            : "bg-iwasp-midnight-elevated border-iwasp-emerald/10 text-iwasp-silver hover:border-iwasp-bronze/30"
+                        )}
+                      >
+                        <h4 className="font-medium text-sm mb-1">{style.name}</h4>
+                        <p className="text-xs opacity-70">{style.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Stories Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {stories.map((story, index) => (
+                      <motion.div
+                        key={story.id}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="aspect-[9/16] rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 flex items-center justify-center cursor-pointer hover:border-iwasp-bronze/30 transition-all group"
+                      >
+                        <div className="text-center">
+                          {story.type === "video" ? (
+                            <Play className="w-8 h-8 text-iwasp-silver/40 mx-auto group-hover:text-iwasp-bronze transition-colors" />
+                          ) : (
+                            <Image className="w-8 h-8 text-iwasp-silver/40 mx-auto group-hover:text-iwasp-bronze transition-colors" />
+                          )}
+                          <span className="text-xs text-iwasp-silver mt-2 block">{story.title}</span>
+                        </div>
+                      </motion.div>
+                    ))}
+                    
+                    {/* Add Story */}
+                    <div className="aspect-[9/16] rounded-2xl border-2 border-dashed border-iwasp-emerald/20 flex items-center justify-center cursor-pointer hover:border-iwasp-bronze/30 transition-all">
+                      <div className="text-center">
+                        <Plus className="w-8 h-8 text-iwasp-silver/40 mx-auto" />
+                        <span className="text-xs text-iwasp-silver mt-2 block">Ajouter</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
               {/* LA MANUFACTURE TAB - Art de la Matière */}
               {activeTab === "manufacture" && (
                 <motion.div
@@ -779,345 +1144,6 @@ const Studio = () => {
                 </motion.div>
               )}
 
-              {activeTab === "leads" && (
-                <motion.div
-                  key="leads"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-6"
-                >
-                  {/* Leads header */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-display text-iwasp-cream">Vos Contacts Prestigieux</h3>
-                      <p className="text-sm text-iwasp-silver">Leads extraits de vos interactions NFC</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-display text-iwasp-bronze">{mockLeads.length}</div>
-                      <div className="text-xs text-iwasp-silver uppercase tracking-wider">Ce mois</div>
-                    </div>
-                  </div>
-
-                  {/* Leads list */}
-                  <div className="space-y-3">
-                    {mockLeads.map((lead, index) => (
-                      <motion.div
-                        key={lead.name}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="p-4 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 hover:border-iwasp-bronze/30 transition-all group"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-iwasp-bronze/20 to-iwasp-emerald/10 flex items-center justify-center">
-                              <span className="font-display text-lg text-iwasp-bronze">{lead.name.charAt(0)}</span>
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-iwasp-cream">{lead.name}</h4>
-                              <p className="text-sm text-iwasp-silver">{lead.role} · {lead.company}</p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="flex items-center gap-2 justify-end">
-                              <div className="text-sm font-medium text-iwasp-emerald-glow">{lead.score}%</div>
-                              <div className="w-2 h-2 rounded-full bg-iwasp-emerald-glow" />
-                            </div>
-                            <p className="text-xs text-iwasp-silver mt-1">{lead.date}</p>
-                          </div>
-                        </div>
-                        
-                        {/* Quick actions */}
-                        <div className="flex gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button variant="ghost" size="sm" className="text-iwasp-silver hover:text-iwasp-cream hover:bg-iwasp-emerald/10 text-xs gap-1">
-                            <Mail className="w-3 h-3" /> Email
-                          </Button>
-                          <Button variant="ghost" size="sm" className="text-iwasp-silver hover:text-iwasp-cream hover:bg-iwasp-emerald/10 text-xs gap-1">
-                            <MessageCircle className="w-3 h-3" /> WhatsApp
-                          </Button>
-                          <Button variant="ghost" size="sm" className="text-iwasp-silver hover:text-iwasp-cream hover:bg-iwasp-emerald/10 text-xs gap-1">
-                            <Linkedin className="w-3 h-3" /> LinkedIn
-                          </Button>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* Export CTA */}
-                  <div className="p-6 rounded-2xl bg-gradient-to-r from-iwasp-emerald/10 to-iwasp-bronze/10 border border-iwasp-emerald/20">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium text-iwasp-cream mb-1">Exporter vers CRM</h4>
-                        <p className="text-sm text-iwasp-silver">Synchronisez vos leads avec Salesforce, HubSpot ou Pipedrive</p>
-                      </div>
-                      <Button className="bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2">
-                        <ExternalLink className="w-4 h-4" />
-                        Connecter
-                      </Button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* CENTRE D'INTELLIGENCE TAB */}
-              {activeTab === "world" && (
-                <motion.div
-                  key="world"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-8"
-                >
-                  {/* Intelligence Header */}
-                  <div className="flex items-center justify-between flex-wrap gap-4">
-                    <div>
-                      <h3 className="font-display text-3xl md:text-4xl text-iwasp-cream">
-                        Centre <span className="italic text-iwasp-bronze">Intelligence.</span>
-                      </h3>
-                      <p className="text-sm text-iwasp-silver mt-2">Cartographie mondiale de votre influence en temps réel.</p>
-                    </div>
-                    <div className="flex items-center gap-6">
-                      <div className="text-center">
-                        <div className="text-xs text-iwasp-silver uppercase tracking-wider mb-1">Portée Pays</div>
-                        <div className="text-2xl font-display text-iwasp-cream">24</div>
-                      </div>
-                      <div className="h-8 w-px bg-iwasp-bronze/20" />
-                      <div className="text-center">
-                        <div className="text-xs text-iwasp-silver uppercase tracking-wider mb-1">Villes Actives</div>
-                        <div className="text-2xl font-display text-iwasp-bronze">108</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Main Grid: Map + Data Feed */}
-                  <div className="grid lg:grid-cols-[320px,1fr] gap-6">
-                    {/* Live Data Feed Panel */}
-                    <div className="rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 p-5 space-y-4">
-                      <div className="flex items-center gap-2 mb-4">
-                        <TrendingUp className="w-4 h-4 text-iwasp-bronze" />
-                        <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">Flux de Données Live</h4>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        {activityFeed.map((activity, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.15 }}
-                            className="flex items-center gap-3"
-                          >
-                            <div className="w-2 h-2 rounded-full bg-iwasp-bronze animate-pulse" />
-                            <div className="flex-1">
-                              <span className="text-iwasp-cream text-sm">{activity.city}</span>
-                              <span className="text-iwasp-silver text-sm"> · TAP ENREGISTRÉ</span>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-
-                      {/* Satellite Sync Indicator */}
-                      <div className="pt-4 border-t border-iwasp-emerald/10">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-iwasp-silver">SATELLITE SYNC</span>
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-iwasp-emerald-glow animate-pulse" />
-                            <span className="text-xs text-iwasp-emerald-glow">CONNECTÉ</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Interactive World Map HUD */}
-                    <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-iwasp-midnight via-iwasp-midnight-elevated to-iwasp-abyss/20 border border-iwasp-bronze/10 aspect-[16/9] min-h-[350px]">
-                      {/* Radar Grid Background */}
-                      <div className="absolute inset-0">
-                        <div className="absolute inset-0 opacity-10" style={{
-                          backgroundImage: `
-                            radial-gradient(circle at center, transparent 0%, transparent 30%, rgba(184, 143, 72, 0.05) 30%, rgba(184, 143, 72, 0.05) 31%, transparent 31%),
-                            radial-gradient(circle at center, transparent 0%, transparent 50%, rgba(184, 143, 72, 0.03) 50%, rgba(184, 143, 72, 0.03) 51%, transparent 51%),
-                            radial-gradient(circle at center, transparent 0%, transparent 70%, rgba(184, 143, 72, 0.02) 70%, rgba(184, 143, 72, 0.02) 71%, transparent 71%)
-                          `,
-                          backgroundSize: '100% 100%'
-                        }} />
-                        <div className="w-full h-full" style={{
-                          backgroundImage: `
-                            linear-gradient(rgba(184, 143, 72, 0.05) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(184, 143, 72, 0.05) 1px, transparent 1px)
-                          `,
-                          backgroundSize: '60px 60px'
-                        }} />
-                      </div>
-
-                      {/* Decorative Scan Line */}
-                      <motion.div 
-                        className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-iwasp-bronze/50 to-transparent"
-                        initial={{ top: 0, opacity: 0 }}
-                        animate={{ top: ['0%', '100%'], opacity: [0, 0.5, 0] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                      />
-
-                      {/* World Map Silhouette */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-5">
-                        <svg viewBox="0 0 1000 500" className="w-full h-full">
-                          <ellipse cx="500" cy="250" rx="450" ry="200" fill="none" stroke="currentColor" strokeWidth="1" className="text-iwasp-bronze" />
-                          <ellipse cx="500" cy="250" rx="300" ry="133" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-iwasp-bronze" />
-                          <line x1="50" y1="250" x2="950" y2="250" stroke="currentColor" strokeWidth="0.5" className="text-iwasp-bronze" />
-                        </svg>
-                      </div>
-
-                      {/* Hotspots with Enhanced Visuals */}
-                      {worldHotspots.map((spot, index) => (
-                        <motion.div
-                          key={spot.id}
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ delay: index * 0.2, type: "spring", stiffness: 200 }}
-                          className="absolute group cursor-pointer"
-                          style={{
-                            left: `${((spot.lng + 180) / 360) * 100}%`,
-                            top: `${((90 - spot.lat) / 180) * 100}%`,
-                            transform: 'translate(-50%, -50%)'
-                          }}
-                        >
-                          {/* Outer Pulse Ring */}
-                          {spot.active && (
-                            <>
-                              <div className="absolute inset-0 w-10 h-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-iwasp-bronze/30 animate-ping" style={{ animationDuration: '2s' }} />
-                              <div className="absolute inset-0 w-6 h-6 -translate-x-1/2 -translate-y-1/2 rounded-full bg-iwasp-bronze/20 animate-pulse" />
-                            </>
-                          )}
-                          {/* Core Dot */}
-                          <div className={cn(
-                            "w-4 h-4 rounded-full shadow-lg transition-all border-2",
-                            spot.active 
-                              ? "bg-iwasp-bronze border-iwasp-bronze shadow-iwasp-bronze/50" 
-                              : "bg-iwasp-midnight border-iwasp-bronze/30"
-                          )} />
-                          
-                          {/* Enhanced Tooltip */}
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-10 scale-90 group-hover:scale-100">
-                            <div className="px-4 py-3 rounded-xl bg-iwasp-midnight/95 backdrop-blur-xl border border-iwasp-bronze/30 text-center whitespace-nowrap shadow-xl">
-                              <div className="text-iwasp-cream font-medium text-sm">{spot.city}</div>
-                              <div className="text-iwasp-bronze text-lg font-display">{spot.scans}</div>
-                              <div className="text-iwasp-silver text-xs">scans enregistrés</div>
-                            </div>
-                            <div className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-2 h-2 bg-iwasp-midnight border-r border-b border-iwasp-bronze/30 rotate-45" />
-                          </div>
-                        </motion.div>
-                      ))}
-
-                      {/* HUD Corners */}
-                      <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-iwasp-bronze/30" />
-                      <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-iwasp-bronze/30" />
-                      <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-iwasp-bronze/30" />
-                      <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-iwasp-bronze/30" />
-
-                      {/* Map Label */}
-                      <div className="absolute top-6 left-10">
-                        <div className="text-xs text-iwasp-bronze/60 tracking-[0.3em] uppercase">CARTE D'INFLUENCE GLOBALE</div>
-                      </div>
-
-                      {/* Status Badge */}
-                      <div className="absolute top-6 right-10 flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-iwasp-emerald-glow animate-pulse" />
-                        <span className="text-xs text-iwasp-silver tracking-wider">LIVE</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom Row: Performance + Top Destination */}
-                  <div className="grid lg:grid-cols-[1fr,280px] gap-6">
-                    {/* Performance Chart */}
-                    <div className="rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 p-6">
-                      <div className="flex items-center gap-2 mb-6">
-                        <Target className="w-4 h-4 text-iwasp-bronze" />
-                        <h4 className="text-sm text-iwasp-cream font-medium italic">Performances d'Expansion</h4>
-                      </div>
-                      
-                      {/* Stylized Chart */}
-                      <div className="h-32 flex items-end gap-2">
-                        {[35, 42, 58, 67, 72, 85, 91, 78, 95, 88, 92, 100].map((height, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ height: 0 }}
-                            animate={{ height: `${height}%` }}
-                            transition={{ delay: i * 0.1, duration: 0.5, ease: "easeOut" }}
-                            className="flex-1 rounded-t-sm bg-gradient-to-t from-iwasp-bronze/40 to-iwasp-bronze"
-                          />
-                        ))}
-                      </div>
-                      
-                      {/* Chart Labels */}
-                      <div className="flex justify-between mt-3 text-xs text-iwasp-silver">
-                        <span>Jan</span>
-                        <span>Fév</span>
-                        <span>Mar</span>
-                        <span>Avr</span>
-                        <span>Mai</span>
-                        <span>Jun</span>
-                        <span>Jul</span>
-                        <span>Aoû</span>
-                        <span>Sep</span>
-                        <span>Oct</span>
-                        <span>Nov</span>
-                        <span>Déc</span>
-                      </div>
-
-                      {/* Growth Metric */}
-                      <div className="flex items-center justify-between mt-6 pt-4 border-t border-iwasp-emerald/10">
-                        <span className="text-iwasp-silver text-sm">Croissance Annuelle</span>
-                        <span className="text-iwasp-emerald-glow font-display text-xl">+247%</span>
-                      </div>
-                    </div>
-
-                    {/* Top Destination Card */}
-                    <div className="rounded-2xl bg-gradient-to-br from-iwasp-bronze/10 to-iwasp-midnight-elevated border border-iwasp-bronze/20 p-6 flex flex-col">
-                      <div className="text-xs text-iwasp-silver tracking-[0.2em] uppercase mb-4">TOP DESTINATION</div>
-                      
-                      <div className="flex-1 flex flex-col items-center justify-center text-center">
-                        <div className="font-display text-4xl text-iwasp-bronze italic mb-2">Dubaï</div>
-                        <div className="flex items-center gap-1 text-iwasp-silver text-sm">
-                          <span>🇦🇪</span>
-                          <span>Émirats Arabes Unis</span>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 pt-4 border-t border-iwasp-bronze/20 text-center">
-                        <div className="text-iwasp-emerald-glow text-sm font-medium">+24% d'engagement</div>
-                        <div className="text-iwasp-silver/60 text-xs">Cette semaine</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Heatmap by Region */}
-                  <div className="rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 p-6">
-                    <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase mb-4">Heatmap de Réseau par Région</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {[
-                        { region: "Europe", percentage: 42, color: "from-iwasp-bronze to-iwasp-bronze-light" },
-                        { region: "Moyen-Orient", percentage: 31, color: "from-iwasp-emerald to-iwasp-emerald-glow" },
-                        { region: "Asie-Pacifique", percentage: 18, color: "from-iwasp-abyss to-cyan-500" },
-                        { region: "Amériques", percentage: 9, color: "from-purple-600 to-purple-400" },
-                      ].map((item) => (
-                        <div key={item.region} className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/5">
-                          <div className="text-iwasp-cream font-medium text-sm mb-2">{item.region}</div>
-                          <div className="text-2xl font-display text-iwasp-bronze mb-2">{item.percentage}%</div>
-                          <div className="w-full h-1.5 rounded-full bg-iwasp-midnight-elevated overflow-hidden">
-                            <motion.div 
-                              initial={{ width: 0 }}
-                              animate={{ width: `${item.percentage}%` }}
-                              transition={{ duration: 1, delay: 0.5 }}
-                              className={`h-full rounded-full bg-gradient-to-r ${item.color}`}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              )}
             </AnimatePresence>
           </div>
         </div>
