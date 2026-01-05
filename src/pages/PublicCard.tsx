@@ -22,6 +22,7 @@ import { DarkLuxuryBusinessTemplate } from "@/components/templates/DarkLuxuryBus
 import { IWASPBrandBadgeMinimal } from "@/components/templates/IWASPBrandBadge";
 import { IWASPBrandingFooter } from "@/components/IWASPBrandingFooter";
 import DualBrandShowcase from "./DualBrandShowcase";
+import MaisonBOpticCard from "./MaisonBOpticCard";
 
 // Import local profile photo for Herbalism Marrakech
 import ibrahimPhoto from "@/assets/clients/ibrahim-herbalism.jpeg";
@@ -46,6 +47,11 @@ const PublicCard = () => {
   // Special-case showcase cards that are not stored in the database
   if (cleanedSlug === "medina-travertin") {
     return <DualBrandShowcase />;
+  }
+
+  // Special-case static client card (no DB dependency)
+  if (cleanedSlug === "maison-b-optic") {
+    return <MaisonBOpticCard />;
   }
 
   // Record scan on first load
