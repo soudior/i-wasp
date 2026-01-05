@@ -80,23 +80,41 @@ const MaisonBOpticCard = () => {
         `EMAIL:${contactData.email}`,
         `TEL:${contactData.phone}`,
         `ADR:;;${contactData.address};;;;`,
-        `NOTE:${contactData.bio}`,
+        `NOTE:${contactData.bio}\\nWhatsApp: https://wa.me/${contactData.whatsapp}`,
         `URL:${contactData.instagramUrl}`,
         "END:VCARD",
       ].join("\r\n");
 
-      const blob = new Blob([vCardContent], { type: "text/vcard" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "Maison_B_Optic_Marc_Aurel.vcf";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      // Detect iOS/Safari
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
       
-      toast.success("Contact ajouté !");
+      if (isIOS || isSafari) {
+        // iOS/Safari: Use data URI and window.open - triggers native contact prompt
+        const dataUri = `data:text/vcard;charset=utf-8,${encodeURIComponent(vCardContent)}`;
+        window.open(dataUri, "_blank");
+        toast.success("Ajoutez ce contact à votre répertoire");
+      } else {
+        // Android/Desktop: Use blob download
+        const blob = new Blob([vCardContent], { type: "text/vcard;charset=utf-8" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Maison_B_Optic_Marc_Aurel.vcf";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        
+        // Cleanup after short delay
+        setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }, 100);
+        
+        toast.success("Contact téléchargé !");
+      }
     } catch (err) {
+      console.error("vCard error:", err);
       toast.error("Erreur lors du téléchargement");
     } finally {
       setIsDownloading(false);
