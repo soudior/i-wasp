@@ -153,8 +153,9 @@ const App = () => {
                             
                             {/* Public NFC Card */}
                             <Route path="/c/:slug" element={<LegacyCardRedirect />} />
-                            <Route path="/card/:slug" element={<PublicCard />} />
+                            <Route path="/card/medina-travertin" element={<DualBrandShowcase />} />
                             <Route path="/card/herbalism-marrakech" element={<HerbalismCard />} />
+                            <Route path="/card/:slug" element={<PublicCard />} />
                             
                             {/* Auth */}
                             <Route path="/login" element={<Login />} />
@@ -197,7 +198,6 @@ const App = () => {
                             <Route path="/nfc-animation" element={<NFCDemo3D />} />
                             <Route path="/showroom" element={<Showroom3D />} />
                             <Route path="/showroom-3d" element={<Showroom3D />} />
-                            <Route path="/card/medina-travertin" element={<DualBrandShowcase />} />
                             
                             {/* Client Form */}
                             <Route path="/form" element={<ClientForm />} />
