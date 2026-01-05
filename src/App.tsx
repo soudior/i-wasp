@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,73 +16,77 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { SplashScreen } from "@/components/SplashScreen";
 import { NetworkProvider } from "@/components/NetworkProvider";
-import PublicCard from "./pages/PublicCard";
-import AdminClients from "./pages/AdminClients";
-import AdminCreator from "./pages/AdminCreator";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminInstantCard from "./pages/AdminInstantCard";
-import EvolisPrintPage from "./pages/EvolisPrint";
-import FirstCardSetup from "./pages/FirstCardSetup";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import NotFound from "./pages/NotFound";
-import AdminOrders from "./pages/AdminOrders";
-import Onboarding from "./pages/Onboarding";
-import OnboardingSuccess from "./pages/OnboardingSuccess";
-import Dashboard from "./pages/Dashboard";
-import GuestCardCreator from "./pages/GuestCardCreator";
-import FinalizeCard from "./pages/FinalizeCard";
-import HomeSaaS from "./pages/HomeSaaS";
-import Index from "./pages/Index";
-import Demo from "./pages/Demo";
-import Cart from "./pages/Cart";
-import HerbalismCard from "./pages/HerbalismCard";
-import CardSuccess from "./pages/CardSuccess";
-import UserGuide from "./pages/UserGuide";
-import Templates from "./pages/Templates";
-import Settings from "./pages/Settings";
-import Install from "./pages/Install";
-import Help from "./pages/Help";
-import DemoDashboard from "./pages/DemoDashboard";
-import Nails from "./pages/Nails";
-import Partenaires from "./pages/Partenaires";
-import DevenirPartenaire from "./pages/DevenirPartenaire";
-import CertificatPartenaire from "./pages/CertificatPartenaire";
-import RentalDemo from "./pages/RentalDemo";
-import UltraLuxeDemo from "./pages/UltraLuxeDemo";
-import VCardAirbnbBookingDemo from "./pages/VCardAirbnbBookingDemo";
-import ClientForm from "./pages/ClientForm";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import About from "./pages/About";
-import Vision from "./pages/Vision";
-import Features from "./pages/Features";
-import Pricing from "./pages/Pricing";
-import Enterprise from "./pages/Enterprise";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
-import BrandAssets from "./pages/BrandAssets";
-import CardStudio from "./pages/CardStudio";
-import NFCDemo3D from "./pages/NFCDemo3D";
-import ProduitsNFC from "./pages/ProduitsNFC";
-import Conciergerie from "./pages/Conciergerie";
-import Club from "./pages/Club";
-import Contact from "./pages/Contact";
-import Showroom3D from "./pages/Showroom3D";
-import MentionsLegales from "./pages/MentionsLegales";
-import CGV from "./pages/CGV";
-import DualBrandShowcase from "./pages/DualBrandShowcase";
+import { RouteLoader } from "@/components/RouteLoader";
+
+// Route-level code-splitting (performance mobile)
+const PublicCard = lazy(() => import("./pages/PublicCard"));
+const AdminClients = lazy(() => import("./pages/AdminClients"));
+const AdminCreator = lazy(() => import("./pages/AdminCreator"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminInstantCard = lazy(() => import("./pages/AdminInstantCard"));
+const EvolisPrintPage = lazy(() => import("./pages/EvolisPrint"));
+const FirstCardSetup = lazy(() => import("./pages/FirstCardSetup"));
+const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const AdminOrders = lazy(() => import("./pages/AdminOrders"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const OnboardingSuccess = lazy(() => import("./pages/OnboardingSuccess"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const GuestCardCreator = lazy(() => import("./pages/GuestCardCreator"));
+const FinalizeCard = lazy(() => import("./pages/FinalizeCard"));
+const HomeSaaS = lazy(() => import("./pages/HomeSaaS"));
+const Index = lazy(() => import("./pages/Index"));
+const Demo = lazy(() => import("./pages/Demo"));
+const Cart = lazy(() => import("./pages/Cart"));
+const HerbalismCard = lazy(() => import("./pages/HerbalismCard"));
+const CardSuccess = lazy(() => import("./pages/CardSuccess"));
+const UserGuide = lazy(() => import("./pages/UserGuide"));
+const Templates = lazy(() => import("./pages/Templates"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Install = lazy(() => import("./pages/Install"));
+const Help = lazy(() => import("./pages/Help"));
+const DemoDashboard = lazy(() => import("./pages/DemoDashboard"));
+const Nails = lazy(() => import("./pages/Nails"));
+const Partenaires = lazy(() => import("./pages/Partenaires"));
+const DevenirPartenaire = lazy(() => import("./pages/DevenirPartenaire"));
+const CertificatPartenaire = lazy(() => import("./pages/CertificatPartenaire"));
+const RentalDemo = lazy(() => import("./pages/RentalDemo"));
+const UltraLuxeDemo = lazy(() => import("./pages/UltraLuxeDemo"));
+const VCardAirbnbBookingDemo = lazy(() => import("./pages/VCardAirbnbBookingDemo"));
+const ClientForm = lazy(() => import("./pages/ClientForm"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const About = lazy(() => import("./pages/About"));
+const Vision = lazy(() => import("./pages/Vision"));
+const Features = lazy(() => import("./pages/Features"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const Enterprise = lazy(() => import("./pages/Enterprise"));
+const BrandAssets = lazy(() => import("./pages/BrandAssets"));
+const CardStudio = lazy(() => import("./pages/CardStudio"));
+const NFCDemo3D = lazy(() => import("./pages/NFCDemo3D"));
+const ProduitsNFC = lazy(() => import("./pages/ProduitsNFC"));
+const Conciergerie = lazy(() => import("./pages/Conciergerie"));
+const Club = lazy(() => import("./pages/Club"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Showroom3D = lazy(() => import("./pages/Showroom3D"));
+const MentionsLegales = lazy(() => import("./pages/MentionsLegales"));
+const CGV = lazy(() => import("./pages/CGV"));
+const DualBrandShowcase = lazy(() => import("./pages/DualBrandShowcase"));
 
 // NEW Order funnel pages - 7 steps strict flow
-import OrderType from "./pages/order/OrderType";
-import OrderOffre from "./pages/order/OrderOffre";
-import OrderIdentite from "./pages/order/OrderIdentite";
-import OrderCarte from "./pages/order/OrderCarte";
-import OrderLivraison from "./pages/order/OrderLivraison";
-import OrderRecap from "./pages/order/OrderRecap";
-import OrderConfirmationNew from "./pages/order/OrderConfirmationNew";
+const OrderType = lazy(() => import("./pages/order/OrderType"));
+const OrderOffre = lazy(() => import("./pages/order/OrderOffre"));
+const OrderIdentite = lazy(() => import("./pages/order/OrderIdentite"));
+const OrderCarte = lazy(() => import("./pages/order/OrderCarte"));
+const OrderLivraison = lazy(() => import("./pages/order/OrderLivraison"));
+const OrderRecap = lazy(() => import("./pages/order/OrderRecap"));
+const OrderConfirmationNew = lazy(() => import("./pages/order/OrderConfirmationNew"));
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -104,14 +108,24 @@ function OrderRedirect() {
 }
 
 const App = () => {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    const path = window.location.pathname || "/";
+    const isCardRoute = path.startsWith("/card/") || path.startsWith("/c/");
+    if (isCardRoute) return false;
+
+    const splashShown = sessionStorage.getItem("splash-shown");
+    return !splashShown;
+  });
 
   useEffect(() => {
-    const splashShown = sessionStorage.getItem('splash-shown');
-    if (splashShown) {
-      setShowSplash(false);
+    const path = window.location.pathname || "/";
+    const isCardRoute = path.startsWith("/card/") || path.startsWith("/c/");
+    if (isCardRoute) {
+      sessionStorage.setItem("splash-shown", "true");
     }
   }, []);
+
+
 
   const handleSplashComplete = () => {
     setShowSplash(false);
@@ -137,129 +151,131 @@ const App = () => {
                       <ScrollToTop />
                       <ErrorBoundary>
                         <OrderFunnelProvider>
-                          <Routes>
-                          {/* HOME */}
-                          <Route path="/" element={<Index />} />
-                          <Route path="/legacy" element={<HomeSaaS />} />
-                          
-                          {/* NEW PAGES - Final structure */}
-                          <Route path="/produits" element={<ProduitsNFC />} />
-                          <Route path="/conciergerie" element={<Conciergerie />} />
-                          <Route path="/club" element={<Club />} />
-                          <Route path="/contact" element={<Contact />} />
-                          
-                          {/* Demo */}
-                            <Route path="/demo" element={<Demo />} />
+                          <Suspense fallback={<RouteLoader />}>
+                            <Routes>
+                            {/* HOME */}
+                            <Route path="/" element={<Index />} />
+                            <Route path="/legacy" element={<HomeSaaS />} />
                             
-                            {/* Public NFC Card */}
-                            <Route path="/c/:slug" element={<LegacyCardRedirect />} />
-                            <Route path="/card/medina-travertin/*" element={<DualBrandShowcase />} />
-                            <Route path="/card/herbalism-marrakech" element={<HerbalismCard />} />
-                            <Route path="/card/:slug" element={<PublicCard />} />
-                            {/* Auth */}
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/signup" element={<Signup />} />
-                            <Route path="/register" element={<Signup />} />
-                            <Route path="/forgot-password" element={<ForgotPassword />} />
-                            <Route path="/reset-password" element={<ResetPassword />} />
+                            {/* NEW PAGES - Final structure */}
+                            <Route path="/produits" element={<ProduitsNFC />} />
+                            <Route path="/conciergerie" element={<Conciergerie />} />
+                            <Route path="/club" element={<Club />} />
+                            <Route path="/contact" element={<Contact />} />
                             
-                            {/* Guest card creation */}
-                            <Route path="/create" element={<GuestCardCreator />} />
-                            <Route path="/success" element={<CardSuccess />} />
-                            <Route path="/guide" element={<UserGuide />} />
-                            <Route path="/templates" element={<Templates />} />
-                            <Route path="/install" element={<Install />} />
-                            <Route path="/help" element={<Help />} />
-                            <Route path="/faq" element={<Help />} />
-                            <Route path="/demo-dashboard" element={<DemoDashboard />} />
-                            <Route path="/nails" element={<Nails />} />
-                            <Route path="/partenaires" element={<Partenaires />} />
-                            <Route path="/devenir-partenaire" element={<DevenirPartenaire />} />
-                            <Route path="/certificat-partenaire" element={<CertificatPartenaire />} />
-                            <Route path="/privacy" element={<PrivacyPolicy />} />
-                            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                            <Route path="/mentions-legales" element={<MentionsLegales />} />
-                            <Route path="/cgv" element={<CGV />} />
-                            <Route path="/about" element={<About />} />
-                            <Route path="/a-propos" element={<About />} />
-                            <Route path="/vision" element={<Vision />} />
-                            <Route path="/features" element={<Features />} />
-                            <Route path="/fonctionnalites" element={<Features />} />
-                            <Route path="/pricing" element={<Pricing />} />
-                            <Route path="/tarifs" element={<Pricing />} />
-                            <Route path="/enterprise" element={<Enterprise />} />
-                            <Route path="/entreprises" element={<Enterprise />} />
-                            <Route path="/business" element={<Enterprise />} />
-                            <Route path="/rental-demo" element={<RentalDemo />} />
-                            <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
-                            <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
-                            <Route path="/demo/nfc-3d" element={<NFCDemo3D />} />
-                            <Route path="/nfc-animation" element={<NFCDemo3D />} />
-                            <Route path="/showroom" element={<Showroom3D />} />
-                            <Route path="/showroom-3d" element={<Showroom3D />} />
-                            
-                            {/* Client Form */}
-                            <Route path="/form" element={<ClientForm />} />
-                            <Route path="/formulaire" element={<ClientForm />} />
-                            
-                            {/* Finalize card after auth */}
-                            <Route path="/onboarding/finalize" element={<FinalizeCard />} />
-                            
-                            {/* Dashboard */}
-                            <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
-                            <Route path="/settings" element={<DashboardGuard><Settings /></DashboardGuard>} />
-                            <Route path="/studio" element={<DashboardGuard><CardStudio /></DashboardGuard>} />
-                            <Route path="/editor" element={<DashboardGuard><CardStudio /></DashboardGuard>} />
-                            
-                            {/* Legacy onboarding */}
-                            <Route path="/onboarding" element={<Onboarding />} />
-                            <Route path="/onboarding/success" element={<OnboardingSuccess />} />
-                            
-                            {/* First card setup */}
-                            <Route path="/setup" element={<FirstCardSetup />} />
-                            
-                            {/* NEW ORDER FUNNEL - 7 steps STRICT */}
-                            <Route path="/order" element={<Navigate to="/order/type" replace />} />
-                            <Route path="/order/type" element={<OrderType />} />
-                            <Route path="/order/offre" element={<OrderOffre />} />
-                            <Route path="/order/identite" element={<OrderIdentite />} />
-                            <Route path="/order/carte" element={<OrderCarte />} />
-                            <Route path="/order/livraison" element={<OrderLivraison />} />
-                            <Route path="/order/recap" element={<OrderRecap />} />
-                            <Route path="/order/confirmation" element={<OrderConfirmationNew />} />
-                            
-                            {/* Legacy order routes - redirect to new funnel */}
-                            <Route path="/order/identity" element={<Navigate to="/order/identite" replace />} />
-                            <Route path="/order/digital" element={<Navigate to="/order/identite" replace />} />
-                            <Route path="/order/design" element={<Navigate to="/order/carte" replace />} />
-                            <Route path="/order/options" element={<Navigate to="/order/offre" replace />} />
-                            <Route path="/order/summary" element={<Navigate to="/order/recap" replace />} />
-                            <Route path="/order/payment" element={<Navigate to="/order/livraison" replace />} />
-                            
-                            {/* Cart */}
-                            <Route path="/cart" element={<Cart />} />
-                            
-                            {/* Admin */}
-                            <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-                            <Route path="/admin/dashboard" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-                            <Route path="/admin-iwasp" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-                            <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
-                            <Route path="/admin/clients" element={<AdminGuard><AdminClients /></AdminGuard>} />
-                            <Route path="/admin/creator" element={<AdminGuard><AdminCreator /></AdminGuard>} />
-                            <Route path="/admin/cards" element={<AdminGuard><AdminCreator /></AdminGuard>} />
-                            <Route path="/admin/instant" element={<AdminGuard><AdminInstantCard /></AdminGuard>} />
-                            <Route path="/admin/instant-card" element={<AdminGuard><AdminInstantCard /></AdminGuard>} />
-                            <Route path="/admin/vcard/create" element={<Navigate to="/admin/instant" replace />} />
-                            <Route path="/admin/vcard/edit" element={<Navigate to="/admin/instant" replace />} />
-                            <Route path="/admin/evolis" element={<AdminGuard><EvolisPrintPage /></AdminGuard>} />
-                            <Route path="/admin/print" element={<AdminGuard><EvolisPrintPage /></AdminGuard>} />
-                            <Route path="/admin/print-evolis" element={<AdminGuard><EvolisPrintPage /></AdminGuard>} />
-                            <Route path="/admin/brand-assets" element={<AdminGuard><BrandAssets /></AdminGuard>} />
-                            <Route path="/brand-assets" element={<AdminGuard><BrandAssets /></AdminGuard>} />
-                            
-                            {/* 404 */}
-                            <Route path="*" element={<NotFound />} />
-                          </Routes>
+                            {/* Demo */}
+                              <Route path="/demo" element={<Demo />} />
+                              
+                              {/* Public NFC Card */}
+                              <Route path="/c/:slug" element={<LegacyCardRedirect />} />
+                              <Route path="/card/medina-travertin/*" element={<DualBrandShowcase />} />
+                              <Route path="/card/herbalism-marrakech" element={<HerbalismCard />} />
+                              <Route path="/card/:slug" element={<PublicCard />} />
+                              {/* Auth */}
+                              <Route path="/login" element={<Login />} />
+                              <Route path="/signup" element={<Signup />} />
+                              <Route path="/register" element={<Signup />} />
+                              <Route path="/forgot-password" element={<ForgotPassword />} />
+                              <Route path="/reset-password" element={<ResetPassword />} />
+                              
+                              {/* Guest card creation */}
+                              <Route path="/create" element={<GuestCardCreator />} />
+                              <Route path="/success" element={<CardSuccess />} />
+                              <Route path="/guide" element={<UserGuide />} />
+                              <Route path="/templates" element={<Templates />} />
+                              <Route path="/install" element={<Install />} />
+                              <Route path="/help" element={<Help />} />
+                              <Route path="/faq" element={<Help />} />
+                              <Route path="/demo-dashboard" element={<DemoDashboard />} />
+                              <Route path="/nails" element={<Nails />} />
+                              <Route path="/partenaires" element={<Partenaires />} />
+                              <Route path="/devenir-partenaire" element={<DevenirPartenaire />} />
+                              <Route path="/certificat-partenaire" element={<CertificatPartenaire />} />
+                              <Route path="/privacy" element={<PrivacyPolicy />} />
+                              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                              <Route path="/mentions-legales" element={<MentionsLegales />} />
+                              <Route path="/cgv" element={<CGV />} />
+                              <Route path="/about" element={<About />} />
+                              <Route path="/a-propos" element={<About />} />
+                              <Route path="/vision" element={<Vision />} />
+                              <Route path="/features" element={<Features />} />
+                              <Route path="/fonctionnalites" element={<Features />} />
+                              <Route path="/pricing" element={<Pricing />} />
+                              <Route path="/tarifs" element={<Pricing />} />
+                              <Route path="/enterprise" element={<Enterprise />} />
+                              <Route path="/entreprises" element={<Enterprise />} />
+                              <Route path="/business" element={<Enterprise />} />
+                              <Route path="/rental-demo" element={<RentalDemo />} />
+                              <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
+                              <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
+                              <Route path="/demo/nfc-3d" element={<NFCDemo3D />} />
+                              <Route path="/nfc-animation" element={<NFCDemo3D />} />
+                              <Route path="/showroom" element={<Showroom3D />} />
+                              <Route path="/showroom-3d" element={<Showroom3D />} />
+                              
+                              {/* Client Form */}
+                              <Route path="/form" element={<ClientForm />} />
+                              <Route path="/formulaire" element={<ClientForm />} />
+                              
+                              {/* Finalize card after auth */}
+                              <Route path="/onboarding/finalize" element={<FinalizeCard />} />
+                              
+                              {/* Dashboard */}
+                              <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
+                              <Route path="/settings" element={<DashboardGuard><Settings /></DashboardGuard>} />
+                              <Route path="/studio" element={<DashboardGuard><CardStudio /></DashboardGuard>} />
+                              <Route path="/editor" element={<DashboardGuard><CardStudio /></DashboardGuard>} />
+                              
+                              {/* Legacy onboarding */}
+                              <Route path="/onboarding" element={<Onboarding />} />
+                              <Route path="/onboarding/success" element={<OnboardingSuccess />} />
+                              
+                              {/* First card setup */}
+                              <Route path="/setup" element={<FirstCardSetup />} />
+                              
+                              {/* NEW ORDER FUNNEL - 7 steps STRICT */}
+                              <Route path="/order" element={<Navigate to="/order/type" replace />} />
+                              <Route path="/order/type" element={<OrderType />} />
+                              <Route path="/order/offre" element={<OrderOffre />} />
+                              <Route path="/order/identite" element={<OrderIdentite />} />
+                              <Route path="/order/carte" element={<OrderCarte />} />
+                              <Route path="/order/livraison" element={<OrderLivraison />} />
+                              <Route path="/order/recap" element={<OrderRecap />} />
+                              <Route path="/order/confirmation" element={<OrderConfirmationNew />} />
+                              
+                              {/* Legacy order routes - redirect to new funnel */}
+                              <Route path="/order/identity" element={<Navigate to="/order/identite" replace />} />
+                              <Route path="/order/digital" element={<Navigate to="/order/identite" replace />} />
+                              <Route path="/order/design" element={<Navigate to="/order/carte" replace />} />
+                              <Route path="/order/options" element={<Navigate to="/order/offre" replace />} />
+                              <Route path="/order/summary" element={<Navigate to="/order/recap" replace />} />
+                              <Route path="/order/payment" element={<Navigate to="/order/livraison" replace />} />
+                              
+                              {/* Cart */}
+                              <Route path="/cart" element={<Cart />} />
+                              
+                              {/* Admin */}
+                              <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+                              <Route path="/admin/dashboard" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+                              <Route path="/admin-iwasp" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+                              <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
+                              <Route path="/admin/clients" element={<AdminGuard><AdminClients /></AdminGuard>} />
+                              <Route path="/admin/creator" element={<AdminGuard><AdminCreator /></AdminGuard>} />
+                              <Route path="/admin/cards" element={<AdminGuard><AdminCreator /></AdminGuard>} />
+                              <Route path="/admin/instant" element={<AdminGuard><AdminInstantCard /></AdminGuard>} />
+                              <Route path="/admin/instant-card" element={<AdminGuard><AdminInstantCard /></AdminGuard>} />
+                              <Route path="/admin/vcard/create" element={<Navigate to="/admin/instant" replace />} />
+                              <Route path="/admin/vcard/edit" element={<Navigate to="/admin/instant" replace />} />
+                              <Route path="/admin/evolis" element={<AdminGuard><EvolisPrintPage /></AdminGuard>} />
+                              <Route path="/admin/print" element={<AdminGuard><EvolisPrintPage /></AdminGuard>} />
+                              <Route path="/admin/print-evolis" element={<AdminGuard><EvolisPrintPage /></AdminGuard>} />
+                              <Route path="/admin/brand-assets" element={<AdminGuard><BrandAssets /></AdminGuard>} />
+                              <Route path="/brand-assets" element={<AdminGuard><BrandAssets /></AdminGuard>} />
+                              
+                              {/* 404 */}
+                              <Route path="*" element={<NotFound />} />
+                            </Routes>
+                          </Suspense>
                           <MobileBottomNav />
                           <FloatingWhatsApp />
                           <PWAInstallPrompt />
