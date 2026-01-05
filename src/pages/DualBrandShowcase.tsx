@@ -258,13 +258,13 @@ END:VCARD`;
                 <div 
                   className={`w-16 h-16 rounded-full p-0.5 bg-gradient-to-br ${current.primary}`}
                 >
-                  <div className="w-full h-full rounded-full overflow-hidden border-2 border-black">
                     <img 
-                      src={story.imageUrl} 
+                      src={story.imageUrl}
                       alt={story.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover"
                     />
-                  </div>
                 </div>
                 <span className="text-[10px] text-white/60">{story.title}</span>
               </motion.button>
