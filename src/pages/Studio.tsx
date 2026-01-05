@@ -464,7 +464,7 @@ const Studio = () => {
 
             {/* Tab content */}
             <AnimatePresence mode="wait">
-              {/* CERCLE PRIVÉ TAB - Radar d'Influence Premium */}
+              {/* CERCLE PRIVÉ TAB - L'Alliance Privée */}
               {activeTab === "cercle" && (
                 <motion.div
                   key="cercle"
@@ -473,39 +473,62 @@ const Studio = () => {
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-6"
                 >
-                  {/* Main Grid: Radar + Right Panels */}
-                  <div className="grid lg:grid-cols-[1fr,320px] gap-6">
+                  {/* Hero Header */}
+                  <div className="mb-8">
+                    <h2 className="font-display text-4xl md:text-6xl text-iwasp-cream leading-tight">
+                      L'Alliance <span className="italic text-iwasp-bronze">Privée.</span>
+                    </h2>
+                    <p className="text-sm text-iwasp-silver mt-3">
+                      Le premier réseau social physique chiffré au monde.
+                    </p>
+                  </div>
+
+                  {/* Main Grid: Radar + Messages d'Alliance */}
+                  <div className="grid lg:grid-cols-[1fr,300px] gap-6">
                     {/* Left: Radar d'Influence */}
                     <div className="rounded-3xl bg-iwasp-midnight-elevated border border-iwasp-bronze/10 p-6 relative overflow-hidden">
                       {/* Header with member count */}
-                      <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start justify-between mb-2">
                         <div>
-                          <h3 className="font-display text-3xl md:text-4xl text-iwasp-cream mb-1">
+                          <h3 className="font-display text-2xl md:text-3xl text-iwasp-cream mb-1">
                             Radar
                             <br /><span className="italic">d'Influence</span>
                           </h3>
-                          <p className="text-xs text-iwasp-silver uppercase tracking-[0.15em] mt-2">
-                            Zone : <span className="text-iwasp-bronze">Monaco Yacht Club</span>
-                          </p>
                         </div>
                         <div className="text-right">
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-iwasp-emerald-glow animate-pulse" />
-                            <span className="text-xs text-iwasp-silver tracking-wider uppercase">3 Membres</span>
+                            <span className="text-[10px] text-iwasp-cream tracking-wider uppercase font-medium">3 Profils Elite</span>
                           </div>
-                          <span className="text-xs text-iwasp-bronze tracking-wider uppercase">Détectés</span>
+                          <span className="text-[10px] text-iwasp-bronze tracking-wider uppercase">Détectés</span>
                         </div>
                       </div>
 
-                      {/* Radar Circle - Larger */}
-                      <div className="relative aspect-square max-w-[380px] mx-auto my-6">
-                        {/* Radar Rings with subtle glow */}
+                      {/* Scanning Status */}
+                      <div className="flex items-center gap-2 mb-4">
+                        <motion.div
+                          animate={{ opacity: [0.4, 1, 0.4] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                          className="w-1.5 h-1.5 rounded-full bg-iwasp-bronze"
+                        />
+                        <span className="text-[10px] text-iwasp-silver uppercase tracking-[0.15em]">
+                          Scanning <span className="text-iwasp-bronze">Monaco...</span>
+                        </span>
+                      </div>
+
+                      {/* Radar Circle - Larger with enhanced effects */}
+                      <div className="relative aspect-square max-w-[340px] mx-auto my-4">
+                        {/* Radar Rings with gradient glow */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="absolute w-full h-full rounded-full border border-iwasp-bronze/10" />
-                          <div className="absolute w-[80%] h-[80%] rounded-full border border-iwasp-bronze/12" />
-                          <div className="absolute w-[60%] h-[60%] rounded-full border border-iwasp-bronze/15" />
-                          <div className="absolute w-[40%] h-[40%] rounded-full border border-iwasp-bronze/20" />
-                          <div className="absolute w-[20%] h-[20%] rounded-full border border-iwasp-bronze/25" />
+                          {[100, 80, 60, 40, 20].map((size, i) => (
+                            <motion.div
+                              key={size}
+                              className="absolute rounded-full border border-iwasp-bronze/10"
+                              style={{ width: `${size}%`, height: `${size}%` }}
+                              animate={{ scale: [1, 1.02, 1] }}
+                              transition={{ duration: 3, repeat: Infinity, delay: i * 0.2 }}
+                            />
+                          ))}
                         </div>
                         
                         {/* Cross Lines */}
@@ -514,7 +537,7 @@ const Studio = () => {
                           <div className="absolute w-px h-full bg-iwasp-bronze/8" />
                         </div>
 
-                        {/* Sweep Animation - Radar Effect */}
+                        {/* Sweep Animation - Enhanced Radar Effect */}
                         <motion.div
                           className="absolute inset-0"
                           style={{ transformOrigin: 'center center' }}
@@ -524,27 +547,27 @@ const Studio = () => {
                           <div 
                             className="absolute top-1/2 left-1/2 w-1/2 h-px origin-left"
                             style={{
-                              background: 'linear-gradient(to right, hsl(var(--iwasp-bronze) / 0.8), transparent)'
+                              background: 'linear-gradient(to right, hsl(var(--iwasp-bronze) / 0.9), transparent)'
                             }}
                           />
-                          {/* Glow cone effect */}
+                          {/* Wide glow cone effect */}
                           <div 
-                            className="absolute top-1/2 left-1/2 w-1/2 h-8 origin-left -translate-y-1/2 opacity-20"
+                            className="absolute top-1/2 left-1/2 w-1/2 h-16 origin-left -translate-y-1/2 opacity-15"
                             style={{
-                              background: 'linear-gradient(to right, hsl(var(--iwasp-bronze) / 0.4), transparent)',
-                              clipPath: 'polygon(0 50%, 100% 0, 100% 100%)'
+                              background: 'linear-gradient(to right, hsl(var(--iwasp-bronze) / 0.5), transparent)',
+                              clipPath: 'polygon(0 50%, 100% 10%, 100% 90%)'
                             }}
                           />
                         </motion.div>
 
                         {/* Center Point - User */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-iwasp-midnight flex items-center justify-center border-2 border-iwasp-bronze/50">
-                          <User className="w-6 h-6 text-iwasp-bronze/80" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-iwasp-midnight flex items-center justify-center border-2 border-iwasp-bronze/40">
+                          <User className="w-7 h-7 text-iwasp-bronze/70" />
                         </div>
 
-                        {/* Nearby Elite Members */}
+                        {/* Nearby Elite Members with enhanced visuals */}
                         {mockNearbyElite.map((member, index) => {
-                          const radius = (member.distance / 150) * 42;
+                          const radius = (member.distance / 150) * 40;
                           const x = 50 + radius * Math.cos((member.angle - 90) * (Math.PI / 180));
                           const y = 50 + radius * Math.sin((member.angle - 90) * (Math.PI / 180));
                           return (
@@ -560,10 +583,11 @@ const Studio = () => {
                                 transform: 'translate(-50%, -50%)'
                               }}
                             >
-                              {/* Pulse ring */}
-                              <div className="absolute inset-0 w-10 h-10 -m-1 rounded-full border border-iwasp-bronze/30 animate-ping" style={{ animationDuration: '2.5s' }} />
+                              {/* Double pulse rings */}
+                              <div className="absolute inset-0 w-10 h-10 -m-1 rounded-full border border-iwasp-bronze/20 animate-ping" style={{ animationDuration: '3s' }} />
+                              <div className="absolute inset-0 w-12 h-12 -m-2 rounded-full border border-iwasp-bronze/10 animate-ping" style={{ animationDuration: '4s', animationDelay: '0.5s' }} />
                               {/* Member Avatar */}
-                              <div className="w-8 h-8 rounded-full bg-iwasp-midnight border border-iwasp-bronze/50 flex items-center justify-center group-hover:border-iwasp-bronze group-hover:scale-110 transition-all">
+                              <div className="w-9 h-9 rounded-full bg-iwasp-midnight border border-iwasp-bronze/50 flex items-center justify-center group-hover:border-iwasp-bronze group-hover:scale-110 transition-all shadow-lg shadow-iwasp-bronze/10">
                                 <span className="text-[10px] font-medium text-iwasp-cream">{member.initials}</span>
                               </div>
                             </motion.div>
@@ -574,18 +598,20 @@ const Studio = () => {
                       {/* Bottom: Fréquences Alliances */}
                       <div className="flex items-center justify-center gap-6 pt-4 border-t border-iwasp-bronze/10">
                         <div className="text-right">
-                          <span className="text-[10px] text-iwasp-silver/60 uppercase tracking-wider">Fréquences</span>
+                          <span className="text-[9px] text-iwasp-silver/50 uppercase tracking-wider">Fréquences</span>
                           <br />
-                          <span className="text-xs text-iwasp-bronze tracking-[0.15em] uppercase">Alliances Chiffrées</span>
+                          <span className="text-[10px] text-iwasp-bronze tracking-[0.12em] uppercase">Alliances Chiffrées</span>
                         </div>
                         <div className="flex gap-1.5">
                           {[1, 2, 3, 4, 5].map((i) => (
-                            <div 
-                              key={i} 
+                            <motion.div 
+                              key={i}
+                              animate={i <= 3 ? { scale: [1, 1.2, 1] } : {}}
+                              transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
                               className={cn(
                                 "w-3 h-3 rounded-full border",
                                 i <= 3 
-                                  ? "bg-iwasp-bronze/20 border-iwasp-bronze/60" 
+                                  ? "bg-iwasp-bronze/30 border-iwasp-bronze/70" 
                                   : "bg-transparent border-iwasp-bronze/20"
                               )}
                             />
@@ -594,67 +620,85 @@ const Studio = () => {
                       </div>
                     </div>
 
-                    {/* Right Side Panels */}
-                    <div className="space-y-5">
-                      {/* Clusters Actifs */}
+                    {/* Right: Messages d'Alliance */}
+                    <div className="space-y-4">
+                      {/* Messages Header */}
                       <div className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-bronze/10">
-                        <h4 className="text-[10px] text-iwasp-bronze tracking-[0.2em] uppercase mb-4">Clusters Actifs</h4>
-                        <div className="space-y-3">
-                          {[
-                            { name: "Monaco Yacht Show", members: 47, active: true },
-                            { name: "Art Basel", members: 23, active: false },
-                            { name: "Cannes Lions", members: 31, active: false },
-                          ].map((cluster, i) => (
-                            <div 
-                              key={cluster.name}
-                              className={cn(
-                                "p-3 rounded-xl border cursor-pointer transition-all",
-                                cluster.active 
-                                  ? "bg-iwasp-bronze/10 border-iwasp-bronze/40" 
-                                  : "bg-transparent border-iwasp-emerald/10 hover:border-iwasp-bronze/20"
-                              )}
-                            >
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs text-iwasp-cream font-medium">{cluster.name}</span>
-                                {cluster.active && <div className="w-1.5 h-1.5 rounded-full bg-iwasp-emerald-glow" />}
-                              </div>
-                              <span className="text-[10px] text-iwasp-silver">{cluster.members} membres</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Alliance Tap Panel */}
-                      <div className="p-5 rounded-2xl bg-gradient-to-br from-iwasp-bronze/5 to-iwasp-midnight-elevated border border-iwasp-bronze/20 relative overflow-hidden">
-                        {/* Badge */}
-                        <div className="absolute top-4 right-4">
-                          <span className="px-2 py-1 text-[9px] rounded-md bg-iwasp-bronze/20 text-iwasp-bronze tracking-wider uppercase border border-iwasp-bronze/30">
-                            Alliance Tap
-                          </span>
-                        </div>
-
-                        <h4 className="font-display text-2xl text-iwasp-cream leading-tight mt-6 mb-3">
-                          Scellez
-                          <br />vos
-                          <br /><span className="italic text-iwasp-bronze">Rencontres.</span>
-                        </h4>
-                        <p className="text-xs text-iwasp-silver leading-relaxed mb-5">
-                          Deux membres i-Wasp se "tappent" ? Une alliance blockchain est créée, vos informations s'échangent et vos stories se synchronisent.
-                        </p>
-
-                        <Button 
-                          onClick={() => setAllianceTapActive(!allianceTapActive)}
-                          className={cn(
-                            "w-full rounded-xl gap-2 font-medium text-xs py-5",
-                            allianceTapActive 
-                              ? "bg-iwasp-bronze text-iwasp-midnight hover:bg-iwasp-bronze-light" 
-                              : "bg-iwasp-midnight border border-iwasp-bronze/40 text-iwasp-cream hover:bg-iwasp-bronze/10"
-                          )}
+                        <h4 className="text-[10px] text-iwasp-bronze tracking-[0.2em] uppercase mb-4">Messages d'Alliance</h4>
+                        
+                        {/* Message Card */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3 }}
+                          className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-bronze/20 mb-4"
                         >
-                          <Radio className="w-4 h-4" />
-                          {allianceTapActive ? "Alliance Active" : "Lancer l'Appairage"}
-                        </Button>
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-iwasp-bronze/30 to-iwasp-emerald/10 flex items-center justify-center border border-iwasp-bronze/30">
+                              <span className="text-xs font-medium text-iwasp-cream">AV</span>
+                            </div>
+                            <div>
+                              <div className="text-xs text-iwasp-cream font-medium tracking-wide uppercase">Alexandra V.</div>
+                            </div>
+                          </div>
+                          <p className="text-xs text-iwasp-silver leading-relaxed mb-3">
+                            <span className="text-iwasp-bronze">Invitation :</span> Cocktail privé sur le Serene à 21h. Code accès requis.
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[9px] text-iwasp-bronze/60 uppercase tracking-wider">Liaison Éphémère</span>
+                            <motion.div
+                              animate={{ opacity: [0.5, 1, 0.5] }}
+                              transition={{ duration: 2, repeat: Infinity }}
+                              className="w-2 h-2 rounded-full bg-iwasp-emerald-glow"
+                            />
+                          </div>
+                        </motion.div>
+
+                        {/* Second Message */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.5 }}
+                          className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10"
+                        >
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-iwasp-silver/20 to-iwasp-midnight flex items-center justify-center border border-iwasp-silver/20">
+                              <span className="text-xs font-medium text-iwasp-cream">MH</span>
+                            </div>
+                            <div>
+                              <div className="text-xs text-iwasp-cream font-medium tracking-wide uppercase">Marcus H.</div>
+                            </div>
+                          </div>
+                          <p className="text-xs text-iwasp-silver leading-relaxed mb-3">
+                            <span className="text-iwasp-bronze">Deal flow :</span> Opportunité d'investissement exclusive. Réservé aux membres du Cercle.
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[9px] text-iwasp-bronze/60 uppercase tracking-wider">Expire dans 2h</span>
+                            <motion.div
+                              animate={{ opacity: [0.5, 1, 0.5] }}
+                              transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                              className="w-2 h-2 rounded-full bg-iwasp-bronze"
+                            />
+                          </div>
+                        </motion.div>
                       </div>
+
+                      {/* Cluster & Time */}
+                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-bronze/10 flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] text-iwasp-bronze uppercase tracking-wider font-medium">Cercle</span>
+                          <span className="text-[10px] text-iwasp-silver ml-2">11:50</span>
+                        </div>
+                        <span className="text-[10px] text-iwasp-cream uppercase tracking-wider">Monaco</span>
+                      </div>
+
+                      {/* Send Alliance Message Button */}
+                      <Button 
+                        className="w-full rounded-xl gap-2 font-medium text-xs py-5 bg-gradient-to-r from-iwasp-bronze to-iwasp-bronze-light text-iwasp-midnight hover:opacity-90"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        Envoyer une Liaison
+                      </Button>
                     </div>
                   </div>
                 </motion.div>
