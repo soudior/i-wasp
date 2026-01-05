@@ -82,6 +82,7 @@ const DualBrandShowcase = lazy(() => import("./pages/DualBrandShowcase"));
 const Studio = lazy(() => import("./pages/Studio"));
 const DemoStudio = lazy(() => import("./pages/DemoStudio"));
 const MaisonBOpticCard = lazy(() => import("./pages/MaisonBOpticCard"));
+const AdminCardEditor = lazy(() => import("./pages/AdminCardEditor"));
 
 // NEW Order funnel pages - 7 steps strict flow
 const OrderType = lazy(() => import("./pages/order/OrderType"));
@@ -281,6 +282,8 @@ const App = () => {
                               <Route path="/admin/print-evolis" element={<AdminGuard><EvolisPrintPage /></AdminGuard>} />
                               <Route path="/admin/brand-assets" element={<AdminGuard><BrandAssets /></AdminGuard>} />
                               <Route path="/brand-assets" element={<AdminGuard><BrandAssets /></AdminGuard>} />
+                              <Route path="/admin/card-editor" element={<AdminGuard><AdminCardEditor /></AdminGuard>} />
+                              <Route path="/admin/card-editor/:cardSlug" element={<AdminGuard><AdminCardEditor /></AdminGuard>} />
                               
                               {/* 404 */}
                               <Route path="*" element={<NotFound />} />
