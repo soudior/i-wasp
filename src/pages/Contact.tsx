@@ -1,6 +1,6 @@
 /**
  * Contact Page - Formulaire de contact i-wasp
- * Design dark luxury avec ClubNavbar
+ * Palette Stealth Luxury : Noir Émeraude #050807, Argent Titane #A5A9B4, Platine #D1D5DB
  */
 
 import { useState } from "react";
@@ -39,6 +39,16 @@ import {
   MessageSquare
 } from "lucide-react";
 import { toast } from "sonner";
+
+// Stealth Luxury Palette
+const STEALTH = {
+  bg: "#050807",
+  bgAlt: "#0A0D0C",
+  accent: "#A5A9B4",
+  accentLight: "#D1D5DB",
+  border: "rgba(165, 169, 180, 0.12)",
+  glass: "rgba(255, 255, 255, 0.02)"
+};
 
 // Form validation schema
 const contactSchema = z.object({
@@ -110,7 +120,7 @@ export default function Contact() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-[#0B0B0B] text-white">
+      <div className="min-h-screen text-white" style={{ backgroundColor: STEALTH.bg }}>
         <ClubNavbar />
         <main className="pt-32 pb-16 px-6">
           <div className="container mx-auto max-w-lg">
@@ -119,23 +129,36 @@ export default function Contact() {
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-16"
             >
-              <div className="w-20 h-20 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 className="w-10 h-10 text-amber-400" />
+              <div 
+                className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+                style={{ backgroundColor: `${STEALTH.accent}20` }}
+              >
+                <CheckCircle2 className="w-10 h-10" style={{ color: STEALTH.accent }} />
               </div>
-              <h1 className="text-3xl font-bold mb-4">
+              <h1 
+                className="text-3xl font-bold mb-4"
+                style={{ fontFamily: "'Bodoni Moda', serif" }}
+              >
                 Message envoyé !
               </h1>
-              <p className="text-white/60 mb-8">
+              <p className="mb-8" style={{ color: 'rgba(255,255,255,0.6)' }}>
                 Merci pour votre message. Notre équipe vous contactera dans les 24h.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/">
-                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                  <Button 
+                    variant="outline" 
+                    style={{ 
+                      borderColor: STEALTH.border, 
+                      color: 'white',
+                      backgroundColor: 'transparent'
+                    }}
+                  >
                     Retour à l'accueil
                   </Button>
                 </Link>
                 <Link to="/conciergerie">
-                  <Button className="bg-amber-500 hover:bg-amber-600 text-black">
+                  <Button style={{ backgroundColor: STEALTH.accent, color: STEALTH.bg }}>
                     Lancer un projet
                   </Button>
                 </Link>
@@ -148,7 +171,7 @@ export default function Contact() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-white">
+    <div className="min-h-screen text-white" style={{ backgroundColor: STEALTH.bg }}>
       <ClubNavbar />
       
       {/* Hero */}
@@ -158,17 +181,26 @@ export default function Contact() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6">
-              <MessageSquare className="w-4 h-4 text-amber-400" />
-              <span className="text-sm text-amber-300/80">Contact</span>
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+              style={{ 
+                backgroundColor: `${STEALTH.accent}10`, 
+                border: `1px solid ${STEALTH.border}` 
+              }}
+            >
+              <MessageSquare className="w-4 h-4" style={{ color: STEALTH.accent }} />
+              <span className="text-sm" style={{ color: STEALTH.accentLight }}>Contact</span>
             </div>
             
-            <h1 className="text-4xl sm:text-5xl font-bold mb-6">
+            <h1 
+              className="text-4xl sm:text-5xl font-bold mb-6"
+              style={{ fontFamily: "'Bodoni Moda', serif" }}
+            >
               Une question ?<br />
-              <span className="text-amber-400">Parlons-en</span>
+              <span style={{ color: STEALTH.accent }}>Parlons-en</span>
             </h1>
             
-            <p className="text-xl text-white/60 max-w-2xl mx-auto">
+            <p className="text-xl max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.6)' }}>
               Devis, projet sur-mesure ou partenariat ? Notre équipe est à votre écoute.
             </p>
           </motion.div>
@@ -176,7 +208,7 @@ export default function Contact() {
       </section>
       
       {/* Form + Info */}
-      <section className="py-16 px-6 bg-[#121212]">
+      <section className="py-16 px-6" style={{ backgroundColor: STEALTH.bgAlt }}>
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Form */}
@@ -185,9 +217,15 @@ export default function Contact() {
               animate={{ opacity: 1, x: 0 }}
               className="lg:col-span-2"
             >
-              <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
+              <div 
+                className="p-8 rounded-3xl"
+                style={{ 
+                  backgroundColor: STEALTH.glass, 
+                  border: `1px solid ${STEALTH.border}` 
+                }}
+              >
                 <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                  <Send className="w-5 h-5 text-amber-400" />
+                  <Send className="w-5 h-5" style={{ color: STEALTH.accent }} />
                   Envoyez-nous un message
                 </h2>
                 
@@ -195,7 +233,7 @@ export default function Contact() {
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     {/* Request Type */}
                     <div>
-                      <Label className="mb-3 block text-white/70">Type de demande</Label>
+                      <Label className="mb-3 block" style={{ color: 'rgba(255,255,255,0.7)' }}>Type de demande</Label>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {requestTypes.map((type) => {
                           const isSelected = form.watch("requestType") === type.value;
@@ -204,14 +242,19 @@ export default function Contact() {
                               key={type.value}
                               type="button"
                               onClick={() => form.setValue("requestType", type.value as any)}
-                              className={`p-3 rounded-xl border text-center transition-all ${
-                                isSelected
-                                  ? "border-amber-500 bg-amber-500/10"
-                                  : "border-white/10 hover:border-white/30"
-                              }`}
+                              className="p-3 rounded-xl text-center transition-all"
+                              style={{
+                                border: isSelected 
+                                  ? `1px solid ${STEALTH.accent}` 
+                                  : `1px solid ${STEALTH.border}`,
+                                backgroundColor: isSelected ? `${STEALTH.accent}10` : 'transparent'
+                              }}
                             >
-                              <type.icon className={`w-5 h-5 mx-auto mb-2 ${isSelected ? "text-amber-400" : "text-white/50"}`} />
-                              <p className="text-sm font-medium">{type.label}</p>
+                              <type.icon 
+                                className="w-5 h-5 mx-auto mb-2" 
+                                style={{ color: isSelected ? STEALTH.accent : 'rgba(255,255,255,0.5)' }} 
+                              />
+                              <p className="text-sm font-medium text-white">{type.label}</p>
                             </button>
                           );
                         })}
@@ -224,12 +267,12 @@ export default function Contact() {
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-white/70">Nom *</FormLabel>
+                            <FormLabel style={{ color: 'rgba(255,255,255,0.7)' }}>Nom *</FormLabel>
                             <FormControl>
                               <Input 
                                 placeholder="Votre nom" 
                                 {...field} 
-                                className="bg-white/5 border-white/10 focus:border-amber-500" 
+                                className="bg-white/5 border-white/10 focus:border-[#A5A9B4] text-white placeholder:text-white/40" 
                               />
                             </FormControl>
                             <FormMessage />
@@ -242,13 +285,13 @@ export default function Contact() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-white/70">Email *</FormLabel>
+                            <FormLabel style={{ color: 'rgba(255,255,255,0.7)' }}>Email *</FormLabel>
                             <FormControl>
                               <Input 
                                 type="email" 
                                 placeholder="votre@email.com" 
                                 {...field} 
-                                className="bg-white/5 border-white/10 focus:border-amber-500" 
+                                className="bg-white/5 border-white/10 focus:border-[#A5A9B4] text-white placeholder:text-white/40" 
                               />
                             </FormControl>
                             <FormMessage />
@@ -263,13 +306,13 @@ export default function Contact() {
                         name="phone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-white/70">Téléphone</FormLabel>
+                            <FormLabel style={{ color: 'rgba(255,255,255,0.7)' }}>Téléphone</FormLabel>
                             <FormControl>
                               <Input 
                                 type="tel" 
                                 placeholder="+33 6 00 00 00 00" 
                                 {...field} 
-                                className="bg-white/5 border-white/10 focus:border-amber-500" 
+                                className="bg-white/5 border-white/10 focus:border-[#A5A9B4] text-white placeholder:text-white/40" 
                               />
                             </FormControl>
                             <FormMessage />
@@ -282,12 +325,12 @@ export default function Contact() {
                         name="company"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-white/70">Entreprise</FormLabel>
+                            <FormLabel style={{ color: 'rgba(255,255,255,0.7)' }}>Entreprise</FormLabel>
                             <FormControl>
                               <Input 
                                 placeholder="Nom de l'entreprise" 
                                 {...field} 
-                                className="bg-white/5 border-white/10 focus:border-amber-500" 
+                                className="bg-white/5 border-white/10 focus:border-[#A5A9B4] text-white placeholder:text-white/40" 
                               />
                             </FormControl>
                             <FormMessage />
@@ -301,11 +344,11 @@ export default function Contact() {
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white/70">Message *</FormLabel>
+                          <FormLabel style={{ color: 'rgba(255,255,255,0.7)' }}>Message *</FormLabel>
                           <FormControl>
                             <Textarea
                               placeholder="Décrivez votre projet..."
-                              className="min-h-[120px] resize-none bg-white/5 border-white/10 focus:border-amber-500"
+                              className="min-h-[120px] resize-none bg-white/5 border-white/10 focus:border-[#A5A9B4] text-white placeholder:text-white/40"
                               {...field}
                             />
                           </FormControl>
@@ -317,7 +360,11 @@ export default function Contact() {
                     <Button
                       type="submit"
                       size="lg"
-                      className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-semibold"
+                      className="w-full font-semibold"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${STEALTH.accent} 0%, ${STEALTH.accentLight} 100%)`,
+                        color: STEALTH.bg 
+                      }}
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -344,17 +391,26 @@ export default function Contact() {
               className="space-y-6"
             >
               {/* Contact Info */}
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                <h3 className="font-semibold mb-4">Nos coordonnées</h3>
+              <div 
+                className="p-6 rounded-2xl"
+                style={{ 
+                  backgroundColor: STEALTH.glass, 
+                  border: `1px solid ${STEALTH.border}` 
+                }}
+              >
+                <h3 className="font-semibold mb-4 text-white">Nos coordonnées</h3>
                 <div className="space-y-4">
                   {contactInfo.map((item) => (
                     <div key={item.label} className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                        <item.icon className="w-5 h-5 text-amber-400" />
+                      <div 
+                        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${STEALTH.accent}10` }}
+                      >
+                        <item.icon className="w-5 h-5" style={{ color: STEALTH.accent }} />
                       </div>
                       <div>
-                        <p className="text-sm text-white/50">{item.label}</p>
-                        <p className="font-medium">{item.value}</p>
+                        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>{item.label}</p>
+                        <p className="font-medium text-white">{item.value}</p>
                       </div>
                     </div>
                   ))}
@@ -362,9 +418,15 @@ export default function Contact() {
               </div>
 
               {/* WhatsApp CTA */}
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20">
-                <h3 className="font-semibold mb-2">Réponse rapide ?</h3>
-                <p className="text-sm text-white/60 mb-4">
+              <div 
+                className="p-6 rounded-2xl"
+                style={{ 
+                  background: `linear-gradient(135deg, ${STEALTH.accent}10 0%, ${STEALTH.glass} 100%)`,
+                  border: `1px solid ${STEALTH.accent}20` 
+                }}
+              >
+                <h3 className="font-semibold mb-2 text-white">Réponse rapide ?</h3>
+                <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.6)' }}>
                   Contactez-nous directement sur WhatsApp pour une réponse immédiate.
                 </p>
                 <a 
@@ -372,7 +434,10 @@ export default function Contact() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Button className="w-full bg-amber-500 hover:bg-amber-600 text-black">
+                  <Button 
+                    className="w-full"
+                    style={{ backgroundColor: STEALTH.accent, color: STEALTH.bg }}
+                  >
                     <Phone className="mr-2 h-4 w-4" />
                     WhatsApp
                   </Button>
@@ -380,8 +445,14 @@ export default function Contact() {
               </div>
 
               {/* Trust */}
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                <h3 className="font-semibold mb-4">On garantit</h3>
+              <div 
+                className="p-6 rounded-2xl"
+                style={{ 
+                  backgroundColor: STEALTH.glass, 
+                  border: `1px solid ${STEALTH.border}` 
+                }}
+              >
+                <h3 className="font-semibold mb-4 text-white">On garantit</h3>
                 <div className="space-y-3">
                   {[
                     "Réponse en 24h max",
@@ -389,8 +460,8 @@ export default function Contact() {
                     "Accompagnement personnalisé",
                     "Support après-vente",
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2 text-sm text-white/70">
-                      <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                    <div key={i} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                      <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: STEALTH.accent }} />
                       <span>{item}</span>
                     </div>
                   ))}

@@ -1,6 +1,6 @@
 /**
  * Produits NFC — Catalogue des solutions i-wasp
- * Cartes de visite, tags, wearables avec exemples d'usages
+ * Palette Stealth Luxury : Noir Émeraude #050807, Argent Titane #A5A9B4, Platine #D1D5DB
  */
 
 import { motion } from "framer-motion";
@@ -21,6 +21,16 @@ import {
   Calendar,
   Palette
 } from "lucide-react";
+
+// Stealth Luxury Palette
+const STEALTH = {
+  bg: "#050807",
+  bgAlt: "#0A0D0C",
+  accent: "#A5A9B4",
+  accentLight: "#D1D5DB",
+  border: "rgba(165, 169, 180, 0.12)",
+  glass: "rgba(255, 255, 255, 0.02)"
+};
 
 const WHATSAPP_PROJECT_URL = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20des%20produits%20NFC%20i-wasp.";
 
@@ -114,7 +124,7 @@ const useCases = [
 
 export default function ProduitsNFC() {
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-white">
+    <div className="min-h-screen text-white" style={{ backgroundColor: STEALTH.bg }}>
       <ClubNavbar />
       
       {/* Hero */}
@@ -124,17 +134,26 @@ export default function ProduitsNFC() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6">
-              <CreditCard className="w-4 h-4 text-amber-400" />
-              <span className="text-sm text-amber-300/80">Catalogue NFC</span>
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+              style={{ 
+                backgroundColor: `${STEALTH.accent}10`, 
+                border: `1px solid ${STEALTH.border}` 
+              }}
+            >
+              <CreditCard className="w-4 h-4" style={{ color: STEALTH.accent }} />
+              <span className="text-sm" style={{ color: STEALTH.accentLight }}>Catalogue NFC</span>
             </div>
             
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+            <h1 
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
+              style={{ fontFamily: "'Bodoni Moda', serif" }}
+            >
               Des produits NFC<br />
-              <span className="text-amber-400">pour chaque usage</span>
+              <span style={{ color: STEALTH.accent }}>pour chaque usage</span>
             </h1>
             
-            <p className="text-xl text-white/60 max-w-2xl mx-auto mb-10">
+            <p className="text-xl max-w-2xl mx-auto mb-10" style={{ color: 'rgba(255,255,255,0.6)' }}>
               Cartes de visite, tags, wearables... Choisis ton support, 
               on s'occupe du design et de la programmation.
             </p>
@@ -143,7 +162,7 @@ export default function ProduitsNFC() {
       </section>
       
       {/* Products Grid */}
-      <section className="py-16 px-6 bg-[#121212]">
+      <section className="py-16 px-6" style={{ backgroundColor: STEALTH.bgAlt }}>
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 gap-6">
             {products.map((product, index) => (
@@ -153,43 +172,58 @@ export default function ProduitsNFC() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className={`relative p-8 rounded-3xl border transition-all ${
-                  product.popular 
-                    ? "bg-gradient-to-br from-amber-500/10 to-orange-500/5 border-amber-500/30" 
-                    : "bg-white/5 border-white/10 hover:border-amber-500/30"
-                }`}
+                className="relative p-8 rounded-3xl transition-all"
+                style={{
+                  background: product.popular 
+                    ? `linear-gradient(135deg, ${STEALTH.accent}15 0%, ${STEALTH.glass} 100%)`
+                    : STEALTH.glass,
+                  border: `1px solid ${product.popular ? STEALTH.accent + '30' : STEALTH.border}`
+                }}
               >
                 {product.popular && (
-                  <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-amber-500 text-black text-xs font-semibold">
+                  <div 
+                    className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold"
+                    style={{ backgroundColor: STEALTH.accent, color: STEALTH.bg }}
+                  >
                     Populaire
                   </div>
                 )}
                 
                 <div className="flex items-start gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center flex-shrink-0">
-                    <product.icon className="w-7 h-7 text-amber-400" />
+                  <div 
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: `linear-gradient(135deg, ${STEALTH.accent}20 0%, ${STEALTH.accent}10 100%)` }}
+                  >
+                    <product.icon className="w-7 h-7" style={{ color: STEALTH.accent }} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold">{product.title}</h3>
-                    <p className="text-amber-400/80 text-sm">{product.subtitle}</p>
+                    <h3 className="text-xl font-semibold text-white">{product.title}</h3>
+                    <p className="text-sm" style={{ color: STEALTH.accent }}>{product.subtitle}</p>
                   </div>
                 </div>
                 
-                <p className="text-white/60 mb-6">{product.description}</p>
+                <p className="mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>{product.description}</p>
                 
                 <ul className="space-y-2 mb-6">
                   {product.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm text-white/70">
-                      <Check className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                    <li key={feature} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                      <Check className="w-4 h-4 flex-shrink-0" style={{ color: STEALTH.accent }} />
                       {feature}
                     </li>
                   ))}
                 </ul>
                 
-                <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                  <span className="text-lg font-semibold text-amber-400">{product.price}</span>
+                <div 
+                  className="flex items-center justify-between pt-4"
+                  style={{ borderTop: `1px solid ${STEALTH.border}` }}
+                >
+                  <span className="text-lg font-semibold" style={{ color: STEALTH.accent }}>{product.price}</span>
                   <a href={WHATSAPP_PROJECT_URL} target="_blank" rel="noopener noreferrer">
-                    <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-black gap-2">
+                    <Button 
+                      size="sm" 
+                      className="gap-2"
+                      style={{ backgroundColor: STEALTH.accent, color: STEALTH.bg }}
+                    >
                       Commander
                       <ArrowRight className="w-4 h-4" />
                     </Button>
@@ -202,7 +236,7 @@ export default function ProduitsNFC() {
       </section>
       
       {/* Use Cases */}
-      <section className="py-24 px-6 bg-[#0B0B0B]">
+      <section className="py-24 px-6" style={{ backgroundColor: STEALTH.bg }}>
         <div className="container mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -210,10 +244,13 @@ export default function ProduitsNFC() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              <span className="text-amber-400">Exemples</span> d'usages
+            <h2 
+              className="text-3xl sm:text-4xl font-bold mb-4"
+              style={{ fontFamily: "'Bodoni Moda', serif" }}
+            >
+              <span style={{ color: STEALTH.accent }}>Exemples</span> d'usages
             </h2>
-            <p className="text-white/60 max-w-xl mx-auto">
+            <p className="max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.6)' }}>
               Chaque secteur a ses besoins. Voici comment nos clients utilisent le NFC.
             </p>
           </motion.div>
@@ -226,13 +263,20 @@ export default function ProduitsNFC() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center"
+                className="p-6 rounded-2xl text-center"
+                style={{ 
+                  backgroundColor: STEALTH.glass, 
+                  border: `1px solid ${STEALTH.border}` 
+                }}
               >
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-                  <useCase.icon className="w-6 h-6 text-amber-400" />
+                <div 
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
+                  style={{ backgroundColor: `${STEALTH.accent}10` }}
+                >
+                  <useCase.icon className="w-6 h-6" style={{ color: STEALTH.accent }} />
                 </div>
-                <h3 className="font-semibold mb-2">{useCase.sector}</h3>
-                <p className="text-sm text-white/50">{useCase.example}</p>
+                <h3 className="font-semibold text-white mb-2">{useCase.sector}</h3>
+                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>{useCase.example}</p>
               </motion.div>
             ))}
           </div>
@@ -240,23 +284,30 @@ export default function ProduitsNFC() {
       </section>
       
       {/* CTA */}
-      <section className="py-20 px-6 bg-[#121212]">
+      <section className="py-20 px-6" style={{ backgroundColor: STEALTH.bgAlt }}>
         <div className="container mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <Sparkles className="w-10 h-10 text-amber-400 mx-auto mb-6" />
-            <h2 className="text-3xl font-bold mb-4">
+            <Sparkles className="w-10 h-10 mx-auto mb-6" style={{ color: STEALTH.accent }} />
+            <h2 
+              className="text-3xl font-bold mb-4"
+              style={{ fontFamily: "'Bodoni Moda', serif" }}
+            >
               Un projet sur mesure ?
             </h2>
-            <p className="text-white/60 mb-8">
+            <p className="mb-8" style={{ color: 'rgba(255,255,255,0.6)' }}>
               Notre conciergerie analyse tes besoins et te propose la solution idéale.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/conciergerie">
-                <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold px-8 gap-2">
+                <Button 
+                  size="lg" 
+                  className="font-semibold px-8 gap-2"
+                  style={{ backgroundColor: STEALTH.accent, color: STEALTH.bg }}
+                >
                   Parler à la conciergerie
                   <ArrowRight className="w-5 h-5" />
                 </Button>
