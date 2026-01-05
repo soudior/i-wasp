@@ -663,6 +663,41 @@ export type Database = {
         }
         Relationships: []
       }
+      story_analytics: {
+        Row: {
+          created_at: string
+          device_type: string | null
+          duration_ms: number | null
+          event_type: string
+          id: string
+          story_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_type?: string | null
+          duration_ms?: number | null
+          event_type: string
+          id?: string
+          story_id: string
+        }
+        Update: {
+          created_at?: string
+          device_type?: string | null
+          duration_ms?: number | null
+          event_type?: string
+          id?: string
+          story_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_analytics_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "card_stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           cancelled_at: string | null
@@ -945,6 +980,7 @@ export type Database = {
         Returns: string
       }
       get_public_card: { Args: { p_slug: string }; Returns: Json }
+      get_story_stats: { Args: { p_story_id: string }; Returns: Json }
       get_vcard_data: { Args: { p_slug: string }; Returns: Json }
       has_role: {
         Args: {
@@ -956,6 +992,15 @@ export type Database = {
       increment_card_view: { Args: { p_slug: string }; Returns: undefined }
       increment_story_view: { Args: { p_story_id: string }; Returns: undefined }
       is_premium: { Args: { p_user_id: string }; Returns: boolean }
+      track_story_event: {
+        Args: {
+          p_device_type?: string
+          p_duration_ms?: number
+          p_event_type: string
+          p_story_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
