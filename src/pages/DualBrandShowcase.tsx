@@ -24,6 +24,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import medinaMallLogo from '@/assets/clients/medina-mall-logo.png';
+import leTravertinPhoto from '@/assets/clients/le-travertin.jpeg';
 
 type BrandKey = 'medina' | 'travertin';
 
@@ -111,12 +112,13 @@ const brands: Record<BrandKey, BrandConfig> = {
     tagline: "Batbut Cheese Steak · Street Food Premium",
     url: "https://www.instagram.com/letravertin/",
     insta: "https://www.instagram.com/letravertin/",
-    primary: "from-red-600 to-orange-500",
-    primaryHex: "#dc2626",
-    accent: "text-red-400",
-    bg: "bg-[#1a0a0a]",
-    cardBg: "linear-gradient(135deg, #3d1515 0%, #1a0a0a 100%)",
+    primary: "from-amber-200 to-stone-400",
+    primaryHex: "#d4a574",
+    accent: "text-amber-200",
+    bg: "bg-[#1a1612]",
+    cardBg: "linear-gradient(135deg, #2d261f 0%, #1a1612 100%)",
     monogram: "LT",
+    logo: leTravertinPhoto,
     phone: "+212600000000",
     email: "contact@letravertin.ma",
     whatsapp: "+212600000000",
