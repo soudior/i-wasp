@@ -106,9 +106,10 @@ const mockFleet: NFCCard[] = [
 // Tabs configuration
 const tabs = [
   { id: "manufacture", label: "La Manufacture", icon: Gem },
-  { id: "studio", label: "Studio", icon: User },
+  { id: "studio", label: "Mon Identité", icon: User },
   { id: "leads", label: "Mes Leads", icon: Users },
-  { id: "automation", label: "Push & Ads", icon: Bell },
+  { id: "world", label: "Réseau Mondial", icon: Globe },
+  { id: "automation", label: "Ads & Push", icon: Zap },
   { id: "eco", label: "Écologie", icon: Leaf },
 ];
 
@@ -118,6 +119,25 @@ const mockLeads = [
   { name: "Alexandre Moreau", company: "Ferrari", role: "Brand Manager", score: 94, date: "Il y a 5h" },
   { name: "Isabella Chen", company: "Cartier", role: "VP Marketing", score: 91, date: "Hier" },
   { name: "Marcus Van Der Berg", company: "Porsche", role: "CEO Europe", score: 89, date: "Hier" },
+];
+
+// World map hotspots data
+const worldHotspots = [
+  { id: 1, city: "Paris", country: "France", lat: 48.85, lng: 2.35, scans: 312, active: true },
+  { id: 2, city: "Dubaï", country: "EAU", lat: 25.20, lng: 55.27, scans: 187, active: true },
+  { id: 3, city: "New York", country: "USA", lat: 40.71, lng: -74.00, scans: 156, active: false },
+  { id: 4, city: "Genève", country: "Suisse", lat: 46.20, lng: 6.14, scans: 98, active: true },
+  { id: 5, city: "Monaco", country: "Monaco", lat: 43.73, lng: 7.42, scans: 76, active: false },
+  { id: 6, city: "Singapour", country: "Singapour", lat: 1.35, lng: 103.82, scans: 64, active: true },
+];
+
+// Activity feed data
+const activityFeed = [
+  { city: "Genève", country: "Suisse", time: "Il y a 3 min", type: "scan", flag: "🇨🇭" },
+  { city: "New York", country: "USA", time: "Il y a 12 min", type: "vcard", flag: "🇺🇸" },
+  { city: "Dubaï", country: "EAU", time: "Il y a 28 min", type: "scan", flag: "🇦🇪" },
+  { city: "Paris", country: "France", time: "Il y a 45 min", type: "lead", flag: "🇫🇷" },
+  { city: "Monaco", country: "Monaco", time: "Il y a 1h", type: "scan", flag: "🇲🇨" },
 ];
 
 const Studio = () => {
@@ -684,6 +704,200 @@ const Studio = () => {
                         <ExternalLink className="w-4 h-4" />
                         Connecter
                       </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* RÉSEAU MONDIAL TAB */}
+              {activeTab === "world" && (
+                <motion.div
+                  key="world"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-8"
+                >
+                  {/* World Header */}
+                  <div className="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                      <h3 className="font-display text-2xl text-iwasp-cream">
+                        <span className="italic text-iwasp-abyss">Réseau</span> Mondial
+                      </h3>
+                      <p className="text-sm text-iwasp-silver mt-1">Votre influence s'étend à travers les continents.</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="px-4 py-2 rounded-full bg-iwasp-abyss/20 border border-iwasp-abyss/30 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-iwasp-emerald-glow animate-pulse" />
+                        <span className="text-iwasp-cream text-xs font-medium">6 villes actives</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Metrics Row */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      { value: "893", label: "Scans Globaux", icon: "🌍", trend: "+12%" },
+                      { value: "6", label: "Continents Atteints", icon: "✈️", trend: "+2" },
+                      { value: "24", label: "Villes de Pouvoir", icon: "🏙️", trend: "+5" },
+                      { value: "94%", label: "Indice Confiance", icon: "💎", trend: "+3%" },
+                    ].map((stat, i) => (
+                      <div 
+                        key={i}
+                        className="p-4 rounded-2xl bg-gradient-to-br from-iwasp-abyss/20 to-iwasp-midnight-elevated border border-iwasp-abyss/20 text-center"
+                      >
+                        <div className="text-2xl mb-1">{stat.icon}</div>
+                        <div className="text-xl font-display text-iwasp-cream">{stat.value}</div>
+                        <div className="text-xs text-iwasp-silver">{stat.label}</div>
+                        <div className="text-xs text-iwasp-emerald-glow mt-1">{stat.trend}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Map + Activity Grid */}
+                  <div className="grid lg:grid-cols-[1fr,320px] gap-6">
+                    {/* Stylized Map */}
+                    <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-iwasp-abyss/30 via-iwasp-midnight to-iwasp-midnight-elevated border border-iwasp-abyss/30 aspect-[16/10] min-h-[300px]">
+                      {/* Map Background Grid */}
+                      <div className="absolute inset-0 opacity-20">
+                        <div className="w-full h-full" style={{
+                          backgroundImage: `
+                            linear-gradient(rgba(26, 79, 102, 0.3) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(26, 79, 102, 0.3) 1px, transparent 1px)
+                          `,
+                          backgroundSize: '40px 40px'
+                        }} />
+                      </div>
+
+                      {/* Decorative Globe Lines */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-10">
+                        <div className="w-[80%] h-[80%] rounded-full border-2 border-iwasp-abyss border-dashed" />
+                        <div className="absolute w-[60%] h-[60%] rounded-full border border-iwasp-abyss border-dashed" />
+                        <div className="absolute w-[40%] h-[40%] rounded-full border border-iwasp-abyss border-dashed" />
+                      </div>
+
+                      {/* Hotspots */}
+                      {worldHotspots.map((spot) => (
+                        <motion.div
+                          key={spot.id}
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: spot.id * 0.1, type: "spring" }}
+                          className="absolute group cursor-pointer"
+                          style={{
+                            left: `${((spot.lng + 180) / 360) * 100}%`,
+                            top: `${((90 - spot.lat) / 180) * 100}%`,
+                            transform: 'translate(-50%, -50%)'
+                          }}
+                        >
+                          {/* Pulse Ring */}
+                          {spot.active && (
+                            <div className="absolute inset-0 w-6 h-6 -translate-x-1/2 -translate-y-1/2 rounded-full bg-iwasp-bronze/30 animate-ping" />
+                          )}
+                          {/* Dot */}
+                          <div className={cn(
+                            "w-3 h-3 rounded-full shadow-lg transition-all",
+                            spot.active 
+                              ? "bg-iwasp-bronze shadow-iwasp-bronze/50" 
+                              : "bg-iwasp-abyss/50 border border-iwasp-abyss"
+                          )} />
+                          
+                          {/* Tooltip */}
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                            <div className="px-3 py-2 rounded-xl bg-iwasp-midnight border border-iwasp-bronze/30 text-center whitespace-nowrap">
+                              <div className="text-iwasp-cream font-medium text-sm">{spot.city}</div>
+                              <div className="text-iwasp-bronze text-xs">{spot.scans} scans</div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+
+                      {/* Map Legend */}
+                      <div className="absolute bottom-4 left-4 flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-iwasp-bronze" />
+                          <span className="text-xs text-iwasp-silver">Actif</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-iwasp-abyss/50 border border-iwasp-abyss" />
+                          <span className="text-xs text-iwasp-silver">Dormant</span>
+                        </div>
+                      </div>
+
+                      {/* Title */}
+                      <div className="absolute top-4 left-4">
+                        <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">Carte d'Influence</h4>
+                      </div>
+                    </div>
+
+                    {/* Activity Feed */}
+                    <div className="space-y-4">
+                      <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">Activité en Direct</h4>
+                      <div className="space-y-3">
+                        {activityFeed.map((activity, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.1 }}
+                            className="p-3 rounded-xl bg-iwasp-midnight-elevated border border-iwasp-abyss/20 flex items-center gap-3"
+                          >
+                            <div className="text-xl">{activity.flag}</div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-iwasp-cream text-sm font-medium">{activity.city}</div>
+                              <div className="text-iwasp-silver text-xs">{activity.country}</div>
+                            </div>
+                            <div className="text-right">
+                              <div className={cn(
+                                "text-xs font-medium",
+                                activity.type === "lead" ? "text-iwasp-emerald-glow" : 
+                                activity.type === "vcard" ? "text-iwasp-bronze" : "text-iwasp-silver"
+                              )}>
+                                {activity.type === "lead" ? "Lead" : activity.type === "vcard" ? "vCard" : "Scan"}
+                              </div>
+                              <div className="text-iwasp-silver/60 text-xs">{activity.time}</div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+
+                      {/* Expansion Velocity */}
+                      <div className="p-4 rounded-2xl bg-gradient-to-br from-iwasp-bronze/10 to-iwasp-abyss/10 border border-iwasp-bronze/20">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs text-iwasp-silver uppercase tracking-wider">Vitesse d'Expansion</span>
+                          <span className="text-iwasp-bronze font-display text-lg">+23%</span>
+                        </div>
+                        <div className="w-full h-2 rounded-full bg-iwasp-midnight overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: "73%" }}
+                            transition={{ duration: 1.5, ease: "easeOut" }}
+                            className="h-full rounded-full bg-gradient-to-r from-iwasp-bronze to-iwasp-emerald-glow"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Power Cities */}
+                  <div className="space-y-4">
+                    <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">Villes de Pouvoir</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {worldHotspots.slice(0, 6).map((city, i) => (
+                        <div 
+                          key={city.id}
+                          className="p-4 rounded-xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="text-lg">{i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "📍"}</div>
+                            <div>
+                              <div className="text-iwasp-cream font-medium text-sm">{city.city}</div>
+                              <div className="text-iwasp-silver text-xs">{city.country}</div>
+                            </div>
+                          </div>
+                          <div className="text-iwasp-bronze font-display">{city.scans}</div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </motion.div>
