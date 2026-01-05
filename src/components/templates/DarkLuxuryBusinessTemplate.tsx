@@ -30,7 +30,7 @@ import { useCardActionUrl, useIncrementCardView } from "@/hooks/usePublicCard";
 import { IWASPBrandingFooter } from "@/components/IWASPBrandingFooter";
 import { downloadVCard, VCardData } from "@/lib/vcard";
 import { StoryRing } from "@/components/StoryRing";
-import { usePublicStory } from "@/hooks/useStories";
+import { usePublicMultipleStories } from "@/hooks/useMultipleStories";
 
 interface DarkLuxuryBusinessTemplateProps {
   card: {
@@ -76,8 +76,8 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
   const [isNavigating, setIsNavigating] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // Fetch active story for this card
-  const { story } = usePublicStory(card.id);
+  // Fetch active stories for this card
+  const { stories } = usePublicMultipleStories(card.id);
 
   // Extract Google Reviews link from blocks or social_links
   const googleReviewsLink = card.blocks?.find((b: any) => b.type === 'google_reviews')?.url ||
@@ -172,7 +172,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
               photoUrl={card.photo_url || card.logo_url || undefined}
               firstName={card.first_name}
               lastName={card.last_name}
-              story={story}
+              stories={stories}
               whatsappNumber={whatsappLink}
               size="lg"
               className="border-2 rounded-full"

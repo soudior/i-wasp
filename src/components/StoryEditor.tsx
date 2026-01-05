@@ -1,11 +1,11 @@
 /**
- * StoryEditor - Éditeur pour uploader/créer des stories
+ * StoryEditor - Éditeur pour uploader/créer plusieurs stories
  * Supporte images et texte avec couleur de fond
  */
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Type, X, Clock, Sparkles, Image as ImageIcon, Trash2 } from "lucide-react";
+import { Upload, Type, Clock, Sparkles, Image as ImageIcon, Trash2, Plus, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface Story {
   id: string;
@@ -22,12 +24,14 @@ interface Story {
   text_background_color?: string;
   created_at: string;
   expires_at: string;
+  view_count?: number;
 }
 
 interface StoryEditorProps {
   cardId: string;
-  currentStory?: Story | null;
-  onStoryChange: (story: Story | null) => void;
+  stories?: Story[];
+  onStoriesChange: (stories: Story[]) => void;
+  maxStories?: number;
 }
 
 const BACKGROUND_COLORS = [
@@ -39,20 +43,25 @@ const BACKGROUND_COLORS = [
   { id: "purple", color: "#7C3AED", label: "Violet" },
 ];
 
-export function StoryEditor({ cardId, currentStory, onStoryChange }: StoryEditorProps) {
+export function StoryEditor({ 
+  cardId, 
+  stories = [], 
+  onStoriesChange,
+  maxStories = 10 
+}: StoryEditorProps) {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<"image" | "text" | null>(null);
-  const [textContent, setTextContent] = useState(currentStory?.text_content || "");
-  const [bgColor, setBgColor] = useState(currentStory?.text_background_color || "#1D1D1F");
+  const [textContent, setTextContent] = useState("");
+  const [bgColor, setBgColor] = useState("#1D1D1F");
   const [uploading, setUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(currentStory?.image_url || null);
+
+  const canAddMore = stories.length < maxStories;
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
-    // Validate file
     if (!file.type.startsWith("image/")) {
       toast.error("Seules les images sont acceptées");
       return;
@@ -65,7 +74,6 @@ export function StoryEditor({ cardId, currentStory, onStoryChange }: StoryEditor
 
     setUploading(true);
     try {
-      // Upload to storage
       const fileExt = file.name.split(".").pop();
       const fileName = `${user.id}/${cardId}-${Date.now()}.${fileExt}`;
       
@@ -75,38 +83,36 @@ export function StoryEditor({ cardId, currentStory, onStoryChange }: StoryEditor
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: urlData } = supabase.storage
         .from("stories")
         .getPublicUrl(fileName);
 
       const imageUrl = urlData.publicUrl;
-      setPreviewUrl(imageUrl);
 
-      // Save story to database
       const { data: storyData, error: storyError } = await supabase
         .from("card_stories")
-        .upsert({
+        .insert({
           card_id: cardId,
           content_type: "image",
           image_url: imageUrl,
           is_active: true,
-        }, {
-          onConflict: "card_id",
         })
         .select()
         .single();
 
       if (storyError) throw storyError;
 
-      onStoryChange(storyData as Story);
-      toast.success("Story publiée ! Elle sera visible pendant 24h");
+      onStoriesChange([storyData as Story, ...stories]);
+      toast.success("Story ajoutée ! Elle sera visible pendant 24h");
       setMode(null);
     } catch (error) {
       console.error("Error uploading story:", error);
       toast.error("Erreur lors de l'upload de la story");
     } finally {
       setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -117,23 +123,22 @@ export function StoryEditor({ cardId, currentStory, onStoryChange }: StoryEditor
     try {
       const { data: storyData, error } = await supabase
         .from("card_stories")
-        .upsert({
+        .insert({
           card_id: cardId,
           content_type: "text",
           text_content: textContent.trim(),
           text_background_color: bgColor,
           is_active: true,
-        }, {
-          onConflict: "card_id",
         })
         .select()
         .single();
 
       if (error) throw error;
 
-      onStoryChange(storyData as Story);
-      toast.success("Story publiée ! Elle sera visible pendant 24h");
+      onStoriesChange([storyData as Story, ...stories]);
+      toast.success("Story ajoutée ! Elle sera visible pendant 24h");
       setMode(null);
+      setTextContent("");
     } catch (error) {
       console.error("Error creating text story:", error);
       toast.error("Erreur lors de la création de la story");
@@ -142,20 +147,16 @@ export function StoryEditor({ cardId, currentStory, onStoryChange }: StoryEditor
     }
   };
 
-  const handleDeleteStory = async () => {
-    if (!currentStory) return;
-
+  const handleDeleteStory = async (storyId: string) => {
     try {
       const { error } = await supabase
         .from("card_stories")
         .delete()
-        .eq("id", currentStory.id);
+        .eq("id", storyId);
 
       if (error) throw error;
 
-      onStoryChange(null);
-      setPreviewUrl(null);
-      setTextContent("");
+      onStoriesChange(stories.filter(s => s.id !== storyId));
       toast.success("Story supprimée");
     } catch (error) {
       console.error("Error deleting story:", error);
@@ -168,7 +169,7 @@ export function StoryEditor({ cardId, currentStory, onStoryChange }: StoryEditor
       <div className="flex items-center justify-between">
         <Label className="flex items-center gap-2 text-sm font-medium text-foreground">
           <Sparkles size={16} className="text-rose-500" />
-          Story Professionnelle
+          Stories ({stories.length}/{maxStories})
         </Label>
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <Clock size={12} />
@@ -176,42 +177,68 @@ export function StoryEditor({ cardId, currentStory, onStoryChange }: StoryEditor
         </div>
       </div>
 
-      {/* Current story preview */}
-      {currentStory && (
-        <div className="relative rounded-xl overflow-hidden border border-border/50">
-          {currentStory.content_type === "image" && currentStory.image_url && (
-            <img
-              src={currentStory.image_url}
-              alt="Story actuelle"
-              className="w-full h-32 object-cover"
-            />
-          )}
-          {currentStory.content_type === "text" && (
+      {/* Current stories list */}
+      {stories.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {stories.map((story) => (
             <div
-              className="w-full h-32 flex items-center justify-center p-4"
-              style={{ backgroundColor: currentStory.text_background_color }}
+              key={story.id}
+              className="relative flex-shrink-0 w-20 h-28 rounded-xl overflow-hidden border border-border/50 group"
             >
-              <p className="text-white text-sm font-medium text-center line-clamp-3">
-                {currentStory.text_content}
-              </p>
+              {story.content_type === "image" && story.image_url && (
+                <img
+                  src={story.image_url}
+                  alt="Story"
+                  className="w-full h-full object-cover"
+                />
+              )}
+              {story.content_type === "text" && (
+                <div
+                  className="w-full h-full flex items-center justify-center p-2"
+                  style={{ backgroundColor: story.text_background_color }}
+                >
+                  <p className="text-white text-[8px] font-medium text-center line-clamp-4">
+                    {story.text_content}
+                  </p>
+                </div>
+              )}
+              
+              {/* Delete button */}
+              <button
+                onClick={() => handleDeleteStory(story.id)}
+                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <Trash2 size={10} />
+              </button>
+              
+              {/* View count */}
+              <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-black/50 text-white text-[8px] flex items-center gap-0.5">
+                <Eye size={8} />
+                {story.view_count || 0}
+              </div>
+              
+              {/* Time remaining */}
+              <div className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-full bg-black/50 text-white text-[8px]">
+                {formatDistanceToNow(new Date(story.expires_at), { locale: fr })}
+              </div>
             </div>
+          ))}
+          
+          {/* Add new story button */}
+          {canAddMore && !mode && (
+            <button
+              onClick={() => setMode("image")}
+              className="flex-shrink-0 w-20 h-28 rounded-xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-rose-500/50 hover:text-rose-500 transition-colors"
+            >
+              <Plus size={20} />
+              <span className="text-[10px]">Ajouter</span>
+            </button>
           )}
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleDeleteStory}
-            className="absolute top-2 right-2 h-8 w-8 p-0"
-          >
-            <Trash2 size={14} />
-          </Button>
-          <div className="absolute bottom-2 left-2 px-2 py-1 rounded-full bg-black/50 text-white text-xs">
-            Story active
-          </div>
         </div>
       )}
 
-      {/* Mode selector */}
-      {!currentStory && !mode && (
+      {/* Mode selector when no stories exist */}
+      {stories.length === 0 && !mode && (
         <div className="grid grid-cols-2 gap-3">
           <motion.button
             whileTap={{ scale: 0.98 }}
@@ -229,6 +256,30 @@ export function StoryEditor({ cardId, currentStory, onStoryChange }: StoryEditor
             <Type size={24} />
             <span className="text-sm font-medium">Texte</span>
           </motion.button>
+        </div>
+      )}
+
+      {/* Add new story buttons when stories exist */}
+      {stories.length > 0 && canAddMore && !mode && (
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setMode("image")}
+            className="border-rose-500/30 text-rose-500 hover:bg-rose-500/10"
+          >
+            <ImageIcon size={14} className="mr-1.5" />
+            Image
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setMode("text")}
+            className="border-purple-500/30 text-purple-500 hover:bg-purple-500/10"
+          >
+            <Type size={14} className="mr-1.5" />
+            Texte
+          </Button>
         </div>
       )}
 
@@ -345,7 +396,7 @@ export function StoryEditor({ cardId, currentStory, onStoryChange }: StoryEditor
                 disabled={!textContent.trim() || uploading}
                 className="flex-1 bg-gradient-to-r from-rose-500 to-purple-500 text-white"
               >
-                {uploading ? "Publication..." : "Publier"}
+                {uploading ? "Publication..." : "Ajouter"}
               </Button>
             </div>
           </motion.div>
@@ -353,7 +404,7 @@ export function StoryEditor({ cardId, currentStory, onStoryChange }: StoryEditor
       </AnimatePresence>
 
       <p className="text-xs text-muted-foreground text-center">
-        Parfait pour annoncer une promo, un nouveau menu ou un bien disponible !
+        Ajoutez jusqu'à {maxStories} stories qui défilent comme sur Instagram !
       </p>
     </div>
   );

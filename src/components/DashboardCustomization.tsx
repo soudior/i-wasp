@@ -31,7 +31,7 @@ export function DashboardCustomization() {
   const updateCard = useUpdateCard();
   
   const primaryCard = cards[0];
-  const { story: currentStory, updateStory } = useStories(primaryCard?.id);
+  const { stories, updateStories } = useStories(primaryCard?.id);
   
   // Form state
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
@@ -354,8 +354,8 @@ export function DashboardCustomization() {
               >
                 <StoryEditor
                   cardId={primaryCard.id}
-                  currentStory={currentStory}
-                  onStoryChange={updateStory}
+                  stories={stories}
+                  onStoriesChange={updateStories}
                 />
               </GoldFeatureCard>
 
