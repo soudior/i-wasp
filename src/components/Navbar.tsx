@@ -4,8 +4,10 @@ import { Menu, X, LayoutDashboard, LogOut, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { CurrencySwitch } from "@/components/CurrencySwitch";
 
 export function Navbar() {
   const { t } = useTranslation();
@@ -93,6 +95,9 @@ export function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
+            {/* Currency Switch */}
+            <CurrencySwitch variant="pill" />
+            
             {/* Language Selector */}
             <LanguageSelector />
 
@@ -139,6 +144,7 @@ export function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
+            <CurrencySwitch variant="compact" />
             <LanguageSelector />
             <button
               className="p-2 text-foreground"

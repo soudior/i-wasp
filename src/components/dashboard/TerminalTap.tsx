@@ -4,14 +4,15 @@
  * Premium NFC payment simulation for i-Wasp
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Nfc, Check, X, Loader2, Smartphone, 
-  CreditCard, Wifi, WifiOff, Volume2
+  Wifi, WifiOff
 } from "lucide-react";
 import { toast } from "sonner";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 // Stealth Luxury Colors
 const COLORS = {
@@ -30,21 +31,18 @@ const COLORS = {
 type PaymentStatus = "idle" | "waiting" | "processing" | "success" | "error";
 
 interface TerminalTapProps {
-  currency?: "EUR" | "MAD";
   onPaymentComplete?: (amount: number) => void;
 }
 
-export function TerminalTap({ 
-  currency = "MAD", 
-  onPaymentComplete 
-}: TerminalTapProps) {
+export function TerminalTap({ onPaymentComplete }: TerminalTapProps) {
+  const { currency } = useCurrency();
   const [amount, setAmount] = useState("0");
   const [status, setStatus] = useState<PaymentStatus>("idle");
   const [isNfcEnabled, setIsNfcEnabled] = useState(true);
   const { impactLight, impactMedium, notificationSuccess, notificationError } = useHapticFeedback();
 
   const currencySymbol = currency === "EUR" ? "€" : "DH";
-  const currencyLabel = currency === "EUR" ? "EUR" : "MAD";
+  const currencyLabel = currency;
 
   // Format amount display
   const formattedAmount = (() => {

@@ -297,9 +297,8 @@ const Dashboard = () => {
               {/* Terminal Tap - NFC Payment */}
               <div>
                 <TerminalTap 
-                  currency="MAD"
                   onPaymentComplete={(amount) => {
-                    console.log(`Payment completed: ${amount} MAD`);
+                    console.log(`Payment completed: ${amount}`);
                   }}
                 />
               </div>
