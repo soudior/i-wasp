@@ -83,6 +83,7 @@ const Studio = lazy(() => import("./pages/Studio"));
 const DemoStudio = lazy(() => import("./pages/DemoStudio"));
 const MaisonBOpticCard = lazy(() => import("./pages/MaisonBOpticCard"));
 const AdminCardEditor = lazy(() => import("./pages/AdminCardEditor"));
+const AdminCardGenerator = lazy(() => import("./pages/AdminCardGenerator"));
 
 // NEW Order funnel pages - 7 steps strict flow
 const OrderType = lazy(() => import("./pages/order/OrderType"));
@@ -284,6 +285,7 @@ const App = () => {
                               <Route path="/brand-assets" element={<AdminGuard><BrandAssets /></AdminGuard>} />
                               <Route path="/admin/card-editor" element={<AdminGuard><AdminCardEditor /></AdminGuard>} />
                               <Route path="/admin/card-editor/:cardSlug" element={<AdminGuard><AdminCardEditor /></AdminGuard>} />
+                              <Route path="/admin/generator" element={<AdminGuard><AdminCardGenerator /></AdminGuard>} />
                               
                               {/* 404 */}
                               <Route path="*" element={<NotFound />} />
