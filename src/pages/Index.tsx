@@ -170,7 +170,7 @@ const Index = () => {
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </a>
-              <Link to="/showroom">
+              <Link to="/club">
                 <Button 
                   variant="outline" 
                   size="lg"
