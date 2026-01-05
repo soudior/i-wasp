@@ -1,6 +1,11 @@
 /**
  * Club / Abonnement — Avantages membres i-wasp
  * Tarifs, avantages, CTA rejoindre le club
+ * 
+ * Palette Stealth Luxury:
+ * - Noir Émeraude: #050807
+ * - Argent Titane: #A5A9B4
+ * - Platine: #D1D5DB
  */
 
 import { motion } from "framer-motion";
@@ -23,6 +28,15 @@ import {
 } from "lucide-react";
 
 const WHATSAPP_CLUB_URL = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20rejoindre%20le%20club%20i-wasp.";
+
+// Stealth Luxury Colors
+const STEALTH = {
+  noir: "#050807",
+  noirElevated: "#0A0F0D",
+  titanium: "#A5A9B4",
+  platinum: "#D1D5DB",
+  emeraldGlow: "#1A2B26",
+};
 
 // Member benefits
 const memberBenefits = [
@@ -125,36 +139,59 @@ const testimonials = [
 
 export default function Club() {
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-white">
+    <div className="min-h-screen text-white" style={{ backgroundColor: STEALTH.noir }}>
       <ClubNavbar />
       
       {/* Hero */}
       <section className="pt-32 pb-20 px-6 relative overflow-hidden">
-        {/* Glow effect */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[150px]" />
+        {/* Glow effect - Titane subtil */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[150px]"
+          style={{ backgroundColor: `${STEALTH.titanium}10` }}
+        />
         
         <div className="container mx-auto max-w-5xl text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6">
-              <Crown className="w-4 h-4 text-amber-400" />
-              <span className="text-sm text-amber-300/80">Club privé mondial</span>
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6"
+              style={{ 
+                backgroundColor: `${STEALTH.titanium}10`,
+                borderColor: `${STEALTH.titanium}30`
+              }}
+            >
+              <Crown className="w-4 h-4" style={{ color: STEALTH.platinum }} />
+              <span className="text-sm" style={{ color: `${STEALTH.platinum}CC` }}>Club privé mondial</span>
             </div>
             
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
               Rejoins le club<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">i-wasp</span>
+              <span 
+                className="text-transparent bg-clip-text"
+                style={{ 
+                  backgroundImage: `linear-gradient(135deg, ${STEALTH.titanium}, ${STEALTH.platinum})`
+                }}
+              >
+                i-wasp
+              </span>
             </h1>
             
-            <p className="text-xl text-white/60 max-w-2xl mx-auto mb-10">
+            <p className="text-xl max-w-2xl mx-auto mb-10" style={{ color: `${STEALTH.titanium}99` }}>
               Un cercle exclusif de professionnels connectés. 
               Outils premium, IA, conciergerie et réseau mondial.
             </p>
             
             <a href={WHATSAPP_CLUB_URL} target="_blank" rel="noopener noreferrer">
-              <Button size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-semibold px-8 gap-2">
+              <Button 
+                size="lg" 
+                className="font-semibold px-8 gap-2"
+                style={{ 
+                  background: `linear-gradient(135deg, ${STEALTH.titanium}, ${STEALTH.platinum})`,
+                  color: STEALTH.noir
+                }}
+              >
                 <Crown className="w-5 h-5" />
                 Rejoindre maintenant
                 <ArrowRight className="w-5 h-5" />
@@ -165,7 +202,7 @@ export default function Club() {
       </section>
       
       {/* Benefits Grid */}
-      <section className="py-20 px-6 bg-[#121212]">
+      <section className="py-20 px-6" style={{ backgroundColor: STEALTH.noirElevated }}>
         <div className="container mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -174,9 +211,9 @@ export default function Club() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Les avantages <span className="text-amber-400">membres</span>
+              Les avantages <span style={{ color: STEALTH.platinum }}>membres</span>
             </h2>
-            <p className="text-white/60 max-w-xl mx-auto">
+            <p className="max-w-xl mx-auto" style={{ color: `${STEALTH.titanium}99` }}>
               Tout ce dont tu as besoin pour connecter, engager et convertir.
             </p>
           </motion.div>
@@ -189,13 +226,22 @@ export default function Club() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-amber-500/30 transition-all"
+                className="p-6 rounded-2xl border transition-all hover:border-opacity-50"
+                style={{ 
+                  backgroundColor: `${STEALTH.noir}80`,
+                  borderColor: `${STEALTH.titanium}20`
+                }}
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center mb-4">
-                  <benefit.icon className="w-6 h-6 text-amber-400" />
+                <div 
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${STEALTH.titanium}20, ${STEALTH.platinum}10)`
+                  }}
+                >
+                  <benefit.icon className="w-6 h-6" style={{ color: STEALTH.platinum }} />
                 </div>
                 <h3 className="font-semibold mb-2">{benefit.title}</h3>
-                <p className="text-sm text-white/50">{benefit.description}</p>
+                <p className="text-sm" style={{ color: `${STEALTH.titanium}80` }}>{benefit.description}</p>
               </motion.div>
             ))}
           </div>
@@ -203,7 +249,7 @@ export default function Club() {
       </section>
       
       {/* Pricing */}
-      <section className="py-24 px-6 bg-[#0B0B0B]">
+      <section className="py-24 px-6" style={{ backgroundColor: STEALTH.noir }}>
         <div className="container mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -212,9 +258,9 @@ export default function Club() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Choisis ton <span className="text-amber-400">plan</span>
+              Choisis ton <span style={{ color: STEALTH.platinum }}>plan</span>
             </h2>
-            <p className="text-white/60 max-w-xl mx-auto">
+            <p className="max-w-xl mx-auto" style={{ color: `${STEALTH.titanium}99` }}>
               Des formules adaptées à chaque besoin. Sans engagement.
             </p>
           </motion.div>
@@ -227,30 +273,40 @@ export default function Club() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className={`relative p-8 rounded-3xl border transition-all ${
-                  plan.popular 
-                    ? "bg-gradient-to-br from-amber-500/10 to-orange-500/5 border-amber-500/50" 
-                    : "bg-white/5 border-white/10"
-                }`}
+                className="relative p-8 rounded-3xl border transition-all"
+                style={{ 
+                  backgroundColor: plan.popular 
+                    ? `${STEALTH.titanium}10` 
+                    : `${STEALTH.noirElevated}80`,
+                  borderColor: plan.popular 
+                    ? `${STEALTH.titanium}50` 
+                    : `${STEALTH.titanium}20`
+                }}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-black text-xs font-semibold">
+                  <div 
+                    className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-semibold"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${STEALTH.titanium}, ${STEALTH.platinum})`,
+                      color: STEALTH.noir
+                    }}
+                  >
                     Le plus populaire
                   </div>
                 )}
                 
                 <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
-                <p className="text-white/50 text-sm mb-6">{plan.description}</p>
+                <p className="text-sm mb-6" style={{ color: `${STEALTH.titanium}80` }}>{plan.description}</p>
                 
                 <div className="flex items-baseline mb-6">
                   <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className="text-white/50 ml-1">{plan.period}</span>
+                  <span className="ml-1" style={{ color: `${STEALTH.titanium}80` }}>{plan.period}</span>
                 </div>
                 
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm text-white/70">
-                      <Check className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                    <li key={feature} className="flex items-center gap-2 text-sm" style={{ color: `${STEALTH.titanium}B3` }}>
+                      <Check className="w-4 h-4 flex-shrink-0" style={{ color: STEALTH.platinum }} />
                       {feature}
                     </li>
                   ))}
@@ -258,11 +314,14 @@ export default function Club() {
                 
                 <a href={WHATSAPP_CLUB_URL} target="_blank" rel="noopener noreferrer">
                   <Button 
-                    className={`w-full ${
-                      plan.popular 
-                        ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black" 
-                        : "bg-white/10 hover:bg-white/20 text-white"
-                    }`}
+                    className="w-full"
+                    style={plan.popular ? { 
+                      background: `linear-gradient(135deg, ${STEALTH.titanium}, ${STEALTH.platinum})`,
+                      color: STEALTH.noir
+                    } : { 
+                      backgroundColor: `${STEALTH.titanium}20`,
+                      color: 'white'
+                    }}
                   >
                     {plan.cta}
                   </Button>
@@ -274,7 +333,7 @@ export default function Club() {
       </section>
       
       {/* Testimonials */}
-      <section className="py-20 px-6 bg-[#121212]">
+      <section className="py-20 px-6" style={{ backgroundColor: STEALTH.noirElevated }}>
         <div className="container mx-auto max-w-4xl">
           <div className="grid md:grid-cols-2 gap-6">
             {testimonials.map((testimonial, index) => (
@@ -284,17 +343,21 @@ export default function Club() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-white/5 border border-white/10"
+                className="p-6 rounded-2xl border"
+                style={{ 
+                  backgroundColor: `${STEALTH.noir}80`,
+                  borderColor: `${STEALTH.titanium}20`
+                }}
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <Star key={i} className="w-4 h-4" style={{ fill: STEALTH.platinum, color: STEALTH.platinum }} />
                   ))}
                 </div>
-                <p className="text-white/80 mb-6 italic">"{testimonial.quote}"</p>
+                <p className="mb-6 italic" style={{ color: `${STEALTH.titanium}CC` }}>"{testimonial.quote}"</p>
                 <div>
                   <div className="font-semibold">{testimonial.author}</div>
-                  <div className="text-sm text-white/50">{testimonial.role}</div>
+                  <div className="text-sm" style={{ color: `${STEALTH.titanium}80` }}>{testimonial.role}</div>
                 </div>
               </motion.div>
             ))}
@@ -303,8 +366,11 @@ export default function Club() {
       </section>
       
       {/* Final CTA */}
-      <section className="py-24 px-6 bg-[#0B0B0B] relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[150px]" />
+      <section className="py-24 px-6 relative overflow-hidden" style={{ backgroundColor: STEALTH.noir }}>
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[150px]"
+          style={{ backgroundColor: `${STEALTH.titanium}10` }}
+        />
         
         <div className="container mx-auto max-w-3xl text-center relative z-10">
           <motion.div
@@ -312,23 +378,38 @@ export default function Club() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <Gift className="w-12 h-12 text-amber-400 mx-auto mb-6" />
+            <Gift className="w-12 h-12 mx-auto mb-6" style={{ color: STEALTH.platinum }} />
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Prêt à rejoindre le club ?
             </h2>
-            <p className="text-white/60 text-lg mb-8">
+            <p className="text-lg mb-8" style={{ color: `${STEALTH.titanium}99` }}>
               Démarre avec le plan Starter gratuit ou contacte-nous pour un accompagnement personnalisé.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a href={WHATSAPP_CLUB_URL} target="_blank" rel="noopener noreferrer">
-                <Button size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-semibold px-8 gap-2">
+                <Button 
+                  size="lg" 
+                  className="font-semibold px-8 gap-2"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${STEALTH.titanium}, ${STEALTH.platinum})`,
+                    color: STEALTH.noir
+                  }}
+                >
                   <Crown className="w-5 h-5" />
                   Rejoindre le Club
                 </Button>
               </a>
               <Link to="/conciergerie">
-                <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/10 px-8">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="px-8"
+                  style={{ 
+                    borderColor: `${STEALTH.titanium}40`,
+                    color: 'white'
+                  }}
+                >
                   Parler à un conseiller
                 </Button>
               </Link>
