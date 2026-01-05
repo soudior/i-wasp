@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { ClubNavbar } from "@/components/ClubNavbar";
 
 // Assets
 import heroLounge from "@/assets/club/hero-lounge.jpg";
@@ -31,6 +32,8 @@ import cardBlackMatte from "@/assets/cards/card-black-matte.png";
 const Index = () => {
   return (
     <div className="min-h-screen bg-[#050508] text-white overflow-x-hidden">
+      {/* Navigation */}
+      <ClubNavbar />
       
       {/* ════════════════════════════════════════════════════════════════
          HERO — Club entrance immersive
