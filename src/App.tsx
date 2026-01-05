@@ -39,6 +39,7 @@ const AdminOrders = lazy(() => import("./pages/AdminOrders"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const OnboardingSuccess = lazy(() => import("./pages/OnboardingSuccess"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const EliteDashboard = lazy(() => import("./pages/EliteDashboard"));
 const GuestCardCreator = lazy(() => import("./pages/GuestCardCreator"));
 const FinalizeCard = lazy(() => import("./pages/FinalizeCard"));
 const HomeSaaS = lazy(() => import("./pages/HomeSaaS"));
@@ -227,6 +228,7 @@ const App = () => {
                               
                               {/* Dashboard */}
                               <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
+                              <Route path="/elite" element={<DashboardGuard><EliteDashboard /></DashboardGuard>} />
                               <Route path="/settings" element={<DashboardGuard><Settings /></DashboardGuard>} />
                               <Route path="/studio" element={<DashboardGuard><Studio /></DashboardGuard>} />
                               <Route path="/editor" element={<DashboardGuard><CardStudio /></DashboardGuard>} />
