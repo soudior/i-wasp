@@ -122,12 +122,12 @@ const brands: Record<BrandKey, BrandConfig> = {
     whatsapp: "+212600000000",
     location: {
       name: "Le Travertin",
-      address: "Marrakech",
-      city: "Marrakech",
+      address: "91 Avenue Hommane Fetouaki",
+      city: "Marrakech 40000",
       country: "Maroc",
-      lat: 31.6295,
-      lng: -8.0083,
-      googleMaps: "https://maps.google.com/?q=31.6295,-8.0083"
+      lat: 31.6204704,
+      lng: -7.9864811,
+      googleMaps: "https://www.google.com/maps/dir//91+Avenue+Hommane+Fetouaki,+Marrakech+40000,+Maroc/@31.6204704,-7.9864811,17z"
     },
     stories: [
       { id: "1", title: "Batbut", imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400" },
@@ -139,7 +139,7 @@ const brands: Record<BrandKey, BrandConfig> = {
       { icon: Flame, label: "Grillades Premium", sub: "Viande de qualité" },
       { icon: Clock, label: "Horaires", sub: "12h - 23h, 7j/7" },
       { icon: Instagram, label: "Instagram", sub: "@letravertin", link: "https://www.instagram.com/letravertin/" },
-      { icon: MapPin, label: "Nous trouver", sub: "Marrakech", link: "https://maps.google.com/?q=31.6295,-8.0083" }
+      { icon: MapPin, label: "Nous trouver", sub: "91 Av. Hommane Fetouaki", link: "https://www.google.com/maps/dir//91+Avenue+Hommane+Fetouaki,+Marrakech+40000,+Maroc/@31.6204704,-7.9864811,17z" }
     ]
   }
 };
