@@ -2,12 +2,7 @@
  * Step 2: Identité digitale
  * /order/identite
  * 
- * Champs du profil public:
- * - Prénom, Nom, Fonction, Entreprise
- * - Téléphone, Email, WhatsApp
- * - Instagram, LinkedIn, Site web
- * - Bio courte
- * - Géolocalisation avec bouton "Ma position"
+ * Palette Stealth Luxury : Argent Titane #A5A9B4
  */
 
 import { useState, useMemo, useCallback } from "react";
@@ -36,6 +31,14 @@ import {
   AlertCircle
 } from "lucide-react";
 import { toast } from "sonner";
+
+// Stealth Luxury Palette
+const STEALTH = {
+  bg: "#050807",
+  accent: "#A5A9B4",
+  accentLight: "#D1D5DB",
+  border: "rgba(165, 169, 180, 0.2)",
+};
 
 // Validation helpers
 const validateEmail = (email: string): boolean => {
@@ -180,7 +183,8 @@ function OrderIdentiteContent() {
               animate="animate"
             >
               <motion.p 
-                className="text-sm text-primary tracking-widest uppercase mb-3"
+                className="text-sm tracking-widest uppercase mb-3"
+                style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
                 Étape 2 sur 6
@@ -210,7 +214,7 @@ function OrderIdentiteContent() {
               <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <User size={20} className="text-[#FFC700]" />
+                    <User size={20} style={{ color: STEALTH.accent }} />
                     Informations personnelles
                   </CardTitle>
                 </CardHeader>
@@ -293,7 +297,7 @@ function OrderIdentiteContent() {
               <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <Building2 size={20} className="text-[#FFC700]" />
+                    <Building2 size={20} style={{ color: STEALTH.accent }} />
                     Contact
                   </CardTitle>
                 </CardHeader>
@@ -353,7 +357,7 @@ function OrderIdentiteContent() {
               <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <Globe size={20} className="text-[#FFC700]" />
+                    <Globe size={20} style={{ color: STEALTH.accent }} />
                     Réseaux & Web
                   </CardTitle>
                 </CardHeader>
@@ -398,7 +402,7 @@ function OrderIdentiteContent() {
               <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <MapPin size={20} className="text-[#FFC700]" />
+                    <MapPin size={20} style={{ color: STEALTH.accent }} />
                     Géolocalisation
                     {formData.latitude && (
                       <CheckCircle2 className="h-5 w-5 text-green-500 ml-auto" />
@@ -415,16 +419,19 @@ function OrderIdentiteContent() {
                     variant="outline"
                     onClick={() => geolocation.getCurrentPosition()}
                     disabled={geolocation.isLoading}
-                    className="w-full h-12 gap-2 border-2 border-dashed border-[#FFC700]/50 hover:border-[#FFC700] hover:bg-[#FFC700]/10"
+                    className="w-full h-12 gap-2 border-2 border-dashed"
+                    style={{ 
+                      borderColor: `${STEALTH.accent}50`,
+                    }}
                   >
                     {geolocation.isLoading ? (
                       <>
-                        <Loader2 className="h-5 w-5 animate-spin text-[#FFC700]" />
+                        <Loader2 className="h-5 w-5 animate-spin" style={{ color: STEALTH.accent }} />
                         <span>Localisation en cours...</span>
                       </>
                     ) : (
                       <>
-                        <Navigation className="h-5 w-5 text-[#FFC700]" />
+                        <Navigation className="h-5 w-5" style={{ color: STEALTH.accent }} />
                         <span>Utiliser ma position actuelle</span>
                       </>
                     )}
@@ -470,7 +477,7 @@ function OrderIdentiteContent() {
               className="flex justify-between items-center mt-10"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.2 }}
             >
               <Button 
                 variant="ghost" 
@@ -487,7 +494,11 @@ function OrderIdentiteContent() {
                 disabled={!isValid || state.isTransitioning}
                 isLoading={isNavigating}
                 loadingText="Chargement..."
-                className="px-8 rounded-full bg-[#FFC700] hover:bg-[#FFC700]/90 text-black font-semibold disabled:opacity-50"
+                className="px-8 rounded-full font-semibold disabled:opacity-50"
+                style={{ 
+                  backgroundColor: STEALTH.accent, 
+                  color: STEALTH.bg 
+                }}
               >
                 Continuer
                 <ArrowRight className="ml-2 h-5 w-5" />
