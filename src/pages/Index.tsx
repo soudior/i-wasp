@@ -389,6 +389,79 @@ const Index = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
+          SECTION VIDEO — Démonstration NFC
+          ═══════════════════════════════════════════════════════════════════ */}
+      <section 
+        className="py-20 overflow-hidden"
+        style={{ backgroundColor: STEALTH.noirElevated }}
+      >
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <span 
+              className="text-sm tracking-[0.3em] uppercase mb-4 block"
+              style={{ color: STEALTH.platinum }}
+            >
+              Voyez par vous-même
+            </span>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-4 text-white">
+              Un geste. Une connexion.
+            </h2>
+            <p 
+              className="text-lg max-w-xl mx-auto"
+              style={{ color: STEALTH.titanium }}
+            >
+              Approchez votre carte NFC d'un smartphone et partagez instantanément vos informations.
+            </p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="max-w-2xl mx-auto"
+          >
+            <div 
+              className="relative rounded-3xl overflow-hidden border shadow-2xl"
+              style={{ 
+                borderColor: `${STEALTH.titanium}20`,
+                boxShadow: `0 40px 80px -20px ${STEALTH.noir}`
+              }}
+            >
+              {/* Glow effect behind video */}
+              <div 
+                className="absolute inset-0 blur-3xl opacity-30"
+                style={{ backgroundColor: STEALTH.titanium }}
+              />
+              
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto relative z-10"
+                poster="/posters/nfc-demo-poster.webp"
+              >
+                <source src="/nfc-demo-video.mp4" type="video/mp4" />
+              </video>
+            </div>
+            
+            {/* Caption */}
+            <p 
+              className="text-center text-sm mt-6"
+              style={{ color: STEALTH.titanium }}
+            >
+              Compatible avec tous les smartphones récents (iOS & Android)
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
           SECTION 2: COMMENT ÇA MARCHE — 3 étapes simples
           ═══════════════════════════════════════════════════════════════════ */}
       <section 
