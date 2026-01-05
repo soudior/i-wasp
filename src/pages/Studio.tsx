@@ -1,11 +1,13 @@
 /**
  * i-WASP STUDIO — Manufacture de Prestige
  * Version Stealth Luxury avec système EUR/MAD
+ * Tous les boutons sont fonctionnels
  */
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import { 
   User, 
   Crown, 
@@ -23,10 +25,17 @@ import {
   Globe,
   Bell,
   Settings,
-  ArrowLeft
+  ArrowRight,
+  ExternalLink,
+  Wallet
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 
 const Studio = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { addItem } = useCart();
   const [activeTab, setActiveTab] = useState('membership'); 
   const [selectedPlan, setSelectedPlan] = useState('legacy');
   const [isChameleonActive, setIsChameleonActive] = useState(true);
@@ -36,28 +45,32 @@ const Studio = () => {
     { 
       id: 1, 
       name: 'Carte Titane Brossé', 
-      prices: { EUR: '290€', MAD: '3 200 DH' }, 
+      prices: { EUR: 290, MAD: 3200 }, 
+      priceDisplay: { EUR: '290€', MAD: '3 200 DH' }, 
       desc: 'Acier chirurgical, gravure laser.', 
       icon: CreditCard 
     },
     { 
       id: 2, 
       name: 'Set Ongles Aura (10pcs)', 
-      prices: { EUR: '450€', MAD: '4 900 DH' }, 
+      prices: { EUR: 450, MAD: 4900 }, 
+      priceDisplay: { EUR: '450€', MAD: '4 900 DH' }, 
       desc: 'Micro-puces Bio-S invisibles.', 
       icon: Fingerprint 
     },
     { 
       id: 3, 
       name: 'Labels Couture (Pack 5)', 
-      prices: { EUR: '190€', MAD: '2 100 DH' }, 
+      prices: { EUR: 190, MAD: 2100 }, 
+      priceDisplay: { EUR: '190€', MAD: '2 100 DH' }, 
       desc: 'Thermocollage haute résistance.', 
       icon: Shirt 
     },
     { 
       id: 4, 
       name: 'Bague Onyx Connectée', 
-      prices: { EUR: '580€', MAD: '6 300 DH' }, 
+      prices: { EUR: 580, MAD: 6300 }, 
+      priceDisplay: { EUR: '580€', MAD: '6 300 DH' }, 
       desc: 'Céramique noire et puce N-X.', 
       icon: Diamond 
     }
@@ -88,13 +101,51 @@ const Studio = () => {
   ];
 
   const [profile] = useState({
-    name: "Julian de Wasp",
-    title: "Directeur de l'Influence",
+    name: user?.email?.split('@')[0] || "Utilisateur",
+    title: "Membre i-WASP",
     currentMode: "Elite Stealth"
   });
 
   const toggleCurrency = () => {
     setCurrency(prev => prev === 'EUR' ? 'MAD' : 'EUR');
+  };
+
+  const handleReserveProduct = (product: typeof products[0]) => {
+    addItem({
+      templateId: `studio-product-${product.id}`,
+      templateName: 'Manufacture',
+      cardName: product.name,
+      quantity: 1,
+      unitPriceCents: product.prices[currency] * 100,
+    });
+    toast.success(`${product.name} ajouté au panier`);
+  };
+
+  const handlePayAndActivate = () => {
+    navigate('/cart');
+  };
+
+  const handleActivatePlan = (planId: string) => {
+    setSelectedPlan(planId);
+    if (planId !== 'stealth') {
+      toast.success(`Plan ${planId.toUpperCase()} sélectionné`, {
+        description: "Redirection vers le paiement...",
+        action: {
+          label: "Payer",
+          onClick: () => navigate('/checkout')
+        }
+      });
+    } else {
+      toast.success("Plan Stealth activé (Gratuit)");
+    }
+  };
+
+  const handleConnectProfile = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
   };
 
   const menuItems = [
@@ -139,12 +190,26 @@ const Studio = () => {
             </span>
           </div>
 
-          <button className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all">
+          <Link 
+            to="/cart"
+            className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all relative"
+          >
+            <ShoppingBag className="w-4 lg:w-5 h-4 lg:h-5 text-white/40" />
+          </Link>
+          
+          <button 
+            onClick={() => toast.info("Aucune notification")}
+            className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all"
+          >
             <Bell className="w-4 lg:w-5 h-4 lg:h-5 text-white/40" />
           </button>
-          <button className="hidden sm:flex w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white/5 items-center justify-center hover:bg-white/10 transition-all">
+          
+          <Link 
+            to="/settings"
+            className="hidden sm:flex w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white/5 items-center justify-center hover:bg-white/10 transition-all"
+          >
             <Settings className="w-4 lg:w-5 h-4 lg:h-5 text-white/40" />
-          </button>
+          </Link>
         </div>
       </nav>
 
@@ -212,7 +277,7 @@ const Studio = () => {
                   {plans.map((plan) => (
                     <div
                       key={plan.id}
-                      onClick={() => setSelectedPlan(plan.id)}
+                      onClick={() => handleActivatePlan(plan.id)}
                       className={`relative p-6 lg:p-12 rounded-3xl lg:rounded-[4rem] border transition-all duration-700 cursor-pointer flex flex-col justify-between min-h-[400px] lg:h-[680px] ${
                         selectedPlan === plan.id 
                           ? 'bg-white/5 border-[#A5A9B4] shadow-[0_0_60px_rgba(165,169,180,0.08)] lg:scale-105' 
@@ -300,9 +365,12 @@ const Studio = () => {
                           </div>
                           <div className="text-right">
                             <p className="text-lg lg:text-2xl font-black text-[#A5A9B4]">
-                              {p.prices[currency]}
+                              {p.priceDisplay[currency]}
                             </p>
-                            <button className="mt-1 lg:mt-2 text-[10px] lg:text-xs text-white/40 hover:text-[#A5A9B4] transition-colors">
+                            <button 
+                              onClick={() => handleReserveProduct(p)}
+                              className="mt-1 lg:mt-2 text-[10px] lg:text-xs text-white/40 hover:text-[#A5A9B4] transition-colors"
+                            >
                               Réserver
                             </button>
                           </div>
@@ -344,7 +412,11 @@ const Studio = () => {
                           <span>Cartes / Apple Pay / Crypto</span>
                         </div>
                       </div>
-                      <button className="w-full py-4 lg:py-6 bg-gradient-to-r from-[#A5A9B4] to-[#D1D5DB] text-black font-black uppercase text-xs lg:text-sm tracking-widest rounded-full hover:shadow-[0_20px_60px_rgba(165,169,180,0.3)] transition-all">
+                      <button 
+                        onClick={handlePayAndActivate}
+                        className="w-full py-4 lg:py-6 bg-gradient-to-r from-[#A5A9B4] to-[#D1D5DB] text-black font-black uppercase text-xs lg:text-sm tracking-widest rounded-full hover:shadow-[0_20px_60px_rgba(165,169,180,0.3)] transition-all flex items-center justify-center gap-2"
+                      >
+                        <Wallet className="w-5 h-5" />
                         Payer et Activer
                       </button>
                     </div>
@@ -370,9 +442,15 @@ const Studio = () => {
                     <div className="space-y-6 lg:space-y-8">
                       <div className="flex items-center justify-between">
                         <p className="text-[#A5A9B4] font-semibold">Mode Caméléon</p>
+                        <span className={`text-xs px-3 py-1 rounded-full ${isChameleonActive ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white/40'}`}>
+                          {isChameleonActive ? 'Actif' : 'Inactif'}
+                        </span>
                       </div>
                       <button 
-                        onClick={() => setIsChameleonActive(!isChameleonActive)} 
+                        onClick={() => {
+                          setIsChameleonActive(!isChameleonActive);
+                          toast.success(isChameleonActive ? "Mode Caméléon désactivé" : "Mode Caméléon activé");
+                        }} 
                         className={`w-full py-8 lg:py-12 rounded-[2.5rem] lg:rounded-[3.5rem] font-black uppercase text-xs lg:text-[14px] transition-all shadow-2xl ${
                           isChameleonActive 
                             ? 'bg-[#A5A9B4] text-black shadow-[0_30px_60px_rgba(165,169,180,0.3)]' 
@@ -381,20 +459,36 @@ const Studio = () => {
                       >
                         {isChameleonActive ? "Protocole IA Actif" : "Protocole IA Veille"}
                       </button>
+                      
+                      <Link 
+                        to="/dashboard"
+                        className="block w-full py-4 text-center bg-white/5 border border-white/10 rounded-2xl text-white/60 hover:text-white hover:border-[#A5A9B4]/50 transition-all text-sm font-medium"
+                      >
+                        <span className="flex items-center justify-center gap-2">
+                          Accéder au Dashboard
+                          <ArrowRight className="w-4 h-4" />
+                        </span>
+                      </Link>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-center">
                     <div className="relative w-[280px] lg:w-[320px] h-[560px] lg:h-[640px] bg-black rounded-[40px] lg:rounded-[50px] border-4 border-white/10 overflow-hidden shadow-2xl">
                       <div className="absolute inset-3 lg:inset-4 rounded-[32px] lg:rounded-[40px] bg-gradient-to-b from-[#050807] to-[#0a0d0c] flex flex-col items-center justify-center p-6 lg:p-8">
-                        <div className="w-20 lg:w-28 h-20 lg:h-28 rounded-full bg-gradient-to-br from-[#A5A9B4] to-[#D1D5DB] mb-6 lg:mb-8" />
+                        <div className="w-20 lg:w-28 h-20 lg:h-28 rounded-full bg-gradient-to-br from-[#A5A9B4] to-[#D1D5DB] mb-6 lg:mb-8 flex items-center justify-center">
+                          <User className="w-10 lg:w-14 h-10 lg:h-14 text-black" />
+                        </div>
                         <h3 className="text-xl lg:text-2xl font-black text-white text-center mb-2">
                           {profile.name}
                         </h3>
                         <p className="text-[#A5A9B4] text-xs lg:text-sm">{profile.currentMode}</p>
                       </div>
                       <div className="absolute bottom-6 lg:bottom-8 left-1/2 -translate-x-1/2">
-                        <button className="px-6 lg:px-8 py-2.5 lg:py-3 bg-[#A5A9B4] text-black text-[10px] lg:text-xs font-black uppercase tracking-widest rounded-full">
+                        <button 
+                          onClick={handleConnectProfile}
+                          className="px-6 lg:px-8 py-2.5 lg:py-3 bg-[#A5A9B4] text-black text-[10px] lg:text-xs font-black uppercase tracking-widest rounded-full flex items-center gap-2 hover:shadow-lg transition-all"
+                        >
+                          <ExternalLink className="w-3 h-3" />
                           Connecter
                         </button>
                       </div>
@@ -451,9 +545,15 @@ const Studio = () => {
                   />
                 </div>
                 <h2 className="text-3xl lg:text-4xl font-black text-white mb-3 lg:mb-4">Scanner NFC</h2>
-                <p className="text-white/30 max-w-md text-sm lg:text-base">
+                <p className="text-white/30 max-w-md text-sm lg:text-base mb-8">
                   Approchez une carte ou un objet i-Wasp pour l'authentifier instantanément.
                 </p>
+                <button 
+                  onClick={() => toast.info("Fonctionnalité NFC disponible sur l'application mobile")}
+                  className="px-8 py-4 bg-white/5 border border-[#A5A9B4]/30 text-white/60 font-semibold rounded-full hover:border-[#A5A9B4] hover:text-[#A5A9B4] transition-all text-sm"
+                >
+                  Activer le Scanner
+                </button>
               </motion.div>
             )}
 
@@ -472,10 +572,27 @@ const Studio = () => {
                 <p className="text-white/30 text-base lg:text-lg max-w-md mb-8 lg:mb-10">
                   Votre passeport blockchain et vos certificats d'authenticité sont sécurisés ici.
                 </p>
-                <div className="flex items-center space-x-3 px-6 lg:px-8 py-3 lg:py-4 bg-white/5 rounded-full border border-white/10">
+                <div className="flex items-center space-x-3 px-6 lg:px-8 py-3 lg:py-4 bg-white/5 rounded-full border border-white/10 mb-6">
                   <Lock className="w-4 lg:w-5 h-4 lg:h-5 text-[#A5A9B4]" />
                   <span className="text-white/50 text-xs lg:text-sm">Chiffrement de bout en bout</span>
                 </div>
+                <button 
+                  onClick={() => {
+                    if (selectedPlan === 'sovereign') {
+                      toast.success("Accès au Coffre autorisé");
+                    } else {
+                      toast.info("Passez au rang Sovereign pour accéder au Coffre", {
+                        action: {
+                          label: "Upgrade",
+                          onClick: () => setActiveTab('membership')
+                        }
+                      });
+                    }
+                  }}
+                  className="px-8 py-4 bg-gradient-to-r from-[#A5A9B4] to-[#D1D5DB] text-black font-bold rounded-full hover:shadow-lg transition-all text-sm"
+                >
+                  Accéder au Coffre
+                </button>
               </motion.div>
             )}
           </AnimatePresence>
