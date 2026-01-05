@@ -261,12 +261,22 @@ function AdminDashboardContent() {
               </p>
             </div>
           </div>
-          <Badge 
-            className="px-3 py-1"
-            style={{ backgroundColor: 'rgba(255, 199, 0, 0.15)', color: '#FFC700' }}
-          >
-            IWASP Admin
-          </Badge>
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => navigate("/admin/instant")}
+              className="h-10 px-4 rounded-lg font-semibold text-black gap-2"
+              style={{ backgroundColor: '#FFC700' }}
+            >
+              <Zap size={16} />
+              <span className="hidden sm:inline">Création rapide</span>
+            </Button>
+            <Badge 
+              className="px-3 py-1 hidden sm:flex"
+              style={{ backgroundColor: 'rgba(255, 199, 0, 0.15)', color: '#FFC700' }}
+            >
+              IWASP Admin
+            </Badge>
+          </div>
         </div>
       </header>
 
