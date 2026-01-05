@@ -73,6 +73,7 @@ import Contact from "./pages/Contact";
 import Showroom3D from "./pages/Showroom3D";
 import MentionsLegales from "./pages/MentionsLegales";
 import CGV from "./pages/CGV";
+import DualBrandShowcase from "./pages/DualBrandShowcase";
 
 // NEW Order funnel pages - 7 steps strict flow
 import OrderType from "./pages/order/OrderType";
@@ -196,6 +197,7 @@ const App = () => {
                             <Route path="/nfc-animation" element={<NFCDemo3D />} />
                             <Route path="/showroom" element={<Showroom3D />} />
                             <Route path="/showroom-3d" element={<Showroom3D />} />
+                            <Route path="/card/medina-travertin" element={<DualBrandShowcase />} />
                             
                             {/* Client Form */}
                             <Route path="/form" element={<ClientForm />} />
