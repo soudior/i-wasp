@@ -28,7 +28,15 @@ import ibrahimPhoto from "@/assets/clients/ibrahim-herbalism.jpeg";
 
 const PublicCard = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { data: card, isLoading, error } = usePublicCard(slug || "");
+
+  // Normalize slug from URL/NFC tags (handles trailing spaces/newlines/control chars)
+  const cleanedSlug = (slug ?? "")
+    .normalize("NFKC")
+    .trim()
+    .replace(/[\u0000-\u001F\u007F]/g, "")
+    .toLowerCase();
+
+  const { data: card, isLoading, error } = usePublicCard(cleanedSlug);
   const { story } = usePublicStory(card?.id || undefined);
   const recordScan = useRecordScan();
   const getActionUrl = useCardActionUrl();
@@ -36,8 +44,7 @@ const PublicCard = () => {
   const [scanRecorded, setScanRecorded] = useState(false);
 
   // Special-case showcase cards that are not stored in the database
-  const normalizedSlug = (slug ?? "").toLowerCase();
-  if (normalizedSlug === "medina-travertin") {
+  if (cleanedSlug === "medina-travertin") {
     return <DualBrandShowcase />;
   }
 
@@ -45,24 +52,27 @@ const PublicCard = () => {
   useEffect(() => {
     if (card?.id && !scanRecorded) {
       recordScan.mutate(card.id);
-      incrementView(slug || "");
+      incrementView(cleanedSlug);
       setScanRecorded(true);
     }
-  }, [card?.id, scanRecorded, slug]);
+  }, [card?.id, scanRecorded, cleanedSlug, recordScan, incrementView]);
 
   // Secure action handlers - get URLs from server, never expose raw data
-  const handleAction = useCallback(async (action: "email" | "phone" | "whatsapp" | "linkedin") => {
-    if (!slug) return;
-    
-    const url = await getActionUrl(slug, action);
-    if (url) {
-      if (action === "linkedin" || action === "whatsapp") {
-        window.open(url, "_blank", "noopener,noreferrer");
-      } else {
-        window.location.href = url;
+  const handleAction = useCallback(
+    async (action: "email" | "phone" | "whatsapp" | "linkedin") => {
+      if (!cleanedSlug) return;
+
+      const url = await getActionUrl(cleanedSlug, action);
+      if (url) {
+        if (action === "linkedin" || action === "whatsapp") {
+          window.open(url, "_blank", "noopener,noreferrer");
+        } else {
+          window.location.href = url;
+        }
       }
-    }
-  }, [slug, getActionUrl]);
+    },
+    [cleanedSlug, getActionUrl]
+  );
 
   const handleCall = () => handleAction("phone");
   const handleEmail = () => handleAction("email");
@@ -71,14 +81,14 @@ const PublicCard = () => {
 
   // Secure vCard download - get data from server function
   const handleAddContact = async () => {
-    if (!card || !slug) return;
-    
+    if (!card || !cleanedSlug) return;
+
     try {
       // Get vCard data securely from server using raw RPC call
       const { data, error } = await supabase.rpc("get_vcard_data" as any, {
-        p_slug: slug,
+        p_slug: cleanedSlug,
       });
-      
+
       if (error || !data) {
         console.error("Error getting vCard data:", error);
         return;
