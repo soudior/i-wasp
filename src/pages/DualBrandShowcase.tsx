@@ -119,9 +119,9 @@ const brands: Record<BrandKey, BrandConfig> = {
     cardBg: "linear-gradient(135deg, #2d261f 0%, #1a1612 100%)",
     monogram: "LT",
     logo: leTravertinPhoto,
-    phone: "+212600000000",
+    phone: "+212665915278",
     email: "contact@letravertin.ma",
-    whatsapp: "+212600000000",
+    whatsapp: "+212665915278",
     location: {
       name: "Le Travertin",
       address: "91 Avenue Hommane Fetouaki",
