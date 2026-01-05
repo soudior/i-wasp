@@ -1,6 +1,7 @@
 /**
  * i-WASP STUDIO — Centre de Contrôle Ultra-Luxe
  * Dashboard premium avec preview en temps réel
+ * Inclut La Manufacture pour la gestion de flotte NFC
  */
 
 import { useState } from "react";
@@ -27,16 +28,84 @@ import {
   Check,
   ExternalLink,
   TreePine,
-  Sparkles
+  Sparkles,
+  Gem,
+  Lock,
+  Unlock,
+  Eye,
+  MapPin,
+  ShoppingBag,
+  Plus,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+// ============================================================
+// TYPES
+// ============================================================
+
+interface NFCCard {
+  id: string;
+  serialNumber: string;
+  material: "or-24k" | "carbone" | "titane" | "bois-precieux";
+  materialLabel: string;
+  status: "operational" | "locked" | "pending";
+  scans: number;
+  lastScan?: string;
+  location?: string;
+  geoEnabled: boolean;
+  pushEnabled: boolean;
+}
+
+// ============================================================
+// MOCK DATA
+// ============================================================
+
+const mockFleet: NFCCard[] = [
+  {
+    id: "1",
+    serialNumber: "WASP-772-GLD",
+    material: "or-24k",
+    materialLabel: "Or 24K",
+    status: "operational",
+    scans: 847,
+    lastScan: "Il y a 2h",
+    location: "Paris, France",
+    geoEnabled: true,
+    pushEnabled: true
+  },
+  {
+    id: "2",
+    serialNumber: "WASP-104-CRB",
+    material: "carbone",
+    materialLabel: "Carbone Mat",
+    status: "locked",
+    scans: 312,
+    lastScan: "Il y a 3j",
+    location: "Dubaï, EAU",
+    geoEnabled: false,
+    pushEnabled: true
+  },
+  {
+    id: "3",
+    serialNumber: "WASP-891-TTN",
+    material: "titane",
+    materialLabel: "Titane Brossé",
+    status: "pending",
+    scans: 0,
+    geoEnabled: false,
+    pushEnabled: false
+  }
+];
 
 // Tabs configuration
 const tabs = [
+  { id: "manufacture", label: "La Manufacture", icon: Gem },
   { id: "studio", label: "Studio", icon: User },
   { id: "leads", label: "Mes Leads", icon: Users },
   { id: "automation", label: "Push & Ads", icon: Bell },
@@ -52,9 +121,10 @@ const mockLeads = [
 ];
 
 const Studio = () => {
-  const [activeTab, setActiveTab] = useState("studio");
+  const [activeTab, setActiveTab] = useState("manufacture");
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [fleet, setFleet] = useState<NFCCard[]>(mockFleet);
   
   // Profile form state
   const [profile, setProfile] = useState({
@@ -76,6 +146,62 @@ const Studio = () => {
     weeklyReport: true,
     leadAlerts: true,
   });
+
+  // Toggle card lock (Kill-Switch)
+  const toggleCardLock = (cardId: string) => {
+    setFleet(prev => prev.map(card => 
+      card.id === cardId 
+        ? { ...card, status: card.status === "locked" ? "operational" : "locked" as const }
+        : card
+    ));
+  };
+
+  // Toggle geo/push for a card
+  const toggleCardSetting = (cardId: string, setting: "geoEnabled" | "pushEnabled") => {
+    setFleet(prev => prev.map(card => 
+      card.id === cardId 
+        ? { ...card, [setting]: !card[setting] }
+        : card
+    ));
+  };
+
+  // Status badge renderer
+  const getStatusBadge = (status: NFCCard["status"]) => {
+    switch (status) {
+      case "operational":
+        return (
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-iwasp-emerald/20 text-iwasp-emerald-glow border border-iwasp-emerald/30">
+            OPÉRATIONNEL
+          </span>
+        );
+      case "locked":
+        return (
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 border border-red-500/30">
+            VERROUILLÉ
+          </span>
+        );
+      case "pending":
+        return (
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-iwasp-bronze/20 text-iwasp-bronze border border-iwasp-bronze/30">
+            EN FORGE
+          </span>
+        );
+    }
+  };
+
+  // Material gradient renderer
+  const getMaterialGradient = (material: NFCCard["material"]) => {
+    switch (material) {
+      case "or-24k":
+        return "bg-gradient-to-br from-iwasp-bronze via-yellow-600 to-iwasp-bronze";
+      case "carbone":
+        return "bg-gradient-to-br from-zinc-700 via-zinc-800 to-zinc-900";
+      case "titane":
+        return "bg-gradient-to-br from-slate-400 via-slate-500 to-slate-600";
+      case "bois-precieux":
+        return "bg-gradient-to-br from-amber-800 via-amber-900 to-amber-950";
+    }
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -182,6 +308,177 @@ const Studio = () => {
 
             {/* Tab content */}
             <AnimatePresence mode="wait">
+              {/* LA MANUFACTURE TAB */}
+              {activeTab === "manufacture" && (
+                <motion.div
+                  key="manufacture"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-8"
+                >
+                  {/* Fleet Header */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-display text-2xl text-iwasp-cream">
+                        <span className="italic text-iwasp-bronze">La</span> Manufacture
+                      </h3>
+                      <p className="text-sm text-iwasp-silver mt-1">Gérez vos objets de pouvoir physiques et leur sécurité.</p>
+                    </div>
+                    <div className="px-4 py-2 rounded-full bg-iwasp-midnight-elevated border border-iwasp-emerald/30 flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-iwasp-emerald-glow" />
+                      <span className="text-iwasp-cream text-xs font-medium tracking-wider">FLOTTE SÉCURISÉE</span>
+                    </div>
+                  </div>
+
+                  {/* Fleet Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-iwasp-silver text-xs font-semibold tracking-[0.3em] uppercase">
+                        VOS OBJETS CONNECTÉS
+                      </h4>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="border-iwasp-bronze/30 text-iwasp-bronze hover:bg-iwasp-bronze/10 gap-2"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Rituel d'Activation
+                      </Button>
+                    </div>
+
+                    {/* Cards Grid */}
+                    <div className="space-y-4">
+                      {fleet.map((card, index) => (
+                        <motion.div
+                          key={card.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 hover:border-iwasp-bronze/20 transition-all"
+                        >
+                          <div className="flex items-start gap-4">
+                            {/* Card Visual */}
+                            <div className={cn(
+                              "w-20 h-12 rounded-lg flex items-center justify-center text-xs font-semibold shadow-lg flex-shrink-0",
+                              getMaterialGradient(card.material),
+                              card.status === "locked" && "opacity-50 grayscale"
+                            )}>
+                              <span className="text-white/90 tracking-wider">i-WASP</span>
+                            </div>
+
+                            {/* Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <h4 className="font-semibold text-iwasp-cream">{card.materialLabel}</h4>
+                                {getStatusBadge(card.status)}
+                              </div>
+                              <p className="text-iwasp-silver/60 text-sm mt-1">{card.serialNumber}</p>
+                              
+                              {card.status !== "pending" && (
+                                <div className="flex items-center gap-4 mt-3 text-xs text-iwasp-silver/50">
+                                  <span className="flex items-center gap-1">
+                                    <Eye className="w-3 h-3" />
+                                    {card.scans} scans
+                                  </span>
+                                  {card.lastScan && (
+                                    <span>{card.lastScan}</span>
+                                  )}
+                                  {card.location && (
+                                    <span className="flex items-center gap-1">
+                                      <MapPin className="w-3 h-3" />
+                                      {card.location}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+
+                              {card.status === "pending" && (
+                                <div className="mt-3 flex items-center gap-2 text-iwasp-bronze text-xs">
+                                  <Sparkles className="w-3 h-3 animate-pulse" />
+                                  <span>Votre pièce est en cours de forge...</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Controls */}
+                            {card.status !== "pending" && (
+                              <div className="flex flex-col items-end gap-3">
+                                {/* Kill Switch */}
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => toggleCardLock(card.id)}
+                                  className={cn(
+                                    "gap-2 text-xs",
+                                    card.status === "locked" 
+                                      ? "text-red-400 hover:text-red-300 hover:bg-red-500/10" 
+                                      : "text-iwasp-emerald-glow hover:text-iwasp-emerald hover:bg-iwasp-emerald/10"
+                                  )}
+                                >
+                                  {card.status === "locked" ? (
+                                    <>
+                                      <Lock className="w-3 h-3" />
+                                      Déverrouiller
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Unlock className="w-3 h-3" />
+                                      Kill-Switch
+                                    </>
+                                  )}
+                                </Button>
+
+                                {/* Settings toggles */}
+                                <div className="flex items-center gap-4">
+                                  <div className="flex items-center gap-2">
+                                    <Globe className="w-3 h-3 text-iwasp-silver/40" />
+                                    <Switch
+                                      checked={card.geoEnabled}
+                                      onCheckedChange={() => toggleCardSetting(card.id, "geoEnabled")}
+                                      className="scale-75 data-[state=checked]:bg-iwasp-bronze"
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Bell className="w-3 h-3 text-iwasp-silver/40" />
+                                    <Switch
+                                      checked={card.pushEnabled}
+                                      onCheckedChange={() => toggleCardSetting(card.id, "pushEnabled")}
+                                      className="scale-75 data-[state=checked]:bg-iwasp-bronze"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Order New Card CTA */}
+                  <div className="p-6 rounded-2xl bg-gradient-to-r from-iwasp-bronze/10 to-iwasp-emerald/5 border border-iwasp-bronze/20">
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                      <div>
+                        <h4 className="text-iwasp-cream font-semibold flex items-center gap-2">
+                          <ShoppingBag className="w-4 h-4 text-iwasp-bronze" />
+                          Agrandir votre Collection
+                        </h4>
+                        <p className="text-iwasp-silver text-sm mt-1">
+                          Commander une nouvelle pièce sur-mesure : Or 24K, Carbone, Titane ou Bois Précieux
+                        </p>
+                      </div>
+                      <Link to="/order/type">
+                        <Button className="bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2">
+                          <Gem className="w-4 h-4" />
+                          Lancer la Forge
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               {activeTab === "studio" && (
                 <motion.div
                   key="studio"
