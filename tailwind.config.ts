@@ -79,6 +79,7 @@ export default {
         
         /* ══════════════════════════════════════════════════════════════
            PALETTE ULTRA-LUXE — MIDNIGHT EMERALD & BRUSHED BRONZE
+           + BLUE ABYSS + PEARL SAND
            ══════════════════════════════════════════════════════════════ */
         iwasp: {
           midnight: "#050708",               /* Midnight base */
@@ -91,6 +92,16 @@ export default {
           emerald: "#1B4D3E",                /* Émeraude profond */
           "emerald-glow": "#2D7A5F",         /* Émeraude lumineux */
           "emerald-mist": "#1A3D32",         /* Émeraude brume */
+          /* Blue Abyss - Le Monde */
+          abyss: "#0A1628",                  /* Bleu abysse profond */
+          "abyss-light": "#0F2340",          /* Bleu abysse clair */
+          "abyss-glow": "#1E3A5F",           /* Bleu abysse lumineux */
+          ocean: "#2563EB",                  /* Bleu océan accent */
+          /* Pearl Sand - L'Héritage */
+          pearl: "#FAF8F5",                  /* Blanc perle */
+          sand: "#E8E4DD",                   /* Sable clair */
+          "sand-warm": "#D4CFC4",            /* Sable chaud */
+          stone: "#8B8680",                  /* Pierre texte */
         },
         
         /* ══════════════════════════════════════════════════════════════
