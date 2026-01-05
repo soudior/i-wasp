@@ -2,26 +2,16 @@
  * Step 1: Choix de l'offre
  * /order/offre
  * 
- * Palette Stealth Luxury : Argent Titane #A5A9B4, Platine #D1D5DB
+ * Design IWASP Cupertino
  */
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useOrderFunnel, OFFERS, OfferType, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from "@/components/order";
-import { LoadingButton } from "@/components/ui/LoadingButton";
-import { PhysicalCardPreview } from "@/components/PhysicalCardPreview";
-import { Check, ArrowRight, Star, Sparkles, Crown } from "lucide-react";
-
-// Stealth Luxury Palette
-const STEALTH = {
-  bg: "#050807",
-  accent: "#A5A9B4",
-  accentLight: "#D1D5DB",
-  border: "rgba(165, 169, 180, 0.2)",
-};
+import { useOrderFunnel, OfferType, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { Check, ArrowRight, ArrowLeft, Star, Sparkles, Crown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const offerDetails = [
   {
@@ -29,12 +19,10 @@ const offerDetails = [
     icon: Star,
     title: "Essentiel",
     subtitle: "L'essentiel pour démarrer",
-    price: "299 MAD",
+    priceMAD: 299,
     features: [
-      "Carte NFC i-Wasp blanche",
+      "Carte NFC blanche",
       "Profil digital essentiel",
-      "Nom, poste, entreprise",
-      "Téléphone & WhatsApp",
       "Jusqu'à 3 liens",
       "QR Code intelligent",
     ],
@@ -44,16 +32,13 @@ const offerDetails = [
     icon: Sparkles,
     title: "Signature",
     subtitle: "Le plus populaire",
-    price: "599 MAD",
+    priceMAD: 599,
     isPopular: true,
     features: [
-      "Carte NFC i-Wasp Premium",
-      "Profil digital complet",
+      "Carte NFC Premium",
       "Liens illimités",
-      "WhatsApp direct",
       "Galerie photo / vidéo",
       "Mise à jour illimitée",
-      "Reprogrammation carte",
       "Support prioritaire",
     ],
   },
@@ -61,22 +46,21 @@ const offerDetails = [
     id: "elite" as OfferType,
     icon: Crown,
     title: "Élite",
-    subtitle: "L'excellence i-Wasp",
-    price: "999 MAD",
+    subtitle: "L'excellence sur mesure",
+    priceMAD: 999,
     features: [
-      "Carte NFC i-Wasp Elite",
-      "Profil digital sur mesure",
+      "Carte NFC Elite",
       "Personnalisation avancée",
       "Gestion accompagnée",
-      "Mise à jour prise en charge",
       "Support dédié",
-      "Priorité absolue",
     ],
   },
 ];
 
 function OrderOffreContent() {
+  const navigate = useNavigate();
   const { state, setSelectedOffer, nextStep } = useOrderFunnel();
+  const { formatAmount } = useCurrency();
   const [isNavigating, setIsNavigating] = useState(false);
 
   const handleSelectOffer = (offerId: OfferType) => {
@@ -85,202 +69,172 @@ function OrderOffreContent() {
 
   const handleContinue = async () => {
     if (!state.selectedOffer || isNavigating || state.isTransitioning) return;
-    
     setIsNavigating(true);
     await nextStep();
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      <PageTransition>
-        <main className="pt-24 pb-32 px-4">
-          <div className="max-w-5xl mx-auto">
-            {/* Progress Bar */}
-            <OrderProgressBar currentStep={1} />
+    <div className="min-h-screen bg-[#F5F5F7]">
+      {/* Header - Style IWASP */}
+      <header className="sticky top-0 z-40 bg-[#F5F5F7]/95 backdrop-blur-lg border-b border-[#E5E5E5]">
+        <div className="container mx-auto px-5 py-4 flex items-center justify-between">
+          <button 
+            onClick={() => navigate("/order/type")}
+            className="flex items-center gap-2 text-[#8E8E93] hover:text-[#1D1D1F] transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="text-sm font-medium">Retour</span>
+          </button>
+          
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#1D1D1F] flex items-center justify-center">
+              <span className="text-white font-bold text-sm">iW</span>
+            </div>
+            <span className="text-[#1D1D1F] font-semibold">Offres</span>
+          </div>
+          
+          <div className="w-20" />
+        </div>
+      </header>
 
-            {/* Header */}
-            <motion.div 
-              className="text-center mb-10"
-              variants={contentVariants}
-              initial="initial"
-              animate="animate"
-            >
-              <motion.p 
-                className="text-sm tracking-widest uppercase mb-3"
-                style={{ color: STEALTH.accent }}
-                variants={itemVariants}
-              >
-                Étape 1 sur 6
-              </motion.p>
-              <motion.h1 
-                className="text-3xl md:text-4xl font-display font-bold mb-3"
-                variants={itemVariants}
-              >
-                Choisissez votre offre
-              </motion.h1>
-              <motion.p 
-                className="text-muted-foreground text-lg max-w-md mx-auto"
-                variants={itemVariants}
-              >
-                La carte NFC est incluse. Le service fait la différence.
-              </motion.p>
-            </motion.div>
+      {/* Progress bar */}
+      <div className="w-full h-1 bg-[#E5E5E5]">
+        <div className="h-full bg-[#007AFF] w-[25%] transition-all" />
+      </div>
 
-            {/* Offer Cards */}
-            <motion.div 
-              className="grid md:grid-cols-3 gap-6 mb-10"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              {offerDetails.map((offer, index) => {
-                const isSelected = state.selectedOffer === offer.id;
-                const Icon = offer.icon;
-                
-                return (
-                  <motion.button
-                    key={offer.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + index * 0.1 }}
-                    onClick={() => handleSelectOffer(offer.id)}
-                    disabled={state.isTransitioning}
-                    className="relative p-6 rounded-2xl border-2 text-left transition-all duration-200"
-                    style={{
-                      borderColor: isSelected ? STEALTH.accent : 'hsl(var(--border))',
-                      backgroundColor: isSelected ? `${STEALTH.accent}08` : 'hsl(var(--card))',
-                      boxShadow: isSelected ? `0 8px 32px ${STEALTH.accent}20` : 'none',
-                      opacity: state.isTransitioning ? 0.5 : 1,
-                      pointerEvents: state.isTransitioning ? 'none' : 'auto',
-                    }}
-                  >
-                    {/* Popular Badge */}
-                    {offer.isPopular && (
-                      <div 
-                        className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-semibold"
-                        style={{ backgroundColor: STEALTH.accent, color: STEALTH.bg }}
-                      >
-                        Le plus choisi
-                      </div>
-                    )}
+      {/* Content */}
+      <main className="container mx-auto px-5 py-10 max-w-lg">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          {/* Title */}
+          <div className="text-center mb-8">
+            <p className="text-xs uppercase tracking-widest text-[#8E8E93] mb-2">
+              Étape 1 sur 5
+            </p>
+            <h1 className="text-2xl font-bold tracking-tight text-[#1D1D1F] mb-2">
+              Choisissez votre offre
+            </h1>
+            <p className="text-[#8E8E93] text-sm">
+              La carte NFC est incluse
+            </p>
+          </div>
 
-                    {/* Selection Indicator */}
-                    {isSelected && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute top-4 right-4 w-6 h-6 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: STEALTH.accent }}
-                      >
-                        <Check size={14} style={{ color: STEALTH.bg }} />
-                      </motion.div>
-                    )}
+          {/* Offers List */}
+          <div className="space-y-3 mb-8">
+            {offerDetails.map((offer, index) => {
+              const isSelected = state.selectedOffer === offer.id;
+              const Icon = offer.icon;
 
+              return (
+                <motion.button
+                  key={offer.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  onClick={() => handleSelectOffer(offer.id)}
+                  disabled={state.isTransitioning}
+                  className={`relative w-full p-5 rounded-2xl text-left transition-all ${
+                    isSelected 
+                      ? "bg-white ring-2 ring-[#007AFF] shadow-lg" 
+                      : "bg-white shadow-sm"
+                  }`}
+                >
+                  {/* Popular Badge */}
+                  {offer.isPopular && (
+                    <div className="absolute -top-2 right-4 px-3 py-0.5 rounded-full text-[10px] font-semibold bg-[#007AFF] text-white">
+                      Populaire
+                    </div>
+                  )}
+
+                  <div className="flex items-start gap-4">
                     {/* Icon */}
-                    <div 
-                      className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                      style={{ 
-                        backgroundColor: isSelected ? STEALTH.accent : 'hsl(var(--muted))'
-                      }}
-                    >
-                      <Icon 
-                        className="w-6 h-6" 
-                        style={{ color: isSelected ? STEALTH.bg : 'hsl(var(--muted-foreground))' }} 
-                      />
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                      isSelected ? "bg-[#007AFF]" : "bg-[#F5F5F7]"
+                    }`}>
+                      <Icon className={`w-5 h-5 ${isSelected ? "text-white" : "text-[#8E8E93]"}`} />
                     </div>
 
                     {/* Content */}
-                    <h3 className="text-xl font-semibold mb-1">{offer.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-3">{offer.subtitle}</p>
-                    <p className="text-2xl font-bold mb-4">{offer.price}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <div>
+                          <h3 className="text-base font-semibold text-[#1D1D1F]">
+                            {offer.title}
+                          </h3>
+                          <p className="text-xs text-[#8E8E93]">{offer.subtitle}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-lg font-bold ${isSelected ? "text-[#007AFF]" : "text-[#1D1D1F]"}`}>
+                            {formatAmount(offer.priceMAD)}
+                          </span>
+                          {isSelected && (
+                            <div className="w-6 h-6 rounded-full bg-[#007AFF] flex items-center justify-center">
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
 
-                    {/* Features */}
-                    <ul className="space-y-2">
-                      {offer.features.map((feature, i) => (
-                        <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Check 
-                            size={14} 
-                            style={{ color: isSelected ? STEALTH.accent : 'hsl(var(--primary))' }} 
-                          />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.button>
-                );
-              })}
-            </motion.div>
-
-            {/* Continue Button */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="flex justify-center"
-            >
-              <LoadingButton
-                size="xl"
-                onClick={handleContinue}
-                disabled={!state.selectedOffer || state.isTransitioning}
-                isLoading={isNavigating}
-                loadingText="Chargement..."
-                className="px-12 rounded-full font-semibold disabled:opacity-50"
-                style={{ 
-                  backgroundColor: STEALTH.accent, 
-                  color: STEALTH.bg 
-                }}
-              >
-                Continuer
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </LoadingButton>
-            </motion.div>
-
-            {/* Physical Card Preview */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="mt-10"
-            >
-              <PhysicalCardPreview compact />
-            </motion.div>
-
-            {/* Price Note */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="text-center text-xs text-muted-foreground mt-6"
-            >
-              Prix en dirhams marocains (MAD). Livraison gratuite au Maroc.
-            </motion.p>
-            
-            {/* Payment notice */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.75 }}
-              className="flex justify-center mt-4"
-            >
-              <div 
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs"
-                style={{ 
-                  backgroundColor: 'hsl(var(--card))', 
-                  border: `1px solid ${STEALTH.border}`,
-                  color: 'hsl(var(--muted-foreground))'
-                }}
-              >
-                <span style={{ color: STEALTH.accent }}>💳</span>
-                <span>Paiement en ligne bientôt disponible · Paiement à la livraison activé</span>
-              </div>
-            </motion.div>
+                      {/* Features */}
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {offer.features.slice(0, 3).map((feature, i) => (
+                          <span 
+                            key={i} 
+                            className="text-[10px] px-2 py-0.5 rounded-full bg-[#F5F5F7] text-[#8E8E93]"
+                          >
+                            {feature}
+                          </span>
+                        ))}
+                        {offer.features.length > 3 && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F5F5F7] text-[#8E8E93]">
+                            +{offer.features.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
-        </main>
-      </PageTransition>
 
-      <Footer />
+          {/* CTA Desktop */}
+          <div className="hidden md:flex justify-center">
+            <Button
+              size="lg"
+              onClick={handleContinue}
+              disabled={!state.selectedOffer || state.isTransitioning || isNavigating}
+              className="bg-[#007AFF] text-white hover:bg-[#0066D6] font-semibold gap-2 px-10 py-6 text-base rounded-xl transition-all disabled:opacity-40 disabled:bg-[#8E8E93]"
+            >
+              {isNavigating ? "Chargement..." : "Continuer"}
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+
+          {/* Note */}
+          <p className="text-center text-[10px] text-[#8E8E93] mt-6">
+            Livraison gratuite au Maroc · Paiement à la livraison
+          </p>
+        </motion.div>
+      </main>
+
+      {/* Sticky CTA Mobile */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#F5F5F7]/95 backdrop-blur-lg border-t border-[#E5E5E5] md:hidden z-40 safe-area-bottom">
+        <Button
+          size="lg"
+          onClick={handleContinue}
+          disabled={!state.selectedOffer || state.isTransitioning || isNavigating}
+          className="w-full bg-[#007AFF] text-white hover:bg-[#0066D6] font-semibold gap-2 py-6 text-base rounded-xl min-h-[56px] disabled:opacity-40 disabled:bg-[#8E8E93]"
+        >
+          {isNavigating ? "Chargement..." : state.selectedOffer ? "Continuer" : "Sélectionnez une offre"}
+          <ArrowRight className="w-5 h-5" />
+        </Button>
+      </div>
+      
+      <div className="h-24 md:hidden" />
     </div>
   );
 }
