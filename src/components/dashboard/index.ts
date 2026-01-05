@@ -6,3 +6,4 @@ export { GoldAnalyticsPanel } from "./GoldAnalyticsPanel";
 export { GoldLeadsCRM } from "./GoldLeadsCRM";
 export { GoldCoachTips } from "./GoldCoachTips";
 export { GoldSettingsPanel } from "./GoldSettingsPanel";
+export { TerminalTap } from "./TerminalTap";

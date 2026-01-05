@@ -38,6 +38,7 @@ import {
   GoldLeadsCRM,
   GoldCoachTips,
   GoldSettingsPanel,
+  TerminalTap,
 } from "@/components/dashboard";
 
 import { 
@@ -291,8 +292,18 @@ const Dashboard = () => {
               />
             </div>
 
-            {/* Right Column: Coach + Settings */}
+            {/* Right Column: Terminal Tap + Coach + Settings */}
             <div className="space-y-6">
+              {/* Terminal Tap - NFC Payment */}
+              <div>
+                <TerminalTap 
+                  currency="MAD"
+                  onPaymentComplete={(amount) => {
+                    console.log(`Payment completed: ${amount} MAD`);
+                  }}
+                />
+              </div>
+
               {/* Gold Coach Tips */}
               <div>
                 <GoldCoachTips
