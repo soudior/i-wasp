@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import medinaMallLogo from '@/assets/clients/medina-mall-logo.png';
 
 type BrandKey = 'medina' | 'travertin';
 
@@ -31,6 +32,7 @@ interface BrandConfig {
   bg: string;
   cardBg: string;
   monogram: string;
+  logo?: string;
   phone: string;
   email: string;
   services: {
@@ -44,7 +46,7 @@ interface BrandConfig {
 const brands: Record<BrandKey, BrandConfig> = {
   medina: {
     name: "Medina Mall",
-    tagline: "L'Expérience Shopping Culturelle",
+    tagline: "L'Expérience Shopping Culturelle · Marrakech",
     url: "https://medinamall.ma/",
     insta: "https://www.instagram.com/medinamall",
     primary: "from-orange-800 to-amber-600",
@@ -52,6 +54,7 @@ const brands: Record<BrandKey, BrandConfig> = {
     bg: "bg-[#0f0a05]",
     cardBg: "linear-gradient(135deg, #2d1b0d 0%, #0f0a05 100%)",
     monogram: "MM",
+    logo: medinaMallLogo,
     phone: "+212522000000",
     email: "contact@medinamall.ma",
     services: [
@@ -175,14 +178,23 @@ END:VCARD`;
             exit={{ opacity: 0, y: -20 }}
             className="text-center mb-8"
           >
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center mb-6">
               <div className="relative">
                 <div className={`absolute inset-0 bg-gradient-to-r ${current.primary} blur-2xl opacity-30`} />
-                <div 
-                  className={`relative w-20 h-20 rounded-2xl bg-gradient-to-br ${current.primary} flex items-center justify-center text-2xl font-serif font-bold shadow-2xl`}
-                >
-                  {current.monogram}
-                </div>
+                {current.logo ? (
+                  <img 
+                    src={current.logo} 
+                    alt={current.name}
+                    className="relative w-32 h-32 object-contain drop-shadow-2xl"
+                    style={{ filter: 'invert(1)' }}
+                  />
+                ) : (
+                  <div 
+                    className={`relative w-20 h-20 rounded-2xl bg-gradient-to-br ${current.primary} flex items-center justify-center text-2xl font-serif font-bold shadow-2xl`}
+                  >
+                    {current.monogram}
+                  </div>
+                )}
               </div>
             </div>
             <h1 className="text-3xl font-serif font-bold tracking-tight mb-2">
