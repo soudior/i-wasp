@@ -1,10 +1,17 @@
 /**
- * ORDER PROGRESS BAR — 5 ÉTAPES
+ * ORDER PROGRESS BAR — 6 ÉTAPES
+ * Palette Stealth Luxury : Argent Titane #A5A9B4
  */
 
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { useOrderFunnel, STEP_LABELS, TOTAL_STEPS } from "@/contexts/OrderFunnelContext";
+
+// Stealth Luxury Palette
+const STEALTH = {
+  accent: "#A5A9B4",
+  accentLight: "#D1D5DB",
+};
 
 interface OrderProgressBarProps {
   currentStep: number;
@@ -17,10 +24,11 @@ export function OrderProgressBar({ currentStep }: OrderProgressBarProps) {
 
   return (
     <div className="w-full max-w-2xl mx-auto px-4 mb-8">
-      {/* Barre de progression - Jaune #FFC700 */}
+      {/* Barre de progression - Argent Titane */}
       <div className="relative h-1.5 bg-muted rounded-full overflow-hidden mb-4">
         <motion.div 
-          className="absolute inset-y-0 left-0 bg-[#FFC700] rounded-full"
+          className="absolute inset-y-0 left-0 rounded-full"
+          style={{ backgroundColor: STEALTH.accent }}
           initial={{ width: "0%" }}
           animate={{ width: `${progressPercent}%` }}
           transition={{ duration: 0.3, ease: "easeOut" }}
@@ -47,7 +55,7 @@ export function OrderProgressBar({ currentStep }: OrderProgressBarProps) {
                 animate={{
                   scale: isCurrent ? 1.15 : 1,
                   backgroundColor: isCompleted || isCurrent 
-                    ? "#FFC700" 
+                    ? STEALTH.accent 
                     : "hsl(var(--muted))",
                 }}
                 transition={{ duration: 0.15 }}
@@ -61,9 +69,12 @@ export function OrderProgressBar({ currentStep }: OrderProgressBarProps) {
                 {isCompleted ? <Check size={16} strokeWidth={3} /> : stepNumber}
               </motion.div>
 
-              <span className={`text-xs font-medium hidden sm:block ${
-                isCurrent ? "text-[#FFC700]" : isCompleted ? "text-foreground" : "text-muted-foreground"
-              }`}>
+              <span 
+                className="text-xs font-medium hidden sm:block"
+                style={{ 
+                  color: isCurrent ? STEALTH.accent : isCompleted ? 'inherit' : undefined 
+                }}
+              >
                 {label}
               </span>
             </button>
@@ -73,7 +84,7 @@ export function OrderProgressBar({ currentStep }: OrderProgressBarProps) {
 
       {/* Mobile: Current step */}
       <div className="sm:hidden text-center mt-3">
-        <span className="text-sm font-medium text-[#FFC700]">
+        <span className="text-sm font-medium" style={{ color: STEALTH.accent }}>
           {currentStep}/{TOTAL_STEPS} · {STEP_LABELS[currentStep - 1]}
         </span>
       </div>

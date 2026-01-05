@@ -2,16 +2,7 @@
  * Step 4: Livraison + Paiement
  * /order/livraison
  * 
- * Champs livraison (NE PAS afficher sur carte digitale):
- * - Type d'adresse (Domicile / Entreprise / Hôtel)
- * - Adresse
- * - Ville
- * - Pays (Maroc par défaut)
- * - Téléphone
- * 
- * Paiement:
- * - Paiement à la livraison (activé)
- * - Carte bancaire (désactivé - "bientôt disponible")
+ * Palette Stealth Luxury : Argent Titane #A5A9B4
  */
 
 import { useState, useMemo } from "react";
@@ -41,6 +32,14 @@ import {
   Info
 } from "lucide-react";
 import { toast } from "sonner";
+
+// Stealth Luxury Palette
+const STEALTH = {
+  bg: "#050807",
+  accent: "#A5A9B4",
+  accentLight: "#D1D5DB",
+  border: "rgba(165, 169, 180, 0.2)",
+};
 
 const addressTypes = [
   { id: "domicile" as const, icon: Home, label: "Domicile" },
@@ -132,7 +131,8 @@ function OrderLivraisonContent() {
               animate="animate"
             >
               <motion.p 
-                className="text-sm text-primary tracking-widest uppercase mb-3"
+                className="text-sm tracking-widest uppercase mb-3"
+                style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
                 Étape 4 sur 6
@@ -155,9 +155,13 @@ function OrderLivraisonContent() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 rounded-xl bg-[#FFC700]/10 border border-[#FFC700]/30 flex items-start gap-3"
+              className="mb-6 p-4 rounded-xl flex items-start gap-3"
+              style={{ 
+                backgroundColor: `${STEALTH.accent}10`, 
+                border: `1px solid ${STEALTH.accent}30` 
+              }}
             >
-              <Info className="h-5 w-5 text-[#FFC700] flex-shrink-0 mt-0.5" />
+              <Info className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: STEALTH.accent }} />
               <p className="text-sm text-muted-foreground">
                 Ces informations servent uniquement à la livraison. Elles n'apparaîtront pas sur votre carte digitale.
               </p>
@@ -174,7 +178,7 @@ function OrderLivraisonContent() {
               <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <MapPin size={20} className="text-[#FFC700]" />
+                    <MapPin size={20} style={{ color: STEALTH.accent }} />
                     Adresse de livraison
                   </CardTitle>
                 </CardHeader>
@@ -191,16 +195,22 @@ function OrderLivraisonContent() {
                           <button
                             key={type.id}
                             onClick={() => handleChange("addressType", type.id)}
-                            className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all ${
-                              isSelected
-                                ? "border-[#FFC700] bg-[#FFC700]/10"
-                                : "border-border hover:border-[#FFC700]/50"
-                            }`}
+                            className="flex flex-col items-center p-3 rounded-xl border-2 transition-all"
+                            style={{
+                              borderColor: isSelected ? STEALTH.accent : 'hsl(var(--border))',
+                              backgroundColor: isSelected ? `${STEALTH.accent}10` : 'transparent',
+                            }}
                           >
-                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-1 ${
-                              isSelected ? "bg-[#FFC700]" : "bg-muted"
-                            }`}>
-                              <Icon className={`w-5 h-5 ${isSelected ? "text-black" : "text-muted-foreground"}`} />
+                            <div 
+                              className="w-10 h-10 rounded-lg flex items-center justify-center mb-1"
+                              style={{ 
+                                backgroundColor: isSelected ? STEALTH.accent : 'hsl(var(--muted))'
+                              }}
+                            >
+                              <Icon 
+                                className="w-5 h-5" 
+                                style={{ color: isSelected ? STEALTH.bg : 'hsl(var(--muted-foreground))' }} 
+                              />
                             </div>
                             <span className="text-xs font-medium">{type.label}</span>
                           </button>
@@ -284,14 +294,20 @@ function OrderLivraisonContent() {
               <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <Banknote size={20} className="text-[#FFC700]" />
+                    <Banknote size={20} style={{ color: STEALTH.accent }} />
                     Mode de paiement
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <RadioGroup defaultValue="cod" className="space-y-3">
                     {/* COD - Active */}
-                    <div className="flex items-start gap-4 p-4 rounded-xl border-2 border-[#FFC700] bg-[#FFC700]/5">
+                    <div 
+                      className="flex items-start gap-4 p-4 rounded-xl border-2"
+                      style={{ 
+                        borderColor: STEALTH.accent, 
+                        backgroundColor: `${STEALTH.accent}05` 
+                      }}
+                    >
                       <RadioGroupItem value="cod" id="cod" className="mt-1" />
                       <div className="flex-1">
                         <Label htmlFor="cod" className="flex items-center gap-2 font-semibold text-base cursor-pointer">
@@ -307,12 +323,12 @@ function OrderLivraisonContent() {
                             Pas de paiement maintenant
                           </span>
                           <span className="flex items-center gap-1">
-                            <Truck className="h-3 w-3 text-[#FFC700]" />
+                            <Truck className="h-3 w-3" style={{ color: STEALTH.accent }} />
                             Livraison 48h-72h
                           </span>
                         </div>
                       </div>
-                      <CheckCircle2 className="h-5 w-5 text-[#FFC700]" />
+                      <CheckCircle2 className="h-5 w-5" style={{ color: STEALTH.accent }} />
                     </div>
 
                     {/* Card - Disabled with "Coming soon" message */}
@@ -322,7 +338,10 @@ function OrderLivraisonContent() {
                         <Label htmlFor="card" className="flex items-center gap-2 font-semibold text-base text-muted-foreground">
                           <CreditCard className="h-5 w-5" />
                           Carte bancaire
-                          <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
+                          <span 
+                            className="ml-auto text-xs px-2 py-0.5 rounded-full font-medium"
+                            style={{ backgroundColor: `${STEALTH.accent}20`, color: STEALTH.accent }}
+                          >
                             Bientôt
                           </span>
                         </Label>
@@ -335,9 +354,9 @@ function OrderLivraisonContent() {
                   
                   {/* Online payment notice */}
                   <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card border border-border">
-                    <Info className="h-4 w-4 text-primary flex-shrink-0" />
+                    <Info className="h-4 w-4 flex-shrink-0" style={{ color: STEALTH.accent }} />
                     <p className="text-xs text-muted-foreground">
-                      <span className="text-primary font-medium">Paiement en ligne bientôt disponible.</span>
+                      <span className="font-medium" style={{ color: STEALTH.accent }}>Paiement en ligne bientôt disponible.</span>
                       {" "}Pour l'instant, payez à la livraison.
                     </p>
                   </div>
@@ -379,7 +398,11 @@ function OrderLivraisonContent() {
                 disabled={!isValid || state.isTransitioning}
                 isLoading={isNavigating}
                 loadingText="Chargement..."
-                className="px-8 rounded-full bg-[#FFC700] hover:bg-[#FFC700]/90 text-black font-semibold disabled:opacity-50"
+                className="px-8 rounded-full font-semibold disabled:opacity-50"
+                style={{ 
+                  backgroundColor: STEALTH.accent, 
+                  color: STEALTH.bg 
+                }}
               >
                 Continuer
                 <ArrowRight className="ml-2 h-5 w-5" />

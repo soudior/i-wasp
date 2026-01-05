@@ -2,8 +2,7 @@
  * Step 1: Choix de l'offre
  * /order/offre
  * 
- * Essentiel / Signature / Élite
- * Cadre jaune #FFC700 sur l'offre sélectionnée
+ * Palette Stealth Luxury : Argent Titane #A5A9B4, Platine #D1D5DB
  */
 
 import { useState } from "react";
@@ -15,6 +14,14 @@ import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from 
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { PhysicalCardPreview } from "@/components/PhysicalCardPreview";
 import { Check, ArrowRight, Star, Sparkles, Crown } from "lucide-react";
+
+// Stealth Luxury Palette
+const STEALTH = {
+  bg: "#050807",
+  accent: "#A5A9B4",
+  accentLight: "#D1D5DB",
+  border: "rgba(165, 169, 180, 0.2)",
+};
 
 const offerDetails = [
   {
@@ -101,7 +108,8 @@ function OrderOffreContent() {
               animate="animate"
             >
               <motion.p 
-                className="text-sm text-primary tracking-widest uppercase mb-3"
+                className="text-sm tracking-widest uppercase mb-3"
+                style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
                 Étape 1 sur 6
@@ -139,15 +147,21 @@ function OrderOffreContent() {
                     transition={{ delay: 0.3 + index * 0.1 }}
                     onClick={() => handleSelectOffer(offer.id)}
                     disabled={state.isTransitioning}
-                    className={`relative p-6 rounded-2xl border-2 text-left transition-all duration-200 ${
-                      isSelected
-                        ? "border-[#FFC700] bg-[#FFC700]/5 shadow-lg shadow-[#FFC700]/20"
-                        : "border-border bg-card hover:border-[#FFC700]/50"
-                    } ${state.isTransitioning ? "pointer-events-none opacity-50" : ""}`}
+                    className="relative p-6 rounded-2xl border-2 text-left transition-all duration-200"
+                    style={{
+                      borderColor: isSelected ? STEALTH.accent : 'hsl(var(--border))',
+                      backgroundColor: isSelected ? `${STEALTH.accent}08` : 'hsl(var(--card))',
+                      boxShadow: isSelected ? `0 8px 32px ${STEALTH.accent}20` : 'none',
+                      opacity: state.isTransitioning ? 0.5 : 1,
+                      pointerEvents: state.isTransitioning ? 'none' : 'auto',
+                    }}
                   >
                     {/* Popular Badge */}
                     {offer.isPopular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#FFC700] text-black text-xs font-semibold">
+                      <div 
+                        className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-semibold"
+                        style={{ backgroundColor: STEALTH.accent, color: STEALTH.bg }}
+                      >
                         Le plus choisi
                       </div>
                     )}
@@ -157,17 +171,24 @@ function OrderOffreContent() {
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="absolute top-4 right-4 w-6 h-6 rounded-full bg-[#FFC700] flex items-center justify-center"
+                        className="absolute top-4 right-4 w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: STEALTH.accent }}
                       >
-                        <Check size={14} className="text-black" />
+                        <Check size={14} style={{ color: STEALTH.bg }} />
                       </motion.div>
                     )}
 
                     {/* Icon */}
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
-                      isSelected ? "bg-[#FFC700]" : "bg-muted"
-                    }`}>
-                      <Icon className={`w-6 h-6 ${isSelected ? "text-black" : "text-muted-foreground"}`} />
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                      style={{ 
+                        backgroundColor: isSelected ? STEALTH.accent : 'hsl(var(--muted))'
+                      }}
+                    >
+                      <Icon 
+                        className="w-6 h-6" 
+                        style={{ color: isSelected ? STEALTH.bg : 'hsl(var(--muted-foreground))' }} 
+                      />
                     </div>
 
                     {/* Content */}
@@ -179,7 +200,10 @@ function OrderOffreContent() {
                     <ul className="space-y-2">
                       {offer.features.map((feature, i) => (
                         <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Check size={14} className={isSelected ? "text-[#FFC700]" : "text-primary"} />
+                          <Check 
+                            size={14} 
+                            style={{ color: isSelected ? STEALTH.accent : 'hsl(var(--primary))' }} 
+                          />
                           {feature}
                         </li>
                       ))}
@@ -202,7 +226,11 @@ function OrderOffreContent() {
                 disabled={!state.selectedOffer || state.isTransitioning}
                 isLoading={isNavigating}
                 loadingText="Chargement..."
-                className="px-12 rounded-full bg-[#FFC700] hover:bg-[#FFC700]/90 text-black font-semibold disabled:opacity-50"
+                className="px-12 rounded-full font-semibold disabled:opacity-50"
+                style={{ 
+                  backgroundColor: STEALTH.accent, 
+                  color: STEALTH.bg 
+                }}
               >
                 Continuer
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -236,8 +264,15 @@ function OrderOffreContent() {
               transition={{ delay: 0.75 }}
               className="flex justify-center mt-4"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-xs text-muted-foreground">
-                <span className="text-primary">💳</span>
+              <div 
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs"
+                style={{ 
+                  backgroundColor: 'hsl(var(--card))', 
+                  border: `1px solid ${STEALTH.border}`,
+                  color: 'hsl(var(--muted-foreground))'
+                }}
+              >
+                <span style={{ color: STEALTH.accent }}>💳</span>
                 <span>Paiement en ligne bientôt disponible · Paiement à la livraison activé</span>
               </div>
             </motion.div>
