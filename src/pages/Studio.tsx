@@ -1,10 +1,10 @@
 /**
- * i-WASP STUDIO — Centre de Contrôle Ultra-Luxe
- * Dashboard premium avec preview en temps réel
- * Inclut La Manufacture, Résonance & Ads, et Stories
+ * i-WASP STUDIO — Infinite Perfection
+ * Centre de Contrôle Ultra-Luxe avec Mode Caméléon,
+ * Le Coffre NFT, et Conciergerie Privée
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { 
   User, 
@@ -43,7 +43,17 @@ import {
   Settings,
   Smartphone,
   Radio,
-  ChevronRight
+  ChevronRight,
+  Shirt,
+  BadgeCheck,
+  Headphones,
+  Moon,
+  Sun,
+  Briefcase,
+  Wine,
+  Link2,
+  Award,
+  Boxes
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,7 +71,7 @@ interface NFCCard {
   serialNumber: string;
   material: "or-24k" | "carbone" | "titane" | "bois-precieux" | "nail-bio";
   materialLabel: string;
-  productType: "card" | "nail" | "bracelet";
+  productType: "card" | "nail" | "bracelet" | "label";
   status: "operational" | "locked" | "pending";
   scans: number;
   lastScan?: string;
@@ -75,6 +85,24 @@ interface Story {
   type: "image" | "video";
   thumbnail: string;
   title?: string;
+}
+
+interface ChameleonMode {
+  id: string;
+  name: string;
+  icon: typeof Briefcase;
+  description: string;
+  active: boolean;
+}
+
+interface NFTAsset {
+  id: string;
+  name: string;
+  type: "garment" | "accessory";
+  brand: string;
+  tokenId: string;
+  authenticatedAt: string;
+  imageUrl?: string;
 }
 
 // ============================================================
@@ -130,14 +158,27 @@ const mockStories: Story[] = [
   { id: "4", type: "video", thumbnail: "", title: "Conférence" },
 ];
 
-// Tabs configuration
+// Chameleon modes
+const chameleonModes: ChameleonMode[] = [
+  { id: "business", name: "Business Elite", icon: Briefcase, description: "Profil professionnel pour les réunions d'affaires", active: true },
+  { id: "social", name: "Networking Lounge", icon: Wine, description: "Profil décontracté pour les événements sociaux", active: false },
+  { id: "creative", name: "Creative Director", icon: Sparkles, description: "Profil créatif pour les collaborations artistiques", active: false },
+];
+
+// Mock NFT Assets (Le Coffre)
+const mockNFTAssets: NFTAsset[] = [
+  { id: "1", name: "Blazer Signature", type: "garment", brand: "i-WASP Couture", tokenId: "0x7a3...4f2", authenticatedAt: "2025-12-15" },
+  { id: "2", name: "Pochette Monaco", type: "accessory", brand: "i-WASP Couture", tokenId: "0x8b4...5e1", authenticatedAt: "2025-11-20" },
+];
+
+// Tabs configuration - Updated with new sections
 const tabs = [
-  { id: "identity", label: "Mon Identité", icon: User },
-  { id: "manufacture", label: "La Manufacture", icon: Gem },
-  { id: "leads", label: "Mes Leads", icon: Users },
-  { id: "resonance", label: "Résonance & Ads", icon: Zap },
-  { id: "world", label: "Centre Intelligence", icon: Globe },
-  { id: "eco", label: "Écologie", icon: Leaf },
+  { id: "identity", label: "Identité", icon: User },
+  { id: "manufacture", label: "Manufacture", icon: Gem },
+  { id: "coffre", label: "Le Coffre (NFT)", icon: BadgeCheck },
+  { id: "world", label: "Intelligence", icon: Globe },
+  { id: "leads", label: "Récoltes", icon: Users },
+  { id: "concierge", label: "Conciergerie", icon: Headphones },
 ];
 
 // Mock leads data
@@ -168,11 +209,13 @@ const activityFeed = [
 ];
 
 const Studio = () => {
-  const [activeTab, setActiveTab] = useState("identity");
+  const [activeTab, setActiveTab] = useState("manufacture");
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [fleet, setFleet] = useState<NFCCard[]>(mockFleet);
   const [stories, setStories] = useState<Story[]>(mockStories);
+  const [activeChameleonMode, setActiveChameleonMode] = useState<string>("business");
+  const [nftAssets, setNftAssets] = useState<NFTAsset[]>(mockNFTAssets);
   
   // Profile form state
   const [profile, setProfile] = useState({
@@ -195,6 +238,9 @@ const Studio = () => {
     instagramRetargeting: true,
     linkedinRetargeting: false,
   });
+
+  // Get current chameleon mode
+  const currentChameleonMode = chameleonModes.find(m => m.id === activeChameleonMode) || chameleonModes[0];
 
   // Toggle card lock (Kill-Switch)
   const toggleCardLock = (cardId: string) => {
@@ -374,7 +420,7 @@ const Studio = () => {
 
             {/* Tab content */}
             <AnimatePresence mode="wait">
-              {/* LA MANUFACTURE TAB */}
+              {/* LA MANUFACTURE TAB - Art de la Matière */}
               {activeTab === "manufacture" && (
                 <motion.div
                   key="manufacture"
@@ -383,192 +429,235 @@ const Studio = () => {
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-8"
                 >
-                  {/* Fleet Header */}
-                  <div className="flex items-center justify-between flex-wrap gap-4">
+                  {/* Header with Series Number */}
+                  <div className="flex items-start justify-between flex-wrap gap-4">
                     <div>
-                      <h3 className="font-display text-3xl md:text-4xl text-iwasp-cream">
-                        <span className="italic text-iwasp-bronze">La</span> <span className="text-iwasp-bronze">Manufacture.</span>
+                      <h3 className="font-display text-4xl md:text-5xl text-iwasp-cream">
+                        L'Art de la <span className="italic text-iwasp-bronze">Matière.</span>
                       </h3>
-                      <p className="text-sm text-iwasp-silver mt-2">Objets de pouvoir physiques : des cartes à la puce d'ongle invisible.</p>
+                      <p className="text-sm text-iwasp-silver mt-3">
+                        Chaque objet i-Wasp est une pièce d'exception, conçue pour durer et pour impressionner.
+                      </p>
                     </div>
-                    <Link to="/order/type">
-                      <Button className="bg-transparent border-2 border-iwasp-bronze/40 text-iwasp-cream hover:bg-iwasp-bronze/10 gap-2 rounded-xl">
-                        <Plus className="w-4 h-4" />
-                        Nouvelle Commande
-                      </Button>
-                    </Link>
+                    <div className="text-right">
+                      <div className="flex items-center gap-2 text-iwasp-silver/50 mb-1">
+                        <Sparkles className="w-3 h-3" />
+                        <span className="text-[10px] tracking-widest uppercase">Série Limitée</span>
+                      </div>
+                      <div className="font-display text-2xl text-iwasp-cream">N°001</div>
+                      <div className="text-[10px] text-iwasp-bronze tracking-wider uppercase">Fondateur</div>
+                    </div>
                   </div>
 
-                  {/* Main Grid: Collection + Nail Panel */}
-                  <div className="grid lg:grid-cols-[1fr,340px] gap-6">
-                    {/* Left: Collection */}
-                    <div className="space-y-6">
-                      <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">
-                        Votre Collection i-WASP
-                      </h4>
-
-                      {/* Cards Grid */}
-                      <div className="space-y-4">
-                        {fleet.map((card, index) => (
-                          <motion.div
-                            key={card.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 hover:border-iwasp-bronze/20 transition-all"
-                          >
-                            <div className="flex items-start gap-4">
-                              {/* Card/Nail Visual */}
-                              <div className={cn(
-                                "w-20 h-12 rounded-lg flex items-center justify-center text-xs font-semibold shadow-lg flex-shrink-0 relative overflow-hidden",
-                                getMaterialGradient(card.material, card.productType),
-                                card.status === "locked" && "opacity-50 grayscale"
-                              )}>
-                                {card.productType === "nail" ? (
-                                  <div className="flex flex-col items-center">
-                                    <Fingerprint className="w-5 h-5 text-white/90" />
-                                    <span className="text-[8px] text-white/70 mt-0.5">NFC</span>
-                                  </div>
-                                ) : (
-                                  <>
-                                    <span className="absolute top-1 left-1.5 text-[6px] text-white/50 uppercase tracking-wider">PRESTIGE</span>
-                                    <span className="text-white/90 tracking-wider text-[10px] font-bold">i-WASP</span>
-                                  </>
-                                )}
-                              </div>
-
-                              {/* Info */}
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-3 flex-wrap">
-                                  <h4 className="font-semibold text-iwasp-cream">{card.materialLabel}</h4>
-                                  {getStatusBadge(card.status)}
-                                </div>
-                                <p className="text-iwasp-silver/60 text-sm mt-1">{card.serialNumber}</p>
-                                
-                                {card.status !== "pending" && (
-                                  <div className="flex items-center gap-4 mt-3 text-xs text-iwasp-silver/50">
-                                    <span className="flex items-center gap-1">
-                                      <Eye className="w-3 h-3" />
-                                      {card.scans} scans
-                                    </span>
-                                    {card.lastScan && (
-                                      <span>{card.lastScan}</span>
-                                    )}
-                                    {card.location && (
-                                      <span className="flex items-center gap-1">
-                                        <MapPin className="w-3 h-3" />
-                                        {card.location}
-                                      </span>
-                                    )}
-                                  </div>
-                                )}
-
-                                {card.status === "pending" && (
-                                  <div className="mt-3 flex items-center gap-2 text-iwasp-bronze text-xs">
-                                    <Sparkles className="w-3 h-3 animate-pulse" />
-                                    <span>Votre pièce est en cours de forge...</span>
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Controls */}
-                              {card.status !== "pending" && (
-                                <div className="flex flex-col items-end gap-3">
-                                  {/* Kill Switch */}
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => toggleCardLock(card.id)}
-                                    className={cn(
-                                      "gap-2 text-xs",
-                                      card.status === "locked" 
-                                        ? "text-red-400 hover:text-red-300 hover:bg-red-500/10" 
-                                        : "text-iwasp-emerald-glow hover:text-iwasp-emerald hover:bg-iwasp-emerald/10"
-                                    )}
-                                  >
-                                    {card.status === "locked" ? (
-                                      <>
-                                        <Lock className="w-3 h-3" />
-                                        Déverrouiller
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Unlock className="w-3 h-3" />
-                                        Kill-Switch
-                                      </>
-                                    )}
-                                  </Button>
-
-                                  {/* Settings toggles */}
-                                  <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-2">
-                                      <Globe className="w-3 h-3 text-iwasp-silver/40" />
-                                      <Switch
-                                        checked={card.geoEnabled}
-                                        onCheckedChange={() => toggleCardSetting(card.id, "geoEnabled")}
-                                        className="scale-75 data-[state=checked]:bg-iwasp-bronze"
-                                      />
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <Bell className="w-3 h-3 text-iwasp-silver/40" />
-                                      <Switch
-                                        checked={card.pushEnabled}
-                                        onCheckedChange={() => toggleCardSetting(card.id, "pushEnabled")}
-                                        className="scale-75 data-[state=checked]:bg-iwasp-bronze"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </motion.div>
-                        ))}
+                  {/* Product Cards Grid */}
+                  <div className="grid md:grid-cols-3 gap-6">
+                    {/* Card 1: La Carte Héritage */}
+                    <div className="p-6 rounded-3xl bg-iwasp-midnight-elevated border border-iwasp-bronze/20 flex flex-col">
+                      <div className="w-20 h-24 rounded-2xl bg-gradient-to-br from-iwasp-bronze via-yellow-600 to-iwasp-bronze mx-auto mb-4 flex items-center justify-center shadow-lg shadow-iwasp-bronze/20">
+                        <div className="text-center">
+                          <span className="text-[8px] text-white/70 block tracking-wider">i -</span>
+                          <span className="text-xs text-white font-bold tracking-widest">WASP</span>
+                          <span className="text-[8px] text-iwasp-bronze-light block">GOLD</span>
+                        </div>
                       </div>
+                      <h4 className="font-display text-xl text-iwasp-cream italic mb-1">La Carte</h4>
+                      <p className="text-sm text-iwasp-bronze uppercase tracking-wider mb-4">Héritage</p>
+                      <p className="text-xs text-iwasp-silver leading-relaxed flex-1">
+                        Forgée dans un acier inoxydable et plaquée Or 24K. Un poids noble pour une présence inoubliable.
+                      </p>
+                      <Button 
+                        variant="outline" 
+                        className="mt-4 w-full border-iwasp-bronze/30 text-iwasp-cream hover:bg-iwasp-bronze/10 rounded-xl text-xs"
+                      >
+                        Personnaliser
+                      </Button>
                     </div>
 
-                    {/* Right: NFC Nail Panel */}
-                    <div className="p-6 rounded-3xl bg-gradient-to-br from-iwasp-midnight-elevated to-rose-500/5 border border-rose-500/20 flex flex-col">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
-                          <Sparkles className="w-5 h-5 text-white" />
-                        </div>
-                        <h4 className="font-display text-xl text-iwasp-cream">
-                          L'Ongle <span className="italic text-rose-400">NFC</span>
-                          <br />
-                          <span className="text-sm text-iwasp-silver font-sans">Bio-S</span>
-                        </h4>
+                    {/* Card 2: L'Ongle Aura */}
+                    <div className="p-6 rounded-3xl bg-iwasp-midnight-elevated border border-iwasp-emerald/20 flex flex-col">
+                      <div className="w-20 h-24 rounded-2xl bg-iwasp-midnight border border-iwasp-emerald/30 mx-auto mb-4 flex items-center justify-center">
+                        <Sparkles className="w-8 h-8 text-iwasp-bronze" />
                       </div>
-
-                      <p className="text-sm text-iwasp-silver mb-6 leading-relaxed">
-                        Le luxe au bout des doigts. Intégrez une micro-puce NFC i-Wasp lors de votre manucure. Une technologie invisible et résistante pour partager votre univers d'un simple mouvement de la main.
+                      <h4 className="font-display text-xl text-iwasp-cream mb-1">L'Ongle</h4>
+                      <p className="text-sm text-iwasp-silver uppercase tracking-wider mb-4">Aura</p>
+                      <p className="text-xs text-iwasp-silver leading-relaxed flex-1">
+                        Une micro-puce de 0.1mm intégrable en onglerie. Partagez votre monde d'un simple geste gracieux.
                       </p>
+                      <Button 
+                        variant="outline" 
+                        className="mt-4 w-full border-iwasp-emerald/30 text-iwasp-cream hover:bg-iwasp-emerald/10 rounded-xl text-xs"
+                      >
+                        Réserver une Pose
+                      </Button>
+                    </div>
 
-                      {/* Features */}
-                      <div className="space-y-3 mb-6">
-                        <div className="flex items-center gap-3 text-sm">
-                          <Check className="w-4 h-4 text-rose-400" />
-                          <span className="text-iwasp-cream">Compatible Résine & Gel</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm">
-                          <Check className="w-4 h-4 text-rose-400" />
-                          <span className="text-iwasp-cream">Étanchéité IP68 (Spa & Yacht)</span>
-                        </div>
+                    {/* Card 3: Label Couture */}
+                    <div className="p-6 rounded-3xl bg-iwasp-midnight-elevated border border-iwasp-emerald/20 flex flex-col">
+                      <div className="w-20 h-24 rounded-2xl bg-iwasp-midnight border border-iwasp-emerald/30 mx-auto mb-4 flex items-center justify-center">
+                        <Shirt className="w-8 h-8 text-iwasp-silver" />
                       </div>
+                      <h4 className="font-display text-xl text-iwasp-cream mb-1">Label</h4>
+                      <p className="text-sm text-iwasp-silver uppercase tracking-wider mb-4">Couture</p>
+                      <p className="text-xs text-iwasp-silver leading-relaxed flex-1">
+                        Puce thermocollante au fer à repasser. Authentifie vos vêtements de luxe et les connecte à votre profil.
+                      </p>
+                      <Button 
+                        variant="outline" 
+                        className="mt-4 w-full border-iwasp-emerald/30 text-iwasp-cream hover:bg-iwasp-emerald/10 rounded-xl text-xs"
+                      >
+                        Acheter le Kit
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
 
-                      <div className="mt-auto">
-                        <Link to="/order/type">
-                          <Button className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white gap-2 rounded-xl">
-                            <Fingerprint className="w-4 h-4" />
-                            Commander le Kit
-                          </Button>
-                        </Link>
+              {/* LE COFFRE (NFT) TAB */}
+              {activeTab === "coffre" && (
+                <motion.div
+                  key="coffre"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-8"
+                >
+                  {/* Header */}
+                  <div>
+                    <h3 className="font-display text-4xl md:text-5xl text-iwasp-cream">
+                      Le <span className="italic text-iwasp-bronze">Coffre.</span>
+                    </h3>
+                    <p className="text-sm text-iwasp-silver mt-3">
+                      Passeport Digital Blockchain : chaque vêtement devient un actif authentifié.
+                    </p>
+                  </div>
+
+                  {/* Blockchain Info */}
+                  <div className="p-6 rounded-3xl bg-gradient-to-br from-iwasp-midnight-elevated to-iwasp-bronze/5 border border-iwasp-bronze/20">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-xl bg-iwasp-bronze/10 flex items-center justify-center">
+                        <Link2 className="w-6 h-6 text-iwasp-bronze" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-iwasp-cream">Authentification Blockchain</h4>
+                        <p className="text-sm text-iwasp-silver">Vos vêtements possèdent un jumeau numérique inviolable.</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10">
+                        <div className="text-2xl font-display text-iwasp-bronze">{nftAssets.length}</div>
+                        <div className="text-xs text-iwasp-silver">Actifs Certifiés</div>
+                      </div>
+                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10">
+                        <div className="text-2xl font-display text-iwasp-emerald-glow">100%</div>
+                        <div className="text-xs text-iwasp-silver">Authentiques</div>
+                      </div>
+                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10">
+                        <div className="text-2xl font-display text-iwasp-cream">∞</div>
+                        <div className="text-xs text-iwasp-silver">Traçabilité</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* NFT Assets Grid */}
+                  <div className="space-y-4">
+                    <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">
+                      Vos Actifs Numériques
+                    </h4>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      {nftAssets.map((asset, index) => (
+                        <motion.div
+                          key={asset.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 hover:border-iwasp-bronze/30 transition-all"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="w-16 h-16 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/20 flex items-center justify-center">
+                              {asset.type === "garment" ? (
+                                <Shirt className="w-6 h-6 text-iwasp-silver" />
+                              ) : (
+                                <Boxes className="w-6 h-6 text-iwasp-silver" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-iwasp-cream">{asset.name}</h4>
+                              <p className="text-xs text-iwasp-bronze">{asset.brand}</p>
+                              <div className="mt-2 flex items-center gap-2">
+                                <BadgeCheck className="w-3 h-3 text-iwasp-emerald-glow" />
+                                <span className="text-[10px] text-iwasp-silver font-mono">{asset.tokenId}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                      
+                      {/* Add New Asset */}
+                      <div className="p-5 rounded-2xl border-2 border-dashed border-iwasp-emerald/20 hover:border-iwasp-bronze/30 transition-all cursor-pointer flex items-center justify-center min-h-[120px]">
+                        <div className="text-center">
+                          <Plus className="w-6 h-6 text-iwasp-silver/40 mx-auto mb-2" />
+                          <span className="text-xs text-iwasp-silver">Ajouter un vêtement</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </motion.div>
               )}
 
-              {/* MON IDENTITÉ TAB - With Stories */}
+              {/* CONCIERGERIE PRIVÉE TAB */}
+              {activeTab === "concierge" && (
+                <motion.div
+                  key="concierge"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-8"
+                >
+                  {/* Header */}
+                  <div>
+                    <h3 className="font-display text-4xl md:text-5xl text-iwasp-cream">
+                      Conciergerie <span className="italic text-iwasp-bronze">Privée.</span>
+                    </h3>
+                    <p className="text-sm text-iwasp-silver mt-3">
+                      Un service d'élite réservé aux détenteurs de la Carte Or 24K.
+                    </p>
+                  </div>
+
+                  {/* Concierge Hero */}
+                  <div className="p-8 rounded-3xl bg-gradient-to-br from-iwasp-bronze/10 to-iwasp-midnight-elevated border border-iwasp-bronze/30 text-center">
+                    <div className="w-20 h-20 rounded-full bg-iwasp-bronze/20 flex items-center justify-center mx-auto mb-6">
+                      <Headphones className="w-10 h-10 text-iwasp-bronze" />
+                    </div>
+                    <h4 className="font-display text-2xl text-iwasp-cream mb-2">
+                      Votre Concierge Personnel
+                    </h4>
+                    <p className="text-sm text-iwasp-silver max-w-md mx-auto mb-6">
+                      Réservations exclusives, conseils personnalisés, et assistance 24/7 pour tous vos besoins d'exception.
+                    </p>
+                    <Button className="bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2 rounded-xl">
+                      <MessageCircle className="w-4 h-4" />
+                      Contacter le Concierge
+                    </Button>
+                  </div>
+
+                  {/* Services */}
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    {[
+                      { icon: Award, title: "Événements VIP", desc: "Accès prioritaire aux galas et soirées privées" },
+                      { icon: Globe, title: "Voyage Sur-Mesure", desc: "Organisation de séjours d'exception" },
+                      { icon: Crown, title: "Privilèges Exclusifs", desc: "Avantages partenaires dans le monde entier" },
+                    ].map((service, i) => (
+                      <div key={i} className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 text-center">
+                        <service.icon className="w-8 h-8 text-iwasp-bronze mx-auto mb-3" />
+                        <h4 className="font-semibold text-iwasp-cream text-sm mb-1">{service.title}</h4>
+                        <p className="text-xs text-iwasp-silver">{service.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* MON IDENTITÉ TAB */}
               {activeTab === "identity" && (
                 <motion.div
                   key="identity"
@@ -637,50 +726,8 @@ const Studio = () => {
                     </div>
                   </div>
 
-                  {/* Stories Section */}
-                  <div className="p-6 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
-                    <div className="flex items-center justify-between mb-6">
-                      <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">
-                        Stories i-WASP (Vidéo & Photo)
-                      </h4>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-iwasp-bronze/30 text-iwasp-bronze hover:bg-iwasp-bronze/10 gap-2"
-                      >
-                        <Plus className="w-3 h-3" />
-                        Ajouter une Story
-                      </Button>
-                    </div>
-
-                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
-                      {stories.map((story, index) => (
-                        <motion.div
-                          key={story.id}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="aspect-square rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10 hover:border-iwasp-bronze/30 transition-all cursor-pointer group relative overflow-hidden"
-                        >
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            {story.type === "video" ? (
-                              <Play className="w-6 h-6 text-iwasp-silver/40 group-hover:text-iwasp-bronze transition-colors" />
-                            ) : (
-                              <Image className="w-6 h-6 text-iwasp-silver/40 group-hover:text-iwasp-bronze transition-colors" />
-                            )}
-                          </div>
-                        </motion.div>
-                      ))}
-                      {/* Add new story placeholder */}
-                      <div className="aspect-square rounded-xl border-2 border-dashed border-iwasp-emerald/20 hover:border-iwasp-bronze/30 transition-all cursor-pointer flex items-center justify-center">
-                        <Plus className="w-6 h-6 text-iwasp-silver/40" />
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Contact & Social */}
                   <div className="grid md:grid-cols-2 gap-6">
-                    {/* Contact */}
                     <div className="p-6 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
                       <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
                         <Mail className="w-3 h-3 text-iwasp-bronze" />
@@ -699,16 +746,9 @@ const Studio = () => {
                           className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
                           placeholder="Téléphone"
                         />
-                        <Input
-                          value={profile.company}
-                          onChange={(e) => setProfile({ ...profile, company: e.target.value })}
-                          className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
-                          placeholder="Entreprise"
-                        />
                       </div>
                     </div>
 
-                    {/* Social */}
                     <div className="p-6 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
                       <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
                         <Sparkles className="w-3 h-3 text-iwasp-bronze" />
@@ -731,15 +771,6 @@ const Studio = () => {
                             onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
                             className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
                             placeholder="linkedin.com/in/..."
-                          />
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Globe className="w-4 h-4 text-iwasp-silver/60" />
-                          <Input
-                            value={profile.website}
-                            onChange={(e) => setProfile({ ...profile, website: e.target.value })}
-                            className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
-                            placeholder="https://..."
                           />
                         </div>
                       </div>
@@ -1087,309 +1118,7 @@ const Studio = () => {
                   </div>
                 </motion.div>
               )}
-
-              {/* RÉSONANCE & INFLUENCE TAB */}
-              {activeTab === "resonance" && (
-                <motion.div
-                  key="resonance"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-8"
-                >
-                  {/* Header */}
-                  <div className="flex items-center justify-between flex-wrap gap-4">
-                    <div>
-                      <h3 className="font-display text-3xl md:text-4xl text-iwasp-cream">
-                        <span className="italic text-iwasp-bronze">Résonance</span> &
-                        <br />
-                        <span className="text-iwasp-bronze">Influence.</span>
-                      </h3>
-                      <p className="text-sm text-iwasp-silver mt-2">Automatisez votre présence après le contact physique.</p>
-                    </div>
-                    <Button className="bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2 rounded-xl">
-                      Activer les Campagnes
-                    </Button>
-                  </div>
-
-                  {/* Main Grid */}
-                  <div className="grid lg:grid-cols-[1fr,380px] gap-6">
-                    {/* Left: Automations de Courtoisie */}
-                    <div className="space-y-6">
-                      <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">
-                        Automatisations de Courtoisie
-                      </h4>
-
-                      {/* Push Notification */}
-                      <div className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-iwasp-bronze/10 flex items-center justify-center">
-                              <Smartphone className="w-6 h-6 text-iwasp-bronze" />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-iwasp-cream">Notification Push de Rappel</h4>
-                              <p className="text-sm text-iwasp-silver">Envoie un message de prestige 24h après un scan NFC.</p>
-                            </div>
-                          </div>
-                          <Switch
-                            checked={resonance.pushRappel}
-                            onCheckedChange={(checked) => setResonance({ ...resonance, pushRappel: checked })}
-                            className="data-[state=checked]:bg-iwasp-bronze"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Email Conciergerie */}
-                      <div className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-iwasp-bronze/10 flex items-center justify-center">
-                              <Mail className="w-6 h-6 text-iwasp-bronze" />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-iwasp-cream">Email Conciergerie</h4>
-                              <p className="text-sm text-iwasp-silver">Envoi automatique de votre portfolio PDF haute résolution.</p>
-                            </div>
-                          </div>
-                          <Switch
-                            checked={resonance.emailConciergerie}
-                            onCheckedChange={(checked) => setResonance({ ...resonance, emailConciergerie: checked })}
-                            className="data-[state=checked]:bg-iwasp-bronze"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Geo Message */}
-                      <div className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-iwasp-bronze/10 flex items-center justify-center">
-                              <MapPin className="w-6 h-6 text-iwasp-bronze" />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-iwasp-cream">Message Géolocalisé</h4>
-                              <p className="text-sm text-iwasp-silver">Salue vos contacts lorsqu'ils reviennent dans votre périmètre.</p>
-                            </div>
-                          </div>
-                          <Switch
-                            checked={resonance.geoMessage}
-                            onCheckedChange={(checked) => setResonance({ ...resonance, geoMessage: checked })}
-                            className="data-[state=checked]:bg-iwasp-bronze"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right: Retargeting Panel */}
-                    <div className="p-6 rounded-3xl bg-gradient-to-br from-iwasp-midnight-elevated to-iwasp-bronze/5 border border-iwasp-bronze/20">
-                      <h4 className="font-display text-2xl text-iwasp-cream mb-2">
-                        Retargeting de
-                        <br />
-                        <span className="italic text-iwasp-bronze">Luxe</span>
-                      </h4>
-                      <p className="text-sm text-iwasp-silver mb-6">
-                        Ne laissez pas l'intérêt s'éteindre. Notre moteur publicitaire identifie les profils ayant scanné votre i-Wasp pour leur afficher des contenus exclusifs sur Instagram et LinkedIn.
-                      </p>
-
-                      {/* Instagram Active */}
-                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10 mb-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="text-xs text-iwasp-silver tracking-wider uppercase">Campagne Instagram</div>
-                          <div className="flex items-center gap-2">
-                            <RefreshCw className="w-3 h-3 text-iwasp-silver/60" />
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className={cn(
-                            "text-xs font-semibold px-2 py-1 rounded",
-                            resonance.instagramRetargeting 
-                              ? "bg-iwasp-emerald/20 text-iwasp-emerald-glow" 
-                              : "bg-iwasp-midnight-elevated text-iwasp-silver"
-                          )}>
-                            {resonance.instagramRetargeting ? "ACTIVE" : "INACTIVE"}
-                          </span>
-                          <Switch
-                            checked={resonance.instagramRetargeting}
-                            onCheckedChange={(checked) => setResonance({ ...resonance, instagramRetargeting: checked })}
-                            className="data-[state=checked]:bg-iwasp-bronze scale-90"
-                          />
-                        </div>
-                        {resonance.instagramRetargeting && (
-                          <div className="flex items-center gap-2 mt-3">
-                            <div className="flex -space-x-2">
-                              {[1,2,3,4].map(i => (
-                                <div key={i} className="w-6 h-6 rounded-full bg-iwasp-bronze/30 border-2 border-iwasp-midnight" />
-                              ))}
-                            </div>
-                            <span className="text-xs text-iwasp-silver">+124 cibles</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* LinkedIn */}
-                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10 mb-6">
-                        <div className="flex items-center justify-between">
-                          <div className="text-xs text-iwasp-silver tracking-wider uppercase">Campagne LinkedIn</div>
-                          <Switch
-                            checked={resonance.linkedinRetargeting}
-                            onCheckedChange={(checked) => setResonance({ ...resonance, linkedinRetargeting: checked })}
-                            className="data-[state=checked]:bg-iwasp-bronze scale-90"
-                          />
-                        </div>
-                      </div>
-
-                      <Button className="w-full bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2 rounded-xl">
-                        <Settings className="w-4 h-4" />
-                        Synchroniser
-                      </Button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {activeTab === "eco" && (
-                <motion.div
-                  key="eco"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-6"
-                >
-                  {/* Eco impact hero */}
-                  <div className="p-8 rounded-3xl bg-gradient-to-br from-iwasp-emerald/20 to-iwasp-midnight-elevated border border-iwasp-emerald/30 text-center">
-                    <div className="w-20 h-20 rounded-full bg-iwasp-emerald/20 flex items-center justify-center mx-auto mb-6">
-                      <TreePine className="w-10 h-10 text-iwasp-emerald-glow" />
-                    </div>
-                    <h3 className="font-display text-3xl text-iwasp-cream mb-2">
-                      Impact <span className="italic text-iwasp-emerald-glow">Positif</span>
-                    </h3>
-                    <p className="text-iwasp-silver max-w-md mx-auto">
-                      Votre engagement avec i-Wasp contribue à un monde plus durable. Voici votre empreinte.
-                    </p>
-                  </div>
-
-                  {/* Stats grid */}
-                  <div className="grid grid-cols-2 gap-4">
-                    {[
-                      { value: "2,847", label: "Cartes papier économisées", icon: "📄" },
-                      { value: "14", label: "Arbres préservés", icon: "🌳" },
-                      { value: "89kg", label: "CO₂ évité", icon: "💨" },
-                      { value: "∞", label: "Mises à jour sans réimpression", icon: "♻️" },
-                    ].map((stat) => (
-                      <div 
-                        key={stat.label}
-                        className="p-6 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 text-center"
-                      >
-                        <div className="text-3xl mb-2">{stat.icon}</div>
-                        <div className="text-2xl font-display text-iwasp-emerald-glow mb-1">{stat.value}</div>
-                        <div className="text-xs text-iwasp-silver">{stat.label}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Certificate */}
-                  <div className="p-6 rounded-2xl bg-iwasp-midnight border border-iwasp-emerald/20">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-iwasp-emerald/10 flex items-center justify-center">
-                          <Leaf className="w-6 h-6 text-iwasp-emerald-glow" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-iwasp-cream">Certificat Éco-Responsable</h4>
-                          <p className="text-sm text-iwasp-silver">Téléchargez votre certificat d'impact</p>
-                        </div>
-                      </div>
-                      <Button variant="outline" className="border-iwasp-emerald/30 text-iwasp-cream hover:bg-iwasp-emerald/10">
-                        Télécharger
-                      </Button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
             </AnimatePresence>
-          </div>
-
-          {/* Preview sidebar */}
-          <div className="hidden lg:block">
-            <div className="sticky top-28">
-              <div className="text-center mb-4">
-                <span className="text-xs text-iwasp-silver tracking-[0.15em] uppercase">Rendu Temps Réel</span>
-              </div>
-              
-              {/* Phone mockup */}
-              <div className="relative mx-auto w-72">
-                {/* Glow */}
-                <div className="absolute inset-0 bg-iwasp-bronze/15 rounded-[3rem] blur-2xl" />
-                
-                {/* Phone frame */}
-                <div className="relative bg-iwasp-midnight rounded-[2.5rem] p-3 border border-iwasp-bronze/20 shadow-2xl">
-                  {/* Screen */}
-                  <div className="bg-gradient-to-b from-iwasp-midnight-elevated to-iwasp-midnight rounded-[2rem] overflow-hidden aspect-[9/16]">
-                    {/* Dynamic island */}
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-5 bg-black rounded-full z-10" />
-                    
-                    {/* Profile preview */}
-                    <div className="pt-12 px-4 h-full flex flex-col">
-                      {/* Play button indicator */}
-                      <div className="absolute top-16 right-4">
-                        <Play className="w-4 h-4 text-iwasp-silver/40" />
-                      </div>
-
-                      {/* Settings indicator */}
-                      <div className="absolute top-16 left-4">
-                        <Settings className="w-4 h-4 text-iwasp-silver/40" />
-                      </div>
-
-                      {/* Avatar with animated ring */}
-                      <div className="w-16 h-16 rounded-full mx-auto mb-3 relative">
-                        {/* Animated gradient ring for stories */}
-                        <div className="absolute -inset-1 rounded-full bg-gradient-to-tr from-iwasp-bronze via-rose-400 to-iwasp-bronze animate-spin-slow opacity-70" style={{ animationDuration: '3s' }} />
-                        <div className="absolute inset-0 rounded-full bg-iwasp-midnight" />
-                        <div className="absolute inset-0.5 rounded-full bg-gradient-to-br from-iwasp-bronze/30 to-iwasp-emerald/20 flex items-center justify-center">
-                          <User className="w-6 h-6 text-iwasp-bronze" />
-                        </div>
-                      </div>
-                      
-                      {/* Name & title */}
-                      <h3 className="font-display text-base text-center text-iwasp-cream italic mb-0.5">
-                        {profile.name || "Votre nom"}
-                      </h3>
-                      <p className="text-[10px] text-center text-iwasp-bronze tracking-[0.1em] uppercase mb-2">
-                        {profile.title || "Votre titre"}
-                      </p>
-                      
-                      {/* Bio */}
-                      <p className="text-[10px] text-center text-iwasp-silver/70 mb-4 leading-relaxed line-clamp-3 px-2">
-                        "{profile.bio || "Votre manifeste..."}"
-                      </p>
-                      
-                      {/* Action buttons preview */}
-                      <div className="space-y-2 mt-auto mb-4">
-                        <div className="h-9 rounded-xl bg-iwasp-bronze text-iwasp-midnight flex items-center justify-center text-xs font-medium">
-                          Contact Prestige
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
-                          {[Mail, MessageCircle, Linkedin].map((Icon, i) => (
-                            <div key={i} className="h-8 rounded-lg bg-iwasp-midnight-elevated border border-iwasp-emerald/20 flex items-center justify-center">
-                              <Icon className="w-3.5 h-3.5 text-iwasp-emerald-glow" />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Sync indicator */}
-              <div className="mt-6 text-center">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-iwasp-emerald/10 border border-iwasp-emerald/20">
-                  <div className="w-2 h-2 rounded-full bg-iwasp-emerald-glow animate-pulse" />
-                  <span className="text-xs text-iwasp-silver">Synchronisé en temps réel</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
