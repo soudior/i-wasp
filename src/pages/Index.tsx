@@ -111,15 +111,16 @@ const Index = () => {
               </Button>
             </Link>
             
-            <Button 
-              variant="ghost"
-              size="lg"
-              className="text-white/60 hover:text-white hover:bg-white/5 px-6 py-6 text-base rounded-full border border-white/10"
-              onClick={() => document.getElementById("discover")?.scrollIntoView({ behavior: "smooth" })}
-            >
-              Découvrir les avantages
-              <ChevronDown className="w-4 h-4 ml-2" />
-            </Button>
+            <Link to="/showroom">
+              <Button 
+                variant="ghost"
+                size="lg"
+                className="text-white/60 hover:text-white hover:bg-white/5 px-6 py-6 text-base rounded-full border border-white/10"
+              >
+                Explorer le Showroom 3D
+                <ChevronDown className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
           </motion.div>
         </div>
         
