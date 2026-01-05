@@ -29,6 +29,18 @@ import {
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 import iwaspCertifiedBadge from "@/assets/iwasp-certified-badge.png";
 
+// Stealth Luxury Colors
+const COLORS = {
+  bg: "#050807",
+  bgCard: "#0A0D0C",
+  accent: "#A5A9B4",
+  accentLight: "#D1D5DB",
+  text: "#F9FAFB",
+  textMuted: "rgba(249, 250, 251, 0.5)",
+  textDim: "rgba(249, 250, 251, 0.3)",
+  border: "rgba(165, 169, 180, 0.15)",
+};
+
 const Settings = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -225,7 +237,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen" style={{ backgroundColor: COLORS.bg }}>
       <Navbar />
       
       <main className="pt-20 pb-16">
@@ -236,15 +248,16 @@ const Settings = () => {
               variant="ghost" 
               size="icon"
               onClick={() => navigate("/dashboard")}
-              className="text-zinc-400 hover:text-white"
+              style={{ color: COLORS.textMuted }}
+              className="hover:opacity-80"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="font-playfair text-2xl md:text-3xl font-bold text-white">
+              <h1 className="font-playfair text-2xl md:text-3xl font-bold" style={{ color: COLORS.text }}>
                 Paramètres du compte
               </h1>
-              <p className="text-zinc-500 text-sm">
+              <p className="text-sm" style={{ color: COLORS.textDim }}>
                 Gérez votre profil et personnalisez votre carte
               </p>
             </div>
@@ -252,16 +265,19 @@ const Settings = () => {
 
           <div className="space-y-8">
             {/* Logo Upload Section */}
-            <Card className="bg-zinc-900/50 border-zinc-800">
+            <Card style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
-                    <Image className="h-5 w-5 text-white" />
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})` }}
+                  >
+                    <Image className="h-5 w-5" style={{ color: COLORS.bg }} />
                   </div>
                   <div>
-                    <CardTitle className="text-white">Personnalisation de votre Carte Physique</CardTitle>
-                    <CardDescription className="text-zinc-500">
-                      Uploadez votre logo pour la gravure dorée sur votre carte NFC
+                    <CardTitle style={{ color: COLORS.text }}>Personnalisation de votre Carte Physique</CardTitle>
+                    <CardDescription style={{ color: COLORS.textMuted }}>
+                      Uploadez votre logo pour la gravure sur votre carte NFC
                     </CardDescription>
                   </div>
                 </div>
@@ -282,22 +298,31 @@ const Settings = () => {
                     {!logoPreview ? (
                       <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="w-full h-48 border-2 border-dashed border-zinc-700 hover:border-amber-500/50 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all duration-300 group"
+                        className="w-full h-48 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-3 transition-all duration-300 group"
+                        style={{ borderColor: COLORS.border }}
+                        onMouseEnter={(e) => e.currentTarget.style.borderColor = `${COLORS.accent}50`}
+                        onMouseLeave={(e) => e.currentTarget.style.borderColor = COLORS.border}
                       >
-                        <div className="w-14 h-14 rounded-full bg-zinc-800 group-hover:bg-amber-500/20 flex items-center justify-center transition-colors">
-                          <Upload className="h-6 w-6 text-zinc-500 group-hover:text-amber-400" />
+                        <div 
+                          className="w-14 h-14 rounded-full flex items-center justify-center transition-colors group-hover:opacity-80"
+                          style={{ backgroundColor: `${COLORS.accent}20` }}
+                        >
+                          <Upload className="h-6 w-6" style={{ color: COLORS.accent }} />
                         </div>
                         <div className="text-center">
-                          <p className="text-sm font-medium text-zinc-400">
+                          <p className="text-sm font-medium" style={{ color: COLORS.textMuted }}>
                             Cliquez pour uploader votre logo
                           </p>
-                          <p className="text-xs text-zinc-600 mt-1">
+                          <p className="text-xs mt-1" style={{ color: COLORS.textDim }}>
                             PNG, SVG, JPG • Max 5 Mo
                           </p>
                         </div>
                       </button>
                     ) : (
-                      <div className="relative w-full h-48 bg-zinc-800/50 rounded-2xl overflow-hidden">
+                      <div 
+                        className="relative w-full h-48 rounded-2xl overflow-hidden"
+                        style={{ backgroundColor: `${COLORS.accent}10` }}
+                      >
                         <img
                           src={logoPreview}
                           alt="Logo preview"
@@ -307,10 +332,11 @@ const Settings = () => {
                           <Button
                             size="icon"
                             variant="secondary"
-                            className="h-8 w-8 bg-zinc-900/80"
+                            className="h-8 w-8"
+                            style={{ backgroundColor: `${COLORS.bg}CC` }}
                             onClick={() => fileInputRef.current?.click()}
                           >
-                            <Camera className="h-4 w-4" />
+                            <Camera className="h-4 w-4" style={{ color: COLORS.text }} />
                           </Button>
                           <Button
                             size="icon"
@@ -326,7 +352,11 @@ const Settings = () => {
 
                     {logoPreview && !savedLogoUrl && (
                       <Button
-                        className="w-full mt-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-semibold"
+                        className="w-full mt-4 font-semibold"
+                        style={{ 
+                          background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
+                          color: COLORS.bg 
+                        }}
                         onClick={handleUploadLogo}
                         disabled={uploadingLogo}
                       >
@@ -345,20 +375,32 @@ const Settings = () => {
                     )}
 
                     {savedLogoUrl && (
-                      <div className="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2">
-                        <Check className="h-4 w-4 text-emerald-400" />
-                        <span className="text-sm text-emerald-400">Logo enregistré avec succès</span>
+                      <div 
+                        className="mt-4 p-3 rounded-xl flex items-center gap-2"
+                        style={{ backgroundColor: `${COLORS.accent}15`, border: `1px solid ${COLORS.accent}40` }}
+                      >
+                        <Check className="h-4 w-4" style={{ color: COLORS.accent }} />
+                        <span className="text-sm" style={{ color: COLORS.accent }}>Logo enregistré avec succès</span>
                       </div>
                     )}
                   </div>
 
                   {/* Card Preview */}
                   <div>
-                    <p className="text-sm text-zinc-500 mb-3">Aperçu sur votre carte</p>
-                    <div className="relative aspect-[1.586] bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 rounded-2xl overflow-hidden shadow-2xl border border-zinc-700/50">
+                    <p className="text-sm mb-3" style={{ color: COLORS.textMuted }}>Aperçu sur votre carte</p>
+                    <div 
+                      className="relative aspect-[1.586] rounded-2xl overflow-hidden shadow-2xl"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${COLORS.bgCard}, ${COLORS.bg})`,
+                        border: `1px solid ${COLORS.border}`
+                      }}
+                    >
                       {/* Card texture */}
                       <div className="absolute inset-0 opacity-10">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/20 via-transparent to-amber-500/10" />
+                        <div 
+                          className="absolute inset-0" 
+                          style={{ background: `linear-gradient(135deg, ${COLORS.accent}20, transparent, ${COLORS.accent}10)` }}
+                        />
                       </div>
                       
                       {/* Logo on card */}
@@ -372,29 +414,38 @@ const Settings = () => {
                           />
                         ) : (
                           <div className="text-center">
-                            <div className="w-16 h-16 rounded-full bg-zinc-700/50 flex items-center justify-center mx-auto mb-2">
-                              <Image className="h-7 w-7 text-zinc-500" />
+                            <div 
+                              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-2"
+                              style={{ backgroundColor: `${COLORS.accent}15` }}
+                            >
+                              <Image className="h-7 w-7" style={{ color: COLORS.textMuted }} />
                             </div>
-                            <p className="text-xs text-zinc-500">Votre logo ici</p>
+                            <p className="text-xs" style={{ color: COLORS.textDim }}>Votre logo ici</p>
                           </div>
                         )}
                       </div>
 
-                      {/* Gold accent line */}
-                      <div className="absolute bottom-4 left-4 right-4 h-0.5 bg-gradient-to-r from-amber-400/50 via-amber-300/80 to-amber-400/50" />
+                      {/* Accent line */}
+                      <div 
+                        className="absolute bottom-4 left-4 right-4 h-0.5" 
+                        style={{ background: `linear-gradient(90deg, ${COLORS.accent}50, ${COLORS.accentLight}80, ${COLORS.accent}50)` }}
+                      />
                       
                       {/* i-wasp branding */}
                       <div className="absolute bottom-4 right-4">
-                        <span className="text-[8px] text-amber-400/60 font-medium tracking-widest">i-wasp</span>
+                        <span className="text-[8px] font-medium tracking-widest" style={{ color: `${COLORS.accent}60` }}>i-wasp</span>
                       </div>
 
                       {/* NFC indicator */}
-                      <div className="absolute top-4 right-4 w-6 h-6 rounded-full border border-amber-400/30 flex items-center justify-center">
-                        <div className="w-3 h-3 rounded-full bg-amber-400/50" />
+                      <div 
+                        className="absolute top-4 right-4 w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ border: `1px solid ${COLORS.accent}30` }}
+                      >
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `${COLORS.accent}50` }} />
                       </div>
                     </div>
-                    <p className="text-xs text-zinc-600 text-center mt-3">
-                      Le logo sera utilisé pour la gravure dorée sur votre carte physique
+                    <p className="text-xs text-center mt-3" style={{ color: COLORS.textDim }}>
+                      Le logo sera utilisé pour la gravure sur votre carte physique
                     </p>
                   </div>
                 </div>
@@ -402,15 +453,18 @@ const Settings = () => {
             </Card>
 
             {/* Profile Section */}
-            <Card className="bg-zinc-900/50 border-zinc-800">
+            <Card style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center">
-                    <User className="h-5 w-5 text-zinc-400" />
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: `${COLORS.accent}20` }}
+                  >
+                    <User className="h-5 w-5" style={{ color: COLORS.accent }} />
                   </div>
                   <div>
-                    <CardTitle className="text-white">Informations de profil</CardTitle>
-                    <CardDescription className="text-zinc-500">
+                    <CardTitle style={{ color: COLORS.text }}>Informations de profil</CardTitle>
+                    <CardDescription style={{ color: COLORS.textMuted }}>
                       Ces informations apparaîtront sur votre carte digitale
                     </CardDescription>
                   </div>
@@ -419,66 +473,95 @@ const Settings = () => {
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName" className="text-zinc-400">Prénom</Label>
+                    <Label htmlFor="firstName" style={{ color: COLORS.textMuted }}>Prénom</Label>
                     <Input
                       id="firstName"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="Jean"
-                      className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-600 focus:border-amber-500/50"
+                      style={{ 
+                        backgroundColor: `${COLORS.accent}10`, 
+                        borderColor: COLORS.border, 
+                        color: COLORS.text 
+                      }}
+                      className="placeholder:text-white/30"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName" className="text-zinc-400">Nom</Label>
+                    <Label htmlFor="lastName" style={{ color: COLORS.textMuted }}>Nom</Label>
                     <Input
                       id="lastName"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Dupont"
-                      className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-600 focus:border-amber-500/50"
+                      style={{ 
+                        backgroundColor: `${COLORS.accent}10`, 
+                        borderColor: COLORS.border, 
+                        color: COLORS.text 
+                      }}
+                      className="placeholder:text-white/30"
                     />
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="title" className="text-zinc-400">Poste</Label>
+                    <Label htmlFor="title" style={{ color: COLORS.textMuted }}>Poste</Label>
                     <Input
                       id="title"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Directeur Commercial"
-                      className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-600 focus:border-amber-500/50"
+                      style={{ 
+                        backgroundColor: `${COLORS.accent}10`, 
+                        borderColor: COLORS.border, 
+                        color: COLORS.text 
+                      }}
+                      className="placeholder:text-white/30"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="company" className="text-zinc-400">Entreprise</Label>
+                    <Label htmlFor="company" style={{ color: COLORS.textMuted }}>Entreprise</Label>
                     <Input
                       id="company"
                       value={company}
                       onChange={(e) => setCompany(e.target.value)}
                       placeholder="Ma Société SARL"
-                      className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-600 focus:border-amber-500/50"
+                      style={{ 
+                        backgroundColor: `${COLORS.accent}10`, 
+                        borderColor: COLORS.border, 
+                        color: COLORS.text 
+                      }}
+                      className="placeholder:text-white/30"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="bio" className="text-zinc-400">Bio</Label>
+                  <Label htmlFor="bio" style={{ color: COLORS.textMuted }}>Bio</Label>
                   <Textarea
                     id="bio"
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Décrivez-vous en quelques mots..."
                     rows={3}
-                    className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-600 focus:border-amber-500/50 resize-none"
+                    className="resize-none placeholder:text-white/30"
+                    style={{ 
+                      backgroundColor: `${COLORS.accent}10`, 
+                      borderColor: COLORS.border, 
+                      color: COLORS.text 
+                    }}
                   />
                 </div>
 
                 <Button
                   onClick={handleSaveProfile}
                   disabled={savingProfile}
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-semibold"
+                  className="font-semibold"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
+                    color: COLORS.bg 
+                  }}
                 >
                   {savingProfile ? (
                     <>
@@ -496,26 +579,32 @@ const Settings = () => {
             </Card>
 
             {/* Security Section */}
-            <Card className="bg-zinc-900/50 border-zinc-800">
+            <Card style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center">
-                    <Lock className="h-5 w-5 text-zinc-400" />
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: `${COLORS.accent}20` }}
+                  >
+                    <Lock className="h-5 w-5" style={{ color: COLORS.accent }} />
                   </div>
                   <div>
-                    <CardTitle className="text-white">Sécurité</CardTitle>
-                    <CardDescription className="text-zinc-500">
+                    <CardTitle style={{ color: COLORS.text }}>Sécurité</CardTitle>
+                    <CardDescription style={{ color: COLORS.textMuted }}>
                       Gérez votre mot de passe et la sécurité de votre compte
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="p-4 rounded-xl bg-zinc-800/30 border border-zinc-700/50">
+                <div 
+                  className="p-4 rounded-xl"
+                  style={{ backgroundColor: `${COLORS.accent}08`, border: `1px solid ${COLORS.border}` }}
+                >
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-sm font-medium text-white">Adresse email</p>
-                      <p className="text-sm text-zinc-500">{user?.email}</p>
+                      <p className="text-sm font-medium" style={{ color: COLORS.text }}>Adresse email</p>
+                      <p className="text-sm" style={{ color: COLORS.textMuted }}>{user?.email}</p>
                     </div>
                     <img 
                       src={iwaspCertifiedBadge} 
@@ -525,32 +614,42 @@ const Settings = () => {
                   </div>
                 </div>
 
-                <Separator className="bg-zinc-800" />
+                <Separator style={{ backgroundColor: COLORS.border }} />
 
                 <div className="space-y-4">
-                  <p className="text-sm font-medium text-white">Changer le mot de passe</p>
+                  <p className="text-sm font-medium" style={{ color: COLORS.text }}>Changer le mot de passe</p>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="newPassword" className="text-zinc-400">Nouveau mot de passe</Label>
+                    <Label htmlFor="newPassword" style={{ color: COLORS.textMuted }}>Nouveau mot de passe</Label>
                     <Input
                       id="newPassword"
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-600 focus:border-amber-500/50"
+                      style={{ 
+                        backgroundColor: `${COLORS.accent}10`, 
+                        borderColor: COLORS.border, 
+                        color: COLORS.text 
+                      }}
+                      className="placeholder:text-white/30"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-zinc-400">Confirmer le mot de passe</Label>
+                    <Label htmlFor="confirmPassword" style={{ color: COLORS.textMuted }}>Confirmer le mot de passe</Label>
                     <Input
                       id="confirmPassword"
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-600 focus:border-amber-500/50"
+                      style={{ 
+                        backgroundColor: `${COLORS.accent}10`, 
+                        borderColor: COLORS.border, 
+                        color: COLORS.text 
+                      }}
+                      className="placeholder:text-white/30"
                     />
                   </div>
 
@@ -558,7 +657,8 @@ const Settings = () => {
                     onClick={handleChangePassword}
                     disabled={savingPassword || !newPassword || !confirmPassword}
                     variant="outline"
-                    className="border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                    style={{ borderColor: COLORS.border, color: COLORS.textMuted }}
+                    className="hover:opacity-80"
                   >
                     {savingPassword ? (
                       <>
