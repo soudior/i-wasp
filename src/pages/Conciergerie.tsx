@@ -1,6 +1,6 @@
 /**
  * Conciergerie & IA — Formulaire projet i-wasp
- * Décris ton activité, on te propose une solution complète
+ * Stealth Luxury Style - Argent Titane (#A5A9B4)
  */
 
 import { useState } from "react";
@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ClubNavbar } from "@/components/ClubNavbar";
+import { Navbar } from "@/components/Navbar";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { 
   Sparkles, 
@@ -24,6 +24,19 @@ import {
 import { toast } from "sonner";
 
 const WHATSAPP_PROJECT_URL = "https://wa.me/33626424394?text=";
+
+// Stealth Luxury Colors
+const COLORS = {
+  bg: "#050807",
+  bgCard: "#0A0D0C",
+  accent: "#A5A9B4",
+  accentLight: "#D1D5DB",
+  text: "#F9FAFB",
+  textMuted: "rgba(249, 250, 251, 0.7)",
+  textDim: "rgba(249, 250, 251, 0.5)",
+  border: "rgba(165, 169, 180, 0.15)",
+  borderActive: "rgba(165, 169, 180, 0.4)",
+};
 
 // Benefits
 const benefits = [
@@ -103,8 +116,8 @@ ${formData.budget}`;
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-white">
-      <ClubNavbar />
+    <div className="min-h-screen" style={{ backgroundColor: COLORS.bg, color: COLORS.text }}>
+      <Navbar />
       
       {/* Hero */}
       <section className="pt-32 pb-16 px-6">
@@ -113,17 +126,20 @@ ${formData.budget}`;
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span className="text-sm text-amber-300/80">Conciergerie & IA</span>
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+              style={{ backgroundColor: `${COLORS.accent}10`, border: `1px solid ${COLORS.border}` }}
+            >
+              <Sparkles className="w-4 h-4" style={{ color: COLORS.accent }} />
+              <span className="text-sm" style={{ color: COLORS.textMuted }}>Conciergerie & IA</span>
             </div>
             
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
               Décris ton projet,<br />
-              <span className="text-amber-400">on s'occupe du reste</span>
+              <span style={{ color: COLORS.accent }}>on s'occupe du reste</span>
             </h1>
             
-            <p className="text-xl text-white/60 max-w-2xl mx-auto">
+            <p className="text-xl max-w-2xl mx-auto" style={{ color: COLORS.textDim }}>
               Notre IA analyse tes besoins. Un conseiller te propose une solution complète. 
               Tu valides, on livre.
             </p>
@@ -132,7 +148,7 @@ ${formData.budget}`;
       </section>
       
       {/* Benefits */}
-      <section className="py-16 px-6 bg-[#121212]">
+      <section className="py-16 px-6" style={{ backgroundColor: COLORS.bgCard }}>
         <div className="container mx-auto max-w-5xl">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {benefits.map((benefit, index) => (
@@ -142,13 +158,17 @@ ${formData.budget}`;
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-white/5 border border-white/10"
+                className="p-6 rounded-2xl"
+                style={{ backgroundColor: `${COLORS.text}05`, border: `1px solid ${COLORS.border}` }}
               >
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4">
-                  <benefit.icon className="w-6 h-6 text-amber-400" />
+                <div 
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                  style={{ backgroundColor: `${COLORS.accent}15` }}
+                >
+                  <benefit.icon className="w-6 h-6" style={{ color: COLORS.accent }} />
                 </div>
-                <h3 className="font-semibold mb-2">{benefit.title}</h3>
-                <p className="text-sm text-white/50">{benefit.description}</p>
+                <h3 className="font-semibold mb-2" style={{ color: COLORS.text }}>{benefit.title}</h3>
+                <p className="text-sm" style={{ color: COLORS.textDim }}>{benefit.description}</p>
               </motion.div>
             ))}
           </div>
@@ -156,7 +176,7 @@ ${formData.budget}`;
       </section>
       
       {/* Form + Process */}
-      <section className="py-24 px-6 bg-[#0B0B0B]">
+      <section className="py-24 px-6" style={{ backgroundColor: COLORS.bg }}>
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-16">
             {/* Form */}
@@ -165,24 +185,29 @@ ${formData.budget}`;
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-2xl font-bold mb-2">Parle-nous de ton projet</h2>
-              <p className="text-white/50 mb-8">Remplis le formulaire, on te recontacte en 24h max.</p>
+              <h2 className="text-2xl font-bold mb-2" style={{ color: COLORS.text }}>Parle-nous de ton projet</h2>
+              <p className="mb-8" style={{ color: COLORS.textDim }}>Remplis le formulaire, on te recontacte en 24h max.</p>
               
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-white/70 mb-2">Ton nom *</label>
+                    <label className="block text-sm mb-2" style={{ color: COLORS.textMuted }}>Ton nom *</label>
                     <Input
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
                       required
                       placeholder="Jean Dupont"
-                      className="bg-white/5 border-white/10 focus:border-amber-500"
+                      className="h-12"
+                      style={{ 
+                        backgroundColor: `${COLORS.text}05`, 
+                        borderColor: COLORS.border,
+                        color: COLORS.text
+                      }}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-white/70 mb-2">Téléphone *</label>
+                    <label className="block text-sm mb-2" style={{ color: COLORS.textMuted }}>Téléphone *</label>
                     <Input
                       name="phone"
                       type="tel"
@@ -190,13 +215,18 @@ ${formData.budget}`;
                       onChange={handleChange}
                       required
                       placeholder="+33 6 12 34 56 78"
-                      className="bg-white/5 border-white/10 focus:border-amber-500"
+                      className="h-12"
+                      style={{ 
+                        backgroundColor: `${COLORS.text}05`, 
+                        borderColor: COLORS.border,
+                        color: COLORS.text
+                      }}
                     />
                   </div>
                 </div>
                 
                 <div>
-                  <label className="block text-sm text-white/70 mb-2">Email *</label>
+                  <label className="block text-sm mb-2" style={{ color: COLORS.textMuted }}>Email *</label>
                   <Input
                     name="email"
                     type="email"
@@ -204,42 +234,57 @@ ${formData.budget}`;
                     onChange={handleChange}
                     required
                     placeholder="jean@entreprise.com"
-                    className="bg-white/5 border-white/10 focus:border-amber-500"
+                    className="h-12"
+                    style={{ 
+                      backgroundColor: `${COLORS.text}05`, 
+                      borderColor: COLORS.border,
+                      color: COLORS.text
+                    }}
                   />
                 </div>
                 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-white/70 mb-2">Entreprise</label>
+                    <label className="block text-sm mb-2" style={{ color: COLORS.textMuted }}>Entreprise</label>
                     <Input
                       name="company"
                       value={formData.company}
                       onChange={handleChange}
                       placeholder="Mon entreprise"
-                      className="bg-white/5 border-white/10 focus:border-amber-500"
+                      className="h-12"
+                      style={{ 
+                        backgroundColor: `${COLORS.text}05`, 
+                        borderColor: COLORS.border,
+                        color: COLORS.text
+                      }}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-white/70 mb-2">Secteur</label>
+                    <label className="block text-sm mb-2" style={{ color: COLORS.textMuted }}>Secteur</label>
                     <select
                       name="sector"
                       value={formData.sector}
                       onChange={handleChange}
-                      className="w-full h-10 px-3 rounded-md bg-white/5 border border-white/10 text-white focus:border-amber-500 focus:outline-none"
+                      className="w-full h-12 px-3 rounded-md focus:outline-none transition-colors"
+                      style={{ 
+                        backgroundColor: `${COLORS.text}05`, 
+                        border: `1px solid ${COLORS.border}`,
+                        color: COLORS.text
+                      }}
                     >
-                      <option value="" className="bg-[#121212]">Sélectionner...</option>
-                      <option value="restauration" className="bg-[#121212]">Restauration</option>
-                      <option value="immobilier" className="bg-[#121212]">Immobilier</option>
-                      <option value="evenementiel" className="bg-[#121212]">Événementiel</option>
-                      <option value="commerce" className="bg-[#121212]">Commerce</option>
-                      <option value="freelance" className="bg-[#121212]">Freelance / Créateur</option>
-                      <option value="autre" className="bg-[#121212]">Autre</option>
+                      <option value="" style={{ backgroundColor: COLORS.bgCard }}>Sélectionner...</option>
+                      <option value="restauration" style={{ backgroundColor: COLORS.bgCard }}>Restauration</option>
+                      <option value="immobilier" style={{ backgroundColor: COLORS.bgCard }}>Immobilier</option>
+                      <option value="evenementiel" style={{ backgroundColor: COLORS.bgCard }}>Événementiel</option>
+                      <option value="commerce" style={{ backgroundColor: COLORS.bgCard }}>Commerce</option>
+                      <option value="freelance" style={{ backgroundColor: COLORS.bgCard }}>Freelance / Créateur</option>
+                      <option value="autre" style={{ backgroundColor: COLORS.bgCard }}>Autre</option>
                     </select>
                   </div>
                 </div>
                 
                 <div>
-                  <label className="block text-sm text-white/70 mb-2">Décris ton projet *</label>
+                  <label className="block text-sm mb-2" style={{ color: COLORS.textMuted }}>Décris ton projet *</label>
                   <Textarea
                     name="project"
                     value={formData.project}
@@ -247,23 +292,33 @@ ${formData.budget}`;
                     required
                     rows={4}
                     placeholder="Quel est ton objectif ? Qu'est-ce que tu veux créer avec le NFC ?"
-                    className="bg-white/5 border-white/10 focus:border-amber-500 resize-none"
+                    className="resize-none"
+                    style={{ 
+                      backgroundColor: `${COLORS.text}05`, 
+                      borderColor: COLORS.border,
+                      color: COLORS.text
+                    }}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm text-white/70 mb-2">Budget estimé</label>
+                  <label className="block text-sm mb-2" style={{ color: COLORS.textMuted }}>Budget estimé</label>
                   <select
                     name="budget"
                     value={formData.budget}
                     onChange={handleChange}
-                    className="w-full h-10 px-3 rounded-md bg-white/5 border border-white/10 text-white focus:border-amber-500 focus:outline-none"
+                    className="w-full h-12 px-3 rounded-md focus:outline-none transition-colors"
+                    style={{ 
+                      backgroundColor: `${COLORS.text}05`, 
+                      border: `1px solid ${COLORS.border}`,
+                      color: COLORS.text
+                    }}
                   >
-                    <option value="" className="bg-[#121212]">Sélectionner...</option>
-                    <option value="< 100€" className="bg-[#121212]">Moins de 100€</option>
-                    <option value="100-500€" className="bg-[#121212]">100€ - 500€</option>
-                    <option value="500-1000€" className="bg-[#121212]">500€ - 1000€</option>
-                    <option value="> 1000€" className="bg-[#121212]">Plus de 1000€</option>
+                    <option value="" style={{ backgroundColor: COLORS.bgCard }}>Sélectionner...</option>
+                    <option value="< 100€" style={{ backgroundColor: COLORS.bgCard }}>Moins de 100€</option>
+                    <option value="100-500€" style={{ backgroundColor: COLORS.bgCard }}>100€ - 500€</option>
+                    <option value="500-1000€" style={{ backgroundColor: COLORS.bgCard }}>500€ - 1000€</option>
+                    <option value="> 1000€" style={{ backgroundColor: COLORS.bgCard }}>Plus de 1000€</option>
                   </select>
                 </div>
                 
@@ -271,13 +326,17 @@ ${formData.budget}`;
                   type="submit"
                   disabled={isSubmitting}
                   size="lg"
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-semibold gap-2"
+                  className="w-full font-semibold gap-2 h-14 text-base"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
+                    color: COLORS.bg
+                  }}
                 >
                   <Send className="w-5 h-5" />
                   {isSubmitting ? "Envoi..." : "Envoyer via WhatsApp"}
                 </Button>
                 
-                <p className="text-xs text-white/40 text-center">
+                <p className="text-xs text-center" style={{ color: COLORS.textDim }}>
                   En soumettant, tu acceptes d'être recontacté par notre équipe.
                 </p>
               </form>
@@ -289,41 +348,50 @@ ${formData.budget}`;
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-2xl font-bold mb-2">Comment ça marche</h2>
-              <p className="text-white/50 mb-8">Un processus simple en 4 étapes.</p>
+              <h2 className="text-2xl font-bold mb-2" style={{ color: COLORS.text }}>Comment ça marche</h2>
+              <p className="mb-8" style={{ color: COLORS.textDim }}>Un processus simple en 4 étapes.</p>
               
               <div className="space-y-6">
                 {processSteps.map((step, index) => (
                   <div key={step.number} className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-black font-bold">
+                    <div 
+                      className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
+                        color: COLORS.bg
+                      }}
+                    >
                       {step.number}
                     </div>
                     <div className="pt-1">
-                      <h4 className="font-semibold mb-1">{step.title}</h4>
-                      <p className="text-sm text-white/50">{step.description}</p>
+                      <h4 className="font-semibold mb-1" style={{ color: COLORS.text }}>{step.title}</h4>
+                      <p className="text-sm" style={{ color: COLORS.textDim }}>{step.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
               
               {/* Trust badges */}
-              <div className="mt-12 p-6 rounded-2xl bg-white/5 border border-white/10">
-                <h4 className="font-semibold mb-4">Ce qu'on garantit</h4>
+              <div 
+                className="mt-12 p-6 rounded-2xl"
+                style={{ backgroundColor: `${COLORS.text}05`, border: `1px solid ${COLORS.border}` }}
+              >
+                <h4 className="font-semibold mb-4" style={{ color: COLORS.text }}>Ce qu'on garantit</h4>
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-sm text-white/70">
-                    <Check className="w-4 h-4 text-amber-400" />
+                  <div className="flex items-center gap-3 text-sm" style={{ color: COLORS.textMuted }}>
+                    <Check className="w-4 h-4" style={{ color: COLORS.accent }} />
                     <span>Réponse en moins de 24h</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-white/70">
-                    <Check className="w-4 h-4 text-amber-400" />
+                  <div className="flex items-center gap-3 text-sm" style={{ color: COLORS.textMuted }}>
+                    <Check className="w-4 h-4" style={{ color: COLORS.accent }} />
                     <span>Devis détaillé gratuit</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-white/70">
-                    <Check className="w-4 h-4 text-amber-400" />
+                  <div className="flex items-center gap-3 text-sm" style={{ color: COLORS.textMuted }}>
+                    <Check className="w-4 h-4" style={{ color: COLORS.accent }} />
                     <span>Maquette avant validation</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-white/70">
-                    <Check className="w-4 h-4 text-amber-400" />
+                  <div className="flex items-center gap-3 text-sm" style={{ color: COLORS.textMuted }}>
+                    <Check className="w-4 h-4" style={{ color: COLORS.accent }} />
                     <span>Sans engagement</span>
                   </div>
                 </div>
