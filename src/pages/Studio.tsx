@@ -108,7 +108,7 @@ const tabs = [
   { id: "manufacture", label: "La Manufacture", icon: Gem },
   { id: "studio", label: "Mon Identité", icon: User },
   { id: "leads", label: "Mes Leads", icon: Users },
-  { id: "world", label: "Réseau Mondial", icon: Globe },
+  { id: "world", label: "Centre Intelligence", icon: Globe },
   { id: "automation", label: "Ads & Push", icon: Zap },
   { id: "eco", label: "Écologie", icon: Leaf },
 ];
@@ -709,7 +709,7 @@ const Studio = () => {
                 </motion.div>
               )}
 
-              {/* RÉSEAU MONDIAL TAB */}
+              {/* CENTRE D'INTELLIGENCE TAB */}
               {activeTab === "world" && (
                 <motion.div
                   key="world"
@@ -718,71 +718,111 @@ const Studio = () => {
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-8"
                 >
-                  {/* World Header */}
+                  {/* Intelligence Header */}
                   <div className="flex items-center justify-between flex-wrap gap-4">
                     <div>
-                      <h3 className="font-display text-2xl text-iwasp-cream">
-                        <span className="italic text-iwasp-abyss">Réseau</span> Mondial
+                      <h3 className="font-display text-3xl md:text-4xl text-iwasp-cream">
+                        Centre <span className="italic text-iwasp-bronze">Intelligence.</span>
                       </h3>
-                      <p className="text-sm text-iwasp-silver mt-1">Votre influence s'étend à travers les continents.</p>
+                      <p className="text-sm text-iwasp-silver mt-2">Cartographie mondiale de votre influence en temps réel.</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="px-4 py-2 rounded-full bg-iwasp-abyss/20 border border-iwasp-abyss/30 flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-iwasp-emerald-glow animate-pulse" />
-                        <span className="text-iwasp-cream text-xs font-medium">6 villes actives</span>
+                    <div className="flex items-center gap-6">
+                      <div className="text-center">
+                        <div className="text-xs text-iwasp-silver uppercase tracking-wider mb-1">Portée Pays</div>
+                        <div className="text-2xl font-display text-iwasp-cream">24</div>
+                      </div>
+                      <div className="h-8 w-px bg-iwasp-bronze/20" />
+                      <div className="text-center">
+                        <div className="text-xs text-iwasp-silver uppercase tracking-wider mb-1">Villes Actives</div>
+                        <div className="text-2xl font-display text-iwasp-bronze">108</div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Metrics Row */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {[
-                      { value: "893", label: "Scans Globaux", icon: "🌍", trend: "+12%" },
-                      { value: "6", label: "Continents Atteints", icon: "✈️", trend: "+2" },
-                      { value: "24", label: "Villes de Pouvoir", icon: "🏙️", trend: "+5" },
-                      { value: "94%", label: "Indice Confiance", icon: "💎", trend: "+3%" },
-                    ].map((stat, i) => (
-                      <div 
-                        key={i}
-                        className="p-4 rounded-2xl bg-gradient-to-br from-iwasp-abyss/20 to-iwasp-midnight-elevated border border-iwasp-abyss/20 text-center"
-                      >
-                        <div className="text-2xl mb-1">{stat.icon}</div>
-                        <div className="text-xl font-display text-iwasp-cream">{stat.value}</div>
-                        <div className="text-xs text-iwasp-silver">{stat.label}</div>
-                        <div className="text-xs text-iwasp-emerald-glow mt-1">{stat.trend}</div>
+                  {/* Main Grid: Map + Data Feed */}
+                  <div className="grid lg:grid-cols-[320px,1fr] gap-6">
+                    {/* Live Data Feed Panel */}
+                    <div className="rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 p-5 space-y-4">
+                      <div className="flex items-center gap-2 mb-4">
+                        <TrendingUp className="w-4 h-4 text-iwasp-bronze" />
+                        <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">Flux de Données Live</h4>
                       </div>
-                    ))}
-                  </div>
+                      
+                      <div className="space-y-3">
+                        {activityFeed.map((activity, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.15 }}
+                            className="flex items-center gap-3"
+                          >
+                            <div className="w-2 h-2 rounded-full bg-iwasp-bronze animate-pulse" />
+                            <div className="flex-1">
+                              <span className="text-iwasp-cream text-sm">{activity.city}</span>
+                              <span className="text-iwasp-silver text-sm"> · TAP ENREGISTRÉ</span>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
 
-                  {/* Map + Activity Grid */}
-                  <div className="grid lg:grid-cols-[1fr,320px] gap-6">
-                    {/* Stylized Map */}
-                    <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-iwasp-abyss/30 via-iwasp-midnight to-iwasp-midnight-elevated border border-iwasp-abyss/30 aspect-[16/10] min-h-[300px]">
-                      {/* Map Background Grid */}
-                      <div className="absolute inset-0 opacity-20">
+                      {/* Satellite Sync Indicator */}
+                      <div className="pt-4 border-t border-iwasp-emerald/10">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-iwasp-silver">SATELLITE SYNC</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-iwasp-emerald-glow animate-pulse" />
+                            <span className="text-xs text-iwasp-emerald-glow">CONNECTÉ</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Interactive World Map HUD */}
+                    <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-iwasp-midnight via-iwasp-midnight-elevated to-iwasp-abyss/20 border border-iwasp-bronze/10 aspect-[16/9] min-h-[350px]">
+                      {/* Radar Grid Background */}
+                      <div className="absolute inset-0">
+                        <div className="absolute inset-0 opacity-10" style={{
+                          backgroundImage: `
+                            radial-gradient(circle at center, transparent 0%, transparent 30%, rgba(184, 143, 72, 0.05) 30%, rgba(184, 143, 72, 0.05) 31%, transparent 31%),
+                            radial-gradient(circle at center, transparent 0%, transparent 50%, rgba(184, 143, 72, 0.03) 50%, rgba(184, 143, 72, 0.03) 51%, transparent 51%),
+                            radial-gradient(circle at center, transparent 0%, transparent 70%, rgba(184, 143, 72, 0.02) 70%, rgba(184, 143, 72, 0.02) 71%, transparent 71%)
+                          `,
+                          backgroundSize: '100% 100%'
+                        }} />
                         <div className="w-full h-full" style={{
                           backgroundImage: `
-                            linear-gradient(rgba(26, 79, 102, 0.3) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(26, 79, 102, 0.3) 1px, transparent 1px)
+                            linear-gradient(rgba(184, 143, 72, 0.05) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(184, 143, 72, 0.05) 1px, transparent 1px)
                           `,
-                          backgroundSize: '40px 40px'
+                          backgroundSize: '60px 60px'
                         }} />
                       </div>
 
-                      {/* Decorative Globe Lines */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-10">
-                        <div className="w-[80%] h-[80%] rounded-full border-2 border-iwasp-abyss border-dashed" />
-                        <div className="absolute w-[60%] h-[60%] rounded-full border border-iwasp-abyss border-dashed" />
-                        <div className="absolute w-[40%] h-[40%] rounded-full border border-iwasp-abyss border-dashed" />
+                      {/* Decorative Scan Line */}
+                      <motion.div 
+                        className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-iwasp-bronze/50 to-transparent"
+                        initial={{ top: 0, opacity: 0 }}
+                        animate={{ top: ['0%', '100%'], opacity: [0, 0.5, 0] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                      />
+
+                      {/* World Map Silhouette */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-5">
+                        <svg viewBox="0 0 1000 500" className="w-full h-full">
+                          <ellipse cx="500" cy="250" rx="450" ry="200" fill="none" stroke="currentColor" strokeWidth="1" className="text-iwasp-bronze" />
+                          <ellipse cx="500" cy="250" rx="300" ry="133" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-iwasp-bronze" />
+                          <line x1="50" y1="250" x2="950" y2="250" stroke="currentColor" strokeWidth="0.5" className="text-iwasp-bronze" />
+                        </svg>
                       </div>
 
-                      {/* Hotspots */}
-                      {worldHotspots.map((spot) => (
+                      {/* Hotspots with Enhanced Visuals */}
+                      {worldHotspots.map((spot, index) => (
                         <motion.div
                           key={spot.id}
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: spot.id * 0.1, type: "spring" }}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: index * 0.2, type: "spring", stiffness: 200 }}
                           className="absolute group cursor-pointer"
                           style={{
                             left: `${((spot.lng + 180) / 360) * 100}%`,
@@ -790,112 +830,137 @@ const Studio = () => {
                             transform: 'translate(-50%, -50%)'
                           }}
                         >
-                          {/* Pulse Ring */}
+                          {/* Outer Pulse Ring */}
                           {spot.active && (
-                            <div className="absolute inset-0 w-6 h-6 -translate-x-1/2 -translate-y-1/2 rounded-full bg-iwasp-bronze/30 animate-ping" />
+                            <>
+                              <div className="absolute inset-0 w-10 h-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-iwasp-bronze/30 animate-ping" style={{ animationDuration: '2s' }} />
+                              <div className="absolute inset-0 w-6 h-6 -translate-x-1/2 -translate-y-1/2 rounded-full bg-iwasp-bronze/20 animate-pulse" />
+                            </>
                           )}
-                          {/* Dot */}
+                          {/* Core Dot */}
                           <div className={cn(
-                            "w-3 h-3 rounded-full shadow-lg transition-all",
+                            "w-4 h-4 rounded-full shadow-lg transition-all border-2",
                             spot.active 
-                              ? "bg-iwasp-bronze shadow-iwasp-bronze/50" 
-                              : "bg-iwasp-abyss/50 border border-iwasp-abyss"
+                              ? "bg-iwasp-bronze border-iwasp-bronze shadow-iwasp-bronze/50" 
+                              : "bg-iwasp-midnight border-iwasp-bronze/30"
                           )} />
                           
-                          {/* Tooltip */}
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                            <div className="px-3 py-2 rounded-xl bg-iwasp-midnight border border-iwasp-bronze/30 text-center whitespace-nowrap">
+                          {/* Enhanced Tooltip */}
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-10 scale-90 group-hover:scale-100">
+                            <div className="px-4 py-3 rounded-xl bg-iwasp-midnight/95 backdrop-blur-xl border border-iwasp-bronze/30 text-center whitespace-nowrap shadow-xl">
                               <div className="text-iwasp-cream font-medium text-sm">{spot.city}</div>
-                              <div className="text-iwasp-bronze text-xs">{spot.scans} scans</div>
+                              <div className="text-iwasp-bronze text-lg font-display">{spot.scans}</div>
+                              <div className="text-iwasp-silver text-xs">scans enregistrés</div>
                             </div>
+                            <div className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-2 h-2 bg-iwasp-midnight border-r border-b border-iwasp-bronze/30 rotate-45" />
                           </div>
                         </motion.div>
                       ))}
 
-                      {/* Map Legend */}
-                      <div className="absolute bottom-4 left-4 flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-iwasp-bronze" />
-                          <span className="text-xs text-iwasp-silver">Actif</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-iwasp-abyss/50 border border-iwasp-abyss" />
-                          <span className="text-xs text-iwasp-silver">Dormant</span>
-                        </div>
+                      {/* HUD Corners */}
+                      <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-iwasp-bronze/30" />
+                      <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-iwasp-bronze/30" />
+                      <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-iwasp-bronze/30" />
+                      <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-iwasp-bronze/30" />
+
+                      {/* Map Label */}
+                      <div className="absolute top-6 left-10">
+                        <div className="text-xs text-iwasp-bronze/60 tracking-[0.3em] uppercase">CARTE D'INFLUENCE GLOBALE</div>
                       </div>
 
-                      {/* Title */}
-                      <div className="absolute top-4 left-4">
-                        <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">Carte d'Influence</h4>
-                      </div>
-                    </div>
-
-                    {/* Activity Feed */}
-                    <div className="space-y-4">
-                      <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">Activité en Direct</h4>
-                      <div className="space-y-3">
-                        {activityFeed.map((activity, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className="p-3 rounded-xl bg-iwasp-midnight-elevated border border-iwasp-abyss/20 flex items-center gap-3"
-                          >
-                            <div className="text-xl">{activity.flag}</div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-iwasp-cream text-sm font-medium">{activity.city}</div>
-                              <div className="text-iwasp-silver text-xs">{activity.country}</div>
-                            </div>
-                            <div className="text-right">
-                              <div className={cn(
-                                "text-xs font-medium",
-                                activity.type === "lead" ? "text-iwasp-emerald-glow" : 
-                                activity.type === "vcard" ? "text-iwasp-bronze" : "text-iwasp-silver"
-                              )}>
-                                {activity.type === "lead" ? "Lead" : activity.type === "vcard" ? "vCard" : "Scan"}
-                              </div>
-                              <div className="text-iwasp-silver/60 text-xs">{activity.time}</div>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-
-                      {/* Expansion Velocity */}
-                      <div className="p-4 rounded-2xl bg-gradient-to-br from-iwasp-bronze/10 to-iwasp-abyss/10 border border-iwasp-bronze/20">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs text-iwasp-silver uppercase tracking-wider">Vitesse d'Expansion</span>
-                          <span className="text-iwasp-bronze font-display text-lg">+23%</span>
-                        </div>
-                        <div className="w-full h-2 rounded-full bg-iwasp-midnight overflow-hidden">
-                          <motion.div 
-                            initial={{ width: 0 }}
-                            animate={{ width: "73%" }}
-                            transition={{ duration: 1.5, ease: "easeOut" }}
-                            className="h-full rounded-full bg-gradient-to-r from-iwasp-bronze to-iwasp-emerald-glow"
-                          />
-                        </div>
+                      {/* Status Badge */}
+                      <div className="absolute top-6 right-10 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-iwasp-emerald-glow animate-pulse" />
+                        <span className="text-xs text-iwasp-silver tracking-wider">LIVE</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Power Cities */}
-                  <div className="space-y-4">
-                    <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">Villes de Pouvoir</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {worldHotspots.slice(0, 6).map((city, i) => (
-                        <div 
-                          key={city.id}
-                          className="p-4 rounded-xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 flex items-center justify-between"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="text-lg">{i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "📍"}</div>
-                            <div>
-                              <div className="text-iwasp-cream font-medium text-sm">{city.city}</div>
-                              <div className="text-iwasp-silver text-xs">{city.country}</div>
-                            </div>
+                  {/* Bottom Row: Performance + Top Destination */}
+                  <div className="grid lg:grid-cols-[1fr,280px] gap-6">
+                    {/* Performance Chart */}
+                    <div className="rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 p-6">
+                      <div className="flex items-center gap-2 mb-6">
+                        <Target className="w-4 h-4 text-iwasp-bronze" />
+                        <h4 className="text-sm text-iwasp-cream font-medium italic">Performances d'Expansion</h4>
+                      </div>
+                      
+                      {/* Stylized Chart */}
+                      <div className="h-32 flex items-end gap-2">
+                        {[35, 42, 58, 67, 72, 85, 91, 78, 95, 88, 92, 100].map((height, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ height: 0 }}
+                            animate={{ height: `${height}%` }}
+                            transition={{ delay: i * 0.1, duration: 0.5, ease: "easeOut" }}
+                            className="flex-1 rounded-t-sm bg-gradient-to-t from-iwasp-bronze/40 to-iwasp-bronze"
+                          />
+                        ))}
+                      </div>
+                      
+                      {/* Chart Labels */}
+                      <div className="flex justify-between mt-3 text-xs text-iwasp-silver">
+                        <span>Jan</span>
+                        <span>Fév</span>
+                        <span>Mar</span>
+                        <span>Avr</span>
+                        <span>Mai</span>
+                        <span>Jun</span>
+                        <span>Jul</span>
+                        <span>Aoû</span>
+                        <span>Sep</span>
+                        <span>Oct</span>
+                        <span>Nov</span>
+                        <span>Déc</span>
+                      </div>
+
+                      {/* Growth Metric */}
+                      <div className="flex items-center justify-between mt-6 pt-4 border-t border-iwasp-emerald/10">
+                        <span className="text-iwasp-silver text-sm">Croissance Annuelle</span>
+                        <span className="text-iwasp-emerald-glow font-display text-xl">+247%</span>
+                      </div>
+                    </div>
+
+                    {/* Top Destination Card */}
+                    <div className="rounded-2xl bg-gradient-to-br from-iwasp-bronze/10 to-iwasp-midnight-elevated border border-iwasp-bronze/20 p-6 flex flex-col">
+                      <div className="text-xs text-iwasp-silver tracking-[0.2em] uppercase mb-4">TOP DESTINATION</div>
+                      
+                      <div className="flex-1 flex flex-col items-center justify-center text-center">
+                        <div className="font-display text-4xl text-iwasp-bronze italic mb-2">Dubaï</div>
+                        <div className="flex items-center gap-1 text-iwasp-silver text-sm">
+                          <span>🇦🇪</span>
+                          <span>Émirats Arabes Unis</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t border-iwasp-bronze/20 text-center">
+                        <div className="text-iwasp-emerald-glow text-sm font-medium">+24% d'engagement</div>
+                        <div className="text-iwasp-silver/60 text-xs">Cette semaine</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Heatmap by Region */}
+                  <div className="rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 p-6">
+                    <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase mb-4">Heatmap de Réseau par Région</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {[
+                        { region: "Europe", percentage: 42, color: "from-iwasp-bronze to-iwasp-bronze-light" },
+                        { region: "Moyen-Orient", percentage: 31, color: "from-iwasp-emerald to-iwasp-emerald-glow" },
+                        { region: "Asie-Pacifique", percentage: 18, color: "from-iwasp-abyss to-cyan-500" },
+                        { region: "Amériques", percentage: 9, color: "from-purple-600 to-purple-400" },
+                      ].map((item) => (
+                        <div key={item.region} className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/5">
+                          <div className="text-iwasp-cream font-medium text-sm mb-2">{item.region}</div>
+                          <div className="text-2xl font-display text-iwasp-bronze mb-2">{item.percentage}%</div>
+                          <div className="w-full h-1.5 rounded-full bg-iwasp-midnight-elevated overflow-hidden">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${item.percentage}%` }}
+                              transition={{ duration: 1, delay: 0.5 }}
+                              className={`h-full rounded-full bg-gradient-to-r ${item.color}`}
+                            />
                           </div>
-                          <div className="text-iwasp-bronze font-display">{city.scans}</div>
                         </div>
                       ))}
                     </div>
