@@ -1,6 +1,6 @@
 /**
  * Onboarding - iWasp Style
- * Dark theme with gold accent (#FFC700)
+ * Stealth Luxury theme with Titanium Silver accent (#A5A9B4)
  * Step-by-step card creation after signup
  */
 
@@ -24,6 +24,19 @@ import {
 import { cn } from "@/lib/utils";
 import { OnboardingPhotoUpload } from "@/components/onboarding/OnboardingPhotoUpload";
 import { QRCodeSVG } from "qrcode.react";
+
+// Stealth Luxury Colors
+const COLORS = {
+  bg: "#050807",
+  bgCard: "#0A0D0C",
+  accent: "#A5A9B4",
+  accentLight: "#D1D5DB",
+  text: "#F9FAFB",
+  textMuted: "rgba(249, 250, 251, 0.5)",
+  textDim: "rgba(249, 250, 251, 0.3)",
+  border: "rgba(165, 169, 180, 0.15)",
+  borderActive: "rgba(165, 169, 180, 0.4)",
+};
 
 type UserObjective = 'freelance' | 'creator' | 'business' | 'other' | null;
 
@@ -134,13 +147,13 @@ const formSteps = [
   { 
     id: 5, 
     title: "Upgrade", 
-    subtitle: "Passe en GOLD",
+    subtitle: "Passe en ELITE",
     icon: Crown,
     fields: [] as const
   },
 ];
 
-const goldFeatures = [
+const eliteFeatures = [
   { icon: Infinity, label: "Liens illimités", description: "Ajoute autant de liens que tu veux" },
   { icon: Palette, label: "Templates premium", description: "Designs exclusifs et personnalisables" },
   { icon: BarChart3, label: "Statistiques détaillées", description: "Analyse tes scans et visiteurs" },
@@ -239,8 +252,8 @@ export default function Onboarding() {
 
   if (authLoading) {
     return (
-      <div className="min-h-dvh flex items-center justify-center bg-[#0B0B0B]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#FFC700]" />
+      <div className="min-h-dvh flex items-center justify-center" style={{ backgroundColor: COLORS.bg }}>
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: COLORS.accent }} />
       </div>
     );
   }
@@ -255,55 +268,77 @@ export default function Onboarding() {
   // Welcome Screen (Step 0)
   if (step === 0) {
     return (
-      <div className="min-h-dvh flex flex-col items-center justify-center p-6 bg-[#0B0B0B] relative overflow-hidden">
+      <div className="min-h-dvh flex flex-col items-center justify-center p-6 relative overflow-hidden" style={{ backgroundColor: COLORS.bg }}>
         {/* Background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-[#FFC700]/10 rounded-full blur-[120px]" />
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-[120px]" 
+          style={{ backgroundColor: `${COLORS.accent}10` }}
+        />
         
         <div className="relative z-10 text-center max-w-md">
           {/* Logo */}
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-[#FFC700]/20 mb-8">
-            <Crown className="w-10 h-10 text-[#FFC700]" />
+          <div 
+            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-8"
+            style={{ backgroundColor: `${COLORS.accent}20` }}
+          >
+            <Crown className="w-10 h-10" style={{ color: COLORS.accent }} />
           </div>
           
-          <h1 className="text-4xl font-bold text-white mb-4">
+          <h1 className="text-4xl font-bold mb-4" style={{ color: COLORS.text }}>
             Bienvenue sur iWasp
           </h1>
           
-          <p className="text-xl text-[#E5E5E5]/70 leading-relaxed mb-8">
+          <p className="text-xl leading-relaxed mb-8" style={{ color: COLORS.textMuted }}>
             Simplifie le partage de ton identité professionnelle grâce au NFC.
           </p>
           
           <div className="space-y-4 mb-10">
-            <div className="flex items-center gap-4 text-left p-4 rounded-xl bg-[#1F1F1F] border border-[#E5E5E5]/10">
-              <div className="w-10 h-10 rounded-lg bg-[#FFC700]/20 flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-5 h-5 text-[#FFC700]" />
+            <div 
+              className="flex items-center gap-4 text-left p-4 rounded-xl"
+              style={{ backgroundColor: COLORS.bgCard, border: `1px solid ${COLORS.border}` }}
+            >
+              <div 
+                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: `${COLORS.accent}20` }}
+              >
+                <Sparkles className="w-5 h-5" style={{ color: COLORS.accent }} />
               </div>
               <div>
-                <p className="text-white font-medium">Crée ton profil en 2 minutes</p>
-                <p className="text-[#E5E5E5]/50 text-sm">Simple et rapide</p>
+                <p className="font-medium" style={{ color: COLORS.text }}>Crée ton profil en 2 minutes</p>
+                <p className="text-sm" style={{ color: COLORS.textDim }}>Simple et rapide</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-4 text-left p-4 rounded-xl bg-[#1F1F1F] border border-[#E5E5E5]/10">
-              <div className="w-10 h-10 rounded-lg bg-[#FFC700]/20 flex items-center justify-center flex-shrink-0">
-                <Link2 className="w-5 h-5 text-[#FFC700]" />
+            <div 
+              className="flex items-center gap-4 text-left p-4 rounded-xl"
+              style={{ backgroundColor: COLORS.bgCard, border: `1px solid ${COLORS.border}` }}
+            >
+              <div 
+                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: `${COLORS.accent}20` }}
+              >
+                <Link2 className="w-5 h-5" style={{ color: COLORS.accent }} />
               </div>
               <div>
-                <p className="text-white font-medium">Partage d'un simple tap</p>
-                <p className="text-[#E5E5E5]/50 text-sm">NFC + QR Code</p>
+                <p className="font-medium" style={{ color: COLORS.text }}>Partage d'un simple tap</p>
+                <p className="text-sm" style={{ color: COLORS.textDim }}>NFC + QR Code</p>
               </div>
             </div>
           </div>
           
           <button
             onClick={handleNext}
-            className="w-full py-4 rounded-xl font-bold text-lg text-[#0B0B0B] bg-[#FFC700] hover:bg-[#FFC700]/90 transition-all flex items-center justify-center gap-2"
+            className="w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2"
+            style={{ 
+              backgroundColor: COLORS.accent, 
+              color: COLORS.bg 
+            }}
           >
             Créer ma carte NFC
             <ArrowRight size={20} />
           </button>
           
-          <p className="text-[#E5E5E5]/40 text-sm mt-6">
+          <p className="text-sm mt-6" style={{ color: COLORS.textDim }}>
             Gratuit • Sans engagement
           </p>
         </div>
@@ -312,11 +347,14 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="min-h-dvh bg-[#0B0B0B] flex flex-col">
+    <div className="min-h-dvh flex flex-col" style={{ backgroundColor: COLORS.bg }}>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#0B0B0B]/95 backdrop-blur border-b border-[#E5E5E5]/10 safe-top">
+      <header 
+        className="sticky top-0 z-50 backdrop-blur safe-top"
+        style={{ backgroundColor: `${COLORS.bg}F2`, borderBottom: `1px solid ${COLORS.border}` }}
+      >
         <div className="flex items-center justify-between h-14 px-4">
-          <button onClick={handleBack} className="p-2 text-[#E5E5E5]/70 hover:text-white">
+          <button onClick={handleBack} className="p-2 transition-colors hover:opacity-80" style={{ color: COLORS.textMuted }}>
             <ArrowLeft size={20} />
           </button>
           
@@ -325,10 +363,12 @@ export default function Onboarding() {
               <div
                 key={s.id}
                 className={cn(
-                  "w-2 h-2 rounded-full transition-all",
-                  s.id === step ? "bg-[#FFC700] w-6" : 
-                  s.id < step ? "bg-[#FFC700]" : "bg-[#E5E5E5]/20"
+                  "h-2 rounded-full transition-all",
+                  s.id === step ? "w-6" : "w-2"
                 )}
+                style={{ 
+                  backgroundColor: s.id <= step ? COLORS.accent : `${COLORS.text}20`
+                }}
               />
             ))}
           </div>
@@ -337,10 +377,10 @@ export default function Onboarding() {
         </div>
         
         {/* Progress bar */}
-        <div className="h-1 bg-[#1F1F1F]">
+        <div className="h-1" style={{ backgroundColor: COLORS.bgCard }}>
           <div 
-            className="h-full bg-[#FFC700] transition-all duration-300"
-            style={{ width: `${progress}%` }}
+            className="h-full transition-all duration-300"
+            style={{ width: `${progress}%`, backgroundColor: COLORS.accent }}
           />
         </div>
       </header>
@@ -352,12 +392,15 @@ export default function Onboarding() {
           <div className="max-w-md mx-auto">
             {/* Step indicator */}
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-xl bg-[#FFC700]/20 flex items-center justify-center">
-                <currentStep.icon className="h-6 w-6 text-[#FFC700]" />
+              <div 
+                className="w-12 h-12 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: `${COLORS.accent}20` }}
+              >
+                <currentStep.icon className="h-6 w-6" style={{ color: COLORS.accent }} />
               </div>
               <div>
-                <p className="text-sm text-[#E5E5E5]/50">Étape {step}/{formSteps.length - 1}</p>
-                <h1 className="text-xl font-semibold text-white">{currentStep.title}</h1>
+                <p className="text-sm" style={{ color: COLORS.textDim }}>Étape {step}/{formSteps.length - 1}</p>
+                <h1 className="text-xl font-semibold" style={{ color: COLORS.text }}>{currentStep.title}</h1>
               </div>
             </div>
 
@@ -365,7 +408,7 @@ export default function Onboarding() {
             <div className="space-y-4">
               {step === 1 && (
                 <>
-                  <p className="text-lg text-white font-medium mb-6">
+                  <p className="text-lg font-medium mb-6" style={{ color: COLORS.text }}>
                     Quel est ton objectif avec iWasp ?
                   </p>
                   <div className="space-y-3">
@@ -373,35 +416,34 @@ export default function Onboarding() {
                       <button
                         key={option.id}
                         onClick={() => setFormData(prev => ({ ...prev, objective: option.id }))}
-                        className={cn(
-                          "w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left",
-                          formData.objective === option.id
-                            ? "border-[#FFC700] bg-[#FFC700]/10"
-                            : "border-[#E5E5E5]/10 bg-[#1F1F1F] hover:border-[#E5E5E5]/30"
-                        )}
+                        className="w-full flex items-center gap-4 p-4 rounded-xl transition-all text-left"
+                        style={{
+                          border: `1px solid ${formData.objective === option.id ? COLORS.borderActive : COLORS.border}`,
+                          backgroundColor: formData.objective === option.id ? `${COLORS.accent}10` : COLORS.bgCard
+                        }}
                       >
-                        <div className={cn(
-                          "w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors",
-                          formData.objective === option.id
-                            ? "bg-[#FFC700]/20"
-                            : "bg-[#E5E5E5]/10"
-                        )}>
-                          <option.icon className={cn(
-                            "w-6 h-6",
-                            formData.objective === option.id ? "text-[#FFC700]" : "text-[#E5E5E5]/70"
-                          )} />
+                        <div 
+                          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors"
+                          style={{ 
+                            backgroundColor: formData.objective === option.id ? `${COLORS.accent}20` : `${COLORS.text}10`
+                          }}
+                        >
+                          <option.icon 
+                            className="w-6 h-6"
+                            style={{ color: formData.objective === option.id ? COLORS.accent : COLORS.textMuted }}
+                          />
                         </div>
                         <div>
-                          <p className={cn(
-                            "font-medium",
-                            formData.objective === option.id ? "text-white" : "text-[#E5E5E5]"
-                          )}>
+                          <p 
+                            className="font-medium"
+                            style={{ color: formData.objective === option.id ? COLORS.text : COLORS.textMuted }}
+                          >
                             {option.label}
                           </p>
-                          <p className="text-sm text-[#E5E5E5]/50">{option.description}</p>
+                          <p className="text-sm" style={{ color: COLORS.textDim }}>{option.description}</p>
                         </div>
                         {formData.objective === option.id && (
-                          <Check className="w-5 h-5 text-[#FFC700] ml-auto" />
+                          <Check className="w-5 h-5 ml-auto" style={{ color: COLORS.accent }} />
                         )}
                       </button>
                     ))}
@@ -421,48 +463,70 @@ export default function Onboarding() {
                   
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
-                      <Label className="text-[#E5E5E5]/70">Prénom *</Label>
+                      <Label style={{ color: COLORS.textMuted }}>Prénom *</Label>
                       <Input
                         value={formData.first_name}
                         onChange={(e) => updateField("first_name", e.target.value)}
                         placeholder="Jean"
-                        className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
+                        className="h-12"
+                        style={{ 
+                          backgroundColor: COLORS.bgCard, 
+                          borderColor: COLORS.border, 
+                          color: COLORS.text 
+                        }}
                         autoFocus
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[#E5E5E5]/70">Nom *</Label>
+                      <Label style={{ color: COLORS.textMuted }}>Nom *</Label>
                       <Input
                         value={formData.last_name}
                         onChange={(e) => updateField("last_name", e.target.value)}
                         placeholder="Dupont"
-                        className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
+                        className="h-12"
+                        style={{ 
+                          backgroundColor: COLORS.bgCard, 
+                          borderColor: COLORS.border, 
+                          color: COLORS.text 
+                        }}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-[#E5E5E5]/70">Poste / Activité *</Label>
+                    <Label style={{ color: COLORS.textMuted }}>Poste / Activité *</Label>
                     <Input
                       value={formData.title}
                       onChange={(e) => updateField("title", e.target.value)}
                       placeholder="Directeur Commercial"
-                      className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
+                      className="h-12"
+                      style={{ 
+                        backgroundColor: COLORS.bgCard, 
+                        borderColor: COLORS.border, 
+                        color: COLORS.text 
+                      }}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-[#E5E5E5]/70">Entreprise <span className="text-[#E5E5E5]/40">(optionnel)</span></Label>
+                    <Label style={{ color: COLORS.textMuted }}>
+                      Entreprise <span style={{ color: COLORS.textDim }}>(optionnel)</span>
+                    </Label>
                     <Input
                       value={formData.company}
                       onChange={(e) => updateField("company", e.target.value)}
                       placeholder="iWasp"
-                      className="h-12 bg-[#1F1F1F] border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50"
+                      className="h-12"
+                      style={{ 
+                        backgroundColor: COLORS.bgCard, 
+                        borderColor: COLORS.border, 
+                        color: COLORS.text 
+                      }}
                     />
                   </div>
 
-                  <p className="text-center text-sm text-[#E5E5E5]/50 mt-4 flex items-center justify-center gap-2">
-                    <Check className="w-4 h-4 text-[#FFC700]" />
+                  <p className="text-center text-sm mt-4 flex items-center justify-center gap-2" style={{ color: COLORS.textDim }}>
+                    <Check className="w-4 h-4" style={{ color: COLORS.accent }} />
                     Tu pourras modifier ces informations à tout moment.
                   </p>
                 </>
@@ -472,16 +536,18 @@ export default function Onboarding() {
                 <>
                   {/* Links counter */}
                   <div className="flex items-center justify-between mb-4">
-                    <p className="text-sm text-[#E5E5E5]/70">
-                      Liens ajoutés : <span className={cn(
-                        "font-semibold",
-                        linkFields.filter(f => formData[f.key]?.trim()).length >= FREE_LINKS_LIMIT 
-                          ? "text-[#FFC700]" 
-                          : "text-white"
-                      )}>
+                    <p className="text-sm" style={{ color: COLORS.textMuted }}>
+                      Liens ajoutés : <span 
+                        className="font-semibold"
+                        style={{ 
+                          color: linkFields.filter(f => formData[f.key]?.trim()).length >= FREE_LINKS_LIMIT 
+                            ? COLORS.accent 
+                            : COLORS.text 
+                        }}
+                      >
                         {linkFields.filter(f => formData[f.key]?.trim()).length}
                       </span>
-                      <span className="text-[#E5E5E5]/40"> / {FREE_LINKS_LIMIT} (FREE)</span>
+                      <span style={{ color: COLORS.textDim }}> / {FREE_LINKS_LIMIT} (FREE)</span>
                     </p>
                   </div>
 
@@ -493,35 +559,35 @@ export default function Onboarding() {
                       
                       return (
                         <div key={field.key} className="relative">
-                          <div className={cn(
-                            "flex items-center gap-3 p-3 rounded-xl border transition-all",
-                            isLocked 
-                              ? "border-[#E5E5E5]/5 bg-[#1F1F1F]/50 opacity-60" 
-                              : formData[field.key]?.trim() 
-                                ? "border-[#FFC700]/30 bg-[#FFC700]/5" 
-                                : "border-[#E5E5E5]/10 bg-[#1F1F1F]"
-                          )}>
-                            <div className={cn(
-                              "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
-                              formData[field.key]?.trim() ? "bg-[#FFC700]/20" : "bg-[#E5E5E5]/10"
-                            )}>
+                          <div 
+                            className="flex items-center gap-3 p-3 rounded-xl transition-all"
+                            style={{
+                              border: `1px solid ${isLocked ? COLORS.border : isCurrentFilled ? COLORS.borderActive : COLORS.border}`,
+                              backgroundColor: isLocked ? `${COLORS.bgCard}80` : isCurrentFilled ? `${COLORS.accent}05` : COLORS.bgCard,
+                              opacity: isLocked ? 0.6 : 1
+                            }}
+                          >
+                            <div 
+                              className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                              style={{ backgroundColor: isCurrentFilled ? `${COLORS.accent}20` : `${COLORS.text}10` }}
+                            >
                               {isLocked ? (
-                                <Lock className="w-5 h-5 text-[#E5E5E5]/40" />
+                                <Lock className="w-5 h-5" style={{ color: COLORS.textDim }} />
                               ) : (
-                                <field.icon className={cn(
-                                  "w-5 h-5",
-                                  formData[field.key]?.trim() ? "text-[#FFC700]" : "text-[#E5E5E5]/50"
-                                )} />
+                                <field.icon 
+                                  className="w-5 h-5"
+                                  style={{ color: isCurrentFilled ? COLORS.accent : COLORS.textDim }}
+                                />
                               )}
                             </div>
                             <div className="flex-1">
-                              <Label className="text-[#E5E5E5]/70 text-xs mb-1 block">{field.label}</Label>
+                              <Label className="text-xs mb-1 block" style={{ color: COLORS.textMuted }}>{field.label}</Label>
                               <Input
                                 type={field.type}
                                 value={formData[field.key]}
                                 onChange={(e) => {
                                   if (isLocked) {
-                                    toast.error("Passe en GOLD pour des liens illimités");
+                                    toast.error("Passe en ELITE pour des liens illimités");
                                     return;
                                   }
                                   updateField(field.key, e.target.value);
@@ -529,14 +595,15 @@ export default function Onboarding() {
                                 placeholder={field.placeholder}
                                 disabled={isLocked}
                                 className={cn(
-                                  "h-10 border-0 bg-transparent text-white placeholder:text-[#E5E5E5]/30 p-0 focus-visible:ring-0",
+                                  "h-10 border-0 bg-transparent p-0 focus-visible:ring-0",
                                   isLocked && "cursor-not-allowed"
                                 )}
+                                style={{ color: COLORS.text }}
                                 autoFocus={index === 0}
                               />
                             </div>
-                            {formData[field.key]?.trim() && (
-                              <Check className="w-5 h-5 text-[#FFC700]" />
+                            {isCurrentFilled && (
+                              <Check className="w-5 h-5" style={{ color: COLORS.accent }} />
                             )}
                           </div>
                         </div>
@@ -544,15 +611,24 @@ export default function Onboarding() {
                     })}
                   </div>
 
-                  {/* GOLD upgrade message */}
-                  <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-[#FFC700]/10 to-[#FFC700]/5 border border-[#FFC700]/20">
+                  {/* ELITE upgrade message */}
+                  <div 
+                    className="mt-6 p-4 rounded-xl"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${COLORS.accent}15, ${COLORS.accent}05)`,
+                      border: `1px solid ${COLORS.borderActive}`
+                    }}
+                  >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#FFC700]/20 flex items-center justify-center flex-shrink-0">
-                        <Crown className="w-5 h-5 text-[#FFC700]" />
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${COLORS.accent}20` }}
+                      >
+                        <Crown className="w-5 h-5" style={{ color: COLORS.accent }} />
                       </div>
                       <div>
-                        <p className="text-white font-medium text-sm">Passe en GOLD pour des liens illimités</p>
-                        <p className="text-[#E5E5E5]/50 text-xs">+ Analytics, CRM, et plus encore</p>
+                        <p className="font-medium text-sm" style={{ color: COLORS.text }}>Passe en ELITE pour des liens illimités</p>
+                        <p className="text-xs" style={{ color: COLORS.textDim }}>+ Analytics, CRM, et plus encore</p>
                       </div>
                     </div>
                   </div>
@@ -561,7 +637,7 @@ export default function Onboarding() {
 
               {step === 4 && (
                 <>
-                  <p className="text-center text-[#E5E5E5]/70 mb-6">
+                  <p className="text-center mb-6" style={{ color: COLORS.textMuted }}>
                     Voici ce que verront les personnes qui scannent ta carte.
                   </p>
 
@@ -599,13 +675,13 @@ export default function Onboarding() {
                     {/* Links Preview */}
                     <div className="flex flex-wrap justify-center gap-3 mt-5">
                       {formData.phone && (
-                        <div className="w-11 h-11 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
-                          <Phone className="w-5 h-5 text-[#007AFF]" />
+                        <div className="w-11 h-11 rounded-full bg-[#A5A9B4]/10 flex items-center justify-center">
+                          <Phone className="w-5 h-5 text-[#A5A9B4]" />
                         </div>
                       )}
                       {formData.email && (
-                        <div className="w-11 h-11 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
-                          <Mail className="w-5 h-5 text-[#007AFF]" />
+                        <div className="w-11 h-11 rounded-full bg-[#A5A9B4]/10 flex items-center justify-center">
+                          <Mail className="w-5 h-5 text-[#A5A9B4]" />
                         </div>
                       )}
                       {formData.whatsapp && (
@@ -649,7 +725,7 @@ export default function Onboarding() {
                     </p>
                   </div>
 
-                  <p className="text-center text-xs text-[#E5E5E5]/40 mt-6">
+                  <p className="text-center text-xs mt-6" style={{ color: COLORS.textDim }}>
                     Le QR code sera généré automatiquement après création
                   </p>
                 </>
@@ -657,68 +733,90 @@ export default function Onboarding() {
 
               {step === 5 && (
                 <>
-                  {/* GOLD Header */}
+                  {/* ELITE Header */}
                   <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FFC700] to-[#FFD700] mb-4 shadow-lg shadow-[#FFC700]/30">
-                      <Crown className="w-8 h-8 text-[#0B0B0B]" />
+                    <div 
+                      className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 shadow-lg"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
+                        boxShadow: `0 20px 40px ${COLORS.accent}30`
+                      }}
+                    >
+                      <Crown className="w-8 h-8" style={{ color: COLORS.bg }} />
                     </div>
-                    <h2 className="text-2xl font-bold text-white mb-2">
+                    <h2 className="text-2xl font-bold mb-2" style={{ color: COLORS.text }}>
                       Débloque tout le potentiel de ta carte NFC
                     </h2>
-                    <p className="text-[#E5E5E5]/60">
-                      Passe en GOLD et transforme ta carte en outil business
+                    <p style={{ color: COLORS.textMuted }}>
+                      Passe en ELITE et transforme ta carte en outil business
                     </p>
                   </div>
 
                   {/* Features List */}
                   <div className="space-y-3 mb-8">
-                    {goldFeatures.map((feature, index) => (
+                    {eliteFeatures.map((feature, index) => (
                       <div 
                         key={feature.label}
-                        className="flex items-center gap-4 p-4 rounded-xl bg-[#1F1F1F] border border-[#E5E5E5]/10 animate-fade-in"
-                        style={{ animationDelay: `${index * 100}ms` }}
+                        className="flex items-center gap-4 p-4 rounded-xl animate-fade-in"
+                        style={{ 
+                          backgroundColor: COLORS.bgCard, 
+                          border: `1px solid ${COLORS.border}`,
+                          animationDelay: `${index * 100}ms` 
+                        }}
                       >
-                        <div className="w-11 h-11 rounded-xl bg-[#FFC700]/20 flex items-center justify-center flex-shrink-0">
-                          <feature.icon className="w-5 h-5 text-[#FFC700]" />
+                        <div 
+                          className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: `${COLORS.accent}20` }}
+                        >
+                          <feature.icon className="w-5 h-5" style={{ color: COLORS.accent }} />
                         </div>
                         <div>
-                          <p className="font-medium text-white">{feature.label}</p>
-                          <p className="text-sm text-[#E5E5E5]/50">{feature.description}</p>
+                          <p className="font-medium" style={{ color: COLORS.text }}>{feature.label}</p>
+                          <p className="text-sm" style={{ color: COLORS.textDim }}>{feature.description}</p>
                         </div>
-                        <Check className="w-5 h-5 text-[#FFC700] ml-auto flex-shrink-0" />
+                        <Check className="w-5 h-5 ml-auto flex-shrink-0" style={{ color: COLORS.accent }} />
                       </div>
                     ))}
                   </div>
 
                   {/* Pricing */}
-                  <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FFC700]/20 to-[#FFC700]/5 border border-[#FFC700]/30 mb-6">
+                  <div 
+                    className="p-5 rounded-2xl mb-6"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${COLORS.accent}20, ${COLORS.accent}05)`,
+                      border: `1px solid ${COLORS.borderActive}`
+                    }}
+                  >
                     <div className="flex items-baseline justify-center gap-1 mb-2">
-                      <span className="text-4xl font-bold text-white">49</span>
-                      <span className="text-xl text-[#E5E5E5]">MAD</span>
-                      <span className="text-[#E5E5E5]/60">/mois</span>
+                      <span className="text-4xl font-bold" style={{ color: COLORS.text }}>49</span>
+                      <span className="text-xl" style={{ color: COLORS.textMuted }}>MAD</span>
+                      <span style={{ color: COLORS.textDim }}>/mois</span>
                     </div>
-                    <p className="text-center text-sm text-[#E5E5E5]/50">
-                      ou 499 MAD/an <span className="text-[#FFC700]">(2 mois offerts)</span>
+                    <p className="text-center text-sm" style={{ color: COLORS.textDim }}>
+                      ou 499 MAD/an <span style={{ color: COLORS.accent }}>(2 mois offerts)</span>
                     </p>
                   </div>
 
-                  {/* GOLD CTA Button */}
+                  {/* ELITE CTA Button */}
                   <button 
                     onClick={() => {
-                      // TODO: Handle GOLD subscription
                       toast.success("Redirection vers le paiement...");
-                      // For now, proceed with card creation
                       createCard.mutate(formData);
                     }}
                     disabled={createCard.isPending}
-                    className="w-full py-4 rounded-xl font-bold text-lg text-[#0B0B0B] bg-gradient-to-r from-[#FFC700] to-[#FFD700] hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#FFC700]/30"
+                    className="w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
+                      color: COLORS.bg,
+                      boxShadow: `0 20px 40px ${COLORS.accent}30`
+                    }}
                   >
                     {createCard.isPending ? (
                       <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
                       <>
                         <Crown size={20} />
-                        Passer en GOLD – 49 MAD/mois
+                        Passer en ELITE – 49 MAD/mois
                       </>
                     )}
                   </button>
@@ -727,7 +825,8 @@ export default function Onboarding() {
                   <button 
                     onClick={() => createCard.mutate(formData)}
                     disabled={createCard.isPending}
-                    className="w-full mt-4 py-3 text-[#E5E5E5]/60 hover:text-[#E5E5E5] transition-colors text-sm"
+                    className="w-full mt-4 py-3 transition-colors text-sm"
+                    style={{ color: COLORS.textDim }}
                   >
                     Continuer avec FREE
                   </button>
@@ -741,7 +840,12 @@ export default function Onboarding() {
                 <Button 
                   variant="outline" 
                   onClick={handleBack}
-                  className="flex-1 h-12 border-[#E5E5E5]/20 text-[#E5E5E5] hover:bg-[#1F1F1F]"
+                  className="flex-1 h-12"
+                  style={{ 
+                    borderColor: COLORS.border, 
+                    color: COLORS.textMuted,
+                    backgroundColor: 'transparent'
+                  }}
                 >
                   Retour
                 </Button>
@@ -749,7 +853,8 @@ export default function Onboarding() {
               <button 
                 onClick={handleNext}
                 disabled={createCard.isPending}
-                className="flex-1 h-12 rounded-xl font-bold text-[#0B0B0B] bg-[#FFC700] hover:bg-[#FFC700]/90 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                className="flex-1 h-12 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                style={{ backgroundColor: COLORS.accent, color: COLORS.bg }}
               >
                 {createCard.isPending ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -768,7 +873,7 @@ export default function Onboarding() {
             </div>
 
             {step > 1 && step < formSteps.length - 1 && (
-              <p className="text-center text-xs text-[#E5E5E5]/40 mt-4">
+              <p className="text-center text-xs mt-4" style={{ color: COLORS.textDim }}>
                 Ces champs sont optionnels
               </p>
             )}
@@ -776,10 +881,16 @@ export default function Onboarding() {
         </div>
 
         {/* Live preview section - Desktop only */}
-        <div className="hidden md:flex md:w-[380px] bg-[#1F1F1F]/50 border-l border-[#E5E5E5]/10 p-6 items-center justify-center">
+        <div 
+          className="hidden md:flex md:w-[380px] p-6 items-center justify-center"
+          style={{ backgroundColor: `${COLORS.bgCard}80`, borderLeft: `1px solid ${COLORS.border}` }}
+        >
           <Card className="w-full max-w-[300px] p-6 bg-white rounded-2xl shadow-xl">
             <div className="text-center">
-              <div className="w-20 h-20 rounded-full bg-[#FFC700]/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+              <div 
+                className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden"
+                style={{ backgroundColor: `${COLORS.accent}10` }}
+              >
                 {formData.photo_url ? (
                   <img 
                     src={formData.photo_url} 
@@ -787,32 +898,32 @@ export default function Onboarding() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-2xl font-semibold text-[#FFC700]">
+                  <span className="text-2xl font-semibold" style={{ color: COLORS.accent }}>
                     {formData.first_name.charAt(0) || "?"}
                     {formData.last_name.charAt(0) || ""}
                   </span>
                 )}
               </div>
               
-              <h2 className="text-lg font-semibold text-[#0B0B0B]">
+              <h2 className="text-lg font-semibold" style={{ color: COLORS.bg }}>
                 {formData.first_name || "Prénom"} {formData.last_name || "Nom"}
               </h2>
               
               {(formData.title || formData.company) && (
-                <p className="text-sm text-[#0B0B0B]/60 mt-1">
+                <p className="text-sm mt-1" style={{ color: `${COLORS.bg}99` }}>
                   {formData.title}{formData.title && formData.company && " · "}{formData.company}
                 </p>
               )}
               
               {formData.email && (
-                <p className="text-sm text-[#0B0B0B]/50 mt-4 truncate">{formData.email}</p>
+                <p className="text-sm mt-4 truncate" style={{ color: `${COLORS.bg}80` }}>{formData.email}</p>
               )}
               {formData.phone && (
-                <p className="text-sm text-[#0B0B0B]/50">{formData.phone}</p>
+                <p className="text-sm" style={{ color: `${COLORS.bg}80` }}>{formData.phone}</p>
               )}
             </div>
             
-            <p className="text-[10px] text-center text-[#0B0B0B]/30 mt-6">
+            <p className="text-[10px] text-center mt-6" style={{ color: `${COLORS.bg}50` }}>
               Aperçu en temps réel
             </p>
           </Card>
