@@ -1,383 +1,440 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, CreditCard, Sparkles, Smartphone, Package, Zap, UserPlus } from "lucide-react";
+import { ArrowRight, Smartphone, Sparkles, Users, ShoppingBag, Wifi, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import nfcCardWaxSeal from "@/assets/nfc-card-wax-seal.png";
-import phonePreview from "@/assets/phone-preview.png";
+import { motion } from "framer-motion";
+import cardWhiteMinimal from "@/assets/cards/card-white-minimal.png";
+import cardBlackMatte from "@/assets/cards/card-black-matte.png";
+import cardGoldAccent from "@/assets/cards/card-gold-accent.png";
 
 /**
- * Index - Page d'accueil i-Wasp
- * REFONTE COMPLÈTE — Dark Premium (#0B0B0B)
- * Mobile-first, CTAs visibles, parcours clair
+ * Index - Page d'accueil NFC Mode
+ * Design sombre, ultra-premium, focus "tap"
+ * Mobile-first
  */
 
 const Index = () => {
-  const scrollToProducts = () => {
-    document.getElementById("produits-nfc")?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden">
       
       {/* ════════════════════════════════════════════════════════════════
-         HERO SECTION — Above the fold
-         Deux CTAs visibles immédiatement
+         HERO — Écran sombre, slogan géant, geste tap
          ════════════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-[90vh] flex items-center justify-center px-6 pt-24 pb-16">
-        <div className="max-w-6xl mx-auto w-full">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <section className="relative min-h-screen flex items-center justify-center px-6 pt-20 pb-16 overflow-hidden">
+        {/* Background gradient subtil */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255,255,255,0.03) 0%, transparent 60%)'
+          }}
+        />
+        
+        <div className="max-w-5xl mx-auto w-full relative z-10">
+          <div className="text-center space-y-8">
             
-            {/* Contenu texte */}
-            <div className="space-y-8 text-center lg:text-left">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-                Une carte NFC.
-                <span className="block text-foreground">Un profil qui évolue.</span>
-              </h1>
-              
-              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto lg:mx-0">
-                Carte physique premium. Identité digitale vivante.
-                <span className="block mt-1">Zéro réimpression.</span>
-              </p>
-              
-              {/* DEUX CTAs AU-DESSUS DE LA LIGNE DE FLOTTEMENT */}
-              <div className="flex flex-col sm:flex-row items-center gap-4 pt-4 justify-center lg:justify-start">
-                {/* CTA Principal — Jaune */}
-                <Link to="/order/type">
-                  <Button 
-                    size="lg" 
-                    className="bg-primary text-primary-foreground hover:brightness-110 font-semibold gap-2 px-8 py-6 text-base rounded-lg transition-all min-h-[56px]"
-                  >
-                    Créer ma carte maintenant
-                    <ArrowRight className="w-5 h-5" />
-                  </Button>
-                </Link>
-                
-                {/* CTA Secondaire — Contour jaune */}
+            {/* Badge subtil */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-white/60">
+                <Sparkles className="w-4 h-4" />
+                Accessoires NFC Premium
+              </span>
+            </motion.div>
+            
+            {/* Slogan principal — très grand */}
+            <motion.h1 
+              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.05]"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+            >
+              <span className="block">Tape.</span>
+              <span className="block">Connecte.</span>
+              <span className="block text-white/40">Appartiens.</span>
+            </motion.h1>
+            
+            {/* Sous-titre */}
+            <motion.p 
+              className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              Accessoires NFC pour débloquer profils, réseaux, contenus exclusifs et avantages IRL.
+            </motion.p>
+            
+            {/* CTA */}
+            <motion.div
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              <Link to="/order/offre">
                 <Button 
-                  variant="outline"
-                  size="lg"
-                  onClick={scrollToProducts}
-                  className="border-primary text-primary hover:bg-primary/10 px-8 py-6 text-base rounded-lg font-medium min-h-[56px]"
+                  size="lg" 
+                  className="bg-white text-black hover:bg-white/90 font-semibold gap-2 px-8 py-6 text-base rounded-full transition-all min-h-[56px]"
                 >
-                  Voir les produits NFC
+                  Découvrir les produits
+                  <ArrowRight className="w-5 h-5" />
                 </Button>
-              </div>
-            </div>
-            
-            {/* Visuel — Carte + Téléphone */}
-            <div className="relative flex items-center justify-center">
-              <div className="relative">
-                {/* Vidéo Hero optionnelle */}
-                <video
-                  src="/nfc-demo-video.mp4"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-72 md:w-96 h-auto rounded-2xl shadow-2xl relative z-10 object-cover"
-                  poster={nfcCardWaxSeal}
-                />
-                
-                {/* Téléphone overlay */}
-                <div className="absolute -right-4 -bottom-8 md:-right-12 md:-bottom-12 z-20">
-                  <img
-                    src={phonePreview}
-                    alt="Carte digitale i-Wasp sur téléphone"
-                    className="w-28 md:w-40 h-auto rounded-xl shadow-xl"
-                    loading="eager"
-                  />
-                </div>
-              </div>
-            </div>
+              </Link>
+              
+              <Button 
+                variant="ghost"
+                size="lg"
+                className="text-white/60 hover:text-white hover:bg-white/5 px-6 py-6 text-base rounded-full"
+                onClick={() => document.getElementById("tap-demo")?.scrollIntoView({ behavior: "smooth" })}
+              >
+                Voir le geste tap
+              </Button>
+            </motion.div>
           </div>
         </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════
-         HERO VIDEO — Démonstration NFC pleine largeur
-         Carte passant devant téléphone, geste évident
-         ════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}>
-            {/* Video avec aspect ratio responsive */}
-            <div className="relative aspect-video md:aspect-video">
-              <video
-                src="/nfc-demo-video.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="metadata"
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ backgroundColor: '#0B0B0B' }}
-              />
-            </div>
-            {/* Overlay dégradé subtil bas */}
-            <div 
-              className="absolute inset-x-0 bottom-0 h-20 pointer-events-none"
-              style={{ background: 'linear-gradient(to top, rgba(11,11,11,0.6) 0%, transparent 100%)' }}
+        
+        {/* Scroll indicator */}
+        <motion.div 
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+        >
+          <div className="w-6 h-10 rounded-full border-2 border-white/20 flex items-start justify-center p-2">
+            <motion.div 
+              className="w-1.5 h-1.5 rounded-full bg-white/40"
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ════════════════════════════════════════════════════════════════
-         SECTION PRODUITS NFC — Choix des supports
+         SECTION TAP DEMO — Animation du geste
          ════════════════════════════════════════════════════════════════ */}
-      <section id="produits-nfc" className="py-20 px-6 border-t border-border scroll-mt-20">
+      <section id="tap-demo" className="py-24 px-6 scroll-mt-20">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-4">
-              Choisissez votre support NFC
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Chaque support intègre la technologie NFC et se connecte à votre profil digital.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Carte NFC PVC */}
-            <Link 
-              to="/order/type?product=pvc"
-              className="group relative rounded-xl overflow-hidden bg-card border border-border hover:border-primary/50 transition-all"
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            
+            {/* Video démo */}
+            <motion.div 
+              className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-[#111]"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
             >
-              <div className="aspect-[4/3] relative overflow-hidden">
-                <img 
-                  src={nfcCardWaxSeal}
-                  alt="Carte NFC PVC i-Wasp"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <CreditCard className="w-5 h-5 text-primary" />
-                  <h3 className="text-lg font-semibold text-foreground">Carte NFC PVC</h3>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Format carte bancaire. Impression Evolis haute définition.
-                </p>
-                <span className="inline-flex items-center gap-2 text-primary font-medium text-sm group-hover:gap-3 transition-all">
-                  Choisir ce support
-                  <ArrowRight className="w-4 h-4" />
-                </span>
-              </div>
-            </Link>
-            
-            {/* Ongles NFC */}
-            <Link 
-              to="/order/type?product=nails"
-              className="group relative rounded-xl overflow-hidden bg-card border border-border hover:border-primary/50 transition-all"
-            >
-              <div className="aspect-[4/3] relative overflow-hidden bg-card">
-                <video
-                  src="/nails-demo-video.mp4"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  <h3 className="text-lg font-semibold text-foreground">Ongles NFC</h3>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Innovation beauté. Technologie intégrée à vos ongles.
-                </p>
-                <span className="inline-flex items-center gap-2 text-primary font-medium text-sm group-hover:gap-3 transition-all">
-                  Choisir ce support
-                  <ArrowRight className="w-4 h-4" />
-                </span>
-              </div>
-            </Link>
-            
-            {/* Carte Métal */}
-            <div className="group relative rounded-xl overflow-hidden bg-card border border-border opacity-70">
-              <div className="aspect-[4/3] relative overflow-hidden bg-secondary flex items-center justify-center">
-                <div className="text-center p-6">
-                  <Package className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Bientôt disponible</p>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <CreditCard className="w-5 h-5 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold text-muted-foreground">Carte Métal</h3>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Finition acier brossé. Premium ultime.
-                </p>
-                <span className="inline-flex items-center gap-2 text-muted-foreground font-medium text-sm">
-                  Prochainement
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════
-         SECTION — COMMENT ÇA MARCHE (3 étapes visuelles)
-         ════════════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-6 bg-card border-t border-border">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground text-center mb-16">
-            Comment ça marche
-          </h2>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Étape 1 */}
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-6">
-                <CreditCard className="w-7 h-7" />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-4 text-lg font-bold">
-                1
-              </div>
-              <h3 className="font-semibold text-foreground text-lg mb-2">
-                Choisissez votre support NFC
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Carte PVC, ongles NFC ou carte métal selon vos préférences.
-              </p>
-            </div>
-            
-            {/* Étape 2 */}
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-6">
-                <Smartphone className="w-7 h-7" />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-4 text-lg font-bold">
-                2
-              </div>
-              <h3 className="font-semibold text-foreground text-lg mb-2">
-                Créez votre profil digital
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Remplissez vos informations en quelques minutes. Modifiable à tout moment.
-              </p>
-            </div>
-            
-            {/* Étape 3 */}
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-6">
-                <Zap className="w-7 h-7" />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-4 text-lg font-bold">
-                3
-              </div>
-              <h3 className="font-semibold text-foreground text-lg mb-2">
-                Recevez et utilisez immédiatement
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Un simple tap NFC partage votre profil instantanément.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════
-         SECTION — VIDÉOS PRODUITS
-         ════════════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-6 border-t border-border">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground text-center mb-12">
-            Voyez la technologie en action
-          </h2>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Vidéo carte NFC */}
-            <div className="rounded-xl overflow-hidden bg-card border border-border">
               <video
                 src="/nfc-demo-video.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
-                className="w-full h-64 object-cover"
+                className="absolute inset-0 w-full h-full object-cover"
               />
-              <div className="p-4">
-                <h3 className="font-semibold text-foreground mb-1">Carte NFC en action</h3>
-                <p className="text-sm text-muted-foreground">Un tap suffit pour partager votre profil</p>
-              </div>
-            </div>
+              {/* Overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+            </motion.div>
             
-            {/* Vidéo ongles NFC */}
-            <div className="rounded-xl overflow-hidden bg-card border border-border">
-              <video
-                src="/nails-demo-video.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-64 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="font-semibold text-foreground mb-1">Ongles NFC i-Wasp</h3>
-                <p className="text-sm text-muted-foreground">Innovation beauté connectée</p>
+            {/* Texte explicatif */}
+            <motion.div 
+              className="space-y-6"
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+                Un simple tap,<br />
+                <span className="text-white/40">un nouveau monde.</span>
+              </h2>
+              
+              <div className="space-y-4 text-white/60 text-lg">
+                <p>Plus de cartes papier. Plus de QR codes moches.</p>
+                <p>Un seul tap pour tout montrer.</p>
               </div>
-            </div>
+              
+              {/* Étapes visuelles */}
+              <div className="flex items-center gap-4 pt-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                    <Smartphone className="w-5 h-5 text-white/60" />
+                  </div>
+                  <span className="text-sm text-white/40">Approcher</span>
+                </div>
+                <ArrowRight className="w-4 h-4 text-white/20" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-sm">
+                    TAP
+                  </div>
+                  <span className="text-sm text-white/40">Tap</span>
+                </div>
+                <ArrowRight className="w-4 h-4 text-white/20" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-black" />
+                  </div>
+                  <span className="text-sm text-white/40">Connecté</span>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* ════════════════════════════════════════════════════════════════
-         SECTION — CTA FINAL
+         SECTION CAS D'USAGE — 3 blocs mode/social
          ════════════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-6 bg-card border-t border-border">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-6">
-            Prêt à passer au digital ?
-          </h2>
-          <p className="text-muted-foreground text-lg mb-8">
-            Créez votre carte NFC en quelques minutes et commencez à partager votre profil.
-          </p>
+      <section className="py-24 px-6 bg-[#0D0D0D]">
+        <div className="max-w-5xl mx-auto">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+              Pour chaque moment
+            </h2>
+            <p className="text-white/50 text-lg max-w-xl mx-auto">
+              Un accessoire NFC pour chaque occasion
+            </p>
+          </motion.div>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/order/type">
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Soirées & festivals */}
+            <motion.div 
+              className="group p-8 rounded-2xl bg-[#111] border border-white/5 hover:border-white/10 transition-all"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:bg-white/10 transition-colors">
+                <Users className="w-7 h-7 text-white/60" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Soirées & festivals</h3>
+              <p className="text-white/50 leading-relaxed">
+                Partage ton profil en un tap. Plus besoin de dicter ton @ ou d'échanger des numéros.
+              </p>
+            </motion.div>
+            
+            {/* Créateurs & marques */}
+            <motion.div 
+              className="group p-8 rounded-2xl bg-[#111] border border-white/5 hover:border-white/10 transition-all"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:bg-white/10 transition-colors">
+                <ShoppingBag className="w-7 h-7 text-white/60" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Créateurs & marques</h3>
+              <p className="text-white/50 leading-relaxed">
+                Donne accès à une collection, un lookbook, un drop secret directement depuis ton accessoire.
+              </p>
+            </motion.div>
+            
+            {/* Influence & networking */}
+            <motion.div 
+              className="group p-8 rounded-2xl bg-[#111] border border-white/5 hover:border-white/10 transition-all"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:bg-white/10 transition-colors">
+                <Sparkles className="w-7 h-7 text-white/60" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Influence & networking</h3>
+              <p className="text-white/50 leading-relaxed">
+                Tous tes liens dans un seul tag NFC. Instagram, TikTok, Linktree, portfolio — tout en un tap.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SECTION PRODUITS — 3 produits NFC max
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="py-24 px-6">
+        <div className="max-w-5xl mx-auto">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+              Nos produits NFC
+            </h2>
+            <p className="text-white/50 text-lg max-w-xl mx-auto">
+              Design mode. Technologie invisible. Impact réel.
+            </p>
+          </motion.div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Carte NFC Premium */}
+            <motion.div 
+              className="group"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <Link to="/order/offre" className="block">
+                <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-[#111] border border-white/5 group-hover:border-white/20 transition-all mb-4">
+                  <img 
+                    src={cardWhiteMinimal} 
+                    alt="Carte NFC Premium blanche"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold mb-1">Carte NFC Premium</h3>
+                <p className="text-white/50 text-sm mb-3">Blanc minimal · PVC haute qualité</p>
+                <span className="inline-flex items-center gap-2 text-sm text-white/60 group-hover:text-white transition-colors">
+                  Personnaliser
+                  <ArrowRight className="w-4 h-4" />
+                </span>
+              </Link>
+            </motion.div>
+            
+            {/* Carte Black Edition */}
+            <motion.div 
+              className="group"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <Link to="/order/offre" className="block">
+                <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-[#111] border border-white/5 group-hover:border-white/20 transition-all mb-4">
+                  <img 
+                    src={cardBlackMatte} 
+                    alt="Carte NFC Black Edition"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold mb-1">Black Edition</h3>
+                <p className="text-white/50 text-sm mb-3">Noir mat · Finition soft-touch</p>
+                <span className="inline-flex items-center gap-2 text-sm text-white/60 group-hover:text-white transition-colors">
+                  Personnaliser
+                  <ArrowRight className="w-4 h-4" />
+                </span>
+              </Link>
+            </motion.div>
+            
+            {/* Édition limitée Gold */}
+            <motion.div 
+              className="group"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+            >
+              <Link to="/order/offre" className="block">
+                <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-[#111] border border-white/5 group-hover:border-white/20 transition-all mb-4 relative">
+                  <img 
+                    src={cardGoldAccent} 
+                    alt="Carte NFC Gold Edition"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {/* Badge édition limitée */}
+                  <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-xs font-medium">
+                    Édition limitée
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold mb-1">Gold Accent</h3>
+                <p className="text-white/50 text-sm mb-3">Or · Drop exclusif</p>
+                <span className="inline-flex items-center gap-2 text-sm text-white/60 group-hover:text-white transition-colors">
+                  Réserver
+                  <ArrowRight className="w-4 h-4" />
+                </span>
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SECTION CONFIANCE — Bandeau technique
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="py-16 px-6 bg-[#0D0D0D] border-y border-white/5">
+        <div className="max-w-4xl mx-auto">
+          <motion.div 
+            className="flex flex-wrap items-center justify-center gap-8 md:gap-16"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center gap-3 text-white/50">
+              <Smartphone className="w-5 h-5" />
+              <span className="text-sm">Compatible iOS & Android</span>
+            </div>
+            <div className="flex items-center gap-3 text-white/50">
+              <Wifi className="w-5 h-5" />
+              <span className="text-sm">Aucune app à installer</span>
+            </div>
+            <div className="flex items-center gap-3 text-white/50">
+              <Shield className="w-5 h-5" />
+              <span className="text-sm">Résistant à l'eau</span>
+            </div>
+            <div className="flex items-center gap-3 text-white/50">
+              <Zap className="w-5 h-5" />
+              <span className="text-sm">Programmable en secondes</span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         CTA FINAL
+         ════════════════════════════════════════════════════════════════ */}
+      <section className="py-32 px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.h2 
+            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            Prêt à<br />
+            <span className="text-white/40">te connecter ?</span>
+          </motion.h2>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <Link to="/order/offre">
               <Button 
                 size="lg" 
-                className="bg-primary text-primary-foreground hover:brightness-110 font-semibold gap-2 px-10 py-6 text-lg rounded-lg transition-all"
+                className="bg-white text-black hover:bg-white/90 font-semibold gap-2 px-10 py-7 text-lg rounded-full transition-all"
               >
-                Créer ma carte maintenant
+                Créer mon accessoire NFC
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
-            
-            <Link to="/signup">
-              <Button 
-                variant="outline"
-                size="lg"
-                className="border-border text-foreground hover:bg-secondary gap-2 px-8 py-6 text-base rounded-lg"
-              >
-                <UserPlus className="w-5 h-5" />
-                Créer un compte
-              </Button>
-            </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════
-         MOBILE STICKY CTA — Bouton fixe en bas
-         ════════════════════════════════════════════════════════════════ */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-lg border-t border-border md:hidden z-40 safe-area-bottom">
-        <Link to="/order/type" className="block">
-          <Button 
-            size="lg" 
-            className="w-full bg-primary text-primary-foreground hover:brightness-110 font-semibold gap-2 py-6 text-base rounded-lg min-h-[56px]"
-          >
-            Créer ma carte maintenant
-            <ArrowRight className="w-5 h-5" />
-          </Button>
-        </Link>
-      </div>
-      
-      {/* Spacer pour le sticky CTA mobile */}
-      <div className="h-24 md:hidden" />
+      {/* Footer minimal */}
+      <footer className="py-8 px-6 border-t border-white/5">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/30">
+          <p>© 2025 i-Wasp. Tous droits réservés.</p>
+          <div className="flex items-center gap-6">
+            <Link to="/privacy" className="hover:text-white/50 transition-colors">Confidentialité</Link>
+            <Link to="/contact" className="hover:text-white/50 transition-colors">Contact</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
