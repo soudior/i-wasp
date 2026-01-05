@@ -9,16 +9,17 @@ import {
   Phone, 
   Mail, 
   Globe, 
-  Calendar, 
+  Clock, 
   Instagram, 
   ChevronRight,
   ShoppingBag,
-  Sparkles,
   MapPin,
   Navigation,
   Utensils,
   Gem,
-  Sofa
+  Beef,
+  Flame,
+  Star
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -107,21 +108,21 @@ const brands: Record<BrandKey, BrandConfig> = {
   },
   travertin: {
     name: "Le Travertin",
-    tagline: "Design & Mobilier d'Exception",
+    tagline: "Batbut Cheese Steak · Street Food Premium",
     url: "https://www.instagram.com/letravertin/",
     insta: "https://www.instagram.com/letravertin/",
-    primary: "from-stone-500 to-stone-700",
-    primaryHex: "#78716c",
-    accent: "text-stone-300",
-    bg: "bg-[#1c1917]",
-    cardBg: "linear-gradient(135deg, #44403c 0%, #1c1917 100%)",
+    primary: "from-red-600 to-orange-500",
+    primaryHex: "#dc2626",
+    accent: "text-red-400",
+    bg: "bg-[#1a0a0a]",
+    cardBg: "linear-gradient(135deg, #3d1515 0%, #1a0a0a 100%)",
     monogram: "LT",
-    phone: "+212661000000",
+    phone: "+212600000000",
     email: "contact@letravertin.ma",
-    whatsapp: "+212661000000",
+    whatsapp: "+212600000000",
     location: {
-      name: "Le Travertin Showroom",
-      address: "Zone Industrielle",
+      name: "Le Travertin",
+      address: "Marrakech",
       city: "Marrakech",
       country: "Maroc",
       lat: 31.6295,
@@ -129,15 +130,16 @@ const brands: Record<BrandKey, BrandConfig> = {
       googleMaps: "https://maps.google.com/?q=31.6295,-8.0083"
     },
     stories: [
-      { id: "1", title: "Travertin", imageUrl: "https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=400" },
-      { id: "2", title: "Marbre", imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400" },
-      { id: "3", title: "Mobilier", imageUrl: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400" },
+      { id: "1", title: "Batbut", imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400" },
+      { id: "2", title: "Cheese", imageUrl: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=400" },
+      { id: "3", title: "Steak", imageUrl: "https://images.unsplash.com/photo-1546833998-877b37c2e5c6?w=400" },
     ],
     services: [
-      { icon: Sofa, label: "Mobilier Design", sub: "Collection 2026" },
-      { icon: Sparkles, label: "Pierre Naturelle", sub: "Travertin, Marbre, Onyx" },
+      { icon: Beef, label: "Batbut Cheese Steak", sub: "Notre spécialité signature" },
+      { icon: Flame, label: "Grillades Premium", sub: "Viande de qualité" },
+      { icon: Clock, label: "Horaires", sub: "12h - 23h, 7j/7" },
       { icon: Instagram, label: "Instagram", sub: "@letravertin", link: "https://www.instagram.com/letravertin/" },
-      { icon: Calendar, label: "Rendez-vous Showroom", sub: "Visite privée sur demande" }
+      { icon: MapPin, label: "Nous trouver", sub: "Marrakech", link: "https://maps.google.com/?q=31.6295,-8.0083" }
     ]
   }
 };
@@ -375,7 +377,7 @@ END:VCARD`;
                     </p>
                   </div>
                   <div className={`${current.accent}`}>
-                    {activeBrand === 'medina' ? <ShoppingBag size={20} /> : <Sparkles size={20} />}
+                    {activeBrand === 'medina' ? <ShoppingBag size={20} /> : <Flame size={20} />}
                   </div>
                 </div>
               </div>
