@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { CardFormData } from "../CardWizard";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { 
   Camera, 
@@ -29,6 +30,7 @@ interface StepMediaProps {
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export function StepMedia({ data, onChange }: StepMediaProps) {
+  const { user } = useAuth();
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -46,12 +48,18 @@ export function StepMedia({ data, onChange }: StepMediaProps) {
       return;
     }
 
+    if (!user) {
+      toast.error("Veuillez vous connecter pour uploader");
+      return;
+    }
+
     setUploading(true);
 
     try {
-      const fileExt = file.name.split(".").pop();
+      const fileExt = file.name.split(".").pop() || "png";
       const fileName = `${Date.now()}-${type}.${fileExt}`;
-      const filePath = `${type}s/${fileName}`;
+      // IMPORTANT: la policy Storage exige que le 1er dossier = user.id
+      const filePath = `${user.id}/${type}s/${fileName}`;
 
       const { error } = await supabase.storage
         .from("card-assets")

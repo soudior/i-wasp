@@ -256,13 +256,20 @@ function AdminInstantCardContent() {
   };
 
   const uploadImage = async (file: File, folder: string): Promise<string | null> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${folder}-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-    const filePath = `admin-uploads/${fileName}`;
+    if (!user) {
+      toast.error("Non authentifié");
+      return null;
+    }
+
+    const fileExt = file.name.split(".").pop() || "png";
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+
+    // IMPORTANT: la policy Storage exige que le 1er dossier = user.id
+    const filePath = `${user.id}/${folder}/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('card-assets')
-      .upload(filePath, file);
+      .from("card-assets")
+      .upload(filePath, file, { upsert: true });
 
     if (uploadError) {
       console.error("Upload error:", uploadError);
@@ -271,7 +278,7 @@ function AdminInstantCardContent() {
     }
 
     const { data: { publicUrl } } = supabase.storage
-      .from('card-assets')
+      .from("card-assets")
       .getPublicUrl(filePath);
 
     return publicUrl;
