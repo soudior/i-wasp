@@ -1,7 +1,7 @@
 /**
  * Dark Luxury Business Template
  * Theme: Dark Luxury (#0B0B0B background, #F5F5F5 text, #FFC700 accent)
- * For premium businesses with geolocation, gallery and all social networks
+ * For premium businesses with geolocation, gallery, stories and all social networks
  */
 
 import { useState } from "react";
@@ -29,6 +29,8 @@ import { Button } from "@/components/ui/button";
 import { useCardActionUrl, useIncrementCardView } from "@/hooks/usePublicCard";
 import { IWASPBrandingFooter } from "@/components/IWASPBrandingFooter";
 import { downloadVCard, VCardData } from "@/lib/vcard";
+import { StoryRing } from "@/components/StoryRing";
+import { usePublicStory } from "@/hooks/useStories";
 
 interface DarkLuxuryBusinessTemplateProps {
   card: {
@@ -73,6 +75,9 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
   const incrementView = useIncrementCardView();
   const [isNavigating, setIsNavigating] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Fetch active story for this card
+  const { story } = usePublicStory(card.id);
 
   // Extract Google Reviews link from blocks or social_links
   const googleReviewsLink = card.blocks?.find((b: any) => b.type === 'google_reviews')?.url ||
@@ -88,6 +93,9 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
 
   // Get all social links
   const socialLinks = card.social_links?.filter((l: any) => l.url && l.platform !== 'google') || [];
+  
+  // Get WhatsApp number for story reply
+  const whatsappLink = card.social_links?.find((l: any) => l.platform === 'whatsapp')?.url;
 
   const handleAction = async (action: "phone" | "whatsapp" | "email") => {
     const url = await getActionUrl(card.slug, action);
@@ -158,16 +166,18 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          {(card.logo_url || card.photo_url) && (
-            <div className="relative w-24 h-24 mx-auto mb-6">
-              <img
-                src={card.photo_url || card.logo_url || ''}
-                alt={displayName}
-                className="w-full h-full object-cover rounded-2xl border-2"
-                style={{ borderColor: '#FFC700' }}
-              />
-            </div>
-          )}
+          {/* Photo with Story Ring */}
+          <div className="flex justify-center mb-6">
+            <StoryRing
+              photoUrl={card.photo_url || card.logo_url || undefined}
+              firstName={card.first_name}
+              lastName={card.last_name}
+              story={story}
+              whatsappNumber={whatsappLink}
+              size="lg"
+              className="border-2 rounded-full"
+            />
+          </div>
 
           <h1 
             className="text-2xl font-bold tracking-tight mb-2"

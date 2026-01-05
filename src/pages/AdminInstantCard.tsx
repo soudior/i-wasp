@@ -37,7 +37,8 @@ import {
   Music2,
   Video,
   Calendar,
-  Star
+  Star,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,7 +48,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { QRCodeSVG } from "qrcode.react";
 import { motion } from "framer-motion";
-
+import { StoryEditor } from "@/components/StoryEditor";
+import { useStories } from "@/hooks/useStories";
 // Template options
 const TEMPLATES = [
   {
@@ -183,7 +185,8 @@ function AdminInstantCardContent() {
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [createdCard, setCreatedCard] = useState<{ id: string; slug: string } | null>(null);
-  const [activeSection, setActiveSection] = useState<"info" | "social" | "media" | "design">("info");
+  const [activeSection, setActiveSection] = useState<"info" | "social" | "media" | "story" | "design">("info");
+  const [currentStory, setCurrentStory] = useState<any>(null);
 
   const handleInputChange = (field: keyof BusinessCardData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -577,6 +580,7 @@ function AdminInstantCardContent() {
     { id: "info", label: "Infos", icon: Type },
     { id: "social", label: "Réseaux", icon: Instagram },
     { id: "media", label: "Médias", icon: Image },
+    { id: "story", label: "Story", icon: Sparkles },
     { id: "design", label: "Design", icon: Palette },
   ] as const;
 
@@ -936,6 +940,60 @@ function AdminInstantCardContent() {
                 </div>
               </CardContent>
             </Card>
+          </motion.div>
+        )}
+
+        {/* SECTION: STORY */}
+        {activeSection === "story" && (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+            <Card className="border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(236, 72, 153, 0.3)' }}>
+              <CardContent className="pt-6">
+                <div className="text-center mb-6">
+                  <div 
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
+                    style={{ backgroundColor: 'rgba(236, 72, 153, 0.15)' }}
+                  >
+                    <Sparkles size={16} style={{ color: '#EC4899' }} />
+                    <span className="text-sm font-medium" style={{ color: '#EC4899' }}>Story 24h</span>
+                  </div>
+                  <p className="text-sm" style={{ color: 'rgba(245, 245, 245, 0.6)' }}>
+                    Publiez une story visible pendant 24h sur votre carte digitale
+                  </p>
+                </div>
+
+                {createdCard ? (
+                  <StoryEditor
+                    cardId={createdCard.id}
+                    currentStory={currentStory}
+                    onStoryChange={setCurrentStory}
+                  />
+                ) : (
+                  <div 
+                    className="text-center py-8 rounded-xl"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
+                  >
+                    <Sparkles size={32} style={{ color: 'rgba(245, 245, 245, 0.3)' }} className="mx-auto mb-3" />
+                    <p className="text-sm" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                      Créez d'abord votre carte pour ajouter une story
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <div 
+              className="rounded-xl p-4"
+              style={{ backgroundColor: 'rgba(236, 72, 153, 0.08)' }}
+            >
+              <h4 className="text-sm font-medium mb-2" style={{ color: '#EC4899' }}>💡 Idées de stories</h4>
+              <ul className="text-xs space-y-1" style={{ color: 'rgba(245, 245, 245, 0.7)' }}>
+                <li>• Promotion flash ou offre spéciale</li>
+                <li>• Nouveau produit ou service</li>
+                <li>• Bien disponible (immobilier)</li>
+                <li>• Événement ou actualité</li>
+                <li>• Message de bienvenue personnalisé</li>
+              </ul>
+            </div>
           </motion.div>
         )}
 
