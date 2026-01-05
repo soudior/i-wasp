@@ -1,6 +1,6 @@
 /**
- * GlobalFooter - Footer unifié pour toutes les pages i-wasp
- * Design dark luxury cohérent avec ClubNavbar
+ * GlobalFooter - Footer ultra-luxe i-wasp
+ * Palette : Midnight Emerald & Brushed Bronze
  */
 
 import { Link } from "react-router-dom";
@@ -60,24 +60,27 @@ interface GlobalFooterProps {
 }
 
 export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
-  const isDark = variant === "dark";
-  
+  // Always use midnight theme for ultra-luxe consistency
   return (
-    <footer className={`py-16 border-t ${isDark ? "bg-[#0A0A0A] border-white/5 text-white" : "bg-background border-border text-foreground"}`}>
+    <footer className="py-20 border-t bg-iwasp-midnight border-iwasp-emerald/10 text-iwasp-cream">
       <div className="container mx-auto px-6">
         {/* Main footer grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-16">
           {/* Brand */}
           <div className="col-span-2">
-            <Link to="/" className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
-                <Crown className="w-5 h-5 text-black" />
+            <Link to="/" className="flex items-center gap-3 mb-6 group">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-xl bg-iwasp-bronze/20 blur-md" />
+                <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-iwasp-bronze to-iwasp-bronze-light flex items-center justify-center">
+                  <Crown className="w-5 h-5 text-iwasp-midnight" />
+                </div>
               </div>
-              <span className={`font-bold text-xl ${isDark ? "text-white" : "text-foreground"}`}>
-                i-wasp<span className="text-amber-400">.</span>
-              </span>
+              <div className="flex flex-col">
+                <span className="font-display text-xl text-iwasp-cream tracking-tight italic">iW.</span>
+                <span className="text-[10px] text-iwasp-silver tracking-[0.2em] uppercase -mt-1">L'identité absolue</span>
+              </div>
             </Link>
-            <p className={`text-sm leading-relaxed max-w-xs mb-6 ${isDark ? "text-white/50" : "text-muted-foreground"}`}>
+            <p className="text-sm leading-relaxed max-w-xs mb-8 text-iwasp-silver">
               Cartes NFC premium, conciergerie digitale et expériences connectées augmentées par l'IA.
             </p>
             {/* Social links */}
@@ -88,7 +91,7 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
                   href={social.href} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className={`transition-colors ${isDark ? "text-white/40 hover:text-amber-400" : "text-muted-foreground hover:text-primary"}`}
+                  className="text-iwasp-silver/50 hover:text-iwasp-bronze transition-colors duration-300"
                   aria-label={social.name}
                 >
                   {social.icon}
@@ -99,7 +102,7 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
 
           {/* Navigation */}
           <div>
-            <h4 className={`font-semibold mb-4 text-sm uppercase tracking-wider ${isDark ? "text-white/80" : "text-foreground"}`}>
+            <h4 className="font-medium mb-5 text-xs uppercase tracking-[0.15em] text-iwasp-cream/80">
               Navigation
             </h4>
             <ul className="space-y-3">
@@ -107,7 +110,7 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
                 <li key={link.href}>
                   <Link
                     to={link.href}
-                    className={`text-sm transition-colors ${isDark ? "text-white/50 hover:text-amber-400" : "text-muted-foreground hover:text-foreground"}`}
+                    className="text-sm text-iwasp-silver hover:text-iwasp-bronze transition-colors duration-300"
                   >
                     {link.label}
                   </Link>
@@ -118,7 +121,7 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
 
           {/* Support */}
           <div>
-            <h4 className={`font-semibold mb-4 text-sm uppercase tracking-wider ${isDark ? "text-white/80" : "text-foreground"}`}>
+            <h4 className="font-medium mb-5 text-xs uppercase tracking-[0.15em] text-iwasp-cream/80">
               Support
             </h4>
             <ul className="space-y-3">
@@ -126,7 +129,7 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
                 <li key={link.href}>
                   <Link
                     to={link.href}
-                    className={`text-sm transition-colors ${isDark ? "text-white/50 hover:text-amber-400" : "text-muted-foreground hover:text-foreground"}`}
+                    className="text-sm text-iwasp-silver hover:text-iwasp-bronze transition-colors duration-300"
                   >
                     {link.label}
                   </Link>
@@ -137,7 +140,7 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
 
           {/* Legal */}
           <div>
-            <h4 className={`font-semibold mb-4 text-sm uppercase tracking-wider ${isDark ? "text-white/80" : "text-foreground"}`}>
+            <h4 className="font-medium mb-5 text-xs uppercase tracking-[0.15em] text-iwasp-cream/80">
               Légal
             </h4>
             <ul className="space-y-3">
@@ -145,7 +148,7 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
                 <li key={link.href}>
                   <Link
                     to={link.href}
-                    className={`text-sm transition-colors ${isDark ? "text-white/50 hover:text-amber-400" : "text-muted-foreground hover:text-foreground"}`}
+                    className="text-sm text-iwasp-silver hover:text-iwasp-bronze transition-colors duration-300"
                   >
                     {link.label}
                   </Link>
@@ -156,18 +159,18 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
         </div>
 
         {/* Bottom bar */}
-        <div className={`pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-4 ${isDark ? "border-white/5" : "border-border"}`}>
-          <p className={`text-xs ${isDark ? "text-white/30" : "text-muted-foreground"}`}>
+        <div className="pt-8 border-t border-iwasp-emerald/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-iwasp-silver/50">
             © {new Date().getFullYear()} i-wasp. Tous droits réservés.
           </p>
-          <div className={`flex items-center gap-6 text-xs ${isDark ? "text-white/30" : "text-muted-foreground"}`}>
-            <Link to="/mentions-legales" className={`hover:${isDark ? "text-white" : "text-foreground"} transition-colors`}>
+          <div className="flex items-center gap-6 text-xs text-iwasp-silver/50">
+            <Link to="/mentions-legales" className="hover:text-iwasp-cream transition-colors duration-300">
               Mentions légales
             </Link>
-            <Link to="/cgv" className={`hover:${isDark ? "text-white" : "text-foreground"} transition-colors`}>
+            <Link to="/cgv" className="hover:text-iwasp-cream transition-colors duration-300">
               CGV
             </Link>
-            <Link to="/privacy" className={`hover:${isDark ? "text-white" : "text-foreground"} transition-colors`}>
+            <Link to="/privacy" className="hover:text-iwasp-cream transition-colors duration-300">
               Confidentialité
             </Link>
           </div>

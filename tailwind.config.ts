@@ -14,22 +14,15 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['SF Pro Display', 'Inter', 'system-ui', 'sans-serif'],
-        body: ['SF Pro Text', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Playfair Display', 'Georgia', 'serif'],
+        body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
         playfair: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
       },
       colors: {
         /* ═══════════════════════════════════════════════════════════════
-           i-WASP DESIGN SYSTEM — THÈME DARK PREMIUM VERROUILLÉ
-           
-           PALETTE OFFICIELLE VERROUILLÉE :
-           - Fond principal      : #0B0B0B (Noir profond)
-           - Texte principal     : #FFFFFF (Blanc pur)
-           - Jaune signature     : #F5C400 (CTA et accents UNIQUEMENT)
-           
-           RÈGLES STRICTES :
-           - AUCUN fond blanc sur les pages principales
-           - Fond blanc UNIQUEMENT pour champs de formulaire
+           i-WASP DESIGN SYSTEM — MIDNIGHT EMERALD & BRUSHED BRONZE
+           Ultra-Luxe Stratosphérique — Inspiré Apple, Hermès, Porsche
            ═══════════════════════════════════════════════════════════════ */
         
         /* Semantic tokens */
@@ -85,31 +78,33 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
-           COULEURS OFFICIELLES i-WASP — VERROUILLÉES DÉFINITIVEMENT
-           
-           PALETTE UNIQUE — AUCUNE AUTRE COULEUR AUTORISÉE
-           PAS DE THÈME CLAIR — PAS DE BASCULE AUTOMATIQUE
+           PALETTE ULTRA-LUXE — MIDNIGHT EMERALD & BRUSHED BRONZE
            ══════════════════════════════════════════════════════════════ */
         iwasp: {
-          noir: "#0B0B0B",                 /* Fond principal */
-          "noir-elevated": "#121212",      /* Surfaces secondaires */
-          blanc: "#FFFFFF",                /* Texte principal */
-          jaune: "#FFC700",                /* Accent unique (CTA, sélection, focus) */
-          "gris-texte": "#B3B3B3",         /* Texte secondaire */
-          "gris-bordure": "#333333",       /* Bordures subtiles */
+          midnight: "#050708",               /* Midnight base */
+          "midnight-elevated": "#0C1014",    /* Surface secondaire */
+          cream: "#FAF7F2",                  /* Texte principal crème */
+          silver: "#8A9299",                 /* Texte secondaire argent */
+          bronze: "#B8926A",                 /* Bronze brossé - CTA */
+          "bronze-light": "#D4AF7F",         /* Bronze clair */
+          "bronze-glow": "#C9A87A",          /* Bronze lumineux */
+          emerald: "#1B4D3E",                /* Émeraude profond */
+          "emerald-glow": "#2D7A5F",         /* Émeraude lumineux */
+          "emerald-mist": "#1A3D32",         /* Émeraude brume */
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE CARTE NFC — DARK THEME VERROUILLÉ
+           PALETTE CARTE NFC — Ultra-Luxe
            ══════════════════════════════════════════════════════════════ */
         carte: {
-          recto: "#0B0B0B",                /* Fond noir */
-          verso: "#121212",                /* Surface secondaire */
-          texture: "#1A1A1A",              /* Texture subtile */
-          logo: "#FFFFFF",                 /* Logo blanc */
-          texte: "#FFFFFF",                /* Texte blanc */
-          secondaire: "#B3B3B3",           /* Texte secondaire */
-          accent: "#FFC700",               /* Jaune signature unique */
+          recto: "#050708",                  /* Midnight base */
+          verso: "#0C1014",                  /* Surface secondaire */
+          texture: "#111518",                /* Texture subtile */
+          logo: "#FAF7F2",                   /* Logo crème */
+          texte: "#FAF7F2",                  /* Texte crème */
+          secondaire: "#8A9299",             /* Texte secondaire argent */
+          accent: "#B8926A",                 /* Bronze brossé */
+          emerald: "#1B4D3E",                /* Accent émeraude */
         },
       },
       borderRadius: {

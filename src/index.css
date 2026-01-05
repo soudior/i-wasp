@@ -10,48 +10,59 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════════
-       i-WASP DESIGN SYSTEM — THÈME DARK PREMIUM VERROUILLÉ
-       VERSION FINALE — NE PAS MODIFIER SANS INSTRUCTION EXPLICITE
+       i-WASP DESIGN SYSTEM — MIDNIGHT EMERALD & BRUSHED BRONZE
+       Ultra-Luxe Stratosphérique — Inspiré Apple, Hermès, Porsche
        
        ═══════════════════════════════════════════════════════════════════
-       PALETTE OFFICIELLE i-WASP — VERROUILLÉE DÉFINITIVEMENT
+       PALETTE "MIDNIGHT EMERALD & BRUSHED BRONZE"
        ═══════════════════════════════════════════════════════════════════
-       - Fond principal      : #0B0B0B (Noir profond)
-       - Surfaces secondaires: #121212 (Noir élevé)
-       - Texte principal     : #FFFFFF (Blanc pur)
-       - Texte secondaire    : #B3B3B3 (Gris clair)
-       - Accent unique       : #FFC700 (Jaune i-Wasp - CTA, sélection, focus)
+       - Midnight Base     : #050708 (Noir profond bleu-vert)
+       - Midnight Surface  : #0C1014 (Surface élevée)
+       - Emerald Accent    : #1B4D3E (Émeraude de minuit)
+       - Emerald Glow      : #2D7A5F (Émeraude lumineux)
+       - Bronze Primary    : #B8926A (Bronze brossé)
+       - Bronze Light      : #D4AF7F (Bronze clair)
+       - Cream Text        : #FAF7F2 (Crème chaud)
+       - Silver Text       : #8A9299 (Argent mat)
        
-       AUCUNE AUTRE COULEUR AUTORISÉE
-       PAS DE THÈME CLAIR — PAS DE BASCULE AUTOMATIQUE
+       Évoque : Exclusivité, technologie furtive, confiance absolue
        ═══════════════════════════════════════════════════════════════════ */
     
     /* ══════════════════════════════════════════════════════════════════
-       COULEURS OFFICIELLES i-WASP — VERROUILLÉES
+       COULEURS ULTRA-LUXE — MIDNIGHT EMERALD & BRUSHED BRONZE
        ══════════════════════════════════════════════════════════════════ */
     
-    --iwasp-noir: 0 0% 4%;                /* #0B0B0B - Fond principal */
-    --iwasp-noir-elevated: 0 0% 7%;       /* #121212 - Surfaces secondaires (charbon) */
-    --iwasp-blanc: 0 0% 96%;              /* #F5F5F5 - Texte principal blanc cassé */
-    --iwasp-blanc-pur: 0 0% 100%;         /* #FFFFFF - Blanc pur (champs input) */
-    --iwasp-jaune: 48 100% 50%;           /* #FFC700 - Accent UNIQUE (CTA, actif, étape) */
-    --iwasp-gris-texte: 0 0% 71%;         /* #B5B5B5 - Texte secondaire */
-    --iwasp-gris-bordure: 0 0% 20%;       /* #333333 - Bordures subtiles */
+    --iwasp-noir: 210 18% 3%;               /* #050708 - Midnight base */
+    --iwasp-noir-elevated: 210 15% 6%;      /* #0C1014 - Midnight surface */
+    --iwasp-blanc: 40 33% 97%;              /* #FAF7F2 - Crème chaud */
+    --iwasp-blanc-pur: 0 0% 100%;           /* #FFFFFF - Blanc pur (inputs) */
+    
+    /* Bronze brossé — CTA, accents, focus */
+    --iwasp-bronze: 32 35% 57%;             /* #B8926A - Bronze brossé */
+    --iwasp-bronze-light: 32 45% 66%;       /* #D4AF7F - Bronze clair */
+    --iwasp-bronze-glow: 32 50% 75%;        /* Bronze lumineux */
+    
+    /* Émeraude de minuit — Accent secondaire, profondeur */
+    --iwasp-emerald: 160 47% 21%;           /* #1B4D3E - Émeraude profond */
+    --iwasp-emerald-glow: 160 45% 33%;      /* #2D7A5F - Émeraude lumineux */
+    
+    --iwasp-gris-texte: 210 8% 57%;         /* #8A9299 - Argent mat */
+    --iwasp-gris-bordure: 210 10% 15%;      /* Bordures subtiles émeraude */
     
     /* États système */
-    --iwasp-erreur: 0 72% 51%;            /* Rouge erreur */
-    --iwasp-success: 142 76% 36%;         /* Vert succès */
+    --iwasp-erreur: 0 72% 51%;              /* Rouge erreur */
+    --iwasp-success: 160 45% 33%;           /* Émeraude succès */
     
     /* ══════════════════════════════════════════════════════════════════
-       SURFACES — Thème DARK Premium VERROUILLÉ
+       SURFACES — Ultra-Luxe Midnight
        ══════════════════════════════════════════════════════════════════ */
-    --surface-bg: var(--iwasp-noir);           /* #0B0B0B - Fond principal */
-    --surface-card: var(--iwasp-noir-elevated);/* #121212 - Surface carte */
-    --surface-elevated: 0 0% 10%;              /* #1A1A1A - Légère élévation */
-    --surface-overlay: 0 0% 12%;               /* #1F1F1F - Overlay */
+    --surface-bg: var(--iwasp-noir);             /* Fond principal */
+    --surface-card: var(--iwasp-noir-elevated);  /* Surface carte */
+    --surface-elevated: 210 12% 9%;              /* Légère élévation */
+    --surface-overlay: 210 10% 12%;              /* Overlay */
     
     /* ══════════════════════════════════════════════════════════════════
-       TOKENS SÉMANTIQUES — DARK THEME VERROUILLÉ
+       TOKENS SÉMANTIQUES — MIDNIGHT EMERALD & BRONZE
        ══════════════════════════════════════════════════════════════════ */
     --background: var(--iwasp-noir);
     --foreground: var(--iwasp-blanc);
@@ -62,89 +73,93 @@
     --popover: var(--iwasp-noir-elevated);
     --popover-foreground: var(--iwasp-blanc);
     
-    /* Primary = Jaune signature (pour CTA et boutons principaux) */
-    --primary: var(--iwasp-jaune);
-    --primary-foreground: var(--iwasp-noir);
+    /* Primary = Bronze brossé (pour CTA et boutons principaux) */
+    --primary: var(--iwasp-bronze);
+    --primary-foreground: 210 18% 3%;
     
-    --secondary: var(--iwasp-noir-elevated);
+    --secondary: var(--iwasp-emerald);
     --secondary-foreground: var(--iwasp-blanc);
     
     --muted: var(--iwasp-noir-elevated);
     --muted-foreground: var(--iwasp-gris-texte);
     
-    /* Accent = Jaune signature UNIQUE */
-    --accent: var(--iwasp-jaune);
-    --accent-foreground: var(--iwasp-noir);
+    /* Accent = Émeraude de minuit */
+    --accent: var(--iwasp-emerald);
+    --accent-foreground: var(--iwasp-blanc);
     
     --destructive: var(--iwasp-erreur);
     --destructive-foreground: var(--iwasp-blanc);
     
     --border: var(--iwasp-gris-bordure);
-    --input: var(--iwasp-blanc-pur);      /* Champs de formulaire = blanc pur */
+    --input: var(--iwasp-blanc-pur);
     --input-foreground: var(--iwasp-noir);
-    --ring: var(--iwasp-jaune);
+    --ring: var(--iwasp-bronze);
     
     /* ══════════════════════════════════════════════════════════════════
-       RADIUS — Premium
+       RADIUS — Premium Luxe
        ══════════════════════════════════════════════════════════════════ */
-    --radius: 0.75rem;        /* 12px - standard */
-    --radius-card: 1rem;      /* 16px - cartes */
-    --radius-btn: 0.5rem;     /* 8px - boutons */
+    --radius: 0.75rem;
+    --radius-card: 1.25rem;
+    --radius-btn: 0.5rem;
     
     /* ══════════════════════════════════════════════════════════════════
-       PALETTE CARTE NFC PHYSIQUE — Référence
+       PALETTE CARTE NFC PHYSIQUE — Ultra-Luxe
        ══════════════════════════════════════════════════════════════════ */
-    --carte-recto: var(--iwasp-noir);     /* Fond noir */
+    --carte-recto: var(--iwasp-noir);
     --carte-verso: var(--iwasp-noir-elevated);
-    --carte-texture: 0 0% 10%;            /* Texture subtile */
-    --carte-logo: var(--iwasp-blanc);     /* Logo blanc */
-    --carte-texte: var(--iwasp-blanc);    /* Texte blanc */
-    --carte-secondaire: var(--iwasp-gris-texte); /* Texte secondaire */
-    --carte-accent: var(--iwasp-jaune);   /* Jaune signature */
+    --carte-texture: 210 12% 9%;
+    --carte-logo: var(--iwasp-blanc);
+    --carte-texte: var(--iwasp-blanc);
+    --carte-secondaire: var(--iwasp-gris-texte);
+    --carte-accent: var(--iwasp-bronze);
 
     /* Surface tokens */
     --surface-0: var(--iwasp-noir);
     --surface-1: var(--iwasp-noir-elevated);
-    --surface-2: 0 0% 10%;
+    --surface-2: 210 12% 9%;
     --surface-3: var(--iwasp-gris-bordure);
     
-    /* Glass - Dark theme */
-    --glass: 0 0% 100%;
-    --glass-opacity: 0.05;
-    --glass-border: 0 0% 100%;
+    /* Glass - Midnight theme avec reflet émeraude */
+    --glass: 160 20% 95%;
+    --glass-opacity: 0.03;
+    --glass-border: 160 20% 30%;
 
     /* ══════════════════════════════════════════════════════════════════
-       OMBRES — Dark theme
+       OMBRES — Midnight avec lueur émeraude/bronze subtile
        ══════════════════════════════════════════════════════════════════ */
-    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 4px 8px hsl(0 0% 0% / 0.4);
-    --shadow-lg: 0 8px 16px hsl(0 0% 0% / 0.5);
+    --shadow-sm: 0 1px 2px hsl(210 20% 2% / 0.5);
+    --shadow-md: 0 4px 12px hsl(210 20% 2% / 0.6);
+    --shadow-lg: 0 8px 24px hsl(210 20% 2% / 0.7);
     --shadow-card: 
-      0 2px 4px hsl(0 0% 0% / 0.3),
-      0 0 0 1px hsl(0 0% 100% / 0.05);
+      0 2px 8px hsl(210 20% 2% / 0.5),
+      0 0 0 1px hsl(160 20% 30% / 0.1);
     --shadow-elevated:
-      0 4px 12px hsl(0 0% 0% / 0.4),
-      0 0 0 1px hsl(0 0% 100% / 0.05);
+      0 8px 32px hsl(210 20% 2% / 0.6),
+      0 0 0 1px hsl(32 35% 57% / 0.05);
+    --shadow-bronze-glow:
+      0 0 40px hsl(32 45% 50% / 0.15);
+    --shadow-emerald-glow:
+      0 0 60px hsl(160 45% 25% / 0.2);
 
     /* ══════════════════════════════════════════════════════════════════
-       TYPOGRAPHIE — Luxe premium
+       TYPOGRAPHIE — Ultra-Luxe (Playfair + SF Pro)
        ══════════════════════════════════════════════════════════════════ */
-    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    --font-display: 'Playfair Display', 'Georgia', serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
-    --tracking-tight: -0.02em;
-    --tracking-wide: 0.05em;
+    --tracking-tight: -0.03em;
+    --tracking-wide: 0.12em;
 
-    /* Sidebar - Dark theme */
+    /* Sidebar - Midnight theme */
     --sidebar-background: var(--iwasp-noir);
     --sidebar-foreground: var(--iwasp-blanc);
-    --sidebar-primary: var(--iwasp-jaune);
+    --sidebar-primary: var(--iwasp-bronze);
     --sidebar-primary-foreground: var(--iwasp-noir);
-    --sidebar-accent: var(--iwasp-noir-elevated);
+    --sidebar-accent: var(--iwasp-emerald);
     --sidebar-accent-foreground: var(--iwasp-blanc);
     --sidebar-border: var(--iwasp-gris-bordure);
-    --sidebar-ring: var(--iwasp-jaune);
+    --sidebar-ring: var(--iwasp-bronze);
     
-    /* Mobile-first: Safe area insets (Apple notch/Dynamic Island support) */
+    /* Mobile-first: Safe area insets */
     --safe-area-top: env(safe-area-inset-top, 0px);
     --safe-area-right: env(safe-area-inset-right, 0px);
     --safe-area-bottom: env(safe-area-inset-bottom, 0px);
@@ -154,30 +169,31 @@
     --mobile-header-height: 48px;
     --mobile-tab-bar-height: 64px;
     
-    /* Apple-specific safe areas for notch devices */
+    /* Apple-specific safe areas */
     --ios-status-bar-height: max(20px, env(safe-area-inset-top, 20px));
     --ios-home-indicator-height: max(34px, env(safe-area-inset-bottom, 0px));
 
     /* ══════════════════════════════════════════════════════════════════
        SPACING SYSTEM - 8px base
        ══════════════════════════════════════════════════════════════════ */
-    --space-xs: 0.25rem;  /* 4px */
-    --space-sm: 0.5rem;   /* 8px */
-    --space-md: 1rem;     /* 16px */
-    --space-lg: 1.25rem;  /* 20px */
-    --space-xl: 1.5rem;   /* 24px */
-    --space-2xl: 2rem;    /* 32px */
-    --space-section: 2rem; /* 32px between sections */
-    --space-module: 1.25rem; /* 20px between modules */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.25rem;
+    --space-xl: 1.5rem;
+    --space-2xl: 2rem;
+    --space-section: 2rem;
+    --space-module: 1.25rem;
 
     /* ══════════════════════════════════════════════════════════════════
-       ANIMATION TIMING - IWASP PREMIUM
+       ANIMATION TIMING - Ultra-smooth luxury
        ══════════════════════════════════════════════════════════════════ */
-    --duration-fast: 180ms;
-    --duration-normal: 200ms;
-    --duration-slow: 220ms;
-    --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+    --duration-fast: 200ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+    --easing-default: cubic-bezier(0.25, 0.1, 0.25, 1);
     --easing-in-out: cubic-bezier(0.42, 0, 0.58, 1);
+    --easing-luxury: cubic-bezier(0.16, 1, 0.3, 1);
   }
   
   /* ══════════════════════════════════════════════════════════════════
