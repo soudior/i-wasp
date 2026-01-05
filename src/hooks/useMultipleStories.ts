@@ -1,5 +1,5 @@
 /**
- * useStories - Hook pour gérer plusieurs stories d'une carte
+ * useMultipleStories - Hook pour gérer plusieurs stories d'une carte
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -18,7 +18,7 @@ interface Story {
   is_active: boolean;
 }
 
-export function useStories(cardId?: string) {
+export function useMultipleStories(cardId?: string) {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,42 +56,29 @@ export function useStories(cardId?: string) {
     fetchStories();
   }, [fetchStories]);
 
-  const updateStories = useCallback((newStories: Story[]) => {
-    setStories(newStories);
+  const addStory = useCallback((newStory: Story) => {
+    setStories((prev) => [newStory, ...prev]);
   }, []);
 
-  // Backward compatible: return first story as 'story'
-  const story = stories.length > 0 ? stories[0] : null;
-
-  // Backward compatible: update single story
-  const updateStory = useCallback((newStory: Story | null) => {
-    if (newStory) {
-      setStories((prev) => {
-        const exists = prev.find((s) => s.id === newStory.id);
-        if (exists) {
-          return prev.map((s) => (s.id === newStory.id ? newStory : s));
-        }
-        return [newStory, ...prev];
-      });
-    }
+  const removeStory = useCallback((storyId: string) => {
+    setStories((prev) => prev.filter((s) => s.id !== storyId));
   }, []);
 
   return {
     stories,
-    story, // Backward compatible
     loading,
     error,
     refetch: fetchStories,
-    updateStories,
-    updateStory, // Backward compatible
+    addStory,
+    removeStory,
     hasStories: stories.length > 0,
   };
 }
 
 /**
- * usePublicStory - Hook pour récupérer les stories actives d'une carte publique
+ * usePublicMultipleStories - Hook pour récupérer les stories actives d'une carte publique
  */
-export function usePublicStory(cardId?: string) {
+export function usePublicMultipleStories(cardId?: string) {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -124,13 +111,5 @@ export function usePublicStory(cardId?: string) {
     fetchPublicStories();
   }, [cardId]);
 
-  // Backward compatible
-  const story = stories.length > 0 ? stories[0] : null;
-
-  return { 
-    stories, 
-    story, // Backward compatible
-    loading, 
-    hasStories: stories.length > 0 
-  };
+  return { stories, loading, hasStories: stories.length > 0 };
 }

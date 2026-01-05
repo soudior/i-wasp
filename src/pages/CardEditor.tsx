@@ -741,7 +741,7 @@ export default function CardEditor() {
   const [isReorderMode, setIsReorderMode] = useState(false);
 
   // Story management
-  const { story, updateStory } = useStories(editId || undefined);
+  const { stories, updateStories } = useStories(editId || undefined);
 
   // Handle AI generated template - Maps all AI fields to editor blocks
   const handleAITemplateGenerated = useCallback((result: { type: string; template: Record<string, any> }) => {
@@ -1333,8 +1333,8 @@ export default function CardEditor() {
                     <Card variant="premium" className="p-4 mb-4 border-rose-500/20 bg-gradient-to-br from-rose-500/5 to-purple-500/5">
                       <StoryEditor
                         cardId={editId}
-                        currentStory={story}
-                        onStoryChange={updateStory}
+                        stories={stories}
+                        onStoriesChange={updateStories}
                       />
                     </Card>
                   </FeatureGate>

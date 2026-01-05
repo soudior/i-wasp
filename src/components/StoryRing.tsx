@@ -1,12 +1,13 @@
 /**
  * StoryRing - Cercle animé autour de la photo de profil (style Instagram)
  * Affiche un contour coloré quand une story est active
+ * Supporte plusieurs stories avec défilement automatique
  */
 
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { StoryViewer } from "./StoryViewer";
+import { MultiStoryViewer } from "./MultiStoryViewer";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Story {
@@ -24,7 +25,8 @@ interface StoryRingProps {
   photoUrl?: string;
   firstName: string;
   lastName: string;
-  story?: Story | null;
+  story?: Story | null; // Single story (backward compatible)
+  stories?: Story[]; // Multiple stories
   whatsappNumber?: string;
   email?: string;
   size?: "sm" | "md" | "lg";
@@ -48,13 +50,18 @@ export function StoryRing({
   firstName,
   lastName,
   story,
+  stories: propStories,
   whatsappNumber,
   email,
   size = "lg",
   className,
 }: StoryRingProps) {
   const [showViewer, setShowViewer] = useState(false);
-  const hasStory = !!story;
+  
+  // Support both single story and multiple stories
+  const stories = propStories || (story ? [story] : []);
+  const hasStories = stories.length > 0;
+  const storyCount = stories.length;
   const initials = `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase();
 
   const handleStoryView = async (storyId: string) => {
@@ -68,19 +75,19 @@ export function StoryRing({
   return (
     <>
       <motion.button
-        whileHover={{ scale: hasStory ? 1.02 : 1 }}
-        whileTap={{ scale: hasStory ? 0.98 : 1 }}
-        onClick={() => hasStory && setShowViewer(true)}
+        whileHover={{ scale: hasStories ? 1.02 : 1 }}
+        whileTap={{ scale: hasStories ? 0.98 : 1 }}
+        onClick={() => hasStories && setShowViewer(true)}
         className={cn(
           "relative rounded-full focus:outline-none",
-          hasStory && "cursor-pointer",
-          !hasStory && "cursor-default",
+          hasStories && "cursor-pointer",
+          !hasStories && "cursor-default",
           className
         )}
-        disabled={!hasStory}
+        disabled={!hasStories}
       >
         {/* Animated gradient ring for active story */}
-        {hasStory && (
+        {hasStories && (
           <motion.div
             className={cn(
               "absolute inset-0 rounded-full",
@@ -105,7 +112,7 @@ export function StoryRing({
           className={cn(
             "relative rounded-full bg-background",
             sizeClasses[size],
-            hasStory && ringPadding[size]
+            hasStories && ringPadding[size]
           )}
         >
           {/* Photo or initials */}
@@ -123,23 +130,30 @@ export function StoryRing({
             </div>
           )}
 
-          {/* Story indicator dot */}
-          {hasStory && (
+          {/* Story count indicator */}
+          {hasStories && (
             <motion.div
-              className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-gradient-to-br from-rose-500 to-purple-600 border-2 border-background"
+              className="absolute -bottom-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-gradient-to-br from-rose-500 to-purple-600 border-2 border-background flex items-center justify-center"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", damping: 10 }}
-            />
+            >
+              {storyCount > 1 && (
+                <span className="text-white text-[10px] font-bold">
+                  {storyCount}
+                </span>
+              )}
+            </motion.div>
           )}
         </div>
       </motion.button>
 
-      {/* Story Viewer Modal */}
-      {showViewer && story && (
-        <StoryViewer
-          story={story}
+      {/* Multi Story Viewer Modal */}
+      {showViewer && stories.length > 0 && (
+        <MultiStoryViewer
+          stories={stories}
           ownerName={`${firstName} ${lastName}`}
+          ownerPhoto={photoUrl}
           whatsappNumber={whatsappNumber}
           email={email}
           onClose={() => setShowViewer(false)}

@@ -186,7 +186,7 @@ function AdminInstantCardContent() {
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [createdCard, setCreatedCard] = useState<{ id: string; slug: string } | null>(null);
   const [activeSection, setActiveSection] = useState<"info" | "social" | "media" | "story" | "design">("info");
-  const [currentStory, setCurrentStory] = useState<any>(null);
+  const [stories, setStories] = useState<any[]>([]);
 
   const handleInputChange = (field: keyof BusinessCardData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -964,8 +964,8 @@ function AdminInstantCardContent() {
                 {createdCard ? (
                   <StoryEditor
                     cardId={createdCard.id}
-                    currentStory={currentStory}
-                    onStoryChange={setCurrentStory}
+                    stories={stories}
+                    onStoriesChange={setStories}
                   />
                 ) : (
                   <div 
