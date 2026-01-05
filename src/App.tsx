@@ -77,6 +77,7 @@ const Showroom3D = lazy(() => import("./pages/Showroom3D"));
 const MentionsLegales = lazy(() => import("./pages/MentionsLegales"));
 const CGV = lazy(() => import("./pages/CGV"));
 const DualBrandShowcase = lazy(() => import("./pages/DualBrandShowcase"));
+const Studio = lazy(() => import("./pages/Studio"));
 
 // NEW Order funnel pages - 7 steps strict flow
 const OrderType = lazy(() => import("./pages/order/OrderType"));
@@ -223,8 +224,9 @@ const App = () => {
                               {/* Dashboard */}
                               <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
                               <Route path="/settings" element={<DashboardGuard><Settings /></DashboardGuard>} />
-                              <Route path="/studio" element={<DashboardGuard><CardStudio /></DashboardGuard>} />
+                              <Route path="/studio" element={<DashboardGuard><Studio /></DashboardGuard>} />
                               <Route path="/editor" element={<DashboardGuard><CardStudio /></DashboardGuard>} />
+                              <Route path="/card-studio" element={<DashboardGuard><CardStudio /></DashboardGuard>} />
                               
                               {/* Legacy onboarding */}
                               <Route path="/onboarding" element={<Onboarding />} />
