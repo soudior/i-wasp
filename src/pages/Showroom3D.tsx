@@ -19,12 +19,9 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
-  ArrowLeft, 
   Sun, 
   Moon, 
-  Sparkles as SparklesIcon, 
   Users, 
-  ShoppingBag,
   Wine,
   X,
   CreditCard,
@@ -33,6 +30,7 @@ import {
   RotateCcw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ClubNavbar } from "@/components/ClubNavbar";
 import * as THREE from "three";
 
 // Product data
@@ -451,22 +449,15 @@ export default function Showroom3D() {
         </Suspense>
       </Canvas>
       
+      {/* ClubNavbar */}
+      <div className="absolute top-0 left-0 right-0 z-50">
+        <ClubNavbar />
+      </div>
+      
       {/* UI Overlay */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Header */}
-        <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-auto">
-          <Link to="/">
-            <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-white/5 gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Retour
-            </Button>
-          </Link>
-          
-          <div className="flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-sm rounded-full border border-white/10">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs text-white/60">Showroom actif</span>
-          </div>
-          
+        {/* Reset button */}
+        <div className="absolute top-20 right-4 pointer-events-auto">
           <Button 
             variant="ghost" 
             size="sm" 
@@ -476,6 +467,14 @@ export default function Showroom3D() {
             <RotateCcw className="w-4 h-4" />
             Réinitialiser
           </Button>
+        </div>
+        
+        {/* Showroom status badge */}
+        <div className="absolute top-20 left-4 pointer-events-auto">
+          <div className="flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-sm rounded-full border border-white/10">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-xs text-white/60">Showroom actif</span>
+          </div>
         </div>
         
         {/* Ambiance selector */}
