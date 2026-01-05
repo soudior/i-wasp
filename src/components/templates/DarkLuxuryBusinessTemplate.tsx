@@ -1,7 +1,7 @@
 /**
  * Dark Luxury Business Template
  * Theme: Dark Luxury (#0B0B0B background, #F5F5F5 text, #FFC700 accent)
- * For premium businesses with geolocation and quick actions
+ * For premium businesses with geolocation, gallery and all social networks
  */
 
 import { useState } from "react";
@@ -14,7 +14,15 @@ import {
   Instagram,
   ExternalLink,
   Star,
-  Navigation
+  Navigation,
+  Linkedin,
+  Twitter,
+  Facebook,
+  Youtube,
+  Music2,
+  Mail,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCardActionUrl, useIncrementCardView } from "@/hooks/usePublicCard";
@@ -37,15 +45,32 @@ interface DarkLuxuryBusinessTemplateProps {
     has_whatsapp?: boolean;
     has_email?: boolean;
     has_instagram?: boolean;
+    has_linkedin?: boolean;
+    has_twitter?: boolean;
     social_links?: any[];
     blocks?: any[];
   };
 }
 
+// Social network icon mapping
+const SOCIAL_ICONS: Record<string, any> = {
+  instagram: Instagram,
+  facebook: Facebook,
+  linkedin: Linkedin,
+  twitter: Twitter,
+  youtube: Youtube,
+  tiktok: Music2,
+  threads: MessageCircle,
+  telegram: MessageCircle,
+  spotify: Music2,
+  email: Mail,
+};
+
 export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateProps) {
   const getActionUrl = useCardActionUrl();
   const incrementView = useIncrementCardView();
   const [isNavigating, setIsNavigating] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Extract Google Reviews link from blocks or social_links
   const googleReviewsLink = card.blocks?.find((b: any) => b.type === 'google_reviews')?.url ||
@@ -54,6 +79,13 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
   // Extract coordinates from blocks
   const locationBlock = card.blocks?.find((b: any) => b.type === 'location');
   const coordinates = locationBlock?.coordinates;
+
+  // Extract gallery from blocks
+  const galleryBlock = card.blocks?.find((b: any) => b.type === 'gallery');
+  const galleryImages: string[] = galleryBlock?.images || [];
+
+  // Get all social links
+  const socialLinks = card.social_links?.filter((l: any) => l.url && l.platform !== 'google') || [];
 
   const handleAction = async (action: "phone" | "whatsapp" | "email") => {
     const url = await getActionUrl(card.slug, action);
@@ -70,6 +102,14 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
       window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(card.location)}`, '_blank');
     }
     setTimeout(() => setIsNavigating(false), 1000);
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
   };
 
   const displayName = card.company || `${card.first_name} ${card.last_name}`;
@@ -89,7 +129,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
           {(card.logo_url || card.photo_url) && (
             <div className="relative w-24 h-24 mx-auto mb-6">
               <img
-                src={card.logo_url || card.photo_url || ''}
+                src={card.photo_url || card.logo_url || ''}
                 alt={displayName}
                 className="w-full h-full object-cover rounded-2xl border-2"
                 style={{ borderColor: '#FFC700' }}
@@ -188,12 +228,9 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
             </Button>
           )}
 
-          {card.has_instagram && (
+          {card.has_email && (
             <Button
-              onClick={() => {
-                const instagramUrl = card.social_links?.find((l: any) => l.platform === 'instagram')?.url;
-                if (instagramUrl) window.open(instagramUrl, '_blank');
-              }}
+              onClick={() => handleAction('email')}
               className="h-14 rounded-xl font-medium border-2"
               style={{ 
                 backgroundColor: 'transparent',
@@ -201,11 +238,49 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
                 color: '#F5F5F5'
               }}
             >
-              <Instagram size={18} className="mr-2" />
-              Instagram
+              <Mail size={18} className="mr-2" />
+              Email
             </Button>
           )}
         </motion.div>
+
+        {/* All Social Networks */}
+        {socialLinks.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="mb-6"
+          >
+            <p 
+              className="text-xs font-medium mb-3 text-center"
+              style={{ color: 'rgba(245, 245, 245, 0.5)' }}
+            >
+              Réseaux sociaux
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {socialLinks.map((link: any, index: number) => {
+                const Icon = SOCIAL_ICONS[link.platform] || Globe;
+                return (
+                  <motion.button
+                    key={index}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => window.open(link.url, '_blank')}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center border-2 transition-colors hover:border-[#FFC700]"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 199, 0, 0.1)',
+                      borderColor: 'rgba(255, 199, 0, 0.3)',
+                      color: '#FFC700'
+                    }}
+                  >
+                    <Icon size={20} />
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
 
         {/* Description */}
         {card.tagline && (
@@ -222,6 +297,89 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
             >
               {card.tagline}
             </p>
+          </motion.div>
+        )}
+
+        {/* Image Gallery */}
+        {galleryImages.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="mb-6"
+          >
+            <p 
+              className="text-xs font-medium mb-3 text-center"
+              style={{ color: 'rgba(245, 245, 245, 0.5)' }}
+            >
+              Galerie
+            </p>
+            
+            {/* Main Image */}
+            <div className="relative rounded-xl overflow-hidden mb-3">
+              <img
+                src={galleryImages[currentImageIndex]}
+                alt={`Gallery ${currentImageIndex + 1}`}
+                className="w-full aspect-video object-cover"
+              />
+              
+              {galleryImages.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm"
+                    style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+                  >
+                    <ChevronLeft size={24} style={{ color: '#F5F5F5' }} />
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm"
+                    style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+                  >
+                    <ChevronRight size={24} style={{ color: '#F5F5F5' }} />
+                  </button>
+                  
+                  {/* Dots indicator */}
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    {galleryImages.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentImageIndex(idx)}
+                        className="w-2 h-2 rounded-full transition-all"
+                        style={{ 
+                          backgroundColor: idx === currentImageIndex ? '#FFC700' : 'rgba(245, 245, 245, 0.4)',
+                          transform: idx === currentImageIndex ? 'scale(1.2)' : 'scale(1)'
+                        }}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Thumbnail Strip */}
+            {galleryImages.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {galleryImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all"
+                    style={{ 
+                      borderColor: idx === currentImageIndex ? '#FFC700' : 'transparent',
+                      opacity: idx === currentImageIndex ? 1 : 0.6
+                    }}
+                  >
+                    <img
+                      src={img}
+                      alt={`Thumbnail ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </motion.div>
         )}
 
