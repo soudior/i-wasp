@@ -78,6 +78,7 @@ const MentionsLegales = lazy(() => import("./pages/MentionsLegales"));
 const CGV = lazy(() => import("./pages/CGV"));
 const DualBrandShowcase = lazy(() => import("./pages/DualBrandShowcase"));
 const Studio = lazy(() => import("./pages/Studio"));
+const DemoStudio = lazy(() => import("./pages/DemoStudio"));
 
 // NEW Order funnel pages - 7 steps strict flow
 const OrderType = lazy(() => import("./pages/order/OrderType"));
@@ -210,6 +211,7 @@ const App = () => {
                               <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
                               <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
                               <Route path="/demo/nfc-3d" element={<NFCDemo3D />} />
+                              <Route path="/demo/studio" element={<DemoStudio />} />
                               <Route path="/nfc-animation" element={<NFCDemo3D />} />
                               <Route path="/showroom" element={<Showroom3D />} />
                               <Route path="/showroom-3d" element={<Showroom3D />} />
