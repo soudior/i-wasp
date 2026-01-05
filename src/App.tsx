@@ -81,6 +81,7 @@ const CGV = lazy(() => import("./pages/CGV"));
 const DualBrandShowcase = lazy(() => import("./pages/DualBrandShowcase"));
 const Studio = lazy(() => import("./pages/Studio"));
 const DemoStudio = lazy(() => import("./pages/DemoStudio"));
+const MaisonBOpticCard = lazy(() => import("./pages/MaisonBOpticCard"));
 
 // NEW Order funnel pages - 7 steps strict flow
 const OrderType = lazy(() => import("./pages/order/OrderType"));
@@ -175,6 +176,7 @@ const App = () => {
                               <Route path="/c/:slug" element={<LegacyCardRedirect />} />
                               <Route path="/card/medina-travertin/*" element={<DualBrandShowcase />} />
                               <Route path="/card/herbalism-marrakech" element={<HerbalismCard />} />
+                              <Route path="/card/maison-b-optic" element={<MaisonBOpticCard />} />
                               <Route path="/card/:slug" element={<PublicCard />} />
                               {/* Auth */}
                               <Route path="/login" element={<Login />} />
