@@ -1,11 +1,21 @@
-import { useState, useEffect, useRef, MouseEvent } from "react";
+/**
+ * Demo Page — i-wasp Interactive Demo
+ * 
+ * Palette Stealth Luxury:
+ * - Noir Émeraude: #050807
+ * - Argent Titane: #A5A9B4
+ * - Platine: #D1D5DB
+ */
+
+import { useState, useRef, MouseEvent } from "react";
 import { CardData } from "@/components/templates/CardTemplates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
-  Phone, Mail, User, Building2, MapPin, Globe, Linkedin, Instagram,
-  X, Plus, Wallet, Share2, CreditCard, Sparkles, ArrowLeft, Smartphone
+  Phone, Mail, MapPin, Globe, Linkedin, Instagram,
+  X, Plus, Wallet, Share2, Sparkles, ArrowLeft, ShoppingBag,
+  Play, Smartphone, CreditCard, User, Building2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { downloadVCard } from "@/lib/vcard";
@@ -15,6 +25,15 @@ import { IWASPLogoSimple } from "@/components/IWASPLogo";
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
 import demoProfileImage from "@/assets/demo-profile.jpg";
 import { NFCPhysicalCard } from "@/components/print/NFCPhysicalCard";
+
+// Stealth Luxury Colors
+const STEALTH = {
+  noir: "#050807",
+  noirElevated: "#0A0F0D",
+  titanium: "#A5A9B4",
+  platinum: "#D1D5DB",
+  emeraldGlow: "#1A2B26",
+};
 
 // 3D Tilt hook for premium hover effect
 function useTilt3D(intensity: number = 15) {
