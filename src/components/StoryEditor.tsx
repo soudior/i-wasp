@@ -5,7 +5,7 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Type, Clock, Sparkles, Image as ImageIcon, Trash2, Plus, Eye } from "lucide-react";
+import { Upload, Type, Clock, Sparkles, Image as ImageIcon, Trash2, Plus, Eye, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { StoryAnalytics } from "./StoryAnalytics";
 
 interface Story {
   id: string;
@@ -402,6 +403,11 @@ export function StoryEditor({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Analytics Section */}
+      {stories.length > 0 && (
+        <StoryAnalytics stories={stories} className="pt-4 border-t border-border/50" />
+      )}
 
       <p className="text-xs text-muted-foreground text-center">
         Ajoutez jusqu'à {maxStories} stories qui défilent comme sur Instagram !

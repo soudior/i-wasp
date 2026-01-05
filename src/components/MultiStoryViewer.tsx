@@ -1,6 +1,7 @@
 /**
  * MultiStoryViewer - Affichage plein écran des stories multiples (style Instagram)
  * Défilement automatique, navigation tactile, barres de progression
+ * Avec tracking analytics détaillé
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { useStoryAnalytics } from "@/hooks/useStoryAnalytics";
 
 interface Story {
   id: string;
@@ -51,6 +53,9 @@ export function MultiStoryViewer({
   const [viewedStories, setViewedStories] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
+  const storyStartTime = useRef<number>(Date.now());
+  
+  const { trackEvent } = useStoryAnalytics();
 
   const currentStory = stories[currentIndex];
 
@@ -59,6 +64,8 @@ export function MultiStoryViewer({
     if (isPaused) return;
 
     const startTime = Date.now();
+    storyStartTime.current = startTime;
+    
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime;
       const newProgress = Math.min((elapsed / STORY_DURATION) * 100, 100);
@@ -66,24 +73,35 @@ export function MultiStoryViewer({
 
       if (newProgress >= 100) {
         clearInterval(interval);
+        // Track complete view
+        const duration = Date.now() - storyStartTime.current;
+        trackEvent(currentStory.id, 'complete_view', duration);
         goToNext();
       }
     }, 50);
 
     return () => clearInterval(interval);
-  }, [currentIndex, isPaused]);
+  }, [currentIndex, isPaused, currentStory?.id]);
 
   // Record view when story changes
   useEffect(() => {
-    if (currentStory && onView && !viewedStories.has(currentStory.id)) {
-      onView(currentStory.id);
+    if (currentStory && !viewedStories.has(currentStory.id)) {
+      // Track view event
+      trackEvent(currentStory.id, 'view');
+      
+      // Also call legacy onView callback
+      if (onView) {
+        onView(currentStory.id);
+      }
+      
       setViewedStories((prev) => new Set(prev).add(currentStory.id));
     }
-  }, [currentStory?.id, onView, viewedStories]);
+  }, [currentStory?.id, onView, viewedStories, trackEvent]);
 
   // Reset progress when story changes
   useEffect(() => {
     setProgress(0);
+    storyStartTime.current = Date.now();
   }, [currentIndex]);
 
   const goToNext = useCallback(() => {
@@ -102,12 +120,17 @@ export function MultiStoryViewer({
 
   const handleReplyWhatsApp = useCallback(() => {
     if (!whatsappNumber) return;
+    
+    // Track WhatsApp click
+    const duration = Date.now() - storyStartTime.current;
+    trackEvent(currentStory.id, 'whatsapp_click', duration);
+    
     const cleanNumber = whatsappNumber.replace(/[^\d+]/g, "").replace(/^\+/, "");
     const message = encodeURIComponent(
       `Bonjour ${ownerName}, j'ai vu votre story et je souhaite en savoir plus !`
     );
     window.open(`https://wa.me/${cleanNumber}?text=${message}`, "_blank");
-  }, [whatsappNumber, ownerName]);
+  }, [whatsappNumber, ownerName, currentStory?.id, trackEvent]);
 
   // Touch handling for swipe
   const handleTouchStart = (e: React.TouchEvent) => {
