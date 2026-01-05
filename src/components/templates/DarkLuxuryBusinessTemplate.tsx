@@ -22,11 +22,13 @@ import {
   Music2,
   Mail,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  UserPlus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCardActionUrl, useIncrementCardView } from "@/hooks/usePublicCard";
 import { IWASPBrandingFooter } from "@/components/IWASPBrandingFooter";
+import { downloadVCard, VCardData } from "@/lib/vcard";
 
 interface DarkLuxuryBusinessTemplateProps {
   card: {
@@ -110,6 +112,36 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
 
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+  };
+
+  const handleDownloadVCard = () => {
+    // Get social link by platform
+    const getSocialLink = (platform: string) => {
+      return socialLinks.find((l: any) => l.platform === platform)?.url || '';
+    };
+
+    const vCardData: VCardData = {
+      firstName: card.first_name,
+      lastName: card.last_name,
+      title: card.title || undefined,
+      company: card.company || undefined,
+      website: card.website || undefined,
+      photoUrl: card.photo_url || card.logo_url || undefined,
+      nfcPageUrl: `${window.location.origin}/card/${card.slug}`,
+      address: card.location || undefined,
+      // Social networks
+      instagram: getSocialLink('instagram') || undefined,
+      linkedin: getSocialLink('linkedin') || undefined,
+      twitter: getSocialLink('twitter') || undefined,
+      facebook: getSocialLink('facebook') || undefined,
+      youtube: getSocialLink('youtube') || undefined,
+      tiktok: getSocialLink('tiktok') || undefined,
+      telegram: getSocialLink('telegram') || undefined,
+      // Note with location
+      note: card.tagline || undefined,
+    };
+
+    downloadVCard(vCardData);
   };
 
   const displayName = card.company || `${card.first_name} ${card.last_name}`;
@@ -242,6 +274,20 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
               Email
             </Button>
           )}
+
+          {/* Add to Contacts Button */}
+          <Button
+            onClick={handleDownloadVCard}
+            className="h-14 rounded-xl font-medium col-span-2"
+            style={{ 
+              backgroundColor: 'rgba(34, 197, 94, 0.15)',
+              color: '#22C55E',
+              border: '2px solid rgba(34, 197, 94, 0.3)'
+            }}
+          >
+            <UserPlus size={18} className="mr-2" />
+            Ajouter aux contacts
+          </Button>
         </motion.div>
 
         {/* All Social Networks */}
