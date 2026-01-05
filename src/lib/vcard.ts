@@ -254,24 +254,60 @@ export function generateVCard(data: VCardData): string {
   return lines.join("\r\n");
 }
 
-export function downloadVCard(data: VCardData): void {
+/**
+ * Detect iOS/Safari for mobile-specific vCard handling
+ */
+function isIOSOrSafari(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  return isIOS || isSafari;
+}
+
+/**
+ * Download vCard with mobile-optimized handling
+ * - iOS/Safari: Opens data URI to trigger native contact prompt
+ * - Android/Desktop: Uses blob download
+ */
+export function downloadVCard(data: VCardData): { success: boolean; method: 'native' | 'download' } {
   const vcard = generateVCard(data);
-  const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
   
   // Generate filename from name
   const filename = `${data.firstName}_${data.lastName}.vcf`
     .toLowerCase()
     .replace(/\s+/g, "_")
-    .replace(/[^a-z0-9_.-]/g, "");
-  
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename || "contact.vcf";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+    .replace(/[^a-z0-9_.-]/g, "") || "contact.vcf";
+
+  try {
+    if (isIOSOrSafari()) {
+      // iOS/Safari: Use data URI - triggers native contact import
+      const dataUri = `data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`;
+      window.open(dataUri, "_blank");
+      return { success: true, method: 'native' };
+    } else {
+      // Android/Desktop: Use blob download
+      const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup after short delay
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+      return { success: true, method: 'download' };
+    }
+  } catch (error) {
+    console.error("vCard download error:", error);
+    return { success: false, method: 'download' };
+  }
 }
 
 /**
