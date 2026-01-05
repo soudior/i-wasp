@@ -1,17 +1,19 @@
 /**
- * ClubNavbar — Navigation premium pour la homepage i-wasp Club
- * Design glass dark, liens vers Showroom, Tarifs, Contact, Connexion
+ * ClubNavbar — Navigation premium i-wasp Club
+ * Pages finales : Produits, Conciergerie, Club, Tarifs, Contact
  */
 
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, Crown, LogIn, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_LINKS = [
-  { href: "/showroom", label: "Showroom 3D" },
+  { href: "/produits", label: "Produits NFC" },
+  { href: "/conciergerie", label: "Conciergerie & IA" },
+  { href: "/club", label: "Club" },
   { href: "/pricing", label: "Tarifs" },
   { href: "/contact", label: "Contact" },
 ];
@@ -20,6 +22,7 @@ export function ClubNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, signOut } = useAuth();
 
   useEffect(() => {
@@ -34,6 +37,8 @@ export function ClubNavbar() {
     await signOut();
     navigate("/");
   };
+
+  const isActive = (href: string) => location.pathname === href;
 
   return (
     <>
@@ -60,7 +65,11 @@ export function ClubNavbar() {
                 <Link
                   key={link.href}
                   to={link.href}
-                  className="px-4 py-2 text-sm font-medium text-white/60 hover:text-white rounded-lg hover:bg-white/5 transition-all duration-200"
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    isActive(link.href)
+                      ? "text-amber-400 bg-amber-500/10"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  }`}
                 >
                   {link.label}
                 </Link>
@@ -78,7 +87,7 @@ export function ClubNavbar() {
                       className="text-white/60 hover:text-white hover:bg-white/5 gap-2"
                     >
                       <LayoutDashboard className="w-4 h-4" />
-                      Dashboard
+                      Espace client
                     </Button>
                   </Link>
                   <Button 
@@ -155,7 +164,11 @@ export function ClubNavbar() {
                     <Link
                       to={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-4 py-3 text-lg font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                      className={`block px-4 py-3 text-lg font-medium rounded-xl transition-all ${
+                        isActive(link.href)
+                          ? "text-amber-400 bg-amber-500/10"
+                          : "text-white/80 hover:text-white hover:bg-white/5"
+                      }`}
                     >
                       {link.label}
                     </Link>
@@ -170,7 +183,7 @@ export function ClubNavbar() {
                     <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
                       <Button className="w-full bg-white/10 hover:bg-white/20 text-white gap-2">
                         <LayoutDashboard className="w-4 h-4" />
-                        Dashboard
+                        Espace client
                       </Button>
                     </Link>
                     <Button 
