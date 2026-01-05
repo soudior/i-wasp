@@ -1,6 +1,6 @@
 /**
- * ClubNavbar — Navigation premium i-wasp Club
- * Pages finales : Produits, Conciergerie, Club, Tarifs, Contact
+ * ClubNavbar — Navigation ultra-luxe i-wasp
+ * Palette : Midnight Emerald & Brushed Bronze
  */
 
 import { useState, useEffect } from "react";
@@ -45,18 +45,25 @@ export function ClubNavbar() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled 
-            ? "bg-black/80 backdrop-blur-xl border-b border-white/10" 
+            ? "bg-iwasp-midnight/90 backdrop-blur-xl border-b border-iwasp-emerald/10" 
             : "bg-transparent"
         }`}
       >
         <nav className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            {/* Logo */}
+            {/* Logo — Brushed Bronze accent */}
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/40 transition-shadow">
-                <Crown className="w-5 h-5 text-black" />
+              <div className="relative">
+                {/* Outer glow ring */}
+                <div className="absolute inset-0 rounded-xl bg-iwasp-bronze/20 blur-md group-hover:bg-iwasp-bronze/30 transition-all duration-500" />
+                <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-iwasp-bronze to-iwasp-bronze-light flex items-center justify-center shadow-lg">
+                  <Crown className="w-5 h-5 text-iwasp-midnight" />
+                </div>
               </div>
-              <span className="text-white font-bold text-xl tracking-tight">i-wasp</span>
+              <div className="flex flex-col">
+                <span className="font-display text-xl text-iwasp-cream tracking-tight italic">iW.</span>
+                <span className="text-[10px] text-iwasp-silver tracking-[0.2em] uppercase -mt-1">L'identité absolue</span>
+              </div>
             </Link>
 
             {/* Desktop Navigation */}
@@ -65,10 +72,10 @@ export function ClubNavbar() {
                 <Link
                   key={link.href}
                   to={link.href}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
                     isActive(link.href)
-                      ? "text-amber-400 bg-amber-500/10"
-                      : "text-white/60 hover:text-white hover:bg-white/5"
+                      ? "text-iwasp-bronze bg-iwasp-bronze/10"
+                      : "text-iwasp-silver hover:text-iwasp-cream hover:bg-iwasp-emerald/5"
                   }`}
                 >
                   {link.label}
@@ -84,7 +91,7 @@ export function ClubNavbar() {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      className="text-white/60 hover:text-white hover:bg-white/5 gap-2"
+                      className="text-iwasp-silver hover:text-iwasp-cream hover:bg-iwasp-emerald/10 gap-2"
                     >
                       <LayoutDashboard className="w-4 h-4" />
                       Espace client
@@ -94,7 +101,7 @@ export function ClubNavbar() {
                     variant="ghost" 
                     size="sm"
                     onClick={handleLogout}
-                    className="text-white/60 hover:text-white hover:bg-white/5 gap-2"
+                    className="text-iwasp-silver hover:text-iwasp-cream hover:bg-iwasp-emerald/10 gap-2"
                   >
                     <LogOut className="w-4 h-4" />
                     Déconnexion
@@ -106,7 +113,7 @@ export function ClubNavbar() {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      className="text-white/60 hover:text-white hover:bg-white/5 gap-2"
+                      className="text-iwasp-silver hover:text-iwasp-cream hover:bg-iwasp-emerald/10 gap-2"
                     >
                       <LogIn className="w-4 h-4" />
                       Connexion
@@ -115,10 +122,9 @@ export function ClubNavbar() {
                   <Link to="/signup">
                     <Button 
                       size="sm"
-                      className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-semibold gap-2 rounded-full px-5"
+                      className="bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight font-semibold gap-2 rounded-full px-5 tracking-wide uppercase text-xs"
                     >
-                      <Crown className="w-4 h-4" />
-                      Rejoindre
+                      Membres
                     </Button>
                   </Link>
                 </>
@@ -128,7 +134,7 @@ export function ClubNavbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-white/60 hover:text-white transition-colors"
+              className="md:hidden p-2 text-iwasp-silver hover:text-iwasp-cream transition-colors"
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -147,7 +153,7 @@ export function ClubNavbar() {
           >
             {/* Backdrop */}
             <div 
-              className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+              className="absolute inset-0 bg-iwasp-midnight/95 backdrop-blur-xl"
               onClick={() => setIsMobileMenuOpen(false)}
             />
             
@@ -166,8 +172,8 @@ export function ClubNavbar() {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`block px-4 py-3 text-lg font-medium rounded-xl transition-all ${
                         isActive(link.href)
-                          ? "text-amber-400 bg-amber-500/10"
-                          : "text-white/80 hover:text-white hover:bg-white/5"
+                          ? "text-iwasp-bronze bg-iwasp-bronze/10"
+                          : "text-iwasp-cream/80 hover:text-iwasp-cream hover:bg-iwasp-emerald/10"
                       }`}
                     >
                       {link.label}
@@ -177,18 +183,18 @@ export function ClubNavbar() {
               </div>
               
               {/* Auth buttons */}
-              <div className="mt-8 pt-6 border-t border-white/10 space-y-3">
+              <div className="mt-8 pt-6 border-t border-iwasp-emerald/10 space-y-3">
                 {user ? (
                   <>
                     <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-white/10 hover:bg-white/20 text-white gap-2">
+                      <Button className="w-full bg-iwasp-emerald/20 hover:bg-iwasp-emerald/30 text-iwasp-cream gap-2">
                         <LayoutDashboard className="w-4 h-4" />
                         Espace client
                       </Button>
                     </Link>
                     <Button 
                       variant="ghost" 
-                      className="w-full text-white/60 hover:text-white"
+                      className="w-full text-iwasp-silver hover:text-iwasp-cream"
                       onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
                     >
                       <LogOut className="w-4 h-4 mr-2" />
@@ -198,13 +204,13 @@ export function ClubNavbar() {
                 ) : (
                   <>
                     <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold gap-2">
+                      <Button className="w-full bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight font-semibold gap-2 tracking-wide uppercase">
                         <Crown className="w-4 h-4" />
-                        Rejoindre le Club
+                        Rejoindre
                       </Button>
                     </Link>
                     <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full text-white/60 hover:text-white gap-2">
+                      <Button variant="ghost" className="w-full text-iwasp-silver hover:text-iwasp-cream gap-2">
                         <LogIn className="w-4 h-4" />
                         Connexion
                       </Button>
