@@ -105,15 +105,20 @@ const FONT_OPTIONS = [
   { id: "mono", name: "Mono", style: "font-mono" }
 ];
 
-// All social networks
+// All social networks - Complete list
 const SOCIAL_NETWORKS = [
-  { id: "instagram", name: "Instagram", icon: Instagram, placeholder: "https://instagram.com/..." },
-  { id: "facebook", name: "Facebook", icon: Facebook, placeholder: "https://facebook.com/..." },
-  { id: "linkedin", name: "LinkedIn", icon: Linkedin, placeholder: "https://linkedin.com/in/..." },
-  { id: "twitter", name: "Twitter/X", icon: Twitter, placeholder: "https://x.com/..." },
-  { id: "youtube", name: "YouTube", icon: Youtube, placeholder: "https://youtube.com/@..." },
-  { id: "tiktok", name: "TikTok", icon: Music2, placeholder: "https://tiktok.com/@..." },
-  { id: "snapchat", name: "Snapchat", icon: Video, placeholder: "https://snapchat.com/add/..." },
+  { id: "instagram", name: "Instagram", icon: Instagram, placeholder: "@username ou lien complet" },
+  { id: "facebook", name: "Facebook", icon: Facebook, placeholder: "Lien page ou profil" },
+  { id: "linkedin", name: "LinkedIn", icon: Linkedin, placeholder: "Lien profil LinkedIn" },
+  { id: "twitter", name: "Twitter/X", icon: Twitter, placeholder: "@username ou lien" },
+  { id: "youtube", name: "YouTube", icon: Youtube, placeholder: "Lien chaîne YouTube" },
+  { id: "tiktok", name: "TikTok", icon: Music2, placeholder: "@username ou lien" },
+  { id: "snapchat", name: "Snapchat", icon: Video, placeholder: "Username Snapchat" },
+  { id: "threads", name: "Threads", icon: MessageCircle, placeholder: "@username Threads" },
+  { id: "telegram", name: "Telegram", icon: MessageCircle, placeholder: "@username ou t.me/..." },
+  { id: "pinterest", name: "Pinterest", icon: Image, placeholder: "Lien profil Pinterest" },
+  { id: "spotify", name: "Spotify", icon: Music2, placeholder: "Lien artiste/playlist" },
+  { id: "tripadvisor", name: "TripAdvisor", icon: Star, placeholder: "Lien établissement" },
 ];
 
 interface BusinessCardData {
