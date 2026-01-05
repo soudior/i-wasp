@@ -66,6 +66,10 @@ import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import BrandAssets from "./pages/BrandAssets";
 import CardStudio from "./pages/CardStudio";
 import NFCDemo3D from "./pages/NFCDemo3D";
+import ProduitsNFC from "./pages/ProduitsNFC";
+import Conciergerie from "./pages/Conciergerie";
+import Club from "./pages/Club";
+import Contact from "./pages/Contact";
 import Showroom3D from "./pages/Showroom3D";
 
 // NEW Order funnel pages - 7 steps strict flow
@@ -131,11 +135,17 @@ const App = () => {
                       <ErrorBoundary>
                         <OrderFunnelProvider>
                           <Routes>
-                            {/* HOME */}
-                            <Route path="/" element={<HomeSaaS />} />
-                            <Route path="/legacy" element={<Index />} />
-                            
-                            {/* Demo */}
+                          {/* HOME */}
+                          <Route path="/" element={<Index />} />
+                          <Route path="/legacy" element={<HomeSaaS />} />
+                          
+                          {/* NEW PAGES - Final structure */}
+                          <Route path="/produits" element={<ProduitsNFC />} />
+                          <Route path="/conciergerie" element={<Conciergerie />} />
+                          <Route path="/club" element={<Club />} />
+                          <Route path="/contact" element={<Contact />} />
+                          
+                          {/* Demo */}
                             <Route path="/demo" element={<Demo />} />
                             
                             {/* Public NFC Card */}
