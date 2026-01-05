@@ -1,22 +1,32 @@
 /**
  * GlobalFooter - Footer ultra-luxe i-wasp
- * Palette : Midnight Emerald & Brushed Bronze
+ * Palette Stealth Luxury: Noir Émeraude #050807, Argent Titane #A5A9B4, Platine #D1D5DB
  */
 
 import { Link } from "react-router-dom";
-import { Crown } from "lucide-react";
+import { Crown, ShoppingBag, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+// Stealth Luxury Colors
+const STEALTH = {
+  noir: "#050807",
+  noirElevated: "#0A0F0D",
+  titanium: "#A5A9B4",
+  platinum: "#D1D5DB",
+};
 
 const footerLinks = {
   navigation: [
     { label: "Produits NFC", href: "/produits" },
-    { label: "Conciergerie", href: "/conciergerie" },
-    { label: "Club", href: "/club" },
+    { label: "Fonctionnalités", href: "/features" },
     { label: "Tarifs", href: "/pricing" },
+    { label: "Club", href: "/club" },
   ],
   support: [
     { label: "Contact", href: "/contact" },
     { label: "FAQ", href: "/help" },
     { label: "Guide", href: "/guide" },
+    { label: "Conciergerie", href: "/conciergerie" },
   ],
   legal: [
     { label: "Mentions légales", href: "/mentions-legales" },
@@ -60,28 +70,77 @@ interface GlobalFooterProps {
 }
 
 export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
-  // Always use midnight theme for ultra-luxe consistency
   return (
-    <footer className="py-20 border-t bg-iwasp-midnight border-iwasp-emerald/10 text-iwasp-cream">
+    <footer 
+      className="py-20 border-t"
+      style={{ 
+        backgroundColor: STEALTH.noir,
+        borderColor: `${STEALTH.titanium}10`
+      }}
+    >
       <div className="container mx-auto px-6">
+        {/* CTA Section */}
+        <div 
+          className="mb-16 p-8 sm:p-12 rounded-2xl border text-center"
+          style={{ 
+            background: `linear-gradient(135deg, ${STEALTH.titanium}10, ${STEALTH.titanium}05)`,
+            borderColor: `${STEALTH.titanium}20`
+          }}
+        >
+          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            Prêt à passer au digital ?
+          </h3>
+          <p className="mb-6" style={{ color: STEALTH.titanium }}>
+            Commandez votre carte NFC en quelques clics
+          </p>
+          <Link to="/order/type">
+            <Button 
+              size="lg"
+              className="font-semibold px-8 gap-2"
+              style={{ 
+                background: `linear-gradient(135deg, ${STEALTH.titanium}, ${STEALTH.platinum})`,
+                color: STEALTH.noir
+              }}
+            >
+              <ShoppingBag className="w-5 h-5" />
+              Commander ma carte
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+          </Link>
+        </div>
+        
         {/* Main footer grid */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-16">
           {/* Brand */}
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-3 mb-6 group">
               <div className="relative">
-                <div className="absolute inset-0 rounded-xl bg-iwasp-bronze/20 blur-md" />
-                <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-iwasp-bronze to-iwasp-bronze-light flex items-center justify-center">
-                  <Crown className="w-5 h-5 text-iwasp-midnight" />
+                <div 
+                  className="absolute inset-0 rounded-xl blur-md"
+                  style={{ backgroundColor: `${STEALTH.titanium}20` }}
+                />
+                <div 
+                  className="relative w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ background: `linear-gradient(135deg, ${STEALTH.titanium}, ${STEALTH.platinum})` }}
+                >
+                  <Crown className="w-5 h-5" style={{ color: STEALTH.noir }} />
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className="font-display text-xl text-iwasp-cream tracking-tight italic">iW.</span>
-                <span className="text-[10px] text-iwasp-silver tracking-[0.2em] uppercase -mt-1">L'identité absolue</span>
+                <span className="font-display text-xl text-white tracking-tight italic">iW.</span>
+                <span 
+                  className="text-[10px] tracking-[0.2em] uppercase -mt-1"
+                  style={{ color: STEALTH.titanium }}
+                >
+                  Cartes NFC Pro
+                </span>
               </div>
             </Link>
-            <p className="text-sm leading-relaxed max-w-xs mb-8 text-iwasp-silver">
-              Cartes NFC premium, conciergerie digitale et expériences connectées augmentées par l'IA.
+            <p 
+              className="text-sm leading-relaxed max-w-xs mb-8"
+              style={{ color: STEALTH.titanium }}
+            >
+              Cartes NFC premium pour professionnels. Partagez vos informations d'un simple tap.
             </p>
             {/* Social links */}
             <div className="flex items-center gap-4">
@@ -91,7 +150,8 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
                   href={social.href} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-iwasp-silver/50 hover:text-iwasp-bronze transition-colors duration-300"
+                  className="transition-colors duration-300"
+                  style={{ color: `${STEALTH.titanium}60` }}
                   aria-label={social.name}
                 >
                   {social.icon}
@@ -102,7 +162,10 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
 
           {/* Navigation */}
           <div>
-            <h4 className="font-medium mb-5 text-xs uppercase tracking-[0.15em] text-iwasp-cream/80">
+            <h4 
+              className="font-medium mb-5 text-xs uppercase tracking-[0.15em]"
+              style={{ color: `${STEALTH.titanium}CC` }}
+            >
               Navigation
             </h4>
             <ul className="space-y-3">
@@ -110,7 +173,8 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
                 <li key={link.href}>
                   <Link
                     to={link.href}
-                    className="text-sm text-iwasp-silver hover:text-iwasp-bronze transition-colors duration-300"
+                    className="text-sm transition-colors duration-300"
+                    style={{ color: STEALTH.titanium }}
                   >
                     {link.label}
                   </Link>
@@ -121,7 +185,10 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
 
           {/* Support */}
           <div>
-            <h4 className="font-medium mb-5 text-xs uppercase tracking-[0.15em] text-iwasp-cream/80">
+            <h4 
+              className="font-medium mb-5 text-xs uppercase tracking-[0.15em]"
+              style={{ color: `${STEALTH.titanium}CC` }}
+            >
               Support
             </h4>
             <ul className="space-y-3">
@@ -129,7 +196,8 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
                 <li key={link.href}>
                   <Link
                     to={link.href}
-                    className="text-sm text-iwasp-silver hover:text-iwasp-bronze transition-colors duration-300"
+                    className="text-sm transition-colors duration-300"
+                    style={{ color: STEALTH.titanium }}
                   >
                     {link.label}
                   </Link>
@@ -140,7 +208,10 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
 
           {/* Legal */}
           <div>
-            <h4 className="font-medium mb-5 text-xs uppercase tracking-[0.15em] text-iwasp-cream/80">
+            <h4 
+              className="font-medium mb-5 text-xs uppercase tracking-[0.15em]"
+              style={{ color: `${STEALTH.titanium}CC` }}
+            >
               Légal
             </h4>
             <ul className="space-y-3">
@@ -148,7 +219,8 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
                 <li key={link.href}>
                   <Link
                     to={link.href}
-                    className="text-sm text-iwasp-silver hover:text-iwasp-bronze transition-colors duration-300"
+                    className="text-sm transition-colors duration-300"
+                    style={{ color: STEALTH.titanium }}
                   >
                     {link.label}
                   </Link>
@@ -159,18 +231,27 @@ export function GlobalFooter({ variant = "dark" }: GlobalFooterProps) {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 border-t border-iwasp-emerald/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-iwasp-silver/50">
+        <div 
+          className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4"
+          style={{ borderTop: `1px solid ${STEALTH.titanium}10` }}
+        >
+          <p 
+            className="text-xs"
+            style={{ color: `${STEALTH.titanium}60` }}
+          >
             © {new Date().getFullYear()} i-wasp. Tous droits réservés.
           </p>
-          <div className="flex items-center gap-6 text-xs text-iwasp-silver/50">
-            <Link to="/mentions-legales" className="hover:text-iwasp-cream transition-colors duration-300">
+          <div 
+            className="flex items-center gap-6 text-xs"
+            style={{ color: `${STEALTH.titanium}60` }}
+          >
+            <Link to="/mentions-legales" className="hover:text-white transition-colors duration-300">
               Mentions légales
             </Link>
-            <Link to="/cgv" className="hover:text-iwasp-cream transition-colors duration-300">
+            <Link to="/cgv" className="hover:text-white transition-colors duration-300">
               CGV
             </Link>
-            <Link to="/privacy" className="hover:text-iwasp-cream transition-colors duration-300">
+            <Link to="/privacy" className="hover:text-white transition-colors duration-300">
               Confidentialité
             </Link>
           </div>
