@@ -1,8 +1,6 @@
 /**
- * Admin Instant Card Creator
- * Mode "Création instantanée vCard – Admin i-Wasp"
- * Creates digital business cards instantly without payment
- * Enhanced with template selector and customization options
+ * Admin Instant Card Creator - FULL VERSION
+ * All social networks, image gallery, complete options
  */
 
 import { useState } from "react";
@@ -18,7 +16,6 @@ import {
   ArrowLeft,
   ExternalLink,
   Share2,
-  Smartphone,
   Copy,
   Globe,
   Instagram,
@@ -27,7 +24,20 @@ import {
   Palette,
   Type,
   Layout,
-  Check
+  Check,
+  Mail,
+  Linkedin,
+  Twitter,
+  Facebook,
+  Youtube,
+  Camera,
+  Image,
+  X,
+  Plus,
+  Music2,
+  Video,
+  Calendar,
+  Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,18 +105,33 @@ const FONT_OPTIONS = [
   { id: "mono", name: "Mono", style: "font-mono" }
 ];
 
+// All social networks
+const SOCIAL_NETWORKS = [
+  { id: "instagram", name: "Instagram", icon: Instagram, placeholder: "https://instagram.com/..." },
+  { id: "facebook", name: "Facebook", icon: Facebook, placeholder: "https://facebook.com/..." },
+  { id: "linkedin", name: "LinkedIn", icon: Linkedin, placeholder: "https://linkedin.com/in/..." },
+  { id: "twitter", name: "Twitter/X", icon: Twitter, placeholder: "https://x.com/..." },
+  { id: "youtube", name: "YouTube", icon: Youtube, placeholder: "https://youtube.com/@..." },
+  { id: "tiktok", name: "TikTok", icon: Music2, placeholder: "https://tiktok.com/@..." },
+  { id: "snapchat", name: "Snapchat", icon: Video, placeholder: "https://snapchat.com/add/..." },
+];
+
 interface BusinessCardData {
   businessName: string;
   category: string;
   description: string;
+  email: string;
   website: string;
-  instagram: string;
   phone: string;
   whatsapp: string;
   location: string;
   coordinates: { lat: number; lng: number } | null;
   googleReviewsUrl: string;
+  bookingUrl: string;
   logoUrl: string;
+  photoUrl: string;
+  galleryUrls: string[];
+  socialLinks: { [key: string]: string };
   template: string;
   primaryColor: string;
   secondaryColor: string;
@@ -117,14 +142,18 @@ const initialData: BusinessCardData = {
   businessName: "",
   category: "",
   description: "",
+  email: "",
   website: "",
-  instagram: "",
   phone: "",
   whatsapp: "",
   location: "",
   coordinates: null,
   googleReviewsUrl: "",
+  bookingUrl: "",
   logoUrl: "",
+  photoUrl: "",
+  galleryUrls: [],
+  socialLinks: {},
   template: "dark-luxury-business",
   primaryColor: "#FFC700",
   secondaryColor: "#0B0B0B",
@@ -145,11 +174,21 @@ function AdminInstantCardContent() {
   const [formData, setFormData] = useState<BusinessCardData>(initialData);
   const [isCreating, setIsCreating] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [createdCard, setCreatedCard] = useState<{ id: string; slug: string } | null>(null);
-  const [activeSection, setActiveSection] = useState<"info" | "design">("info");
+  const [activeSection, setActiveSection] = useState<"info" | "social" | "media" | "design">("info");
 
   const handleInputChange = (field: keyof BusinessCardData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSocialChange = (network: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      socialLinks: { ...prev.socialLinks, [network]: value }
+    }));
   };
 
   const handleTemplateSelect = (templateId: string) => {
@@ -216,12 +255,9 @@ function AdminInstantCardContent() {
     );
   };
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const uploadImage = async (file: File, folder: string): Promise<string | null> => {
     const fileExt = file.name.split('.').pop();
-    const fileName = `instant-${Date.now()}.${fileExt}`;
+    const fileName = `${folder}-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePath = `admin-uploads/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
@@ -229,16 +265,73 @@ function AdminInstantCardContent() {
       .upload(filePath, file);
 
     if (uploadError) {
-      toast.error("Erreur upload logo");
-      return;
+      console.error("Upload error:", uploadError);
+      toast.error("Erreur upload: " + uploadError.message);
+      return null;
     }
 
     const { data: { publicUrl } } = supabase.storage
       .from('card-assets')
       .getPublicUrl(filePath);
 
-    setFormData(prev => ({ ...prev, logoUrl: publicUrl }));
-    toast.success("Logo uploadé ✓");
+    return publicUrl;
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingLogo(true);
+    const url = await uploadImage(file, 'logo');
+    if (url) {
+      setFormData(prev => ({ ...prev, logoUrl: url }));
+      toast.success("Logo uploadé ✓");
+    }
+    setIsUploadingLogo(false);
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingPhoto(true);
+    const url = await uploadImage(file, 'photo');
+    if (url) {
+      setFormData(prev => ({ ...prev, photoUrl: url }));
+      toast.success("Photo uploadée ✓");
+    }
+    setIsUploadingPhoto(false);
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploadingGallery(true);
+    const uploadedUrls: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const url = await uploadImage(files[i], 'gallery');
+      if (url) {
+        uploadedUrls.push(url);
+      }
+    }
+
+    if (uploadedUrls.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        galleryUrls: [...prev.galleryUrls, ...uploadedUrls]
+      }));
+      toast.success(`${uploadedUrls.length} image(s) ajoutée(s) ✓`);
+    }
+    setIsUploadingGallery(false);
+  };
+
+  const removeGalleryImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      galleryUrls: prev.galleryUrls.filter((_, i) => i !== index)
+    }));
   };
 
   const createInstantCard = async () => {
@@ -276,10 +369,24 @@ function AdminInstantCardContent() {
         });
       }
 
-      const socialLinks: any[] = [];
-      if (formData.instagram) {
-        socialLinks.push({ platform: 'instagram', url: formData.instagram });
+      if (formData.galleryUrls.length > 0) {
+        blocks.push({
+          type: 'gallery',
+          images: formData.galleryUrls
+        });
       }
+
+      if (formData.bookingUrl) {
+        blocks.push({
+          type: 'booking',
+          url: formData.bookingUrl
+        });
+      }
+
+      // Build social links array
+      const socialLinks = Object.entries(formData.socialLinks)
+        .filter(([_, url]) => url && url.trim() !== '')
+        .map(([platform, url]) => ({ platform, url }));
 
       // Custom styles with colors and font
       const customStyles = {
@@ -298,13 +405,16 @@ function AdminInstantCardContent() {
           title: formData.category,
           company: formData.businessName,
           tagline: formData.description,
+          email: formData.email || null,
           website: formData.website || null,
           phone: formData.phone || null,
           whatsapp: formData.whatsapp || null,
-          instagram: formData.instagram || null,
+          instagram: formData.socialLinks.instagram || null,
+          linkedin: formData.socialLinks.linkedin || null,
+          twitter: formData.socialLinks.twitter || null,
           location: formData.location || null,
           logo_url: formData.logoUrl || null,
-          photo_url: formData.logoUrl || null,
+          photo_url: formData.photoUrl || formData.logoUrl || null,
           template: formData.template,
           blocks: blocks,
           social_links: socialLinks,
@@ -358,24 +468,15 @@ function AdminInstantCardContent() {
   // Success view
   if (createdCard) {
     return (
-      <div 
-        className="min-h-dvh w-full"
-        style={{ backgroundColor: '#0B0B0B' }}
-      >
+      <div className="min-h-dvh w-full" style={{ backgroundColor: '#0B0B0B' }}>
         <div className="max-w-md mx-auto px-4 py-8">
           <div className="text-center mb-8">
             <div 
               className="inline-flex items-center gap-2 px-5 py-3 rounded-full"
               style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)' }}
             >
-              <span 
-                className="w-3 h-3 rounded-full animate-pulse"
-                style={{ backgroundColor: '#22C55E' }}
-              />
-              <span 
-                className="font-semibold"
-                style={{ color: '#22C55E' }}
-              >
+              <span className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: '#22C55E' }} />
+              <span className="font-semibold" style={{ color: '#22C55E' }}>
                 Carte digitale active
               </span>
             </div>
@@ -383,39 +484,28 @@ function AdminInstantCardContent() {
 
           <Card 
             className="border-2 mb-6"
-            style={{ 
-              backgroundColor: 'rgba(255, 255, 255, 0.03)',
-              borderColor: 'rgba(34, 197, 94, 0.3)'
-            }}
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', borderColor: 'rgba(34, 197, 94, 0.3)' }}
           >
             <CardContent className="pt-6">
               <div className="flex justify-center mb-6">
-                <div 
-                  className="p-4 rounded-2xl"
-                  style={{ backgroundColor: '#FFFFFF' }}
-                >
-                  <QRCodeSVG
-                    value={getCardUrl()}
-                    size={180}
-                    level="H"
-                    fgColor="#0B0B0B"
-                    bgColor="#FFFFFF"
-                    includeMargin={false}
-                  />
+                <div className="p-4 rounded-2xl" style={{ backgroundColor: '#FFFFFF' }}>
+                  <QRCodeSVG value={getCardUrl()} size={180} level="H" fgColor="#0B0B0B" bgColor="#FFFFFF" />
                 </div>
               </div>
 
               <div className="text-center mb-6">
-                <h2 
-                  className="text-xl font-bold mb-2"
-                  style={{ color: '#F5F5F5' }}
-                >
+                {(formData.photoUrl || formData.logoUrl) && (
+                  <img 
+                    src={formData.photoUrl || formData.logoUrl} 
+                    alt="Profile" 
+                    className="w-20 h-20 rounded-full object-cover mx-auto mb-3 border-2"
+                    style={{ borderColor: formData.primaryColor }}
+                  />
+                )}
+                <h2 className="text-xl font-bold mb-2" style={{ color: '#F5F5F5' }}>
                   {formData.businessName}
                 </h2>
-                <p 
-                  className="text-sm mb-2"
-                  style={{ color: 'rgba(245, 245, 245, 0.6)' }}
-                >
+                <p className="text-sm mb-2" style={{ color: 'rgba(245, 245, 245, 0.6)' }}>
                   {formData.category}
                 </p>
                 <Badge style={{ backgroundColor: formData.primaryColor, color: formData.secondaryColor }}>
@@ -427,18 +517,8 @@ function AdminInstantCardContent() {
                 className="rounded-xl p-4 mb-6"
                 style={{ backgroundColor: 'rgba(34, 197, 94, 0.08)' }}
               >
-                <p 
-                  className="text-xs mb-1"
-                  style={{ color: 'rgba(245, 245, 245, 0.5)' }}
-                >
-                  Lien public
-                </p>
-                <p 
-                  className="text-sm font-mono break-all"
-                  style={{ color: '#22C55E' }}
-                >
-                  {getCardUrl()}
-                </p>
+                <p className="text-xs mb-1" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>Lien public</p>
+                <p className="text-sm font-mono break-all" style={{ color: '#22C55E' }}>{getCardUrl()}</p>
               </div>
 
               <div className="space-y-3">
@@ -452,23 +532,11 @@ function AdminInstantCardContent() {
                 </Button>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    onClick={shareCard}
-                    variant="outline"
-                    className="h-12 rounded-xl font-medium border-2"
-                    style={{ borderColor: 'rgba(245, 245, 245, 0.3)', color: '#F5F5F5' }}
-                  >
-                    <Share2 size={16} className="mr-2" />
-                    Partager
+                  <Button onClick={shareCard} variant="outline" className="h-12 rounded-xl" style={{ borderColor: 'rgba(245, 245, 245, 0.3)', color: '#F5F5F5' }}>
+                    <Share2 size={16} className="mr-2" /> Partager
                   </Button>
-                  <Button
-                    onClick={copyLink}
-                    variant="outline"
-                    className="h-12 rounded-xl font-medium border-2"
-                    style={{ borderColor: 'rgba(245, 245, 245, 0.3)', color: '#F5F5F5' }}
-                  >
-                    <Copy size={16} className="mr-2" />
-                    Copier
+                  <Button onClick={copyLink} variant="outline" className="h-12 rounded-xl" style={{ borderColor: 'rgba(245, 245, 245, 0.3)', color: '#F5F5F5' }}>
+                    <Copy size={16} className="mr-2" /> Copier
                   </Button>
                 </div>
               </div>
@@ -477,25 +545,15 @@ function AdminInstantCardContent() {
 
           <div className="space-y-3">
             <Button
-              onClick={() => {
-                setCreatedCard(null);
-                setFormData(initialData);
-              }}
+              onClick={() => { setCreatedCard(null); setFormData(initialData); }}
               variant="ghost"
               className="w-full h-12"
               style={{ color: 'rgba(245, 245, 245, 0.6)' }}
             >
-              <Zap size={16} className="mr-2" />
-              Créer une autre carte
+              <Zap size={16} className="mr-2" /> Créer une autre carte
             </Button>
-            <Button
-              onClick={() => navigate("/admin")}
-              variant="ghost"
-              className="w-full h-12"
-              style={{ color: 'rgba(245, 245, 245, 0.4)' }}
-            >
-              <ArrowLeft size={16} className="mr-2" />
-              Retour Admin
+            <Button onClick={() => navigate("/admin")} variant="ghost" className="w-full h-12" style={{ color: 'rgba(245, 245, 245, 0.4)' }}>
+              <ArrowLeft size={16} className="mr-2" /> Retour Admin
             </Button>
           </div>
         </div>
@@ -503,85 +561,58 @@ function AdminInstantCardContent() {
     );
   }
 
+  const sections = [
+    { id: "info", label: "Infos", icon: Type },
+    { id: "social", label: "Réseaux", icon: Instagram },
+    { id: "media", label: "Médias", icon: Image },
+    { id: "design", label: "Design", icon: Palette },
+  ] as const;
+
   // Form view
   return (
-    <div 
-      className="min-h-dvh w-full"
-      style={{ backgroundColor: '#0B0B0B' }}
-    >
+    <div className="min-h-dvh w-full" style={{ backgroundColor: '#0B0B0B' }}>
       {/* Header */}
       <div 
         className="sticky top-0 z-10 backdrop-blur border-b"
-        style={{ 
-          backgroundColor: 'rgba(11, 11, 11, 0.95)',
-          borderColor: 'rgba(255, 199, 0, 0.2)'
-        }}
+        style={{ backgroundColor: 'rgba(11, 11, 11, 0.95)', borderColor: 'rgba(255, 199, 0, 0.2)' }}
       >
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => navigate("/admin")}
-            style={{ color: '#F5F5F5' }}
-          >
+          <Button variant="ghost" size="icon" onClick={() => navigate("/admin")} style={{ color: '#F5F5F5' }}>
             <ArrowLeft size={20} />
           </Button>
           <div className="flex items-center gap-2">
             <Zap size={20} style={{ color: '#FFC700' }} />
-            <h1 
-              className="text-lg font-bold"
-              style={{ color: '#F5F5F5' }}
-            >
-              Création Instantanée
-            </h1>
+            <h1 className="text-lg font-bold" style={{ color: '#F5F5F5' }}>Création Instantanée</h1>
           </div>
         </div>
         
         {/* Tabs */}
         <div className="max-w-2xl mx-auto px-4 pb-2">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setActiveSection("info")}
-              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2`}
-              style={{
-                backgroundColor: activeSection === "info" ? 'rgba(255, 199, 0, 0.15)' : 'transparent',
-                color: activeSection === "info" ? '#FFC700' : 'rgba(245, 245, 245, 0.5)'
-              }}
-            >
-              <Type size={16} />
-              Informations
-            </button>
-            <button
-              onClick={() => setActiveSection("design")}
-              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2`}
-              style={{
-                backgroundColor: activeSection === "design" ? 'rgba(255, 199, 0, 0.15)' : 'transparent',
-                color: activeSection === "design" ? '#FFC700' : 'rgba(245, 245, 245, 0.5)'
-              }}
-            >
-              <Palette size={16} />
-              Design
-            </button>
+          <div className="flex gap-1">
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className="flex-1 py-2 px-2 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5"
+                style={{
+                  backgroundColor: activeSection === section.id ? 'rgba(255, 199, 0, 0.15)' : 'transparent',
+                  color: activeSection === section.id ? '#FFC700' : 'rgba(245, 245, 245, 0.5)'
+                }}
+              >
+                <section.icon size={14} />
+                <span className="hidden sm:inline">{section.label}</span>
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         
+        {/* SECTION: INFOS */}
         {activeSection === "info" && (
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-6"
-          >
-            {/* Business Identity */}
-            <Card 
-              className="border"
-              style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                borderColor: 'rgba(255, 199, 0, 0.2)'
-              }}
-            >
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+            <Card className="border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(255, 199, 0, 0.2)' }}>
               <CardContent className="pt-6 space-y-4">
                 <div>
                   <Label style={{ color: '#F5F5F5' }}>Nom commercial *</Label>
@@ -589,11 +620,7 @@ function AdminInstantCardContent() {
                     value={formData.businessName}
                     onChange={(e) => handleInputChange("businessName", e.target.value)}
                     className="h-12 rounded-xl border-2"
-                    style={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      borderColor: 'rgba(255, 199, 0, 0.3)',
-                      color: '#F5F5F5'
-                    }}
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 199, 0, 0.3)', color: '#F5F5F5' }}
                     placeholder="Ex: Mon Commerce"
                   />
                 </div>
@@ -604,150 +631,103 @@ function AdminInstantCardContent() {
                     value={formData.category}
                     onChange={(e) => handleInputChange("category", e.target.value)}
                     className="h-12 rounded-xl border"
-                    style={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      borderColor: 'rgba(245, 245, 245, 0.1)',
-                      color: '#F5F5F5'
-                    }}
-                    placeholder="Ex: Restaurant, Boutique, Consultant..."
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }}
+                    placeholder="Ex: Restaurant, Boutique..."
                   />
                 </div>
 
                 <div>
-                  <Label style={{ color: '#F5F5F5' }}>Description courte</Label>
+                  <Label style={{ color: '#F5F5F5' }}>Description</Label>
                   <Textarea
                     value={formData.description}
                     onChange={(e) => handleInputChange("description", e.target.value)}
                     className="rounded-xl border resize-none"
-                    style={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      borderColor: 'rgba(245, 245, 245, 0.1)',
-                      color: '#F5F5F5'
-                    }}
-                    placeholder="Description courte du commerce"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }}
+                    placeholder="Description courte"
                     rows={2}
                   />
-                </div>
-
-                {/* Logo Upload */}
-                <div>
-                  <Label style={{ color: '#F5F5F5' }}>Logo</Label>
-                  <div className="flex gap-3">
-                    <label 
-                      className="flex-1 h-12 rounded-xl border-2 border-dashed flex items-center justify-center cursor-pointer transition-colors hover:border-[#FFC700]/50"
-                      style={{ borderColor: 'rgba(255, 199, 0, 0.3)' }}
-                    >
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleLogoUpload}
-                        className="hidden"
-                      />
-                      <span style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
-                        {formData.logoUrl ? 'Logo uploadé ✓' : 'Choisir un logo'}
-                      </span>
-                    </label>
-                    {formData.logoUrl && (
-                      <img 
-                        src={formData.logoUrl} 
-                        alt="Logo" 
-                        className="h-12 w-12 rounded-xl object-cover"
-                      />
-                    )}
-                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Contact & Links */}
-            <Card 
-              className="border"
-              style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                borderColor: 'rgba(245, 245, 245, 0.1)'
-              }}
-            >
+            {/* Contact */}
+            <Card className="border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(245, 245, 245, 0.1)' }}>
               <CardContent className="pt-6 space-y-4">
+                <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'rgba(245, 245, 245, 0.7)' }}>
+                  <Phone size={14} /> Contact
+                </h3>
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
-                      <Phone size={14} /> Téléphone
-                    </Label>
+                    <Label className="text-xs" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>Téléphone</Label>
                     <Input
                       value={formData.phone}
                       onChange={(e) => handleInputChange("phone", e.target.value)}
-                      className="h-12 rounded-xl border"
-                      style={{ 
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                        borderColor: 'rgba(245, 245, 245, 0.1)',
-                        color: '#F5F5F5'
-                      }}
+                      className="h-11 rounded-xl border"
+                      style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }}
                       placeholder="+212..."
                     />
                   </div>
                   <div>
-                    <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
-                      <MessageCircle size={14} /> WhatsApp
-                    </Label>
+                    <Label className="text-xs" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>WhatsApp</Label>
                     <Input
                       value={formData.whatsapp}
                       onChange={(e) => handleInputChange("whatsapp", e.target.value)}
-                      className="h-12 rounded-xl border"
-                      style={{ 
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                        borderColor: 'rgba(245, 245, 245, 0.1)',
-                        color: '#F5F5F5'
-                      }}
+                      className="h-11 rounded-xl border"
+                      style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }}
                       placeholder="+212..."
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
-                    <Globe size={14} /> Site web
+                  <Label className="text-xs flex items-center gap-1" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                    <Mail size={12} /> Email
+                  </Label>
+                  <Input
+                    value={formData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    className="h-11 rounded-xl border"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }}
+                    placeholder="contact@..."
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-xs flex items-center gap-1" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                    <Globe size={12} /> Site web
                   </Label>
                   <Input
                     value={formData.website}
                     onChange={(e) => handleInputChange("website", e.target.value)}
-                    className="h-12 rounded-xl border"
-                    style={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      borderColor: 'rgba(245, 245, 245, 0.1)',
-                      color: '#F5F5F5'
-                    }}
+                    className="h-11 rounded-xl border"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }}
                     placeholder="https://..."
                   />
                 </div>
 
                 <div>
-                  <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
-                    <Instagram size={14} /> Instagram
+                  <Label className="text-xs flex items-center gap-1" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                    <Calendar size={12} /> Lien réservation / Booking
                   </Label>
                   <Input
-                    value={formData.instagram}
-                    onChange={(e) => handleInputChange("instagram", e.target.value)}
-                    className="h-12 rounded-xl border"
-                    style={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      borderColor: 'rgba(245, 245, 245, 0.1)',
-                      color: '#F5F5F5'
-                    }}
-                    placeholder="https://instagram.com/..."
+                    value={formData.bookingUrl}
+                    onChange={(e) => handleInputChange("bookingUrl", e.target.value)}
+                    className="h-11 rounded-xl border"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }}
+                    placeholder="https://booking.com/..."
                   />
                 </div>
 
                 <div>
-                  <Label style={{ color: '#F5F5F5' }}>Lien Avis Google (optionnel)</Label>
+                  <Label className="text-xs flex items-center gap-1" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                    <Star size={12} /> Lien Avis Google
+                  </Label>
                   <Input
                     value={formData.googleReviewsUrl}
                     onChange={(e) => handleInputChange("googleReviewsUrl", e.target.value)}
-                    className="h-12 rounded-xl border"
-                    style={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      borderColor: 'rgba(245, 245, 245, 0.1)',
-                      color: '#F5F5F5'
-                    }}
+                    className="h-11 rounded-xl border"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }}
                     placeholder="https://g.page/..."
                   />
                 </div>
@@ -755,54 +735,191 @@ function AdminInstantCardContent() {
             </Card>
 
             {/* Location */}
-            <Card 
-              className="border"
-              style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                borderColor: 'rgba(245, 245, 245, 0.1)'
-              }}
-            >
+            <Card className="border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(245, 245, 245, 0.1)' }}>
+              <CardContent className="pt-6">
+                <Label className="flex items-center gap-2 mb-3" style={{ color: '#F5F5F5' }}>
+                  <MapPin size={14} /> Localisation
+                </Label>
+                <div className="flex gap-3">
+                  <Input
+                    value={formData.location}
+                    onChange={(e) => handleInputChange("location", e.target.value)}
+                    className="flex-1 h-12 rounded-xl border"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }}
+                    placeholder="Ville, Pays"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleGetLocation}
+                    disabled={isLocating}
+                    className="h-12 px-4 rounded-xl"
+                    style={{ backgroundColor: '#FFC700', color: '#0B0B0B' }}
+                  >
+                    {isLocating ? <Loader2 size={18} className="animate-spin" /> : <MapPin size={18} />}
+                  </Button>
+                </div>
+                {formData.coordinates && (
+                  <p className="text-xs mt-2" style={{ color: 'rgba(255, 199, 0, 0.7)' }}>✓ Position GPS détectée</p>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* SECTION: SOCIAL */}
+        {activeSection === "social" && (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+            <Card className="border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(255, 199, 0, 0.2)' }}>
               <CardContent className="pt-6 space-y-4">
-                <div>
-                  <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
-                    <MapPin size={14} /> Localisation
-                  </Label>
-                  <div className="flex gap-3">
+                <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: '#FFC700' }}>
+                  <Instagram size={14} /> Réseaux sociaux
+                </h3>
+                <p className="text-xs" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                  Ajoutez tous vos profils sociaux
+                </p>
+                
+                {SOCIAL_NETWORKS.map((network) => (
+                  <div key={network.id}>
+                    <Label className="text-xs flex items-center gap-2 mb-1.5" style={{ color: 'rgba(245, 245, 245, 0.6)' }}>
+                      <network.icon size={14} /> {network.name}
+                    </Label>
                     <Input
-                      value={formData.location}
-                      onChange={(e) => handleInputChange("location", e.target.value)}
-                      className="flex-1 h-12 rounded-xl border"
-                      style={{ 
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                        borderColor: 'rgba(245, 245, 245, 0.1)',
-                        color: '#F5F5F5'
-                      }}
-                      placeholder="Ville, Pays"
+                      value={formData.socialLinks[network.id] || ''}
+                      onChange={(e) => handleSocialChange(network.id, e.target.value)}
+                      className="h-11 rounded-xl border"
+                      style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }}
+                      placeholder={network.placeholder}
                     />
-                    <Button
-                      type="button"
-                      onClick={handleGetLocation}
-                      disabled={isLocating}
-                      className="h-12 px-4 rounded-xl"
-                      style={{ 
-                        backgroundColor: '#FFC700',
-                        color: '#0B0B0B'
-                      }}
-                    >
-                      {isLocating ? (
-                        <Loader2 size={18} className="animate-spin" />
-                      ) : (
-                        <MapPin size={18} />
-                      )}
-                    </Button>
                   </div>
-                  {formData.coordinates && (
-                    <p 
-                      className="text-xs mt-2"
-                      style={{ color: 'rgba(255, 199, 0, 0.7)' }}
+                ))}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* SECTION: MEDIA */}
+        {activeSection === "media" && (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+            {/* Logo */}
+            <Card className="border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(255, 199, 0, 0.2)' }}>
+              <CardContent className="pt-6">
+                <Label className="flex items-center gap-2 mb-3" style={{ color: '#F5F5F5' }}>
+                  <Image size={14} /> Logo
+                </Label>
+                <div className="flex gap-3 items-center">
+                  <label 
+                    className="flex-1 h-24 rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors hover:border-[#FFC700]/50"
+                    style={{ borderColor: 'rgba(255, 199, 0, 0.3)' }}
+                  >
+                    <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" disabled={isUploadingLogo} />
+                    {isUploadingLogo ? (
+                      <Loader2 size={24} className="animate-spin" style={{ color: '#FFC700' }} />
+                    ) : (
+                      <>
+                        <Plus size={24} style={{ color: 'rgba(245, 245, 245, 0.3)' }} />
+                        <span className="text-xs mt-2" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                          Ajouter logo
+                        </span>
+                      </>
+                    )}
+                  </label>
+                  {formData.logoUrl && (
+                    <div className="relative">
+                      <img src={formData.logoUrl} alt="Logo" className="h-24 w-24 rounded-xl object-cover" />
+                      <button
+                        onClick={() => setFormData(prev => ({ ...prev, logoUrl: '' }))}
+                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center"
+                      >
+                        <X size={14} className="text-white" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Photo de profil */}
+            <Card className="border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(245, 245, 245, 0.1)' }}>
+              <CardContent className="pt-6">
+                <Label className="flex items-center gap-2 mb-3" style={{ color: '#F5F5F5' }}>
+                  <Camera size={14} /> Photo de profil
+                </Label>
+                <div className="flex gap-3 items-center">
+                  <label 
+                    className="flex-1 h-24 rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors hover:border-[#FFC700]/50"
+                    style={{ borderColor: 'rgba(245, 245, 245, 0.2)' }}
+                  >
+                    <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" disabled={isUploadingPhoto} />
+                    {isUploadingPhoto ? (
+                      <Loader2 size={24} className="animate-spin" style={{ color: '#FFC700' }} />
+                    ) : (
+                      <>
+                        <Camera size={24} style={{ color: 'rgba(245, 245, 245, 0.3)' }} />
+                        <span className="text-xs mt-2" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                          Ajouter photo
+                        </span>
+                      </>
+                    )}
+                  </label>
+                  {formData.photoUrl && (
+                    <div className="relative">
+                      <img src={formData.photoUrl} alt="Photo" className="h-24 w-24 rounded-full object-cover border-2" style={{ borderColor: formData.primaryColor }} />
+                      <button
+                        onClick={() => setFormData(prev => ({ ...prev, photoUrl: '' }))}
+                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center"
+                      >
+                        <X size={14} className="text-white" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Galerie */}
+            <Card className="border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(245, 245, 245, 0.1)' }}>
+              <CardContent className="pt-6">
+                <Label className="flex items-center gap-2 mb-3" style={{ color: '#F5F5F5' }}>
+                  <Image size={14} /> Galerie d'images ({formData.galleryUrls.length}/10)
+                </Label>
+                
+                <div className="grid grid-cols-3 gap-3">
+                  {formData.galleryUrls.map((url, index) => (
+                    <div key={index} className="relative aspect-square">
+                      <img src={url} alt={`Gallery ${index + 1}`} className="w-full h-full rounded-xl object-cover" />
+                      <button
+                        onClick={() => removeGalleryImage(index)}
+                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center"
+                      >
+                        <X size={14} className="text-white" />
+                      </button>
+                    </div>
+                  ))}
+                  
+                  {formData.galleryUrls.length < 10 && (
+                    <label 
+                      className="aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors hover:border-[#FFC700]/50"
+                      style={{ borderColor: 'rgba(245, 245, 245, 0.2)' }}
                     >
-                      ✓ Position GPS détectée
-                    </p>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        multiple 
+                        onChange={handleGalleryUpload} 
+                        className="hidden" 
+                        disabled={isUploadingGallery}
+                      />
+                      {isUploadingGallery ? (
+                        <Loader2 size={20} className="animate-spin" style={{ color: '#FFC700' }} />
+                      ) : (
+                        <>
+                          <Plus size={20} style={{ color: 'rgba(245, 245, 245, 0.3)' }} />
+                          <span className="text-xs mt-1" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                            Ajouter
+                          </span>
+                        </>
+                      )}
+                    </label>
                   )}
                 </div>
               </CardContent>
@@ -810,20 +927,11 @@ function AdminInstantCardContent() {
           </motion.div>
         )}
 
+        {/* SECTION: DESIGN */}
         {activeSection === "design" && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-6"
-          >
-            {/* Template Selector */}
-            <Card 
-              className="border"
-              style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                borderColor: 'rgba(255, 199, 0, 0.2)'
-              }}
-            >
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+            {/* Templates */}
+            <Card className="border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(255, 199, 0, 0.2)' }}>
               <CardContent className="pt-6">
                 <Label className="flex items-center gap-2 mb-4" style={{ color: '#F5F5F5' }}>
                   <Layout size={14} /> Template
@@ -833,143 +941,64 @@ function AdminInstantCardContent() {
                     <button
                       key={template.id}
                       onClick={() => handleTemplateSelect(template.id)}
-                      className={`relative p-4 rounded-xl border-2 transition-all text-left ${
-                        formData.template === template.id ? 'scale-[1.02]' : 'hover:scale-[1.01]'
-                      }`}
-                      style={{
-                        backgroundColor: template.preview.bg,
-                        borderColor: formData.template === template.id ? template.preview.accent : 'transparent'
-                      }}
+                      className={`relative p-4 rounded-xl border-2 transition-all text-left ${formData.template === template.id ? 'scale-[1.02]' : 'hover:scale-[1.01]'}`}
+                      style={{ backgroundColor: template.preview.bg, borderColor: formData.template === template.id ? template.preview.accent : 'transparent' }}
                     >
                       {formData.template === template.id && (
-                        <div 
-                          className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: template.preview.accent }}
-                        >
+                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: template.preview.accent }}>
                           <Check size={12} style={{ color: template.preview.bg }} />
                         </div>
                       )}
-                      <div 
-                        className="w-8 h-1 rounded-full mb-2"
-                        style={{ backgroundColor: template.preview.accent }}
-                      />
-                      <p 
-                        className="text-sm font-semibold"
-                        style={{ color: template.preview.text }}
-                      >
-                        {template.name}
-                      </p>
-                      <p 
-                        className="text-xs opacity-60"
-                        style={{ color: template.preview.text }}
-                      >
-                        {template.description}
-                      </p>
+                      <div className="w-8 h-1 rounded-full mb-2" style={{ backgroundColor: template.preview.accent }} />
+                      <p className="text-sm font-semibold" style={{ color: template.preview.text }}>{template.name}</p>
+                      <p className="text-xs opacity-60" style={{ color: template.preview.text }}>{template.description}</p>
                     </button>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Color Presets */}
-            <Card 
-              className="border"
-              style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                borderColor: 'rgba(245, 245, 245, 0.1)'
-              }}
-            >
+            {/* Colors */}
+            <Card className="border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(245, 245, 245, 0.1)' }}>
               <CardContent className="pt-6">
                 <Label className="flex items-center gap-2 mb-4" style={{ color: '#F5F5F5' }}>
-                  <Palette size={14} /> Palette de couleurs
+                  <Palette size={14} /> Couleurs
                 </Label>
                 <div className="grid grid-cols-3 gap-3">
                   {COLOR_PRESETS.map((preset) => (
                     <button
                       key={preset.name}
                       onClick={() => handleColorPreset(preset)}
-                      className={`p-3 rounded-xl border-2 transition-all ${
-                        formData.primaryColor === preset.primary ? 'scale-105' : 'hover:scale-102'
-                      }`}
-                      style={{
-                        backgroundColor: preset.secondary,
-                        borderColor: formData.primaryColor === preset.primary ? preset.primary : 'transparent'
-                      }}
+                      className={`p-3 rounded-xl border-2 transition-all ${formData.primaryColor === preset.primary ? 'scale-105' : ''}`}
+                      style={{ backgroundColor: preset.secondary, borderColor: formData.primaryColor === preset.primary ? preset.primary : 'transparent' }}
                     >
-                      <div 
-                        className="w-full h-6 rounded-lg mb-2"
-                        style={{ backgroundColor: preset.primary }}
-                      />
-                      <p 
-                        className="text-xs font-medium"
-                        style={{ color: preset.primary }}
-                      >
-                        {preset.name}
-                      </p>
+                      <div className="w-full h-6 rounded-lg mb-2" style={{ backgroundColor: preset.primary }} />
+                      <p className="text-xs font-medium" style={{ color: preset.primary }}>{preset.name}</p>
                     </button>
                   ))}
                 </div>
 
-                {/* Custom Colors */}
                 <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t" style={{ borderColor: 'rgba(245, 245, 245, 0.1)' }}>
                   <div>
-                    <Label className="text-xs mb-2 block" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
-                      Couleur principale
-                    </Label>
+                    <Label className="text-xs mb-2 block" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>Couleur principale</Label>
                     <div className="flex items-center gap-2">
-                      <input
-                        type="color"
-                        value={formData.primaryColor}
-                        onChange={(e) => handleInputChange("primaryColor", e.target.value)}
-                        className="w-10 h-10 rounded-lg cursor-pointer border-0"
-                      />
-                      <Input
-                        value={formData.primaryColor}
-                        onChange={(e) => handleInputChange("primaryColor", e.target.value)}
-                        className="flex-1 h-10 rounded-lg text-xs font-mono"
-                        style={{ 
-                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                          borderColor: 'rgba(245, 245, 245, 0.1)',
-                          color: '#F5F5F5'
-                        }}
-                      />
+                      <input type="color" value={formData.primaryColor} onChange={(e) => handleInputChange("primaryColor", e.target.value)} className="w-10 h-10 rounded-lg cursor-pointer border-0" />
+                      <Input value={formData.primaryColor} onChange={(e) => handleInputChange("primaryColor", e.target.value)} className="flex-1 h-10 rounded-lg text-xs font-mono" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }} />
                     </div>
                   </div>
                   <div>
-                    <Label className="text-xs mb-2 block" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
-                      Couleur de fond
-                    </Label>
+                    <Label className="text-xs mb-2 block" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>Fond</Label>
                     <div className="flex items-center gap-2">
-                      <input
-                        type="color"
-                        value={formData.secondaryColor}
-                        onChange={(e) => handleInputChange("secondaryColor", e.target.value)}
-                        className="w-10 h-10 rounded-lg cursor-pointer border-0"
-                      />
-                      <Input
-                        value={formData.secondaryColor}
-                        onChange={(e) => handleInputChange("secondaryColor", e.target.value)}
-                        className="flex-1 h-10 rounded-lg text-xs font-mono"
-                        style={{ 
-                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                          borderColor: 'rgba(245, 245, 245, 0.1)',
-                          color: '#F5F5F5'
-                        }}
-                      />
+                      <input type="color" value={formData.secondaryColor} onChange={(e) => handleInputChange("secondaryColor", e.target.value)} className="w-10 h-10 rounded-lg cursor-pointer border-0" />
+                      <Input value={formData.secondaryColor} onChange={(e) => handleInputChange("secondaryColor", e.target.value)} className="flex-1 h-10 rounded-lg text-xs font-mono" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(245, 245, 245, 0.1)', color: '#F5F5F5' }} />
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Font Selector */}
-            <Card 
-              className="border"
-              style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                borderColor: 'rgba(245, 245, 245, 0.1)'
-              }}
-            >
+            {/* Fonts */}
+            <Card className="border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(245, 245, 245, 0.1)' }}>
               <CardContent className="pt-6">
                 <Label className="flex items-center gap-2 mb-4" style={{ color: '#F5F5F5' }}>
                   <Type size={14} /> Police
@@ -995,43 +1024,22 @@ function AdminInstantCardContent() {
             </Card>
 
             {/* Preview */}
-            <Card 
-              className="border overflow-hidden"
-              style={{ 
-                backgroundColor: formData.secondaryColor,
-                borderColor: formData.primaryColor + '40'
-              }}
-            >
+            <Card className="border overflow-hidden" style={{ backgroundColor: formData.secondaryColor, borderColor: formData.primaryColor + '40' }}>
               <CardContent className="pt-6 text-center">
-                <p className="text-xs mb-3 opacity-50" style={{ color: formData.primaryColor }}>
-                  Aperçu
-                </p>
-                {formData.logoUrl && (
-                  <img 
-                    src={formData.logoUrl} 
-                    alt="Logo preview" 
-                    className="w-16 h-16 rounded-xl object-cover mx-auto mb-3"
-                  />
+                <p className="text-xs mb-3 opacity-50" style={{ color: formData.primaryColor }}>Aperçu</p>
+                {(formData.photoUrl || formData.logoUrl) && (
+                  <img src={formData.photoUrl || formData.logoUrl} alt="Preview" className="w-16 h-16 rounded-full object-cover mx-auto mb-3 border-2" style={{ borderColor: formData.primaryColor }} />
                 )}
                 <h3 
-                  className={`text-xl font-bold mb-1 ${
-                    formData.fontFamily === 'playfair' ? 'font-serif' : 
-                    formData.fontFamily === 'mono' ? 'font-mono' : 'font-sans'
-                  }`}
-                  style={{ color: formData.secondaryColor === '#FFFFFF' || formData.secondaryColor === '#FAF9F6' || formData.secondaryColor === '#FAFAFA' ? '#1D1D1F' : '#F5F5F5' }}
+                  className={`text-xl font-bold mb-1 ${formData.fontFamily === 'playfair' ? 'font-serif' : formData.fontFamily === 'mono' ? 'font-mono' : 'font-sans'}`}
+                  style={{ color: ['#FFFFFF', '#FAF9F6', '#FAFAFA'].includes(formData.secondaryColor) ? '#1D1D1F' : '#F5F5F5' }}
                 >
                   {formData.businessName || "Nom du commerce"}
                 </h3>
-                <p 
-                  className="text-sm opacity-60"
-                  style={{ color: formData.secondaryColor === '#FFFFFF' || formData.secondaryColor === '#FAF9F6' || formData.secondaryColor === '#FAFAFA' ? '#1D1D1F' : '#F5F5F5' }}
-                >
+                <p className="text-sm opacity-60" style={{ color: ['#FFFFFF', '#FAF9F6', '#FAFAFA'].includes(formData.secondaryColor) ? '#1D1D1F' : '#F5F5F5' }}>
                   {formData.category || "Catégorie"}
                 </p>
-                <div 
-                  className="inline-block mt-4 px-4 py-2 rounded-lg text-sm font-medium"
-                  style={{ backgroundColor: formData.primaryColor, color: formData.secondaryColor }}
-                >
+                <div className="inline-block mt-4 px-4 py-2 rounded-lg text-sm font-medium" style={{ backgroundColor: formData.primaryColor, color: formData.secondaryColor }}>
                   Contacter
                 </div>
               </CardContent>
@@ -1044,34 +1052,18 @@ function AdminInstantCardContent() {
           onClick={createInstantCard}
           disabled={isCreating || !formData.businessName}
           className="w-full h-14 rounded-xl font-bold text-lg"
-          style={{ 
-            backgroundColor: formData.primaryColor,
-            color: formData.secondaryColor
-          }}
+          style={{ backgroundColor: formData.primaryColor, color: formData.secondaryColor }}
         >
           {isCreating ? (
-            <>
-              <Loader2 size={20} className="mr-2 animate-spin" />
-              Création en cours...
-            </>
+            <><Loader2 size={20} className="mr-2 animate-spin" /> Création...</>
           ) : (
-            <>
-              <Zap size={20} className="mr-2" />
-              Créer la carte instantanément
-            </>
+            <><Zap size={20} className="mr-2" /> Créer la carte</>
           )}
         </Button>
 
-        {/* Info Note */}
-        <div 
-          className="rounded-xl p-4 text-center"
-          style={{ backgroundColor: `${formData.primaryColor}15` }}
-        >
-          <p 
-            className="text-xs"
-            style={{ color: 'rgba(245, 245, 245, 0.6)' }}
-          >
-            Carte créée sans paiement • NFC activable • Modifiable depuis Admin
+        <div className="rounded-xl p-4 text-center" style={{ backgroundColor: `${formData.primaryColor}15` }}>
+          <p className="text-xs" style={{ color: 'rgba(245, 245, 245, 0.6)' }}>
+            NFC activable • Modifiable depuis Admin
           </p>
         </div>
       </div>
