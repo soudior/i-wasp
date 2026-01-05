@@ -230,6 +230,7 @@ const App = () => {
                             <Route path="/admin/creator" element={<AdminGuard><AdminCreator /></AdminGuard>} />
                             <Route path="/admin/cards" element={<AdminGuard><AdminCreator /></AdminGuard>} />
                             <Route path="/admin/instant" element={<AdminGuard><AdminInstantCard /></AdminGuard>} />
+                            <Route path="/admin/instant-card" element={<AdminGuard><AdminInstantCard /></AdminGuard>} />
                             <Route path="/admin/vcard/create" element={<Navigate to="/admin/instant" replace />} />
                             <Route path="/admin/vcard/edit" element={<Navigate to="/admin/instant" replace />} />
                             <Route path="/admin/evolis" element={<AdminGuard><EvolisPrintPage /></AdminGuard>} />
