@@ -2,9 +2,10 @@
  * Admin Instant Card Creator
  * Mode "Création instantanée vCard – Admin i-Wasp"
  * Creates digital business cards instantly without payment
+ * Enhanced with template selector and customization options
  */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminGuard } from "@/components/AdminGuard";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,18 +14,20 @@ import { toast } from "sonner";
 import { 
   Zap, 
   MapPin, 
-  Check,
   Loader2,
   ArrowLeft,
   ExternalLink,
-  QrCode,
   Share2,
   Smartphone,
   Copy,
   Globe,
   Instagram,
   Phone,
-  MessageCircle
+  MessageCircle,
+  Palette,
+  Type,
+  Layout,
+  Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +36,64 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { QRCodeSVG } from "qrcode.react";
+import { motion } from "framer-motion";
+
+// Template options
+const TEMPLATES = [
+  {
+    id: "dark-luxury-business",
+    name: "Dark Luxury",
+    description: "Fond sombre, accents dorés",
+    preview: { bg: "#0B0B0B", accent: "#FFC700", text: "#F5F5F5" }
+  },
+  {
+    id: "iwasp-signature",
+    name: "i-Wasp Signature",
+    description: "Blanc épuré, premium",
+    preview: { bg: "#FFFFFF", accent: "#000000", text: "#1D1D1F" }
+  },
+  {
+    id: "boutique",
+    name: "Boutique",
+    description: "Élégant, tons neutres",
+    preview: { bg: "#FAF9F6", accent: "#8B7355", text: "#2C2C2C" }
+  },
+  {
+    id: "restaurant",
+    name: "Restaurant",
+    description: "Chaleureux, accueillant",
+    preview: { bg: "#1A1A1A", accent: "#E8B86D", text: "#FFFFFF" }
+  },
+  {
+    id: "hotel-concierge",
+    name: "Hôtellerie",
+    description: "Luxe, service premium",
+    preview: { bg: "#0D1B2A", accent: "#D4AF37", text: "#F0E6D3" }
+  },
+  {
+    id: "default",
+    name: "Minimal",
+    description: "Simple et efficace",
+    preview: { bg: "#FAFAFA", accent: "#007AFF", text: "#000000" }
+  }
+];
+
+// Color presets
+const COLOR_PRESETS = [
+  { name: "Or", primary: "#FFC700", secondary: "#0B0B0B" },
+  { name: "Bleu", primary: "#007AFF", secondary: "#FFFFFF" },
+  { name: "Émeraude", primary: "#10B981", secondary: "#0F172A" },
+  { name: "Rose", primary: "#EC4899", secondary: "#1F1F1F" },
+  { name: "Orange", primary: "#F97316", secondary: "#18181B" },
+  { name: "Violet", primary: "#8B5CF6", secondary: "#0C0A1D" }
+];
+
+// Font options
+const FONT_OPTIONS = [
+  { id: "inter", name: "Inter", style: "font-sans" },
+  { id: "playfair", name: "Playfair", style: "font-serif" },
+  { id: "mono", name: "Mono", style: "font-mono" }
+];
 
 interface BusinessCardData {
   businessName: string;
@@ -46,6 +107,10 @@ interface BusinessCardData {
   coordinates: { lat: number; lng: number } | null;
   googleReviewsUrl: string;
   logoUrl: string;
+  template: string;
+  primaryColor: string;
+  secondaryColor: string;
+  fontFamily: string;
 }
 
 const initialData: BusinessCardData = {
@@ -60,21 +125,10 @@ const initialData: BusinessCardData = {
   coordinates: null,
   googleReviewsUrl: "",
   logoUrl: "",
-};
-
-// Prefilled data for Medina Mall demo
-const MEDINA_MALL_DATA: BusinessCardData = {
-  businessName: "Medina Mall",
-  category: "Commerce / Centre commercial premium",
-  description: "Centre commercial premium à Marrakech",
-  website: "https://medinamall.ma",
-  instagram: "https://www.instagram.com/letravertin",
-  phone: "",
-  whatsapp: "",
-  location: "Marrakech, Maroc",
-  coordinates: null,
-  googleReviewsUrl: "",
-  logoUrl: "",
+  template: "dark-luxury-business",
+  primaryColor: "#FFC700",
+  secondaryColor: "#0B0B0B",
+  fontFamily: "inter"
 };
 
 export default function AdminInstantCard() {
@@ -88,13 +142,34 @@ export default function AdminInstantCard() {
 function AdminInstantCardContent() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [formData, setFormData] = useState<BusinessCardData>(MEDINA_MALL_DATA);
+  const [formData, setFormData] = useState<BusinessCardData>(initialData);
   const [isCreating, setIsCreating] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [createdCard, setCreatedCard] = useState<{ id: string; slug: string } | null>(null);
+  const [activeSection, setActiveSection] = useState<"info" | "design">("info");
 
   const handleInputChange = (field: keyof BusinessCardData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleTemplateSelect = (templateId: string) => {
+    const template = TEMPLATES.find(t => t.id === templateId);
+    if (template) {
+      setFormData(prev => ({
+        ...prev,
+        template: templateId,
+        primaryColor: template.preview.accent,
+        secondaryColor: template.preview.bg
+      }));
+    }
+  };
+
+  const handleColorPreset = (preset: typeof COLOR_PRESETS[0]) => {
+    setFormData(prev => ({
+      ...prev,
+      primaryColor: preset.primary,
+      secondaryColor: preset.secondary
+    }));
   };
 
   const handleGetLocation = () => {
@@ -112,7 +187,6 @@ function AdminInstantCardContent() {
           coordinates: { lat: latitude, lng: longitude }
         }));
 
-        // Reverse geocode to get address
         try {
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
@@ -180,13 +254,11 @@ function AdminInstantCardContent() {
 
     setIsCreating(true);
     try {
-      // Generate unique slug
       const baseSlug = formData.businessName.toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '');
       const uniqueSlug = `${baseSlug}-${Date.now().toString(36)}`;
 
-      // Prepare blocks for location and Google Reviews
       const blocks: any[] = [];
       
       if (formData.coordinates) {
@@ -204,13 +276,18 @@ function AdminInstantCardContent() {
         });
       }
 
-      // Prepare social links
       const socialLinks: any[] = [];
       if (formData.instagram) {
         socialLinks.push({ platform: 'instagram', url: formData.instagram });
       }
 
-      // Create the card
+      // Custom styles with colors and font
+      const customStyles = {
+        primaryColor: formData.primaryColor,
+        secondaryColor: formData.secondaryColor,
+        fontFamily: formData.fontFamily
+      };
+
       const { data: card, error } = await supabase
         .from('digital_cards')
         .insert([{
@@ -228,9 +305,10 @@ function AdminInstantCardContent() {
           location: formData.location || null,
           logo_url: formData.logoUrl || null,
           photo_url: formData.logoUrl || null,
-          template: "dark-luxury-business",
+          template: formData.template,
           blocks: blocks,
           social_links: socialLinks,
+          custom_styles: customStyles,
           is_active: true,
           nfc_enabled: true,
           wallet_enabled: true,
@@ -285,11 +363,10 @@ function AdminInstantCardContent() {
         style={{ backgroundColor: '#0B0B0B' }}
       >
         <div className="max-w-md mx-auto px-4 py-8">
-          {/* Status Badge */}
           <div className="text-center mb-8">
             <div 
               className="inline-flex items-center gap-2 px-5 py-3 rounded-full"
-              style={{ backgroundColor: 'rgba(255, 199, 0, 0.15)' }}
+              style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)' }}
             >
               <span 
                 className="w-3 h-3 rounded-full animate-pulse"
@@ -297,19 +374,18 @@ function AdminInstantCardContent() {
               />
               <span 
                 className="font-semibold"
-                style={{ color: '#FFC700' }}
+                style={{ color: '#22C55E' }}
               >
                 Carte digitale active
               </span>
             </div>
           </div>
 
-          {/* QR Code Card */}
           <Card 
             className="border-2 mb-6"
             style={{ 
               backgroundColor: 'rgba(255, 255, 255, 0.03)',
-              borderColor: 'rgba(255, 199, 0, 0.3)'
+              borderColor: 'rgba(34, 197, 94, 0.3)'
             }}
           >
             <CardContent className="pt-6">
@@ -337,17 +413,19 @@ function AdminInstantCardContent() {
                   {formData.businessName}
                 </h2>
                 <p 
-                  className="text-sm"
+                  className="text-sm mb-2"
                   style={{ color: 'rgba(245, 245, 245, 0.6)' }}
                 >
                   {formData.category}
                 </p>
+                <Badge style={{ backgroundColor: formData.primaryColor, color: formData.secondaryColor }}>
+                  {TEMPLATES.find(t => t.id === formData.template)?.name}
+                </Badge>
               </div>
 
-              {/* URL Display */}
               <div 
                 className="rounded-xl p-4 mb-6"
-                style={{ backgroundColor: 'rgba(255, 199, 0, 0.08)' }}
+                style={{ backgroundColor: 'rgba(34, 197, 94, 0.08)' }}
               >
                 <p 
                   className="text-xs mb-1"
@@ -357,18 +435,17 @@ function AdminInstantCardContent() {
                 </p>
                 <p 
                   className="text-sm font-mono break-all"
-                  style={{ color: '#FFC700' }}
+                  style={{ color: '#22C55E' }}
                 >
                   {getCardUrl()}
                 </p>
               </div>
 
-              {/* Action Buttons */}
               <div className="space-y-3">
                 <Button
                   onClick={() => navigate(`/card/${createdCard.slug}`)}
-                  className="w-full h-14 rounded-xl font-semibold text-black"
-                  style={{ backgroundColor: '#FFC700' }}
+                  className="w-full h-14 rounded-xl font-semibold"
+                  style={{ backgroundColor: formData.primaryColor, color: formData.secondaryColor }}
                 >
                   <ExternalLink size={18} className="mr-2" />
                   Ouvrir la carte
@@ -377,47 +454,27 @@ function AdminInstantCardContent() {
                 <div className="grid grid-cols-2 gap-3">
                   <Button
                     onClick={shareCard}
+                    variant="outline"
                     className="h-12 rounded-xl font-medium border-2"
-                    style={{ 
-                      backgroundColor: 'transparent',
-                      borderColor: 'rgba(255, 199, 0, 0.5)',
-                      color: '#FFC700'
-                    }}
+                    style={{ borderColor: 'rgba(245, 245, 245, 0.3)', color: '#F5F5F5' }}
                   >
                     <Share2 size={16} className="mr-2" />
                     Partager
                   </Button>
                   <Button
                     onClick={copyLink}
+                    variant="outline"
                     className="h-12 rounded-xl font-medium border-2"
-                    style={{ 
-                      backgroundColor: 'transparent',
-                      borderColor: 'rgba(245, 245, 245, 0.3)',
-                      color: '#F5F5F5'
-                    }}
+                    style={{ borderColor: 'rgba(245, 245, 245, 0.3)', color: '#F5F5F5' }}
                   >
                     <Copy size={16} className="mr-2" />
                     Copier
                   </Button>
                 </div>
-
-                <Button
-                  onClick={() => toast.info("Wallet Pass disponible après connexion")}
-                  className="w-full h-12 rounded-xl font-medium border-2"
-                  style={{ 
-                    backgroundColor: 'transparent',
-                    borderColor: 'rgba(245, 245, 245, 0.2)',
-                    color: 'rgba(245, 245, 245, 0.7)'
-                  }}
-                >
-                  <Smartphone size={16} className="mr-2" />
-                  Ajouter au téléphone
-                </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Create Another */}
           <div className="space-y-3">
             <Button
               onClick={() => {
@@ -432,7 +489,7 @@ function AdminInstantCardContent() {
               Créer une autre carte
             </Button>
             <Button
-              onClick={() => navigate("/admin/orders")}
+              onClick={() => navigate("/admin")}
               variant="ghost"
               className="w-full h-12"
               style={{ color: 'rgba(245, 245, 245, 0.4)' }}
@@ -460,11 +517,11 @@ function AdminInstantCardContent() {
           borderColor: 'rgba(255, 199, 0, 0.2)'
         }}
       >
-        <div className="max-w-lg mx-auto px-4 py-4 flex items-center gap-4">
+        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
           <Button 
             variant="ghost" 
             size="icon"
-            onClick={() => navigate("/admin/orders")}
+            onClick={() => navigate("/admin")}
             style={{ color: '#F5F5F5' }}
           >
             <ArrowLeft size={20} />
@@ -478,252 +535,509 @@ function AdminInstantCardContent() {
               Création Instantanée
             </h1>
           </div>
-          <Badge 
-            className="ml-auto"
-            style={{ 
-              backgroundColor: 'rgba(255, 199, 0, 0.15)',
-              color: '#FFC700'
-            }}
-          >
-            Dark Luxury
-          </Badge>
+        </div>
+        
+        {/* Tabs */}
+        <div className="max-w-2xl mx-auto px-4 pb-2">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveSection("info")}
+              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2`}
+              style={{
+                backgroundColor: activeSection === "info" ? 'rgba(255, 199, 0, 0.15)' : 'transparent',
+                color: activeSection === "info" ? '#FFC700' : 'rgba(245, 245, 245, 0.5)'
+              }}
+            >
+              <Type size={16} />
+              Informations
+            </button>
+            <button
+              onClick={() => setActiveSection("design")}
+              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2`}
+              style={{
+                backgroundColor: activeSection === "design" ? 'rgba(255, 199, 0, 0.15)' : 'transparent',
+                color: activeSection === "design" ? '#FFC700' : 'rgba(245, 245, 245, 0.5)'
+              }}
+            >
+              <Palette size={16} />
+              Design
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
-        {/* Business Identity */}
-        <Card 
-          className="border"
-          style={{ 
-            backgroundColor: 'rgba(255, 255, 255, 0.02)',
-            borderColor: 'rgba(255, 199, 0, 0.2)'
-          }}
-        >
-          <CardContent className="pt-6 space-y-4">
-            <div>
-              <Label style={{ color: '#F5F5F5' }}>Nom commercial *</Label>
-              <Input
-                value={formData.businessName}
-                onChange={(e) => handleInputChange("businessName", e.target.value)}
-                className="h-12 rounded-xl border-2"
-                style={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(255, 199, 0, 0.3)',
-                  color: '#F5F5F5'
-                }}
-                placeholder="Ex: Medina Mall"
-              />
-            </div>
-
-            <div>
-              <Label style={{ color: '#F5F5F5' }}>Catégorie</Label>
-              <Input
-                value={formData.category}
-                onChange={(e) => handleInputChange("category", e.target.value)}
-                className="h-12 rounded-xl border"
-                style={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(245, 245, 245, 0.1)',
-                  color: '#F5F5F5'
-                }}
-                placeholder="Ex: Commerce / Centre commercial"
-              />
-            </div>
-
-            <div>
-              <Label style={{ color: '#F5F5F5' }}>Description courte</Label>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => handleInputChange("description", e.target.value)}
-                className="rounded-xl border resize-none"
-                style={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(245, 245, 245, 0.1)',
-                  color: '#F5F5F5'
-                }}
-                placeholder="Description courte du commerce"
-                rows={2}
-              />
-            </div>
-
-            {/* Logo Upload */}
-            <div>
-              <Label style={{ color: '#F5F5F5' }}>Logo</Label>
-              <div className="flex gap-3">
-                <label 
-                  className="flex-1 h-12 rounded-xl border-2 border-dashed flex items-center justify-center cursor-pointer transition-colors hover:border-[#FFC700]/50"
-                  style={{ borderColor: 'rgba(255, 199, 0, 0.3)' }}
-                >
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    className="hidden"
+      <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+        
+        {activeSection === "info" && (
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-6"
+          >
+            {/* Business Identity */}
+            <Card 
+              className="border"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                borderColor: 'rgba(255, 199, 0, 0.2)'
+              }}
+            >
+              <CardContent className="pt-6 space-y-4">
+                <div>
+                  <Label style={{ color: '#F5F5F5' }}>Nom commercial *</Label>
+                  <Input
+                    value={formData.businessName}
+                    onChange={(e) => handleInputChange("businessName", e.target.value)}
+                    className="h-12 rounded-xl border-2"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      borderColor: 'rgba(255, 199, 0, 0.3)',
+                      color: '#F5F5F5'
+                    }}
+                    placeholder="Ex: Mon Commerce"
                   />
-                  <span style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
-                    {formData.logoUrl ? 'Logo uploadé ✓' : 'Choisir un logo'}
-                  </span>
-                </label>
+                </div>
+
+                <div>
+                  <Label style={{ color: '#F5F5F5' }}>Catégorie / Métier</Label>
+                  <Input
+                    value={formData.category}
+                    onChange={(e) => handleInputChange("category", e.target.value)}
+                    className="h-12 rounded-xl border"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      borderColor: 'rgba(245, 245, 245, 0.1)',
+                      color: '#F5F5F5'
+                    }}
+                    placeholder="Ex: Restaurant, Boutique, Consultant..."
+                  />
+                </div>
+
+                <div>
+                  <Label style={{ color: '#F5F5F5' }}>Description courte</Label>
+                  <Textarea
+                    value={formData.description}
+                    onChange={(e) => handleInputChange("description", e.target.value)}
+                    className="rounded-xl border resize-none"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      borderColor: 'rgba(245, 245, 245, 0.1)',
+                      color: '#F5F5F5'
+                    }}
+                    placeholder="Description courte du commerce"
+                    rows={2}
+                  />
+                </div>
+
+                {/* Logo Upload */}
+                <div>
+                  <Label style={{ color: '#F5F5F5' }}>Logo</Label>
+                  <div className="flex gap-3">
+                    <label 
+                      className="flex-1 h-12 rounded-xl border-2 border-dashed flex items-center justify-center cursor-pointer transition-colors hover:border-[#FFC700]/50"
+                      style={{ borderColor: 'rgba(255, 199, 0, 0.3)' }}
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                      />
+                      <span style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                        {formData.logoUrl ? 'Logo uploadé ✓' : 'Choisir un logo'}
+                      </span>
+                    </label>
+                    {formData.logoUrl && (
+                      <img 
+                        src={formData.logoUrl} 
+                        alt="Logo" 
+                        className="h-12 w-12 rounded-xl object-cover"
+                      />
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Contact & Links */}
+            <Card 
+              className="border"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                borderColor: 'rgba(245, 245, 245, 0.1)'
+              }}
+            >
+              <CardContent className="pt-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
+                      <Phone size={14} /> Téléphone
+                    </Label>
+                    <Input
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange("phone", e.target.value)}
+                      className="h-12 rounded-xl border"
+                      style={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        borderColor: 'rgba(245, 245, 245, 0.1)',
+                        color: '#F5F5F5'
+                      }}
+                      placeholder="+212..."
+                    />
+                  </div>
+                  <div>
+                    <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
+                      <MessageCircle size={14} /> WhatsApp
+                    </Label>
+                    <Input
+                      value={formData.whatsapp}
+                      onChange={(e) => handleInputChange("whatsapp", e.target.value)}
+                      className="h-12 rounded-xl border"
+                      style={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        borderColor: 'rgba(245, 245, 245, 0.1)',
+                        color: '#F5F5F5'
+                      }}
+                      placeholder="+212..."
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
+                    <Globe size={14} /> Site web
+                  </Label>
+                  <Input
+                    value={formData.website}
+                    onChange={(e) => handleInputChange("website", e.target.value)}
+                    className="h-12 rounded-xl border"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      borderColor: 'rgba(245, 245, 245, 0.1)',
+                      color: '#F5F5F5'
+                    }}
+                    placeholder="https://..."
+                  />
+                </div>
+
+                <div>
+                  <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
+                    <Instagram size={14} /> Instagram
+                  </Label>
+                  <Input
+                    value={formData.instagram}
+                    onChange={(e) => handleInputChange("instagram", e.target.value)}
+                    className="h-12 rounded-xl border"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      borderColor: 'rgba(245, 245, 245, 0.1)',
+                      color: '#F5F5F5'
+                    }}
+                    placeholder="https://instagram.com/..."
+                  />
+                </div>
+
+                <div>
+                  <Label style={{ color: '#F5F5F5' }}>Lien Avis Google (optionnel)</Label>
+                  <Input
+                    value={formData.googleReviewsUrl}
+                    onChange={(e) => handleInputChange("googleReviewsUrl", e.target.value)}
+                    className="h-12 rounded-xl border"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      borderColor: 'rgba(245, 245, 245, 0.1)',
+                      color: '#F5F5F5'
+                    }}
+                    placeholder="https://g.page/..."
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Location */}
+            <Card 
+              className="border"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                borderColor: 'rgba(245, 245, 245, 0.1)'
+              }}
+            >
+              <CardContent className="pt-6 space-y-4">
+                <div>
+                  <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
+                    <MapPin size={14} /> Localisation
+                  </Label>
+                  <div className="flex gap-3">
+                    <Input
+                      value={formData.location}
+                      onChange={(e) => handleInputChange("location", e.target.value)}
+                      className="flex-1 h-12 rounded-xl border"
+                      style={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        borderColor: 'rgba(245, 245, 245, 0.1)',
+                        color: '#F5F5F5'
+                      }}
+                      placeholder="Ville, Pays"
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleGetLocation}
+                      disabled={isLocating}
+                      className="h-12 px-4 rounded-xl"
+                      style={{ 
+                        backgroundColor: '#FFC700',
+                        color: '#0B0B0B'
+                      }}
+                    >
+                      {isLocating ? (
+                        <Loader2 size={18} className="animate-spin" />
+                      ) : (
+                        <MapPin size={18} />
+                      )}
+                    </Button>
+                  </div>
+                  {formData.coordinates && (
+                    <p 
+                      className="text-xs mt-2"
+                      style={{ color: 'rgba(255, 199, 0, 0.7)' }}
+                    >
+                      ✓ Position GPS détectée
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {activeSection === "design" && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-6"
+          >
+            {/* Template Selector */}
+            <Card 
+              className="border"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                borderColor: 'rgba(255, 199, 0, 0.2)'
+              }}
+            >
+              <CardContent className="pt-6">
+                <Label className="flex items-center gap-2 mb-4" style={{ color: '#F5F5F5' }}>
+                  <Layout size={14} /> Template
+                </Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {TEMPLATES.map((template) => (
+                    <button
+                      key={template.id}
+                      onClick={() => handleTemplateSelect(template.id)}
+                      className={`relative p-4 rounded-xl border-2 transition-all text-left ${
+                        formData.template === template.id ? 'scale-[1.02]' : 'hover:scale-[1.01]'
+                      }`}
+                      style={{
+                        backgroundColor: template.preview.bg,
+                        borderColor: formData.template === template.id ? template.preview.accent : 'transparent'
+                      }}
+                    >
+                      {formData.template === template.id && (
+                        <div 
+                          className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: template.preview.accent }}
+                        >
+                          <Check size={12} style={{ color: template.preview.bg }} />
+                        </div>
+                      )}
+                      <div 
+                        className="w-8 h-1 rounded-full mb-2"
+                        style={{ backgroundColor: template.preview.accent }}
+                      />
+                      <p 
+                        className="text-sm font-semibold"
+                        style={{ color: template.preview.text }}
+                      >
+                        {template.name}
+                      </p>
+                      <p 
+                        className="text-xs opacity-60"
+                        style={{ color: template.preview.text }}
+                      >
+                        {template.description}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Color Presets */}
+            <Card 
+              className="border"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                borderColor: 'rgba(245, 245, 245, 0.1)'
+              }}
+            >
+              <CardContent className="pt-6">
+                <Label className="flex items-center gap-2 mb-4" style={{ color: '#F5F5F5' }}>
+                  <Palette size={14} /> Palette de couleurs
+                </Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {COLOR_PRESETS.map((preset) => (
+                    <button
+                      key={preset.name}
+                      onClick={() => handleColorPreset(preset)}
+                      className={`p-3 rounded-xl border-2 transition-all ${
+                        formData.primaryColor === preset.primary ? 'scale-105' : 'hover:scale-102'
+                      }`}
+                      style={{
+                        backgroundColor: preset.secondary,
+                        borderColor: formData.primaryColor === preset.primary ? preset.primary : 'transparent'
+                      }}
+                    >
+                      <div 
+                        className="w-full h-6 rounded-lg mb-2"
+                        style={{ backgroundColor: preset.primary }}
+                      />
+                      <p 
+                        className="text-xs font-medium"
+                        style={{ color: preset.primary }}
+                      >
+                        {preset.name}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Custom Colors */}
+                <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t" style={{ borderColor: 'rgba(245, 245, 245, 0.1)' }}>
+                  <div>
+                    <Label className="text-xs mb-2 block" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                      Couleur principale
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={formData.primaryColor}
+                        onChange={(e) => handleInputChange("primaryColor", e.target.value)}
+                        className="w-10 h-10 rounded-lg cursor-pointer border-0"
+                      />
+                      <Input
+                        value={formData.primaryColor}
+                        onChange={(e) => handleInputChange("primaryColor", e.target.value)}
+                        className="flex-1 h-10 rounded-lg text-xs font-mono"
+                        style={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          borderColor: 'rgba(245, 245, 245, 0.1)',
+                          color: '#F5F5F5'
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs mb-2 block" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                      Couleur de fond
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={formData.secondaryColor}
+                        onChange={(e) => handleInputChange("secondaryColor", e.target.value)}
+                        className="w-10 h-10 rounded-lg cursor-pointer border-0"
+                      />
+                      <Input
+                        value={formData.secondaryColor}
+                        onChange={(e) => handleInputChange("secondaryColor", e.target.value)}
+                        className="flex-1 h-10 rounded-lg text-xs font-mono"
+                        style={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          borderColor: 'rgba(245, 245, 245, 0.1)',
+                          color: '#F5F5F5'
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Font Selector */}
+            <Card 
+              className="border"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                borderColor: 'rgba(245, 245, 245, 0.1)'
+              }}
+            >
+              <CardContent className="pt-6">
+                <Label className="flex items-center gap-2 mb-4" style={{ color: '#F5F5F5' }}>
+                  <Type size={14} /> Police
+                </Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {FONT_OPTIONS.map((font) => (
+                    <button
+                      key={font.id}
+                      onClick={() => handleInputChange("fontFamily", font.id)}
+                      className={`p-4 rounded-xl border-2 transition-all ${font.style}`}
+                      style={{
+                        backgroundColor: formData.fontFamily === font.id ? 'rgba(255, 199, 0, 0.1)' : 'rgba(255, 255, 255, 0.02)',
+                        borderColor: formData.fontFamily === font.id ? '#FFC700' : 'rgba(245, 245, 245, 0.1)',
+                        color: '#F5F5F5'
+                      }}
+                    >
+                      <p className="text-lg font-semibold mb-1">Aa</p>
+                      <p className="text-xs opacity-60">{font.name}</p>
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Preview */}
+            <Card 
+              className="border overflow-hidden"
+              style={{ 
+                backgroundColor: formData.secondaryColor,
+                borderColor: formData.primaryColor + '40'
+              }}
+            >
+              <CardContent className="pt-6 text-center">
+                <p className="text-xs mb-3 opacity-50" style={{ color: formData.primaryColor }}>
+                  Aperçu
+                </p>
                 {formData.logoUrl && (
                   <img 
                     src={formData.logoUrl} 
-                    alt="Logo" 
-                    className="h-12 w-12 rounded-xl object-cover"
+                    alt="Logo preview" 
+                    className="w-16 h-16 rounded-xl object-cover mx-auto mb-3"
                   />
                 )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Contact & Links */}
-        <Card 
-          className="border"
-          style={{ 
-            backgroundColor: 'rgba(255, 255, 255, 0.02)',
-            borderColor: 'rgba(245, 245, 245, 0.1)'
-          }}
-        >
-          <CardContent className="pt-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
-                  <Phone size={14} /> Téléphone
-                </Label>
-                <Input
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
-                  className="h-12 rounded-xl border"
-                  style={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    borderColor: 'rgba(245, 245, 245, 0.1)',
-                    color: '#F5F5F5'
-                  }}
-                  placeholder="+212..."
-                />
-              </div>
-              <div>
-                <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
-                  <MessageCircle size={14} /> WhatsApp
-                </Label>
-                <Input
-                  value={formData.whatsapp}
-                  onChange={(e) => handleInputChange("whatsapp", e.target.value)}
-                  className="h-12 rounded-xl border"
-                  style={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    borderColor: 'rgba(245, 245, 245, 0.1)',
-                    color: '#F5F5F5'
-                  }}
-                  placeholder="+212..."
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
-                <Globe size={14} /> Site web
-              </Label>
-              <Input
-                value={formData.website}
-                onChange={(e) => handleInputChange("website", e.target.value)}
-                className="h-12 rounded-xl border"
-                style={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(245, 245, 245, 0.1)',
-                  color: '#F5F5F5'
-                }}
-                placeholder="https://..."
-              />
-            </div>
-
-            <div>
-              <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
-                <Instagram size={14} /> Instagram
-              </Label>
-              <Input
-                value={formData.instagram}
-                onChange={(e) => handleInputChange("instagram", e.target.value)}
-                className="h-12 rounded-xl border"
-                style={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(245, 245, 245, 0.1)',
-                  color: '#F5F5F5'
-                }}
-                placeholder="https://instagram.com/..."
-              />
-            </div>
-
-            <div>
-              <Label style={{ color: '#F5F5F5' }}>Lien Avis Google (optionnel)</Label>
-              <Input
-                value={formData.googleReviewsUrl}
-                onChange={(e) => handleInputChange("googleReviewsUrl", e.target.value)}
-                className="h-12 rounded-xl border"
-                style={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: 'rgba(245, 245, 245, 0.1)',
-                  color: '#F5F5F5'
-                }}
-                placeholder="https://g.page/..."
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Location */}
-        <Card 
-          className="border"
-          style={{ 
-            backgroundColor: 'rgba(255, 255, 255, 0.02)',
-            borderColor: 'rgba(245, 245, 245, 0.1)'
-          }}
-        >
-          <CardContent className="pt-6 space-y-4">
-            <div>
-              <Label className="flex items-center gap-2" style={{ color: '#F5F5F5' }}>
-                <MapPin size={14} /> Localisation
-              </Label>
-              <div className="flex gap-3">
-                <Input
-                  value={formData.location}
-                  onChange={(e) => handleInputChange("location", e.target.value)}
-                  className="flex-1 h-12 rounded-xl border"
-                  style={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    borderColor: 'rgba(245, 245, 245, 0.1)',
-                    color: '#F5F5F5'
-                  }}
-                  placeholder="Ville, Pays"
-                />
-                <Button
-                  type="button"
-                  onClick={handleGetLocation}
-                  disabled={isLocating}
-                  className="h-12 px-4 rounded-xl"
-                  style={{ 
-                    backgroundColor: '#FFC700',
-                    color: '#0B0B0B'
-                  }}
+                <h3 
+                  className={`text-xl font-bold mb-1 ${
+                    formData.fontFamily === 'playfair' ? 'font-serif' : 
+                    formData.fontFamily === 'mono' ? 'font-mono' : 'font-sans'
+                  }`}
+                  style={{ color: formData.secondaryColor === '#FFFFFF' || formData.secondaryColor === '#FAF9F6' || formData.secondaryColor === '#FAFAFA' ? '#1D1D1F' : '#F5F5F5' }}
                 >
-                  {isLocating ? (
-                    <Loader2 size={18} className="animate-spin" />
-                  ) : (
-                    <MapPin size={18} />
-                  )}
-                </Button>
-              </div>
-              {formData.coordinates && (
+                  {formData.businessName || "Nom du commerce"}
+                </h3>
                 <p 
-                  className="text-xs mt-2"
-                  style={{ color: 'rgba(255, 199, 0, 0.7)' }}
+                  className="text-sm opacity-60"
+                  style={{ color: formData.secondaryColor === '#FFFFFF' || formData.secondaryColor === '#FAF9F6' || formData.secondaryColor === '#FAFAFA' ? '#1D1D1F' : '#F5F5F5' }}
                 >
-                  ✓ Position GPS: {formData.coordinates.lat.toFixed(6)}, {formData.coordinates.lng.toFixed(6)}
+                  {formData.category || "Catégorie"}
                 </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                <div 
+                  className="inline-block mt-4 px-4 py-2 rounded-lg text-sm font-medium"
+                  style={{ backgroundColor: formData.primaryColor, color: formData.secondaryColor }}
+                >
+                  Contacter
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* Create Button */}
         <Button
@@ -731,8 +1045,8 @@ function AdminInstantCardContent() {
           disabled={isCreating || !formData.businessName}
           className="w-full h-14 rounded-xl font-bold text-lg"
           style={{ 
-            backgroundColor: '#FFC700',
-            color: '#0B0B0B'
+            backgroundColor: formData.primaryColor,
+            color: formData.secondaryColor
           }}
         >
           {isCreating ? (
@@ -751,7 +1065,7 @@ function AdminInstantCardContent() {
         {/* Info Note */}
         <div 
           className="rounded-xl p-4 text-center"
-          style={{ backgroundColor: 'rgba(255, 199, 0, 0.08)' }}
+          style={{ backgroundColor: `${formData.primaryColor}15` }}
         >
           <p 
             className="text-xs"
