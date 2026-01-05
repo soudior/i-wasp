@@ -1,7 +1,7 @@
 /**
  * i-WASP STUDIO — Centre de Contrôle Ultra-Luxe
  * Dashboard premium avec preview en temps réel
- * Inclut La Manufacture pour la gestion de flotte NFC
+ * Inclut La Manufacture, Résonance & Ads, et Stories
  */
 
 import { useState } from "react";
@@ -36,7 +36,14 @@ import {
   MapPin,
   ShoppingBag,
   Plus,
-  Shield
+  Shield,
+  Fingerprint,
+  Image,
+  Play,
+  Settings,
+  Smartphone,
+  Radio,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,14 +59,22 @@ import { cn } from "@/lib/utils";
 interface NFCCard {
   id: string;
   serialNumber: string;
-  material: "or-24k" | "carbone" | "titane" | "bois-precieux";
+  material: "or-24k" | "carbone" | "titane" | "bois-precieux" | "nail-bio";
   materialLabel: string;
+  productType: "card" | "nail" | "bracelet";
   status: "operational" | "locked" | "pending";
   scans: number;
   lastScan?: string;
   location?: string;
   geoEnabled: boolean;
   pushEnabled: boolean;
+}
+
+interface Story {
+  id: string;
+  type: "image" | "video";
+  thumbnail: string;
+  title?: string;
 }
 
 // ============================================================
@@ -71,7 +86,8 @@ const mockFleet: NFCCard[] = [
     id: "1",
     serialNumber: "WASP-772-GLD",
     material: "or-24k",
-    materialLabel: "Or 24K",
+    materialLabel: "Carte Or 24K",
+    productType: "card",
     status: "operational",
     scans: 847,
     lastScan: "Il y a 2h",
@@ -81,10 +97,11 @@ const mockFleet: NFCCard[] = [
   },
   {
     id: "2",
-    serialNumber: "WASP-104-CRB",
-    material: "carbone",
-    materialLabel: "Carbone Mat",
-    status: "locked",
+    serialNumber: "WASP-NAIL-001",
+    material: "nail-bio",
+    materialLabel: "NFC Nail Pro (Set)",
+    productType: "nail",
+    status: "operational",
     scans: 312,
     lastScan: "Il y a 3j",
     location: "Dubaï, EAU",
@@ -93,23 +110,33 @@ const mockFleet: NFCCard[] = [
   },
   {
     id: "3",
-    serialNumber: "WASP-891-TTN",
-    material: "titane",
-    materialLabel: "Titane Brossé",
-    status: "pending",
-    scans: 0,
+    serialNumber: "WASP-104-CRB",
+    material: "carbone",
+    materialLabel: "Carbone Mat",
+    productType: "card",
+    status: "locked",
+    scans: 156,
+    lastScan: "Il y a 1 semaine",
     geoEnabled: false,
     pushEnabled: false
   }
 ];
 
+// Mock stories data
+const mockStories: Story[] = [
+  { id: "1", type: "video", thumbnail: "", title: "Monaco Event" },
+  { id: "2", type: "image", thumbnail: "", title: "Portrait Pro" },
+  { id: "3", type: "image", thumbnail: "", title: "Bureau" },
+  { id: "4", type: "video", thumbnail: "", title: "Conférence" },
+];
+
 // Tabs configuration
 const tabs = [
+  { id: "identity", label: "Mon Identité", icon: User },
   { id: "manufacture", label: "La Manufacture", icon: Gem },
-  { id: "studio", label: "Mon Identité", icon: User },
   { id: "leads", label: "Mes Leads", icon: Users },
+  { id: "resonance", label: "Résonance & Ads", icon: Zap },
   { id: "world", label: "Centre Intelligence", icon: Globe },
-  { id: "automation", label: "Ads & Push", icon: Zap },
   { id: "eco", label: "Écologie", icon: Leaf },
 ];
 
@@ -141,16 +168,17 @@ const activityFeed = [
 ];
 
 const Studio = () => {
-  const [activeTab, setActiveTab] = useState("manufacture");
+  const [activeTab, setActiveTab] = useState("identity");
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [fleet, setFleet] = useState<NFCCard[]>(mockFleet);
+  const [stories, setStories] = useState<Story[]>(mockStories);
   
   // Profile form state
   const [profile, setProfile] = useState({
     name: "Julian de Wasp",
-    title: "Directeur de l'Innovation",
-    bio: "Bâtisseur d'empires digitaux. Leader visionnaire.",
+    title: "Directeur de l'Influence",
+    bio: "Bâtisseur d'empires digitaux. Leader visionnaire au service de l'excellence.",
     email: "julian@i-wasp.com",
     phone: "+33 6 00 00 00 00",
     company: "i-WASP",
@@ -159,12 +187,13 @@ const Studio = () => {
     linkedin: "juliandewasp",
   });
   
-  // Automation settings
-  const [automation, setAutomation] = useState({
-    pushEnabled: true,
-    adsSync: false,
-    weeklyReport: true,
-    leadAlerts: true,
+  // Resonance settings (Push, Email, Ads)
+  const [resonance, setResonance] = useState({
+    pushRappel: true,
+    emailConciergerie: true,
+    geoMessage: false,
+    instagramRetargeting: true,
+    linkedinRetargeting: false,
   });
 
   // Toggle card lock (Kill-Switch)
@@ -209,8 +238,11 @@ const Studio = () => {
     }
   };
 
-  // Material gradient renderer
-  const getMaterialGradient = (material: NFCCard["material"]) => {
+  // Material/Product gradient renderer
+  const getMaterialGradient = (material: NFCCard["material"], productType: NFCCard["productType"]) => {
+    if (productType === "nail") {
+      return "bg-gradient-to-br from-rose-400 via-pink-500 to-rose-600";
+    }
     switch (material) {
       case "or-24k":
         return "bg-gradient-to-br from-iwasp-bronze via-yellow-600 to-iwasp-bronze";
@@ -220,6 +252,20 @@ const Studio = () => {
         return "bg-gradient-to-br from-slate-400 via-slate-500 to-slate-600";
       case "bois-precieux":
         return "bg-gradient-to-br from-amber-800 via-amber-900 to-amber-950";
+      default:
+        return "bg-gradient-to-br from-zinc-600 to-zinc-800";
+    }
+  };
+
+  // Get product icon
+  const getProductIcon = (productType: NFCCard["productType"]) => {
+    switch (productType) {
+      case "nail":
+        return <Fingerprint className="w-4 h-4" />;
+      case "bracelet":
+        return <Radio className="w-4 h-4" />;
+      default:
+        return <Gem className="w-4 h-4" />;
     }
   };
 
@@ -338,290 +384,364 @@ const Studio = () => {
                   className="space-y-8"
                 >
                   {/* Fleet Header */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-wrap gap-4">
                     <div>
-                      <h3 className="font-display text-2xl text-iwasp-cream">
-                        <span className="italic text-iwasp-bronze">La</span> Manufacture
+                      <h3 className="font-display text-3xl md:text-4xl text-iwasp-cream">
+                        <span className="italic text-iwasp-bronze">La</span> <span className="text-iwasp-bronze">Manufacture.</span>
                       </h3>
-                      <p className="text-sm text-iwasp-silver mt-1">Gérez vos objets de pouvoir physiques et leur sécurité.</p>
+                      <p className="text-sm text-iwasp-silver mt-2">Objets de pouvoir physiques : des cartes à la puce d'ongle invisible.</p>
                     </div>
-                    <div className="px-4 py-2 rounded-full bg-iwasp-midnight-elevated border border-iwasp-emerald/30 flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-iwasp-emerald-glow" />
-                      <span className="text-iwasp-cream text-xs font-medium tracking-wider">FLOTTE SÉCURISÉE</span>
-                    </div>
-                  </div>
-
-                  {/* Fleet Section */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-iwasp-silver text-xs font-semibold tracking-[0.3em] uppercase">
-                        VOS OBJETS CONNECTÉS
-                      </h4>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="border-iwasp-bronze/30 text-iwasp-bronze hover:bg-iwasp-bronze/10 gap-2"
-                      >
-                        <Plus className="w-3 h-3" />
-                        Rituel d'Activation
+                    <Link to="/order/type">
+                      <Button className="bg-transparent border-2 border-iwasp-bronze/40 text-iwasp-cream hover:bg-iwasp-bronze/10 gap-2 rounded-xl">
+                        <Plus className="w-4 h-4" />
+                        Nouvelle Commande
                       </Button>
-                    </div>
-
-                    {/* Cards Grid */}
-                    <div className="space-y-4">
-                      {fleet.map((card, index) => (
-                        <motion.div
-                          key={card.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 hover:border-iwasp-bronze/20 transition-all"
-                        >
-                          <div className="flex items-start gap-4">
-                            {/* Card Visual */}
-                            <div className={cn(
-                              "w-20 h-12 rounded-lg flex items-center justify-center text-xs font-semibold shadow-lg flex-shrink-0",
-                              getMaterialGradient(card.material),
-                              card.status === "locked" && "opacity-50 grayscale"
-                            )}>
-                              <span className="text-white/90 tracking-wider">i-WASP</span>
-                            </div>
-
-                            {/* Info */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-3 flex-wrap">
-                                <h4 className="font-semibold text-iwasp-cream">{card.materialLabel}</h4>
-                                {getStatusBadge(card.status)}
-                              </div>
-                              <p className="text-iwasp-silver/60 text-sm mt-1">{card.serialNumber}</p>
-                              
-                              {card.status !== "pending" && (
-                                <div className="flex items-center gap-4 mt-3 text-xs text-iwasp-silver/50">
-                                  <span className="flex items-center gap-1">
-                                    <Eye className="w-3 h-3" />
-                                    {card.scans} scans
-                                  </span>
-                                  {card.lastScan && (
-                                    <span>{card.lastScan}</span>
-                                  )}
-                                  {card.location && (
-                                    <span className="flex items-center gap-1">
-                                      <MapPin className="w-3 h-3" />
-                                      {card.location}
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-
-                              {card.status === "pending" && (
-                                <div className="mt-3 flex items-center gap-2 text-iwasp-bronze text-xs">
-                                  <Sparkles className="w-3 h-3 animate-pulse" />
-                                  <span>Votre pièce est en cours de forge...</span>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Controls */}
-                            {card.status !== "pending" && (
-                              <div className="flex flex-col items-end gap-3">
-                                {/* Kill Switch */}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => toggleCardLock(card.id)}
-                                  className={cn(
-                                    "gap-2 text-xs",
-                                    card.status === "locked" 
-                                      ? "text-red-400 hover:text-red-300 hover:bg-red-500/10" 
-                                      : "text-iwasp-emerald-glow hover:text-iwasp-emerald hover:bg-iwasp-emerald/10"
-                                  )}
-                                >
-                                  {card.status === "locked" ? (
-                                    <>
-                                      <Lock className="w-3 h-3" />
-                                      Déverrouiller
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Unlock className="w-3 h-3" />
-                                      Kill-Switch
-                                    </>
-                                  )}
-                                </Button>
-
-                                {/* Settings toggles */}
-                                <div className="flex items-center gap-4">
-                                  <div className="flex items-center gap-2">
-                                    <Globe className="w-3 h-3 text-iwasp-silver/40" />
-                                    <Switch
-                                      checked={card.geoEnabled}
-                                      onCheckedChange={() => toggleCardSetting(card.id, "geoEnabled")}
-                                      className="scale-75 data-[state=checked]:bg-iwasp-bronze"
-                                    />
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Bell className="w-3 h-3 text-iwasp-silver/40" />
-                                    <Switch
-                                      checked={card.pushEnabled}
-                                      onCheckedChange={() => toggleCardSetting(card.id, "pushEnabled")}
-                                      className="scale-75 data-[state=checked]:bg-iwasp-bronze"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
+                    </Link>
                   </div>
 
-                  {/* Order New Card CTA */}
-                  <div className="p-6 rounded-2xl bg-gradient-to-r from-iwasp-bronze/10 to-iwasp-emerald/5 border border-iwasp-bronze/20">
-                    <div className="flex items-center justify-between flex-wrap gap-4">
-                      <div>
-                        <h4 className="text-iwasp-cream font-semibold flex items-center gap-2">
-                          <ShoppingBag className="w-4 h-4 text-iwasp-bronze" />
-                          Agrandir votre Collection
-                        </h4>
-                        <p className="text-iwasp-silver text-sm mt-1">
-                          Commander une nouvelle pièce sur-mesure : Or 24K, Carbone, Titane ou Bois Précieux
-                        </p>
+                  {/* Main Grid: Collection + Nail Panel */}
+                  <div className="grid lg:grid-cols-[1fr,340px] gap-6">
+                    {/* Left: Collection */}
+                    <div className="space-y-6">
+                      <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">
+                        Votre Collection i-WASP
+                      </h4>
+
+                      {/* Cards Grid */}
+                      <div className="space-y-4">
+                        {fleet.map((card, index) => (
+                          <motion.div
+                            key={card.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 hover:border-iwasp-bronze/20 transition-all"
+                          >
+                            <div className="flex items-start gap-4">
+                              {/* Card/Nail Visual */}
+                              <div className={cn(
+                                "w-20 h-12 rounded-lg flex items-center justify-center text-xs font-semibold shadow-lg flex-shrink-0 relative overflow-hidden",
+                                getMaterialGradient(card.material, card.productType),
+                                card.status === "locked" && "opacity-50 grayscale"
+                              )}>
+                                {card.productType === "nail" ? (
+                                  <div className="flex flex-col items-center">
+                                    <Fingerprint className="w-5 h-5 text-white/90" />
+                                    <span className="text-[8px] text-white/70 mt-0.5">NFC</span>
+                                  </div>
+                                ) : (
+                                  <>
+                                    <span className="absolute top-1 left-1.5 text-[6px] text-white/50 uppercase tracking-wider">PRESTIGE</span>
+                                    <span className="text-white/90 tracking-wider text-[10px] font-bold">i-WASP</span>
+                                  </>
+                                )}
+                              </div>
+
+                              {/* Info */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-3 flex-wrap">
+                                  <h4 className="font-semibold text-iwasp-cream">{card.materialLabel}</h4>
+                                  {getStatusBadge(card.status)}
+                                </div>
+                                <p className="text-iwasp-silver/60 text-sm mt-1">{card.serialNumber}</p>
+                                
+                                {card.status !== "pending" && (
+                                  <div className="flex items-center gap-4 mt-3 text-xs text-iwasp-silver/50">
+                                    <span className="flex items-center gap-1">
+                                      <Eye className="w-3 h-3" />
+                                      {card.scans} scans
+                                    </span>
+                                    {card.lastScan && (
+                                      <span>{card.lastScan}</span>
+                                    )}
+                                    {card.location && (
+                                      <span className="flex items-center gap-1">
+                                        <MapPin className="w-3 h-3" />
+                                        {card.location}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+
+                                {card.status === "pending" && (
+                                  <div className="mt-3 flex items-center gap-2 text-iwasp-bronze text-xs">
+                                    <Sparkles className="w-3 h-3 animate-pulse" />
+                                    <span>Votre pièce est en cours de forge...</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Controls */}
+                              {card.status !== "pending" && (
+                                <div className="flex flex-col items-end gap-3">
+                                  {/* Kill Switch */}
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => toggleCardLock(card.id)}
+                                    className={cn(
+                                      "gap-2 text-xs",
+                                      card.status === "locked" 
+                                        ? "text-red-400 hover:text-red-300 hover:bg-red-500/10" 
+                                        : "text-iwasp-emerald-glow hover:text-iwasp-emerald hover:bg-iwasp-emerald/10"
+                                    )}
+                                  >
+                                    {card.status === "locked" ? (
+                                      <>
+                                        <Lock className="w-3 h-3" />
+                                        Déverrouiller
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Unlock className="w-3 h-3" />
+                                        Kill-Switch
+                                      </>
+                                    )}
+                                  </Button>
+
+                                  {/* Settings toggles */}
+                                  <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-2">
+                                      <Globe className="w-3 h-3 text-iwasp-silver/40" />
+                                      <Switch
+                                        checked={card.geoEnabled}
+                                        onCheckedChange={() => toggleCardSetting(card.id, "geoEnabled")}
+                                        className="scale-75 data-[state=checked]:bg-iwasp-bronze"
+                                      />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Bell className="w-3 h-3 text-iwasp-silver/40" />
+                                      <Switch
+                                        checked={card.pushEnabled}
+                                        onCheckedChange={() => toggleCardSetting(card.id, "pushEnabled")}
+                                        className="scale-75 data-[state=checked]:bg-iwasp-bronze"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        ))}
                       </div>
-                      <Link to="/order/type">
-                        <Button className="bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2">
-                          <Gem className="w-4 h-4" />
-                          Lancer la Forge
-                        </Button>
-                      </Link>
+                    </div>
+
+                    {/* Right: NFC Nail Panel */}
+                    <div className="p-6 rounded-3xl bg-gradient-to-br from-iwasp-midnight-elevated to-rose-500/5 border border-rose-500/20 flex flex-col">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
+                          <Sparkles className="w-5 h-5 text-white" />
+                        </div>
+                        <h4 className="font-display text-xl text-iwasp-cream">
+                          L'Ongle <span className="italic text-rose-400">NFC</span>
+                          <br />
+                          <span className="text-sm text-iwasp-silver font-sans">Bio-S</span>
+                        </h4>
+                      </div>
+
+                      <p className="text-sm text-iwasp-silver mb-6 leading-relaxed">
+                        Le luxe au bout des doigts. Intégrez une micro-puce NFC i-Wasp lors de votre manucure. Une technologie invisible et résistante pour partager votre univers d'un simple mouvement de la main.
+                      </p>
+
+                      {/* Features */}
+                      <div className="space-y-3 mb-6">
+                        <div className="flex items-center gap-3 text-sm">
+                          <Check className="w-4 h-4 text-rose-400" />
+                          <span className="text-iwasp-cream">Compatible Résine & Gel</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm">
+                          <Check className="w-4 h-4 text-rose-400" />
+                          <span className="text-iwasp-cream">Étanchéité IP68 (Spa & Yacht)</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-auto">
+                        <Link to="/order/type">
+                          <Button className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white gap-2 rounded-xl">
+                            <Fingerprint className="w-4 h-4" />
+                            Commander le Kit
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
               )}
 
-              {activeTab === "studio" && (
+              {/* MON IDENTITÉ TAB - With Stories */}
+              {activeTab === "identity" && (
                 <motion.div
-                  key="studio"
+                  key="identity"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="space-y-6"
+                  className="space-y-8"
                 >
-                  {/* Name & Title */}
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-xs text-iwasp-silver tracking-[0.15em] uppercase">
-                        Nom de Prestige
-                      </label>
-                      <Input
-                        value={profile.name}
-                        onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                        className="bg-iwasp-midnight-elevated border-iwasp-emerald/20 text-iwasp-cream placeholder:text-iwasp-silver/50 focus:border-iwasp-bronze rounded-xl h-12"
-                        placeholder="Votre nom"
-                      />
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-display text-3xl md:text-4xl text-iwasp-cream">
+                        <span className="italic">Votre</span> <span className="text-iwasp-bronze">Identité.</span>
+                      </h3>
+                      <p className="text-sm text-iwasp-silver mt-2">Scénarisez votre première impression numérique.</p>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs text-iwasp-silver tracking-[0.15em] uppercase">
-                        Titre / Rang
-                      </label>
-                      <Input
-                        value={profile.title}
-                        onChange={(e) => setProfile({ ...profile, title: e.target.value })}
-                        className="bg-iwasp-midnight-elevated border-iwasp-emerald/20 text-iwasp-cream placeholder:text-iwasp-silver/50 focus:border-iwasp-bronze rounded-xl h-12"
-                        placeholder="Votre titre"
-                      />
-                    </div>
+                    <Button
+                      onClick={handleSave}
+                      disabled={isSaving}
+                      className="bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2 rounded-xl"
+                    >
+                      <Save className="w-4 h-4" />
+                      Enregistrer
+                    </Button>
                   </div>
 
-                  {/* Bio */}
-                  <div className="space-y-2">
-                    <label className="text-xs text-iwasp-silver tracking-[0.15em] uppercase">
-                      Manifeste Personnel (Bio)
-                    </label>
-                    <Textarea
-                      value={profile.bio}
-                      onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                      className="bg-iwasp-midnight-elevated border-iwasp-emerald/20 text-iwasp-cream placeholder:text-iwasp-silver/50 focus:border-iwasp-bronze rounded-xl min-h-[100px] resize-none"
-                      placeholder="Votre histoire en quelques mots..."
-                    />
-                  </div>
-
-                  {/* Contact fields */}
-                  <div className="pt-6 border-t border-iwasp-emerald/10">
-                    <h3 className="text-sm text-iwasp-cream font-medium mb-4 flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-iwasp-bronze" />
-                      Coordonnées
-                    </h3>
-                    <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Informations Générales */}
+                  <div className="p-6 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
+                    <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase mb-6">Informations Générales</h4>
+                    
+                    <div className="grid sm:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-xs text-iwasp-silver tracking-[0.1em] uppercase flex items-center gap-2">
-                          <Mail className="w-3 h-3" /> Email
+                        <label className="text-xs text-iwasp-silver tracking-[0.15em] uppercase">
+                          Nom de Scène / Prestige
                         </label>
+                        <Input
+                          value={profile.name}
+                          onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                          className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream placeholder:text-iwasp-silver/50 focus:border-iwasp-bronze rounded-xl h-12"
+                          placeholder="Votre nom"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs text-iwasp-silver tracking-[0.15em] uppercase">
+                          Fonction Royale
+                        </label>
+                        <Input
+                          value={profile.title}
+                          onChange={(e) => setProfile({ ...profile, title: e.target.value })}
+                          className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream placeholder:text-iwasp-silver/50 focus:border-iwasp-bronze rounded-xl h-12"
+                          placeholder="Votre titre"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 mt-6">
+                      <label className="text-xs text-iwasp-silver tracking-[0.15em] uppercase">
+                        Manifeste (Biographie)
+                      </label>
+                      <Textarea
+                        value={profile.bio}
+                        onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                        className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream placeholder:text-iwasp-silver/50 focus:border-iwasp-bronze rounded-xl min-h-[100px] resize-none"
+                        placeholder="Votre histoire en quelques mots..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Stories Section */}
+                  <div className="p-6 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
+                    <div className="flex items-center justify-between mb-6">
+                      <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">
+                        Stories i-WASP (Vidéo & Photo)
+                      </h4>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-iwasp-bronze/30 text-iwasp-bronze hover:bg-iwasp-bronze/10 gap-2"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Ajouter une Story
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                      {stories.map((story, index) => (
+                        <motion.div
+                          key={story.id}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="aspect-square rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10 hover:border-iwasp-bronze/30 transition-all cursor-pointer group relative overflow-hidden"
+                        >
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            {story.type === "video" ? (
+                              <Play className="w-6 h-6 text-iwasp-silver/40 group-hover:text-iwasp-bronze transition-colors" />
+                            ) : (
+                              <Image className="w-6 h-6 text-iwasp-silver/40 group-hover:text-iwasp-bronze transition-colors" />
+                            )}
+                          </div>
+                        </motion.div>
+                      ))}
+                      {/* Add new story placeholder */}
+                      <div className="aspect-square rounded-xl border-2 border-dashed border-iwasp-emerald/20 hover:border-iwasp-bronze/30 transition-all cursor-pointer flex items-center justify-center">
+                        <Plus className="w-6 h-6 text-iwasp-silver/40" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contact & Social */}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* Contact */}
+                    <div className="p-6 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
+                      <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+                        <Mail className="w-3 h-3 text-iwasp-bronze" />
+                        Coordonnées
+                      </h4>
+                      <div className="space-y-4">
                         <Input
                           value={profile.email}
                           onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                          className="bg-iwasp-midnight-elevated border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
+                          className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
+                          placeholder="Email"
                         />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs text-iwasp-silver tracking-[0.1em] uppercase flex items-center gap-2">
-                          <Phone className="w-3 h-3" /> Téléphone
-                        </label>
                         <Input
                           value={profile.phone}
                           onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                          className="bg-iwasp-midnight-elevated border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
+                          className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
+                          placeholder="Téléphone"
                         />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs text-iwasp-silver tracking-[0.1em] uppercase flex items-center gap-2">
-                          <Building2 className="w-3 h-3" /> Entreprise
-                        </label>
                         <Input
                           value={profile.company}
                           onChange={(e) => setProfile({ ...profile, company: e.target.value })}
-                          className="bg-iwasp-midnight-elevated border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs text-iwasp-silver tracking-[0.1em] uppercase flex items-center gap-2">
-                          <Globe className="w-3 h-3" /> Site web
-                        </label>
-                        <Input
-                          value={profile.website}
-                          onChange={(e) => setProfile({ ...profile, website: e.target.value })}
-                          className="bg-iwasp-midnight-elevated border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
+                          className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
+                          placeholder="Entreprise"
                         />
                       </div>
                     </div>
-                  </div>
 
-                  {/* Social links */}
-                  <div className="pt-6 border-t border-iwasp-emerald/10">
-                    <h3 className="text-sm text-iwasp-cream font-medium mb-4 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-iwasp-bronze" />
-                      Réseaux Sociaux
-                    </h3>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-xs text-iwasp-silver tracking-[0.1em] uppercase flex items-center gap-2">
-                          <Instagram className="w-3 h-3" /> Instagram
-                        </label>
-                        <Input
-                          value={profile.instagram}
-                          onChange={(e) => setProfile({ ...profile, instagram: e.target.value })}
-                          className="bg-iwasp-midnight-elevated border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs text-iwasp-silver tracking-[0.1em] uppercase flex items-center gap-2">
-                          <Linkedin className="w-3 h-3" /> LinkedIn
-                        </label>
-                        <Input
-                          value={profile.linkedin}
-                          onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
-                          className="bg-iwasp-midnight-elevated border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
-                        />
+                    {/* Social */}
+                    <div className="p-6 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
+                      <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+                        <Sparkles className="w-3 h-3 text-iwasp-bronze" />
+                        Réseaux Sociaux
+                      </h4>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                          <Instagram className="w-4 h-4 text-iwasp-silver/60" />
+                          <Input
+                            value={profile.instagram}
+                            onChange={(e) => setProfile({ ...profile, instagram: e.target.value })}
+                            className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
+                            placeholder="@username"
+                          />
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Linkedin className="w-4 h-4 text-iwasp-silver/60" />
+                          <Input
+                            value={profile.linkedin}
+                            onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
+                            className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
+                            placeholder="linkedin.com/in/..."
+                          />
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Globe className="w-4 h-4 text-iwasp-silver/60" />
+                          <Input
+                            value={profile.website}
+                            onChange={(e) => setProfile({ ...profile, website: e.target.value })}
+                            className="bg-iwasp-midnight border-iwasp-emerald/20 text-iwasp-cream focus:border-iwasp-bronze rounded-xl h-11"
+                            placeholder="https://..."
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -968,71 +1088,162 @@ const Studio = () => {
                 </motion.div>
               )}
 
-              {activeTab === "automation" && (
+              {/* RÉSONANCE & INFLUENCE TAB */}
+              {activeTab === "resonance" && (
                 <motion.div
-                  key="automation"
+                  key="resonance"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="space-y-6"
+                  className="space-y-8"
                 >
-                  {/* Automation header */}
-                  <div className="p-6 rounded-2xl bg-gradient-to-r from-iwasp-midnight-elevated to-iwasp-emerald/5 border border-iwasp-emerald/20">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-iwasp-bronze/20 flex items-center justify-center">
-                        <Zap className="w-6 h-6 text-iwasp-bronze" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-display text-iwasp-cream">Automation Active</h3>
-                        <p className="text-sm text-iwasp-silver">i-Wasp travaille pour vous 24/7</p>
-                      </div>
+                  {/* Header */}
+                  <div className="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                      <h3 className="font-display text-3xl md:text-4xl text-iwasp-cream">
+                        <span className="italic text-iwasp-bronze">Résonance</span> &
+                        <br />
+                        <span className="text-iwasp-bronze">Influence.</span>
+                      </h3>
+                      <p className="text-sm text-iwasp-silver mt-2">Automatisez votre présence après le contact physique.</p>
                     </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="text-center">
-                        <div className="text-2xl font-display text-iwasp-bronze">847</div>
-                        <div className="text-xs text-iwasp-silver">Push envoyés</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-display text-iwasp-bronze">23%</div>
-                        <div className="text-xs text-iwasp-silver">Taux d'ouverture</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-display text-iwasp-bronze">12</div>
-                        <div className="text-xs text-iwasp-silver">Conversions</div>
-                      </div>
-                    </div>
+                    <Button className="bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2 rounded-xl">
+                      Activer les Campagnes
+                    </Button>
                   </div>
 
-                  {/* Settings */}
-                  <div className="space-y-4">
-                    {[
-                      { key: "pushEnabled", icon: Bell, title: "Notifications Push", desc: "Envoyez des messages aux personnes qui ont tapé votre carte" },
-                      { key: "adsSync", icon: Target, title: "Sync Publicitaire", desc: "Synchronisez vos leads avec Meta Ads et Google Ads" },
-                      { key: "weeklyReport", icon: TrendingUp, title: "Rapport Hebdomadaire", desc: "Recevez un résumé de vos performances chaque lundi" },
-                      { key: "leadAlerts", icon: Users, title: "Alertes Lead VIP", desc: "Soyez notifié instantanément pour les leads à haut score" },
-                    ].map((setting) => (
-                      <div 
-                        key={setting.key}
-                        className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-iwasp-emerald/10 flex items-center justify-center">
-                            <setting.icon className="w-5 h-5 text-iwasp-emerald-glow" />
+                  {/* Main Grid */}
+                  <div className="grid lg:grid-cols-[1fr,380px] gap-6">
+                    {/* Left: Automations de Courtoisie */}
+                    <div className="space-y-6">
+                      <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">
+                        Automatisations de Courtoisie
+                      </h4>
+
+                      {/* Push Notification */}
+                      <div className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-iwasp-bronze/10 flex items-center justify-center">
+                              <Smartphone className="w-6 h-6 text-iwasp-bronze" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-iwasp-cream">Notification Push de Rappel</h4>
+                              <p className="text-sm text-iwasp-silver">Envoie un message de prestige 24h après un scan NFC.</p>
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="font-medium text-iwasp-cream">{setting.title}</h4>
-                            <p className="text-sm text-iwasp-silver">{setting.desc}</p>
+                          <Switch
+                            checked={resonance.pushRappel}
+                            onCheckedChange={(checked) => setResonance({ ...resonance, pushRappel: checked })}
+                            className="data-[state=checked]:bg-iwasp-bronze"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Email Conciergerie */}
+                      <div className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-iwasp-bronze/10 flex items-center justify-center">
+                              <Mail className="w-6 h-6 text-iwasp-bronze" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-iwasp-cream">Email Conciergerie</h4>
+                              <p className="text-sm text-iwasp-silver">Envoi automatique de votre portfolio PDF haute résolution.</p>
+                            </div>
+                          </div>
+                          <Switch
+                            checked={resonance.emailConciergerie}
+                            onCheckedChange={(checked) => setResonance({ ...resonance, emailConciergerie: checked })}
+                            className="data-[state=checked]:bg-iwasp-bronze"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Geo Message */}
+                      <div className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-iwasp-bronze/10 flex items-center justify-center">
+                              <MapPin className="w-6 h-6 text-iwasp-bronze" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-iwasp-cream">Message Géolocalisé</h4>
+                              <p className="text-sm text-iwasp-silver">Salue vos contacts lorsqu'ils reviennent dans votre périmètre.</p>
+                            </div>
+                          </div>
+                          <Switch
+                            checked={resonance.geoMessage}
+                            onCheckedChange={(checked) => setResonance({ ...resonance, geoMessage: checked })}
+                            className="data-[state=checked]:bg-iwasp-bronze"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right: Retargeting Panel */}
+                    <div className="p-6 rounded-3xl bg-gradient-to-br from-iwasp-midnight-elevated to-iwasp-bronze/5 border border-iwasp-bronze/20">
+                      <h4 className="font-display text-2xl text-iwasp-cream mb-2">
+                        Retargeting de
+                        <br />
+                        <span className="italic text-iwasp-bronze">Luxe</span>
+                      </h4>
+                      <p className="text-sm text-iwasp-silver mb-6">
+                        Ne laissez pas l'intérêt s'éteindre. Notre moteur publicitaire identifie les profils ayant scanné votre i-Wasp pour leur afficher des contenus exclusifs sur Instagram et LinkedIn.
+                      </p>
+
+                      {/* Instagram Active */}
+                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10 mb-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="text-xs text-iwasp-silver tracking-wider uppercase">Campagne Instagram</div>
+                          <div className="flex items-center gap-2">
+                            <RefreshCw className="w-3 h-3 text-iwasp-silver/60" />
                           </div>
                         </div>
-                        <Switch
-                          checked={automation[setting.key as keyof typeof automation]}
-                          onCheckedChange={(checked) => 
-                            setAutomation({ ...automation, [setting.key]: checked })
-                          }
-                          className="data-[state=checked]:bg-iwasp-bronze"
-                        />
+                        <div className="flex items-center justify-between">
+                          <span className={cn(
+                            "text-xs font-semibold px-2 py-1 rounded",
+                            resonance.instagramRetargeting 
+                              ? "bg-iwasp-emerald/20 text-iwasp-emerald-glow" 
+                              : "bg-iwasp-midnight-elevated text-iwasp-silver"
+                          )}>
+                            {resonance.instagramRetargeting ? "ACTIVE" : "INACTIVE"}
+                          </span>
+                          <Switch
+                            checked={resonance.instagramRetargeting}
+                            onCheckedChange={(checked) => setResonance({ ...resonance, instagramRetargeting: checked })}
+                            className="data-[state=checked]:bg-iwasp-bronze scale-90"
+                          />
+                        </div>
+                        {resonance.instagramRetargeting && (
+                          <div className="flex items-center gap-2 mt-3">
+                            <div className="flex -space-x-2">
+                              {[1,2,3,4].map(i => (
+                                <div key={i} className="w-6 h-6 rounded-full bg-iwasp-bronze/30 border-2 border-iwasp-midnight" />
+                              ))}
+                            </div>
+                            <span className="text-xs text-iwasp-silver">+124 cibles</span>
+                          </div>
+                        )}
                       </div>
-                    ))}
+
+                      {/* LinkedIn */}
+                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10 mb-6">
+                        <div className="flex items-center justify-between">
+                          <div className="text-xs text-iwasp-silver tracking-wider uppercase">Campagne LinkedIn</div>
+                          <Switch
+                            checked={resonance.linkedinRetargeting}
+                            onCheckedChange={(checked) => setResonance({ ...resonance, linkedinRetargeting: checked })}
+                            className="data-[state=checked]:bg-iwasp-bronze scale-90"
+                          />
+                        </div>
+                      </div>
+
+                      <Button className="w-full bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2 rounded-xl">
+                        <Settings className="w-4 h-4" />
+                        Synchroniser
+                      </Button>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -1103,7 +1314,7 @@ const Studio = () => {
           <div className="hidden lg:block">
             <div className="sticky top-28">
               <div className="text-center mb-4">
-                <span className="text-xs text-iwasp-silver tracking-[0.15em] uppercase">Aperçu en direct</span>
+                <span className="text-xs text-iwasp-silver tracking-[0.15em] uppercase">Rendu Temps Réel</span>
               </div>
               
               {/* Phone mockup */}
@@ -1119,48 +1330,53 @@ const Studio = () => {
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-5 bg-black rounded-full z-10" />
                     
                     {/* Profile preview */}
-                    <div className="pt-14 px-5">
-                      {/* Avatar */}
-                      <div className="w-20 h-20 rounded-full mx-auto mb-4 relative">
-                        <div className="absolute inset-0 rounded-full border-2 border-iwasp-bronze" />
-                        <div className="absolute inset-1 rounded-full bg-gradient-to-br from-iwasp-bronze/30 to-iwasp-emerald/20 flex items-center justify-center">
-                          <Crown className="w-8 h-8 text-iwasp-bronze" />
+                    <div className="pt-12 px-4 h-full flex flex-col">
+                      {/* Play button indicator */}
+                      <div className="absolute top-16 right-4">
+                        <Play className="w-4 h-4 text-iwasp-silver/40" />
+                      </div>
+
+                      {/* Settings indicator */}
+                      <div className="absolute top-16 left-4">
+                        <Settings className="w-4 h-4 text-iwasp-silver/40" />
+                      </div>
+
+                      {/* Avatar with animated ring */}
+                      <div className="w-16 h-16 rounded-full mx-auto mb-3 relative">
+                        {/* Animated gradient ring for stories */}
+                        <div className="absolute -inset-1 rounded-full bg-gradient-to-tr from-iwasp-bronze via-rose-400 to-iwasp-bronze animate-spin-slow opacity-70" style={{ animationDuration: '3s' }} />
+                        <div className="absolute inset-0 rounded-full bg-iwasp-midnight" />
+                        <div className="absolute inset-0.5 rounded-full bg-gradient-to-br from-iwasp-bronze/30 to-iwasp-emerald/20 flex items-center justify-center">
+                          <User className="w-6 h-6 text-iwasp-bronze" />
                         </div>
                       </div>
                       
                       {/* Name & title */}
-                      <h3 className="font-display text-lg text-center text-iwasp-cream italic mb-1">
+                      <h3 className="font-display text-base text-center text-iwasp-cream italic mb-0.5">
                         {profile.name || "Votre nom"}
                       </h3>
-                      <p className="text-xs text-center text-iwasp-silver tracking-[0.1em] uppercase mb-4">
+                      <p className="text-[10px] text-center text-iwasp-bronze tracking-[0.1em] uppercase mb-2">
                         {profile.title || "Votre titre"}
                       </p>
                       
                       {/* Bio */}
-                      <p className="text-xs text-center text-iwasp-silver/80 mb-6 leading-relaxed">
-                        {profile.bio || "Votre manifeste..."}
+                      <p className="text-[10px] text-center text-iwasp-silver/70 mb-4 leading-relaxed line-clamp-3 px-2">
+                        "{profile.bio || "Votre manifeste..."}"
                       </p>
                       
                       {/* Action buttons preview */}
-                      <div className="space-y-2">
-                        <div className="h-10 rounded-xl bg-iwasp-bronze/20 border border-iwasp-bronze/30 flex items-center justify-center text-xs text-iwasp-bronze">
-                          Appeler
+                      <div className="space-y-2 mt-auto mb-4">
+                        <div className="h-9 rounded-xl bg-iwasp-bronze text-iwasp-midnight flex items-center justify-center text-xs font-medium">
+                          Contact Prestige
                         </div>
                         <div className="grid grid-cols-3 gap-2">
                           {[Mail, MessageCircle, Linkedin].map((Icon, i) => (
-                            <div key={i} className="h-10 rounded-xl bg-iwasp-emerald/10 border border-iwasp-emerald/20 flex items-center justify-center">
-                              <Icon className="w-4 h-4 text-iwasp-emerald-glow" />
+                            <div key={i} className="h-8 rounded-lg bg-iwasp-midnight-elevated border border-iwasp-emerald/20 flex items-center justify-center">
+                              <Icon className="w-3.5 h-3.5 text-iwasp-emerald-glow" />
                             </div>
                           ))}
                         </div>
                       </div>
-                      
-                      {/* Company */}
-                      {profile.company && (
-                        <div className="mt-6 pt-4 border-t border-iwasp-emerald/10 text-center">
-                          <p className="text-xs text-iwasp-silver/60">{profile.company}</p>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
