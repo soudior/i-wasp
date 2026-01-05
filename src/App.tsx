@@ -153,10 +153,9 @@ const App = () => {
                             
                             {/* Public NFC Card */}
                             <Route path="/c/:slug" element={<LegacyCardRedirect />} />
-                            <Route path="/card/medina-travertin" element={<DualBrandShowcase />} />
+                            <Route path="/card/medina-travertin/*" element={<DualBrandShowcase />} />
                             <Route path="/card/herbalism-marrakech" element={<HerbalismCard />} />
                             <Route path="/card/:slug" element={<PublicCard />} />
-                            
                             {/* Auth */}
                             <Route path="/login" element={<Login />} />
                             <Route path="/signup" element={<Signup />} />
