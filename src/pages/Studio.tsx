@@ -204,15 +204,14 @@ const mockNearbyElite: EliteMember[] = [
   { id: "3", initials: "SC", distance: 80, angle: 270 },
 ];
 
-// Tabs configuration - Updated with new sections
+// Tabs configuration - Updated with Stealth Luxury navigation
 const tabs = [
-  { id: "identity", label: "Identité", icon: User },
-  { id: "cercle", label: "Cercle Privé", icon: Users },
-  { id: "scanner", label: "Scanner", icon: ScanLine },
-  { id: "storylab", label: "Story Lab", icon: Camera },
-  { id: "manufacture", label: "Manufacture", icon: Gem },
-  { id: "coffre", label: "Le Coffre", icon: BadgeCheck },
-  { id: "concierge", label: "Conciergerie", icon: Headphones },
+  { id: "identity", label: "L'IDENTITÉ", icon: User },
+  { id: "cercle", label: "CERCLE PRIVÉ", icon: Users },
+  { id: "storylab", label: "VISUAL LAB", icon: Camera },
+  { id: "scanner", label: "AUTHENTIFICATION", icon: ScanLine },
+  { id: "manufacture", label: "MANUFACTURE", icon: Gem },
+  { id: "coffre", label: "LE COFFRE", icon: BadgeCheck },
 ];
 
 // Mock leads data
@@ -360,57 +359,41 @@ const Studio = () => {
   };
 
   return (
-    <div className="min-h-screen bg-iwasp-midnight">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-iwasp-midnight/90 backdrop-blur-xl border-b border-iwasp-emerald/10">
+    <div className="min-h-screen bg-[#050807]">
+      {/* Header - Stealth Luxury */}
+      <header className="sticky top-0 z-50 bg-[#050807]/95 backdrop-blur-xl border-b border-[#A5A9B4]/10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link to="/" className="p-2 rounded-xl hover:bg-iwasp-emerald/10 transition-colors">
-                <ArrowLeft className="w-5 h-5 text-iwasp-silver" />
+              <Link to="/" className="p-2 rounded-xl hover:bg-[#A5A9B4]/5 transition-colors">
+                <ArrowLeft className="w-5 h-5 text-[#A5A9B4]" />
               </Link>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full border-2 border-iwasp-bronze flex items-center justify-center">
-                  <span className="font-display text-lg text-iwasp-bronze italic">W</span>
+                <div className="w-10 h-10 rounded-full border border-[#A5A9B4]/30 flex items-center justify-center bg-[#050807]">
+                  <span className="font-display text-lg text-white italic">W</span>
                 </div>
                 <div>
-                  <h1 className="text-sm font-semibold text-iwasp-cream tracking-[0.15em] uppercase">i-WASP</h1>
-                  <p className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">Studio</p>
+                  <h1 className="text-sm font-medium text-white tracking-[0.25em] uppercase">i - W A S P</h1>
+                  <p className="text-[10px] text-[#A5A9B4] tracking-[0.35em] uppercase">L'ÉLITE FURTIVE</p>
                 </div>
               </div>
             </div>
             
-            {/* Cluster Badge */}
-            <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-iwasp-midnight-elevated border border-iwasp-bronze/20">
-              <Radio className="w-3 h-3 text-iwasp-bronze" />
-              <span className="text-xs text-iwasp-cream tracking-wider font-medium">
-                Cercle : {activeCluster}
+            {/* Node Cluster Badge - Stealth */}
+            <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[#0A0F0D] border border-[#A5A9B4]/15">
+              <span className="text-[10px] text-[#A5A9B4] tracking-[0.15em]">&gt;_</span>
+              <span className="text-xs text-white tracking-wider font-medium uppercase">
+                Node : Swiss-Alps Cluster
               </span>
             </div>
             
             <div className="flex items-center gap-4">
-              {lastSaved && (
-                <span className="text-xs text-iwasp-silver flex items-center gap-2">
-                  <Check className="w-3 h-3 text-iwasp-emerald-glow" />
-                  Synchronisé
-                </span>
-              )}
               <Button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight font-medium gap-2 rounded-xl"
+                variant="ghost"
+                size="icon"
+                className="text-[#A5A9B4] hover:text-white hover:bg-[#A5A9B4]/5"
               >
-                {isSaving ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    Synchronisation...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4" />
-                    Enregistrer
-                  </>
-                )}
+                <ShoppingBag className="w-5 h-5" />
               </Button>
             </div>
           </div>
@@ -418,156 +401,142 @@ const Studio = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-[1fr,380px] gap-8">
-          {/* Main content */}
-          <div>
-            {/* Hero section */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-8 flex items-start gap-6"
-            >
-              {/* Bronze accent bar */}
-              <div className="w-4 h-32 rounded-full bg-gradient-to-b from-iwasp-bronze to-iwasp-bronze/30 hidden sm:block" />
-              
-              <div>
-                <h2 className="font-display text-4xl sm:text-5xl font-normal text-iwasp-cream mb-2">
-                  <span className="italic">Améliorez</span>
-                  <br />
-                  votre
-                  <br />
-                  <span className="text-iwasp-bronze">Influence.</span>
-                </h2>
-                <p className="text-iwasp-silver mt-4 max-w-md">
-                  Gérez chaque aspect de votre présence i-Wasp en temps réel.
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Tabs */}
-            <div className="flex gap-2 mb-8 overflow-x-auto pb-2 -mx-2 px-2">
+        <div className="grid lg:grid-cols-[260px,1fr] gap-8">
+          {/* Sidebar Navigation - Stealth Vertical */}
+          <aside className="hidden lg:block">
+            <nav className="space-y-1">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all whitespace-nowrap ${
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all",
                     activeTab === tab.id
-                      ? "bg-iwasp-bronze text-iwasp-midnight"
-                      : "bg-iwasp-midnight-elevated border border-iwasp-emerald/10 text-iwasp-silver hover:border-iwasp-bronze/30 hover:text-iwasp-cream"
-                  }`}
+                      ? "bg-white text-[#050807] font-medium"
+                      : "text-[#A5A9B4] hover:text-white hover:bg-[#A5A9B4]/5"
+                  )}
                 >
                   <tab.icon className="w-4 h-4" />
-                  {tab.label}
+                  <span className="text-xs tracking-[0.12em] uppercase">{tab.label}</span>
                 </button>
               ))}
-            </div>
+            </nav>
+          </aside>
 
-            {/* Tab content */}
+          {/* Mobile Tabs */}
+          <div className="lg:hidden flex gap-2 mb-6 overflow-x-auto pb-2 -mx-2 px-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-xs transition-all whitespace-nowrap tracking-wider uppercase",
+                  activeTab === tab.id
+                    ? "bg-white text-[#050807]"
+                    : "bg-[#0A0F0D] border border-[#A5A9B4]/10 text-[#A5A9B4] hover:border-[#A5A9B4]/20 hover:text-white"
+                )}
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Main content */}
+          <div className="min-w-0">
             <AnimatePresence mode="wait">
-              {/* CERCLE PRIVÉ TAB - L'Alliance Privée */}
+              {/* CERCLE PRIVÉ TAB - L'Alliance Invisible - Stealth Luxury */}
               {activeTab === "cercle" && (
                 <motion.div
                   key="cercle"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="space-y-6"
+                  className="space-y-8"
                 >
-                  {/* Hero Header */}
-                  <div className="mb-8">
-                    <h2 className="font-display text-4xl md:text-6xl text-iwasp-cream leading-tight">
-                      L'Alliance <span className="italic text-iwasp-bronze">Privée.</span>
+                  {/* Hero Header - L'Alliance Invisible */}
+                  <div className="mb-4">
+                    <h2 className="font-display text-5xl md:text-7xl lg:text-8xl text-white leading-[0.95] tracking-tight">
+                      L'Alliance
+                      <br />
+                      <span className="italic text-[#D1D5DB]">Invisible.</span>
                     </h2>
-                    <p className="text-sm text-iwasp-silver mt-3">
-                      Le premier réseau social physique chiffré au monde.
+                    <p className="text-sm text-[#A5A9B4] mt-4 italic">
+                      L'influence est une vibration furtive.
                     </p>
                   </div>
 
-                  {/* Main Grid: Radar + Messages d'Alliance */}
-                  <div className="grid lg:grid-cols-[1fr,300px] gap-6">
-                    {/* Left: Radar d'Influence */}
-                    <div className="rounded-3xl bg-iwasp-midnight-elevated border border-iwasp-bronze/10 p-6 relative overflow-hidden">
-                      {/* Header with member count */}
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h3 className="font-display text-2xl md:text-3xl text-iwasp-cream mb-1">
-                            Radar
-                            <br /><span className="italic">d'Influence</span>
-                          </h3>
-                        </div>
-                        <div className="text-right">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-iwasp-emerald-glow animate-pulse" />
-                            <span className="text-[10px] text-iwasp-cream tracking-wider uppercase font-medium">3 Profils Elite</span>
+                  {/* Main Grid: Radar + Liaisons Chiffrées */}
+                  <div className="grid lg:grid-cols-[1fr,280px] gap-6">
+                    {/* Left: Radar d'Élite - Stealth Design */}
+                    <div className="rounded-3xl bg-[#0A0F0D] border border-[#A5A9B4]/10 p-6 relative overflow-hidden">
+                      {/* Radar Title */}
+                      <div className="mb-4">
+                        <h3 className="font-display text-2xl md:text-3xl text-white italic mb-1">
+                          Radar d'Élite
+                        </h3>
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] text-[#A5A9B4] uppercase tracking-[0.15em]">SATELLITE SYNC</span>
                           </div>
-                          <span className="text-[10px] text-iwasp-bronze tracking-wider uppercase">Détectés</span>
+                          <span className="text-[10px] text-[#D1D5DB] uppercase tracking-wider font-medium">ACTIVE</span>
                         </div>
                       </div>
 
-                      {/* Scanning Status */}
-                      <div className="flex items-center gap-2 mb-4">
-                        <motion.div
-                          animate={{ opacity: [0.4, 1, 0.4] }}
-                          transition={{ duration: 1.5, repeat: Infinity }}
-                          className="w-1.5 h-1.5 rounded-full bg-iwasp-bronze"
-                        />
-                        <span className="text-[10px] text-iwasp-silver uppercase tracking-[0.15em]">
-                          Scanning <span className="text-iwasp-bronze">Monaco...</span>
-                        </span>
-                      </div>
-
-                      {/* Radar Circle - Larger with enhanced effects */}
-                      <div className="relative aspect-square max-w-[340px] mx-auto my-4">
-                        {/* Radar Rings with gradient glow */}
+                      {/* Radar Circle - Stealth Titanium */}
+                      <div className="relative aspect-square max-w-[340px] mx-auto my-6">
+                        {/* Radar Rings with titanium glow */}
                         <div className="absolute inset-0 flex items-center justify-center">
                           {[100, 80, 60, 40, 20].map((size, i) => (
                             <motion.div
                               key={size}
-                              className="absolute rounded-full border border-iwasp-bronze/10"
+                              className="absolute rounded-full border border-[#A5A9B4]/8"
                               style={{ width: `${size}%`, height: `${size}%` }}
-                              animate={{ scale: [1, 1.02, 1] }}
-                              transition={{ duration: 3, repeat: Infinity, delay: i * 0.2 }}
+                              animate={{ scale: [1, 1.01, 1] }}
+                              transition={{ duration: 4, repeat: Infinity, delay: i * 0.3 }}
                             />
                           ))}
                         </div>
                         
-                        {/* Cross Lines */}
+                        {/* Cross Lines - Titanium */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="absolute w-full h-px bg-iwasp-bronze/8" />
-                          <div className="absolute w-px h-full bg-iwasp-bronze/8" />
+                          <div className="absolute w-full h-px bg-[#A5A9B4]/5" />
+                          <div className="absolute w-px h-full bg-[#A5A9B4]/5" />
                         </div>
 
-                        {/* Sweep Animation - Enhanced Radar Effect */}
+                        {/* Sweep Animation - Titanium Stealth */}
                         <motion.div
                           className="absolute inset-0"
                           style={{ transformOrigin: 'center center' }}
                           animate={{ rotate: 360 }}
-                          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
                         >
                           <div 
                             className="absolute top-1/2 left-1/2 w-1/2 h-px origin-left"
                             style={{
-                              background: 'linear-gradient(to right, hsl(var(--iwasp-bronze) / 0.9), transparent)'
+                              background: 'linear-gradient(to right, rgba(165, 169, 180, 0.6), transparent)'
                             }}
                           />
                           {/* Wide glow cone effect */}
                           <div 
-                            className="absolute top-1/2 left-1/2 w-1/2 h-16 origin-left -translate-y-1/2 opacity-15"
+                            className="absolute top-1/2 left-1/2 w-1/2 h-12 origin-left -translate-y-1/2 opacity-10"
                             style={{
-                              background: 'linear-gradient(to right, hsl(var(--iwasp-bronze) / 0.5), transparent)',
-                              clipPath: 'polygon(0 50%, 100% 10%, 100% 90%)'
+                              background: 'linear-gradient(to right, rgba(209, 213, 219, 0.4), transparent)',
+                              clipPath: 'polygon(0 50%, 100% 20%, 100% 80%)'
                             }}
                           />
                         </motion.div>
 
-                        {/* Center Point - User */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-iwasp-midnight flex items-center justify-center border-2 border-iwasp-bronze/40">
-                          <User className="w-7 h-7 text-iwasp-bronze/70" />
+                        {/* Center Point - User Avatar */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-[#050807] flex items-center justify-center border border-[#A5A9B4]/30 overflow-hidden">
+                          <div className="w-16 h-16 rounded-full bg-gradient-to-b from-[#1A1F1D] to-[#050807] flex items-center justify-center">
+                            <User className="w-8 h-8 text-[#A5A9B4]/50" />
+                          </div>
                         </div>
 
-                        {/* Nearby Elite Members with enhanced visuals */}
+                        {/* Nearby Elite Members - Titanium style */}
                         {mockNearbyElite.map((member, index) => {
-                          const radius = (member.distance / 150) * 40;
+                          const radius = (member.distance / 150) * 38;
                           const x = 50 + radius * Math.cos((member.angle - 90) * (Math.PI / 180));
                           const y = 50 + radius * Math.sin((member.angle - 90) * (Math.PI / 180));
                           return (
@@ -575,7 +544,7 @@ const Studio = () => {
                               key={member.id}
                               initial={{ scale: 0, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
-                              transition={{ delay: index * 0.3 + 0.5 }}
+                              transition={{ delay: index * 0.4 + 0.6 }}
                               className="absolute group cursor-pointer"
                               style={{
                                 left: `${x}%`,
@@ -583,128 +552,69 @@ const Studio = () => {
                                 transform: 'translate(-50%, -50%)'
                               }}
                             >
-                              {/* Double pulse rings */}
-                              <div className="absolute inset-0 w-10 h-10 -m-1 rounded-full border border-iwasp-bronze/20 animate-ping" style={{ animationDuration: '3s' }} />
-                              <div className="absolute inset-0 w-12 h-12 -m-2 rounded-full border border-iwasp-bronze/10 animate-ping" style={{ animationDuration: '4s', animationDelay: '0.5s' }} />
-                              {/* Member Avatar */}
-                              <div className="w-9 h-9 rounded-full bg-iwasp-midnight border border-iwasp-bronze/50 flex items-center justify-center group-hover:border-iwasp-bronze group-hover:scale-110 transition-all shadow-lg shadow-iwasp-bronze/10">
-                                <span className="text-[10px] font-medium text-iwasp-cream">{member.initials}</span>
+                              {/* Single pulse ring - subtle */}
+                              <motion.div 
+                                className="absolute inset-0 w-10 h-10 -m-1 rounded-full border border-[#A5A9B4]/15"
+                                animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
+                                transition={{ duration: 3, repeat: Infinity, delay: index * 0.5 }}
+                              />
+                              {/* Member Avatar - Titanium */}
+                              <div className="w-9 h-9 rounded-full bg-[#0A0F0D] border border-[#A5A9B4]/30 flex items-center justify-center group-hover:border-[#D1D5DB] group-hover:scale-110 transition-all">
+                                <span className="text-[10px] font-medium text-white">{member.initials}</span>
                               </div>
                             </motion.div>
                           );
                         })}
                       </div>
-
-                      {/* Bottom: Fréquences Alliances */}
-                      <div className="flex items-center justify-center gap-6 pt-4 border-t border-iwasp-bronze/10">
-                        <div className="text-right">
-                          <span className="text-[9px] text-iwasp-silver/50 uppercase tracking-wider">Fréquences</span>
-                          <br />
-                          <span className="text-[10px] text-iwasp-bronze tracking-[0.12em] uppercase">Alliances Chiffrées</span>
-                        </div>
-                        <div className="flex gap-1.5">
-                          {[1, 2, 3, 4, 5].map((i) => (
-                            <motion.div 
-                              key={i}
-                              animate={i <= 3 ? { scale: [1, 1.2, 1] } : {}}
-                              transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
-                              className={cn(
-                                "w-3 h-3 rounded-full border",
-                                i <= 3 
-                                  ? "bg-iwasp-bronze/30 border-iwasp-bronze/70" 
-                                  : "bg-transparent border-iwasp-bronze/20"
-                              )}
-                            />
-                          ))}
-                        </div>
-                      </div>
                     </div>
 
-                    {/* Right: Messages d'Alliance */}
+                    {/* Right: Liaisons Chiffrées - Stealth Panel */}
                     <div className="space-y-4">
-                      {/* Messages Header */}
-                      <div className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-bronze/10">
-                        <h4 className="text-[10px] text-iwasp-bronze tracking-[0.2em] uppercase mb-4">Messages d'Alliance</h4>
+                      {/* Liaisons Header */}
+                      <div className="p-5 rounded-2xl bg-[#0A0F0D] border border-[#A5A9B4]/10">
+                        <h4 className="text-[11px] text-[#D1D5DB] tracking-[0.2em] uppercase mb-4 font-medium">
+                          LIAISONS CHIFFRÉES
+                        </h4>
                         
-                        {/* Message Card */}
+                        {/* Message Card - Alexandra */}
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.3 }}
-                          className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-bronze/20 mb-4"
+                          className="p-4 rounded-xl bg-[#050807] border border-[#A5A9B4]/15 mb-3"
                         >
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-iwasp-bronze/30 to-iwasp-emerald/10 flex items-center justify-center border border-iwasp-bronze/30">
-                              <span className="text-xs font-medium text-iwasp-cream">AV</span>
+                          <div className="flex items-start gap-3 mb-3">
+                            <div className="flex flex-col items-center">
+                              <span className="text-[10px] text-[#A5A9B4] tracking-wider uppercase mb-1">ALEX</span>
+                              <span className="text-[11px] text-white font-medium">V.</span>
                             </div>
-                            <div>
-                              <div className="text-xs text-iwasp-cream font-medium tracking-wide uppercase">Alexandra V.</div>
+                            <div className="flex-1 border-l border-[#A5A9B4]/10 pl-3">
+                              <p className="text-xs text-[#A5A9B4] leading-relaxed">
+                                "Votre profil d'influence précède votre arrivée."
+                              </p>
+                              <p className="text-[10px] text-[#D1D5DB]/60 mt-2">
+                                Rejoignez-nous.
+                              </p>
                             </div>
-                          </div>
-                          <p className="text-xs text-iwasp-silver leading-relaxed mb-3">
-                            <span className="text-iwasp-bronze">Invitation :</span> Cocktail privé sur le Serene à 21h. Code accès requis.
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <span className="text-[9px] text-iwasp-bronze/60 uppercase tracking-wider">Liaison Éphémère</span>
-                            <motion.div
-                              animate={{ opacity: [0.5, 1, 0.5] }}
-                              transition={{ duration: 2, repeat: Infinity }}
-                              className="w-2 h-2 rounded-full bg-iwasp-emerald-glow"
-                            />
                           </div>
                         </motion.div>
 
-                        {/* Second Message */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.5 }}
-                          className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10"
-                        >
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-iwasp-silver/20 to-iwasp-midnight flex items-center justify-center border border-iwasp-silver/20">
-                              <span className="text-xs font-medium text-iwasp-cream">MH</span>
-                            </div>
-                            <div>
-                              <div className="text-xs text-iwasp-cream font-medium tracking-wide uppercase">Marcus H.</div>
-                            </div>
-                          </div>
-                          <p className="text-xs text-iwasp-silver leading-relaxed mb-3">
-                            <span className="text-iwasp-bronze">Deal flow :</span> Opportunité d'investissement exclusive. Réservé aux membres du Cercle.
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <span className="text-[9px] text-iwasp-bronze/60 uppercase tracking-wider">Expire dans 2h</span>
-                            <motion.div
-                              animate={{ opacity: [0.5, 1, 0.5] }}
-                              transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                              className="w-2 h-2 rounded-full bg-iwasp-bronze"
-                            />
-                          </div>
-                        </motion.div>
-                      </div>
-
-                      {/* Cluster & Time */}
-                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-bronze/10 flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] text-iwasp-bronze uppercase tracking-wider font-medium">Cercle</span>
-                          <span className="text-[10px] text-iwasp-silver ml-2">11:50</span>
+                        {/* Quick action icons */}
+                        <div className="flex justify-end gap-2">
+                          <button className="w-8 h-8 rounded-lg bg-[#050807] border border-[#A5A9B4]/10 flex items-center justify-center hover:border-[#A5A9B4]/30 transition-colors">
+                            <Sparkles className="w-3.5 h-3.5 text-[#A5A9B4]" />
+                          </button>
+                          <button className="w-8 h-8 rounded-lg bg-[#050807] border border-[#A5A9B4]/10 flex items-center justify-center hover:border-[#A5A9B4]/30 transition-colors">
+                            <Settings className="w-3.5 h-3.5 text-[#A5A9B4]" />
+                          </button>
                         </div>
-                        <span className="text-[10px] text-iwasp-cream uppercase tracking-wider">Monaco</span>
                       </div>
-
-                      {/* Send Alliance Message Button */}
-                      <Button 
-                        className="w-full rounded-xl gap-2 font-medium text-xs py-5 bg-gradient-to-r from-iwasp-bronze to-iwasp-bronze-light text-iwasp-midnight hover:opacity-90"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                        Envoyer une Liaison
-                      </Button>
                     </div>
                   </div>
                 </motion.div>
               )}
 
-              {/* SCANNER DE PRESTIGE TAB */}
+              {/* AUTHENTIFICATION TAB - Stealth Luxury */}
               {activeTab === "scanner" && (
                 <motion.div
                   key="scanner"
@@ -716,17 +626,17 @@ const Studio = () => {
                   {/* Header */}
                   <div className="flex items-start justify-between flex-wrap gap-4">
                     <div>
-                      <h3 className="font-display text-4xl md:text-5xl text-iwasp-cream">
-                        Scanner de
-                        <br /><span className="italic text-iwasp-bronze">Prestige.</span>
+                      <h3 className="font-display text-4xl md:text-5xl text-white">
+                        Authentification
+                        <br /><span className="italic text-[#D1D5DB]">Absolue.</span>
                       </h3>
-                      <p className="text-sm text-iwasp-silver mt-3">
+                      <p className="text-sm text-[#A5A9B4] mt-3">
                         Vérifiez l'authenticité d'une pièce textile d'un simple geste.
                       </p>
                     </div>
-                    <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-bronze/20">
-                      <div className="text-xs text-iwasp-bronze uppercase tracking-wider mb-1">Liaison Blockchain</div>
-                      <div className="text-sm text-iwasp-cream">Sécurisée & Infalsifiable</div>
+                    <div className="p-4 rounded-xl bg-[#0A0F0D] border border-[#A5A9B4]/15">
+                      <div className="text-xs text-[#D1D5DB] uppercase tracking-wider mb-1">Liaison Blockchain</div>
+                      <div className="text-sm text-white">Sécurisée & Infalsifiable</div>
                     </div>
                   </div>
 
@@ -734,35 +644,35 @@ const Studio = () => {
                   <div className="grid lg:grid-cols-[1fr,320px] gap-8">
                     {/* Scanner Interface */}
                     <div className="flex flex-col items-center">
-                      {/* Scanner Box */}
-                      <div className="relative w-full max-w-sm aspect-square rounded-3xl bg-iwasp-midnight border-2 border-iwasp-bronze/20 flex items-center justify-center">
-                        {/* Corner Brackets */}
-                        <div className="absolute top-6 left-6 w-10 h-10 border-l-2 border-t-2 border-iwasp-bronze/50" />
-                        <div className="absolute top-6 right-6 w-10 h-10 border-r-2 border-t-2 border-iwasp-bronze/50" />
-                        <div className="absolute bottom-6 left-6 w-10 h-10 border-l-2 border-b-2 border-iwasp-bronze/50" />
-                        <div className="absolute bottom-6 right-6 w-10 h-10 border-r-2 border-b-2 border-iwasp-bronze/50" />
+                      {/* Scanner Box - Titanium */}
+                      <div className="relative w-full max-w-sm aspect-square rounded-3xl bg-[#050807] border border-[#A5A9B4]/15 flex items-center justify-center">
+                        {/* Corner Brackets - Titanium */}
+                        <div className="absolute top-6 left-6 w-10 h-10 border-l-2 border-t-2 border-[#A5A9B4]/40" />
+                        <div className="absolute top-6 right-6 w-10 h-10 border-r-2 border-t-2 border-[#A5A9B4]/40" />
+                        <div className="absolute bottom-6 left-6 w-10 h-10 border-l-2 border-b-2 border-[#A5A9B4]/40" />
+                        <div className="absolute bottom-6 right-6 w-10 h-10 border-r-2 border-b-2 border-[#A5A9B4]/40" />
 
-                        {/* Scan Line Animation */}
+                        {/* Scan Line Animation - Titanium */}
                         <motion.div
-                          className="absolute left-6 right-6 h-0.5 bg-gradient-to-r from-transparent via-iwasp-bronze to-transparent"
+                          className="absolute left-6 right-6 h-0.5 bg-gradient-to-r from-transparent via-[#D1D5DB] to-transparent"
                           animate={{ top: ['15%', '85%', '15%'] }}
                           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                         />
 
                         {/* Central Content */}
                         <div className="text-center z-10">
-                          <div className="w-16 h-16 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-bronze/30 flex items-center justify-center mx-auto mb-4">
-                            <ScanLine className="w-8 h-8 text-iwasp-bronze" />
+                          <div className="w-16 h-16 rounded-2xl bg-[#0A0F0D] border border-[#A5A9B4]/20 flex items-center justify-center mx-auto mb-4">
+                            <ScanLine className="w-8 h-8 text-[#D1D5DB]" />
                           </div>
-                          <h4 className="font-display text-xl text-iwasp-cream italic mb-2">Prêt à Scanner</h4>
-                          <p className="text-xs text-iwasp-silver max-w-[200px]">
+                          <h4 className="font-display text-xl text-white italic mb-2">Prêt à Scanner</h4>
+                          <p className="text-xs text-[#A5A9B4] max-w-[200px]">
                             Approchez votre téléphone du label thermocollé sur le vêtement.
                           </p>
                         </div>
                       </div>
 
-                      {/* Action Button */}
-                      <Button className="mt-6 bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2 rounded-xl px-8">
+                      {/* Action Button - Titanium/Platinum */}
+                      <Button className="mt-6 bg-[#D1D5DB] hover:bg-white text-[#050807] gap-2 rounded-xl px-8 font-medium">
                         <Camera className="w-4 h-4" />
                         Lancer le Scan
                       </Button>
@@ -771,25 +681,25 @@ const Studio = () => {
                     {/* Right Panel */}
                     <div className="space-y-6">
                       {/* Authenticité Info */}
-                      <div className="p-6 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10">
-                        <h4 className="font-display text-xl text-iwasp-cream mb-2">
+                      <div className="p-6 rounded-2xl bg-[#0A0F0D] border border-[#A5A9B4]/10">
+                        <h4 className="font-display text-xl text-white mb-2">
                           L'Authenticité
-                          <br /><span className="italic text-iwasp-bronze">Augmentée.</span>
+                          <br /><span className="italic text-[#D1D5DB]">Augmentée.</span>
                         </h4>
-                        <p className="text-sm text-iwasp-silver leading-relaxed">
-                          En scannant un vêtement i-Wasp, vous accédez à l'âme de l'article. C'est l'assurance d'une pièce unique et la preuve sociale immédiate de votre appartenance à l'élite.
+                        <p className="text-sm text-[#A5A9B4] leading-relaxed">
+                          En scannant un vêtement i-Wasp, vous accédez à l'âme de l'article. C'est l'assurance d'une pièce unique.
                         </p>
                       </div>
 
                       {/* Tech Card */}
-                      <div className="p-5 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10 flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-iwasp-emerald/10 flex items-center justify-center shrink-0">
-                          <Cpu className="w-6 h-6 text-iwasp-silver" />
+                      <div className="p-5 rounded-xl bg-[#050807] border border-[#A5A9B4]/10 flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-[#0A0F0D] flex items-center justify-center shrink-0">
+                          <Cpu className="w-6 h-6 text-[#A5A9B4]" />
                         </div>
                         <div>
-                          <h5 className="font-medium text-iwasp-cream text-sm mb-1">Puce NFC Sub-Nanos</h5>
-                          <p className="text-xs text-iwasp-silver leading-relaxed">
-                            Technologie invisible résistante aux lavages intensifs et à la pression thermique.
+                          <h5 className="font-medium text-white text-sm mb-1">Puce NFC Sub-Nanos</h5>
+                          <p className="text-xs text-[#A5A9B4] leading-relaxed">
+                            Technologie invisible résistante aux lavages intensifs.
                           </p>
                         </div>
                       </div>
@@ -798,7 +708,7 @@ const Studio = () => {
                 </motion.div>
               )}
 
-              {/* STORY LAB TAB */}
+              {/* VISUAL LAB TAB - Stealth Luxury */}
               {activeTab === "storylab" && (
                 <motion.div
                   key="storylab"
@@ -809,32 +719,32 @@ const Studio = () => {
                 >
                   {/* Header */}
                   <div>
-                    <h3 className="font-display text-4xl md:text-5xl text-iwasp-cream">
-                      Story <span className="italic text-iwasp-bronze">Lab.</span>
+                    <h3 className="font-display text-4xl md:text-5xl text-white">
+                      Visual <span className="italic text-[#D1D5DB]">Lab.</span>
                     </h3>
-                    <p className="text-sm text-iwasp-silver mt-3">
-                      Créez des visuels dignes des plus grands magazines directement dans l'application.
+                    <p className="text-sm text-[#A5A9B4] mt-3">
+                      Créez des visuels dignes des plus grands magazines.
                     </p>
                   </div>
 
-                  {/* Style Options */}
+                  {/* Style Options - Titanium */}
                   <div className="grid sm:grid-cols-3 gap-4">
                     {[
                       { name: "Magazine", desc: "Style éditorial premium", active: true },
                       { name: "Minimal", desc: "Épuré et moderne", active: false },
-                      { name: "Aura", desc: "Éclats dorés luxueux", active: false },
+                      { name: "Stealth", desc: "Luxe furtif", active: false },
                     ].map((style) => (
                       <div 
                         key={style.name}
                         className={cn(
                           "p-5 rounded-2xl border cursor-pointer transition-all",
                           style.active 
-                            ? "bg-iwasp-bronze/10 border-iwasp-bronze text-iwasp-cream" 
-                            : "bg-iwasp-midnight-elevated border-iwasp-emerald/10 text-iwasp-silver hover:border-iwasp-bronze/30"
+                            ? "bg-white text-[#050807]" 
+                            : "bg-[#0A0F0D] border-[#A5A9B4]/10 text-[#A5A9B4] hover:border-[#A5A9B4]/30"
                         )}
                       >
                         <h4 className="font-medium text-sm mb-1">{style.name}</h4>
-                        <p className="text-xs opacity-70">{style.desc}</p>
+                        <p className={cn("text-xs", style.active ? "text-[#050807]/60" : "opacity-70")}>{style.desc}</p>
                       </div>
                     ))}
                   </div>
@@ -847,30 +757,30 @@ const Studio = () => {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.1 }}
-                        className="aspect-[9/16] rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 flex items-center justify-center cursor-pointer hover:border-iwasp-bronze/30 transition-all group"
+                        className="aspect-[9/16] rounded-2xl bg-[#0A0F0D] border border-[#A5A9B4]/10 flex items-center justify-center cursor-pointer hover:border-[#D1D5DB]/30 transition-all group"
                       >
                         <div className="text-center">
                           {story.type === "video" ? (
-                            <Play className="w-8 h-8 text-iwasp-silver/40 mx-auto group-hover:text-iwasp-bronze transition-colors" />
+                            <Play className="w-8 h-8 text-[#A5A9B4]/40 mx-auto group-hover:text-[#D1D5DB] transition-colors" />
                           ) : (
-                            <Image className="w-8 h-8 text-iwasp-silver/40 mx-auto group-hover:text-iwasp-bronze transition-colors" />
+                            <Image className="w-8 h-8 text-[#A5A9B4]/40 mx-auto group-hover:text-[#D1D5DB] transition-colors" />
                           )}
-                          <span className="text-xs text-iwasp-silver mt-2 block">{story.title}</span>
+                          <span className="text-xs text-[#A5A9B4] mt-2 block">{story.title}</span>
                         </div>
                       </motion.div>
                     ))}
                     
                     {/* Add Story */}
-                    <div className="aspect-[9/16] rounded-2xl border-2 border-dashed border-iwasp-emerald/20 flex items-center justify-center cursor-pointer hover:border-iwasp-bronze/30 transition-all">
+                    <div className="aspect-[9/16] rounded-2xl border-2 border-dashed border-[#A5A9B4]/15 flex items-center justify-center cursor-pointer hover:border-[#D1D5DB]/30 transition-all">
                       <div className="text-center">
-                        <Plus className="w-8 h-8 text-iwasp-silver/40 mx-auto" />
-                        <span className="text-xs text-iwasp-silver mt-2 block">Ajouter</span>
+                        <Plus className="w-8 h-8 text-[#A5A9B4]/40 mx-auto" />
+                        <span className="text-xs text-[#A5A9B4] mt-2 block">Ajouter</span>
                       </div>
                     </div>
                   </div>
                 </motion.div>
               )}
-              {/* LA MANUFACTURE TAB - Art de la Matière */}
+              {/* LA MANUFACTURE TAB - Stealth Luxury */}
               {activeTab === "manufacture" && (
                 <motion.div
                   key="manufacture"
@@ -882,78 +792,78 @@ const Studio = () => {
                   {/* Header with Series Number */}
                   <div className="flex items-start justify-between flex-wrap gap-4">
                     <div>
-                      <h3 className="font-display text-4xl md:text-5xl text-iwasp-cream">
-                        L'Art de la <span className="italic text-iwasp-bronze">Matière.</span>
+                      <h3 className="font-display text-4xl md:text-5xl text-white">
+                        L'Art de la <span className="italic text-[#D1D5DB]">Matière.</span>
                       </h3>
-                      <p className="text-sm text-iwasp-silver mt-3">
-                        Chaque objet i-Wasp est une pièce d'exception, conçue pour durer et pour impressionner.
+                      <p className="text-sm text-[#A5A9B4] mt-3">
+                        Chaque objet i-Wasp est une pièce d'exception.
                       </p>
                     </div>
                     <div className="text-right">
-                      <div className="flex items-center gap-2 text-iwasp-silver/50 mb-1">
+                      <div className="flex items-center gap-2 text-[#A5A9B4]/50 mb-1">
                         <Sparkles className="w-3 h-3" />
                         <span className="text-[10px] tracking-widest uppercase">Série Limitée</span>
                       </div>
-                      <div className="font-display text-2xl text-iwasp-cream">N°001</div>
-                      <div className="text-[10px] text-iwasp-bronze tracking-wider uppercase">Fondateur</div>
+                      <div className="font-display text-2xl text-white">N°001</div>
+                      <div className="text-[10px] text-[#D1D5DB] tracking-wider uppercase">Fondateur</div>
                     </div>
                   </div>
 
-                  {/* Product Cards Grid */}
+                  {/* Product Cards Grid - Titanium theme */}
                   <div className="grid md:grid-cols-3 gap-6">
-                    {/* Card 1: La Carte Héritage */}
-                    <div className="p-6 rounded-3xl bg-iwasp-midnight-elevated border border-iwasp-bronze/20 flex flex-col">
-                      <div className="w-20 h-24 rounded-2xl bg-gradient-to-br from-iwasp-bronze via-yellow-600 to-iwasp-bronze mx-auto mb-4 flex items-center justify-center shadow-lg shadow-iwasp-bronze/20">
+                    {/* Card 1: La Carte Titane */}
+                    <div className="p-6 rounded-3xl bg-[#0A0F0D] border border-[#A5A9B4]/15 flex flex-col">
+                      <div className="w-20 h-24 rounded-2xl bg-gradient-to-br from-[#A5A9B4] via-[#D1D5DB] to-[#A5A9B4] mx-auto mb-4 flex items-center justify-center shadow-lg">
                         <div className="text-center">
-                          <span className="text-[8px] text-white/70 block tracking-wider">i -</span>
-                          <span className="text-xs text-white font-bold tracking-widest">WASP</span>
-                          <span className="text-[8px] text-iwasp-bronze-light block">GOLD</span>
+                          <span className="text-[8px] text-[#050807]/70 block tracking-wider">i -</span>
+                          <span className="text-xs text-[#050807] font-bold tracking-widest">WASP</span>
+                          <span className="text-[8px] text-[#050807]/60 block">TITANIUM</span>
                         </div>
                       </div>
-                      <h4 className="font-display text-xl text-iwasp-cream italic mb-1">La Carte</h4>
-                      <p className="text-sm text-iwasp-bronze uppercase tracking-wider mb-4">Héritage</p>
-                      <p className="text-xs text-iwasp-silver leading-relaxed flex-1">
-                        Forgée dans un acier inoxydable et plaquée Or 24K. Un poids noble pour une présence inoubliable.
+                      <h4 className="font-display text-xl text-white italic mb-1">La Carte</h4>
+                      <p className="text-sm text-[#D1D5DB] uppercase tracking-wider mb-4">Titane</p>
+                      <p className="text-xs text-[#A5A9B4] leading-relaxed flex-1">
+                        Forgée dans un acier inoxydable brossé. Un poids noble pour une présence inoubliable.
                       </p>
                       <Button 
                         variant="outline" 
-                        className="mt-4 w-full border-iwasp-bronze/30 text-iwasp-cream hover:bg-iwasp-bronze/10 rounded-xl text-xs"
+                        className="mt-4 w-full border-[#A5A9B4]/30 text-white hover:bg-[#A5A9B4]/10 rounded-xl text-xs"
                       >
                         Personnaliser
                       </Button>
                     </div>
 
                     {/* Card 2: L'Ongle Aura */}
-                    <div className="p-6 rounded-3xl bg-iwasp-midnight-elevated border border-iwasp-emerald/20 flex flex-col">
-                      <div className="w-20 h-24 rounded-2xl bg-iwasp-midnight border border-iwasp-emerald/30 mx-auto mb-4 flex items-center justify-center">
-                        <Sparkles className="w-8 h-8 text-iwasp-bronze" />
+                    <div className="p-6 rounded-3xl bg-[#0A0F0D] border border-[#A5A9B4]/10 flex flex-col">
+                      <div className="w-20 h-24 rounded-2xl bg-[#050807] border border-[#A5A9B4]/20 mx-auto mb-4 flex items-center justify-center">
+                        <Sparkles className="w-8 h-8 text-[#D1D5DB]" />
                       </div>
-                      <h4 className="font-display text-xl text-iwasp-cream mb-1">L'Ongle</h4>
-                      <p className="text-sm text-iwasp-silver uppercase tracking-wider mb-4">Aura</p>
-                      <p className="text-xs text-iwasp-silver leading-relaxed flex-1">
-                        Une micro-puce de 0.1mm intégrable en onglerie. Partagez votre monde d'un simple geste gracieux.
+                      <h4 className="font-display text-xl text-white mb-1">L'Ongle</h4>
+                      <p className="text-sm text-[#A5A9B4] uppercase tracking-wider mb-4">Aura</p>
+                      <p className="text-xs text-[#A5A9B4] leading-relaxed flex-1">
+                        Une micro-puce de 0.1mm intégrable en onglerie. Partagez votre monde d'un simple geste.
                       </p>
                       <Button 
                         variant="outline" 
-                        className="mt-4 w-full border-iwasp-emerald/30 text-iwasp-cream hover:bg-iwasp-emerald/10 rounded-xl text-xs"
+                        className="mt-4 w-full border-[#A5A9B4]/20 text-white hover:bg-[#A5A9B4]/10 rounded-xl text-xs"
                       >
                         Réserver une Pose
                       </Button>
                     </div>
 
                     {/* Card 3: Label Couture */}
-                    <div className="p-6 rounded-3xl bg-iwasp-midnight-elevated border border-iwasp-emerald/20 flex flex-col">
-                      <div className="w-20 h-24 rounded-2xl bg-iwasp-midnight border border-iwasp-emerald/30 mx-auto mb-4 flex items-center justify-center">
-                        <Shirt className="w-8 h-8 text-iwasp-silver" />
+                    <div className="p-6 rounded-3xl bg-[#0A0F0D] border border-[#A5A9B4]/10 flex flex-col">
+                      <div className="w-20 h-24 rounded-2xl bg-[#050807] border border-[#A5A9B4]/20 mx-auto mb-4 flex items-center justify-center">
+                        <Shirt className="w-8 h-8 text-[#A5A9B4]" />
                       </div>
-                      <h4 className="font-display text-xl text-iwasp-cream mb-1">Label</h4>
-                      <p className="text-sm text-iwasp-silver uppercase tracking-wider mb-4">Couture</p>
-                      <p className="text-xs text-iwasp-silver leading-relaxed flex-1">
-                        Puce thermocollante au fer à repasser. Authentifie vos vêtements de luxe et les connecte à votre profil.
+                      <h4 className="font-display text-xl text-white mb-1">Label</h4>
+                      <p className="text-sm text-[#A5A9B4] uppercase tracking-wider mb-4">Couture</p>
+                      <p className="text-xs text-[#A5A9B4] leading-relaxed flex-1">
+                        Puce thermocollante au fer à repasser. Authentifie vos vêtements de luxe.
                       </p>
                       <Button 
                         variant="outline" 
-                        className="mt-4 w-full border-iwasp-emerald/30 text-iwasp-cream hover:bg-iwasp-emerald/10 rounded-xl text-xs"
+                        className="mt-4 w-full border-[#A5A9B4]/20 text-white hover:bg-[#A5A9B4]/10 rounded-xl text-xs"
                       >
                         Acheter le Kit
                       </Button>
@@ -962,7 +872,7 @@ const Studio = () => {
                 </motion.div>
               )}
 
-              {/* LE COFFRE (NFT) TAB */}
+              {/* LE COFFRE (NFT) TAB - Stealth Luxury */}
               {activeTab === "coffre" && (
                 <motion.div
                   key="coffre"
@@ -973,44 +883,44 @@ const Studio = () => {
                 >
                   {/* Header */}
                   <div>
-                    <h3 className="font-display text-4xl md:text-5xl text-iwasp-cream">
-                      Le <span className="italic text-iwasp-bronze">Coffre.</span>
+                    <h3 className="font-display text-4xl md:text-5xl text-white">
+                      Le <span className="italic text-[#D1D5DB]">Coffre.</span>
                     </h3>
-                    <p className="text-sm text-iwasp-silver mt-3">
+                    <p className="text-sm text-[#A5A9B4] mt-3">
                       Passeport Digital Blockchain : chaque vêtement devient un actif authentifié.
                     </p>
                   </div>
 
-                  {/* Blockchain Info */}
-                  <div className="p-6 rounded-3xl bg-gradient-to-br from-iwasp-midnight-elevated to-iwasp-bronze/5 border border-iwasp-bronze/20">
+                  {/* Blockchain Info - Titanium */}
+                  <div className="p-6 rounded-3xl bg-[#0A0F0D] border border-[#A5A9B4]/15">
                     <div className="flex items-center gap-4 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-iwasp-bronze/10 flex items-center justify-center">
-                        <Link2 className="w-6 h-6 text-iwasp-bronze" />
+                      <div className="w-12 h-12 rounded-xl bg-[#A5A9B4]/10 flex items-center justify-center">
+                        <Link2 className="w-6 h-6 text-[#D1D5DB]" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-iwasp-cream">Authentification Blockchain</h4>
-                        <p className="text-sm text-iwasp-silver">Vos vêtements possèdent un jumeau numérique inviolable.</p>
+                        <h4 className="font-semibold text-white">Authentification Blockchain</h4>
+                        <p className="text-sm text-[#A5A9B4]">Vos vêtements possèdent un jumeau numérique inviolable.</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-4 text-center">
-                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10">
-                        <div className="text-2xl font-display text-iwasp-bronze">{nftAssets.length}</div>
-                        <div className="text-xs text-iwasp-silver">Actifs Certifiés</div>
+                      <div className="p-4 rounded-xl bg-[#050807] border border-[#A5A9B4]/10">
+                        <div className="text-2xl font-display text-[#D1D5DB]">{nftAssets.length}</div>
+                        <div className="text-xs text-[#A5A9B4]">Actifs Certifiés</div>
                       </div>
-                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10">
-                        <div className="text-2xl font-display text-iwasp-emerald-glow">100%</div>
-                        <div className="text-xs text-iwasp-silver">Authentiques</div>
+                      <div className="p-4 rounded-xl bg-[#050807] border border-[#A5A9B4]/10">
+                        <div className="text-2xl font-display text-white">100%</div>
+                        <div className="text-xs text-[#A5A9B4]">Authentiques</div>
                       </div>
-                      <div className="p-4 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/10">
-                        <div className="text-2xl font-display text-iwasp-cream">∞</div>
-                        <div className="text-xs text-iwasp-silver">Traçabilité</div>
+                      <div className="p-4 rounded-xl bg-[#050807] border border-[#A5A9B4]/10">
+                        <div className="text-2xl font-display text-white">∞</div>
+                        <div className="text-xs text-[#A5A9B4]">Traçabilité</div>
                       </div>
                     </div>
                   </div>
 
                   {/* NFT Assets Grid */}
                   <div className="space-y-4">
-                    <h4 className="text-xs text-iwasp-silver tracking-[0.2em] uppercase">
+                    <h4 className="text-xs text-[#A5A9B4] tracking-[0.2em] uppercase">
                       Vos Actifs Numériques
                     </h4>
                     <div className="grid sm:grid-cols-2 gap-4">
@@ -1020,22 +930,22 @@ const Studio = () => {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.1 }}
-                          className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 hover:border-iwasp-bronze/30 transition-all"
+                          className="p-5 rounded-2xl bg-[#0A0F0D] border border-[#A5A9B4]/10 hover:border-[#D1D5DB]/30 transition-all"
                         >
                           <div className="flex items-start gap-4">
-                            <div className="w-16 h-16 rounded-xl bg-iwasp-midnight border border-iwasp-emerald/20 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-xl bg-[#050807] border border-[#A5A9B4]/15 flex items-center justify-center">
                               {asset.type === "garment" ? (
-                                <Shirt className="w-6 h-6 text-iwasp-silver" />
+                                <Shirt className="w-6 h-6 text-[#A5A9B4]" />
                               ) : (
-                                <Boxes className="w-6 h-6 text-iwasp-silver" />
+                                <Boxes className="w-6 h-6 text-[#A5A9B4]" />
                               )}
                             </div>
                             <div className="flex-1">
-                              <h4 className="font-semibold text-iwasp-cream">{asset.name}</h4>
-                              <p className="text-xs text-iwasp-bronze">{asset.brand}</p>
+                              <h4 className="font-semibold text-white">{asset.name}</h4>
+                              <p className="text-xs text-[#D1D5DB]">{asset.brand}</p>
                               <div className="mt-2 flex items-center gap-2">
-                                <BadgeCheck className="w-3 h-3 text-iwasp-emerald-glow" />
-                                <span className="text-[10px] text-iwasp-silver font-mono">{asset.tokenId}</span>
+                                <BadgeCheck className="w-3 h-3 text-[#D1D5DB]" />
+                                <span className="text-[10px] text-[#A5A9B4] font-mono">{asset.tokenId}</span>
                               </div>
                             </div>
                           </div>
@@ -1043,66 +953,13 @@ const Studio = () => {
                       ))}
                       
                       {/* Add New Asset */}
-                      <div className="p-5 rounded-2xl border-2 border-dashed border-iwasp-emerald/20 hover:border-iwasp-bronze/30 transition-all cursor-pointer flex items-center justify-center min-h-[120px]">
+                      <div className="p-5 rounded-2xl border-2 border-dashed border-[#A5A9B4]/15 hover:border-[#D1D5DB]/30 transition-all cursor-pointer flex items-center justify-center min-h-[120px]">
                         <div className="text-center">
-                          <Plus className="w-6 h-6 text-iwasp-silver/40 mx-auto mb-2" />
-                          <span className="text-xs text-iwasp-silver">Ajouter un vêtement</span>
+                          <Plus className="w-6 h-6 text-[#A5A9B4]/40 mx-auto mb-2" />
+                          <span className="text-xs text-[#A5A9B4]">Ajouter un vêtement</span>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* CONCIERGERIE PRIVÉE TAB */}
-              {activeTab === "concierge" && (
-                <motion.div
-                  key="concierge"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-8"
-                >
-                  {/* Header */}
-                  <div>
-                    <h3 className="font-display text-4xl md:text-5xl text-iwasp-cream">
-                      Conciergerie <span className="italic text-iwasp-bronze">Privée.</span>
-                    </h3>
-                    <p className="text-sm text-iwasp-silver mt-3">
-                      Un service d'élite réservé aux détenteurs de la Carte Or 24K.
-                    </p>
-                  </div>
-
-                  {/* Concierge Hero */}
-                  <div className="p-8 rounded-3xl bg-gradient-to-br from-iwasp-bronze/10 to-iwasp-midnight-elevated border border-iwasp-bronze/30 text-center">
-                    <div className="w-20 h-20 rounded-full bg-iwasp-bronze/20 flex items-center justify-center mx-auto mb-6">
-                      <Headphones className="w-10 h-10 text-iwasp-bronze" />
-                    </div>
-                    <h4 className="font-display text-2xl text-iwasp-cream mb-2">
-                      Votre Concierge Personnel
-                    </h4>
-                    <p className="text-sm text-iwasp-silver max-w-md mx-auto mb-6">
-                      Réservations exclusives, conseils personnalisés, et assistance 24/7 pour tous vos besoins d'exception.
-                    </p>
-                    <Button className="bg-iwasp-bronze hover:bg-iwasp-bronze-light text-iwasp-midnight gap-2 rounded-xl">
-                      <MessageCircle className="w-4 h-4" />
-                      Contacter le Concierge
-                    </Button>
-                  </div>
-
-                  {/* Services */}
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    {[
-                      { icon: Award, title: "Événements VIP", desc: "Accès prioritaire aux galas et soirées privées" },
-                      { icon: Globe, title: "Voyage Sur-Mesure", desc: "Organisation de séjours d'exception" },
-                      { icon: Crown, title: "Privilèges Exclusifs", desc: "Avantages partenaires dans le monde entier" },
-                    ].map((service, i) => (
-                      <div key={i} className="p-5 rounded-2xl bg-iwasp-midnight-elevated border border-iwasp-emerald/10 text-center">
-                        <service.icon className="w-8 h-8 text-iwasp-bronze mx-auto mb-3" />
-                        <h4 className="font-semibold text-iwasp-cream text-sm mb-1">{service.title}</h4>
-                        <p className="text-xs text-iwasp-silver">{service.desc}</p>
-                      </div>
-                    ))}
                   </div>
                 </motion.div>
               )}

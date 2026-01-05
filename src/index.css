@@ -29,25 +29,26 @@
        ═══════════════════════════════════════════════════════════════════ */
     
     /* ══════════════════════════════════════════════════════════════════
-       COULEURS ULTRA-LUXE — MIDNIGHT EMERALD & BRUSHED BRONZE
+       STEALTH LUXURY — NOIR ÉMERAUDE & TITANE BROSSÉ
+       Palette sans jaune/or - Luxe furtif type Audemars Piguet
        ══════════════════════════════════════════════════════════════════ */
     
-    --iwasp-noir: 210 18% 3%;               /* #050708 - Midnight base */
-    --iwasp-noir-elevated: 210 15% 6%;      /* #0C1014 - Midnight surface */
-    --iwasp-blanc: 40 33% 97%;              /* #FAF7F2 - Crème chaud */
+    --iwasp-noir: 160 20% 2%;               /* #050807 - Noir Émeraude Profond */
+    --iwasp-noir-elevated: 160 18% 4%;      /* #0A0F0D - Surface élevée */
+    --iwasp-blanc: 0 0% 98%;                /* #FAFAFA - Blanc pur */
     --iwasp-blanc-pur: 0 0% 100%;           /* #FFFFFF - Blanc pur (inputs) */
     
-    /* Bronze brossé — CTA, accents, focus */
-    --iwasp-bronze: 32 35% 57%;             /* #B8926A - Bronze brossé */
-    --iwasp-bronze-light: 32 45% 66%;       /* #D4AF7F - Bronze clair */
-    --iwasp-bronze-glow: 32 50% 75%;        /* Bronze lumineux */
+    /* Argent Titane — CTA, accents, focus (remplace le bronze) */
+    --iwasp-bronze: 220 6% 67%;             /* #A5A9B4 - Argent Titane */
+    --iwasp-bronze-light: 220 8% 82%;       /* #D1D5DB - Platine */
+    --iwasp-bronze-glow: 220 7% 76%;        /* #C4C8CF - Titane lumineux */
     
-    /* Émeraude de minuit — Accent secondaire, profondeur */
-    --iwasp-emerald: 160 47% 21%;           /* #1B4D3E - Émeraude profond */
-    --iwasp-emerald-glow: 160 45% 33%;      /* #2D7A5F - Émeraude lumineux */
+    /* Émeraude Furtif — Accent secondaire, profondeur */
+    --iwasp-emerald: 160 20% 6%;            /* #0A1210 - Émeraude furtif */
+    --iwasp-emerald-glow: 160 18% 14%;      /* #1A2B26 - Émeraude glow */
     
-    --iwasp-gris-texte: 210 8% 57%;         /* #8A9299 - Argent mat */
-    --iwasp-gris-bordure: 210 10% 15%;      /* Bordures subtiles émeraude */
+    --iwasp-gris-texte: 220 6% 67%;         /* #A5A9B4 - Argent Titane */
+    --iwasp-gris-bordure: 160 15% 10%;      /* Bordures émeraude subtiles */
     
     /* États système */
     --iwasp-erreur: 0 72% 51%;              /* Rouge erreur */

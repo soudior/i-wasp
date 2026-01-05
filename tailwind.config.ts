@@ -82,16 +82,19 @@ export default {
            + BLUE ABYSS + PEARL SAND
            ══════════════════════════════════════════════════════════════ */
         iwasp: {
-          midnight: "#050708",               /* Midnight base */
-          "midnight-elevated": "#0C1014",    /* Surface secondaire */
-          cream: "#FAF7F2",                  /* Texte principal crème */
-          silver: "#8A9299",                 /* Texte secondaire argent */
-          bronze: "#B8926A",                 /* Bronze brossé - CTA */
-          "bronze-light": "#D4AF7F",         /* Bronze clair */
-          "bronze-glow": "#C9A87A",          /* Bronze lumineux */
-          emerald: "#1B4D3E",                /* Émeraude profond */
-          "emerald-glow": "#2D7A5F",         /* Émeraude lumineux */
-          "emerald-mist": "#1A3D32",         /* Émeraude brume */
+          /* STEALTH LUXURY - Noir Émeraude & Titane Brossé */
+          midnight: "#050807",               /* Noir Émeraude Profond */
+          "midnight-elevated": "#0A0F0D",    /* Surface secondaire émeraude */
+          cream: "#FAFAFA",                  /* Blanc pur */
+          silver: "#A5A9B4",                 /* Argent Titane */
+          bronze: "#A5A9B4",                 /* Titane (remplace bronze) */
+          "bronze-light": "#D1D5DB",         /* Platine */
+          "bronze-glow": "#C4C8CF",          /* Titane lumineux */
+          titanium: "#A5A9B4",               /* Argent Titane primaire */
+          platinum: "#D1D5DB",               /* Platine */
+          emerald: "#0A1210",                /* Émeraude profond furtif */
+          "emerald-glow": "#1A2B26",         /* Émeraude glow subtil */
+          "emerald-mist": "#0D1815",         /* Émeraude brume */
           /* Blue Abyss - Le Monde */
           abyss: "#0A1628",                  /* Bleu abysse profond */
           "abyss-light": "#0F2340",          /* Bleu abysse clair */
