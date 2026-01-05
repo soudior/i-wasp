@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ClubNavbar } from "@/components/ClubNavbar";
+import { GlobalFooter } from "@/components/GlobalFooter";
 import {
   Form,
   FormControl,
@@ -400,24 +401,7 @@ export default function Contact() {
         </div>
       </section>
       
-      {/* Footer */}
-      <footer className="py-12 bg-[#0A0A0A] border-t border-white/5">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-2xl font-bold text-white">
-              i-wasp<span className="text-amber-400">.</span>
-            </div>
-            <div className="flex items-center gap-8 text-sm text-white/50">
-              <Link to="/about" className="hover:text-white transition-colors">À propos</Link>
-              <Link to="/contact" className="hover:text-white transition-colors">Contact</Link>
-              <Link to="/privacy" className="hover:text-white transition-colors">Confidentialité</Link>
-            </div>
-            <div className="text-sm text-white/30">
-              © 2025 i-wasp. Tous droits réservés.
-            </div>
-          </div>
-        </div>
-      </footer>
+      <GlobalFooter variant="dark" />
     </div>
   );
 }

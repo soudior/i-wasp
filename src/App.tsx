@@ -71,6 +71,8 @@ import Conciergerie from "./pages/Conciergerie";
 import Club from "./pages/Club";
 import Contact from "./pages/Contact";
 import Showroom3D from "./pages/Showroom3D";
+import MentionsLegales from "./pages/MentionsLegales";
+import CGV from "./pages/CGV";
 
 // NEW Order funnel pages - 7 steps strict flow
 import OrderType from "./pages/order/OrderType";
@@ -175,6 +177,8 @@ const App = () => {
                             <Route path="/certificat-partenaire" element={<CertificatPartenaire />} />
                             <Route path="/privacy" element={<PrivacyPolicy />} />
                             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                            <Route path="/mentions-legales" element={<MentionsLegales />} />
+                            <Route path="/cgv" element={<CGV />} />
                             <Route path="/about" element={<About />} />
                             <Route path="/a-propos" element={<About />} />
                             <Route path="/vision" element={<Vision />} />
