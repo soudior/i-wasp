@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { GuestCardProvider } from "@/contexts/GuestCardContext";
 import { BrandProvider } from "@/contexts/BrandContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { OrderFunnelProvider } from "@/contexts/OrderFunnelContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
 import { AdminGuard } from "@/components/AdminGuard";
@@ -140,9 +141,10 @@ const App = () => {
         <NetworkProvider>
           <AuthProvider>
             <BrandProvider>
-              <GuestCardProvider>
-                <CartProvider>
-                <TooltipProvider>
+              <CurrencyProvider>
+                <GuestCardProvider>
+                  <CartProvider>
+                  <TooltipProvider>
                   <FeatureValidationProvider showOverlay={true}>
                     {showSplash && (
                       <SplashScreen onComplete={handleSplashComplete} minDuration={800} />
@@ -290,11 +292,12 @@ const App = () => {
                 </TooltipProvider>
               </CartProvider>
             </GuestCardProvider>
-          </BrandProvider>
-        </AuthProvider>
-      </NetworkProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
+          </CurrencyProvider>
+        </BrandProvider>
+      </AuthProvider>
+    </NetworkProvider>
+  </QueryClientProvider>
+</ErrorBoundary>
   );
 };
 
