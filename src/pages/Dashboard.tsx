@@ -1,56 +1,28 @@
 import { useState } from "react";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCards, useUpdateCard, useDeleteCard } from "@/hooks/useCards";
 import { useLeads } from "@/hooks/useLeads";
 import { useScans } from "@/hooks/useScans";
-import { useUserOrders, getOrderStatusLabel, getOrderStatusColor } from "@/hooks/useOrders";
+import { useUserOrders } from "@/hooks/useOrders";
 import { useSubscription } from "@/hooks/useSubscription";
-import { useContactsStories, useOwnStories } from "@/hooks/useContactsStories";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { DashboardCard } from "@/components/DashboardCard";
-import { SubscriptionCard } from "@/components/SubscriptionCard";
-import { StoriesCarousel } from "@/components/StoriesCarousel";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { formatPrice } from "@/lib/pricing";
-import { generateInvoicePDF, downloadInvoice } from "@/lib/invoiceGenerator";
-import { format } from "date-fns";
-import { fr, enUS, es, it, nl } from "date-fns/locale";
 import { 
   generateAppleWalletPass, 
   generateGoogleWalletPass,
-  supportsAppleWallet,
-  supportsGoogleWallet 
 } from "@/lib/wallet";
-import { PhysicalCardStudio } from "@/components/print/PhysicalCardStudio";
-import { DashboardCustomization } from "@/components/DashboardCustomization";
-import { BrandSyncReminder } from "@/components/BrandSyncReminder";
-import { GoldVerificationBadge } from "@/components/GoldFeatureCard";
 import { 
-  AICoachPanel, 
-  PushNotificationsPanel, 
-  PerformanceChart,
-  GoldDashboardHeader,
-  GoldAnalyticsPanel,
-  GoldLeadsCRM,
-  GoldCoachTips,
-  GoldSettingsPanel,
-  TerminalTap,
-} from "@/components/dashboard";
-
-import { 
-  Plus, CreditCard, Users, Eye, TrendingUp, 
-  MoreVertical, Wallet, QrCode,
+  Plus, CreditCard, Users, Eye, 
+  MoreVertical, Wallet,
   Wifi, WifiOff, Pencil, Trash2, ExternalLink, Copy,
-  LogOut, X, Apple, Smartphone, ShoppingBag,
-  Clock, CheckCircle2, Factory, Truck, Package,
-  Download, MapPin, ChevronRight, FileText, Loader2, Image,
-  Zap, BarChart3, Palette, Sparkles
+  Apple, Smartphone, ShoppingBag, TrendingUp,
+  ChevronRight, Loader2, Settings, Zap
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -77,113 +49,22 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-// Status icon mapping
-function getStatusIcon(status: string) {
-  switch (status) {
-    case "pending":
-      return <Clock className="h-3.5 w-3.5" />;
-    case "paid":
-      return <CheckCircle2 className="h-3.5 w-3.5" />;
-    case "in_production":
-      return <Factory className="h-3.5 w-3.5" />;
-    case "shipped":
-      return <Truck className="h-3.5 w-3.5" />;
-    case "delivered":
-      return <Package className="h-3.5 w-3.5" />;
-    default:
-      return <Package className="h-3.5 w-3.5" />;
-  }
-}
-
-// Order timeline step
-function OrderTimelineStep({ 
-  status, 
-  currentStatus, 
-  label 
-}: { 
-  status: string; 
-  currentStatus: string; 
-  label: string;
-}) {
-  const statusOrder = ["pending", "paid", "in_production", "shipped", "delivered"];
-  const currentIndex = statusOrder.indexOf(currentStatus);
-  const stepIndex = statusOrder.indexOf(status);
-  const isCompleted = stepIndex < currentIndex;
-  const isActive = stepIndex === currentIndex;
-
-  return (
-    <div className="flex flex-col items-center">
-      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all ${
-        isCompleted 
-          ? "bg-green-500 text-white" 
-          : isActive 
-            ? "bg-primary text-primary-foreground animate-pulse" 
-            : "bg-secondary text-muted-foreground"
-      }`}>
-        {isCompleted ? <CheckCircle2 className="h-3 w-3" /> : getStatusIcon(status)}
-      </div>
-      <span className={`text-[10px] mt-1 text-center max-w-[60px] leading-tight ${
-        isCompleted || isActive ? "text-foreground" : "text-muted-foreground"
-      }`}>
-        {label}
-      </span>
-    </div>
-  );
-}
-
 const Dashboard = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { data: cards = [], isLoading: cardsLoading } = useCards();
   const { data: leads = [] } = useLeads();
   const { data: scans = [] } = useScans();
-  const { data: orders = [], isLoading: ordersLoading } = useUserOrders();
+  const { data: orders = [] } = useUserOrders();
   const { isPremium } = useSubscription();
-  const { contacts: contactsWithStories, loading: storiesLoading } = useContactsStories();
-  const { stories: ownStories, cardInfo: ownCardInfo } = useOwnStories();
   const updateCard = useUpdateCard();
   const deleteCard = useDeleteCard();
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [walletCardId, setWalletCardId] = useState<string | null>(null);
-  const [downloadingInvoice, setDownloadingInvoice] = useState<string | null>(null);
-  const [physicalCardId, setPhysicalCardId] = useState<string | null>(null);
 
-  // Get locale for date-fns based on current language
-  const getDateLocale = () => {
-    switch (i18n.language) {
-      case 'en': return enUS;
-      case 'es': return es;
-      case 'it': return it;
-      case 'nl': return nl;
-      default: return fr;
-    }
-  };
-
-  const selectedCard = cards.find(c => c.id === selectedCardId);
   const walletCard = cards.find(c => c.id === walletCardId);
-  const physicalCard = cards.find(c => c.id === physicalCardId);
-
-  const handleDownloadInvoice = async (order: any) => {
-    setDownloadingInvoice(order.id);
-    try {
-      const blob = await generateInvoicePDF(order);
-      downloadInvoice(blob, order.order_number);
-      toast.success(t("dashboard.invoiceDownloaded"));
-    } catch (error) {
-      console.error("Failed to generate invoice:", error);
-      toast.error(t("dashboard.invoiceError"));
-    } finally {
-      setDownloadingInvoice(null);
-    }
-  };
-
-  const handleLogout = async () => {
-    await signOut();
-    navigate("/");
-  };
 
   const handleToggleNFC = async (cardId: string, currentState: boolean) => {
     await updateCard.mutateAsync({
@@ -213,15 +94,12 @@ const Dashboard = () => {
   const handleWalletAction = (type: "apple" | "google") => {
     if (!walletCard) return;
     
-    // Generate wallet pass data (in production, this would call backend API)
     if (type === "apple") {
-      const passData = generateAppleWalletPass({ type: "apple", card: walletCard });
-      console.log("Apple Wallet Pass Data:", passData);
-      toast.info("Intégration Apple Wallet bientôt disponible. Les données du pass sont prêtes.");
+      generateAppleWalletPass({ type: "apple", card: walletCard });
+      toast.info("Intégration Apple Wallet bientôt disponible.");
     } else {
-      const passData = generateGoogleWalletPass({ type: "google", card: walletCard });
-      console.log("Google Wallet Pass Data:", passData);
-      toast.info("Intégration Google Wallet bientôt disponible. Les données du pass sont prêtes.");
+      generateGoogleWalletPass({ type: "google", card: walletCard });
+      toast.info("Intégration Google Wallet bientôt disponible.");
     }
     
     setShowWalletModal(false);
@@ -231,522 +109,329 @@ const Dashboard = () => {
   const totalLeads = leads.length;
   const conversionRate = totalViews > 0 ? ((totalLeads / totalViews) * 100).toFixed(1) : "0";
 
-  // Note: Auth and empty state checks are handled by DashboardGuard at route level
+  const userName = user?.user_metadata?.first_name || user?.email?.split("@")[0] || "Utilisateur";
+
+  // Stats data
+  const stats = [
+    { label: "Vues", value: totalViews, icon: Eye, color: "text-blue-500" },
+    { label: "Leads", value: totalLeads, icon: Users, color: "text-green-500" },
+    { label: "Conversion", value: `${conversionRate}%`, icon: TrendingUp, color: "text-purple-500" },
+    { label: "Cartes", value: cards.length, icon: CreditCard, color: "text-orange-500" },
+  ];
+
+  // Quick actions
+  const quickActions = [
+    { label: "Nouvelle carte", icon: Plus, href: "/create", primary: true },
+    { label: "Mes commandes", icon: ShoppingBag, href: "/orders", count: orders.length },
+    { label: "Paramètres", icon: Settings, href: "/settings" },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
-      
       <Navbar />
       
-      <main className="relative z-10 pt-24 pb-16">
-        <div className="container mx-auto px-6">
-          {/* Gold Dashboard Header - Prestige */}
-          <GoldDashboardHeader
-            userName={user?.user_metadata?.first_name || user?.email?.split("@")[0] || "Client"}
-            isPremium={isPremium}
-            onPushNotification={() => toast.info("Fonctionnalité Push disponible ci-dessous")}
-            totalScans={scans.length}
-          />
+      <main className="pt-24 pb-16">
+        <div className="container mx-auto px-6 max-w-5xl">
+          
+          {/* Header - Cupertino style */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-10"
+          >
+            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-1">
+              Bonjour, {userName}
+            </h1>
+            <p className="text-muted-foreground">
+              Votre tableau de bord IWASP
+            </p>
+          </motion.div>
 
-          {/* Stories Carousel - Style Instagram */}
-          {(contactsWithStories.length > 0 || ownCardInfo) && (
-            <div className="mb-8 -mx-6">
-              <div className="flex items-center gap-2 px-6 mb-3">
-                <Sparkles size={16} className="text-rose-500" />
-                <h3 className="text-sm font-semibold text-foreground">Stories</h3>
-                <span className="text-xs text-muted-foreground">• 24h</span>
-              </div>
-              <StoriesCarousel
-                users={contactsWithStories}
-                showAddStory={!!ownCardInfo}
-                currentUserPhoto={ownCardInfo?.photoUrl}
-                currentUserName={ownCardInfo?.firstName || user?.user_metadata?.first_name || "Vous"}
-                onAddStory={() => navigate("/card-editor/" + cards[0]?.id)}
-                variant="default"
-              />
-            </div>
-          )}
+          {/* Stats Grid - Apple-like cards */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10"
+          >
+            {stats.map((stat, index) => (
+              <Card 
+                key={stat.label}
+                className="p-5 bg-card border-border/50 hover:border-border transition-colors"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`p-2 rounded-xl bg-secondary ${stat.color}`}>
+                    <stat.icon size={18} />
+                  </div>
+                </div>
+                <p className="text-2xl font-bold text-foreground tracking-tight">
+                  {stat.value}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {stat.label}
+                </p>
+              </Card>
+            ))}
+          </motion.div>
 
-          {/* Quick Actions Bar */}
-          <div className="flex items-center justify-end gap-3 mb-8 flex-wrap">
-            <Link to="/card-studio">
-              <Button variant="outline" className="gap-2">
-                <Palette size={18} />
-                Card Studio
-              </Button>
-            </Link>
-            <Link to="/settings">
-              <Button variant="outline" size="icon">
-                <Pencil size={18} />
-              </Button>
-            </Link>
-            <Link to="/orders">
-              <Button variant="outline">
-                <ShoppingBag size={18} />
-                {t("dashboard.myOrders")}
-              </Button>
-            </Link>
-            <Link to="/create">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                <Plus size={18} />
-                {t("dashboard.newCard")}
-              </Button>
-            </Link>
-          </div>
+          {/* Quick Actions */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex flex-wrap gap-3 mb-10"
+          >
+            {quickActions.map((action) => (
+              <Link key={action.label} to={action.href}>
+                <Button 
+                  variant={action.primary ? "default" : "outline"}
+                  className={`gap-2 h-11 px-5 rounded-xl ${
+                    action.primary 
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                      : "hover:bg-secondary"
+                  }`}
+                >
+                  <action.icon size={18} />
+                  {action.label}
+                  {action.count !== undefined && action.count > 0 && (
+                    <span className="ml-1 px-2 py-0.5 text-xs bg-secondary rounded-full">
+                      {action.count}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            ))}
+          </motion.div>
 
-          {/* Gold Analytics Panel - 30 days chart */}
-          <div className="mb-12">
-            <GoldAnalyticsPanel
-              scans={scans}
-              leads={leads}
-              cards={cards}
-            />
-          </div>
-
-          {/* Two Column Layout: CRM + Coach */}
-          <div className="grid lg:grid-cols-3 gap-6 mb-12">
-            {/* Gold Leads CRM - 2 columns */}
-            <div className="lg:col-span-2">
-              <GoldLeadsCRM
-                leads={leads}
-                onStatusChange={(leadId, status) => {
-                  toast.success(`Lead marqué comme ${status}`);
-                }}
-              />
-            </div>
-
-            {/* Right Column: Terminal Tap + Coach + Settings */}
-            <div className="space-y-6">
-              {/* Terminal Tap - NFC Payment */}
-              <div>
-                <TerminalTap 
-                  onPaymentComplete={(amount) => {
-                    console.log(`Payment completed: ${amount}`);
-                  }}
-                />
-              </div>
-
-              {/* Gold Coach Tips */}
-              <div>
-                <GoldCoachTips
-                  scans={scans}
-                  leads={leads}
-                  cards={cards}
-                />
-              </div>
-
-              {/* Gold Settings Panel */}
-              <div>
-                <GoldSettingsPanel
-                  wifiEnabled={false}
-                  cardSlug={cards[0]?.slug}
-                  onMagicImport={() => navigate("/order/type")}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Push Notifications Gold */}
-          <div className="mb-12">
-            <PushNotificationsPanel 
-              leads={leads}
-              isPremium={isPremium}
-              onUpgrade={() => navigate("/checkout")}
-            />
-          </div>
-
-          {/* Subscription Section - Mon Plan */}
-          <div className="mb-12">
-            <h2 className="font-display text-xl font-semibold text-foreground flex items-center gap-2 mb-6">
-              {t("dashboard.myPlan")}
-            </h2>
-            <SubscriptionCard />
-          </div>
-
-          {/* Customization Section - Noir & Or */}
-          <div className="mb-12">
-            <DashboardCustomization />
-          </div>
-
-          {/* Brand Sync Reminder */}
-          <div className="mb-12">
-            <BrandSyncReminder />
-          </div>
-
-          {/* Orders Section - Premium Glassmorphism */}
-          <div className="mb-12">
+          {/* Cards Section */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-12"
+          >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="font-display text-xl font-semibold text-foreground flex items-center gap-2">
-                <ShoppingBag className="h-5 w-5" />
-                {t("dashboard.myOrders")}
+              <h2 className="text-xl font-semibold text-foreground">
+                Mes cartes
               </h2>
-              {orders.length > 0 && (
-                <Link to="/orders">
-                  <Button variant="outline" size="sm" className="gap-2">
-                    {t("dashboard.viewAll")}
-                    <ChevronRight size={14} />
+              {cards.length > 0 && (
+                <Link to="/create">
+                  <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground">
+                    Voir tout
+                    <ChevronRight size={16} />
                   </Button>
                 </Link>
               )}
             </div>
 
-            {ordersLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            {cardsLoading ? (
+              <div className="flex justify-center py-16">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
-            ) : orders.length === 0 ? (
-              <Card className="p-8 text-center bg-card border border-border">
-                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-muted flex items-center justify-center">
-                  <ShoppingBag className="h-7 w-7 text-muted-foreground" />
+            ) : cards.length === 0 ? (
+              <Card className="p-12 text-center border-dashed border-2 border-border/50">
+                <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-secondary flex items-center justify-center">
+                  <CreditCard size={28} className="text-muted-foreground" />
                 </div>
-                <h3 className="font-display text-lg font-semibold mb-2">
-                  {t("dashboard.noOrders")}
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  Créez votre première carte
                 </h3>
-                <p className="text-muted-foreground text-sm mb-5 max-w-xs mx-auto">
-                  {t("dashboard.noOrdersDesc")}
+                <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
+                  Votre identité digitale premium vous attend
                 </p>
-                <Link to="/checkout">
-                  <Button className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">
-                    <ShoppingBag size={16} />
-                    {t("dashboard.orderNow")}
+                <Link to="/create">
+                  <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                    <Plus size={18} />
+                    Créer ma carte
                   </Button>
                 </Link>
               </Card>
             ) : (
-              <div className="space-y-4">
-                {orders.slice(0, 3).map((order, index) => (
+              <div className="grid gap-4">
+                {cards.map((card) => (
                   <Card 
-                    key={order.id} 
-                    className="bg-card border border-border overflow-hidden hover:border-border/80 transition-colors"
+                    key={card.id}
+                    className="p-5 bg-card border-border/50 hover:border-border transition-all group"
                   >
-                    <div className="p-5">
-                      {/* Order header */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                            <Package className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono font-semibold text-foreground">
-                                {order.order_number}
-                              </span>
-                              <Badge className={`${getOrderStatusColor(order.status)} text-xs`}>
-                                {getStatusIcon(order.status)}
-                                <span className="ml-1">{getOrderStatusLabel(order.status)}</span>
-                              </Badge>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        {/* Avatar */}
+                        <div className="w-14 h-14 rounded-2xl bg-secondary overflow-hidden flex-shrink-0">
+                          {card.photo_url ? (
+                            <img 
+                              src={card.photo_url} 
+                              alt={card.first_name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                              <CreditCard size={24} />
                             </div>
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              {format(new Date(order.created_at), "d MMMM yyyy", { locale: fr })}
-                            </p>
-                          </div>
+                          )}
                         </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-foreground">
-                            {formatPrice(order.total_price_cents)}
+                        
+                        {/* Info */}
+                        <div>
+                          <h3 className="font-semibold text-foreground">
+                            {card.first_name} {card.last_name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {card.title || card.company || "Carte digitale"}
                           </p>
-                          <p className="text-xs text-muted-foreground">
-                            {order.quantity} carte{order.quantity > 1 ? "s" : ""}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Timeline mini */}
-                      <div className="flex items-center justify-between px-2 py-3 bg-secondary/30 rounded-xl mb-4">
-                        <OrderTimelineStep status="pending" currentStatus={order.status} label="Reçue" />
-                        <div className="flex-1 h-0.5 bg-border mx-1" />
-                        <OrderTimelineStep status="paid" currentStatus={order.status} label="Confirmée" />
-                        <div className="flex-1 h-0.5 bg-border mx-1" />
-                        <OrderTimelineStep status="in_production" currentStatus={order.status} label="Production" />
-                        <div className="flex-1 h-0.5 bg-border mx-1" />
-                        <OrderTimelineStep status="shipped" currentStatus={order.status} label="Expédiée" />
-                        <div className="flex-1 h-0.5 bg-border mx-1" />
-                        <OrderTimelineStep status="delivered" currentStatus={order.status} label="Livrée" />
-                      </div>
-
-                      {/* Order details */}
-                      <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                          <div className="text-sm">
-                            <p className="font-medium text-foreground">{order.shipping_name}</p>
-                            <p className="text-muted-foreground text-xs line-clamp-2">
-                              {order.shipping_address}, {order.shipping_city}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CreditCard className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                          <div className="text-sm">
-                            <p className="font-medium text-foreground">Paiement à la livraison</p>
-                            <p className="text-muted-foreground text-xs">
-                              Cash ou carte
-                            </p>
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Eye size={12} />
+                              {card.view_count || 0}
+                            </span>
+                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Users size={12} />
+                              {leads.filter(l => l.card_id === card.id).length}
+                            </span>
+                            {card.nfc_enabled && (
+                              <span className="text-xs text-green-500 flex items-center gap-1">
+                                <Zap size={12} />
+                                NFC
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
 
                       {/* Actions */}
-                      <div className="flex items-center gap-2 pt-3 border-t border-border/50">
-                        <Link to={`/orders/${order.id}`} className="flex-1">
-                          <Button variant="outline" size="sm" className="w-full gap-2">
-                            <ExternalLink size={14} />
-                            Voir détails
-                          </Button>
-                        </Link>
+                      <div className="flex items-center gap-2">
                         <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="gap-2"
-                          onClick={() => handleDownloadInvoice(order)}
-                          disabled={downloadingInvoice === order.id}
+                          variant="ghost" 
+                          size="sm"
+                          className="hidden sm:flex gap-1 text-muted-foreground hover:text-foreground"
+                          onClick={() => window.open(`/c/${card.slug}`, '_blank')}
                         >
-                          {downloadingInvoice === order.id ? (
-                            <Loader2 size={14} className="animate-spin" />
-                          ) : (
-                            <Download size={14} />
-                          )}
-                          Facture
+                          <ExternalLink size={14} />
+                          Voir
                         </Button>
+                        
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-9 w-9">
+                              <MoreVertical size={18} />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem onClick={() => navigate(`/create?edit=${card.id}`)}>
+                              <Pencil size={14} className="mr-2" />
+                              Modifier
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleToggleNFC(card.id, card.nfc_enabled)}>
+                              {card.nfc_enabled ? (
+                                <>
+                                  <WifiOff size={14} className="mr-2" />
+                                  Désactiver NFC
+                                </>
+                              ) : (
+                                <>
+                                  <Wifi size={14} className="mr-2" />
+                                  Activer NFC
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleCopyLink(card.slug)}>
+                              <Copy size={14} className="mr-2" />
+                              Copier le lien
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => window.open(`/c/${card.slug}`, '_blank')}>
+                              <ExternalLink size={14} className="mr-2" />
+                              Ouvrir
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => handleAddToWallet(card.id)}>
+                              <Wallet size={14} className="mr-2" />
+                              Ajouter au Wallet
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              className="text-destructive"
+                              onClick={() => setDeleteCardId(card.id)}
+                            >
+                              <Trash2 size={14} className="mr-2" />
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
                   </Card>
                 ))}
-
-                {orders.length > 3 && (
-                  <Link to="/orders" className="block">
-                    <Card className="p-4 text-center hover:bg-secondary/30 transition-colors cursor-pointer border-dashed">
-                      <span className="text-sm text-muted-foreground">
-                        Voir les {orders.length - 3} autres commandes
-                      </span>
-                    </Card>
-                  </Link>
-                )}
               </div>
             )}
-          </div>
+          </motion.section>
 
-          {/* Cards Grid - 3D Floating Cards */}
-          <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-display text-xl font-semibold text-foreground">
-                Mes cartes
-              </h2>
-              {cards.length > 0 && (
-                <Link to="/create">
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Plus size={16} />
-                    Ajouter
-                  </Button>
-                </Link>
-              )}
-            </div>
-            
-            {cardsLoading ? (
-              <div className="flex justify-center py-12">
-                <div className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
-              </div>
-            ) : cards.length === 0 ? (
-              <div className="card-glass p-12 text-center animate-scale-in">
-                <div className="animate-float-subtle">
-                  <CreditCard size={64} className="mx-auto mb-6 text-chrome" />
-                </div>
-                <h3 className="font-display text-xl font-semibold text-foreground mb-3">
-                  Créez votre première carte
-                </h3>
-                <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                  Votre identité digitale premium vous attend. Créez une carte de visite NFC futuriste en quelques clics.
-                </p>
-                <Link to="/create">
-                  <Button variant="chrome" size="lg" className="gap-2">
-                    <Plus size={18} />
-                    Créer ma carte
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {cards.map((card, index) => (
-                  <div key={card.id} className="relative group">
-                    <DashboardCard
-                      card={card}
-                      index={index}
-                      leadsCount={leads.filter(l => l.card_id === card.id).length}
-                      onClick={() => setSelectedCardId(card.id)}
-                    />
-                    
-                    {/* Quick actions overlay */}
-                    <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline" size="icon" className="w-8 h-8 bg-background/80 backdrop-blur-sm">
-                            <MoreVertical size={14} />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-48">
-                          <DropdownMenuItem onClick={() => navigate(`/create?edit=${card.id}`)}>
-                            <Pencil size={14} className="mr-2" />
-                            Modifier
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleToggleNFC(card.id, card.nfc_enabled)}>
-                            {card.nfc_enabled ? (
-                              <>
-                                <WifiOff size={14} className="mr-2" />
-                                Désactiver NFC
-                              </>
-                            ) : (
-                              <>
-                                <Wifi size={14} className="mr-2" />
-                                Activer NFC
-                              </>
-                            )}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleCopyLink(card.slug)}>
-                            <Copy size={14} className="mr-2" />
-                            Copier le lien
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => window.open(`/c/${card.slug}`, '_blank')}>
-                            <ExternalLink size={14} className="mr-2" />
-                            Voir la carte
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => setPhysicalCardId(card.id)}>
-                            <Image size={14} className="mr-2" />
-                            Générer visuel
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleAddToWallet(card.id)}>
-                            <Wallet size={14} className="mr-2" />
-                            Ajouter au Wallet
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem 
-                            className="text-destructive"
-                            onClick={() => setDeleteCardId(card.id)}
-                          >
-                            <Trash2 size={14} className="mr-2" />
-                            Supprimer
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Add new card tile */}
-                <div
-                  className="animate-fade-up"
-                  style={{ animationDelay: `${cards.length * 0.1 + 0.2}s` }}
-                >
-                  <Link to="/create">
-                    <div className="h-full min-h-[280px] card-glass border-dashed border-2 border-foreground/10 hover:border-foreground/30 transition-all cursor-pointer group flex flex-col items-center justify-center p-6">
-                      <div className="w-14 h-14 rounded-2xl bg-foreground/10 flex items-center justify-center mb-4 group-hover:bg-foreground/20 transition-colors group-hover:scale-110 group-hover:rotate-90 duration-300">
-                        <Plus size={24} className="text-chrome" />
-                      </div>
-                      <span className="font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                        Nouvelle carte
-                      </span>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Recent leads */}
+          {/* Recent Leads - Simple list */}
           {leads.length > 0 && (
-            <div className="mb-12 animate-fade-up" style={{ animationDelay: '0.3s' }}>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display text-xl font-semibold text-foreground">
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mb-12"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-foreground">
                   Leads récents
                 </h2>
                 <Link to="/leads">
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground">
                     Voir tout
-                    <ExternalLink size={14} />
+                    <ChevronRight size={16} />
                   </Button>
                 </Link>
               </div>
-              
-              <Card variant="premium">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground">Contact</th>
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground">Email</th>
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground">Téléphone</th>
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground">Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {leads.slice(0, 5).map((lead) => (
-                        <tr key={lead.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-                          <td className="p-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-                                <span className="text-sm font-medium text-foreground">
-                                  {lead.name?.charAt(0) || "?"}
-                                </span>
-                              </div>
-                              <span className="font-medium text-foreground">{lead.name || "—"}</span>
-                            </div>
-                          </td>
-                          <td className="p-4 text-muted-foreground">{lead.email || "—"}</td>
-                          <td className="p-4 text-muted-foreground">{lead.phone || "—"}</td>
-                          <td className="p-4 text-muted-foreground">
-                            {new Date(lead.created_at).toLocaleDateString("fr-FR")}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+
+              <Card className="divide-y divide-border/50">
+                {leads.slice(0, 5).map((lead) => (
+                  <div key={lead.id} className="p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+                        <span className="text-sm font-medium text-foreground">
+                          {lead.name?.charAt(0) || "?"}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">{lead.name || "Anonyme"}</p>
+                        <p className="text-sm text-muted-foreground">{lead.email || lead.phone || "—"}</p>
+                      </div>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(lead.created_at).toLocaleDateString("fr-FR")}
+                    </span>
+                  </div>
+                ))}
               </Card>
-            </div>
+            </motion.section>
           )}
 
-          {/* Recent scans */}
-          {scans.length > 0 && (
-            <div className="animate-fade-up" style={{ animationDelay: '0.4s' }}>
-              <h2 className="font-display text-xl font-semibold text-foreground mb-4">
-                Historique des scans
-              </h2>
-              
-              <Card variant="premium">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground">Carte</th>
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground">Date</th>
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground">Appareil</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {scans.slice(0, 10).map((scan) => (
-                        <tr key={scan.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-                          <td className="p-4">
-                            <span className="font-medium text-foreground">
-                              {scan.digital_cards?.first_name} {scan.digital_cards?.last_name}
-                            </span>
-                          </td>
-                          <td className="p-4 text-muted-foreground">
-                            {new Date(scan.scanned_at).toLocaleString("fr-FR")}
-                          </td>
-                          <td className="p-4 text-muted-foreground text-sm">
-                            {scan.user_agent?.includes("iPhone") ? "iPhone" :
-                             scan.user_agent?.includes("Android") ? "Android" :
-                             scan.user_agent?.includes("Mac") ? "Mac" :
-                             scan.user_agent?.includes("Windows") ? "Windows" : "Autre"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+          {/* Premium upsell - Subtle */}
+          {!isPremium && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Card className="p-6 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">Passez à Premium</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Débloquez toutes les fonctionnalités avancées
+                    </p>
+                  </div>
+                  <Link to="/checkout">
+                    <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                      Découvrir
+                    </Button>
+                  </Link>
                 </div>
               </Card>
-            </div>
+            </motion.div>
           )}
+
         </div>
       </main>
 
@@ -754,7 +439,7 @@ const Dashboard = () => {
 
       {/* Delete confirmation dialog */}
       <AlertDialog open={!!deleteCardId} onOpenChange={() => setDeleteCardId(null)}>
-        <AlertDialogContent className="card-glass border-border">
+        <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Supprimer cette carte ?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -775,7 +460,7 @@ const Dashboard = () => {
 
       {/* Wallet modal */}
       <Dialog open={showWalletModal} onOpenChange={setShowWalletModal}>
-        <DialogContent className="card-glass border-border max-w-sm">
+        <DialogContent className="bg-card border-border max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-foreground text-center">Ajouter au Wallet</DialogTitle>
             <DialogDescription className="text-center">
@@ -786,7 +471,7 @@ const Dashboard = () => {
           <div className="space-y-3 pt-4">
             <button
               onClick={() => handleWalletAction("apple")}
-              className="w-full p-4 rounded-2xl bg-foreground text-background font-medium flex items-center justify-center gap-3 hover:bg-foreground/90 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full p-4 rounded-xl bg-foreground text-background font-medium flex items-center justify-center gap-3 hover:bg-foreground/90 transition-all active:scale-[0.98]"
             >
               <Apple size={20} />
               Apple Wallet
@@ -794,7 +479,7 @@ const Dashboard = () => {
             
             <button
               onClick={() => handleWalletAction("google")}
-              className="w-full p-4 rounded-2xl bg-surface-2 text-foreground font-medium flex items-center justify-center gap-3 hover:bg-surface-3 transition-all border border-border hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full p-4 rounded-xl bg-secondary text-foreground font-medium flex items-center justify-center gap-3 hover:bg-secondary/80 transition-all border border-border active:scale-[0.98]"
             >
               <Smartphone size={20} />
               Google Wallet
@@ -806,15 +491,6 @@ const Dashboard = () => {
           </p>
         </DialogContent>
       </Dialog>
-
-      {/* Physical Card Generator Modal */}
-      <PhysicalCardStudio
-        open={!!physicalCardId}
-        onOpenChange={(open) => !open && setPhysicalCardId(null)}
-        cardId={physicalCardId || undefined}
-        logoUrl={physicalCard?.logo_url}
-        cardName={physicalCard ? `${physicalCard.first_name}-${physicalCard.last_name}` : "carte"}
-      />
     </div>
   );
 };
