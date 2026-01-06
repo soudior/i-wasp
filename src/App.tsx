@@ -95,6 +95,7 @@ const OrderLivraison = lazy(() => import("./pages/order/OrderLivraison"));
 const OrderRecap = lazy(() => import("./pages/order/OrderRecap"));
 const OrderConfirmationNew = lazy(() => import("./pages/order/OrderConfirmationNew"));
 const CheckoutTunnel = lazy(() => import("./pages/CheckoutTunnel"));
+const SovereignDashboard = lazy(() => import("./pages/SovereignDashboard"));
 
 
 const queryClient = new QueryClient({
@@ -222,6 +223,7 @@ const App = () => {
                               <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
                               <Route path="/demo/nfc-3d" element={<NFCDemo3D />} />
                               <Route path="/demo/studio" element={<DemoStudio />} />
+                              <Route path="/sovereign" element={<SovereignDashboard />} />
                               <Route path="/nfc-animation" element={<NFCDemo3D />} />
                               <Route path="/showroom" element={<Showroom3D />} />
                               <Route path="/showroom-3d" element={<Showroom3D />} />
