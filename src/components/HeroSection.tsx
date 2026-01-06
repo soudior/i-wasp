@@ -6,7 +6,7 @@ const WHATSAPP_ORDER_URL = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%2
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden bg-[#F5F5F7]">
+    <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden bg-background transition-colors duration-300">
       <div className="container mx-auto px-6 py-24 lg:py-32">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
           
@@ -15,11 +15,11 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="text-[2.5rem] sm:text-[3.5rem] lg:text-[4.5rem] font-semibold leading-[1.05] tracking-[-0.02em] text-[#1D1D1F]"
+            className="text-[2.5rem] sm:text-[3.5rem] lg:text-[4.5rem] font-semibold leading-[1.05] tracking-[-0.02em] text-foreground"
           >
             Partagez vos contacts
             <br />
-            <span className="text-[#8E8E93]">en un seul geste.</span>
+            <span className="text-muted-foreground">en un seul geste.</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -27,7 +27,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="mt-6 text-lg sm:text-xl text-[#8E8E93] max-w-2xl leading-relaxed"
+            className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl leading-relaxed"
           >
             Une carte NFC premium. Un achat unique. Votre profil digital inclus à vie.
           </motion.p>
@@ -46,7 +46,7 @@ export function HeroSection() {
             >
               <Button 
                 size="lg" 
-                className="bg-[#007AFF] hover:bg-[#0066D6] text-white font-medium px-8 py-6 text-lg rounded-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-[#007AFF]/20"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-8 py-6 text-lg rounded-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20"
               >
                 Commander
               </Button>
@@ -60,8 +60,8 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="mt-16 lg:mt-20 relative"
           >
-            {/* Subtle glow behind card */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#007AFF]/10 to-transparent blur-3xl scale-150 opacity-50" />
+            {/* Subtle glow behind card - adapts to theme */}
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent blur-3xl scale-150 opacity-50" />
             
             {/* NFC Card with hover animation */}
             <motion.div
@@ -78,7 +78,7 @@ export function HeroSection() {
               <img
                 src={nfcCardWaxSeal}
                 alt="Carte NFC IWASP"
-                className="w-full max-w-md lg:max-w-lg h-auto rounded-3xl shadow-2xl shadow-black/10"
+                className="w-full max-w-md lg:max-w-lg h-auto rounded-3xl shadow-2xl shadow-black/20 dark:shadow-black/40"
                 loading="eager"
               />
               
@@ -94,7 +94,7 @@ export function HeroSection() {
                     repeat: Infinity,
                     ease: "easeOut"
                   }}
-                  className="w-16 h-16 rounded-full border-2 border-[#007AFF]/40"
+                  className="w-16 h-16 rounded-full border-2 border-primary/40"
                 />
                 <motion.div
                   animate={{ 
@@ -107,7 +107,7 @@ export function HeroSection() {
                     ease: "easeOut",
                     delay: 0.5
                   }}
-                  className="absolute inset-0 w-16 h-16 rounded-full border-2 border-[#007AFF]/40"
+                  className="absolute inset-0 w-16 h-16 rounded-full border-2 border-primary/40"
                 />
               </div>
             </motion.div>
@@ -118,7 +118,7 @@ export function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-12 text-sm text-[#8E8E93]"
+            className="mt-12 text-sm text-muted-foreground/70"
           >
             Compatible tous smartphones · Apple & Google Wallet
           </motion.p>
