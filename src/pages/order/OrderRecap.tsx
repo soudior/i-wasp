@@ -2,6 +2,7 @@
  * Step 5: Récapitulatif Final
  * /order/recap
  * 
+ * IWASP Cupertino Style
  * - Création automatique compte client
  * - Création automatique carte digitale ACTIVE
  * - Création commande
@@ -21,8 +22,17 @@ import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { PhysicalCardPreview } from "@/components/PhysicalCardPreview";
-import { ArrowLeft, CheckCircle2, Sparkles } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Package, MapPin, CreditCard } from "lucide-react";
 import { toast } from "sonner";
+
+// IWASP Cupertino Palette
+const CUPERTINO = {
+  bg: "#F5F5F7",
+  card: "#FFFFFF",
+  text: "#1D1D1F",
+  textSecondary: "#8E8E93",
+  accent: "#007AFF",
+};
 
 function OrderRecapContent() {
   const navigate = useNavigate();
@@ -159,7 +169,7 @@ function OrderRecapContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: CUPERTINO.bg }}>
       <Navbar />
       
       <PageTransition>
@@ -175,14 +185,22 @@ function OrderRecapContent() {
               initial="initial"
               animate="animate"
             >
+              <motion.p 
+                className="text-sm tracking-widest uppercase mb-3"
+                style={{ color: CUPERTINO.accent }}
+                variants={itemVariants}
+              >
+                Étape 5 sur 6
+              </motion.p>
               <motion.h1 
                 className="text-2xl md:text-3xl font-display font-bold mb-2"
+                style={{ color: CUPERTINO.text }}
                 variants={itemVariants}
               >
                 Récapitulatif
               </motion.h1>
               <motion.p 
-                className="text-muted-foreground"
+                style={{ color: CUPERTINO.textSecondary }}
                 variants={itemVariants}
               >
                 Vérifiez avant de confirmer
@@ -191,60 +209,64 @@ function OrderRecapContent() {
 
             {/* Clean Summary Card */}
             <motion.div
-              className="bg-secondary/50 rounded-2xl p-6 space-y-5"
+              className="rounded-3xl p-6 space-y-5 shadow-sm"
+              style={{ backgroundColor: CUPERTINO.card }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
               {/* Offre */}
               <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Offre</span>
-                <span className="font-semibold text-primary">
+                <span style={{ color: CUPERTINO.textSecondary }}>Offre</span>
+                <span className="font-semibold" style={{ color: CUPERTINO.accent }}>
                   i-Wasp {selectedOffer?.name}
                 </span>
               </div>
 
               {/* Quantité */}
               <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Quantité</span>
-                <span className="font-medium">1 carte</span>
+                <span style={{ color: CUPERTINO.textSecondary }}>Quantité</span>
+                <span className="font-medium" style={{ color: CUPERTINO.text }}>1 carte</span>
               </div>
 
               {/* Mode de paiement */}
               <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Paiement</span>
-                <span className="font-medium">À la livraison</span>
+                <span style={{ color: CUPERTINO.textSecondary }}>Paiement</span>
+                <span className="font-medium" style={{ color: CUPERTINO.text }}>À la livraison</span>
               </div>
 
               {/* Visuel carte */}
               {state.cardPersonalization && (
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Visuel carte</span>
-                  <span className="font-medium capitalize">
+                  <span style={{ color: CUPERTINO.textSecondary }}>Visuel carte</span>
+                  <span className="font-medium capitalize" style={{ color: CUPERTINO.text }}>
                     {state.cardPersonalization.visualType === "logo" ? "Logo" : "Photo"}
                   </span>
                 </div>
               )}
 
-              <Separator className="bg-border/50" />
+              <Separator className="bg-gray-200" />
 
               {/* Adresse de livraison */}
               <div>
-                <p className="text-muted-foreground text-sm mb-1">Livraison</p>
-                <p className="font-medium">{state.shippingInfo?.address}</p>
-                <p className="text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 mb-2">
+                  <MapPin size={16} style={{ color: CUPERTINO.accent }} />
+                  <p className="text-sm" style={{ color: CUPERTINO.textSecondary }}>Livraison</p>
+                </div>
+                <p className="font-medium" style={{ color: CUPERTINO.text }}>{state.shippingInfo?.address}</p>
+                <p className="text-sm" style={{ color: CUPERTINO.textSecondary }}>
                   {state.shippingInfo?.city}, {state.shippingInfo?.country}
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm mt-1" style={{ color: CUPERTINO.textSecondary }}>
                   Tél: {state.shippingInfo?.phone}
                 </p>
               </div>
 
-              <Separator className="bg-border/50" />
+              <Separator className="bg-gray-200" />
 
               {/* Prix Total */}
               <div className="flex justify-between items-center pt-2">
-                <span className="text-lg font-semibold">Total TTC</span>
-                <span className="text-2xl font-bold text-primary">
+                <span className="text-lg font-semibold" style={{ color: CUPERTINO.text }}>Total TTC</span>
+                <span className="text-2xl font-bold" style={{ color: CUPERTINO.accent }}>
                   {formatPrice(selectedOffer?.price || 0)}
                 </span>
               </div>
@@ -273,13 +295,14 @@ function OrderRecapContent() {
                 isLoading={isProcessing}
                 loadingText="Traitement..."
                 disabled={state.isTransitioning}
-                className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-14 text-lg"
+                className="w-full rounded-full font-semibold h-14 text-lg text-white"
+                style={{ backgroundColor: CUPERTINO.accent }}
               >
                 <CheckCircle2 className="mr-2 h-5 w-5" />
                 Confirmer ma commande
               </LoadingButton>
 
-              <p className="text-xs text-center text-muted-foreground mt-3">
+              <p className="text-xs text-center mt-3" style={{ color: CUPERTINO.textSecondary }}>
                 Règlement en espèces à la réception
               </p>
             </motion.div>
@@ -295,7 +318,8 @@ function OrderRecapContent() {
                 variant="ghost" 
                 onClick={prevStep}
                 disabled={state.isTransitioning || isProcessing}
-                className="gap-2 text-muted-foreground"
+                className="gap-2"
+                style={{ color: CUPERTINO.textSecondary }}
               >
                 <ArrowLeft size={18} />
                 Retour
