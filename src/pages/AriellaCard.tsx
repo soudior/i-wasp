@@ -13,9 +13,9 @@ import {
   Linkedin, 
   Download,
   Share2,
-  Scale
+  Scale,
+  Navigation
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 // Obsidian Stealth Palette
 const OBSIDIAN = {
@@ -47,7 +47,7 @@ const itemVariants = {
   }
 };
 
-// Profile data
+// Profile data - Ariella KHIAT COHEN
 const PROFILE = {
   firstName: "Ariella",
   lastName: "KHIAT COHEN",
@@ -56,10 +56,15 @@ const PROFILE = {
   address: "6 rue Ruhmkorff - 75017 Paris",
   phone: "09.83.83.33.64",
   email: "akc.avocate@gmail.com",
-  website: "https://akc-avocat.fr",
-  linkedin: "https://linkedin.com/in/ariella-khiat-cohen",
+  website: null as string | null,
+  linkedin: null as string | null,
   tagline: "Défendre vos droits avec excellence et détermination",
-  initials: "AK"
+  initials: "AK",
+  // Coordonnées GPS exactes pour 6 rue Ruhmkorff, 75017 Paris
+  coordinates: {
+    lat: 48.8847,
+    lng: 2.2988
+  }
 };
 
 function ActionButton({ 
@@ -168,8 +173,8 @@ TITLE:${PROFILE.title}
 ORG:${PROFILE.company}
 TEL;TYPE=WORK,VOICE:${PROFILE.phone.replace(/\./g, "")}
 EMAIL:${PROFILE.email}
-ADR;TYPE=WORK:;;${PROFILE.address};;;;France
-URL:${PROFILE.website}
+ADR;TYPE=WORK:;;6 rue Ruhmkorff;Paris;;75017;France
+GEO:${PROFILE.coordinates.lat};${PROFILE.coordinates.lng}
 END:VCARD`;
 
     const blob = new Blob([vcard], { type: "text/vcard" });
@@ -179,6 +184,10 @@ END:VCARD`;
     a.download = `${PROFILE.firstName}_${PROFILE.lastName}.vcf`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleOpenMap = () => {
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${PROFILE.coordinates.lat},${PROFILE.coordinates.lng}`, "_blank");
   };
 
   return (
@@ -301,6 +310,11 @@ END:VCARD`;
               onClick={handleEmail}
             />
             <ActionButton 
+              icon={Navigation} 
+              label="Itinéraire vers le cabinet" 
+              onClick={handleOpenMap}
+            />
+            <ActionButton 
               icon={Download} 
               label="Ajouter aux contacts" 
               onClick={handleDownloadVCard}
@@ -314,7 +328,7 @@ END:VCARD`;
             icon={MapPin}
             label="Cabinet"
             value={PROFILE.address}
-            href={`https://maps.google.com/?q=${encodeURIComponent(PROFILE.address)}`}
+            href={`https://www.google.com/maps/dir/?api=1&destination=${PROFILE.coordinates.lat},${PROFILE.coordinates.lng}`}
           />
           <ContactItem 
             icon={Phone}
