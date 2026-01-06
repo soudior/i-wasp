@@ -96,6 +96,7 @@ const OrderRecap = lazy(() => import("./pages/order/OrderRecap"));
 const OrderConfirmationNew = lazy(() => import("./pages/order/OrderConfirmationNew"));
 const CheckoutTunnel = lazy(() => import("./pages/CheckoutTunnel"));
 const SovereignDashboard = lazy(() => import("./pages/SovereignDashboard"));
+const AriellaCard = lazy(() => import("./pages/AriellaCard"));
 
 
 const queryClient = new QueryClient({
@@ -183,6 +184,7 @@ const App = () => {
                               <Route path="/card/medina-travertin/*" element={<DualBrandShowcase />} />
                               <Route path="/card/herbalism-marrakech" element={<HerbalismCard />} />
                               <Route path="/card/maison-b-optic" element={<MaisonBOpticCard />} />
+                              <Route path="/card/ariella-khiat-cohen" element={<AriellaCard />} />
                               <Route path="/card/:slug" element={<PublicCard />} />
                               {/* Auth */}
                               <Route path="/login" element={<Login />} />
