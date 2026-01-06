@@ -160,7 +160,7 @@ export function StepComplete({ cardId, cardSlug, data }: StepCompleteProps) {
           Votre carte est désormais partageable et prête à impressionner.
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          <span className="text-accent">IWASP</span> — Tap. Connect. Empower.
+          <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:opacity-80 transition-opacity">I-WASP.com</a> — Tap. Connect. Empower.
         </p>
       </motion.div>
     </div>
