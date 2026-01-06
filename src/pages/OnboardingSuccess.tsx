@@ -219,12 +219,15 @@ export default function OnboardingSuccess() {
       </div>
 
       {/* Footer */}
-      <p 
-        className="absolute bottom-6 text-xs tracking-wider"
+      <a 
+        href="https://i-wasp.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute bottom-6 text-xs tracking-wider hover:opacity-80 transition-opacity"
         style={{ color: COLORS.textDim }}
       >
-        Powered by IWASP
-      </p>
+        Powered by I-WASP.com
+      </a>
     </div>
   );
 }
