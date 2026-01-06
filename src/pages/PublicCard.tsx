@@ -272,6 +272,7 @@ const PublicCard = () => {
           has_instagram: card.has_instagram,
           social_links: card.social_links,
           blocks: card.blocks,
+          custom_styles: card.custom_styles,
         }}
       />
     );

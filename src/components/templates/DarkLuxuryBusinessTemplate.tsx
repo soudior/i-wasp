@@ -32,6 +32,17 @@ import { downloadVCard, VCardData } from "@/lib/vcard";
 import { StoryRing } from "@/components/StoryRing";
 import { usePublicMultipleStories } from "@/hooks/useMultipleStories";
 
+interface CustomStyles {
+  backgroundColor?: string;
+  accentColor?: string;
+  textColor?: string;
+  secondaryTextColor?: string;
+  navyColor?: string;
+  borderRadius?: number;
+  shadowPreset?: string;
+  theme?: string;
+}
+
 interface DarkLuxuryBusinessTemplateProps {
   card: {
     id: string;
@@ -53,6 +64,7 @@ interface DarkLuxuryBusinessTemplateProps {
     has_twitter?: boolean;
     social_links?: any[];
     blocks?: any[];
+    custom_styles?: CustomStyles | null;
   };
 }
 
@@ -75,6 +87,13 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
   const incrementView = useIncrementCardView();
   const [isNavigating, setIsNavigating] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Custom styles with defaults
+  const styles = card.custom_styles || {};
+  const bgColor = styles.backgroundColor || '#0B0B0B';
+  const accentColor = styles.accentColor || '#FFC700';
+  const textColor = styles.textColor || '#F5F5F5';
+  const secondaryTextColor = styles.secondaryTextColor || 'rgba(245, 245, 245, 0.6)';
   
   // Fetch active stories for this card
   const { stories } = usePublicMultipleStories(card.id);
@@ -157,7 +176,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
   return (
     <div 
       className="min-h-dvh w-full"
-      style={{ backgroundColor: '#0B0B0B' }}
+      style={{ backgroundColor: bgColor }}
     >
       <div className="max-w-md mx-auto px-4 py-8 pb-24">
         {/* Header with Logo or Photo */}
@@ -181,7 +200,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
 
           <h1 
             className="text-2xl font-bold tracking-tight mb-2"
-            style={{ color: '#F5F5F5' }}
+            style={{ color: textColor }}
           >
             {displayName}
           </h1>
@@ -189,7 +208,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
           {card.title && (
             <p 
               className="text-sm font-medium mb-3"
-              style={{ color: '#FFC700' }}
+              style={{ color: accentColor }}
             >
               {card.title}
             </p>
@@ -198,7 +217,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
           {card.location && (
             <div 
               className="flex items-center justify-center gap-1.5 text-sm"
-              style={{ color: 'rgba(245, 245, 245, 0.6)' }}
+              style={{ color: secondaryTextColor }}
             >
               <MapPin size={14} />
               <span>{card.location}</span>
@@ -217,7 +236,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
             <Button
               onClick={() => handleAction('phone')}
               className="h-14 rounded-xl font-medium text-black"
-              style={{ backgroundColor: '#FFC700' }}
+              style={{ backgroundColor: accentColor }}
             >
               <Phone size={18} className="mr-2" />
               Appeler
@@ -230,8 +249,8 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
               className="h-14 rounded-xl font-medium border-2"
               style={{ 
                 backgroundColor: 'transparent',
-                borderColor: '#FFC700',
-                color: '#FFC700'
+                borderColor: accentColor,
+                color: accentColor
               }}
             >
               <MessageCircle size={18} className="mr-2" />
@@ -246,8 +265,8 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
               className="h-14 rounded-xl font-medium border-2 col-span-2"
               style={{ 
                 backgroundColor: 'transparent',
-                borderColor: 'rgba(245, 245, 245, 0.3)',
-                color: '#F5F5F5'
+                borderColor: `${textColor}30`,
+                color: textColor
               }}
             >
               <Navigation size={18} className="mr-2" />
@@ -261,8 +280,8 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
               className="h-14 rounded-xl font-medium border-2"
               style={{ 
                 backgroundColor: 'transparent',
-                borderColor: 'rgba(245, 245, 245, 0.3)',
-                color: '#F5F5F5'
+                borderColor: `${textColor}30`,
+                color: textColor
               }}
             >
               <Globe size={18} className="mr-2" />
@@ -276,8 +295,8 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
               className="h-14 rounded-xl font-medium border-2"
               style={{ 
                 backgroundColor: 'transparent',
-                borderColor: 'rgba(245, 245, 245, 0.3)',
-                color: '#F5F5F5'
+                borderColor: `${textColor}30`,
+                color: textColor
               }}
             >
               <Mail size={18} className="mr-2" />
@@ -290,9 +309,9 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
             onClick={handleDownloadVCard}
             className="h-14 rounded-xl font-medium col-span-2"
             style={{ 
-              backgroundColor: 'rgba(34, 197, 94, 0.15)',
-              color: '#22C55E',
-              border: '2px solid rgba(34, 197, 94, 0.3)'
+              backgroundColor: `${accentColor}15`,
+              color: accentColor,
+              border: `2px solid ${accentColor}30`
             }}
           >
             <UserPlus size={18} className="mr-2" />
@@ -310,7 +329,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
           >
             <p 
               className="text-xs font-medium mb-3 text-center"
-              style={{ color: 'rgba(245, 245, 245, 0.5)' }}
+              style={{ color: secondaryTextColor }}
             >
               Réseaux sociaux
             </p>
@@ -323,11 +342,11 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => window.open(link.url, '_blank')}
-                    className="w-12 h-12 rounded-xl flex items-center justify-center border-2 transition-colors hover:border-[#FFC700]"
+                    className="w-12 h-12 rounded-xl flex items-center justify-center border-2 transition-colors"
                     style={{ 
-                      backgroundColor: 'rgba(255, 199, 0, 0.1)',
-                      borderColor: 'rgba(255, 199, 0, 0.3)',
-                      color: '#FFC700'
+                      backgroundColor: `${accentColor}15`,
+                      borderColor: `${accentColor}30`,
+                      color: accentColor
                     }}
                   >
                     <Icon size={20} />
@@ -345,11 +364,11 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="rounded-xl p-5 mb-6"
-            style={{ backgroundColor: 'rgba(255, 199, 0, 0.08)' }}
+            style={{ backgroundColor: `${accentColor}12` }}
           >
             <p 
               className="text-sm leading-relaxed"
-              style={{ color: 'rgba(245, 245, 245, 0.85)' }}
+              style={{ color: `${textColor}DD` }}
             >
               {card.tagline}
             </p>
@@ -366,7 +385,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
           >
             <p 
               className="text-xs font-medium mb-3 text-center"
-              style={{ color: 'rgba(245, 245, 245, 0.5)' }}
+              style={{ color: secondaryTextColor }}
             >
               Galerie
             </p>
@@ -386,14 +405,14 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
                     className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm"
                     style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
                   >
-                    <ChevronLeft size={24} style={{ color: '#F5F5F5' }} />
+                    <ChevronLeft size={24} style={{ color: textColor }} />
                   </button>
                   <button
                     onClick={nextImage}
                     className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm"
                     style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
                   >
-                    <ChevronRight size={24} style={{ color: '#F5F5F5' }} />
+                    <ChevronRight size={24} style={{ color: textColor }} />
                   </button>
                   
                   {/* Dots indicator */}
@@ -404,7 +423,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
                         onClick={() => setCurrentImageIndex(idx)}
                         className="w-2 h-2 rounded-full transition-all"
                         style={{ 
-                          backgroundColor: idx === currentImageIndex ? '#FFC700' : 'rgba(245, 245, 245, 0.4)',
+                          backgroundColor: idx === currentImageIndex ? accentColor : `${textColor}60`,
                           transform: idx === currentImageIndex ? 'scale(1.2)' : 'scale(1)'
                         }}
                       />
@@ -423,7 +442,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
                     onClick={() => setCurrentImageIndex(idx)}
                     className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all"
                     style={{ 
-                      borderColor: idx === currentImageIndex ? '#FFC700' : 'transparent',
+                      borderColor: idx === currentImageIndex ? accentColor : 'transparent',
                       opacity: idx === currentImageIndex ? 1 : 0.6
                     }}
                   >
@@ -450,8 +469,8 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
               onClick={() => window.open(googleReviewsLink, '_blank')}
               className="w-full h-14 rounded-xl font-medium mb-6"
               style={{ 
-                backgroundColor: 'rgba(255, 199, 0, 0.15)',
-                color: '#FFC700'
+                backgroundColor: `${accentColor}20`,
+                color: accentColor
               }}
             >
               <Star size={18} className="mr-2" />
@@ -469,25 +488,25 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
             transition={{ delay: 0.4 }}
             className="rounded-xl overflow-hidden mb-6 cursor-pointer"
             onClick={handleOpenMaps}
-            style={{ backgroundColor: 'rgba(245, 245, 245, 0.05)' }}
+            style={{ backgroundColor: `${textColor}08` }}
           >
             <div className="aspect-video flex items-center justify-center">
               <div className="text-center p-6">
                 <div 
                   className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: 'rgba(255, 199, 0, 0.2)' }}
+                  style={{ backgroundColor: `${accentColor}25` }}
                 >
-                  <MapPin size={28} style={{ color: '#FFC700' }} />
+                  <MapPin size={28} style={{ color: accentColor }} />
                 </div>
                 <p 
                   className="font-medium mb-1"
-                  style={{ color: '#F5F5F5' }}
+                  style={{ color: textColor }}
                 >
                   {card.location}
                 </p>
                 <p 
                   className="text-xs"
-                  style={{ color: 'rgba(245, 245, 245, 0.5)' }}
+                  style={{ color: secondaryTextColor }}
                 >
                   Appuyez pour ouvrir dans Google Maps
                 </p>
@@ -506,8 +525,8 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
           <div 
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium"
             style={{ 
-              backgroundColor: 'rgba(255, 199, 0, 0.1)',
-              color: '#FFC700'
+              backgroundColor: `${accentColor}15`,
+              color: accentColor
             }}
           >
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
