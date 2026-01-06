@@ -410,12 +410,15 @@ END:VCARD`;
           className="text-center pt-6 border-t"
           style={{ borderColor: COLORS.border }}
         >
-          <p 
-            className="text-xs tracking-widest uppercase"
+          <a 
+            href="https://i-wasp.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-xs tracking-widest uppercase hover:opacity-80 transition-opacity"
             style={{ color: COLORS.textSecondary }}
           >
-            Powered by <span style={{ color: COLORS.gold }}>IWASP</span>
-          </p>
+            Powered by <span style={{ color: COLORS.gold }}>I-WASP.com</span>
+          </a>
         </motion.div>
       </motion.div>
     </div>
