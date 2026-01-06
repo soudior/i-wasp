@@ -184,7 +184,6 @@ const App = () => {
                               <Route path="/card/medina-travertin/*" element={<DualBrandShowcase />} />
                               <Route path="/card/herbalism-marrakech" element={<HerbalismCard />} />
                               <Route path="/card/maison-b-optic" element={<MaisonBOpticCard />} />
-                              <Route path="/card/ariella-khiat-cohen" element={<AriellaCard />} />
                               <Route path="/card/:slug" element={<PublicCard />} />
                               {/* Auth */}
                               <Route path="/login" element={<Login />} />
