@@ -21,7 +21,7 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: "Accueil", isExternal: false },
     { href: "/features", label: "Fonctionnalités", isExternal: false },
-    { href: "/boutique", label: "Boutique", isExternal: false },
+    { href: "/boutique", label: "Boutique", isNew: true, isExternal: false },
     { href: "/demo/studio", label: "Studio", isExternal: false },
     { href: "/pricing", label: "Tarifs", isExternal: false },
     { href: "/order/type", label: "Commander", highlight: true, isExternal: false },
@@ -79,7 +79,7 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   to={link.href}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                     link.highlight
                       ? "bg-primary text-primary-foreground hover:brightness-105"
                       : location.pathname === link.href
@@ -88,6 +88,11 @@ export function Navbar() {
                   }`}
                 >
                   {link.label}
+                  {link.isNew && (
+                    <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] font-bold bg-primary text-primary-foreground rounded-full animate-pulse">
+                      New
+                    </span>
+                  )}
                 </Link>
               )
             ))}
