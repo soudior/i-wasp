@@ -2,7 +2,7 @@
  * Step 2: Identité digitale
  * /order/identite
  * 
- * Palette Stealth Luxury : Argent Titane #A5A9B4
+ * IWASP Cupertino Style
  */
 
 import { useState, useMemo, useCallback } from "react";
@@ -32,12 +32,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-// Stealth Luxury Palette
-const STEALTH = {
-  bg: "#050807",
-  accent: "#A5A9B4",
-  accentLight: "#D1D5DB",
-  border: "rgba(165, 169, 180, 0.2)",
+// IWASP Cupertino Palette
+const CUPERTINO = {
+  bg: "#F5F5F7",
+  card: "#FFFFFF",
+  text: "#1D1D1F",
+  textSecondary: "#8E8E93",
+  accent: "#007AFF",
 };
 
 // Validation helpers
@@ -166,7 +167,7 @@ function OrderIdentiteContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: CUPERTINO.bg }}>
       <Navbar />
       
       <PageTransition>
@@ -184,19 +185,21 @@ function OrderIdentiteContent() {
             >
               <motion.p 
                 className="text-sm tracking-widest uppercase mb-3"
-                style={{ color: STEALTH.accent }}
+                style={{ color: CUPERTINO.accent }}
                 variants={itemVariants}
               >
                 Étape 2 sur 6
               </motion.p>
               <motion.h1 
                 className="text-3xl md:text-4xl font-display font-bold mb-3"
+                style={{ color: CUPERTINO.text }}
                 variants={itemVariants}
               >
                 Votre identité digitale
               </motion.h1>
               <motion.p 
-                className="text-muted-foreground text-lg"
+                className="text-lg"
+                style={{ color: CUPERTINO.textSecondary }}
                 variants={itemVariants}
               >
                 Ces informations seront visibles sur votre carte publique
@@ -211,24 +214,25 @@ function OrderIdentiteContent() {
               className="space-y-6"
             >
               {/* Personal Info */}
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <User size={20} style={{ color: STEALTH.accent }} />
-                    Informations personnelles
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+              <div 
+                className="rounded-3xl p-6 shadow-sm"
+                style={{ backgroundColor: CUPERTINO.card }}
+              >
+                <div className="flex items-center gap-2 text-lg font-semibold mb-4" style={{ color: CUPERTINO.text }}>
+                  <User size={20} style={{ color: CUPERTINO.accent }} />
+                  Informations personnelles
+                </div>
+                <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">Prénom *</Label>
+                      <Label htmlFor="firstName" style={{ color: CUPERTINO.text }}>Prénom *</Label>
                       <Input
                         id="firstName"
                         value={formData.firstName}
                         onChange={(e) => handleChange("firstName", e.target.value)}
                         onBlur={() => handleBlur("firstName")}
                         placeholder="Jean"
-                        className={touched.firstName && errors.firstName ? "border-destructive" : ""}
+                        className={`rounded-xl ${touched.firstName && errors.firstName ? "border-destructive" : ""}`}
                       />
                       {touched.firstName && errors.firstName && (
                         <p className="text-xs text-destructive flex items-center gap-1">
@@ -238,14 +242,14 @@ function OrderIdentiteContent() {
                       )}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Nom *</Label>
+                      <Label htmlFor="lastName" style={{ color: CUPERTINO.text }}>Nom *</Label>
                       <Input
                         id="lastName"
                         value={formData.lastName}
                         onChange={(e) => handleChange("lastName", e.target.value)}
                         onBlur={() => handleBlur("lastName")}
                         placeholder="Dupont"
-                        className={touched.lastName && errors.lastName ? "border-destructive" : ""}
+                        className={`rounded-xl ${touched.lastName && errors.lastName ? "border-destructive" : ""}`}
                       />
                       {touched.lastName && errors.lastName && (
                         <p className="text-xs text-destructive flex items-center gap-1">
@@ -257,27 +261,29 @@ function OrderIdentiteContent() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="title">Fonction</Label>
+                    <Label htmlFor="title" style={{ color: CUPERTINO.text }}>Fonction</Label>
                     <Input
                       id="title"
                       value={formData.title || ""}
                       onChange={(e) => handleChange("title", e.target.value)}
                       placeholder="Directeur Commercial"
+                      className="rounded-xl"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="company">Entreprise</Label>
+                    <Label htmlFor="company" style={{ color: CUPERTINO.text }}>Entreprise</Label>
                     <Input
                       id="company"
                       value={formData.company || ""}
                       onChange={(e) => handleChange("company", e.target.value)}
                       placeholder="Ma Société"
+                      className="rounded-xl"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="bio">Bio courte</Label>
+                    <Label htmlFor="bio" style={{ color: CUPERTINO.text }}>Bio courte</Label>
                     <Textarea
                       id="bio"
                       value={formData.bio || ""}
@@ -285,25 +291,27 @@ function OrderIdentiteContent() {
                       placeholder="Quelques mots sur vous ou votre activité..."
                       rows={3}
                       maxLength={200}
+                      className="rounded-xl"
                     />
-                    <p className="text-xs text-muted-foreground text-right">
+                    <p className="text-xs text-right" style={{ color: CUPERTINO.textSecondary }}>
                       {(formData.bio?.length || 0)}/200
                     </p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* Contact Info */}
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Building2 size={20} style={{ color: STEALTH.accent }} />
-                    Contact
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+              <div 
+                className="rounded-3xl p-6 shadow-sm"
+                style={{ backgroundColor: CUPERTINO.card }}
+              >
+                <div className="flex items-center gap-2 text-lg font-semibold mb-4" style={{ color: CUPERTINO.text }}>
+                  <Building2 size={20} style={{ color: CUPERTINO.accent }} />
+                  Contact
+                </div>
+                <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Téléphone *</Label>
+                    <Label htmlFor="phone" style={{ color: CUPERTINO.text }}>Téléphone *</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -311,7 +319,7 @@ function OrderIdentiteContent() {
                       onChange={(e) => handleChange("phone", e.target.value)}
                       onBlur={() => handleBlur("phone")}
                       placeholder="+212 6 12 34 56 78"
-                      className={touched.phone && errors.phone ? "border-destructive" : ""}
+                      className={`rounded-xl ${touched.phone && errors.phone ? "border-destructive" : ""}`}
                     />
                     {touched.phone && errors.phone && (
                       <p className="text-xs text-destructive flex items-center gap-1">
@@ -322,7 +330,7 @@ function OrderIdentiteContent() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email" style={{ color: CUPERTINO.text }}>Email *</Label>
                     <Input
                       id="email"
                       type="email"
@@ -330,7 +338,7 @@ function OrderIdentiteContent() {
                       onChange={(e) => handleChange("email", e.target.value)}
                       onBlur={() => handleBlur("email")}
                       placeholder="jean@exemple.com"
-                      className={touched.email && errors.email ? "border-destructive" : ""}
+                      className={`rounded-xl ${touched.email && errors.email ? "border-destructive" : ""}`}
                     />
                     {touched.email && errors.email && (
                       <p className="text-xs text-destructive flex items-center gap-1">
@@ -341,76 +349,81 @@ function OrderIdentiteContent() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="whatsapp">WhatsApp</Label>
+                    <Label htmlFor="whatsapp" style={{ color: CUPERTINO.text }}>WhatsApp</Label>
                     <Input
                       id="whatsapp"
                       type="tel"
                       value={formData.whatsapp || ""}
                       onChange={(e) => handleChange("whatsapp", e.target.value)}
                       placeholder="+212 6 12 34 56 78"
+                      className="rounded-xl"
                     />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* Social & Web */}
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Globe size={20} style={{ color: STEALTH.accent }} />
-                    Réseaux & Web
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+              <div 
+                className="rounded-3xl p-6 shadow-sm"
+                style={{ backgroundColor: CUPERTINO.card }}
+              >
+                <div className="flex items-center gap-2 text-lg font-semibold mb-4" style={{ color: CUPERTINO.text }}>
+                  <Globe size={20} style={{ color: CUPERTINO.accent }} />
+                  Réseaux & Web
+                </div>
+                <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="instagram">Instagram</Label>
+                    <Label htmlFor="instagram" style={{ color: CUPERTINO.text }}>Instagram</Label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: CUPERTINO.textSecondary }}>@</span>
                       <Input
                         id="instagram"
                         value={formData.instagram || ""}
                         onChange={(e) => handleChange("instagram", e.target.value.replace("@", ""))}
                         placeholder="moncompte"
-                        className="pl-8"
+                        className="pl-8 rounded-xl"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="linkedin">LinkedIn</Label>
+                    <Label htmlFor="linkedin" style={{ color: CUPERTINO.text }}>LinkedIn</Label>
                     <Input
                       id="linkedin"
                       value={formData.linkedin || ""}
                       onChange={(e) => handleChange("linkedin", e.target.value)}
                       placeholder="linkedin.com/in/monprofil"
+                      className="rounded-xl"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="website">Site web</Label>
+                    <Label htmlFor="website" style={{ color: CUPERTINO.text }}>Site web</Label>
                     <Input
                       id="website"
                       value={formData.website || ""}
                       onChange={(e) => handleChange("website", e.target.value)}
                       placeholder="www.monsite.com"
+                      className="rounded-xl"
                     />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* Geolocation */}
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <MapPin size={20} style={{ color: STEALTH.accent }} />
-                    Géolocalisation
-                    {formData.latitude && (
-                      <CheckCircle2 className="h-5 w-5 text-green-500 ml-auto" />
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
+              <div 
+                className="rounded-3xl p-6 shadow-sm"
+                style={{ backgroundColor: CUPERTINO.card }}
+              >
+                <div className="flex items-center gap-2 text-lg font-semibold mb-4" style={{ color: CUPERTINO.text }}>
+                  <MapPin size={20} style={{ color: CUPERTINO.accent }} />
+                  Géolocalisation
+                  {formData.latitude && (
+                    <CheckCircle2 className="h-5 w-5 text-green-500 ml-auto" />
+                  )}
+                </div>
+                <div className="space-y-4">
+                  <p className="text-sm" style={{ color: CUPERTINO.textSecondary }}>
                     Ajoutez votre position pour générer un lien Google Maps automatique.
                   </p>
 
@@ -419,19 +432,17 @@ function OrderIdentiteContent() {
                     variant="outline"
                     onClick={() => geolocation.getCurrentPosition()}
                     disabled={geolocation.isLoading}
-                    className="w-full h-12 gap-2 border-2 border-dashed"
-                    style={{ 
-                      borderColor: `${STEALTH.accent}50`,
-                    }}
+                    className="w-full h-12 gap-2 border-2 border-dashed rounded-xl"
+                    style={{ borderColor: `${CUPERTINO.accent}40` }}
                   >
                     {geolocation.isLoading ? (
                       <>
-                        <Loader2 className="h-5 w-5 animate-spin" style={{ color: STEALTH.accent }} />
+                        <Loader2 className="h-5 w-5 animate-spin" style={{ color: CUPERTINO.accent }} />
                         <span>Localisation en cours...</span>
                       </>
                     ) : (
                       <>
-                        <Navigation className="h-5 w-5" style={{ color: STEALTH.accent }} />
+                        <Navigation className="h-5 w-5" style={{ color: CUPERTINO.accent }} />
                         <span>Utiliser ma position actuelle</span>
                       </>
                     )}
@@ -445,19 +456,19 @@ function OrderIdentiteContent() {
                     <motion.div
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-3 rounded-lg bg-green-500/10 border border-green-500/20"
+                      className="p-3 rounded-xl bg-green-500/10 border border-green-500/20"
                     >
                       <p className="text-sm text-green-600 flex items-center gap-2">
                         <CheckCircle2 size={16} />
                         Position enregistrée
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1 truncate">
+                      <p className="text-xs mt-1 truncate" style={{ color: CUPERTINO.textSecondary }}>
                         {formData.googleMapsUrl}
                       </p>
                     </motion.div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* Validation Status */}
               {isValid && (
@@ -484,6 +495,7 @@ function OrderIdentiteContent() {
                 onClick={prevStep}
                 disabled={state.isTransitioning}
                 className="gap-2"
+                style={{ color: CUPERTINO.textSecondary }}
               >
                 <ArrowLeft size={18} />
                 Retour
@@ -494,11 +506,8 @@ function OrderIdentiteContent() {
                 disabled={!isValid || state.isTransitioning}
                 isLoading={isNavigating}
                 loadingText="Chargement..."
-                className="px-8 rounded-full font-semibold disabled:opacity-50"
-                style={{ 
-                  backgroundColor: STEALTH.accent, 
-                  color: STEALTH.bg 
-                }}
+                className="px-8 rounded-full font-semibold disabled:opacity-50 text-white"
+                style={{ backgroundColor: CUPERTINO.accent }}
               >
                 Continuer
                 <ArrowRight className="ml-2 h-5 w-5" />

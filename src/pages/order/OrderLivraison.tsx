@@ -2,7 +2,7 @@
  * Step 4: Livraison + Paiement
  * /order/livraison
  * 
- * Palette Stealth Luxury : Argent Titane #A5A9B4
+ * IWASP Cupertino Style
  */
 
 import { useState, useMemo } from "react";
@@ -33,12 +33,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-// Stealth Luxury Palette
-const STEALTH = {
-  bg: "#050807",
-  accent: "#A5A9B4",
-  accentLight: "#D1D5DB",
-  border: "rgba(165, 169, 180, 0.2)",
+// IWASP Cupertino Palette
+const CUPERTINO = {
+  bg: "#F5F5F7",
+  card: "#FFFFFF",
+  text: "#1D1D1F",
+  textSecondary: "#8E8E93",
+  accent: "#007AFF",
 };
 
 const addressTypes = [
@@ -114,7 +115,7 @@ function OrderLivraisonContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: CUPERTINO.bg }}>
       <Navbar />
       
       <PageTransition>
@@ -132,19 +133,21 @@ function OrderLivraisonContent() {
             >
               <motion.p 
                 className="text-sm tracking-widest uppercase mb-3"
-                style={{ color: STEALTH.accent }}
+                style={{ color: CUPERTINO.accent }}
                 variants={itemVariants}
               >
                 Étape 4 sur 6
               </motion.p>
               <motion.h1 
                 className="text-3xl md:text-4xl font-display font-bold mb-3"
+                style={{ color: CUPERTINO.text }}
                 variants={itemVariants}
               >
                 Livraison & Paiement
               </motion.h1>
               <motion.p 
-                className="text-muted-foreground text-lg"
+                className="text-lg"
+                style={{ color: CUPERTINO.textSecondary }}
                 variants={itemVariants}
               >
                 Où livrer votre carte NFC ?
@@ -155,14 +158,14 @@ function OrderLivraisonContent() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 rounded-xl flex items-start gap-3"
+              className="mb-6 p-4 rounded-2xl flex items-start gap-3"
               style={{ 
-                backgroundColor: `${STEALTH.accent}10`, 
-                border: `1px solid ${STEALTH.accent}30` 
+                backgroundColor: `${CUPERTINO.accent}10`, 
+                border: `1px solid ${CUPERTINO.accent}30` 
               }}
             >
-              <Info className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: STEALTH.accent }} />
-              <p className="text-sm text-muted-foreground">
+              <Info className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: CUPERTINO.accent }} />
+              <p className="text-sm" style={{ color: CUPERTINO.textSecondary }}>
                 Ces informations servent uniquement à la livraison. Elles n'apparaîtront pas sur votre carte digitale.
               </p>
             </motion.div>
@@ -175,17 +178,18 @@ function OrderLivraisonContent() {
               className="space-y-6"
             >
               {/* Shipping Address */}
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <MapPin size={20} style={{ color: STEALTH.accent }} />
-                    Adresse de livraison
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+              <div 
+                className="rounded-3xl p-6 shadow-sm"
+                style={{ backgroundColor: CUPERTINO.card }}
+              >
+                <div className="flex items-center gap-2 text-lg font-semibold mb-4" style={{ color: CUPERTINO.text }}>
+                  <MapPin size={20} style={{ color: CUPERTINO.accent }} />
+                  Adresse de livraison
+                </div>
+                <div className="space-y-4">
                   {/* Address Type */}
                   <div className="space-y-2">
-                    <Label>Type d'adresse</Label>
+                    <Label style={{ color: CUPERTINO.text }}>Type d'adresse</Label>
                     <div className="grid grid-cols-3 gap-3">
                       {addressTypes.map((type) => {
                         const isSelected = formData.addressType === type.id;
@@ -195,24 +199,24 @@ function OrderLivraisonContent() {
                           <button
                             key={type.id}
                             onClick={() => handleChange("addressType", type.id)}
-                            className="flex flex-col items-center p-3 rounded-xl border-2 transition-all"
+                            className="flex flex-col items-center p-3 rounded-2xl border-2 transition-all"
                             style={{
-                              borderColor: isSelected ? STEALTH.accent : 'hsl(var(--border))',
-                              backgroundColor: isSelected ? `${STEALTH.accent}10` : 'transparent',
+                              borderColor: isSelected ? CUPERTINO.accent : '#E5E5EA',
+                              backgroundColor: isSelected ? `${CUPERTINO.accent}10` : CUPERTINO.card,
                             }}
                           >
                             <div 
-                              className="w-10 h-10 rounded-lg flex items-center justify-center mb-1"
+                              className="w-10 h-10 rounded-xl flex items-center justify-center mb-1"
                               style={{ 
-                                backgroundColor: isSelected ? STEALTH.accent : 'hsl(var(--muted))'
+                                backgroundColor: isSelected ? CUPERTINO.accent : '#F2F2F7'
                               }}
                             >
                               <Icon 
                                 className="w-5 h-5" 
-                                style={{ color: isSelected ? STEALTH.bg : 'hsl(var(--muted-foreground))' }} 
+                                style={{ color: isSelected ? '#FFFFFF' : CUPERTINO.textSecondary }} 
                               />
                             </div>
-                            <span className="text-xs font-medium">{type.label}</span>
+                            <span className="text-xs font-medium" style={{ color: CUPERTINO.text }}>{type.label}</span>
                           </button>
                         );
                       })}
@@ -221,14 +225,14 @@ function OrderLivraisonContent() {
 
                   {/* Address */}
                   <div className="space-y-2">
-                    <Label htmlFor="address">Adresse *</Label>
+                    <Label htmlFor="address" style={{ color: CUPERTINO.text }}>Adresse *</Label>
                     <Input
                       id="address"
                       value={formData.address}
                       onChange={(e) => handleChange("address", e.target.value)}
                       onBlur={() => handleBlur("address")}
                       placeholder="123 Rue Mohammed V, Quartier Maarif"
-                      className={touched.address && errors.address ? "border-destructive" : ""}
+                      className={`rounded-xl ${touched.address && errors.address ? "border-destructive" : ""}`}
                     />
                     {touched.address && errors.address && (
                       <p className="text-xs text-destructive flex items-center gap-1">
@@ -240,14 +244,14 @@ function OrderLivraisonContent() {
 
                   {/* City */}
                   <div className="space-y-2">
-                    <Label htmlFor="city">Ville *</Label>
+                    <Label htmlFor="city" style={{ color: CUPERTINO.text }}>Ville *</Label>
                     <Input
                       id="city"
                       value={formData.city}
                       onChange={(e) => handleChange("city", e.target.value)}
                       onBlur={() => handleBlur("city")}
                       placeholder="Casablanca"
-                      className={touched.city && errors.city ? "border-destructive" : ""}
+                      className={`rounded-xl ${touched.city && errors.city ? "border-destructive" : ""}`}
                     />
                     {touched.city && errors.city && (
                       <p className="text-xs text-destructive flex items-center gap-1">
@@ -259,18 +263,19 @@ function OrderLivraisonContent() {
 
                   {/* Country */}
                   <div className="space-y-2">
-                    <Label htmlFor="country">Pays</Label>
+                    <Label htmlFor="country" style={{ color: CUPERTINO.text }}>Pays</Label>
                     <Input
                       id="country"
                       value={formData.country}
                       onChange={(e) => handleChange("country", e.target.value)}
                       placeholder="Maroc"
+                      className="rounded-xl"
                     />
                   </div>
 
                   {/* Phone */}
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Téléphone de livraison *</Label>
+                    <Label htmlFor="phone" style={{ color: CUPERTINO.text }}>Téléphone de livraison *</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -278,7 +283,7 @@ function OrderLivraisonContent() {
                       onChange={(e) => handleChange("phone", e.target.value)}
                       onBlur={() => handleBlur("phone")}
                       placeholder="+212 6 12 34 56 78"
-                      className={touched.phone && errors.phone ? "border-destructive" : ""}
+                      className={`rounded-xl ${touched.phone && errors.phone ? "border-destructive" : ""}`}
                     />
                     {touched.phone && errors.phone && (
                       <p className="text-xs text-destructive flex items-center gap-1">
@@ -287,65 +292,66 @@ function OrderLivraisonContent() {
                       </p>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* Payment Method */}
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Banknote size={20} style={{ color: STEALTH.accent }} />
-                    Mode de paiement
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+              <div 
+                className="rounded-3xl p-6 shadow-sm"
+                style={{ backgroundColor: CUPERTINO.card }}
+              >
+                <div className="flex items-center gap-2 text-lg font-semibold mb-4" style={{ color: CUPERTINO.text }}>
+                  <Banknote size={20} style={{ color: CUPERTINO.accent }} />
+                  Mode de paiement
+                </div>
+                <div className="space-y-4">
                   <RadioGroup defaultValue="cod" className="space-y-3">
                     {/* COD - Active */}
                     <div 
-                      className="flex items-start gap-4 p-4 rounded-xl border-2"
+                      className="flex items-start gap-4 p-4 rounded-2xl border-2"
                       style={{ 
-                        borderColor: STEALTH.accent, 
-                        backgroundColor: `${STEALTH.accent}05` 
+                        borderColor: CUPERTINO.accent, 
+                        backgroundColor: `${CUPERTINO.accent}05` 
                       }}
                     >
                       <RadioGroupItem value="cod" id="cod" className="mt-1" />
                       <div className="flex-1">
-                        <Label htmlFor="cod" className="flex items-center gap-2 font-semibold text-base cursor-pointer">
+                        <Label htmlFor="cod" className="flex items-center gap-2 font-semibold text-base cursor-pointer" style={{ color: CUPERTINO.text }}>
                           <Banknote className="h-5 w-5 text-green-600" />
                           Paiement à la livraison
                         </Label>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm mt-1" style={{ color: CUPERTINO.textSecondary }}>
                           Payez en espèces à la réception de votre carte 🇲🇦
                         </p>
-                        <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-4 mt-2 text-xs" style={{ color: CUPERTINO.textSecondary }}>
                           <span className="flex items-center gap-1">
                             <CheckCircle2 className="h-3 w-3 text-green-600" />
                             Pas de paiement maintenant
                           </span>
                           <span className="flex items-center gap-1">
-                            <Truck className="h-3 w-3" style={{ color: STEALTH.accent }} />
+                            <Truck className="h-3 w-3" style={{ color: CUPERTINO.accent }} />
                             Livraison 48h-72h
                           </span>
                         </div>
                       </div>
-                      <CheckCircle2 className="h-5 w-5" style={{ color: STEALTH.accent }} />
+                      <CheckCircle2 className="h-5 w-5" style={{ color: CUPERTINO.accent }} />
                     </div>
 
                     {/* Card - Disabled with "Coming soon" message */}
-                    <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-muted/30 opacity-60">
+                    <div className="flex items-start gap-4 p-4 rounded-2xl border opacity-60" style={{ backgroundColor: '#F2F2F7' }}>
                       <RadioGroupItem value="card" id="card" disabled className="mt-1" />
                       <div className="flex-1">
-                        <Label htmlFor="card" className="flex items-center gap-2 font-semibold text-base text-muted-foreground">
+                        <Label htmlFor="card" className="flex items-center gap-2 font-semibold text-base" style={{ color: CUPERTINO.textSecondary }}>
                           <CreditCard className="h-5 w-5" />
                           Carte bancaire
                           <span 
                             className="ml-auto text-xs px-2 py-0.5 rounded-full font-medium"
-                            style={{ backgroundColor: `${STEALTH.accent}20`, color: STEALTH.accent }}
+                            style={{ backgroundColor: `${CUPERTINO.accent}20`, color: CUPERTINO.accent }}
                           >
                             Bientôt
                           </span>
                         </Label>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm mt-1" style={{ color: CUPERTINO.textSecondary }}>
                           Paiement en ligne bientôt disponible
                         </p>
                       </div>
@@ -353,15 +359,15 @@ function OrderLivraisonContent() {
                   </RadioGroup>
                   
                   {/* Online payment notice */}
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card border border-border">
-                    <Info className="h-4 w-4 flex-shrink-0" style={{ color: STEALTH.accent }} />
-                    <p className="text-xs text-muted-foreground">
-                      <span className="font-medium" style={{ color: STEALTH.accent }}>Paiement en ligne bientôt disponible.</span>
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ backgroundColor: '#F2F2F7' }}>
+                    <Info className="h-4 w-4 flex-shrink-0" style={{ color: CUPERTINO.accent }} />
+                    <p className="text-xs" style={{ color: CUPERTINO.textSecondary }}>
+                      <span className="font-medium" style={{ color: CUPERTINO.accent }}>Paiement en ligne bientôt disponible.</span>
                       {" "}Pour l'instant, payez à la livraison.
                     </p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* Validation Status */}
               {isValid && (
@@ -388,6 +394,7 @@ function OrderLivraisonContent() {
                 onClick={prevStep}
                 disabled={state.isTransitioning}
                 className="gap-2"
+                style={{ color: CUPERTINO.textSecondary }}
               >
                 <ArrowLeft size={18} />
                 Retour
@@ -398,11 +405,8 @@ function OrderLivraisonContent() {
                 disabled={!isValid || state.isTransitioning}
                 isLoading={isNavigating}
                 loadingText="Chargement..."
-                className="px-8 rounded-full font-semibold disabled:opacity-50"
-                style={{ 
-                  backgroundColor: STEALTH.accent, 
-                  color: STEALTH.bg 
-                }}
+                className="px-8 rounded-full font-semibold disabled:opacity-50 text-white"
+                style={{ backgroundColor: CUPERTINO.accent }}
               >
                 Continuer
                 <ArrowRight className="ml-2 h-5 w-5" />
