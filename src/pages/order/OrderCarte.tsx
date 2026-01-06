@@ -2,7 +2,7 @@
  * Step 3: Personnalisation carte physique
  * /order/carte
  * 
- * Official i-Wasp Card Design Editor with fixed branding
+ * IWASP Stealth Luxury Design
  */
 
 import { useState } from "react";
@@ -15,6 +15,7 @@ import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CardDesignEditor, CardDesignConfig, defaultCardDesignConfig } from "@/components/order/CardDesignEditor";
+import { STEALTH } from "@/lib/stealthPalette";
 import { 
   ArrowRight, 
   ArrowLeft,
@@ -68,10 +69,11 @@ function OrderCarteContent() {
   // Card back preview component
   const CardBackPreview = () => (
     <div
-      className="relative rounded-xl overflow-hidden shadow-2xl"
+      className="relative rounded-xl overflow-hidden"
       style={{
         aspectRatio: 85.6 / 54,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: STEALTH.bgCard,
+        boxShadow: STEALTH.shadowLg,
       }}
     >
       {/* Centered i-Wasp logo */}
@@ -85,7 +87,13 @@ function OrderCarteContent() {
       
       {/* NFC indicator */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-        <Badge variant="secondary" className="text-[10px] bg-gray-100 text-gray-600 border-none">
+        <Badge 
+          className="text-[10px] border-none"
+          style={{ 
+            backgroundColor: STEALTH.accentMuted, 
+            color: STEALTH.textSecondary 
+          }}
+        >
           NFC activé
         </Badge>
       </div>
@@ -93,7 +101,7 @@ function OrderCarteContent() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: STEALTH.bg }}>
       <Navbar />
       
       <PageTransition>
@@ -110,19 +118,21 @@ function OrderCarteContent() {
               animate="animate"
             >
               <motion.p 
-                className="text-sm text-primary tracking-widest uppercase mb-3"
+                className="text-sm tracking-widest uppercase mb-3"
+                style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
                 Étape 3 sur 6
               </motion.p>
               <motion.h1 
                 className="text-2xl md:text-3xl font-display font-bold mb-2"
+                style={{ color: STEALTH.text }}
                 variants={itemVariants}
               >
                 Personnalisez votre carte
               </motion.h1>
               <motion.p 
-                className="text-muted-foreground max-w-md mx-auto"
+                style={{ color: STEALTH.textSecondary }}
                 variants={itemVariants}
               >
                 Uploadez votre logo et positionnez-le sur la carte officielle i-Wasp
@@ -138,12 +148,17 @@ function OrderCarteContent() {
                 className="space-y-4"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-primary" />
+                  <div 
+                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: STEALTH.accentMuted }}
+                  >
+                    <Sparkles className="w-5 h-5" style={{ color: STEALTH.accent }} />
                   </div>
                   <div>
-                    <p className="font-semibold text-sm">Éditeur de carte</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="font-semibold text-sm" style={{ color: STEALTH.text }}>
+                      Éditeur de carte
+                    </p>
+                    <p className="text-xs" style={{ color: STEALTH.textSecondary }}>
                       Glissez pour positionner votre logo
                     </p>
                   </div>
@@ -163,9 +178,22 @@ function OrderCarteContent() {
                 className="space-y-6"
               >
                 {/* Preview Section */}
-                <div className="bg-secondary/30 rounded-2xl p-6 sticky top-24">
+                <div 
+                  className="rounded-2xl p-6 sticky top-24"
+                  style={{ 
+                    backgroundColor: STEALTH.bgCard,
+                    border: `1px solid ${STEALTH.border}`
+                  }}
+                >
                   <div className="flex items-center justify-between mb-4">
-                    <Badge variant="outline" className="border-primary/50 text-primary text-xs">
+                    <Badge 
+                      className="text-xs"
+                      style={{ 
+                        backgroundColor: STEALTH.accentMuted, 
+                        color: STEALTH.accent,
+                        border: `1px solid ${STEALTH.borderActive}`
+                      }}
+                    >
                       {showBack ? "Verso" : "Recto"} • Aperçu fidèle
                     </Badge>
                     <Button
@@ -173,6 +201,7 @@ function OrderCarteContent() {
                       size="sm"
                       onClick={() => setShowBack(!showBack)}
                       className="h-8 gap-1 text-xs"
+                      style={{ color: STEALTH.textSecondary }}
                     >
                       <FlipHorizontal className="w-3 h-3" />
                       {showBack ? "Voir recto" : "Voir verso"}
@@ -194,10 +223,11 @@ function OrderCarteContent() {
                       <div style={{ backfaceVisibility: "hidden" }}>
                         {!showBack && (
                           <div
-                            className="relative rounded-xl overflow-hidden shadow-2xl"
+                            className="relative rounded-xl overflow-hidden"
                             style={{
                               aspectRatio: 85.6 / 54,
-                              backgroundColor: "#FFFFFF",
+                              backgroundColor: "#0B0B0B",
+                              boxShadow: STEALTH.shadowLg,
                             }}
                           >
                             {/* Fixed i-Wasp Logo */}
@@ -250,7 +280,7 @@ function OrderCarteContent() {
                             {/* Placeholder if no logo */}
                             {!cardDesign.logoUrl && (
                               <div className="absolute inset-0 flex items-center justify-center">
-                                <p className="text-gray-400 text-sm">
+                                <p style={{ color: STEALTH.textMuted }}>
                                   Uploadez votre logo
                                 </p>
                               </div>
@@ -274,14 +304,32 @@ function OrderCarteContent() {
 
                   {/* Info badges */}
                   <div className="flex flex-wrap gap-2 mt-4 justify-center">
-                    <Badge variant="secondary" className="text-[10px]">
+                    <Badge 
+                      className="text-[10px]"
+                      style={{ 
+                        backgroundColor: STEALTH.accentMuted, 
+                        color: STEALTH.textSecondary 
+                      }}
+                    >
                       <Lock className="w-2.5 h-2.5 mr-1" />
                       i-Wasp protégé
                     </Badge>
-                    <Badge variant="secondary" className="text-[10px]">
+                    <Badge 
+                      className="text-[10px]"
+                      style={{ 
+                        backgroundColor: STEALTH.accentMuted, 
+                        color: STEALTH.textSecondary 
+                      }}
+                    >
                       Format carte de crédit
                     </Badge>
-                    <Badge variant="secondary" className="text-[10px]">
+                    <Badge 
+                      className="text-[10px]"
+                      style={{ 
+                        backgroundColor: STEALTH.accentMuted, 
+                        color: STEALTH.textSecondary 
+                      }}
+                    >
                       PVC premium
                     </Badge>
                   </div>
@@ -290,17 +338,33 @@ function OrderCarteContent() {
                   {cardDesign.logoUrl && (
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="w-full mt-4 gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full mt-4 gap-2"
+                          style={{ 
+                            borderColor: STEALTH.border,
+                            color: STEALTH.text,
+                            backgroundColor: 'transparent'
+                          }}
+                        >
                           <Eye className="w-4 h-4" />
                           Aperçu grande taille
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl p-6">
+                      <DialogContent 
+                        className="max-w-2xl p-6"
+                        style={{ 
+                          backgroundColor: STEALTH.bg,
+                          borderColor: STEALTH.border
+                        }}
+                      >
                         <div
-                          className="relative rounded-xl overflow-hidden shadow-2xl"
+                          className="relative rounded-xl overflow-hidden"
                           style={{
                             aspectRatio: 85.6 / 54,
-                            backgroundColor: "#FFFFFF",
+                            backgroundColor: "#0B0B0B",
+                            boxShadow: STEALTH.shadowLg,
                           }}
                         >
                           {/* Fixed i-Wasp Logo */}
@@ -348,7 +412,10 @@ function OrderCarteContent() {
                             </div>
                           )}
                         </div>
-                        <p className="text-center text-sm text-muted-foreground mt-4">
+                        <p 
+                          className="text-center text-sm mt-4"
+                          style={{ color: STEALTH.textSecondary }}
+                        >
                           Voici exactement la carte que vous recevrez
                         </p>
                       </DialogContent>
@@ -358,7 +425,13 @@ function OrderCarteContent() {
 
                 {/* Validation message */}
                 {!canContinue && (
-                  <div className="text-center text-sm text-muted-foreground bg-muted/50 p-4 rounded-xl">
+                  <div 
+                    className="text-center text-sm p-4 rounded-xl"
+                    style={{ 
+                      backgroundColor: STEALTH.accentMuted,
+                      color: STEALTH.textSecondary
+                    }}
+                  >
                     <p>Uploadez votre logo pour continuer</p>
                   </div>
                 )}
@@ -376,6 +449,11 @@ function OrderCarteContent() {
                 variant="outline"
                 onClick={prevStep}
                 className="w-full sm:w-auto gap-2"
+                style={{ 
+                  borderColor: STEALTH.border,
+                  color: STEALTH.textSecondary,
+                  backgroundColor: 'transparent'
+                }}
               >
                 <ArrowLeft className="w-4 h-4" />
                 Retour
@@ -385,7 +463,11 @@ function OrderCarteContent() {
                 onClick={handleContinue}
                 disabled={!canContinue}
                 isLoading={isNavigating}
-                className="w-full sm:w-auto gap-2"
+                className="w-full sm:w-auto gap-2 rounded-full"
+                style={{ 
+                  backgroundColor: STEALTH.accent,
+                  color: STEALTH.bg
+                }}
               >
                 Continuer
                 <ArrowRight className="w-4 h-4" />
