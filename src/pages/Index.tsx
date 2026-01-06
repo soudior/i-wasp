@@ -103,8 +103,8 @@ const mainFeatures = [
 // Quick access links for logged-in users
 const quickLinks = [
   { href: "/dashboard", label: "Mon Dashboard", icon: LayoutDashboard },
+  { href: "/boutique", label: "Boutique", icon: ShoppingBag },
   { href: "/card-studio", label: "Éditer ma Carte", icon: Palette },
-  { href: "/order/type", label: "Commander", icon: ShoppingBag },
   { href: "/settings", label: "Paramètres", icon: Crown },
 ];
 

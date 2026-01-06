@@ -21,9 +21,9 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: "Accueil", isExternal: false },
     { href: "/features", label: "Fonctionnalités", isExternal: false },
+    { href: "/boutique", label: "Boutique", isExternal: false },
     { href: "/demo/studio", label: "Studio", isExternal: false },
     { href: "/pricing", label: "Tarifs", isExternal: false },
-    { href: "/enterprise", label: "Entreprises", isExternal: false },
     { href: "/order/type", label: "Commander", highlight: true, isExternal: false },
   ];
 
