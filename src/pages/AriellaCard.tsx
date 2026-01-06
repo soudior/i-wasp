@@ -13,10 +13,10 @@ import {
   Linkedin, 
   Download,
   Share2,
-  Scale,
   Navigation,
   MessageCircle
 } from "lucide-react";
+import akcLogo from "@/assets/clients/akc-logo.png";
 
 // Obsidian Stealth Palette
 const OBSIDIAN = {
@@ -245,16 +245,20 @@ END:VCARD`;
             boxShadow: `0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 ${OBSIDIAN.border}`
           }}
         >
-          {/* Avatar */}
+          {/* Logo */}
           <div className="flex justify-center mb-6">
             <div 
-              className="w-28 h-28 rounded-full flex items-center justify-center border-2"
+              className="w-32 h-32 rounded-full overflow-hidden border-2 bg-white"
               style={{
-                background: `linear-gradient(135deg, ${OBSIDIAN.emeraldGlow} 0%, transparent 100%)`,
-                borderColor: OBSIDIAN.emerald
+                borderColor: OBSIDIAN.emerald,
+                boxShadow: `0 0 30px ${OBSIDIAN.emeraldGlow}`
               }}
             >
-              <Scale size={40} style={{ color: OBSIDIAN.emerald }} strokeWidth={1} />
+              <img 
+                src={akcLogo} 
+                alt="Cabinet AKC - Ariella KHIAT COHEN" 
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
 
@@ -282,7 +286,6 @@ END:VCARD`;
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
               style={{ background: OBSIDIAN.emeraldGlow }}
             >
-              <Scale size={14} style={{ color: OBSIDIAN.emerald }} />
               <span 
                 className="text-sm font-medium tracking-wide"
                 style={{ color: OBSIDIAN.emerald }}
