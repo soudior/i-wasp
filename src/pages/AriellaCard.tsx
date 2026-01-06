@@ -417,7 +417,7 @@ END:VCARD`;
             className="text-xs tracking-widest uppercase hover:opacity-80 transition-opacity"
             style={{ color: COLORS.textSecondary }}
           >
-            Powered by <span style={{ color: COLORS.gold }}>I-WASP.com</span>
+            Powered by <span style={{ color: COLORS.gold }}>i-wasp.com</span>
           </a>
         </motion.div>
       </motion.div>
