@@ -84,7 +84,7 @@ export function IWASPBrandingFooter({
             color: isDark ? "#d4af37" : "#1D1D1F",
           }}
         >
-          i-Wasp.com
+          i-wasp.com
         </span>
       </a>
     </footer>
@@ -125,7 +125,7 @@ export function IWASPBrandingInline({
             textDecoration: "none",
           }}
         >
-          i-Wasp.com
+          i-wasp.com
         </a>
       </p>
     </div>

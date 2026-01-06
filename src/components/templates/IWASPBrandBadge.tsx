@@ -45,19 +45,18 @@ export function IWASPBrandBadge({
           : '0 4px 16px rgba(0, 0, 0, 0.1)',
       }}
     >
-      {/* Brand Text "IWasp" */}
+      {/* Brand Text "i-Wasp" */}
       <span 
         style={{ 
           fontSize: '11px', 
           fontWeight: 600, 
-          letterSpacing: '0.12em', 
+          letterSpacing: '0.05em', 
           color: isDark 
             ? 'rgba(255, 255, 255, 0.85)' 
             : 'rgba(0, 0, 0, 0.75)',
-          textTransform: 'uppercase',
         }}
       >
-        IWasp
+        i-Wasp
       </span>
       
       {/* NFC Waves Icon ")))" */}
@@ -104,14 +103,13 @@ export function IWASPBrandBadgeMinimal({
         style={{ 
           fontSize: '9px', 
           fontWeight: 600, 
-          letterSpacing: '0.12em', 
+          letterSpacing: '0.05em', 
           color: isDark 
             ? 'rgba(255, 255, 255, 0.8)' 
             : 'rgba(0, 0, 0, 0.6)',
-          textTransform: 'uppercase',
         }}
       >
-        IWasp
+        i-Wasp
       </span>
       <svg 
         width="14" 

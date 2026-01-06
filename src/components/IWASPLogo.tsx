@@ -73,10 +73,10 @@ export function IWASPLogoCompact({
   return (
     <div className={`flex items-center ${config.gap} ${className}`}>
       <span 
-        className={`${config.text} font-semibold tracking-tight text-foreground uppercase`}
-        style={{ letterSpacing: '0.05em' }}
+        className={`${config.text} font-semibold tracking-tight text-foreground`}
+        style={{ letterSpacing: '-0.02em' }}
       >
-        iWasp
+        i-Wasp
       </span>
       <svg 
         viewBox="0 0 16 16" 
