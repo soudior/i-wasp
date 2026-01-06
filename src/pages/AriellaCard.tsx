@@ -62,8 +62,8 @@ const PROFILE = {
   address: "6 rue Ruhmkorff - 75017 Paris",
   phone: "09.83.83.33.64",
   email: "akc.avocate@gmail.com",
-  website: null as string | null,
-  linkedin: null as string | null,
+  website: "https://www.akc-avocate.fr",
+  linkedin: "https://www.linkedin.com/in/ariella-khiat-cohen-avocate",
   tagline: "Défendre vos droits avec excellence et détermination",
   initials: "AK",
   coordinates: {
@@ -190,6 +190,8 @@ ORG:${PROFILE.company}
 TEL;TYPE=WORK,VOICE:${PROFILE.phone.replace(/\./g, "")}
 EMAIL:${PROFILE.email}
 ADR;TYPE=WORK:;;6 rue Ruhmkorff;Paris;;75017;France
+URL:${PROFILE.website}
+X-SOCIALPROFILE;TYPE=linkedin:${PROFILE.linkedin}
 GEO:${PROFILE.coordinates.lat};${PROFILE.coordinates.lng}
 END:VCARD`;
 
