@@ -10,6 +10,7 @@ import { BrandProvider } from "@/contexts/BrandContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { OrderFunnelProvider } from "@/contexts/OrderFunnelContext";
+import { CheckoutProvider } from "@/contexts/CheckoutContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
 import { AdminGuard } from "@/components/AdminGuard";
 import { FeatureValidationProvider } from "@/components/FeatureValidationProvider";
@@ -93,6 +94,7 @@ const OrderCarte = lazy(() => import("./pages/order/OrderCarte"));
 const OrderLivraison = lazy(() => import("./pages/order/OrderLivraison"));
 const OrderRecap = lazy(() => import("./pages/order/OrderRecap"));
 const OrderConfirmationNew = lazy(() => import("./pages/order/OrderConfirmationNew"));
+const CheckoutTunnel = lazy(() => import("./pages/CheckoutTunnel"));
 
 
 const queryClient = new QueryClient({
@@ -148,6 +150,7 @@ const App = () => {
               <CurrencyProvider>
                 <GuestCardProvider>
                   <CartProvider>
+                  <CheckoutProvider>
                   <TooltipProvider>
                   <FeatureValidationProvider showOverlay={true}>
                     {showSplash && (
@@ -263,8 +266,10 @@ const App = () => {
                               <Route path="/order/summary" element={<Navigate to="/order/recap" replace />} />
                               <Route path="/order/payment" element={<Navigate to="/order/livraison" replace />} />
                               
-                              {/* Cart */}
+                              {/* Cart & Checkout */}
                               <Route path="/cart" element={<Cart />} />
+                              <Route path="/boutique" element={<CheckoutTunnel />} />
+                              <Route path="/checkout-tunnel" element={<CheckoutTunnel />} />
                               
                               {/* Admin */}
                               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
@@ -299,6 +304,7 @@ const App = () => {
                     </BrowserRouter>
                   </FeatureValidationProvider>
                 </TooltipProvider>
+              </CheckoutProvider>
               </CartProvider>
             </GuestCardProvider>
           </CurrencyProvider>
