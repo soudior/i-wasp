@@ -954,10 +954,10 @@ function AdminInstantCardContent() {
                     style={{ backgroundColor: 'rgba(236, 72, 153, 0.15)' }}
                   >
                     <Sparkles size={16} style={{ color: '#EC4899' }} />
-                    <span className="text-sm font-medium" style={{ color: '#EC4899' }}>Story 24h</span>
+                    <span className="text-sm font-medium" style={{ color: '#EC4899' }}>Stories 24h</span>
                   </div>
                   <p className="text-sm" style={{ color: 'rgba(245, 245, 245, 0.6)' }}>
-                    Publiez une story visible pendant 24h sur votre carte digitale
+                    Créez plusieurs stories qui défilent comme sur Instagram !
                   </p>
                 </div>
 
@@ -966,33 +966,100 @@ function AdminInstantCardContent() {
                     cardId={createdCard.id}
                     stories={stories}
                     onStoriesChange={setStories}
+                    maxStories={10}
                   />
                 ) : (
                   <div 
-                    className="text-center py-8 rounded-xl"
+                    className="text-center py-8 rounded-xl space-y-4"
                     style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
                   >
-                    <Sparkles size={32} style={{ color: 'rgba(245, 245, 245, 0.3)' }} className="mx-auto mb-3" />
-                    <p className="text-sm" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
-                      Créez d'abord votre carte pour ajouter une story
-                    </p>
+                    <div className="flex justify-center gap-2">
+                      {[1, 2, 3].map((i) => (
+                        <div 
+                          key={i}
+                          className="w-14 h-20 rounded-lg border-2 border-dashed flex items-center justify-center"
+                          style={{ borderColor: 'rgba(236, 72, 153, 0.3)' }}
+                        >
+                          <Plus size={16} style={{ color: 'rgba(236, 72, 153, 0.5)' }} />
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: 'rgba(245, 245, 245, 0.7)' }}>
+                        Ajoutez vos stories après la création
+                      </p>
+                      <p className="text-xs mt-1" style={{ color: 'rgba(245, 245, 245, 0.4)' }}>
+                        Jusqu'à 10 stories qui défilent automatiquement
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => setActiveSection("info")}
+                      variant="outline"
+                      size="sm"
+                      className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10"
+                    >
+                      <ArrowLeft size={14} className="mr-1.5" />
+                      Commencer par les infos
+                    </Button>
                   </div>
                 )}
               </CardContent>
             </Card>
 
+            {/* Instructions améliorées */}
             <div 
               className="rounded-xl p-4"
               style={{ backgroundColor: 'rgba(236, 72, 153, 0.08)' }}
             >
-              <h4 className="text-sm font-medium mb-2" style={{ color: '#EC4899' }}>💡 Idées de stories</h4>
-              <ul className="text-xs space-y-1" style={{ color: 'rgba(245, 245, 245, 0.7)' }}>
-                <li>• Promotion flash ou offre spéciale</li>
-                <li>• Nouveau produit ou service</li>
-                <li>• Bien disponible (immobilier)</li>
-                <li>• Événement ou actualité</li>
-                <li>• Message de bienvenue personnalisé</li>
+              <h4 className="text-sm font-medium mb-3" style={{ color: '#EC4899' }}>📱 Stories style Instagram</h4>
+              <ul className="text-xs space-y-2" style={{ color: 'rgba(245, 245, 245, 0.7)' }}>
+                <li className="flex items-start gap-2">
+                  <span>📸</span>
+                  <span>Ajoutez jusqu'à <strong>10 images ou textes</strong></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span>⏱️</span>
+                  <span>Défilement automatique toutes les 5 secondes</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span>👆</span>
+                  <span>Navigation tactile gauche/droite</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span>📊</span>
+                  <span>Statistiques de vues en temps réel</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span>🕐</span>
+                  <span>Expiration automatique après 24h</span>
+                </li>
               </ul>
+            </div>
+
+            {/* Idées de contenu */}
+            <div 
+              className="rounded-xl p-4"
+              style={{ backgroundColor: 'rgba(255, 199, 0, 0.08)' }}
+            >
+              <h4 className="text-sm font-medium mb-2" style={{ color: '#FFC700' }}>💡 Idées de contenu</h4>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "Promo flash",
+                  "Nouveau produit",
+                  "Événement",
+                  "Coulisses",
+                  "Témoignage client",
+                  "Actualité"
+                ].map((idea) => (
+                  <span 
+                    key={idea}
+                    className="px-2.5 py-1 rounded-full text-xs"
+                    style={{ backgroundColor: 'rgba(255, 199, 0, 0.15)', color: '#FFC700' }}
+                  >
+                    {idea}
+                  </span>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
