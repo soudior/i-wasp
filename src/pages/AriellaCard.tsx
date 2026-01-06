@@ -14,7 +14,8 @@ import {
   Download,
   Share2,
   Scale,
-  Navigation
+  Navigation,
+  MessageCircle
 } from "lucide-react";
 
 // Obsidian Stealth Palette
@@ -190,6 +191,12 @@ END:VCARD`;
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${PROFILE.coordinates.lat},${PROFILE.coordinates.lng}`, "_blank");
   };
 
+  const handleWhatsApp = () => {
+    // Format: +33 9 83 83 33 64 (French format)
+    const phoneNumber = "33" + PROFILE.phone.replace(/\./g, "").substring(1);
+    window.open(`https://wa.me/${phoneNumber}`, "_blank");
+  };
+
   return (
     <div 
       className="min-h-screen w-full flex flex-col"
@@ -303,6 +310,11 @@ END:VCARD`;
               label="Appeler" 
               onClick={handleCall}
               variant="primary"
+            />
+            <ActionButton 
+              icon={MessageCircle} 
+              label="WhatsApp" 
+              onClick={handleWhatsApp}
             />
             <ActionButton 
               icon={Mail} 
