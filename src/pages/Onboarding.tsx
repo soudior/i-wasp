@@ -719,10 +719,10 @@ export default function Onboarding() {
                       </div>
                     </div>
 
-                    {/* IWASP Badge */}
-                    <p className="text-center text-[10px] text-[#8E8E93] mt-4 tracking-wide">
-                      Powered by IWASP
-                    </p>
+                    {/* I-WASP Badge */}
+                    <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="block text-center text-[10px] text-[#8E8E93] mt-4 tracking-wide hover:opacity-80 transition-opacity">
+                      Powered by I-WASP.com
+                    </a>
                   </div>
 
                   <p className="text-center text-xs mt-6" style={{ color: COLORS.textDim }}>

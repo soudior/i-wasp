@@ -525,9 +525,9 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
       </div>
 
       {/* Footer */}
-      <div className="text-center py-6 text-[#E5E5E5]/30 text-xs">
-        Powered by IWASP
-      </div>
+      <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="block text-center py-6 text-[#E5E5E5]/30 text-xs hover:opacity-80 transition-opacity">
+        Powered by I-WASP.com
+      </a>
     </div>
   );
 }

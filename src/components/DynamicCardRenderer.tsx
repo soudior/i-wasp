@@ -1540,12 +1540,12 @@ export function DynamicCardRenderer({
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <p className={cn(
-              "text-[10px] tracking-[0.2em] uppercase font-light",
+            <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className={cn(
+              "text-[10px] tracking-[0.2em] uppercase font-light hover:opacity-80 transition-opacity",
               isDark ? "text-white/15" : "text-neutral-300"
             )}>
-              Powered by IWASP
-            </p>
+              Powered by I-WASP.com
+            </a>
           </motion.div>
 
           {/* Bottom gradient line */}

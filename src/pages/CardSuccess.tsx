@@ -257,7 +257,7 @@ export default function CardSuccess() {
 
               {/* Footer */}
               <div className="text-center mt-5">
-                <p className="text-[10px] text-white/30">Powered by IWASP</p>
+                <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="text-[10px] text-white/30 hover:opacity-80 transition-opacity">Powered by I-WASP.com</a>
               </div>
             </CardContent>
           </Card>
