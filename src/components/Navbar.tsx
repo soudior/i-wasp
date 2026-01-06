@@ -8,6 +8,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { CurrencySwitch } from "@/components/CurrencySwitch";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Navbar() {
   const { t } = useTranslation();
@@ -99,7 +100,10 @@ export function Navbar() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+            
             {/* Currency Switch */}
             <CurrencySwitch variant="pill" />
             
@@ -148,9 +152,9 @@ export function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="md:hidden flex items-center gap-1">
+            <ThemeToggle />
             <CurrencySwitch variant="compact" />
-            <LanguageSelector />
             <button
               className="p-2 text-foreground"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
