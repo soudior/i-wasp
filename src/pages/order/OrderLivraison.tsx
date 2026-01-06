@@ -2,7 +2,7 @@
  * Step 4: Livraison + Paiement
  * /order/livraison
  * 
- * IWASP Cupertino Style
+ * IWASP Stealth Luxury Style
  */
 
 import { useState, useMemo } from "react";
@@ -13,10 +13,10 @@ import { Footer } from "@/components/Footer";
 import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from "@/components/order";
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { STEALTH } from "@/lib/stealthPalette";
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -32,15 +32,6 @@ import {
   Info
 } from "lucide-react";
 import { toast } from "sonner";
-
-// IWASP Cupertino Palette
-const CUPERTINO = {
-  bg: "#F5F5F7",
-  card: "#FFFFFF",
-  text: "#1D1D1F",
-  textSecondary: "#8E8E93",
-  accent: "#007AFF",
-};
 
 const addressTypes = [
   { id: "domicile" as const, icon: Home, label: "Domicile" },
@@ -114,8 +105,15 @@ function OrderLivraisonContent() {
     await nextStep();
   };
 
+  // Input styles for dark theme
+  const inputStyles = {
+    backgroundColor: STEALTH.bgInput,
+    borderColor: STEALTH.border,
+    color: STEALTH.text,
+  };
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: CUPERTINO.bg }}>
+    <div className="min-h-screen" style={{ backgroundColor: STEALTH.bg }}>
       <Navbar />
       
       <PageTransition>
@@ -133,21 +131,21 @@ function OrderLivraisonContent() {
             >
               <motion.p 
                 className="text-sm tracking-widest uppercase mb-3"
-                style={{ color: CUPERTINO.accent }}
+                style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
                 Étape 4 sur 6
               </motion.p>
               <motion.h1 
                 className="text-3xl md:text-4xl font-display font-bold mb-3"
-                style={{ color: CUPERTINO.text }}
+                style={{ color: STEALTH.text }}
                 variants={itemVariants}
               >
                 Livraison & Paiement
               </motion.h1>
               <motion.p 
                 className="text-lg"
-                style={{ color: CUPERTINO.textSecondary }}
+                style={{ color: STEALTH.textSecondary }}
                 variants={itemVariants}
               >
                 Où livrer votre carte NFC ?
@@ -160,12 +158,12 @@ function OrderLivraisonContent() {
               animate={{ opacity: 1, y: 0 }}
               className="mb-6 p-4 rounded-2xl flex items-start gap-3"
               style={{ 
-                backgroundColor: `${CUPERTINO.accent}10`, 
-                border: `1px solid ${CUPERTINO.accent}30` 
+                backgroundColor: STEALTH.accentMuted, 
+                border: `1px solid ${STEALTH.borderActive}` 
               }}
             >
-              <Info className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: CUPERTINO.accent }} />
-              <p className="text-sm" style={{ color: CUPERTINO.textSecondary }}>
+              <Info className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: STEALTH.accent }} />
+              <p className="text-sm" style={{ color: STEALTH.textSecondary }}>
                 Ces informations servent uniquement à la livraison. Elles n'apparaîtront pas sur votre carte digitale.
               </p>
             </motion.div>
@@ -179,17 +177,23 @@ function OrderLivraisonContent() {
             >
               {/* Shipping Address */}
               <div 
-                className="rounded-3xl p-6 shadow-sm"
-                style={{ backgroundColor: CUPERTINO.card }}
+                className="rounded-3xl p-6"
+                style={{ 
+                  backgroundColor: STEALTH.bgCard,
+                  border: `1px solid ${STEALTH.border}`
+                }}
               >
-                <div className="flex items-center gap-2 text-lg font-semibold mb-4" style={{ color: CUPERTINO.text }}>
-                  <MapPin size={20} style={{ color: CUPERTINO.accent }} />
+                <div 
+                  className="flex items-center gap-2 text-lg font-semibold mb-4"
+                  style={{ color: STEALTH.text }}
+                >
+                  <MapPin size={20} style={{ color: STEALTH.accent }} />
                   Adresse de livraison
                 </div>
                 <div className="space-y-4">
                   {/* Address Type */}
                   <div className="space-y-2">
-                    <Label style={{ color: CUPERTINO.text }}>Type d'adresse</Label>
+                    <Label style={{ color: STEALTH.text }}>Type d'adresse</Label>
                     <div className="grid grid-cols-3 gap-3">
                       {addressTypes.map((type) => {
                         const isSelected = formData.addressType === type.id;
@@ -201,22 +205,27 @@ function OrderLivraisonContent() {
                             onClick={() => handleChange("addressType", type.id)}
                             className="flex flex-col items-center p-3 rounded-2xl border-2 transition-all"
                             style={{
-                              borderColor: isSelected ? CUPERTINO.accent : '#E5E5EA',
-                              backgroundColor: isSelected ? `${CUPERTINO.accent}10` : CUPERTINO.card,
+                              borderColor: isSelected ? STEALTH.accent : STEALTH.border,
+                              backgroundColor: isSelected ? STEALTH.accentMuted : STEALTH.bgCard,
                             }}
                           >
                             <div 
                               className="w-10 h-10 rounded-xl flex items-center justify-center mb-1"
                               style={{ 
-                                backgroundColor: isSelected ? CUPERTINO.accent : '#F2F2F7'
+                                backgroundColor: isSelected ? STEALTH.accent : STEALTH.bgInput
                               }}
                             >
                               <Icon 
                                 className="w-5 h-5" 
-                                style={{ color: isSelected ? '#FFFFFF' : CUPERTINO.textSecondary }} 
+                                style={{ color: isSelected ? STEALTH.bg : STEALTH.textSecondary }} 
                               />
                             </div>
-                            <span className="text-xs font-medium" style={{ color: CUPERTINO.text }}>{type.label}</span>
+                            <span 
+                              className="text-xs font-medium"
+                              style={{ color: STEALTH.text }}
+                            >
+                              {type.label}
+                            </span>
                           </button>
                         );
                       })}
@@ -225,17 +234,18 @@ function OrderLivraisonContent() {
 
                   {/* Address */}
                   <div className="space-y-2">
-                    <Label htmlFor="address" style={{ color: CUPERTINO.text }}>Adresse *</Label>
+                    <Label htmlFor="address" style={{ color: STEALTH.text }}>Adresse *</Label>
                     <Input
                       id="address"
                       value={formData.address}
                       onChange={(e) => handleChange("address", e.target.value)}
                       onBlur={() => handleBlur("address")}
                       placeholder="123 Rue Mohammed V, Quartier Maarif"
-                      className={`rounded-xl ${touched.address && errors.address ? "border-destructive" : ""}`}
+                      className="rounded-xl"
+                      style={inputStyles}
                     />
                     {touched.address && errors.address && (
-                      <p className="text-xs text-destructive flex items-center gap-1">
+                      <p className="text-xs flex items-center gap-1" style={{ color: STEALTH.error }}>
                         <AlertCircle size={12} />
                         {errors.address}
                       </p>
@@ -244,17 +254,18 @@ function OrderLivraisonContent() {
 
                   {/* City */}
                   <div className="space-y-2">
-                    <Label htmlFor="city" style={{ color: CUPERTINO.text }}>Ville *</Label>
+                    <Label htmlFor="city" style={{ color: STEALTH.text }}>Ville *</Label>
                     <Input
                       id="city"
                       value={formData.city}
                       onChange={(e) => handleChange("city", e.target.value)}
                       onBlur={() => handleBlur("city")}
                       placeholder="Casablanca"
-                      className={`rounded-xl ${touched.city && errors.city ? "border-destructive" : ""}`}
+                      className="rounded-xl"
+                      style={inputStyles}
                     />
                     {touched.city && errors.city && (
-                      <p className="text-xs text-destructive flex items-center gap-1">
+                      <p className="text-xs flex items-center gap-1" style={{ color: STEALTH.error }}>
                         <AlertCircle size={12} />
                         {errors.city}
                       </p>
@@ -263,19 +274,20 @@ function OrderLivraisonContent() {
 
                   {/* Country */}
                   <div className="space-y-2">
-                    <Label htmlFor="country" style={{ color: CUPERTINO.text }}>Pays</Label>
+                    <Label htmlFor="country" style={{ color: STEALTH.text }}>Pays</Label>
                     <Input
                       id="country"
                       value={formData.country}
                       onChange={(e) => handleChange("country", e.target.value)}
                       placeholder="Maroc"
                       className="rounded-xl"
+                      style={inputStyles}
                     />
                   </div>
 
                   {/* Phone */}
                   <div className="space-y-2">
-                    <Label htmlFor="phone" style={{ color: CUPERTINO.text }}>Téléphone de livraison *</Label>
+                    <Label htmlFor="phone" style={{ color: STEALTH.text }}>Téléphone de livraison *</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -283,10 +295,11 @@ function OrderLivraisonContent() {
                       onChange={(e) => handleChange("phone", e.target.value)}
                       onBlur={() => handleBlur("phone")}
                       placeholder="+212 6 12 34 56 78"
-                      className={`rounded-xl ${touched.phone && errors.phone ? "border-destructive" : ""}`}
+                      className="rounded-xl"
+                      style={inputStyles}
                     />
                     {touched.phone && errors.phone && (
-                      <p className="text-xs text-destructive flex items-center gap-1">
+                      <p className="text-xs flex items-center gap-1" style={{ color: STEALTH.error }}>
                         <AlertCircle size={12} />
                         {errors.phone}
                       </p>
@@ -297,11 +310,17 @@ function OrderLivraisonContent() {
 
               {/* Payment Method */}
               <div 
-                className="rounded-3xl p-6 shadow-sm"
-                style={{ backgroundColor: CUPERTINO.card }}
+                className="rounded-3xl p-6"
+                style={{ 
+                  backgroundColor: STEALTH.bgCard,
+                  border: `1px solid ${STEALTH.border}`
+                }}
               >
-                <div className="flex items-center gap-2 text-lg font-semibold mb-4" style={{ color: CUPERTINO.text }}>
-                  <Banknote size={20} style={{ color: CUPERTINO.accent }} />
+                <div 
+                  className="flex items-center gap-2 text-lg font-semibold mb-4"
+                  style={{ color: STEALTH.text }}
+                >
+                  <Banknote size={20} style={{ color: STEALTH.accent }} />
                   Mode de paiement
                 </div>
                 <div className="space-y-4">
@@ -310,48 +329,68 @@ function OrderLivraisonContent() {
                     <div 
                       className="flex items-start gap-4 p-4 rounded-2xl border-2"
                       style={{ 
-                        borderColor: CUPERTINO.accent, 
-                        backgroundColor: `${CUPERTINO.accent}05` 
+                        borderColor: STEALTH.accent, 
+                        backgroundColor: STEALTH.accentMuted 
                       }}
                     >
                       <RadioGroupItem value="cod" id="cod" className="mt-1" />
                       <div className="flex-1">
-                        <Label htmlFor="cod" className="flex items-center gap-2 font-semibold text-base cursor-pointer" style={{ color: CUPERTINO.text }}>
-                          <Banknote className="h-5 w-5 text-green-600" />
+                        <Label 
+                          htmlFor="cod" 
+                          className="flex items-center gap-2 font-semibold text-base cursor-pointer"
+                          style={{ color: STEALTH.text }}
+                        >
+                          <Banknote className="h-5 w-5" style={{ color: STEALTH.success }} />
                           Paiement à la livraison
                         </Label>
-                        <p className="text-sm mt-1" style={{ color: CUPERTINO.textSecondary }}>
+                        <p className="text-sm mt-1" style={{ color: STEALTH.textSecondary }}>
                           Payez en espèces à la réception de votre carte 🇲🇦
                         </p>
-                        <div className="flex items-center gap-4 mt-2 text-xs" style={{ color: CUPERTINO.textSecondary }}>
+                        <div 
+                          className="flex items-center gap-4 mt-2 text-xs"
+                          style={{ color: STEALTH.textSecondary }}
+                        >
                           <span className="flex items-center gap-1">
-                            <CheckCircle2 className="h-3 w-3 text-green-600" />
+                            <CheckCircle2 className="h-3 w-3" style={{ color: STEALTH.success }} />
                             Pas de paiement maintenant
                           </span>
                           <span className="flex items-center gap-1">
-                            <Truck className="h-3 w-3" style={{ color: CUPERTINO.accent }} />
+                            <Truck className="h-3 w-3" style={{ color: STEALTH.accent }} />
                             Livraison 48h-72h
                           </span>
                         </div>
                       </div>
-                      <CheckCircle2 className="h-5 w-5" style={{ color: CUPERTINO.accent }} />
+                      <CheckCircle2 className="h-5 w-5" style={{ color: STEALTH.accent }} />
                     </div>
 
                     {/* Card - Disabled with "Coming soon" message */}
-                    <div className="flex items-start gap-4 p-4 rounded-2xl border opacity-60" style={{ backgroundColor: '#F2F2F7' }}>
+                    <div 
+                      className="flex items-start gap-4 p-4 rounded-2xl border opacity-60"
+                      style={{ 
+                        backgroundColor: STEALTH.bgInput,
+                        borderColor: STEALTH.border
+                      }}
+                    >
                       <RadioGroupItem value="card" id="card" disabled className="mt-1" />
                       <div className="flex-1">
-                        <Label htmlFor="card" className="flex items-center gap-2 font-semibold text-base" style={{ color: CUPERTINO.textSecondary }}>
+                        <Label 
+                          htmlFor="card" 
+                          className="flex items-center gap-2 font-semibold text-base"
+                          style={{ color: STEALTH.textSecondary }}
+                        >
                           <CreditCard className="h-5 w-5" />
                           Carte bancaire
                           <span 
                             className="ml-auto text-xs px-2 py-0.5 rounded-full font-medium"
-                            style={{ backgroundColor: `${CUPERTINO.accent}20`, color: CUPERTINO.accent }}
+                            style={{ 
+                              backgroundColor: STEALTH.accentMuted, 
+                              color: STEALTH.accent 
+                            }}
                           >
                             Bientôt
                           </span>
                         </Label>
-                        <p className="text-sm mt-1" style={{ color: CUPERTINO.textSecondary }}>
+                        <p className="text-sm mt-1" style={{ color: STEALTH.textMuted }}>
                           Paiement en ligne bientôt disponible
                         </p>
                       </div>
@@ -359,10 +398,15 @@ function OrderLivraisonContent() {
                   </RadioGroup>
                   
                   {/* Online payment notice */}
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ backgroundColor: '#F2F2F7' }}>
-                    <Info className="h-4 w-4 flex-shrink-0" style={{ color: CUPERTINO.accent }} />
-                    <p className="text-xs" style={{ color: CUPERTINO.textSecondary }}>
-                      <span className="font-medium" style={{ color: CUPERTINO.accent }}>Paiement en ligne bientôt disponible.</span>
+                  <div 
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl"
+                    style={{ backgroundColor: STEALTH.bgInput }}
+                  >
+                    <Info className="h-4 w-4 flex-shrink-0" style={{ color: STEALTH.accent }} />
+                    <p className="text-xs" style={{ color: STEALTH.textSecondary }}>
+                      <span className="font-medium" style={{ color: STEALTH.accent }}>
+                        Paiement en ligne bientôt disponible.
+                      </span>
                       {" "}Pour l'instant, payez à la livraison.
                     </p>
                   </div>
@@ -374,10 +418,19 @@ function OrderLivraisonContent() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="flex items-center gap-2 p-4 rounded-xl bg-green-500/10 border border-green-500/20"
+                  className="flex items-center gap-2 p-4 rounded-xl"
+                  style={{ 
+                    backgroundColor: STEALTH.successBg,
+                    border: `1px solid ${STEALTH.success}30`
+                  }}
                 >
-                  <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  <span className="text-sm font-medium text-green-600">Adresse de livraison complète</span>
+                  <CheckCircle2 className="h-5 w-5" style={{ color: STEALTH.success }} />
+                  <span 
+                    className="text-sm font-medium"
+                    style={{ color: STEALTH.success }}
+                  >
+                    Adresse de livraison complète
+                  </span>
                 </motion.div>
               )}
             </motion.div>
@@ -394,7 +447,7 @@ function OrderLivraisonContent() {
                 onClick={prevStep}
                 disabled={state.isTransitioning}
                 className="gap-2"
-                style={{ color: CUPERTINO.textSecondary }}
+                style={{ color: STEALTH.textSecondary }}
               >
                 <ArrowLeft size={18} />
                 Retour
@@ -405,8 +458,11 @@ function OrderLivraisonContent() {
                 disabled={!isValid || state.isTransitioning}
                 isLoading={isNavigating}
                 loadingText="Chargement..."
-                className="px-8 rounded-full font-semibold disabled:opacity-50 text-white"
-                style={{ backgroundColor: CUPERTINO.accent }}
+                className="px-8 rounded-full font-semibold disabled:opacity-50"
+                style={{ 
+                  backgroundColor: STEALTH.accent,
+                  color: STEALTH.bg
+                }}
               >
                 Continuer
                 <ArrowRight className="ml-2 h-5 w-5" />

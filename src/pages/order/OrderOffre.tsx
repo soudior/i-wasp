@@ -2,7 +2,7 @@
  * Step 1: Choix de l'offre
  * /order/offre
  * 
- * Design IWASP Cupertino
+ * Design IWASP Stealth Luxury
  */
 
 import { useState } from "react";
@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useOrderFunnel, OfferType, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { STEALTH } from "@/lib/stealthPalette";
 import { Check, ArrowRight, ArrowLeft, Star, Sparkles, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -74,23 +75,33 @@ function OrderOffreContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7]">
-      {/* Header - Style IWASP */}
-      <header className="sticky top-0 z-40 bg-[#F5F5F7]/95 backdrop-blur-lg border-b border-[#E5E5E5]">
+    <div className="min-h-screen" style={{ backgroundColor: STEALTH.bg }}>
+      {/* Header */}
+      <header 
+        className="sticky top-0 z-40 backdrop-blur-lg"
+        style={{ 
+          backgroundColor: `${STEALTH.bg}E6`,
+          borderBottom: `1px solid ${STEALTH.border}`
+        }}
+      >
         <div className="container mx-auto px-5 py-4 flex items-center justify-between">
           <button 
             onClick={() => navigate("/order/type")}
-            className="flex items-center gap-2 text-[#8E8E93] hover:text-[#1D1D1F] transition-colors"
+            className="flex items-center gap-2 transition-colors"
+            style={{ color: STEALTH.textSecondary }}
           >
             <ArrowLeft className="w-5 h-5" />
             <span className="text-sm font-medium">Retour</span>
           </button>
           
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#1D1D1F] flex items-center justify-center">
-              <span className="text-white font-bold text-sm">iW</span>
+            <div 
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: STEALTH.accent }}
+            >
+              <span className="font-bold text-sm" style={{ color: STEALTH.bg }}>iW</span>
             </div>
-            <span className="text-[#1D1D1F] font-semibold">Offres</span>
+            <span className="font-semibold" style={{ color: STEALTH.text }}>Offres</span>
           </div>
           
           <div className="w-20" />
@@ -98,8 +109,11 @@ function OrderOffreContent() {
       </header>
 
       {/* Progress bar */}
-      <div className="w-full h-1 bg-[#E5E5E5]">
-        <div className="h-full bg-[#007AFF] w-[25%] transition-all" />
+      <div className="w-full h-1" style={{ backgroundColor: STEALTH.border }}>
+        <div 
+          className="h-full w-[25%] transition-all" 
+          style={{ background: STEALTH.gradientAccent }}
+        />
       </div>
 
       {/* Content */}
@@ -111,13 +125,19 @@ function OrderOffreContent() {
         >
           {/* Title */}
           <div className="text-center mb-8">
-            <p className="text-xs uppercase tracking-widest text-[#8E8E93] mb-2">
+            <p 
+              className="text-xs uppercase tracking-widest mb-2"
+              style={{ color: STEALTH.accent }}
+            >
               Étape 1 sur 5
             </p>
-            <h1 className="text-2xl font-bold tracking-tight text-[#1D1D1F] mb-2">
+            <h1 
+              className="text-2xl font-bold tracking-tight mb-2"
+              style={{ color: STEALTH.text }}
+            >
               Choisissez votre offre
             </h1>
-            <p className="text-[#8E8E93] text-sm">
+            <p style={{ color: STEALTH.textSecondary }}>
               La carte NFC est incluse
             </p>
           </div>
@@ -136,43 +156,70 @@ function OrderOffreContent() {
                   transition={{ delay: index * 0.1 }}
                   onClick={() => handleSelectOffer(offer.id)}
                   disabled={state.isTransitioning}
-                  className={`relative w-full p-5 rounded-2xl text-left transition-all ${
-                    isSelected 
-                      ? "bg-white ring-2 ring-[#007AFF] shadow-lg" 
-                      : "bg-white shadow-sm"
-                  }`}
+                  className="relative w-full p-5 rounded-2xl text-left transition-all"
+                  style={{
+                    backgroundColor: STEALTH.bgCard,
+                    border: `2px solid ${isSelected ? STEALTH.accent : STEALTH.border}`,
+                    boxShadow: isSelected ? STEALTH.glow : 'none',
+                  }}
                 >
                   {/* Popular Badge */}
                   {offer.isPopular && (
-                    <div className="absolute -top-2 right-4 px-3 py-0.5 rounded-full text-[10px] font-semibold bg-[#007AFF] text-white">
+                    <div 
+                      className="absolute -top-2 right-4 px-3 py-0.5 rounded-full text-[10px] font-semibold"
+                      style={{ 
+                        background: STEALTH.gradientAccent, 
+                        color: STEALTH.bg 
+                      }}
+                    >
                       Populaire
                     </div>
                   )}
 
                   <div className="flex items-start gap-4">
                     {/* Icon */}
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      isSelected ? "bg-[#007AFF]" : "bg-[#F5F5F7]"
-                    }`}>
-                      <Icon className={`w-5 h-5 ${isSelected ? "text-white" : "text-[#8E8E93]"}`} />
+                    <div 
+                      className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ 
+                        backgroundColor: isSelected ? STEALTH.accent : STEALTH.accentMuted 
+                      }}
+                    >
+                      <Icon 
+                        className="w-5 h-5" 
+                        style={{ color: isSelected ? STEALTH.bg : STEALTH.textSecondary }} 
+                      />
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <div>
-                          <h3 className="text-base font-semibold text-[#1D1D1F]">
+                          <h3 
+                            className="text-base font-semibold"
+                            style={{ color: STEALTH.text }}
+                          >
                             {offer.title}
                           </h3>
-                          <p className="text-xs text-[#8E8E93]">{offer.subtitle}</p>
+                          <p 
+                            className="text-xs"
+                            style={{ color: STEALTH.textSecondary }}
+                          >
+                            {offer.subtitle}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className={`text-lg font-bold ${isSelected ? "text-[#007AFF]" : "text-[#1D1D1F]"}`}>
+                          <span 
+                            className="text-lg font-bold"
+                            style={{ color: isSelected ? STEALTH.accent : STEALTH.text }}
+                          >
                             {formatAmount(offer.priceMAD)}
                           </span>
                           {isSelected && (
-                            <div className="w-6 h-6 rounded-full bg-[#007AFF] flex items-center justify-center">
-                              <Check className="w-4 h-4 text-white" />
+                            <div 
+                              className="w-6 h-6 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: STEALTH.accent }}
+                            >
+                              <Check className="w-4 h-4" style={{ color: STEALTH.bg }} />
                             </div>
                           )}
                         </div>
@@ -183,13 +230,23 @@ function OrderOffreContent() {
                         {offer.features.slice(0, 3).map((feature, i) => (
                           <span 
                             key={i} 
-                            className="text-[10px] px-2 py-0.5 rounded-full bg-[#F5F5F7] text-[#8E8E93]"
+                            className="text-[10px] px-2 py-0.5 rounded-full"
+                            style={{ 
+                              backgroundColor: STEALTH.accentMuted, 
+                              color: STEALTH.textSecondary 
+                            }}
                           >
                             {feature}
                           </span>
                         ))}
                         {offer.features.length > 3 && (
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F5F5F7] text-[#8E8E93]">
+                          <span 
+                            className="text-[10px] px-2 py-0.5 rounded-full"
+                            style={{ 
+                              backgroundColor: STEALTH.accentMuted, 
+                              color: STEALTH.textSecondary 
+                            }}
+                          >
                             +{offer.features.length - 3}
                           </span>
                         )}
@@ -207,7 +264,11 @@ function OrderOffreContent() {
               size="lg"
               onClick={handleContinue}
               disabled={!state.selectedOffer || state.isTransitioning || isNavigating}
-              className="bg-[#007AFF] text-white hover:bg-[#0066D6] font-semibold gap-2 px-10 py-6 text-base rounded-xl transition-all disabled:opacity-40 disabled:bg-[#8E8E93]"
+              className="font-semibold gap-2 px-10 py-6 text-base rounded-full transition-all disabled:opacity-40"
+              style={{ 
+                backgroundColor: STEALTH.accent, 
+                color: STEALTH.bg 
+              }}
             >
               {isNavigating ? "Chargement..." : "Continuer"}
               <ArrowRight className="w-5 h-5" />
@@ -215,19 +276,32 @@ function OrderOffreContent() {
           </div>
 
           {/* Note */}
-          <p className="text-center text-[10px] text-[#8E8E93] mt-6">
+          <p 
+            className="text-center text-[10px] mt-6"
+            style={{ color: STEALTH.textMuted }}
+          >
             Livraison gratuite au Maroc · Paiement à la livraison
           </p>
         </motion.div>
       </main>
 
       {/* Sticky CTA Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#F5F5F7]/95 backdrop-blur-lg border-t border-[#E5E5E5] md:hidden z-40 safe-area-bottom">
+      <div 
+        className="fixed bottom-0 left-0 right-0 p-4 backdrop-blur-lg md:hidden z-40 safe-area-bottom"
+        style={{ 
+          backgroundColor: `${STEALTH.bg}E6`,
+          borderTop: `1px solid ${STEALTH.border}`
+        }}
+      >
         <Button
           size="lg"
           onClick={handleContinue}
           disabled={!state.selectedOffer || state.isTransitioning || isNavigating}
-          className="w-full bg-[#007AFF] text-white hover:bg-[#0066D6] font-semibold gap-2 py-6 text-base rounded-xl min-h-[56px] disabled:opacity-40 disabled:bg-[#8E8E93]"
+          className="w-full font-semibold gap-2 py-6 text-base rounded-full min-h-[56px] disabled:opacity-40"
+          style={{ 
+            backgroundColor: STEALTH.accent, 
+            color: STEALTH.bg 
+          }}
         >
           {isNavigating ? "Chargement..." : state.selectedOffer ? "Continuer" : "Sélectionnez une offre"}
           <ArrowRight className="w-5 h-5" />
