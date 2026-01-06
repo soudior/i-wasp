@@ -1,6 +1,6 @@
 /**
  * Ariella KHIAT COHEN - Avocat à la Cour
- * Carte digitale premium - Thème Obsidian Stealth
+ * Carte digitale premium - Thème Bleu Marine & Or
  */
 
 import { useState } from "react";
@@ -18,17 +18,22 @@ import {
 } from "lucide-react";
 import akcLogo from "@/assets/clients/akc-logo.png";
 
-// Obsidian Stealth Palette
-const OBSIDIAN = {
-  bg: "#050505",
-  card: "#0A0A0A",
-  border: "rgba(180, 180, 180, 0.08)",
-  borderHover: "rgba(180, 180, 180, 0.15)",
-  text: "#E8E8E8",
+// Palette Bleu Marine & Or - Style Cabinet d'Avocat
+const COLORS = {
+  bg: "#0A0E14",
+  card: "#0F1419",
+  border: "rgba(201, 162, 39, 0.15)",
+  borderHover: "rgba(201, 162, 39, 0.3)",
+  text: "#F5F5F5",
   textSecondary: "rgba(200, 200, 200, 0.6)",
-  titanium: "#A0A5AD",
-  emerald: "#10B981",
-  emeraldGlow: "rgba(16, 185, 129, 0.15)",
+  // Bleu Marine du logo
+  navy: "#1B3A5F",
+  navyLight: "#2A4D73",
+  navyGlow: "rgba(27, 58, 95, 0.3)",
+  // Or du logo
+  gold: "#C9A227",
+  goldLight: "#D4B84A",
+  goldGlow: "rgba(201, 162, 39, 0.15)",
 };
 
 const containerVariants = {
@@ -61,7 +66,6 @@ const PROFILE = {
   linkedin: null as string | null,
   tagline: "Défendre vos droits avec excellence et détermination",
   initials: "AK",
-  // Coordonnées GPS exactes pour 6 rue Ruhmkorff, 75017 Paris
   coordinates: {
     lat: 48.8847,
     lng: 2.2988
@@ -88,12 +92,16 @@ function ActionButton({
         flex items-center justify-center gap-3 w-full py-4 px-5
         rounded-2xl font-medium text-sm tracking-wide
         transition-all duration-300
-        ${variant === "primary" 
-          ? "bg-gradient-to-r from-[#10B981] to-[#059669] text-white shadow-lg shadow-emerald-500/20" 
-          : "bg-[#111111] border border-[rgba(180,180,180,0.08)] text-[#E8E8E8] hover:border-[rgba(180,180,180,0.15)]"
-        }
       `}
-      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+      style={{ 
+        fontFamily: "'Inter', system-ui, sans-serif",
+        background: variant === "primary" 
+          ? `linear-gradient(135deg, ${COLORS.gold} 0%, ${COLORS.goldLight} 100%)`
+          : COLORS.card,
+        color: variant === "primary" ? "#0A0E14" : COLORS.text,
+        border: variant === "primary" ? "none" : `1px solid ${COLORS.border}`,
+        boxShadow: variant === "primary" ? `0 4px 20px ${COLORS.goldGlow}` : "none"
+      }}
     >
       <Icon size={18} strokeWidth={1.5} />
       <span>{label}</span>
@@ -110,19 +118,26 @@ function ContactItem({ icon: Icon, label, value, href }: {
   const content = (
     <motion.div 
       whileHover={{ x: 4 }}
-      className="flex items-start gap-4 p-4 rounded-xl bg-[#0A0A0A] border border-[rgba(180,180,180,0.05)] hover:border-[rgba(16,185,129,0.2)] transition-all duration-300 cursor-pointer group"
+      className="flex items-start gap-4 p-4 rounded-xl transition-all duration-300 cursor-pointer group"
+      style={{
+        background: COLORS.card,
+        border: `1px solid ${COLORS.border}`
+      }}
     >
       <div 
         className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{ background: OBSIDIAN.emeraldGlow }}
+        style={{ background: COLORS.goldGlow }}
       >
-        <Icon size={18} style={{ color: OBSIDIAN.emerald }} strokeWidth={1.5} />
+        <Icon size={18} style={{ color: COLORS.gold }} strokeWidth={1.5} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs uppercase tracking-wider mb-1" style={{ color: OBSIDIAN.textSecondary }}>
+        <p className="text-xs uppercase tracking-wider mb-1" style={{ color: COLORS.textSecondary }}>
           {label}
         </p>
-        <p className="text-sm font-medium truncate group-hover:text-[#10B981] transition-colors" style={{ color: OBSIDIAN.text }}>
+        <p 
+          className="text-sm font-medium truncate transition-colors" 
+          style={{ color: COLORS.text }}
+        >
           {value}
         </p>
       </div>
@@ -192,7 +207,6 @@ END:VCARD`;
   };
 
   const handleWhatsApp = () => {
-    // Format: +33 9 83 83 33 64 (French format)
     const phoneNumber = "33" + PROFILE.phone.replace(/\./g, "").substring(1);
     window.open(`https://wa.me/${phoneNumber}`, "_blank");
   };
@@ -201,16 +215,26 @@ END:VCARD`;
     <div 
       className="min-h-screen w-full flex flex-col"
       style={{ 
-        background: `linear-gradient(180deg, ${OBSIDIAN.bg} 0%, #080808 100%)`,
+        background: `linear-gradient(180deg, ${COLORS.bg} 0%, #060810 100%)`,
         fontFamily: "'Bodoni Moda', 'Playfair Display', serif"
       }}
     >
-      {/* Ambient glow effect */}
+      {/* Ambient glow effect - Gold */}
       <div 
         className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] pointer-events-none"
         style={{
-          background: `radial-gradient(ellipse at center, ${OBSIDIAN.emeraldGlow} 0%, transparent 70%)`,
+          background: `radial-gradient(ellipse at center, ${COLORS.goldGlow} 0%, transparent 70%)`,
           filter: "blur(80px)",
+          opacity: 0.5
+        }}
+      />
+      
+      {/* Navy accent glow */}
+      <div 
+        className="fixed bottom-0 right-0 w-[400px] h-[400px] pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse at center, ${COLORS.navyGlow} 0%, transparent 70%)`,
+          filter: "blur(100px)",
           opacity: 0.4
         }}
       />
@@ -225,39 +249,39 @@ END:VCARD`;
         <motion.div variants={itemVariants} className="flex justify-end mb-6">
           <button
             onClick={handleShare}
-            className="w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300"
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
             style={{ 
-              borderColor: OBSIDIAN.border,
-              background: OBSIDIAN.card
+              border: `1px solid ${COLORS.border}`,
+              background: COLORS.card
             }}
           >
-            <Share2 size={16} style={{ color: OBSIDIAN.titanium }} />
+            <Share2 size={16} style={{ color: COLORS.gold }} />
           </button>
         </motion.div>
 
         {/* Profile Card */}
         <motion.div 
           variants={itemVariants}
-          className="rounded-3xl p-8 mb-6 border backdrop-blur-sm"
+          className="rounded-3xl p-8 mb-6 backdrop-blur-sm"
           style={{
-            background: `linear-gradient(145deg, ${OBSIDIAN.card} 0%, rgba(10,10,10,0.8) 100%)`,
-            borderColor: OBSIDIAN.border,
-            boxShadow: `0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 ${OBSIDIAN.border}`
+            background: `linear-gradient(145deg, ${COLORS.card} 0%, rgba(15,20,25,0.9) 100%)`,
+            border: `1px solid ${COLORS.border}`,
+            boxShadow: `0 20px 60px rgba(0,0,0,0.5), 0 0 40px ${COLORS.goldGlow}`
           }}
         >
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <div 
-              className="w-32 h-32 rounded-full overflow-hidden border-2 bg-white"
+              className="w-36 h-36 rounded-full overflow-hidden bg-white p-1"
               style={{
-                borderColor: OBSIDIAN.emerald,
-                boxShadow: `0 0 30px ${OBSIDIAN.emeraldGlow}`
+                border: `3px solid ${COLORS.gold}`,
+                boxShadow: `0 0 30px ${COLORS.goldGlow}, 0 0 60px ${COLORS.navyGlow}`
               }}
             >
               <img 
                 src={akcLogo} 
                 alt="Cabinet AKC - Ariella KHIAT COHEN" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-full"
               />
             </div>
           </div>
@@ -267,7 +291,7 @@ END:VCARD`;
             <h1 
               className="text-3xl font-bold tracking-tight mb-2"
               style={{ 
-                color: OBSIDIAN.text,
+                color: COLORS.text,
                 fontFamily: "'Bodoni Moda', 'Playfair Display', serif"
               }}
             >
@@ -276,7 +300,7 @@ END:VCARD`;
             <h2 
               className="text-2xl font-light tracking-wide mb-3"
               style={{ 
-                color: OBSIDIAN.titanium,
+                color: COLORS.gold,
                 fontFamily: "'Bodoni Moda', 'Playfair Display', serif"
               }}
             >
@@ -284,11 +308,14 @@ END:VCARD`;
             </h2>
             <div 
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
-              style={{ background: OBSIDIAN.emeraldGlow }}
+              style={{ 
+                background: COLORS.navyGlow,
+                border: `1px solid ${COLORS.navy}`
+              }}
             >
               <span 
                 className="text-sm font-medium tracking-wide"
-                style={{ color: OBSIDIAN.emerald }}
+                style={{ color: COLORS.text }}
               >
                 {PROFILE.title}
               </span>
@@ -299,7 +326,7 @@ END:VCARD`;
           <p 
             className="text-center text-sm leading-relaxed mb-6 px-2"
             style={{ 
-              color: OBSIDIAN.textSecondary,
+              color: COLORS.textSecondary,
               fontFamily: "'Inter', system-ui, sans-serif"
             }}
           >
@@ -379,13 +406,13 @@ END:VCARD`;
         <motion.div 
           variants={itemVariants}
           className="text-center pt-6 border-t"
-          style={{ borderColor: OBSIDIAN.border }}
+          style={{ borderColor: COLORS.border }}
         >
           <p 
             className="text-xs tracking-widest uppercase"
-            style={{ color: OBSIDIAN.textSecondary }}
+            style={{ color: COLORS.textSecondary }}
           >
-            Powered by <span style={{ color: OBSIDIAN.titanium }}>IWASP</span>
+            Powered by <span style={{ color: COLORS.gold }}>IWASP</span>
           </p>
         </motion.div>
       </motion.div>
