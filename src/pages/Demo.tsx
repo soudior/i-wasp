@@ -596,9 +596,9 @@ export default function Demo() {
 
             {/* Footer */}
             <div className="border-t border-white/[0.04] py-4 text-center">
-              <p className="text-[10px] text-white/15 tracking-[0.2em] uppercase">
-                Powered by IWASP
-              </p>
+              <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="text-[10px] text-white/15 tracking-[0.2em] uppercase hover:opacity-80 transition-opacity">
+                Powered by I-WASP.com
+              </a>
             </div>
           </motion.div>
 

@@ -216,7 +216,7 @@ export const CardBack = forwardRef<HTMLDivElement, CardBackProps>(
           </svg>
         </div>
 
-        {/* Powered by IWASP - bottom center, subtle */}
+        {/* Powered by I-WASP.com - bottom center, subtle */}
         <div
           className="absolute bottom-0 left-0 right-0 flex justify-center z-10"
           style={{ paddingBottom: mmToPx(4) }}
@@ -231,7 +231,7 @@ export const CardBack = forwardRef<HTMLDivElement, CardBackProps>(
               textTransform: "uppercase",
             }}
           >
-            Powered by IWASP
+            Powered by I-WASP.com
           </span>
         </div>
       </div>
