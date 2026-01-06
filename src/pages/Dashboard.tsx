@@ -7,10 +7,12 @@ import { useLeads } from "@/hooks/useLeads";
 import { useScans } from "@/hooks/useScans";
 import { useUserOrders, getOrderStatusLabel, getOrderStatusColor } from "@/hooks/useOrders";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useContactsStories, useOwnStories } from "@/hooks/useContactsStories";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { DashboardCard } from "@/components/DashboardCard";
 import { SubscriptionCard } from "@/components/SubscriptionCard";
+import { StoriesCarousel } from "@/components/StoriesCarousel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -48,7 +50,7 @@ import {
   LogOut, X, Apple, Smartphone, ShoppingBag,
   Clock, CheckCircle2, Factory, Truck, Package,
   Download, MapPin, ChevronRight, FileText, Loader2, Image,
-  Zap, BarChart3, Palette
+  Zap, BarChart3, Palette, Sparkles
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -138,6 +140,8 @@ const Dashboard = () => {
   const { data: scans = [] } = useScans();
   const { data: orders = [], isLoading: ordersLoading } = useUserOrders();
   const { isPremium } = useSubscription();
+  const { contacts: contactsWithStories, loading: storiesLoading } = useContactsStories();
+  const { stories: ownStories, cardInfo: ownCardInfo } = useOwnStories();
   const updateCard = useUpdateCard();
   const deleteCard = useDeleteCard();
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
@@ -243,6 +247,25 @@ const Dashboard = () => {
             onPushNotification={() => toast.info("Fonctionnalité Push disponible ci-dessous")}
             totalScans={scans.length}
           />
+
+          {/* Stories Carousel - Style Instagram */}
+          {(contactsWithStories.length > 0 || ownCardInfo) && (
+            <div className="mb-8 -mx-6">
+              <div className="flex items-center gap-2 px-6 mb-3">
+                <Sparkles size={16} className="text-rose-500" />
+                <h3 className="text-sm font-semibold text-foreground">Stories</h3>
+                <span className="text-xs text-muted-foreground">• 24h</span>
+              </div>
+              <StoriesCarousel
+                users={contactsWithStories}
+                showAddStory={!!ownCardInfo}
+                currentUserPhoto={ownCardInfo?.photoUrl}
+                currentUserName={ownCardInfo?.firstName || user?.user_metadata?.first_name || "Vous"}
+                onAddStory={() => navigate("/card-editor/" + cards[0]?.id)}
+                variant="default"
+              />
+            </div>
+          )}
 
           {/* Quick Actions Bar */}
           <div className="flex items-center justify-end gap-3 mb-8 flex-wrap">
