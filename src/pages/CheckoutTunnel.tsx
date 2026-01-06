@@ -529,20 +529,95 @@ const CheckoutTunnel = () => {
             </motion.div>
           )}
 
-          {/* TAB: MONITOR / VOICE (Placeholder) */}
-          {(activeTab === 'monitor' || activeTab === 'voice') && (
+          {/* TAB: GLOBAL MONITOR */}
+          {activeTab === 'monitor' && (
             <motion.div 
-              key="placeholder"
+              key="monitor"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="text-center py-16"
             >
-              <Radar className="w-20 h-20 mx-auto text-[#A5A9B4]/30 mb-6" />
-              <h1 className="text-2xl font-black italic text-white/20">
-                {activeTab === 'monitor' ? 'Global Monitor' : 'IA Vocal'}
-              </h1>
-              <p className="text-white/10 mt-2">Module en développement...</p>
+              <h1 className="text-4xl md:text-6xl font-black italic mb-4">Global <span className="text-[#A5A9B4]">Monitor.</span></h1>
+              <p className="text-white/30 italic mb-8 max-w-md">"Surveillance en temps réel du réseau Sovereign. Chaque scan est une connexion."</p>
+              
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                {[
+                  { label: 'Cartes Actives', value: globalNodes.toLocaleString(), icon: CreditCard },
+                  { label: 'Scans 24h', value: '12,847', icon: Radar },
+                  { label: 'Réseau Live', value: activeScans, icon: Globe, isLive: true }
+                ].map((stat) => (
+                  <div key={stat.label} className="p-6 rounded-2xl border border-white/5 bg-white/[0.02]">
+                    <div className="flex items-center gap-3 mb-4">
+                      <stat.icon className="w-6 h-6 text-[#A5A9B4]" />
+                      {stat.isLive && <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />}
+                    </div>
+                    <p className="text-3xl font-black text-[#A5A9B4] mb-1">{stat.value}</p>
+                    <p className="text-[9px] tracking-widest text-white/30 uppercase">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="p-6 rounded-3xl border border-white/5 bg-white/[0.02]">
+                <h3 className="text-lg font-black italic mb-4">Activité Récente</h3>
+                <div className="space-y-3">
+                  {[
+                    { city: 'Paris', time: 'Il y a 2 min', action: 'Nouveau scan' },
+                    { city: 'Marrakech', time: 'Il y a 5 min', action: 'Contact ajouté' },
+                    { city: 'Dubai', time: 'Il y a 12 min', action: 'Nouveau scan' },
+                    { city: 'New York', time: 'Il y a 18 min', action: 'WhatsApp' },
+                  ].map((event, i) => (
+                    <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-black/40 border border-white/5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+                        <span className="font-black text-sm">{event.city}</span>
+                        <span className="text-[9px] text-[#A5A9B4] uppercase">{event.action}</span>
+                      </div>
+                      <span className="text-[9px] text-white/30">{event.time}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* TAB: IA VOCAL */}
+          {activeTab === 'voice' && (
+            <motion.div 
+              key="voice"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="max-w-2xl mx-auto"
+            >
+              <h1 className="text-4xl md:text-6xl font-black italic mb-4 text-center">IA <span className="text-[#A5A9B4]">Vocal.</span></h1>
+              <p className="text-white/30 italic mb-10 text-center">"Votre assistant vocal Sovereign. Commandez par la voix."</p>
+              
+              <div className="p-8 rounded-3xl border border-white/5 bg-white/[0.02] text-center mb-8">
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-b from-[#A5A9B4]/20 to-transparent flex items-center justify-center border border-[#A5A9B4]/30">
+                  <Mic className="w-10 h-10 text-[#A5A9B4]" />
+                </div>
+                <p className="text-white/50 text-sm mb-6">Appuyez pour parler</p>
+                <button 
+                  onClick={() => notify("IA Vocal activée. Dites votre commande...")}
+                  className="px-10 py-5 bg-[#A5A9B4] text-black rounded-full font-black uppercase text-xs tracking-[0.3em] hover:bg-white transition-all"
+                >
+                  Activer le Micro
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { cmd: '"Nouvelle commande"', desc: 'Lance le tunnel de commande' },
+                  { cmd: '"Mes stats"', desc: 'Affiche le Global Monitor' },
+                  { cmd: '"Legacy Map"', desc: 'Ouvre la carte mondiale' },
+                  { cmd: '"Contacter support"', desc: 'Ouvre WhatsApp' },
+                ].map((item, i) => (
+                  <div key={i} className="p-4 rounded-2xl border border-white/5 bg-white/[0.02]">
+                    <p className="font-black text-[#A5A9B4] text-sm mb-1">{item.cmd}</p>
+                    <p className="text-[9px] text-white/30">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
