@@ -1,21 +1,39 @@
 /**
  * IWASP Leads Dashboard
- * Premium lead management interface with scoring
- * Apple-level design, full export capabilities
- * CRM automation ready (Zapier / Make / Webhooks)
- * RGPD compliant with delete functionality
+ * Simplified, Apple-like design
+ * Filters, search, bulk actions
  */
 
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { useLeads, useUpdateLeadStatus, useDeleteLead, type LeadWithCard } from "@/hooks/useLeads";
-import { useCards } from "@/hooks/useCards";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { motion } from "framer-motion";
+import { format, subDays, isAfter, parseISO } from "date-fns";
+import { fr } from "date-fns/locale";
+import {
+  Search,
+  Download,
+  Trash2,
+  Mail,
+  Phone,
+  Building2,
+  Calendar,
+  ChevronDown,
+  MoreHorizontal,
+  Users,
+  Flame,
+  Thermometer,
+  Snowflake,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  MessageSquare,
+  ArrowUpDown,
+  RefreshCw,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -31,14 +49,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -48,836 +58,782 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { useLeads, useUpdateLeadStatus, useDeleteLead, type LeadWithCard } from "@/hooks/useLeads";
+import { useCards } from "@/hooks/useCards";
 import { toast } from "sonner";
-import { 
-  Users, Download, Search, Phone, Mail, Building2,
-  Calendar, CreditCard, ArrowLeft, X, Flame, TrendingUp,
-  Eye, MoreVertical, CheckCircle, MessageCircle, Clock,
-  Webhook, FileSpreadsheet, Send, Settings, Zap, Trash2, Shield
-} from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { CRMIntegrationPanel } from "@/components/CRMIntegrationPanel";
-import { useWebhookConfigs } from "@/hooks/useWebhookConfig";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { DashboardLayout } from "@/layouts/DashboardLayout";
 
-// Lead temperature based on score
-type LeadTemperature = "cold" | "warm" | "hot";
+type LeadTemperature = "hot" | "warm" | "cold";
+type SortField = "created_at" | "lead_score" | "name";
+type SortOrder = "asc" | "desc";
+
+const ITEMS_PER_PAGE = 10;
 
 function getLeadTemperature(score: number): LeadTemperature {
-  if (score >= 51) return "hot";
-  if (score >= 21) return "warm";
+  if (score >= 30) return "hot";
+  if (score >= 15) return "warm";
   return "cold";
 }
 
-function getTemperatureLabel(temp: LeadTemperature): string {
-  switch (temp) {
-    case "hot": return "Chaud";
-    case "warm": return "Tiède";
-    case "cold": return "Froid";
-  }
-}
-
-// Score badge component with temperature status
-function ScoreBadge({ score }: { score: number }) {
+function TemperatureBadge({ score }: { score: number }) {
   const temp = getLeadTemperature(score);
-  
-  if (temp === "hot") {
-    return (
-      <div className="flex items-center gap-2">
-        <Badge className="bg-emerald-500/20 text-emerald-500 border-emerald-500/30 gap-1 animate-pulse">
-          <Flame size={12} />
-          Chaud
-        </Badge>
-        <span className="text-xs text-muted-foreground font-medium">{score} pts</span>
-      </div>
-    );
-  }
-  if (temp === "warm") {
-    return (
-      <div className="flex items-center gap-2">
-        <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30 gap-1">
-          <TrendingUp size={12} />
-          Tiède
-        </Badge>
-        <span className="text-xs text-muted-foreground">{score} pts</span>
-      </div>
-    );
-  }
-  return (
-    <div className="flex items-center gap-2">
-      <Badge variant="secondary" className="text-muted-foreground gap-1">
-        Froid
-      </Badge>
-      <span className="text-xs text-muted-foreground">{score} pts</span>
-    </div>
-  );
-}
-
-// Status badge component
-function StatusBadge({ status }: { status: string }) {
-  const config: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
-    new: { label: "Nouveau", className: "bg-blue-500/20 text-blue-500 border-blue-500/30", icon: <Clock size={12} /> },
-    contacted: { label: "Contacté", className: "bg-amber-500/20 text-amber-500 border-amber-500/30", icon: <MessageCircle size={12} /> },
-    converted: { label: "Converti", className: "bg-emerald-500/20 text-emerald-500 border-emerald-500/30", icon: <CheckCircle size={12} /> },
-    archived: { label: "Archivé", className: "bg-muted text-muted-foreground border-muted", icon: null },
+  const config = {
+    hot: { icon: Flame, label: "Chaud", className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+    warm: { icon: Thermometer, label: "Tiède", className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
+    cold: { icon: Snowflake, label: "Froid", className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
   };
+  const { icon: Icon, label, className } = config[temp];
   
-  const c = config[status] || config.new;
   return (
-    <Badge className={`${c.className} gap-1`}>
-      {c.icon}
-      {c.label}
+    <Badge variant="secondary" className={`${className} gap-1`}>
+      <Icon className="h-3 w-3" />
+      {score} pts
     </Badge>
   );
 }
 
-const Leads = () => {
-  const { user } = useAuth();
-  const { data: leads = [], isLoading } = useLeads();
+function StatusBadge({ status }: { status: string }) {
+  const config: Record<string, { icon: typeof CheckCircle2; label: string; className: string }> = {
+    new: { icon: Clock, label: "Nouveau", className: "bg-primary/10 text-primary" },
+    contacted: { icon: MessageSquare, label: "Contacté", className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
+    converted: { icon: CheckCircle2, label: "Converti", className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
+    archived: { icon: XCircle, label: "Archivé", className: "bg-muted text-muted-foreground" },
+  };
+  const { icon: Icon, label, className } = config[status] || config.new;
+  
+  return (
+    <Badge variant="secondary" className={`${className} gap-1`}>
+      <Icon className="h-3 w-3" />
+      {label}
+    </Badge>
+  );
+}
+
+export default function Leads() {
+  const { data: leads = [], isLoading, refetch } = useLeads();
   const { data: cards = [] } = useCards();
-  const { data: webhookConfigs = [] } = useWebhookConfigs();
   const updateStatus = useUpdateLeadStatus();
   const deleteLead = useDeleteLead();
-  
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCardId, setSelectedCardId] = useState<string>("all");
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [selectedDateRange, setSelectedDateRange] = useState<string>("all");
-  const [selectedTemperature, setSelectedTemperature] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<"date" | "score">("score"); // Default sort by score
-  const [selectedLead, setSelectedLead] = useState<LeadWithCard | null>(null);
-  const [leadToDelete, setLeadToDelete] = useState<LeadWithCard | null>(null);
-  
-  // CRM Integration panel
-  const [crmPanelOpen, setCrmPanelOpen] = useState(false);
 
-  // Date range filter helper
-  const isWithinDateRange = (dateStr: string, range: string): boolean => {
-    if (range === "all") return true;
-    
-    const date = new Date(dateStr);
-    const now = new Date();
-    
-    switch (range) {
-      case "today":
-        return date.toDateString() === now.toDateString();
-      case "week":
-        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        return date >= weekAgo;
-      case "month":
-        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        return date >= monthAgo;
-      case "quarter":
-        const quarterAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-        return date >= quarterAgo;
-      default:
-        return true;
-    }
-  };
+  // Filters
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [temperatureFilter, setTemperatureFilter] = useState<string>("all");
+  const [cardFilter, setCardFilter] = useState<string>("all");
+  const [dateFilter, setDateFilter] = useState<string>("all");
+  
+  // Sorting
+  const [sortField, setSortField] = useState<SortField>("created_at");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Selection
+  const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set());
+  
+  // Modals
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<LeadWithCard | null>(null);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
   // Filter and sort leads
   const filteredLeads = useMemo(() => {
-    let result = leads.filter(lead => {
-      if (selectedCardId !== "all" && lead.card_id !== selectedCardId) return false;
-      if (selectedStatus !== "all" && lead.status !== selectedStatus) return false;
-      if (!isWithinDateRange(lead.created_at, selectedDateRange)) return false;
-      
-      // Temperature filter
-      if (selectedTemperature !== "all") {
-        const temp = getLeadTemperature(lead.lead_score);
-        if (temp !== selectedTemperature) return false;
-      }
-      
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        return (
-          lead.name?.toLowerCase().includes(query) ||
-          lead.email?.toLowerCase().includes(query) ||
-          lead.phone?.includes(query) ||
-          lead.company?.toLowerCase().includes(query)
-        );
-      }
-      
-      return true;
-    });
+    let result = [...leads];
 
-    // Sort leads
-    result.sort((a, b) => {
-      if (sortBy === "score") {
-        return b.lead_score - a.lead_score; // Highest score first
+    // Search
+    if (search) {
+      const searchLower = search.toLowerCase();
+      result = result.filter(
+        (lead) =>
+          lead.name?.toLowerCase().includes(searchLower) ||
+          lead.email?.toLowerCase().includes(searchLower) ||
+          lead.phone?.includes(search) ||
+          lead.company?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Status filter
+    if (statusFilter !== "all") {
+      result = result.filter((lead) => lead.status === statusFilter);
+    }
+
+    // Temperature filter
+    if (temperatureFilter !== "all") {
+      result = result.filter((lead) => getLeadTemperature(lead.lead_score) === temperatureFilter);
+    }
+
+    // Card filter
+    if (cardFilter !== "all") {
+      result = result.filter((lead) => lead.card_id === cardFilter);
+    }
+
+    // Date filter
+    if (dateFilter !== "all") {
+      const now = new Date();
+      const cutoff = {
+        today: subDays(now, 1),
+        week: subDays(now, 7),
+        month: subDays(now, 30),
+      }[dateFilter];
+      if (cutoff) {
+        result = result.filter((lead) => isAfter(parseISO(lead.created_at), cutoff));
       }
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime(); // Newest first
+    }
+
+    // Sort
+    result.sort((a, b) => {
+      let comparison = 0;
+      switch (sortField) {
+        case "created_at":
+          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          break;
+        case "lead_score":
+          comparison = a.lead_score - b.lead_score;
+          break;
+        case "name":
+          comparison = (a.name || "").localeCompare(b.name || "");
+          break;
+      }
+      return sortOrder === "asc" ? comparison : -comparison;
     });
 
     return result;
-  }, [leads, selectedCardId, selectedStatus, selectedDateRange, selectedTemperature, sortBy, searchQuery]);
+  }, [leads, search, statusFilter, temperatureFilter, cardFilter, dateFilter, sortField, sortOrder]);
 
-  // Stats with scoring
-  const stats = useMemo(() => {
-    const total = leads.length;
-    const hotLeads = leads.filter(l => l.lead_score >= 50).length;
-    const thisMonth = leads.filter(l => {
-      const date = new Date(l.created_at);
-      const now = new Date();
-      return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-    }).length;
-    const conversionRate = total > 0 
-      ? ((leads.filter(l => l.status === "converted").length / total) * 100).toFixed(1) 
-      : "0";
-    
-    return { total, hotLeads, thisMonth, conversionRate };
-  }, [leads]);
+  // Pagination
+  const totalPages = Math.ceil(filteredLeads.length / ITEMS_PER_PAGE);
+  const paginatedLeads = filteredLeads.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
-  // Export to CSV
-  const handleExportCSV = () => {
-    if (filteredLeads.length === 0) {
-      toast.error("Aucun lead à exporter");
-      return;
+  // Stats
+  const stats = useMemo(() => ({
+    total: leads.length,
+    hot: leads.filter((l) => getLeadTemperature(l.lead_score) === "hot").length,
+    new: leads.filter((l) => l.status === "new").length,
+    converted: leads.filter((l) => l.status === "converted").length,
+  }), [leads]);
+
+  // Selection handlers
+  const toggleSelect = (id: string) => {
+    const newSelected = new Set(selectedLeads);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
     }
+    setSelectedLeads(newSelected);
+  };
 
-    // BOM for Excel UTF-8 compatibility
-    const BOM = "\uFEFF";
-    const headers = ["Nom", "Email", "Téléphone", "Société", "Message", "Score", "Statut", "Source", "Appareil", "Carte", "Date"];
-    const rows = filteredLeads.map(lead => [
-      lead.name || "",
-      lead.email || "",
-      lead.phone || "",
-      lead.company || "",
-      lead.message || "",
-      lead.lead_score.toString(),
-      lead.status,
-      lead.source || "nfc",
-      lead.device_type || "",
-      `${lead.digital_cards?.first_name || ""} ${lead.digital_cards?.last_name || ""}`,
-      format(new Date(lead.created_at), "dd/MM/yyyy HH:mm"),
-    ]);
+  const toggleSelectAll = () => {
+    if (selectedLeads.size === paginatedLeads.length) {
+      setSelectedLeads(new Set());
+    } else {
+      setSelectedLeads(new Set(paginatedLeads.map((l) => l.id)));
+    }
+  };
 
-    const csvContent = BOM + [
-      headers.join(";"), // Use semicolon for Excel FR compatibility
-      ...rows.map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(";"))
+  // Bulk actions
+  const handleBulkStatusChange = async (status: string) => {
+    const promises = Array.from(selectedLeads).map((id) =>
+      updateStatus.mutateAsync({ id, status })
+    );
+    await Promise.all(promises);
+    setSelectedLeads(new Set());
+    toast.success(`${selectedLeads.size} leads mis à jour`);
+  };
+
+  const handleBulkDelete = async () => {
+    const promises = Array.from(selectedLeads).map((id) =>
+      deleteLead.mutateAsync(id)
+    );
+    await Promise.all(promises);
+    setSelectedLeads(new Set());
+    setDeleteDialogOpen(false);
+    toast.success(`${selectedLeads.size} leads supprimés`);
+  };
+
+  // Export
+  const handleExport = () => {
+    const csvContent = [
+      ["Nom", "Email", "Téléphone", "Entreprise", "Score", "Statut", "Date"].join("\t"),
+      ...filteredLeads.map((lead) =>
+        [
+          lead.name || "-",
+          lead.email || "-",
+          lead.phone || "-",
+          lead.company || "-",
+          lead.lead_score,
+          lead.status,
+          format(parseISO(lead.created_at), "dd/MM/yyyy", { locale: fr }),
+        ].join("\t")
+      ),
     ].join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csvContent], { type: "text/tab-separated-values" });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `iwasp-leads-${format(new Date(), "yyyy-MM-dd")}.csv`;
-    link.click();
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `leads-${format(new Date(), "yyyy-MM-dd")}.tsv`;
+    a.click();
     URL.revokeObjectURL(url);
-    
-    toast.success(`${filteredLeads.length} leads exportés en CSV`);
-  };
-
-  // Export to Excel (XLSX-like TSV)
-  const handleExportExcel = () => {
-    if (filteredLeads.length === 0) {
-      toast.error("Aucun lead à exporter");
-      return;
-    }
-
-    const BOM = "\uFEFF";
-    const headers = ["Nom", "Email", "Téléphone", "Société", "Message", "Score", "Statut", "Source", "Appareil", "Carte", "Date", "Lead Chaud"];
-    const rows = filteredLeads.map(lead => [
-      lead.name || "",
-      lead.email || "",
-      lead.phone || "",
-      lead.company || "",
-      lead.message || "",
-      lead.lead_score.toString(),
-      lead.status === "new" ? "Nouveau" : lead.status === "contacted" ? "Contacté" : lead.status === "converted" ? "Converti" : "Archivé",
-      lead.source?.toUpperCase() || "NFC",
-      lead.device_type || "",
-      `${lead.digital_cards?.first_name || ""} ${lead.digital_cards?.last_name || ""}`,
-      format(new Date(lead.created_at), "dd/MM/yyyy HH:mm"),
-      lead.lead_score >= 50 ? "🔥 OUI" : "NON",
-    ]);
-
-    // Tab-separated for Excel
-    const tsvContent = BOM + [
-      headers.join("\t"),
-      ...rows.map(row => row.map(cell => `${cell.replace(/\t/g, ' ')}`).join("\t"))
-    ].join("\n");
-
-    const blob = new Blob([tsvContent], { type: "application/vnd.ms-excel;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `iwasp-leads-${format(new Date(), "yyyy-MM-dd")}.xls`;
-    link.click();
-    URL.revokeObjectURL(url);
-    
-    toast.success(`${filteredLeads.length} leads exportés en Excel`);
-  };
-
-  // Send lead to webhook (using configured webhooks)
-  const handleSendToWebhook = async (lead: LeadWithCard) => {
-    if (webhookConfigs.length === 0) {
-      setCrmPanelOpen(true);
-      toast.error("Configurez d'abord une intégration CRM");
-      return;
-    }
-
-    // RGPD check
-    if (!lead.consent_given) {
-      toast.error("Ce lead n'a pas donné son consentement (RGPD)");
-      return;
-    }
-
-    const activeConfig = webhookConfigs.find(c => c.enabled);
-    if (!activeConfig) {
-      toast.error("Aucune intégration active");
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase.functions.invoke("lead-webhook", {
-        body: {
-          action: "sync_lead",
-          lead_id: lead.id,
-          webhook_url: activeConfig.webhook_url,
-          config_id: activeConfig.id,
-          user_id: user?.id,
-          field_mapping: activeConfig.field_mapping,
-          retry_count: activeConfig.retry_count,
-          sync_consented_only: activeConfig.sync_consented_only,
-        },
-      });
-
-      if (error || !data?.success) {
-        toast.error("Échec de l'envoi au CRM");
-      } else {
-        toast.success("Lead envoyé au CRM !");
-      }
-    } catch (err) {
-      toast.error("Erreur de connexion");
-    }
-  };
-
-  const handleStatusChange = async (leadId: string, newStatus: string) => {
-    await updateStatus.mutateAsync({ id: leadId, status: newStatus });
-  };
-
-  const handleDeleteLead = async () => {
-    if (!leadToDelete) return;
-    await deleteLead.mutateAsync(leadToDelete.id);
-    setLeadToDelete(null);
-    setSelectedLead(null);
+    toast.success("Export téléchargé");
   };
 
   const clearFilters = () => {
-    setSearchQuery("");
-    setSelectedCardId("all");
-    setSelectedStatus("all");
-    setSelectedDateRange("all");
-    setSelectedTemperature("all");
-    setSortBy("score");
+    setSearch("");
+    setStatusFilter("all");
+    setTemperatureFilter("all");
+    setCardFilter("all");
+    setDateFilter("all");
+    setCurrentPage(1);
   };
 
-  const hasActiveFilters = searchQuery || selectedCardId !== "all" || selectedStatus !== "all" || selectedDateRange !== "all" || selectedTemperature !== "all";
+  const hasActiveFilters = search || statusFilter !== "all" || temperatureFilter !== "all" || cardFilter !== "all" || dateFilter !== "all";
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-grid opacity-20" />
-      <div className="absolute top-20 left-1/4 w-[600px] h-[600px] orb opacity-20 animate-pulse-glow" />
-      <div className="noise" />
-      
-      <Navbar />
-      
-      <main className="relative z-10 pt-24 pb-16">
-        <div className="container mx-auto px-6">
+    <DashboardLayout>
+      <div className="min-h-screen bg-background">
+        <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
           {/* Header */}
-          <div className="flex flex-col gap-6 mb-8 animate-fade-up">
-            <div className="flex items-center gap-4">
-              <Link to="/dashboard">
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <ArrowLeft size={20} />
-                </Button>
-              </Link>
-              <div className="flex-1">
-                <h1 className="font-display text-3xl md:text-4xl font-bold">
-                  Leads
-                </h1>
-                <p className="text-muted-foreground mt-1">
-                  Gérez vos contacts capturés
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={() => setCrmPanelOpen(true)}
-                  className="rounded-full relative"
-                  title="Intégrations CRM"
-                >
-                  <Zap size={18} />
-                  {webhookConfigs.filter(c => c.enabled).length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full" />
-                  )}
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="chrome" disabled={filteredLeads.length === 0}>
-                      <Download size={18} />
-                      Exporter
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={handleExportCSV}>
-                      <FileSpreadsheet size={14} className="mr-2" />
-                      Export CSV
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleExportExcel}>
-                      <FileSpreadsheet size={14} className="mr-2" />
-                      Export Excel
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Contacts</h1>
+              <p className="text-muted-foreground text-sm">
+                Gérez vos leads et suivez vos conversions
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                className="gap-2"
+              >
+                <RefreshCw className="h-4 w-4" />
+                <span className="hidden sm:inline">Actualiser</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                disabled={filteredLeads.length === 0}
+                className="gap-2"
+              >
+                <Download className="h-4 w-4" />
+                <span className="hidden sm:inline">Exporter</span>
+              </Button>
             </div>
           </div>
 
-          {/* KPI Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {/* Stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: "Total leads", value: stats.total, icon: Users, color: "text-foreground" },
-              { label: "Leads chauds", value: stats.hotLeads, icon: Flame, color: "text-emerald-500" },
-              { label: "Ce mois", value: stats.thisMonth, icon: Calendar, color: "text-blue-500" },
-              { label: "Taux conversion", value: `${stats.conversionRate}%`, icon: TrendingUp, color: "text-amber-500" },
-            ].map((stat, index) => (
-              <div
-                key={stat.label}
-                className="animate-fade-up"
-                style={{ animationDelay: `${0.1 + index * 0.05}s` }}
-              >
-                <Card variant="premium" className="p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className={`w-10 h-10 rounded-xl bg-foreground/10 flex items-center justify-center`}>
-                      <stat.icon size={20} className={stat.color} />
-                    </div>
+              { label: "Total", value: stats.total, icon: Users, color: "text-foreground" },
+              { label: "Chauds", value: stats.hot, icon: Flame, color: "text-red-500" },
+              { label: "Nouveaux", value: stats.new, icon: Clock, color: "text-primary" },
+              { label: "Convertis", value: stats.converted, icon: CheckCircle2, color: "text-green-500" },
+            ].map((stat) => (
+              <Card key={stat.label} className="bg-card border-border">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className={`p-2 rounded-xl bg-muted ${stat.color}`}>
+                    <stat.icon className="h-5 w-5" />
                   </div>
-                  <p className={`font-display text-2xl font-bold ${stat.color} mb-1`}>
-                    {stat.value}
-                  </p>
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                </Card>
-              </div>
+                  <div>
+                    <p className="text-2xl font-semibold text-foreground">{stat.value}</p>
+                    <p className="text-xs text-muted-foreground">{stat.label}</p>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
 
           {/* Filters */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-            <div className="relative flex-1">
-              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher un lead..."
-                className="pl-12 h-12 bg-secondary/50 border-0 rounded-xl"
-              />
-            </div>
-            
-            <Select value={selectedCardId} onValueChange={setSelectedCardId}>
-              <SelectTrigger className="w-full md:w-[180px] h-12 bg-secondary/50 border-0 rounded-xl">
-                <CreditCard size={16} className="mr-2 text-muted-foreground" />
-                <SelectValue placeholder="Carte" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les cartes</SelectItem>
-                {cards.map(card => (
-                  <SelectItem key={card.id} value={card.id}>
-                    {card.first_name} {card.last_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <Card className="bg-card border-border">
+            <CardContent className="p-4 space-y-4">
+              {/* Search + Main filters */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Rechercher par nom, email, téléphone..."
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="pl-10 bg-background"
+                  />
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}>
+                    <SelectTrigger className="w-[130px] bg-background">
+                      <SelectValue placeholder="Statut" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous statuts</SelectItem>
+                      <SelectItem value="new">Nouveau</SelectItem>
+                      <SelectItem value="contacted">Contacté</SelectItem>
+                      <SelectItem value="converted">Converti</SelectItem>
+                      <SelectItem value="archived">Archivé</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-              <SelectTrigger className="w-full md:w-[160px] h-12 bg-secondary/50 border-0 rounded-xl">
-                <SelectValue placeholder="Statut" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous statuts</SelectItem>
-                <SelectItem value="new">Nouveau</SelectItem>
-                <SelectItem value="contacted">Contacté</SelectItem>
-                <SelectItem value="converted">Converti</SelectItem>
-                <SelectItem value="archived">Archivé</SelectItem>
-              </SelectContent>
-            </Select>
+                  <Select value={temperatureFilter} onValueChange={(v) => { setTemperatureFilter(v); setCurrentPage(1); }}>
+                    <SelectTrigger className="w-[130px] bg-background">
+                      <SelectValue placeholder="Température" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Toutes temp.</SelectItem>
+                      <SelectItem value="hot">Chaud</SelectItem>
+                      <SelectItem value="warm">Tiède</SelectItem>
+                      <SelectItem value="cold">Froid</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-            <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
-              <SelectTrigger className="w-full md:w-[150px] h-12 bg-secondary/50 border-0 rounded-xl">
-                <Calendar size={16} className="mr-2 text-muted-foreground" />
-                <SelectValue placeholder="Période" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes dates</SelectItem>
-                <SelectItem value="today">Aujourd'hui</SelectItem>
-                <SelectItem value="week">7 derniers jours</SelectItem>
-                <SelectItem value="month">30 derniers jours</SelectItem>
-                <SelectItem value="quarter">3 derniers mois</SelectItem>
-              </SelectContent>
-            </Select>
+                  <Select value={dateFilter} onValueChange={(v) => { setDateFilter(v); setCurrentPage(1); }}>
+                    <SelectTrigger className="w-[130px] bg-background">
+                      <SelectValue placeholder="Période" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Toutes dates</SelectItem>
+                      <SelectItem value="today">Aujourd'hui</SelectItem>
+                      <SelectItem value="week">7 derniers jours</SelectItem>
+                      <SelectItem value="month">30 derniers jours</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-            <Select value={selectedTemperature} onValueChange={setSelectedTemperature}>
-              <SelectTrigger className="w-full md:w-[140px] h-12 bg-secondary/50 border-0 rounded-xl">
-                <Flame size={16} className="mr-2 text-muted-foreground" />
-                <SelectValue placeholder="Score" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous scores</SelectItem>
-                <SelectItem value="hot">🔥 Chauds (51+)</SelectItem>
-                <SelectItem value="warm">🌡️ Tièdes (21-50)</SelectItem>
-                <SelectItem value="cold">❄️ Froids (0-20)</SelectItem>
-              </SelectContent>
-            </Select>
+                  {cards.length > 1 && (
+                    <Select value={cardFilter} onValueChange={(v) => { setCardFilter(v); setCurrentPage(1); }}>
+                      <SelectTrigger className="w-[150px] bg-background">
+                        <SelectValue placeholder="Carte" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Toutes cartes</SelectItem>
+                        {cards.map((card) => (
+                          <SelectItem key={card.id} value={card.id}>
+                            {card.first_name} {card.last_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
+              </div>
 
-            <Select value={sortBy} onValueChange={(v) => setSortBy(v as "date" | "score")}>
-              <SelectTrigger className="w-full md:w-[140px] h-12 bg-secondary/50 border-0 rounded-xl">
-                <TrendingUp size={16} className="mr-2 text-muted-foreground" />
-                <SelectValue placeholder="Trier par" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="score">Score (haut → bas)</SelectItem>
-                <SelectItem value="date">Date (récent)</SelectItem>
-              </SelectContent>
-            </Select>
+              {/* Active filters + Clear */}
+              {hasActiveFilters && (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {filteredLeads.length} résultat{filteredLeads.length !== 1 ? "s" : ""}
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={clearFilters} className="text-primary">
+                    Effacer les filtres
+                  </Button>
+                </div>
+              )}
 
-            {hasActiveFilters && (
-              <Button
-                variant="outline"
-                onClick={clearFilters}
-                className="h-12 rounded-xl gap-2"
-              >
-                <X size={16} />
-                Effacer
-              </Button>
-            )}
-          </div>
+              {/* Bulk actions */}
+              {selectedLeads.size > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20"
+                >
+                  <span className="text-sm font-medium text-foreground">
+                    {selectedLeads.size} sélectionné{selectedLeads.size !== 1 ? "s" : ""}
+                  </span>
+                  <div className="flex-1" />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="gap-2">
+                        Changer statut
+                        <ChevronDown className="h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange("contacted")}>
+                        Marquer contacté
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange("converted")}>
+                        Marquer converti
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange("archived")}>
+                        Archiver
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setDeleteDialogOpen(true)}
+                    className="gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Supprimer
+                  </Button>
+                </motion.div>
+              )}
+            </CardContent>
+          </Card>
 
-          {/* Leads List */}
-          <div className="animate-fade-up" style={{ animationDelay: '0.3s' }}>
+          {/* Table */}
+          <Card className="bg-card border-border overflow-hidden">
             {isLoading ? (
-              <div className="flex justify-center py-20">
-                <div className="w-8 h-8 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
+              <div className="p-12 text-center">
+                <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto" />
+                <p className="text-muted-foreground mt-4">Chargement...</p>
               </div>
             ) : filteredLeads.length === 0 ? (
-              <Card variant="premium" className="p-12 text-center">
-                <Users size={48} className="mx-auto mb-4 text-muted-foreground/30" />
-                <h3 className="font-display text-lg font-medium text-foreground mb-2">
-                  {hasActiveFilters ? "Aucun résultat" : "Aucun lead capturé"}
-                </h3>
-                <p className="text-muted-foreground text-sm max-w-md mx-auto">
-                  {hasActiveFilters 
+              <div className="p-12 text-center">
+                <Users className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                <p className="text-foreground font-medium">Aucun contact trouvé</p>
+                <p className="text-muted-foreground text-sm mt-1">
+                  {hasActiveFilters
                     ? "Essayez de modifier vos filtres"
-                    : "Partagez votre carte NFC pour commencer à capturer des leads qualifiés."
-                  }
+                    : "Les leads apparaîtront ici après un scan de carte"}
                 </p>
-              </Card>
+              </div>
             ) : (
-              <Card variant="premium" className="overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border bg-secondary/30">
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground">Contact</th>
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground hidden md:table-cell">Société</th>
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground">Score</th>
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground hidden lg:table-cell">Statut</th>
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground hidden lg:table-cell">Source</th>
-                        <th className="text-left p-4 text-sm font-medium text-muted-foreground">Date</th>
-                        <th className="text-right p-4 text-sm font-medium text-muted-foreground">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredLeads.map((lead) => (
-                        <tr 
-                          key={lead.id} 
-                          className="border-b border-border last:border-0 hover:bg-secondary/20 transition-colors"
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={selectedLeads.size === paginatedLeads.length && paginatedLeads.length > 0}
+                          onCheckedChange={toggleSelectAll}
+                        />
+                      </TableHead>
+                      <TableHead>
+                        <button
+                          onClick={() => {
+                            if (sortField === "name") {
+                              setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                            } else {
+                              setSortField("name");
+                              setSortOrder("asc");
+                            }
+                          }}
+                          className="flex items-center gap-1 hover:text-foreground transition-colors"
                         >
-                          <td className="p-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center flex-shrink-0">
-                                <span className="text-sm font-medium text-foreground">
-                                  {lead.name?.charAt(0)?.toUpperCase() || "?"}
-                                </span>
-                              </div>
-                              <div className="min-w-0">
-                                <p className="font-medium text-foreground truncate">
-                                  {lead.name || "—"}
-                                </p>
-                                <p className="text-sm text-muted-foreground truncate">
-                                  {lead.email || lead.phone || "—"}
-                                </p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="p-4 text-muted-foreground hidden md:table-cell">
-                            {lead.company || "—"}
-                          </td>
-                          <td className="p-4">
-                            <ScoreBadge score={lead.lead_score || 0} />
-                          </td>
-                          <td className="p-4 hidden lg:table-cell">
-                            <StatusBadge status={lead.status || "new"} />
-                          </td>
-                          <td className="p-4 hidden lg:table-cell">
-                            <Badge variant="outline" className="uppercase text-xs">
-                              {lead.source || "NFC"}
-                            </Badge>
-                          </td>
-                          <td className="p-4 text-sm text-muted-foreground">
-                            {format(new Date(lead.created_at), "dd MMM", { locale: fr })}
-                          </td>
-                          <td className="p-4 text-right">
-                            <div className="flex items-center justify-end gap-1">
-                              {lead.phone && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 rounded-full"
-                                  onClick={() => window.open(`tel:${lead.phone}`)}
-                                >
-                                  <Phone size={14} />
-                                </Button>
-                              )}
-                              {lead.phone && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 rounded-full"
-                                  onClick={() => window.open(`https://wa.me/${lead.phone?.replace(/\s+/g, "")}`)}
-                                >
-                                  <MessageCircle size={14} />
-                                </Button>
-                              )}
+                          Contact
+                          <ArrowUpDown className="h-3 w-3" />
+                        </button>
+                      </TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        <button
+                          onClick={() => {
+                            if (sortField === "lead_score") {
+                              setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                            } else {
+                              setSortField("lead_score");
+                              setSortOrder("desc");
+                            }
+                          }}
+                          className="flex items-center gap-1 hover:text-foreground transition-colors"
+                        >
+                          Score
+                          <ArrowUpDown className="h-3 w-3" />
+                        </button>
+                      </TableHead>
+                      <TableHead className="hidden sm:table-cell">Statut</TableHead>
+                      <TableHead className="hidden lg:table-cell">
+                        <button
+                          onClick={() => {
+                            if (sortField === "created_at") {
+                              setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                            } else {
+                              setSortField("created_at");
+                              setSortOrder("desc");
+                            }
+                          }}
+                          className="flex items-center gap-1 hover:text-foreground transition-colors"
+                        >
+                          Date
+                          <ArrowUpDown className="h-3 w-3" />
+                        </button>
+                      </TableHead>
+                      <TableHead className="w-12" />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedLeads.map((lead) => (
+                      <TableRow
+                        key={lead.id}
+                        className="group cursor-pointer"
+                        onClick={() => {
+                          setSelectedLead(lead);
+                          setDetailDialogOpen(true);
+                        }}
+                      >
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={selectedLeads.has(lead.id)}
+                            onCheckedChange={() => toggleSelect(lead.id)}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className="min-w-0">
+                            <p className="font-medium text-foreground truncate">
+                              {lead.name || "—"}
+                            </p>
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground mt-0.5">
                               {lead.email && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 rounded-full"
-                                  onClick={() => window.open(`mailto:${lead.email}`)}
-                                >
-                                  <Mail size={14} />
-                                </Button>
+                                <span className="flex items-center gap-1 truncate">
+                                  <Mail className="h-3 w-3 flex-shrink-0" />
+                                  <span className="truncate">{lead.email}</span>
+                                </span>
                               )}
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                                    <MoreVertical size={14} />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => setSelectedLead(lead)}>
-                                    <Eye size={14} className="mr-2" />
-                                    Voir détails
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem onClick={() => handleStatusChange(lead.id, "contacted")}>
-                                    <MessageCircle size={14} className="mr-2" />
-                                    Marquer contacté
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleStatusChange(lead.id, "converted")}>
-                                    <CheckCircle size={14} className="mr-2" />
-                                    Marquer converti
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleStatusChange(lead.id, "archived")}>
-                                    Archiver
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem 
-                                    onClick={() => setLeadToDelete(lead)}
-                                    className="text-destructive focus:text-destructive"
-                                  >
-                                    <Trash2 size={14} className="mr-2" />
-                                    Supprimer (RGPD)
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                              {lead.phone && (
+                                <span className="flex items-center gap-1">
+                                  <Phone className="h-3 w-3 flex-shrink-0" />
+                                  {lead.phone}
+                                </span>
+                              )}
                             </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </Card>
-            )}
-          </div>
+                            {lead.company && (
+                              <span className="flex items-center gap-1 text-sm text-muted-foreground mt-0.5">
+                                <Building2 className="h-3 w-3 flex-shrink-0" />
+                                {lead.company}
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          <TemperatureBadge score={lead.lead_score} />
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <StatusBadge status={lead.status} />
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell text-muted-foreground text-sm">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {format(parseISO(lead.created_at), "dd MMM yyyy", { locale: fr })}
+                          </div>
+                        </TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => updateStatus.mutate({ id: lead.id, status: "contacted" })}>
+                                Marquer contacté
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => updateStatus.mutate({ id: lead.id, status: "converted" })}>
+                                Marquer converti
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => updateStatus.mutate({ id: lead.id, status: "archived" })}>
+                                Archiver
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              {lead.email && (
+                                <DropdownMenuItem onClick={() => window.location.href = `mailto:${lead.email}`}>
+                                  Envoyer un email
+                                </DropdownMenuItem>
+                              )}
+                              {lead.phone && (
+                                <DropdownMenuItem onClick={() => window.location.href = `tel:${lead.phone}`}>
+                                  Appeler
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => {
+                                  setSelectedLeads(new Set([lead.id]));
+                                  setDeleteDialogOpen(true);
+                                }}
+                              >
+                                Supprimer
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
 
-          {/* Results count */}
-          {filteredLeads.length > 0 && (
-            <p className="text-sm text-muted-foreground text-center mt-6">
-              {filteredLeads.length} lead{filteredLeads.length > 1 ? "s" : ""} 
-              {hasActiveFilters && " (filtré)"}
-            </p>
-          )}
-        </div>
-      </main>
-
-      <Footer />
-
-      {/* Lead Detail Modal */}
-      {selectedLead && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center"
-          onClick={() => setSelectedLead(null)}
-        >
-          <div 
-            className="bg-background w-full md:max-w-md md:rounded-2xl rounded-t-2xl p-6 animate-fade-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-foreground/10 flex items-center justify-center">
-                  <span className="text-xl font-semibold text-foreground">
-                    {selectedLead.name?.charAt(0)?.toUpperCase() || "?"}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="font-display text-lg font-semibold text-foreground">
-                    {selectedLead.name || "Sans nom"}
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <ScoreBadge score={selectedLead.lead_score || 0} />
-                    <StatusBadge status={selectedLead.status || "new"} />
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="p-4 border-t border-border">
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                          let page: number;
+                          if (totalPages <= 5) {
+                            page = i + 1;
+                          } else if (currentPage <= 3) {
+                            page = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            page = totalPages - 4 + i;
+                          } else {
+                            page = currentPage - 2 + i;
+                          }
+                          return (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setCurrentPage(page)}
+                                isActive={currentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        })}
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
                   </div>
-                </div>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="rounded-full"
-                onClick={() => setSelectedLead(null)}
-              >
-                <X size={20} />
-              </Button>
-            </div>
-
-            <div className="space-y-3 mb-6">
-              {selectedLead.email && (
-                <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl">
-                  <Mail size={18} className="text-muted-foreground" />
-                  <span className="text-foreground">{selectedLead.email}</span>
-                </div>
-              )}
-              {selectedLead.phone && (
-                <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl">
-                  <Phone size={18} className="text-muted-foreground" />
-                  <span className="text-foreground">{selectedLead.phone}</span>
-                </div>
-              )}
-              {selectedLead.company && (
-                <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl">
-                  <Building2 size={18} className="text-muted-foreground" />
-                  <span className="text-foreground">{selectedLead.company}</span>
-                </div>
-              )}
-              {selectedLead.message && (
-                <div className="p-3 bg-secondary/50 rounded-xl">
-                  <p className="text-xs text-muted-foreground mb-1">Message</p>
-                  <p className="text-foreground text-sm">{selectedLead.message}</p>
-                </div>
-              )}
-              <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl">
-                <Calendar size={18} className="text-muted-foreground" />
-                <span className="text-foreground">
-                  {format(new Date(selectedLead.created_at), "dd MMMM yyyy à HH:mm", { locale: fr })}
-                </span>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl">
-                <CreditCard size={18} className="text-muted-foreground" />
-                <span className="text-muted-foreground">Via</span>
-                <span className="text-foreground">
-                  {selectedLead.digital_cards?.first_name} {selectedLead.digital_cards?.last_name}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex gap-3 mb-3">
-              {selectedLead.phone && (
-                <Button 
-                  variant="chrome" 
-                  className="flex-1"
-                  onClick={() => window.open(`tel:${selectedLead.phone}`)}
-                >
-                  <Phone size={16} />
-                  Appeler
-                </Button>
-              )}
-              {selectedLead.phone && (
-                <Button 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={() => window.open(`https://wa.me/${selectedLead.phone?.replace(/\s+/g, "")}`)}
-                >
-                  <MessageCircle size={16} />
-                  WhatsApp
-                </Button>
-              )}
-              {selectedLead.email && !selectedLead.phone && (
-                <Button 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={() => window.open(`mailto:${selectedLead.email}`)}
-                >
-                  <Mail size={16} />
-                  Email
-                </Button>
-              )}
-            </div>
-            
-            {/* RGPD Delete button */}
-            <Button
-              variant="ghost"
-              className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={() => {
-                setLeadToDelete(selectedLead);
-              }}
-            >
-              <Trash2 size={16} className="mr-2" />
-              Supprimer (RGPD)
-            </Button>
-          </div>
+                )}
+              </>
+            )}
+          </Card>
         </div>
-      )}
 
-      {/* CRM Integration Panel */}
-      <CRMIntegrationPanel open={crmPanelOpen} onOpenChange={setCrmPanelOpen} />
+        {/* Lead Detail Dialog */}
+        <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>{selectedLead?.name || "Contact"}</DialogTitle>
+              <DialogDescription>
+                Ajouté le {selectedLead && format(parseISO(selectedLead.created_at), "dd MMMM yyyy à HH:mm", { locale: fr })}
+              </DialogDescription>
+            </DialogHeader>
+            {selectedLead && (
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <TemperatureBadge score={selectedLead.lead_score} />
+                  <StatusBadge status={selectedLead.status} />
+                </div>
 
-      {/* RGPD Delete Confirmation Dialog */}
-      <AlertDialog open={!!leadToDelete} onOpenChange={() => setLeadToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <Shield size={20} className="text-destructive" />
-              Supprimer ce lead (RGPD)
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Cette action est irréversible. Le lead{" "}
-              <span className="font-medium text-foreground">
-                {leadToDelete?.name || leadToDelete?.email || "sans nom"}
-              </span>{" "}
-              sera définitivement supprimé conformément au RGPD.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteLead}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              <Trash2 size={16} className="mr-2" />
-              Supprimer définitivement
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+                <div className="space-y-3">
+                  {selectedLead.email && (
+                    <div className="flex items-center gap-3 text-sm">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <a href={`mailto:${selectedLead.email}`} className="text-primary hover:underline">
+                        {selectedLead.email}
+                      </a>
+                    </div>
+                  )}
+                  {selectedLead.phone && (
+                    <div className="flex items-center gap-3 text-sm">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <a href={`tel:${selectedLead.phone}`} className="text-primary hover:underline">
+                        {selectedLead.phone}
+                      </a>
+                    </div>
+                  )}
+                  {selectedLead.company && (
+                    <div className="flex items-center gap-3 text-sm">
+                      <Building2 className="h-4 w-4 text-muted-foreground" />
+                      <span>{selectedLead.company}</span>
+                    </div>
+                  )}
+                  {selectedLead.message && (
+                    <div className="p-3 rounded-lg bg-muted">
+                      <p className="text-sm text-foreground">{selectedLead.message}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <Select
+                    value={selectedLead.status}
+                    onValueChange={(status) => {
+                      updateStatus.mutate({ id: selectedLead.id, status });
+                      setSelectedLead({ ...selectedLead, status });
+                    }}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">Nouveau</SelectItem>
+                      <SelectItem value="contacted">Contacté</SelectItem>
+                      <SelectItem value="converted">Converti</SelectItem>
+                      <SelectItem value="archived">Archivé</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => {
+                      setSelectedLeads(new Set([selectedLead.id]));
+                      setDetailDialogOpen(false);
+                      setDeleteDialogOpen(true);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Supprimer {selectedLeads.size} contact{selectedLeads.size !== 1 ? "s" : ""} ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Cette action est irréversible. Les données seront définitivement supprimées conformément au RGPD.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleBulkDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Supprimer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </DashboardLayout>
   );
-};
-
-export default Leads;
+}
