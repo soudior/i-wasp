@@ -30,9 +30,10 @@ import {
   RotateCw,
 } from "lucide-react";
 
-// Import the official i-Wasp logo and card template
-import iwaspLogo from "@/assets/iwasp-logo.png";
-import cardTemplateFront from "@/assets/cards/card-template-front.png";
+// Import the official i-Wasp logo and card templates
+import iwaspLogoCard from "@/assets/cards/iwasp-logo-card.png";
+import cardRectoTemplate from "@/assets/cards/card-recto-template.png";
+import cardVersoPattern from "@/assets/cards/card-verso-pattern.png";
 
 export interface CardDesignConfig {
   logoUrl: string | null;
@@ -305,9 +306,9 @@ export function CardDesignEditor({
                     backgroundColor: "#FFFFFF",
                   }}
                 >
-                  {/* Card Template Background */}
+                  {/* Card Template Background - Recto */}
                   <img
-                    src={cardTemplateFront}
+                    src={cardRectoTemplate}
                     alt="i-Wasp Card Template"
                     className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0"
                   />
@@ -316,14 +317,14 @@ export function CardDesignEditor({
                   <div
                     className="absolute z-30 pointer-events-none"
                     style={{
-                      top: "12%",
-                      right: "6%",
-                      width: "22%",
+                      top: "8%",
+                      right: "4%",
+                      width: "20%",
                       height: "auto",
                     }}
                   >
                     <img
-                      src={iwaspLogo}
+                      src={iwaspLogoCard}
                       alt="i-Wasp"
                       className="w-full h-auto object-contain"
                     />
@@ -426,7 +427,7 @@ export function CardDesignEditor({
                   )}
                 </div>
 
-                {/* Back Side with Honeycomb Pattern */}
+                {/* Back Side with Pattern from uploaded image */}
                 <div
                   className="absolute inset-0 rounded-xl overflow-hidden shadow-2xl"
                   style={{
@@ -435,39 +436,26 @@ export function CardDesignEditor({
                     backgroundColor: "#FFFFFF",
                   }}
                 >
-                  {/* Honeycomb SVG Pattern */}
-                  <svg
-                    className="absolute inset-0 w-full h-full"
-                    viewBox="0 0 89.6 58"
-                    preserveAspectRatio="xMidYMid slice"
-                  >
-                    <defs>
-                      <pattern id="honeycomb" width="8" height="8" patternUnits="userSpaceOnUse">
-                        <path 
-                          d="M4 0 L8 2 L8 6 L4 8 L0 6 L0 2 Z" 
-                          fill="none" 
-                          stroke="rgba(0,0,0,0.06)" 
-                          strokeWidth="0.3"
-                        />
-                      </pattern>
-                    </defs>
-                    <rect x="0" y="0" width="100%" height="100%" fill="white" />
-                    <rect x="0" y="0" width="100%" height="100%" fill="url(#honeycomb)" />
-                  </svg>
+                  {/* Verso Pattern Background */}
+                  <img
+                    src={cardVersoPattern}
+                    alt="Pattern verso"
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                  />
 
                   {/* i-Wasp logo centered on back */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <img
-                      src={iwaspLogo}
+                      src={iwaspLogoCard}
                       alt="i-Wasp"
-                      className="w-1/4 h-auto object-contain opacity-20"
+                      className="w-1/3 h-auto object-contain opacity-15"
                     />
                   </div>
 
                   {/* Back label */}
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
                     <Badge variant="outline" className="text-[10px] bg-white/80 border-gray-200">
-                      Verso · Pattern Honeycomb
+                      Verso · Pattern i-Wasp
                     </Badge>
                   </div>
                 </div>
