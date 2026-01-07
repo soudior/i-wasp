@@ -407,6 +407,79 @@ const Dashboard = () => {
             </motion.section>
           )}
 
+          {/* Recent Orders with payment status */}
+          {orders.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45 }}
+              className="mb-12"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-foreground">
+                  Commandes récentes
+                </h2>
+                <Link to="/orders">
+                  <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground">
+                    Voir tout
+                    <ChevronRight size={16} />
+                  </Button>
+                </Link>
+              </div>
+
+              <Card className="divide-y divide-border/50">
+                {orders.slice(0, 5).map((order) => {
+                  const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
+                    pending: { label: "En attente", color: "text-amber-600", bg: "bg-amber-100" },
+                    paid: { label: "Payée", color: "text-green-600", bg: "bg-green-100" },
+                    in_production: { label: "En production", color: "text-purple-600", bg: "bg-purple-100" },
+                    shipped: { label: "Expédiée", color: "text-blue-600", bg: "bg-blue-100" },
+                    delivered: { label: "Livrée", color: "text-emerald-600", bg: "bg-emerald-100" },
+                  };
+                  const status = statusConfig[order.status] || statusConfig.pending;
+                  const paymentMethod = order.payment_method === "stripe" ? "Carte" : "À la livraison";
+                  
+                  return (
+                    <Link 
+                      key={order.id} 
+                      to={`/orders/${order.id}`}
+                      className="p-4 flex items-center justify-between hover:bg-secondary/50 transition-colors block"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
+                          <ShoppingBag size={18} className="text-muted-foreground" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">
+                            Commande #{order.order_number}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-sm text-muted-foreground">
+                              {(order.total_price_cents / 100).toFixed(0)} {order.currency}
+                            </span>
+                            <span className="text-muted-foreground">•</span>
+                            <span className="text-xs text-muted-foreground">
+                              {paymentMethod}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${status.bg} ${status.color}`}>
+                          {status.label}
+                        </span>
+                        <span className="text-xs text-muted-foreground hidden sm:block">
+                          {new Date(order.created_at).toLocaleDateString("fr-FR")}
+                        </span>
+                        <ChevronRight size={16} className="text-muted-foreground" />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </Card>
+            </motion.section>
+          )}
+
           {/* Premium upsell - Subtle */}
           {!isPremium && (
             <motion.div
