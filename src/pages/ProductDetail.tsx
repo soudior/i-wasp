@@ -10,6 +10,7 @@ import { GlobalFooter } from "@/components/GlobalFooter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { PartnerSalonsMap } from "@/components/PartnerSalonsMap";
 import {
   ArrowLeft,
   ArrowRight,
@@ -643,6 +644,11 @@ export default function ProductDetail() {
           </motion.div>
         </div>
       </section>
+
+      {/* Partner Salons Map - Only for NFC Nails */}
+      {product.category === "nails" && (
+        <PartnerSalonsMap />
+      )}
 
       {/* Lightbox */}
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
