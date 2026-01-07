@@ -39,6 +39,7 @@ import cardBack from "@/assets/cards/card-base-back.png";
 import nfcTagsImage from "@/assets/products/nfc-tags-collection.png";
 import nfcWearablesImage from "@/assets/products/nfc-wearables.png";
 import nfcBadgesImage from "@/assets/products/nfc-badges-event.png";
+import nfcNailsImage from "@/assets/products/nfc-nails-collection.png";
 
 // Stealth Luxury Palette
 const STEALTH = {
@@ -136,8 +137,24 @@ const cardProducts: CardProduct[] = [
   }
 ];
 
-// Other products with images
+// Other products with images (including NFC Nails)
 const otherProducts = [
+  {
+    id: "ongles-nfc",
+    icon: Sparkles,
+    image: nfcNailsImage,
+    title: "Ongles NFC",
+    subtitle: "Beauté connectée",
+    description: "Révolutionnez votre manucure avec la technologie NFC intégrée. Partagez vos infos d'un simple toucher.",
+    features: [
+      "Puce NFC invisible",
+      "Compatible tous designs",
+      "Tenue 3-4 semaines",
+      "Application en salon"
+    ],
+    price: "À partir de 89€",
+    badge: "Nouveau"
+  },
   {
     id: "tags-nfc",
     icon: Tag,
@@ -276,104 +293,96 @@ function FlipCard({ product, isFlipped, onFlip }: {
   );
 }
 
-// Card Product Component
-function CardProductCard({ product, index }: { product: CardProduct; index: number }) {
-  const [isFlipped, setIsFlipped] = useState(false);
+// Compact Card Carousel Component
+function CardsCarousel() {
+  const [activeCard, setActiveCard] = useState(0);
   const navigate = useNavigate();
+  const product = cardProducts[activeCard];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="relative rounded-3xl p-6"
-      style={{
-        background: product.popular 
-          ? `linear-gradient(135deg, ${STEALTH.accent}15 0%, ${STEALTH.glass} 100%)`
-          : STEALTH.glass,
-        border: `1px solid ${product.popular ? STEALTH.accent + '30' : STEALTH.border}`
-      }}
-    >
-      {/* Badge */}
-      {product.badge && (
-        <Badge 
-          className={`absolute -top-3 left-6 ${
-            product.popular 
-              ? "bg-white text-black" 
-              : product.badge === "Premium"
-              ? "bg-gradient-to-r from-amber-400 to-amber-600 text-black"
-              : "bg-emerald-500 text-white"
-          }`}
-        >
-          {product.badge === "Premium" && <Star className="w-3 h-3 mr-1" />}
-          {product.badge}
-        </Badge>
-      )}
-
-      {/* Card Preview with Flip */}
-      <div className="mb-6">
-        <FlipCard 
-          product={product} 
-          isFlipped={isFlipped} 
-          onFlip={() => setIsFlipped(!isFlipped)} 
-        />
+    <div className="rounded-3xl p-6" style={{ background: STEALTH.glass, border: `1px solid ${STEALTH.border}` }}>
+      {/* Card Selector */}
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+        {cardProducts.map((card, index) => (
+          <button
+            key={card.id}
+            onClick={() => setActiveCard(index)}
+            className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              index === activeCard ? 'bg-white text-black' : 'bg-white/10 text-white/70 hover:bg-white/20'
+            }`}
+          >
+            {card.badge && <span className="mr-1.5">{card.badge === "Populaire" ? "⭐" : card.badge === "Premium" ? "💎" : "🏷️"}</span>}
+            {card.name}
+          </button>
+        ))}
       </div>
 
-      {/* Content */}
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-xl font-semibold text-white">{product.name}</h3>
-          <p className="text-sm" style={{ color: STEALTH.accent }}>{product.subtitle}</p>
+      <div className="grid lg:grid-cols-2 gap-8 items-center">
+        {/* Card Preview */}
+        <div className="relative">
+          <FlipCard 
+            product={product} 
+            isFlipped={false} 
+            onFlip={() => {}} 
+          />
+          {product.badge && (
+            <Badge 
+              className={`absolute -top-2 -right-2 ${
+                product.popular ? "bg-white text-black" : "bg-gradient-to-r from-amber-400 to-amber-600 text-black"
+              }`}
+            >
+              {product.badge}
+            </Badge>
+          )}
         </div>
 
-        <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
-          {product.description}
-        </p>
-
-        {/* Features */}
-        <ul className="space-y-2">
-          {product.features.map((feature, i) => (
-            <li key={i} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
-              <Check className="w-4 h-4 flex-shrink-0" style={{ color: STEALTH.accent }} />
-              {feature}
-            </li>
-          ))}
-        </ul>
-
-        {/* Price & CTA */}
-        <div 
-          className="pt-4 flex items-center justify-between"
-          style={{ borderTop: `1px solid ${STEALTH.border}` }}
-        >
+        {/* Card Info */}
+        <div className="space-y-4">
           <div>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>À partir de</p>
-            <p className="text-2xl font-bold text-white">{product.price.EUR}</p>
+            <h3 className="text-2xl font-bold text-white">{product.name}</h3>
+            <p className="text-sm" style={{ color: STEALTH.accent }}>{product.subtitle}</p>
           </div>
-          <div className="flex gap-2">
-            <Button 
-              onClick={() => navigate(`/produits/${product.id}`)}
-              variant="outline"
-              className="rounded-full px-4"
-              style={{ borderColor: STEALTH.border, color: 'white' }}
-            >
-              Détails
-            </Button>
-            <Button 
-              onClick={() => navigate("/order")}
-              className="rounded-full px-4 gap-2"
-              style={{ 
-                backgroundColor: product.popular ? 'white' : STEALTH.accent, 
-                color: STEALTH.bg 
-              }}
-            >
-              Commander
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+
+          <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            {product.description}
+          </p>
+
+          <ul className="grid grid-cols-2 gap-2">
+            {product.features.slice(0, 4).map((feature, i) => (
+              <li key={i} className="flex items-center gap-2 text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                <Check className="w-3 h-3 flex-shrink-0" style={{ color: STEALTH.accent }} />
+                {feature}
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex items-center justify-between pt-4" style={{ borderTop: `1px solid ${STEALTH.border}` }}>
+            <div>
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>À partir de</p>
+              <p className="text-2xl font-bold text-white">{product.price.EUR}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => navigate(`/produits/${product.id}`)}
+                variant="outline"
+                className="rounded-full px-4"
+                style={{ borderColor: STEALTH.border, color: 'white' }}
+              >
+                Détails
+              </Button>
+              <Button 
+                onClick={() => navigate("/order")}
+                className="rounded-full px-4 gap-2"
+                style={{ backgroundColor: 'white', color: STEALTH.bg }}
+              >
+                Commander
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -487,31 +496,40 @@ export default function ProduitsNFC() {
         </div>
       </section>
       
-      {/* Card Products Grid */}
+      {/* Cards Section - Compact Carousel */}
       <section className="py-16 px-6" style={{ backgroundColor: STEALTH.bgAlt }}>
-        <div className="container mx-auto max-w-6xl">
+        <div className="container mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-8"
           >
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
+              style={{ 
+                backgroundColor: `${STEALTH.accent}10`, 
+                border: `1px solid ${STEALTH.border}` 
+              }}
+            >
+              <CreditCard className="w-4 h-4" style={{ color: STEALTH.accent }} />
+              <span className="text-sm" style={{ color: STEALTH.accentLight }}>4 modèles disponibles</span>
+            </div>
             <h2 
               className="text-3xl sm:text-4xl font-bold mb-4"
               style={{ fontFamily: "'Bodoni Moda', serif" }}
             >
               Nos <span style={{ color: STEALTH.accent }}>cartes</span>
             </h2>
-            <p className="max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              Cliquez sur chaque carte pour voir le recto et le verso
-            </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {cardProducts.map((product, index) => (
-              <CardProductCard key={product.id} product={product} index={index} />
-            ))}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <CardsCarousel />
+          </motion.div>
         </div>
       </section>
 
@@ -532,7 +550,7 @@ export default function ProduitsNFC() {
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {otherProducts.map((product, index) => (
               <motion.div
                 key={product.id}
@@ -547,13 +565,19 @@ export default function ProduitsNFC() {
                 }}
               >
                 {/* Product Image */}
-                <div className="relative aspect-[16/9] overflow-hidden">
+                <div className="relative aspect-square overflow-hidden">
                   <img 
                     src={product.image} 
                     alt={product.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  {/* Badge for new products */}
+                  {'badge' in product && product.badge && (
+                    <Badge className="absolute top-3 right-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white border-none">
+                      {product.badge}
+                    </Badge>
+                  )}
                   <div 
                     className="absolute top-3 left-3 w-10 h-10 rounded-xl flex items-center justify-center"
                     style={{ background: `linear-gradient(135deg, ${STEALTH.accent}40 0%, ${STEALTH.accent}20 100%)`, backdropFilter: 'blur(8px)' }}
