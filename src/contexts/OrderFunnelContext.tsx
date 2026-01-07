@@ -25,9 +25,9 @@ export interface OfferConfig {
 }
 
 export const OFFERS: OfferConfig[] = [
-  { id: "essentiel", name: "Essentiel", price: 29900, priceCurrency: "MAD" },
-  { id: "signature", name: "Signature", price: 59900, priceCurrency: "MAD" },
-  { id: "elite", name: "Élite", price: 99900, priceCurrency: "MAD" },
+  { id: "essentiel", name: "Essentiel", price: 27700, priceCurrency: "MAD" }, // ~27,69€
+  { id: "signature", name: "Signature", price: 55500, priceCurrency: "MAD" }, // ~55,46€
+  { id: "elite", name: "Élite", price: 92500, priceCurrency: "MAD" },         // ~92,5€
 ];
 
 // Digital identity (step 2: public profile)
