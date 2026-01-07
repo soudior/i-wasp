@@ -73,6 +73,7 @@ const BrandAssets = lazy(() => import("./pages/BrandAssets"));
 const CardStudio = lazy(() => import("./pages/CardStudio"));
 const NFCDemo3D = lazy(() => import("./pages/NFCDemo3D"));
 const ProduitsNFC = lazy(() => import("./pages/ProduitsNFC"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const Conciergerie = lazy(() => import("./pages/Conciergerie"));
 const Club = lazy(() => import("./pages/Club"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -172,6 +173,7 @@ const App = () => {
                             
                             {/* NEW PAGES - Final structure */}
                             <Route path="/produits" element={<ProduitsNFC />} />
+                            <Route path="/produits/:productId" element={<ProductDetail />} />
                             <Route path="/conciergerie" element={<Conciergerie />} />
                             <Route path="/club" element={<Club />} />
                             <Route path="/contact" element={<Contact />} />

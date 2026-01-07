@@ -67,7 +67,7 @@ interface CardProduct {
 
 const cardProducts: CardProduct[] = [
   {
-    id: "signature",
+    id: "carte-signature",
     name: "Carte Signature",
     subtitle: "L'essentiel premium",
     description: "Une carte élégante qui partage ton profil digital en un tap. Design personnalisé, finition luxe.",
@@ -82,7 +82,7 @@ const cardProducts: CardProduct[] = [
     icon: CreditCard
   },
   {
-    id: "executive",
+    id: "carte-executive",
     name: "Carte Executive",
     subtitle: "Pour les professionnels",
     description: "La carte business par excellence. Logo entreprise, personnalisation avancée, support prioritaire.",
@@ -100,7 +100,7 @@ const cardProducts: CardProduct[] = [
     icon: Star
   },
   {
-    id: "luxury",
+    id: "carte-luxury",
     name: "Carte Luxury",
     subtitle: "L'excellence absolue",
     description: "Pour ceux qui ne font aucun compromis. Matériaux nobles, finitions exceptionnelles, service conciergerie.",
@@ -118,7 +118,7 @@ const cardProducts: CardProduct[] = [
     icon: Sparkles
   },
   {
-    id: "team",
+    id: "pack-team",
     name: "Pack Team",
     subtitle: "Pour les équipes",
     description: "Équipez toute votre équipe. Tarifs dégressifs, gestion centralisée, design uniforme.",
@@ -139,7 +139,7 @@ const cardProducts: CardProduct[] = [
 // Other products with images
 const otherProducts = [
   {
-    id: "tag-nfc",
+    id: "tags-nfc",
     icon: Tag,
     image: nfcTagsImage,
     title: "Tags NFC",
@@ -154,7 +154,7 @@ const otherProducts = [
     price: "À partir de 29€"
   },
   {
-    id: "wearable",
+    id: "wearables-nfc",
     icon: Watch,
     image: nfcWearablesImage,
     title: "Wearables NFC",
@@ -169,7 +169,7 @@ const otherProducts = [
     price: "À partir de 69€"
   },
   {
-    id: "badge-event",
+    id: "badges-evenement",
     icon: Smartphone,
     image: nfcBadgesImage,
     title: "Badges événement",
@@ -350,17 +350,27 @@ function CardProductCard({ product, index }: { product: CardProduct; index: numb
             <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>À partir de</p>
             <p className="text-2xl font-bold text-white">{product.price.EUR}</p>
           </div>
-          <Button 
-            onClick={() => navigate("/order")}
-            className="rounded-full px-6 gap-2"
-            style={{ 
-              backgroundColor: product.popular ? 'white' : STEALTH.accent, 
-              color: STEALTH.bg 
-            }}
-          >
-            Commander
-            <ArrowRight className="w-4 h-4" />
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => navigate(`/produits/${product.id}`)}
+              variant="outline"
+              className="rounded-full px-4"
+              style={{ borderColor: STEALTH.border, color: 'white' }}
+            >
+              Détails
+            </Button>
+            <Button 
+              onClick={() => navigate("/order")}
+              className="rounded-full px-4 gap-2"
+              style={{ 
+                backgroundColor: product.popular ? 'white' : STEALTH.accent, 
+                color: STEALTH.bg 
+              }}
+            >
+              Commander
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </motion.div>
