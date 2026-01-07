@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.payment-history]
 verify_jwt = false
+
+[functions.create-nfc-payment]
+verify_jwt = false

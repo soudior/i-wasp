@@ -69,7 +69,7 @@ export interface ShippingInfo {
 
 // Payment info
 export interface PaymentInfo {
-  method: "cod"; // Only COD enabled for now
+  method: "cod" | "stripe"; // COD or Stripe online payment
 }
 
 // Complete funnel state
