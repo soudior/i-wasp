@@ -1,6 +1,6 @@
 /**
  * Produits NFC — Catalogue des solutions i-wasp
- * Avec modèles de carte recto/verso flip interactif
+ * Avec modèles de carte recto/verso flip interactif et galerie 3D
  */
 
 import { useState } from "react";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ClubNavbar } from "@/components/ClubNavbar";
 import { GlobalFooter } from "@/components/GlobalFooter";
+import { Card3DGallery } from "@/components/Card3DGallery";
 import { 
   CreditCard, 
   Tag, 
@@ -26,7 +27,8 @@ import {
   Star,
   Zap,
   Shield,
-  QrCode
+  QrCode,
+  Box
 } from "lucide-react";
 
 // Import card images
@@ -423,6 +425,47 @@ export default function ProduitsNFC() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* 3D Gallery Section */}
+      <section className="py-16 px-6" style={{ backgroundColor: STEALTH.bgAlt }}>
+        <div className="container mx-auto max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-8"
+          >
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
+              style={{ 
+                backgroundColor: `${STEALTH.accent}10`, 
+                border: `1px solid ${STEALTH.border}` 
+              }}
+            >
+              <Box className="w-4 h-4" style={{ color: STEALTH.accent }} />
+              <span className="text-sm" style={{ color: STEALTH.accentLight }}>Vue 3D Interactive</span>
+            </div>
+            <h2 
+              className="text-3xl sm:text-4xl font-bold mb-4"
+              style={{ fontFamily: "'Bodoni Moda', serif" }}
+            >
+              Explorez en <span style={{ color: STEALTH.accent }}>360°</span>
+            </h2>
+            <p className="max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              Faites pivoter la carte avec votre souris ou votre doigt pour découvrir chaque détail
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card3DGallery />
+          </motion.div>
         </div>
       </section>
       
