@@ -334,13 +334,24 @@ export default function OrderDetails() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <CreditCard className="h-5 w-5 text-primary" />
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      order.payment_method === "stripe" ? "bg-blue-100" : "bg-primary/10"
+                    }`}>
+                      <CreditCard className={`h-5 w-5 ${
+                        order.payment_method === "stripe" ? "text-blue-600" : "text-primary"
+                      }`} />
                     </div>
                     <div>
-                      <p className="font-medium">Paiement à la livraison</p>
+                      <p className="font-medium">
+                        {order.payment_method === "stripe" ? "Paiement par carte" : "Paiement à la livraison"}
+                      </p>
                       <p className="text-sm text-muted-foreground">
-                        Payez en espèces ou par carte à la réception
+                        {order.payment_method === "stripe" 
+                          ? order.paid_at 
+                            ? `Payé le ${format(new Date(order.paid_at), "d MMMM yyyy", { locale: fr })}`
+                            : "En attente de paiement"
+                          : "Payez en espèces à la réception"
+                        }
                       </p>
                     </div>
                   </div>
