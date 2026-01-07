@@ -57,7 +57,7 @@ function generateEmailHtml(title: string, body: string, orderNumber: string, tra
           
           <!-- CTA Button -->
           <div style="text-align: center; margin-bottom: 32px;">
-            <a href="https://iwasp.app/orders" style="display: inline-block; background: #1D1D1F; color: #FFFFFF; text-decoration: none; padding: 14px 32px; border-radius: 12px; font-size: 14px; font-weight: 600;">
+            <a href="https://iwasp.app/track?order=${orderNumber}" style="display: inline-block; background: #1D1D1F; color: #FFFFFF; text-decoration: none; padding: 14px 32px; border-radius: 12px; font-size: 14px; font-weight: 600;">
               Suivre ma commande
             </a>
           </div>

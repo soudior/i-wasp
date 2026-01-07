@@ -102,6 +102,7 @@ const LegacyMap = lazy(() => import("./pages/LegacyMap"));
 const Subscription = lazy(() => import("./pages/Subscription"));
 const OrderDetails = lazy(() => import("./pages/OrderDetails"));
 const Orders = lazy(() => import("./pages/Orders"));
+const TrackOrder = lazy(() => import("./pages/TrackOrder"));
 
 
 const queryClient = new QueryClient({
@@ -237,6 +238,9 @@ const App = () => {
                               <Route path="/showroom" element={<Showroom3D />} />
                               <Route path="/showroom-3d" element={<Showroom3D />} />
                               
+                              {/* Public order tracking */}
+                              <Route path="/track" element={<TrackOrder />} />
+                              <Route path="/suivi" element={<TrackOrder />} />
                               {/* Client Form */}
                               <Route path="/form" element={<ClientForm />} />
                               <Route path="/formulaire" element={<ClientForm />} />
