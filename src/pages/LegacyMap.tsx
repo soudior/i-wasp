@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { SovereignDock } from '@/components/SovereignDock';
 
 interface LegacyFlag {
   id: string;
@@ -355,6 +356,9 @@ export default function LegacyMap() {
           </p>
         </div>
       </motion.div>
+
+      {/* Sovereign Dock */}
+      <SovereignDock />
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
