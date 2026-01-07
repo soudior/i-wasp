@@ -42,6 +42,10 @@ import cardPackaging from "@/assets/products/card-packaging.png";
 import nfcTagsImage from "@/assets/products/nfc-tags-collection.png";
 import nfcWearablesImage from "@/assets/products/nfc-wearables.png";
 import nfcBadgesImage from "@/assets/products/nfc-badges-event.png";
+import nfcNailsImage from "@/assets/products/nfc-nails-collection.png";
+import nfcNailsApplication from "@/assets/products/nfc-nails-application.png";
+import nfcNailsUsage from "@/assets/products/nfc-nails-usage.png";
+import nfcNailsPackaging from "@/assets/products/nfc-nails-packaging.png";
 
 // Stealth Luxury Palette
 const STEALTH = {
@@ -73,7 +77,7 @@ interface Product {
   specs: ProductSpec[];
   included: string[];
   badge?: string;
-  category: "card" | "tag" | "wearable" | "badge";
+  category: "card" | "tag" | "wearable" | "badge" | "nails";
 }
 
 const products: Record<string, Product> = {
@@ -270,6 +274,39 @@ const products: Record<string, Product> = {
       "Export données illimité"
     ],
     category: "badge"
+  },
+  "ongles-nfc": {
+    id: "ongles-nfc",
+    name: "Ongles NFC",
+    subtitle: "Beauté connectée",
+    description: "Révolutionnez votre manucure avec la technologie NFC intégrée.",
+    longDescription: "Les Ongles NFC i-Wasp représentent la fusion parfaite entre beauté et technologie. Une micropuce NFC invisible est intégrée directement dans votre ongle lors de votre pose en salon. Partagez vos coordonnées, réseaux sociaux ou portfolio d'un simple toucher élégant. L'innovation beauté ultime pour les professionnelles connectées.",
+    price: { EUR: "89€", MAD: "890 DH" },
+    images: [nfcNailsImage, nfcNailsApplication, nfcNailsUsage, nfcNailsPackaging],
+    features: [
+      "Puce NFC micro-intégrée",
+      "Compatible tous designs nail art",
+      "Tenue 3-4 semaines",
+      "Application en salon partenaire",
+      "Résistant vernis et gel",
+      "Profil digital personnalisable"
+    ],
+    specs: [
+      { icon: Ruler, label: "Taille puce", value: "3 × 3 mm" },
+      { icon: Weight, label: "Poids", value: "< 0.1g" },
+      { icon: Wifi, label: "Technologie", value: "NFC NTAG213" },
+      { icon: Droplets, label: "Résistance", value: "Eau, vernis, gel UV" },
+      { icon: Zap, label: "Portée", value: "1-2 cm" },
+      { icon: Shield, label: "Durée", value: "3-4 semaines" }
+    ],
+    included: [
+      "1 × Puce NFC pour ongle",
+      "Pose en salon partenaire",
+      "Configuration profil digital",
+      "Support WhatsApp dédié"
+    ],
+    badge: "Nouveau",
+    category: "nails"
   }
 };
 
@@ -277,7 +314,8 @@ const categoryIcons: Record<string, React.ElementType> = {
   card: CreditCard,
   tag: Tag,
   wearable: Watch,
-  badge: Smartphone
+  badge: Smartphone,
+  nails: Sparkles
 };
 
 export default function ProductDetail() {
