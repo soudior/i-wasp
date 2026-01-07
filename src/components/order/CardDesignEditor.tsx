@@ -34,6 +34,7 @@ import {
 import iwaspLogoCard from "@/assets/cards/iwasp-logo-card.png";
 import cardRectoTemplate from "@/assets/cards/card-recto-template.png";
 import cardVersoPattern from "@/assets/cards/card-verso-pattern.png";
+import { LiveCardPreview } from "./LiveCardPreview";
 
 export interface CardDesignConfig {
   logoUrl: string | null;
@@ -524,6 +525,11 @@ export function CardDesignEditor({
                 Le logo i-Wasp reste visible en haut à droite sur toutes les cartes imprimées.
               </span>
             </div>
+          </div>
+
+          {/* Live Print Preview */}
+          <div className="mt-6 pt-6 border-t border-border/50">
+            <LiveCardPreview config={value} />
           </div>
         </>
       )}
