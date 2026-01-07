@@ -5,67 +5,58 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useOrderFunnel } from "@/contexts/OrderFunnelContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useTranslation } from "react-i18next";
 import { STEALTH } from "@/lib/stealthPalette";
+import { WorldClockGlobe } from "@/components/WorldClockGlobe";
 import cardBlackMatte from "@/assets/cards/card-black-matte.webp";
 import cardNavyExecutive from "@/assets/cards/card-navy-executive.png";
 
 /**
  * OrderType - Sélection du type de produit NFC
  * Étape 0 du tunnel de commande - Design IWASP Stealth Luxury
+ * Internationalized with auto-detected language/currency
  */
 
 interface ProductOption {
   id: string;
-  name: string;
-  description: string;
+  nameKey: string;
+  descKey: string;
   priceMAD: number;
   icon: React.ElementType;
   image?: string;
   available: boolean;
-  features: string[];
+  featuresKeys: string[];
 }
 
 const products: ProductOption[] = [
   {
     id: "pvc",
-    name: "Carte NFC PVC",
-    description: "Format carte bancaire. Finition mate premium.",
+    nameKey: "order.pvcCard",
+    descKey: "order.pvcCardDesc",
     priceMAD: 350,
     icon: CreditCard,
     image: cardBlackMatte,
     available: true,
-    features: [
-      "Format CR80 standard",
-      "Finition mat premium",
-      "Puce NFC NTAG"
-    ]
+    featuresKeys: ["order.pvcFeature1", "order.pvcFeature2", "order.pvcFeature3"]
   },
   {
     id: "nails",
-    name: "Ongles NFC",
-    description: "Innovation beauté. Technologie intégrée.",
+    nameKey: "order.nfcNails",
+    descKey: "order.nfcNailsDesc",
     priceMAD: 590,
     icon: Sparkles,
     image: cardNavyExecutive,
     available: true,
-    features: [
-      "Kit 10 capsules NFC",
-      "Compatible tout smartphone",
-      "Pose incluse"
-    ]
+    featuresKeys: ["order.nailsFeature1", "order.nailsFeature2", "order.nailsFeature3"]
   },
   {
     id: "metal",
-    name: "Carte Métal",
-    description: "Finition acier brossé. Premium ultime.",
+    nameKey: "order.metalCard",
+    descKey: "order.metalCardDesc",
     priceMAD: 990,
     icon: Package,
     available: false,
-    features: [
-      "Acier inoxydable",
-      "Gravure laser",
-      "Édition limitée"
-    ]
+    featuresKeys: ["order.metalFeature1", "order.metalFeature2", "order.metalFeature3"]
   }
 ];
 
@@ -73,7 +64,8 @@ export default function OrderType() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { state, setProductType } = useOrderFunnel();
-  const { formatAmount } = useCurrency();
+  const { formatAmount, currency, currencySymbol } = useCurrency();
+  const { t } = useTranslation();
 
   // Pré-sélection si paramètre URL
   useEffect(() => {
@@ -110,7 +102,7 @@ export default function OrderType() {
             style={{ color: STEALTH.textSecondary }}
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">Retour</span>
+            <span className="text-sm font-medium">{t("order.back")}</span>
           </button>
           
           <div className="flex items-center gap-3">
@@ -120,10 +112,12 @@ export default function OrderType() {
             >
               <span className="font-bold text-sm" style={{ color: STEALTH.bg }}>iW</span>
             </div>
-            <span className="font-semibold" style={{ color: STEALTH.text }}>Commande</span>
+            <span className="font-semibold" style={{ color: STEALTH.text }}>{t("order.title")}</span>
           </div>
           
-          <div className="w-20" />
+          {/* World Clock Globe */}
+          <WorldClockGlobe compact className="hidden sm:flex" />
+          <div className="w-20 sm:hidden" />
         </div>
       </header>
 
@@ -142,17 +136,37 @@ export default function OrderType() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          {/* Title */}
+          {/* Title with Globe */}
           <div className="text-center mb-10">
+            {/* Mobile Globe */}
+            <div className="flex justify-center mb-4 sm:hidden">
+              <WorldClockGlobe />
+            </div>
+            
             <h1 
               className="text-2xl font-bold tracking-tight mb-3"
               style={{ color: STEALTH.text }}
             >
-              Choisissez votre support
+              {t("order.chooseSupport")}
             </h1>
             <p style={{ color: STEALTH.textSecondary }}>
-              Technologie NFC intégrée
+              {t("order.nfcTechnology")}
             </p>
+            
+            {/* Currency indicator */}
+            <div 
+              className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full text-xs"
+              style={{ 
+                backgroundColor: STEALTH.bgCard,
+                border: `1px solid ${STEALTH.border}`,
+                color: STEALTH.textSecondary
+              }}
+            >
+              <span className="font-medium" style={{ color: STEALTH.accent }}>
+                {currencySymbol}
+              </span>
+              <span>{currency}</span>
+            </div>
           </div>
 
           {/* Products List */}
@@ -188,7 +202,7 @@ export default function OrderType() {
                       {product.image ? (
                         <img 
                           src={product.image}
-                          alt={product.name}
+                          alt={t(product.nameKey)}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -205,7 +219,7 @@ export default function OrderType() {
                           className="text-base font-semibold"
                           style={{ color: STEALTH.text }}
                         >
-                          {product.name}
+                          {t(product.nameKey)}
                         </h3>
                         {isSelected && (
                           <div 
@@ -223,7 +237,7 @@ export default function OrderType() {
                               color: STEALTH.textSecondary 
                             }}
                           >
-                            Bientôt
+                            {t("order.comingSoon")}
                           </span>
                         )}
                       </div>
@@ -232,7 +246,7 @@ export default function OrderType() {
                         className="text-sm mb-2 line-clamp-1"
                         style={{ color: STEALTH.textSecondary }}
                       >
-                        {product.description}
+                        {t(product.descKey)}
                       </p>
 
                       <p 
@@ -260,7 +274,7 @@ export default function OrderType() {
                 color: STEALTH.bg 
               }}
             >
-              Continuer
+              {t("order.continue")}
               <ArrowRight className="w-5 h-5" />
             </Button>
           </div>
@@ -285,7 +299,7 @@ export default function OrderType() {
             color: STEALTH.bg 
           }}
         >
-          {state.productType ? "Continuer" : "Sélectionnez un produit"}
+          {state.productType ? t("order.continue") : t("order.selectProduct")}
           <ArrowRight className="w-5 h-5" />
         </Button>
       </div>
