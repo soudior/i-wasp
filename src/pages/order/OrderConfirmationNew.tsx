@@ -2,20 +2,23 @@
  * Step 6: Confirmation
  * /order/confirmation
  * 
+ * - Vérification du paiement Stripe si applicable
  * - Compte créé automatiquement
  * - Accès immédiat à la carte digitale
  * - Partage activé (WhatsApp, lien, QR)
  */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PageTransition, contentVariants, itemVariants } from "@/components/order";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
   CheckCircle2,
   Share2,
@@ -27,16 +30,72 @@ import {
   Sparkles,
   ArrowRight,
   Smartphone,
-  Truck
+  Truck,
+  Loader2,
+  XCircle,
+  AlertCircle
 } from "lucide-react";
 import confetti from "canvas-confetti";
+import { toast } from "sonner";
+
+type PaymentStatus = "loading" | "verified" | "failed" | "cod";
+
+interface PaymentDetails {
+  amountTotal: number | null;
+  currency: string | null;
+  customerEmail: string | null;
+}
 
 function OrderConfirmationContent() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { state, resetFunnel } = useOrderFunnel();
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("loading");
+  const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
 
-  // Confetti on mount
+  const sessionId = searchParams.get("session_id");
+  const paymentParam = searchParams.get("payment");
+
+  // Verify payment on mount
   useEffect(() => {
+    const verifyPayment = async () => {
+      // If COD or no session, mark as COD
+      if (!sessionId || paymentParam !== "success") {
+        setPaymentStatus("cod");
+        triggerConfetti();
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.functions.invoke("verify-payment", {
+          body: { sessionId },
+        });
+
+        if (error) throw error;
+
+        if (data?.verified) {
+          setPaymentStatus("verified");
+          setPaymentDetails({
+            amountTotal: data.amountTotal,
+            currency: data.currency,
+            customerEmail: data.customerEmail,
+          });
+          toast.success("Paiement confirmé !");
+          triggerConfetti();
+        } else {
+          setPaymentStatus("failed");
+          toast.error("Le paiement n'a pas pu être vérifié");
+        }
+      } catch (err) {
+        console.error("Payment verification error:", err);
+        setPaymentStatus("failed");
+      }
+    };
+
+    verifyPayment();
+  }, [sessionId, paymentParam]);
+
+  const triggerConfetti = () => {
     const duration = 3000;
     const end = Date.now() + duration;
 
@@ -62,7 +121,7 @@ function OrderConfirmationContent() {
     };
 
     frame();
-  }, []);
+  };
 
   const handleGoToDashboard = () => {
     resetFunnel();
@@ -76,6 +135,88 @@ function OrderConfirmationContent() {
     window.open(url, "_blank");
   };
 
+  const formatAmount = (cents: number, currency: string) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: currency.toUpperCase(),
+    }).format(cents / 100);
+  };
+
+  // Loading state
+  if (paymentStatus === "loading") {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="pt-24 pb-32 px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="mb-8">
+              <div className="w-24 h-24 mx-auto rounded-full bg-muted flex items-center justify-center">
+                <Loader2 className="w-12 h-12 text-[#FFC700] animate-spin" />
+              </div>
+            </div>
+            <h1 className="text-2xl font-bold mb-4">Vérification du paiement...</h1>
+            <p className="text-muted-foreground">Veuillez patienter quelques instants</p>
+            <div className="mt-8 space-y-3">
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Failed payment state
+  if (paymentStatus === "failed") {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="pt-24 pb-32 px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="mb-8"
+            >
+              <div className="w-24 h-24 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
+                <XCircle className="w-14 h-14 text-red-500" />
+              </div>
+            </motion.div>
+            <h1 className="text-2xl font-bold mb-4">Problème de paiement</h1>
+            <p className="text-muted-foreground mb-8">
+              Nous n'avons pas pu vérifier votre paiement. Votre commande a été enregistrée.
+            </p>
+            <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30 mb-8">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-yellow-500" />
+                <p className="text-sm text-left">
+                  Notre équipe vous contactera par WhatsApp pour finaliser votre commande.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button
+                onClick={handleGoToDashboard}
+                className="bg-[#FFC700] hover:bg-[#FFC700]/90 text-black"
+              >
+                <User className="mr-2 h-5 w-5" />
+                Accéder à mon profil
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/order/recap")}
+              >
+                Réessayer le paiement
+              </Button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Success state (verified or COD)
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -107,6 +248,24 @@ function OrderConfirmationContent() {
               >
                 Commande confirmée ! 🎉
               </motion.h1>
+              
+              {/* Payment Verified Badge */}
+              {paymentStatus === "verified" && (
+                <motion.div
+                  variants={itemVariants}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 mb-2"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <span className="text-sm font-medium text-green-400">
+                    Paiement vérifié
+                    {paymentDetails?.amountTotal && paymentDetails?.currency && (
+                      <span className="ml-1">
+                        • {formatAmount(paymentDetails.amountTotal, paymentDetails.currency)}
+                      </span>
+                    )}
+                  </span>
+                </motion.div>
+              )}
               
               {/* Immediate Access Banner */}
               <motion.div
@@ -156,11 +315,17 @@ function OrderConfirmationContent() {
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-[#FFC700]/20 flex items-center justify-center">
-                        <Sparkles className="w-5 h-5 text-[#FFC700]" />
+                        {paymentStatus === "verified" ? (
+                          <CheckCircle2 className="w-5 h-5 text-green-500" />
+                        ) : (
+                          <Sparkles className="w-5 h-5 text-[#FFC700]" />
+                        )}
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Paiement</p>
-                        <p className="font-medium">À la livraison</p>
+                        <p className="font-medium">
+                          {paymentStatus === "verified" ? "Confirmé ✓" : "À la livraison"}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -212,7 +377,8 @@ function OrderConfirmationContent() {
                   <div>
                     <p className="font-medium text-muted-foreground">Carte physique en fabrication</p>
                     <p className="text-sm text-muted-foreground">
-                      Livraison sous 48-72h · Paiement à la réception
+                      Livraison sous 48-72h
+                      {paymentStatus === "cod" && " · Paiement à la réception"}
                     </p>
                   </div>
                 </div>
