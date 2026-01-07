@@ -53,7 +53,7 @@ serve(async (req) => {
       }
     }
 
-    const { quantity = 1, offerId = "signature", priceInCents } = await req.json();
+    const { quantity = 1, offerId = "signature", priceInCents, orderId } = await req.json();
     
     // Get price in MAD centimes
     const priceMAD = priceInCents || OFFER_PRICES[offerId] || OFFER_PRICES.signature;
@@ -61,7 +61,7 @@ serve(async (req) => {
     // Convert to EUR cents for Stripe (minimum 50 cents)
     const priceEUR = Math.max(50, Math.round(priceMAD * MAD_TO_EUR_RATE));
     
-    logStep("Payment request", { quantity, offerId, priceMAD, priceEUR });
+    logStep("Payment request", { quantity, offerId, priceMAD, priceEUR, orderId });
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     
@@ -101,6 +101,7 @@ serve(async (req) => {
         offer_id: offerId,
         quantity: String(quantity),
         price_mad: String(priceMAD),
+        order_id: orderId || '',
       },
     });
 

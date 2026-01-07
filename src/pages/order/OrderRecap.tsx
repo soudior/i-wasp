@@ -134,7 +134,7 @@ function OrderRecapContent() {
         logoUrl: state.cardPersonalization?.imageUrl || null,
       };
 
-      await createOrder.mutateAsync({
+      const order = await createOrder.mutateAsync({
         order_items: [orderItem],
         quantity: 1,
         unit_price_cents: selectedOffer?.price || 59900,
@@ -154,8 +154,8 @@ function OrderRecapContent() {
         payment_method: paymentMethod,
       });
 
-      // 4. If Stripe payment, redirect to checkout
-      if (paymentMethod === "stripe") {
+      // 4. If Stripe payment, redirect to checkout with order ID
+      if (paymentMethod === "stripe" && order?.id) {
         toast.info("Redirection vers le paiement sécurisé...");
         
         const { data, error } = await supabase.functions.invoke('create-nfc-payment', {
@@ -163,6 +163,7 @@ function OrderRecapContent() {
             quantity: 1,
             offerId: state.selectedOffer,
             priceInCents: selectedOffer?.price || 59900,
+            orderId: order.id,
           },
         });
 
