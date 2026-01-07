@@ -29,8 +29,9 @@ import {
   Lock,
 } from "lucide-react";
 
-// Import the official i-Wasp logo
+// Import the official i-Wasp logo and card template
 import iwaspLogo from "@/assets/iwasp-logo.png";
+import cardTemplateFront from "@/assets/cards/card-template-front.png";
 
 export interface CardDesignConfig {
   logoUrl: string | null;
@@ -277,13 +278,20 @@ export function CardDesignEditor({
                 backgroundColor: "#FFFFFF",
               }}
             >
-              {/* Fixed i-Wasp Logo - ALWAYS top-right, never removable */}
+            {/* Card Template Background */}
+              <img
+                src={cardTemplateFront}
+                alt="i-Wasp Card Template"
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0"
+              />
+
+              {/* Fixed i-Wasp Logo - positioned exactly as in template (top-right) */}
               <div
                 className="absolute z-30 pointer-events-none"
                 style={{
-                  top: "8%",
-                  right: "5%",
-                  width: "18%",
+                  top: "12%",
+                  right: "6%",
+                  width: "22%",
                   height: "auto",
                 }}
               >
@@ -291,7 +299,6 @@ export function CardDesignEditor({
                   src={iwaspLogo}
                   alt="i-Wasp"
                   className="w-full h-auto object-contain"
-                  style={{ opacity: 0.9 }}
                 />
               </div>
 
