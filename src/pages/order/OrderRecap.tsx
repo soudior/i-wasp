@@ -3,6 +3,7 @@
  * /order/recap
  * 
  * IWASP Stealth Luxury Style
+ * - Choix du mode de paiement (Stripe ou COD)
  * - Création automatique compte client
  * - Création automatique carte digitale ACTIVE
  * - Création commande
@@ -23,15 +24,18 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { PhysicalCardPreview } from "@/components/PhysicalCardPreview";
 import { STEALTH } from "@/lib/stealthPalette";
-import { ArrowLeft, CheckCircle2, MapPin } from "lucide-react";
+import { ArrowLeft, CheckCircle2, MapPin, CreditCard, Banknote, Shield, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+
+type PaymentMethod = "stripe" | "cod";
 
 function OrderRecapContent() {
   const navigate = useNavigate();
-  const { state, prevStep, markComplete } = useOrderFunnel();
+  const { state, prevStep, markComplete, setPaymentInfo } = useOrderFunnel();
   const { user } = useAuth();
   const createOrder = useCreateOrder();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe");
 
   const selectedOffer = OFFERS.find(o => o.id === state.selectedOffer);
 
@@ -51,6 +55,7 @@ function OrderRecapContent() {
     if (isProcessing || state.isTransitioning) return;
     
     setIsProcessing(true);
+    setPaymentInfo({ method: paymentMethod });
 
     try {
       let userId = user?.id;
@@ -75,7 +80,6 @@ function OrderRecapContent() {
 
         if (authError) {
           console.error("Auto signup error:", authError);
-          // If user already exists, try to continue without account creation
           if (!authError.message.includes("already registered")) {
             throw authError;
           }
@@ -107,14 +111,13 @@ function OrderRecapContent() {
             website: website || null,
             tagline: bio || null,
             template: 'iwasp-signature',
-            is_active: true, // CARTE DIGITALE ACTIVE IMMÉDIATEMENT
+            is_active: true,
             nfc_enabled: true,
             wallet_enabled: true,
           });
 
         if (cardError) {
           console.error("Card creation error:", cardError);
-          // Continue with order even if card creation fails
         } else {
           toast.success("Carte digitale activée !");
         }
@@ -148,9 +151,32 @@ function OrderRecapContent() {
         shipping_postal_code: "",
         shipping_country: "MA",
         customer_email: email,
-        payment_method: "cod",
+        payment_method: paymentMethod,
       });
 
+      // 4. If Stripe payment, redirect to checkout
+      if (paymentMethod === "stripe") {
+        toast.info("Redirection vers le paiement sécurisé...");
+        
+        const { data, error } = await supabase.functions.invoke('create-nfc-payment', {
+          body: { 
+            quantity: 1,
+            offerId: state.selectedOffer,
+            priceInCents: selectedOffer?.price || 59900,
+          },
+        });
+
+        if (error) throw error;
+
+        if (data?.url) {
+          window.location.href = data.url;
+          return;
+        } else {
+          throw new Error('No checkout URL received');
+        }
+      }
+
+      // COD: go directly to confirmation
       markComplete();
       navigate("/order/confirmation");
     } catch (error) {
@@ -195,7 +221,7 @@ function OrderRecapContent() {
                 style={{ color: STEALTH.textSecondary }}
                 variants={itemVariants}
               >
-                Vérifiez avant de confirmer
+                Vérifiez et choisissez votre mode de paiement
               </motion.p>
             </motion.div>
 
@@ -221,12 +247,6 @@ function OrderRecapContent() {
               <div className="flex justify-between items-center">
                 <span style={{ color: STEALTH.textSecondary }}>Quantité</span>
                 <span className="font-medium" style={{ color: STEALTH.text }}>1 carte</span>
-              </div>
-
-              {/* Mode de paiement */}
-              <div className="flex justify-between items-center">
-                <span style={{ color: STEALTH.textSecondary }}>Paiement</span>
-                <span className="font-medium" style={{ color: STEALTH.text }}>À la livraison</span>
               </div>
 
               {/* Visuel carte */}
@@ -280,6 +300,81 @@ function OrderRecapContent() {
               </div>
             </motion.div>
 
+            {/* Payment Method Selection */}
+            <motion.div
+              className="mt-6 space-y-3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <p 
+                className="text-sm font-medium mb-3"
+                style={{ color: STEALTH.textSecondary }}
+              >
+                Mode de paiement
+              </p>
+
+              {/* Stripe Option */}
+              <button
+                onClick={() => setPaymentMethod("stripe")}
+                className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${
+                  paymentMethod === "stripe" 
+                    ? "border-[#D4AF37] bg-[#D4AF37]/10" 
+                    : "border-white/10 hover:border-white/20"
+                }`}
+                style={{ backgroundColor: paymentMethod === "stripe" ? "rgba(212, 175, 55, 0.1)" : STEALTH.bgCard }}
+              >
+                <div 
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    paymentMethod === "stripe" ? "bg-[#D4AF37]" : "bg-white/10"
+                  }`}
+                >
+                  <CreditCard className={`w-6 h-6 ${paymentMethod === "stripe" ? "text-black" : "text-white/60"}`} />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="font-semibold" style={{ color: STEALTH.text }}>
+                    Paiement par carte
+                  </p>
+                  <p className="text-sm" style={{ color: STEALTH.textSecondary }}>
+                    Visa, Mastercard • Sécurisé par Stripe
+                  </p>
+                </div>
+                {paymentMethod === "stripe" && (
+                  <CheckCircle2 className="w-5 h-5 text-[#D4AF37]" />
+                )}
+              </button>
+
+              {/* COD Option */}
+              <button
+                onClick={() => setPaymentMethod("cod")}
+                className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${
+                  paymentMethod === "cod" 
+                    ? "border-[#D4AF37] bg-[#D4AF37]/10" 
+                    : "border-white/10 hover:border-white/20"
+                }`}
+                style={{ backgroundColor: paymentMethod === "cod" ? "rgba(212, 175, 55, 0.1)" : STEALTH.bgCard }}
+              >
+                <div 
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    paymentMethod === "cod" ? "bg-[#D4AF37]" : "bg-white/10"
+                  }`}
+                >
+                  <Banknote className={`w-6 h-6 ${paymentMethod === "cod" ? "text-black" : "text-white/60"}`} />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="font-semibold" style={{ color: STEALTH.text }}>
+                    Paiement à la livraison
+                  </p>
+                  <p className="text-sm" style={{ color: STEALTH.textSecondary }}>
+                    Espèces à la réception
+                  </p>
+                </div>
+                {paymentMethod === "cod" && (
+                  <CheckCircle2 className="w-5 h-5 text-[#D4AF37]" />
+                )}
+              </button>
+            </motion.div>
+
             {/* Physical Card Preview */}
             <motion.div
               className="mt-6"
@@ -301,24 +396,39 @@ function OrderRecapContent() {
                 size="xl"
                 onClick={handleConfirmOrder}
                 isLoading={isProcessing}
-                loadingText="Traitement..."
+                loadingText={paymentMethod === "stripe" ? "Redirection..." : "Traitement..."}
                 disabled={state.isTransitioning}
-                className="w-full rounded-full font-semibold h-14 text-lg"
+                className="w-full rounded-full font-semibold h-14 text-lg gap-2"
                 style={{ 
                   backgroundColor: STEALTH.accent,
                   color: STEALTH.bg
                 }}
               >
-                <CheckCircle2 className="mr-2 h-5 w-5" />
-                Confirmer ma commande
+                {paymentMethod === "stripe" ? (
+                  <>
+                    <CreditCard className="h-5 w-5" />
+                    Payer {formatPrice(selectedOffer?.price || 0)}
+                    <ExternalLink className="h-4 w-4 opacity-60" />
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="h-5 w-5" />
+                    Confirmer ma commande
+                  </>
+                )}
               </LoadingButton>
 
-              <p 
-                className="text-xs text-center mt-3"
-                style={{ color: STEALTH.textMuted }}
-              >
-                Règlement en espèces à la réception
-              </p>
+              <div className="flex items-center justify-center gap-2 mt-3">
+                <Shield className="w-4 h-4" style={{ color: STEALTH.textMuted }} />
+                <p 
+                  className="text-xs"
+                  style={{ color: STEALTH.textMuted }}
+                >
+                  {paymentMethod === "stripe" 
+                    ? "Paiement sécurisé par Stripe" 
+                    : "Règlement en espèces à la réception"}
+                </p>
+              </div>
             </motion.div>
 
             {/* Back Button */}
