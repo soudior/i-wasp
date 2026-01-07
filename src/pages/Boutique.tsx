@@ -8,9 +8,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
-  CreditCard, 
-  Sparkles, 
-  Crown,
   ArrowRight,
   Shield,
   Zap,
@@ -18,6 +15,11 @@ import {
   Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+// Product images
+import cardPVC from "@/assets/cards/card-black-matte.png";
+import cardMetal from "@/assets/cards/card-gold-accent.png";
+import nailsHero from "@/assets/nails/nails-hero.png";
 
 // Product data
 const products = [
@@ -28,8 +30,7 @@ const products = [
     description: "Carte professionnelle en PVC haute qualité avec puce NFC intégrée.",
     price: 29,
     currency: "€",
-    image: "/src/assets/cards/card-black-matte.png",
-    icon: CreditCard,
+    image: cardPVC,
     features: [
       "Impression recto-verso",
       "Puce NFC haute fréquence",
@@ -46,8 +47,7 @@ const products = [
     description: "Carte en métal brossé avec gravure laser et finition premium.",
     price: 89,
     currency: "€",
-    image: "/src/assets/cards/card-gold-accent.png",
-    icon: Crown,
+    image: cardMetal,
     features: [
       "Métal brossé premium",
       "Gravure laser précise",
@@ -64,8 +64,7 @@ const products = [
     description: "Ongles connectés avec puce NFC invisible. La technologie au bout des doigts.",
     price: 49,
     currency: "€",
-    image: "/src/assets/nails/nails-hero.png",
-    icon: Sparkles,
+    image: nailsHero,
     features: [
       "Pose par professionnels",
       "Puce invisible intégrée",
@@ -168,12 +167,14 @@ export default function Boutique() {
                 `}>
                   {/* Product Image */}
                   <div className={`
-                    h-48 bg-gradient-to-br ${product.color}
-                    flex items-center justify-center p-6
+                    h-56 bg-gradient-to-br ${product.color}
+                    flex items-center justify-center p-4 overflow-hidden
                   `}>
-                    <div className="w-32 h-32 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-                      <product.icon className="w-16 h-16 text-white" />
-                    </div>
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-contain drop-shadow-2xl"
+                    />
                   </div>
 
                   {/* Content */}
