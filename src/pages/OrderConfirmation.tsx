@@ -11,10 +11,13 @@ import {
   ArrowRight,
   Clock,
   Shield,
-  Sparkles
+  Sparkles,
+  QrCode,
+  Share2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
+import { QRCodeSVG } from "qrcode.react";
 
 export default function OrderConfirmation() {
   const [searchParams] = useSearchParams();
@@ -68,6 +71,24 @@ export default function OrderConfirmation() {
   }, [orderNumber, navigate]);
 
   if (!orderNumber) return null;
+
+  const trackingUrl = `${window.location.origin}/track?order=${orderNumber}`;
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Suivi commande ${orderNumber}`,
+          text: `Suivez ma commande IWASP: ${orderNumber}`,
+          url: trackingUrl,
+        });
+      } catch (err) {
+        console.log("Share cancelled");
+      }
+    } else {
+      navigator.clipboard.writeText(trackingUrl);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center px-4 py-12">
@@ -209,6 +230,41 @@ export default function OrderConfirmation() {
 
             <Separator />
 
+            {/* QR Code for Tracking */}
+            <div className="bg-secondary/30 rounded-xl p-6 text-center">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <QrCode className="w-5 h-5 text-primary" />
+                <h3 className="font-semibold text-foreground">QR Code de suivi</h3>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Scannez ce code pour suivre votre commande à tout moment
+              </p>
+              <div className="bg-white p-4 rounded-xl inline-block shadow-sm">
+                <QRCodeSVG 
+                  value={trackingUrl}
+                  size={140}
+                  level="M"
+                  includeMargin={false}
+                  fgColor="#1D1D1F"
+                  bgColor="#FFFFFF"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-3 font-mono break-all">
+                {trackingUrl}
+              </p>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleShare}
+                className="mt-3"
+              >
+                <Share2 className="w-4 h-4 mr-2" />
+                Partager le lien
+              </Button>
+            </div>
+
+            <Separator />
+
             {/* Trust badges */}
             <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
@@ -221,9 +277,9 @@ export default function OrderConfirmation() {
 
             {/* Actions */}
             <div className="space-y-3">
-              <Link to="/orders" className="block">
+              <Link to={`/track?order=${orderNumber}`} className="block">
                 <Button className="w-full" size="lg">
-                  Voir ma commande
+                  Suivre ma commande
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </Link>
