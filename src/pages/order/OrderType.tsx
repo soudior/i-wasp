@@ -8,6 +8,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslation } from "react-i18next";
 import { STEALTH } from "@/lib/stealthPalette";
 import { WorldClockGlobe } from "@/components/WorldClockGlobe";
+import { CurrencySelector } from "@/components/CurrencySelector";
 import cardBlackMatte from "@/assets/cards/card-black-matte.webp";
 import cardNavyExecutive from "@/assets/cards/card-navy-executive.png";
 
@@ -115,9 +116,11 @@ export default function OrderType() {
             <span className="font-semibold" style={{ color: STEALTH.text }}>{t("order.title")}</span>
           </div>
           
-          {/* World Clock Globe */}
-          <WorldClockGlobe compact className="hidden sm:flex" />
-          <div className="w-20 sm:hidden" />
+          {/* Currency Selector + World Clock */}
+          <div className="flex items-center gap-2">
+            <CurrencySelector variant="stealth" />
+            <WorldClockGlobe compact className="hidden sm:flex" />
+          </div>
         </div>
       </header>
 
@@ -138,8 +141,8 @@ export default function OrderType() {
         >
           {/* Title with Globe */}
           <div className="text-center mb-10">
-            {/* Mobile Globe */}
-            <div className="flex justify-center mb-4 sm:hidden">
+            {/* Mobile Globe + Currency */}
+            <div className="flex justify-center items-center gap-3 mb-4 sm:hidden">
               <WorldClockGlobe />
             </div>
             
@@ -152,21 +155,6 @@ export default function OrderType() {
             <p style={{ color: STEALTH.textSecondary }}>
               {t("order.nfcTechnology")}
             </p>
-            
-            {/* Currency indicator */}
-            <div 
-              className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full text-xs"
-              style={{ 
-                backgroundColor: STEALTH.bgCard,
-                border: `1px solid ${STEALTH.border}`,
-                color: STEALTH.textSecondary
-              }}
-            >
-              <span className="font-medium" style={{ color: STEALTH.accent }}>
-                {currencySymbol}
-              </span>
-              <span>{currency}</span>
-            </div>
           </div>
 
           {/* Products List */}
