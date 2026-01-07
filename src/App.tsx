@@ -103,7 +103,7 @@ const Subscription = lazy(() => import("./pages/Subscription"));
 const OrderDetails = lazy(() => import("./pages/OrderDetails"));
 const Orders = lazy(() => import("./pages/Orders"));
 const TrackOrder = lazy(() => import("./pages/TrackOrder"));
-
+const Boutique = lazy(() => import("./pages/Boutique"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -286,7 +286,8 @@ const App = () => {
                               
                               {/* Cart & Checkout */}
                               <Route path="/cart" element={<Cart />} />
-                              <Route path="/boutique" element={<CheckoutTunnel />} />
+                              <Route path="/boutique" element={<Boutique />} />
+                              <Route path="/shop" element={<Boutique />} />
                               <Route path="/checkout-tunnel" element={<CheckoutTunnel />} />
                               
                               {/* Admin */}
