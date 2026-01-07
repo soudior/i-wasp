@@ -99,6 +99,7 @@ const CheckoutTunnel = lazy(() => import("./pages/CheckoutTunnel"));
 const SovereignDashboard = lazy(() => import("./pages/SovereignDashboard"));
 const AriellaCard = lazy(() => import("./pages/AriellaCard"));
 const LegacyMap = lazy(() => import("./pages/LegacyMap"));
+const Subscription = lazy(() => import("./pages/Subscription"));
 
 
 const queryClient = new QueryClient({
@@ -245,6 +246,7 @@ const App = () => {
                               <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
                               <Route path="/elite" element={<DashboardGuard><EliteDashboard /></DashboardGuard>} />
                               <Route path="/settings" element={<DashboardGuard><Settings /></DashboardGuard>} />
+                              <Route path="/subscription" element={<DashboardGuard><Subscription /></DashboardGuard>} />
                               <Route path="/studio" element={<DashboardGuard><Studio /></DashboardGuard>} />
                               <Route path="/editor" element={<DashboardGuard><CardStudio /></DashboardGuard>} />
                               <Route path="/card-studio" element={<DashboardGuard><CardStudio /></DashboardGuard>} />

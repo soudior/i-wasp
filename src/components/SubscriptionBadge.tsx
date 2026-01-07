@@ -4,11 +4,12 @@
  */
 
 import { useState } from 'react';
-import { Crown, Star, Settings, Loader2, ExternalLink } from 'lucide-react';
+import { Crown, Star, Settings, Loader2, ExternalLink, FileText } from 'lucide-react';
 import { useStripeSubscription } from '@/hooks/useStripeSubscription';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -103,6 +104,12 @@ export function SubscriptionBadge({ showLabel = true, size = 'md', onClick }: Su
             )}
           </div>
           <DropdownMenuSeparator className="bg-white/10" />
+          <DropdownMenuItem asChild>
+            <Link to="/subscription" className="text-white hover:bg-white/10 cursor-pointer">
+              <FileText className="w-4 h-4 mr-2" />
+              Voir les détails
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem 
             onClick={handleManageSubscription}
             disabled={isOpeningPortal}
