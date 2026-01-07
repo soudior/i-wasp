@@ -1,10 +1,21 @@
 /**
  * SubscriptionBadge - Affiche le badge d'abonnement actuel
+ * Utilise useStripeSubscription pour le statut réel Stripe
  */
 
-import { Crown, Star } from 'lucide-react';
-import { useSubscription } from '@/hooks/useSubscription';
+import { useState } from 'react';
+import { Crown, Star, Settings, Loader2, ExternalLink } from 'lucide-react';
+import { useStripeSubscription } from '@/hooks/useStripeSubscription';
+import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface SubscriptionBadgeProps {
   showLabel?: boolean;
@@ -13,7 +24,29 @@ interface SubscriptionBadgeProps {
 }
 
 export function SubscriptionBadge({ showLabel = true, size = 'md', onClick }: SubscriptionBadgeProps) {
-  const { isGold, plan, isLoading } = useSubscription();
+  const { isGold, subscription, isLoading } = useStripeSubscription();
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
+
+  const handleManageSubscription = async () => {
+    setIsOpeningPortal(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+      
+      if (error) throw error;
+      
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        toast.success('Ouverture du portail de gestion...');
+      } else {
+        throw new Error('No portal URL received');
+      }
+    } catch (err) {
+      console.error('Portal error:', err);
+      toast.error('Impossible d\'ouvrir le portail. Veuillez réessayer.');
+    } finally {
+      setIsOpeningPortal(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -22,9 +55,9 @@ export function SubscriptionBadge({ showLabel = true, size = 'md', onClick }: Su
   }
 
   const sizeClasses = {
-    sm: 'w-6 h-6',
-    md: 'w-8 h-8',
-    lg: 'w-10 h-10'
+    sm: 'h-6',
+    md: 'h-8',
+    lg: 'h-10'
   };
 
   const iconSizes = {
@@ -33,22 +66,58 @@ export function SubscriptionBadge({ showLabel = true, size = 'md', onClick }: Su
     lg: 'w-5 h-5'
   };
 
+  const formatEndDate = (dateStr: string | null) => {
+    if (!dateStr) return null;
+    return new Date(dateStr).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
   if (isGold) {
     return (
-      <motion.button
-        onClick={onClick}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className={`${sizeClasses[size]} rounded-full flex items-center ${showLabel ? 'gap-2 px-4' : 'justify-center'}`}
-        style={{ 
-          background: 'linear-gradient(135deg, #A5A9B4, #D1D5DB)',
-        }}
-      >
-        <Crown className={`${iconSizes[size]} text-black`} />
-        {showLabel && (
-          <span className="text-sm font-semibold text-black">Signature</span>
-        )}
-      </motion.button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`${sizeClasses[size]} rounded-full flex items-center ${showLabel ? 'gap-2 px-4' : 'justify-center px-2'}`}
+            style={{ 
+              background: 'linear-gradient(135deg, #D4AF37, #F4D03F)',
+            }}
+          >
+            <Crown className={`${iconSizes[size]} text-black`} />
+            {showLabel && (
+              <span className="text-sm font-semibold text-black">Gold</span>
+            )}
+          </motion.button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56 bg-[#0A0F0D] border-white/10">
+          <div className="px-3 py-2">
+            <p className="text-sm font-medium text-white">Abonnement Gold</p>
+            {subscription.subscriptionEnd && (
+              <p className="text-xs text-[#A5A9B4] mt-1">
+                Renouvellement : {formatEndDate(subscription.subscriptionEnd)}
+              </p>
+            )}
+          </div>
+          <DropdownMenuSeparator className="bg-white/10" />
+          <DropdownMenuItem 
+            onClick={handleManageSubscription}
+            disabled={isOpeningPortal}
+            className="text-white hover:bg-white/10 cursor-pointer"
+          >
+            {isOpeningPortal ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Settings className="w-4 h-4 mr-2" />
+            )}
+            Gérer mon abonnement
+            <ExternalLink className="w-3 h-3 ml-auto opacity-50" />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 
@@ -57,13 +126,13 @@ export function SubscriptionBadge({ showLabel = true, size = 'md', onClick }: Su
       onClick={onClick}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className={`${sizeClasses[size]} rounded-full flex items-center ${showLabel ? 'gap-2 px-4' : 'justify-center'} border border-white/20 hover:border-[#A5A9B4]/50 transition-colors`}
+      className={`${sizeClasses[size]} rounded-full flex items-center ${showLabel ? 'gap-2 px-4' : 'justify-center px-2'} border border-white/20 hover:border-[#D4AF37]/50 transition-colors`}
       style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
     >
-      <Star className={`${iconSizes[size]} text-[#A5A9B4]`} />
+      <Star className={`${iconSizes[size]} text-[#D4AF37]`} />
       {showLabel && (
         <span className="text-sm text-[#A5A9B4]">
-          Passer à Signature
+          Passer à Gold
         </span>
       )}
     </motion.button>
