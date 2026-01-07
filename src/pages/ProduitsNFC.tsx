@@ -35,6 +35,11 @@ import {
 import cardFront from "@/assets/cards/card-base-front.png";
 import cardBack from "@/assets/cards/card-base-back.png";
 
+// Import product images
+import nfcTagsImage from "@/assets/products/nfc-tags-collection.png";
+import nfcWearablesImage from "@/assets/products/nfc-wearables.png";
+import nfcBadgesImage from "@/assets/products/nfc-badges-event.png";
+
 // Stealth Luxury Palette
 const STEALTH = {
   bg: "#050807",
@@ -131,11 +136,12 @@ const cardProducts: CardProduct[] = [
   }
 ];
 
-// Other products
+// Other products with images
 const otherProducts = [
   {
     id: "tag-nfc",
     icon: Tag,
+    image: nfcTagsImage,
     title: "Tags NFC",
     subtitle: "Discret et polyvalent",
     description: "Stickers NFC à coller partout : vitrines, produits, affiches. Redirige vers n'importe quelle URL.",
@@ -150,6 +156,7 @@ const otherProducts = [
   {
     id: "wearable",
     icon: Watch,
+    image: nfcWearablesImage,
     title: "Wearables NFC",
     subtitle: "Toujours sur toi",
     description: "Bracelets, bagues et accessoires connectés. Partage tes infos sans sortir de carte.",
@@ -164,6 +171,7 @@ const otherProducts = [
   {
     id: "badge-event",
     icon: Smartphone,
+    image: nfcBadgesImage,
     title: "Badges événement",
     subtitle: "Pour les pros",
     description: "Badges NFC pour conférences, salons et événements. Collecte de leads automatisée.",
@@ -522,51 +530,62 @@ export default function ProduitsNFC() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-3xl"
+                className="rounded-3xl overflow-hidden group"
                 style={{
                   background: STEALTH.glass,
                   border: `1px solid ${STEALTH.border}`
                 }}
               >
-                <div className="flex items-start gap-4 mb-4">
+                {/* Product Image */}
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <img 
+                    src={product.image} 
+                    alt={product.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   <div 
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: `linear-gradient(135deg, ${STEALTH.accent}20 0%, ${STEALTH.accent}10 100%)` }}
+                    className="absolute top-3 left-3 w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: `linear-gradient(135deg, ${STEALTH.accent}40 0%, ${STEALTH.accent}20 100%)`, backdropFilter: 'blur(8px)' }}
                   >
-                    <product.icon className="w-6 h-6" style={{ color: STEALTH.accent }} />
+                    <product.icon className="w-5 h-5" style={{ color: STEALTH.accentLight }} />
                   </div>
-                  <div>
+                </div>
+
+                {/* Content */}
+                <div className="p-6">
+                  <div className="mb-3">
                     <h3 className="text-lg font-semibold text-white">{product.title}</h3>
                     <p className="text-sm" style={{ color: STEALTH.accent }}>{product.subtitle}</p>
                   </div>
-                </div>
-                
-                <p className="mb-4 text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>{product.description}</p>
-                
-                <ul className="space-y-2 mb-4">
-                  {product.features.slice(0, 3).map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                      <Check className="w-4 h-4 flex-shrink-0" style={{ color: STEALTH.accent }} />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                
-                <div 
-                  className="flex items-center justify-between pt-4"
-                  style={{ borderTop: `1px solid ${STEALTH.border}` }}
-                >
-                  <span className="text-lg font-semibold" style={{ color: STEALTH.accent }}>{product.price}</span>
-                  <a href={WHATSAPP_PROJECT_URL} target="_blank" rel="noopener noreferrer">
-                    <Button 
-                      size="sm" 
-                      className="gap-2 rounded-full"
-                      style={{ backgroundColor: STEALTH.accent, color: STEALTH.bg }}
-                    >
-                      Demander
-                      <ArrowRight className="w-4 h-4" />
-                    </Button>
-                  </a>
+                  
+                  <p className="mb-4 text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>{product.description}</p>
+                  
+                  <ul className="space-y-2 mb-4">
+                    {product.features.slice(0, 3).map((feature) => (
+                      <li key={feature} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                        <Check className="w-4 h-4 flex-shrink-0" style={{ color: STEALTH.accent }} />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  <div 
+                    className="flex items-center justify-between pt-4"
+                    style={{ borderTop: `1px solid ${STEALTH.border}` }}
+                  >
+                    <span className="text-lg font-semibold" style={{ color: STEALTH.accent }}>{product.price}</span>
+                    <a href={WHATSAPP_PROJECT_URL} target="_blank" rel="noopener noreferrer">
+                      <Button 
+                        size="sm" 
+                        className="gap-2 rounded-full"
+                        style={{ backgroundColor: STEALTH.accent, color: STEALTH.bg }}
+                      >
+                        Demander
+                        <ArrowRight className="w-4 h-4" />
+                      </Button>
+                    </a>
+                  </div>
                 </div>
               </motion.div>
             ))}
