@@ -98,6 +98,7 @@ const OrderConfirmationNew = lazy(() => import("./pages/order/OrderConfirmationN
 const CheckoutTunnel = lazy(() => import("./pages/CheckoutTunnel"));
 const SovereignDashboard = lazy(() => import("./pages/SovereignDashboard"));
 const AriellaCard = lazy(() => import("./pages/AriellaCard"));
+const LegacyMap = lazy(() => import("./pages/LegacyMap"));
 
 
 const queryClient = new QueryClient({
@@ -227,6 +228,8 @@ const App = () => {
                               <Route path="/demo/nfc-3d" element={<NFCDemo3D />} />
                               <Route path="/demo/studio" element={<DemoStudio />} />
                               <Route path="/sovereign" element={<SovereignDashboard />} />
+                              <Route path="/legacy-map" element={<LegacyMap />} />
+                              <Route path="/alliance" element={<LegacyMap />} />
                               <Route path="/nfc-animation" element={<NFCDemo3D />} />
                               <Route path="/showroom" element={<Showroom3D />} />
                               <Route path="/showroom-3d" element={<Showroom3D />} />

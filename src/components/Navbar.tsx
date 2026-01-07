@@ -23,7 +23,7 @@ export function Navbar() {
     { href: "/", label: "Accueil", isExternal: false },
     { href: "/features", label: "Fonctionnalités", isExternal: false },
     { href: "/boutique", label: "Boutique", isNew: true, isExternal: false },
-    { href: "/demo/studio", label: "Studio", isExternal: false },
+    { href: "/legacy-map", label: "Alliance", isNew: true, isExternal: false },
     { href: "/pricing", label: "Tarifs", isExternal: false },
     { href: "/order/type", label: "Commander", highlight: true, isExternal: false },
   ];
