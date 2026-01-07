@@ -8,33 +8,42 @@
 
 ## 🚀 Étapes de Configuration
 
-### 1. Cloner le projet
+### 1. Exporter depuis Lovable vers GitHub
+
+Dans Lovable, cliquez sur **"Export to GitHub"** pour transférer le projet.
+
+### 2. Cloner le projet
 
 ```bash
-git clone https://github.com/soudior/i-wasp.git
+git clone https://github.com/VOTRE_USERNAME/i-wasp.git
 cd i-wasp
 ```
 
-### 2. Installer les dépendances
+### 3. Installer les dépendances
 
 ```bash
 npm install
 ```
 
-### 3. Ajouter la plateforme iOS
+### 4. Build du projet
+
+```bash
+npm run build
+```
+
+### 5. Ajouter la plateforme iOS
 
 ```bash
 npx cap add ios
 ```
 
-### 4. Synchroniser le projet
+### 6. Synchroniser le projet
 
 ```bash
-npm run build
 npx cap sync ios
 ```
 
-### 5. Ouvrir dans Xcode
+### 7. Ouvrir dans Xcode
 
 ```bash
 npx cap open ios
@@ -44,18 +53,17 @@ npx cap open ios
 
 ### Icônes requises pour l'App Store
 
-Créez un fichier `AppIcon.png` de **1024x1024 pixels** et placez-le dans :
+Créez un fichier `AppIcon.png` de **1024x1024 pixels** et utilisez un générateur :
+
+- **App Icon Generator** : https://appicon.co (recommandé)
+- **MakeAppIcon** : https://makeappicon.com
+
+Placez les fichiers générés dans :
 ```
 ios/App/App/Assets.xcassets/AppIcon.appiconset/
 ```
 
-### Génération automatique des tailles
-
-Utilisez l'un de ces outils :
-- **App Icon Generator** : https://appicon.co
-- **MakeAppIcon** : https://makeappicon.com
-
-Tailles générées automatiquement :
+### Tailles générées automatiquement
 - 20x20, 29x29, 40x40, 58x58, 60x60
 - 76x76, 80x80, 87x87, 120x120
 - 152x152, 167x167, 180x180, 1024x1024
@@ -68,51 +76,81 @@ Tailles générées automatiquement :
 2. Ajoutez votre image splash (2732x2732px recommandé)
 3. Configurez le LaunchScreen.storyboard
 
-### Couleurs recommandées IWASP
+### Couleurs IWASP Stealth Luxury
 
-- Background : `#F5F5F7`
-- Logo gold : `#D4AF37`
-- Texte : `#1D1D1F`
+- Background : `#000000` (Noir profond)
+- Accent : `#D4AF37` (Or subtil)
+- Texte : `#FFFFFF`
 
 ## ⚙️ Configuration dans Xcode
 
 ### 1. Signing & Capabilities
 
-1. Sélectionnez le projet dans le navigateur
-2. Onglet "Signing & Capabilities"
-3. Activez "Automatically manage signing"
+1. Sélectionnez le projet **App** dans le navigateur
+2. Onglet **Signing & Capabilities**
+3. Activez **Automatically manage signing**
 4. Sélectionnez votre Team (Apple Developer)
+5. Bundle ID : `app.lovable.17c6de152d8546a1a7d8e5c478c6f024`
 
 ### 2. Ajouter les Capabilities
 
-Cliquez sur "+ Capability" et ajoutez :
+Cliquez sur **"+ Capability"** et ajoutez :
 - **Near Field Communication Tag Reading** (pour NFC)
 - **Associated Domains** (pour les liens universels)
 - **Push Notifications** (optionnel)
-- **Background Modes** > Background fetch
+- **Background Modes** → Background fetch
 
 ### 3. Associated Domains
 
-Ajoutez :
+Dans le champ Associated Domains, ajoutez :
 ```
 applinks:i-wasp.com
 applinks:www.i-wasp.com
 ```
 
+### 4. Info.plist
+
+Vérifiez que ces clés sont présentes :
+
+```xml
+<key>NFCReaderUsageDescription</key>
+<string>IWASP utilise le NFC pour partager votre carte de visite digitale</string>
+
+<key>NSCameraUsageDescription</key>
+<string>IWASP utilise la caméra pour scanner les QR codes et personnaliser votre profil</string>
+
+<key>NSPhotoLibraryUsageDescription</key>
+<string>IWASP accède à vos photos pour personnaliser votre carte de visite</string>
+
+<key>NSContactsUsageDescription</key>
+<string>IWASP peut ajouter des contacts à votre carnet d'adresses</string>
+
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>IWASP utilise votre position pour personnaliser votre expérience</string>
+```
+
 ## 📤 Publication sur l'App Store
 
-### 1. Archive
+### 1. Build Release
 
-1. Dans Xcode : Product → Archive
-2. Attendez la compilation complète
+1. Dans Xcode, sélectionnez **Any iOS Device (arm64)**
+2. **Product → Archive**
+3. Attendez la compilation complète
 
-### 2. App Store Connect
+### 2. Distribute App
+
+1. Dans l'Organizer, sélectionnez votre archive
+2. **Distribute App → App Store Connect**
+3. Suivez les instructions
+
+### 3. App Store Connect
 
 1. Allez sur https://appstoreconnect.apple.com
-2. Créez une nouvelle app avec le Bundle ID : `app.lovable.17c6de152d8546a1a7d8e5c478c6f024`
-3. Remplissez les métadonnées
+2. **My Apps → (+) New App**
+3. Bundle ID: `app.lovable.17c6de152d8546a1a7d8e5c478c6f024`
+4. Remplissez les métadonnées
 
-### 3. Métadonnées requises
+### 4. Métadonnées requises
 
 **Nom de l'app** : IWASP - Carte de visite NFC
 
@@ -145,12 +183,26 @@ Rejoignez la révolution du networking digital avec IWASP.
 
 **Catégorie** : Business
 
-### 4. Screenshots requis
+**URL Politique de confidentialité** : https://i-wasp.com/privacy
 
-- iPhone 6.7" (1290 x 2796) - iPhone 15 Pro Max
-- iPhone 6.5" (1242 x 2688) - iPhone 11 Pro Max
-- iPhone 5.5" (1242 x 2208) - iPhone 8 Plus
-- iPad Pro 12.9" (2048 x 2732)
+**URL Support** : https://i-wasp.com/contact
+
+### 5. Screenshots requis
+
+| Device | Résolution |
+|--------|-----------|
+| iPhone 6.7" | 1290 x 2796 |
+| iPhone 6.5" | 1242 x 2688 |
+| iPhone 5.5" | 1242 x 2208 |
+| iPad Pro 12.9" | 2048 x 2732 |
+
+### 6. Soumettre pour review
+
+1. Téléchargez votre build
+2. Remplissez tous les champs requis
+3. **Submit for Review**
+
+Délai de review : 24-48 heures généralement
 
 ## 📋 Checklist avant soumission
 
@@ -162,9 +214,11 @@ Rejoignez la révolution du networking digital avec IWASP.
 - [ ] Métadonnées complètes
 - [ ] Test sur appareil physique
 - [ ] Build sans erreurs ni warnings
+- [ ] Capabilities NFC et Associated Domains configurées
 
 ## 🔗 Liens utiles
 
 - [Documentation Capacitor iOS](https://capacitorjs.com/docs/ios)
+- [App Store Connect](https://appstoreconnect.apple.com)
 - [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
 - [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
