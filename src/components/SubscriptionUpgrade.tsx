@@ -13,11 +13,12 @@ import { toast } from 'sonner';
 import { SUBSCRIPTION_PLANS } from '@/lib/subscriptionPlans';
 
 interface SubscriptionUpgradeProps {
+  isOpen?: boolean;
   onClose?: () => void;
   onSuccess?: () => void;
 }
 
-export function SubscriptionUpgrade({ onClose, onSuccess }: SubscriptionUpgradeProps) {
+export function SubscriptionUpgrade({ isOpen = true, onClose, onSuccess }: SubscriptionUpgradeProps) {
   const { user } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
@@ -112,6 +113,8 @@ export function SubscriptionUpgrade({ onClose, onSuccess }: SubscriptionUpgradeP
     'Badge Signature',
     'Conseiller IA dédié'
   ];
+
+  if (!isOpen) return null;
 
   return (
     <motion.div

@@ -9,11 +9,14 @@ import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { CurrencySwitch } from "@/components/CurrencySwitch";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { SubscriptionBadge } from "@/components/SubscriptionBadge";
+import { SubscriptionUpgrade } from "@/components/SubscriptionUpgrade";
 
 export function Navbar() {
   const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut, loading } = useAuth();
@@ -123,6 +126,11 @@ export function Navbar() {
             {!loading && (
               user ? (
                 <>
+                  <SubscriptionBadge 
+                    showLabel={true} 
+                    size="sm" 
+                    onClick={() => setShowUpgrade(true)} 
+                  />
                   <Link to="/dashboard">
                     <Button variant="ghost" size="sm" className="gap-2">
                       <LayoutDashboard size={16} />
@@ -209,6 +217,16 @@ export function Navbar() {
             <div className="pt-4 flex flex-col gap-3">
               {user ? (
                 <>
+                  <div className="flex justify-center pb-2">
+                    <SubscriptionBadge 
+                      showLabel={true} 
+                      size="md" 
+                      onClick={() => {
+                        setShowUpgrade(true);
+                        setIsMobileMenuOpen(false);
+                      }} 
+                    />
+                  </div>
                   <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button className="w-full gap-2 bg-foreground text-background hover:bg-foreground/90">
                       <LayoutDashboard size={16} />
@@ -245,6 +263,12 @@ export function Navbar() {
           </div>
         </div>
       </nav>
+
+      {/* Subscription Upgrade Modal */}
+      <SubscriptionUpgrade 
+        isOpen={showUpgrade} 
+        onClose={() => setShowUpgrade(false)} 
+      />
     </header>
   );
 }
