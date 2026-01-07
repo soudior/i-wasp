@@ -3,9 +3,9 @@
  * Matériaux réalistes : métal brossé, reflets, finitions premium
  */
 
-import { useRef, useState, Suspense, useMemo } from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows, Html, useEnvironment } from "@react-three/drei";
+import { useRef, useState, Suspense, useMemo, useCallback } from "react";
+import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { OrbitControls, Environment, ContactShadows, Html, useEnvironment, Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, RotateCcw, Maximize2, Sparkles } from "lucide-react";
@@ -286,6 +286,159 @@ function Card3D({
   );
 }
 
+// Sparkle Particles Component for Chrome finish
+function SparkleParticles({ count = 80 }: { count?: number }) {
+  const pointsRef = useRef<THREE.Points>(null);
+  
+  // Generate random particle positions in a sphere around the card
+  const particles = useMemo(() => {
+    const positions = new Float32Array(count * 3);
+    const speeds = new Float32Array(count);
+    const sizes = new Float32Array(count);
+    const phases = new Float32Array(count);
+    
+    for (let i = 0; i < count; i++) {
+      // Distribute particles in an ellipsoid shape around the card
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const radius = 1.2 + Math.random() * 0.8;
+      
+      // Ellipsoid dimensions matching card aspect ratio
+      const x = radius * Math.sin(phi) * Math.cos(theta) * 1.5;
+      const y = radius * Math.sin(phi) * Math.sin(theta) * 0.9;
+      const z = radius * Math.cos(phi) * 0.5;
+      
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = z;
+      
+      speeds[i] = 0.2 + Math.random() * 0.5;
+      sizes[i] = 0.02 + Math.random() * 0.04;
+      phases[i] = Math.random() * Math.PI * 2;
+    }
+    
+    return { positions, speeds, sizes, phases };
+  }, [count]);
+  
+  // Animate particles
+  useFrame((state) => {
+    if (!pointsRef.current) return;
+    
+    const positions = pointsRef.current.geometry.attributes.position.array as Float32Array;
+    const time = state.clock.elapsedTime;
+    
+    for (let i = 0; i < count; i++) {
+      const i3 = i * 3;
+      const speed = particles.speeds[i];
+      const phase = particles.phases[i];
+      
+      // Orbital motion with gentle floating
+      const angle = time * speed + phase;
+      const baseX = particles.positions[i3];
+      const baseY = particles.positions[i3 + 1];
+      const baseZ = particles.positions[i3 + 2];
+      
+      positions[i3] = baseX + Math.sin(angle) * 0.1;
+      positions[i3 + 1] = baseY + Math.sin(angle * 1.3 + phase) * 0.15;
+      positions[i3 + 2] = baseZ + Math.cos(angle * 0.7) * 0.08;
+    }
+    
+    pointsRef.current.geometry.attributes.position.needsUpdate = true;
+    
+    // Rotate the entire particle system slowly
+    pointsRef.current.rotation.y = time * 0.1;
+  });
+  
+  return (
+    <Points ref={pointsRef} positions={particles.positions} stride={3} frustumCulled={false}>
+      <PointMaterial
+        transparent
+        color="#ffd700"
+        size={0.03}
+        sizeAttenuation={true}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        opacity={0.8}
+      />
+    </Points>
+  );
+}
+
+// Glowing Ring Effect for Chrome
+function GlowRing() {
+  const ringRef = useRef<THREE.Mesh>(null);
+  
+  useFrame((state) => {
+    if (!ringRef.current) return;
+    const time = state.clock.elapsedTime;
+    ringRef.current.rotation.z = time * 0.2;
+    ringRef.current.scale.setScalar(1 + Math.sin(time * 2) * 0.03);
+  });
+  
+  return (
+    <mesh ref={ringRef} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+      <ringGeometry args={[1.4, 1.5, 64]} />
+      <meshBasicMaterial
+        color="#ffd700"
+        transparent
+        opacity={0.15}
+        side={THREE.DoubleSide}
+        blending={THREE.AdditiveBlending}
+      />
+    </mesh>
+  );
+}
+
+// Floating Light Orbs
+function LightOrbs({ count = 6 }: { count?: number }) {
+  const orbsRef = useRef<THREE.Group>(null);
+  
+  const orbs = useMemo(() => {
+    return Array.from({ length: count }, (_, i) => ({
+      angle: (i / count) * Math.PI * 2,
+      radius: 1.3 + Math.random() * 0.3,
+      speed: 0.3 + Math.random() * 0.2,
+      size: 0.03 + Math.random() * 0.02,
+      yOffset: (Math.random() - 0.5) * 0.6,
+      phase: Math.random() * Math.PI * 2
+    }));
+  }, [count]);
+  
+  useFrame((state) => {
+    if (!orbsRef.current) return;
+    const time = state.clock.elapsedTime;
+    
+    orbsRef.current.children.forEach((orb, i) => {
+      const config = orbs[i];
+      const angle = config.angle + time * config.speed;
+      
+      orb.position.x = Math.cos(angle) * config.radius;
+      orb.position.z = Math.sin(angle) * config.radius * 0.4;
+      orb.position.y = config.yOffset + Math.sin(time * 2 + config.phase) * 0.1;
+      
+      // Pulsing opacity effect
+      const material = (orb as THREE.Mesh).material as THREE.MeshBasicMaterial;
+      material.opacity = 0.4 + Math.sin(time * 3 + config.phase) * 0.3;
+    });
+  });
+  
+  return (
+    <group ref={orbsRef}>
+      {orbs.map((orb, i) => (
+        <mesh key={i} position={[Math.cos(orb.angle) * orb.radius, orb.yOffset, Math.sin(orb.angle) * orb.radius * 0.4]}>
+          <sphereGeometry args={[orb.size, 16, 16]} />
+          <meshBasicMaterial
+            color="#ffd700"
+            transparent
+            opacity={0.6}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 // Loading placeholder
 function LoadingCard() {
   return (
@@ -394,6 +547,15 @@ export function Card3DGallery() {
             isActive={true}
             autoRotate={autoRotate}
           />
+          
+          {/* Chrome particle effects */}
+          {activeCard.finish === "chrome" && (
+            <>
+              <SparkleParticles count={100} />
+              <GlowRing />
+              <LightOrbs count={8} />
+            </>
+          )}
           
           <ContactShadows
             position={[0, -0.9, 0]}
