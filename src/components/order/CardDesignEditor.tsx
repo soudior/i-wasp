@@ -27,6 +27,7 @@ import {
   RotateCcw,
   ZoomIn,
   Lock,
+  RotateCw,
 } from "lucide-react";
 
 // Import the official i-Wasp logo and card template
@@ -70,6 +71,7 @@ export function CardDesignEditor({
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [showBack, setShowBack] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -258,147 +260,229 @@ export function CardDesignEditor({
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Move className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium">Déplacez votre logo</span>
+                <span className="text-sm font-medium">
+                  {showBack ? "Verso de la carte" : "Déplacez votre logo"}
+                </span>
               </div>
-              <Button variant="ghost" size="sm" onClick={handleCenterLogo} className="h-8">
-                <RotateCcw className="w-3 h-3 mr-1" />
-                Centrer
-              </Button>
+              <div className="flex items-center gap-2">
+                {!showBack && (
+                  <Button variant="ghost" size="sm" onClick={handleCenterLogo} className="h-8">
+                    <RotateCcw className="w-3 h-3 mr-1" />
+                    Centrer
+                  </Button>
+                )}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowBack(!showBack)} 
+                  className="h-8 gap-1"
+                >
+                  <RotateCw className="w-3 h-3" />
+                  {showBack ? "Recto" : "Verso"}
+                </Button>
+              </div>
             </div>
 
-            {/* Official i-Wasp Card Preview */}
-            <div
-              ref={cardRef}
-              className={`relative rounded-xl overflow-hidden shadow-2xl mx-auto ${
-                isDragging ? "cursor-grabbing" : !value.isFullBleed ? "cursor-grab" : ""
-              }`}
-              style={{
-                aspectRatio: CARD_RATIO,
-                maxWidth: "100%",
-                backgroundColor: "#FFFFFF",
-              }}
+            {/* Card Preview with 3D Flip Animation */}
+            <div 
+              className="relative mx-auto perspective-1000"
+              style={{ aspectRatio: CARD_RATIO, maxWidth: "100%" }}
             >
-            {/* Card Template Background */}
-              <img
-                src={cardTemplateFront}
-                alt="i-Wasp Card Template"
-                className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0"
-              />
-
-              {/* Fixed i-Wasp Logo - positioned exactly as in template (top-right) */}
-              <div
-                className="absolute z-30 pointer-events-none"
-                style={{
-                  top: "12%",
-                  right: "6%",
-                  width: "22%",
-                  height: "auto",
-                }}
+              <motion.div
+                className="relative w-full h-full"
+                style={{ transformStyle: "preserve-3d" }}
+                animate={{ rotateY: showBack ? 180 : 0 }}
+                transition={{ duration: 0.6, ease: "easeInOut" }}
               >
-                <img
-                  src={iwaspLogo}
-                  alt="i-Wasp"
-                  className="w-full h-auto object-contain"
-                />
-              </div>
-
-              {/* Lock indicator for i-Wasp logo */}
-              <div className="absolute top-2 right-2 z-40">
-                <Badge variant="secondary" className="text-[9px] bg-black/60 text-white border-none gap-1">
-                  <Lock className="w-2.5 h-2.5" />
-                  i-Wasp
-                </Badge>
-              </div>
-
-              {/* Drag constraint indicator */}
-              {isDragging && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="absolute border-2 border-primary/40 rounded-lg pointer-events-none z-10"
+                {/* Front Side */}
+                <div
+                  ref={cardRef}
+                  className={`absolute inset-0 rounded-xl overflow-hidden shadow-2xl ${
+                    isDragging ? "cursor-grabbing" : !value.isFullBleed && !showBack ? "cursor-grab" : ""
+                  }`}
                   style={{
-                    top: `${DRAG_MARGIN}%`,
-                    left: `${DRAG_MARGIN}%`,
-                    right: `${DRAG_MARGIN}%`,
-                    bottom: `${DRAG_MARGIN}%`,
+                    backfaceVisibility: "hidden",
+                    backgroundColor: "#FFFFFF",
                   }}
-                />
-              )}
-
-              {/* User Logo - Draggable */}
-              {value.isFullBleed ? (
-                <motion.img
-                  src={value.logoUrl}
-                  alt="Votre logo"
-                  onLoad={() => setImageLoaded(true)}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: imageLoaded ? 1 : 0 }}
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    ...getLogoStyle(),
-                    zIndex: 5,
-                  }}
-                  draggable={false}
-                />
-              ) : (
-                <motion.div
-                  drag
-                  dragMomentum={false}
-                  dragElastic={0.1}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                  initial={false}
-                  animate={{
-                    opacity: imageLoaded ? 1 : 0,
-                  }}
-                  whileDrag={{ scale: 1.05, zIndex: 50 }}
-                  style={{
-                    position: "absolute",
-                    left: `${value.logoX}%`,
-                    top: `${value.logoY}%`,
-                    transform: "translate(-50%, -50%)",
-                    zIndex: isDragging ? 50 : 5,
-                    cursor: isDragging ? "grabbing" : "grab",
-                  }}
-                  className="touch-none"
                 >
-                  <motion.img
-                    src={value.logoUrl}
-                    alt="Votre logo"
-                    onLoad={() => setImageLoaded(true)}
-                    style={getLogoStyle()}
-                    className={`object-contain pointer-events-none select-none ${
-                      isDragging ? "drop-shadow-2xl" : "drop-shadow-lg"
-                    }`}
-                    draggable={false}
+                  {/* Card Template Background */}
+                  <img
+                    src={cardTemplateFront}
+                    alt="i-Wasp Card Template"
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0"
                   />
 
-                  {imageLoaded && !isDragging && (
+                  {/* Fixed i-Wasp Logo - positioned exactly as in template (top-right) */}
+                  <div
+                    className="absolute z-30 pointer-events-none"
+                    style={{
+                      top: "12%",
+                      right: "6%",
+                      width: "22%",
+                      height: "auto",
+                    }}
+                  >
+                    <img
+                      src={iwaspLogo}
+                      alt="i-Wasp"
+                      className="w-full h-auto object-contain"
+                    />
+                  </div>
+
+                  {/* Lock indicator for i-Wasp logo */}
+                  <div className="absolute top-2 right-2 z-40">
+                    <Badge variant="secondary" className="text-[9px] bg-black/60 text-white border-none gap-1">
+                      <Lock className="w-2.5 h-2.5" />
+                      i-Wasp
+                    </Badge>
+                  </div>
+
+                  {/* Drag constraint indicator */}
+                  {isDragging && !showBack && (
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium whitespace-nowrap bg-black/70 text-white"
-                    >
-                      <Move size={10} />
-                      Glissez
-                    </motion.div>
+                      className="absolute border-2 border-primary/40 rounded-lg pointer-events-none z-10"
+                      style={{
+                        top: `${DRAG_MARGIN}%`,
+                        left: `${DRAG_MARGIN}%`,
+                        right: `${DRAG_MARGIN}%`,
+                        bottom: `${DRAG_MARGIN}%`,
+                      }}
+                    />
                   )}
-                </motion.div>
-              )}
 
-              {/* Loading state */}
-              {!imageLoaded && value.logoUrl && (
-                <div className="absolute inset-0 flex items-center justify-center z-10">
-                  <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                  {/* User Logo - Draggable */}
+                  {!showBack && (
+                    <>
+                      {value.isFullBleed ? (
+                        <motion.img
+                          src={value.logoUrl}
+                          alt="Votre logo"
+                          onLoad={() => setImageLoaded(true)}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: imageLoaded ? 1 : 0 }}
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            ...getLogoStyle(),
+                            zIndex: 5,
+                          }}
+                          draggable={false}
+                        />
+                      ) : (
+                        <motion.div
+                          drag
+                          dragMomentum={false}
+                          dragElastic={0.1}
+                          onDragStart={handleDragStart}
+                          onDragEnd={handleDragEnd}
+                          initial={false}
+                          animate={{
+                            opacity: imageLoaded ? 1 : 0,
+                          }}
+                          whileDrag={{ scale: 1.05, zIndex: 50 }}
+                          style={{
+                            position: "absolute",
+                            left: `${value.logoX}%`,
+                            top: `${value.logoY}%`,
+                            transform: "translate(-50%, -50%)",
+                            zIndex: isDragging ? 50 : 5,
+                            cursor: isDragging ? "grabbing" : "grab",
+                          }}
+                          className="touch-none"
+                        >
+                          <motion.img
+                            src={value.logoUrl}
+                            alt="Votre logo"
+                            onLoad={() => setImageLoaded(true)}
+                            style={getLogoStyle()}
+                            className={`object-contain pointer-events-none select-none ${
+                              isDragging ? "drop-shadow-2xl" : "drop-shadow-lg"
+                            }`}
+                            draggable={false}
+                          />
+
+                          {imageLoaded && !isDragging && (
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium whitespace-nowrap bg-black/70 text-white"
+                            >
+                              <Move size={10} />
+                              Glissez
+                            </motion.div>
+                          )}
+                        </motion.div>
+                      )}
+                    </>
+                  )}
+
+                  {/* Loading state */}
+                  {!imageLoaded && value.logoUrl && !showBack && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                    </div>
+                  )}
                 </div>
-              )}
+
+                {/* Back Side with Honeycomb Pattern */}
+                <div
+                  className="absolute inset-0 rounded-xl overflow-hidden shadow-2xl"
+                  style={{
+                    backfaceVisibility: "hidden",
+                    transform: "rotateY(180deg)",
+                    backgroundColor: "#FFFFFF",
+                  }}
+                >
+                  {/* Honeycomb SVG Pattern */}
+                  <svg
+                    className="absolute inset-0 w-full h-full"
+                    viewBox="0 0 89.6 58"
+                    preserveAspectRatio="xMidYMid slice"
+                  >
+                    <defs>
+                      <pattern id="honeycomb" width="8" height="8" patternUnits="userSpaceOnUse">
+                        <path 
+                          d="M4 0 L8 2 L8 6 L4 8 L0 6 L0 2 Z" 
+                          fill="none" 
+                          stroke="rgba(0,0,0,0.06)" 
+                          strokeWidth="0.3"
+                        />
+                      </pattern>
+                    </defs>
+                    <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                    <rect x="0" y="0" width="100%" height="100%" fill="url(#honeycomb)" />
+                  </svg>
+
+                  {/* i-Wasp logo centered on back */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                      src={iwaspLogo}
+                      alt="i-Wasp"
+                      className="w-1/4 h-auto object-contain opacity-20"
+                    />
+                  </div>
+
+                  {/* Back label */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+                    <Badge variant="outline" className="text-[10px] bg-white/80 border-gray-200">
+                      Verso · Pattern Honeycomb
+                    </Badge>
+                  </div>
+                </div>
+              </motion.div>
             </div>
 
             {/* Position indicator */}
-            {!value.isFullBleed && (
+            {!value.isFullBleed && !showBack && (
               <p className="text-center text-xs text-muted-foreground mt-3">
                 Position: {Math.round(value.logoX)}%, {Math.round(value.logoY)}%
+              </p>
+            )}
+            {showBack && (
+              <p className="text-center text-xs text-muted-foreground mt-3">
+                Le verso affiche le pattern honeycomb subtil
               </p>
             )}
           </div>
