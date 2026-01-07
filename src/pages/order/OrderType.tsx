@@ -34,7 +34,7 @@ const products: ProductOption[] = [
     id: "pvc",
     nameKey: "order.pvcCard",
     descKey: "order.pvcCardDesc",
-    priceMAD: 350,
+    priceMAD: 324, // ~32,41€
     icon: CreditCard,
     image: cardBlackMatte,
     available: true,
@@ -44,7 +44,7 @@ const products: ProductOption[] = [
     id: "nails",
     nameKey: "order.nfcNails",
     descKey: "order.nfcNailsDesc",
-    priceMAD: 590,
+    priceMAD: 546, // ~54,63€
     icon: Sparkles,
     image: cardNavyExecutive,
     available: true,
@@ -54,7 +54,7 @@ const products: ProductOption[] = [
     id: "metal",
     nameKey: "order.metalCard",
     descKey: "order.metalCardDesc",
-    priceMAD: 990,
+    priceMAD: 917, // ~91,67€
     icon: Package,
     available: false,
     featuresKeys: ["order.metalFeature1", "order.metalFeature2", "order.metalFeature3"]

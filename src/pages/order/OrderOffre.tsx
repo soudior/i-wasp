@@ -20,7 +20,7 @@ const offerDetails = [
     icon: Star,
     title: "Essentiel",
     subtitle: "L'essentiel pour démarrer",
-    priceMAD: 299,
+    priceMAD: 277, // ~27,69€
     features: [
       "Carte NFC blanche",
       "Profil digital essentiel",
@@ -33,7 +33,7 @@ const offerDetails = [
     icon: Sparkles,
     title: "Signature",
     subtitle: "Le plus populaire",
-    priceMAD: 599,
+    priceMAD: 555, // ~55,46€
     isPopular: true,
     features: [
       "Carte NFC Premium",
@@ -48,7 +48,7 @@ const offerDetails = [
     icon: Crown,
     title: "Élite",
     subtitle: "L'excellence sur mesure",
-    priceMAD: 999,
+    priceMAD: 925, // ~92,5€
     features: [
       "Carte NFC Elite",
       "Personnalisation avancée",

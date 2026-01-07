@@ -69,12 +69,28 @@ export function useAdminUpdateOrder() {
         .single();
       
       if (error) throw error;
-      return data as Order;
+      return { order: data as Order, newStatus: updates.status, trackingNumber: updates.tracking_number };
     },
-    onSuccess: () => {
+    onSuccess: async ({ order, newStatus, trackingNumber }) => {
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       toast.success("Commande mise à jour");
+      
+      // Send push notification if status changed
+      if (newStatus) {
+        try {
+          await supabase.functions.invoke('send-push-notification', {
+            body: { 
+              orderId: order.id, 
+              newStatus,
+              trackingNumber: trackingNumber || undefined
+            },
+          });
+          console.log("Push notification sent for order:", order.order_number);
+        } catch (e) {
+          console.warn("Failed to send push notification:", e);
+        }
+      }
     },
     onError: (error) => {
       console.error("Error updating order:", error);
@@ -175,11 +191,11 @@ export function useMarkShipped() {
       if (error) throw error;
       return data as Order;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
       toast.success("Commande expédiée");
       
-      // Send shipped email with tracking number
+      // Send shipped email
       sendOrderEmail({ 
         orderId: data.id, 
         emailType: "shipped", 
@@ -187,6 +203,19 @@ export function useMarkShipped() {
       }).then(success => {
         if (success) console.log("Shipped email sent");
       });
+      
+      // Send push notification
+      try {
+        await supabase.functions.invoke('send-push-notification', {
+          body: { 
+            orderId: data.id, 
+            newStatus: "shipped",
+            trackingNumber: data.tracking_number
+          },
+        });
+      } catch (e) {
+        console.warn("Failed to send push notification:", e);
+      }
     },
     onError: (error) => {
       console.error("Error marking shipped:", error);
@@ -214,7 +243,7 @@ export function useMarkDelivered() {
       if (error) throw error;
       return data as Order;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
       toast.success("Commande livrée et payée ✓");
       
@@ -223,6 +252,18 @@ export function useMarkDelivered() {
         .then(success => {
           if (success) console.log("Delivered email sent");
         });
+      
+      // Send push notification
+      try {
+        await supabase.functions.invoke('send-push-notification', {
+          body: { 
+            orderId: data.id, 
+            newStatus: "delivered"
+          },
+        });
+      } catch (e) {
+        console.warn("Failed to send push notification:", e);
+      }
     },
     onError: (error) => {
       console.error("Error marking delivered:", error);
