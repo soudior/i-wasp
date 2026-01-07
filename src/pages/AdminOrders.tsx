@@ -53,7 +53,8 @@ import {
   CreditCard,
   Image as ImageIcon,
   MessageCircle,
-  Phone
+  Phone,
+  Pencil
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -124,7 +125,10 @@ export default function AdminOrders() {
   const [shipDialogOpen, setShipDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [adminNotes, setAdminNotes] = useState("");
+  const [editStatus, setEditStatus] = useState<string>("");
+  const [editTracking, setEditTracking] = useState("");
 
   // Download logo helper
   const handleDownloadLogo = async (order: Order) => {
@@ -220,6 +224,44 @@ export default function AdminOrders() {
     setSelectedOrder(order);
     setDetailsDialogOpen(true);
   };
+
+  // Handle open edit dialog
+  const handleOpenEdit = (order: Order) => {
+    setSelectedOrder(order);
+    setEditStatus(order.status);
+    setEditTracking(order.tracking_number || "");
+    setEditDialogOpen(true);
+  };
+
+  // Handle save edit
+  const handleSaveEdit = () => {
+    if (selectedOrder) {
+      const updates: any = { 
+        status: editStatus,
+        tracking_number: editTracking || null 
+      };
+      
+      // Set timestamps based on status change
+      if (editStatus === "paid" && selectedOrder.status !== "paid") {
+        updates.paid_at = new Date().toISOString();
+      }
+      if (editStatus === "in_production" && selectedOrder.status !== "in_production") {
+        updates.production_started_at = new Date().toISOString();
+      }
+      if (editStatus === "shipped" && selectedOrder.status !== "shipped") {
+        updates.shipped_at = new Date().toISOString();
+      }
+      if (editStatus === "delivered" && selectedOrder.status !== "delivered") {
+        updates.delivered_at = new Date().toISOString();
+      }
+      
+      updateOrder.mutate({
+        orderId: selectedOrder.id,
+        updates
+      });
+      setEditDialogOpen(false);
+    }
+  };
   
   // Handle open notes dialog
   const handleOpenNotes = (order: Order) => {
@@ -273,8 +315,18 @@ export default function AdminOrders() {
   const getOrderActions = (order: Order) => {
     const actions: JSX.Element[] = [];
     
-    // Always show notes and details buttons
+    // Always show edit, notes and details buttons
     actions.push(
+      <Button
+        key="edit"
+        size="sm"
+        variant="ghost"
+        onClick={() => handleOpenEdit(order)}
+        title="Modifier statut/tracking"
+        className="text-blue-600 hover:text-blue-700"
+      >
+        <Pencil className="h-4 w-4" />
+      </Button>,
       <Button
         key="notes"
         size="sm"
@@ -903,6 +955,57 @@ export default function AdminOrders() {
               <Button onClick={handleConfirmShip} disabled={markShipped.isPending}>
                 <Truck className="h-4 w-4 mr-2" />
                 {markShipped.isPending ? "Traitement..." : "Confirmer l'expédition"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Status & Tracking Dialog */}
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Modifier la commande</DialogTitle>
+              <DialogDescription>
+                Commande {selectedOrder?.order_number} - Modifier le statut et le numéro de suivi
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+              <div>
+                <Label htmlFor="edit-status">Statut de la commande</Label>
+                <select
+                  id="edit-status"
+                  value={editStatus}
+                  onChange={(e) => setEditStatus(e.target.value)}
+                  className="mt-2 w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
+                >
+                  <option value="pending">🟡 En attente</option>
+                  <option value="paid">🔵 Confirmée (Payée)</option>
+                  <option value="in_production">🟣 En production</option>
+                  <option value="shipped">🔷 Expédiée</option>
+                  <option value="delivered">🟢 Livrée</option>
+                </select>
+              </div>
+              <div>
+                <Label htmlFor="edit-tracking">Numéro de suivi</Label>
+                <Input
+                  id="edit-tracking"
+                  value={editTracking}
+                  onChange={(e) => setEditTracking(e.target.value)}
+                  placeholder="Ex: MA123456789"
+                  className="mt-2"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Le client sera notifié si le statut change à "Expédiée"
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+                Annuler
+              </Button>
+              <Button onClick={handleSaveEdit} disabled={updateOrder.isPending}>
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                {updateOrder.isPending ? "Enregistrement..." : "Enregistrer"}
               </Button>
             </DialogFooter>
           </DialogContent>
