@@ -225,10 +225,9 @@ export default function OrderType() {
                         <img 
                           src={product.image}
                           alt={product.name}
-                          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-2xl"
+                          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
                           style={{ 
-                            mixBlendMode: 'multiply',
-                            filter: 'brightness(1.1) contrast(1.05)'
+                            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))'
                           }}
                         />
                       ) : (
