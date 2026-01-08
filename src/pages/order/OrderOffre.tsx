@@ -3,57 +3,109 @@
  * /order/offre
  * 
  * Design IWASP Stealth Luxury
+ * Affiche clairement les différences entre offres pour aider l'utilisateur
  */
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useOrderFunnel, OfferType, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { STEALTH } from "@/lib/stealthPalette";
-import { Check, ArrowRight, ArrowLeft, Star, Sparkles, Crown } from "lucide-react";
+import { 
+  Check, ArrowRight, ArrowLeft, Star, Sparkles, Crown, 
+  BarChart3, Users, RefreshCw, Headphones, Palette, Link2, 
+  Image
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const offerDetails = [
+interface OfferFeature {
+  label: string;
+  included: boolean;
+  icon: React.ElementType;
+  highlight?: boolean;
+}
+
+interface OfferDetail {
+  id: OfferType;
+  icon: React.ElementType;
+  title: string;
+  subtitle: string;
+  priceMAD: number;
+  description: string;
+  idealFor: string;
+  features: OfferFeature[];
+  limitations?: string[];
+  highlights?: string[];
+  isPopular?: boolean;
+}
+
+// Détails complets des offres avec indication claire de la valeur
+const offerDetails: OfferDetail[] = [
   {
-    id: "essentiel" as OfferType,
+    id: "essentiel",
     icon: Star,
     title: "Essentiel",
-    subtitle: "L'essentiel pour démarrer",
-    priceMAD: 277, // ~27,69€
+    subtitle: "Votre identité digitale de base",
+    priceMAD: 277,
+    description: "Parfait si vous débutez et voulez simplement partager vos coordonnées.",
+    idealFor: "Particuliers, premiers pas dans le networking digital",
     features: [
-      "Carte NFC blanche",
-      "Profil digital essentiel",
-      "Jusqu'à 3 liens",
-      "QR Code intelligent",
+      { label: "Carte NFC standard", included: true, icon: Star },
+      { label: "Profil digital", included: true, icon: Link2 },
+      { label: "Jusqu'à 3 liens", included: true, icon: Link2 },
+      { label: "QR Code de secours", included: true, icon: Check },
+    ],
+    limitations: [
+      "Mises à jour limitées",
+      "Design basique",
+      "Pas de statistiques",
+      "Pas de capture de contacts",
     ],
   },
   {
-    id: "signature" as OfferType,
+    id: "signature",
     icon: Sparkles,
     title: "Signature",
-    subtitle: "Le plus populaire",
-    priceMAD: 555, // ~55,46€
+    subtitle: "L'expérience complète",
+    priceMAD: 555,
     isPopular: true,
+    description: "Pour les professionnels qui veulent maximiser leur impact et suivre leurs résultats.",
+    idealFor: "Entrepreneurs, commerciaux, indépendants actifs",
     features: [
-      "Carte NFC Premium",
-      "Liens illimités",
-      "Galerie photo / vidéo",
-      "Mise à jour illimitée",
-      "Support prioritaire",
+      { label: "Carte NFC Premium", included: true, icon: Sparkles },
+      { label: "Liens illimités", included: true, icon: Link2 },
+      { label: "Galerie photo/vidéo", included: true, icon: Image },
+      { label: "Mises à jour illimitées", included: true, icon: RefreshCw },
+      { label: "Statistiques de visites", included: true, highlight: true, icon: BarChart3 },
+      { label: "Capture automatique de contacts", included: true, highlight: true, icon: Users },
+      { label: "Support prioritaire", included: true, icon: Headphones },
+    ],
+    highlights: [
+      "Voyez qui consulte votre profil",
+      "Exportez vos contacts en un clic",
+      "Mises à jour en temps réel",
     ],
   },
   {
-    id: "elite" as OfferType,
+    id: "elite",
     icon: Crown,
     title: "Élite",
-    subtitle: "L'excellence sur mesure",
-    priceMAD: 925, // ~92,5€
+    subtitle: "Service sur-mesure",
+    priceMAD: 925,
+    description: "Un accompagnement personnalisé pour votre équipe ou votre marque.",
+    idealFor: "Équipes, entreprises, événements",
     features: [
-      "Carte NFC Elite",
-      "Personnalisation avancée",
-      "Gestion accompagnée",
-      "Support dédié",
+      { label: "Tout Signature inclus", included: true, icon: Check },
+      { label: "Design personnalisé", included: true, icon: Palette },
+      { label: "Formation incluse", included: true, icon: Headphones },
+      { label: "Interlocuteur dédié", included: true, icon: Crown },
+      { label: "Cartes pour l'équipe", included: true, icon: Users },
+    ],
+    highlights: [
+      "Branding entreprise unifié",
+      "Gestion centralisée",
+      "SLA garanti",
     ],
   },
 ];
@@ -225,20 +277,29 @@ function OrderOffreContent() {
                         </div>
                       </div>
 
-                      {/* Features */}
+                      {/* Features preview */}
                       <div className="flex flex-wrap gap-1 mt-2">
-                        {offer.features.slice(0, 3).map((feature, i) => (
-                          <span 
-                            key={i} 
-                            className="text-[10px] px-2 py-0.5 rounded-full"
-                            style={{ 
-                              backgroundColor: STEALTH.accentMuted, 
-                              color: STEALTH.textSecondary 
-                            }}
-                          >
-                            {feature}
-                          </span>
-                        ))}
+                        {offer.features.slice(0, 3).map((feature, i) => {
+                          const isHighlight = feature.highlight === true;
+                          return (
+                            <span 
+                              key={i} 
+                              className={`text-[10px] px-2 py-0.5 rounded-full ${
+                                isHighlight ? 'font-medium' : ''
+                              }`}
+                              style={{ 
+                                backgroundColor: isHighlight 
+                                  ? `${STEALTH.accent}20` 
+                                  : STEALTH.accentMuted, 
+                                color: isHighlight 
+                                  ? STEALTH.accent 
+                                  : STEALTH.textSecondary 
+                              }}
+                            >
+                              {feature.label}
+                            </span>
+                          );
+                        })}
                         {offer.features.length > 3 && (
                           <span 
                             className="text-[10px] px-2 py-0.5 rounded-full"
@@ -251,6 +312,24 @@ function OrderOffreContent() {
                           </span>
                         )}
                       </div>
+                      
+                      {/* Ideal for hint - shown when selected */}
+                      <AnimatePresence>
+                        {isSelected && (
+                          <motion.p
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="text-[11px] mt-3 pt-3"
+                            style={{ 
+                              color: STEALTH.accent,
+                              borderTop: `1px solid ${STEALTH.border}`
+                            }}
+                          >
+                            💡 {offer.idealFor}
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
                 </motion.button>
