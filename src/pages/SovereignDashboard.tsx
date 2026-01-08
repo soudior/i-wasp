@@ -31,28 +31,33 @@ import { SovereignTicker } from "@/components/SovereignTicker";
 
 // === PALETTE OBSIDIAN STEALTH ===
 const OBSIDIAN = {
-  bg: "#050807",
-  bgCard: "#0A0C0B",
-  bgInput: "#0F1110",
-  border: "rgba(165, 169, 180, 0.1)",
-  borderHover: "rgba(165, 169, 180, 0.2)",
-  borderActive: "rgba(165, 169, 180, 0.4)",
-  text: "#D1D5DB",
-  textSecondary: "rgba(165, 169, 180, 0.6)",
-  textMuted: "rgba(165, 169, 180, 0.4)",
-  accent: "#A5A9B4",
-  accentHover: "#D1D5DB",
-  accentMuted: "rgba(165, 169, 180, 0.15)",
-  emerald: "#0D9488",
-  emeraldGlow: "rgba(13, 148, 136, 0.3)",
-  gold: "#D4AF37",
-  goldGlow: "rgba(212, 175, 55, 0.3)",
-  success: "#4ADE80",
-  gradient: "linear-gradient(135deg, #A5A9B4, #D1D5DB)",
-  goldGradient: "linear-gradient(135deg, #D4AF37, #F5D76E)",
-  shadow: "0 4px 24px rgba(0, 0, 0, 0.4)",
-  glow: "0 0 60px rgba(165, 169, 180, 0.2)",
-  goldGlowShadow: "0 0 60px rgba(212, 175, 55, 0.2)",
+  bg: "#0A0A0A",
+  bgCard: "#141414",
+  bgInput: "#1A1A1A",
+  border: "rgba(255, 255, 255, 0.08)",
+  borderHover: "rgba(255, 255, 255, 0.15)",
+  borderActive: "rgba(255, 255, 255, 0.25)",
+  text: "#FFFFFF",
+  textSecondary: "rgba(255, 255, 255, 0.65)",
+  textMuted: "rgba(255, 255, 255, 0.4)",
+  accent: "#FFFFFF",
+  accentHover: "#F5F5F5",
+  accentMuted: "rgba(255, 255, 255, 0.08)",
+  emerald: "#22C55E",
+  emeraldGlow: "rgba(34, 197, 94, 0.3)",
+  gold: "#EAB308",
+  goldGlow: "rgba(234, 179, 8, 0.3)",
+  success: "#22C55E",
+  gradient: "linear-gradient(135deg, #FFFFFF, #E5E5E5)",
+  goldGradient: "linear-gradient(135deg, #EAB308, #FACC15)",
+  shadow: "0 4px 24px rgba(0, 0, 0, 0.6)",
+  glow: "0 0 60px rgba(255, 255, 255, 0.1)",
+  goldGlowShadow: "0 0 60px rgba(234, 179, 8, 0.25)",
+  // Tags colors
+  mustHave: "#22C55E",
+  eliteSeries: "#EAB308",
+  masterpiece: "#F97316",
+  expansion: "#3B82F6",
 };
 
 // === TYPES ===
@@ -83,10 +88,18 @@ interface Product {
 
 // === SOVEREIGN TIERS ===
 const SOVEREIGN_TIERS = {
-  MEMBER: { name: "Sovereign Member", icon: Crown, color: OBSIDIAN.accent },
-  ELITE: { name: "Sovereign Elite", icon: Shield, color: OBSIDIAN.emerald },
-  MASTER: { name: "Sovereign Master", icon: Star, color: OBSIDIAN.gold },
+  MEMBER: { name: "Sovereign Member", icon: Crown, color: "#FFFFFF" },
+  ELITE: { name: "Sovereign Elite", icon: Shield, color: "#22C55E" },
+  MASTER: { name: "Sovereign Master", icon: Star, color: "#EAB308" },
 } as const;
+
+// === TAG COLORS ===
+const TAG_COLORS: Record<string, string> = {
+  "MUST-HAVE": "#22C55E",
+  "ELITE SERIES": "#EAB308", 
+  "MASTERPIECE": "#F97316",
+  "EXPANSION": "#3B82F6",
+};
 
 // === MASTER IDENTITY ===
 const MASTER_IDENTITY = {
@@ -102,10 +115,10 @@ const MASTER_IDENTITY = {
 
 // === PRODUCTS ARSENAL ===
 const PRODUCTS: Product[] = [
-  { id: "1", name: "Sovereign Card Titane", price: 290, desc: "Acier chirurgical, gravure laser premium.", icon: CreditCard, tag: "Must-Have" },
-  { id: "2", name: "Bague NFC Optic N-X", price: 580, desc: "Céramique & NFC furtif. Édition limitée.", icon: Diamond, tag: "Elite Series", sovereignOnly: true },
-  { id: "3", name: "Veste Couture Sovereign", price: 1250, desc: "Haute couture avec 5 puces NFC intégrées.", icon: Shirt, tag: "Masterpiece", sovereignOnly: true },
-  { id: "4", name: "Label Couture NFC (x10)", price: 350, desc: "Signez vos vêtements avec votre identité.", icon: Fingerprint, tag: "Expansion" },
+  { id: "1", name: "Sovereign Card Titane", price: 290, desc: "Acier chirurgical, gravure laser premium.", icon: CreditCard, tag: "MUST-HAVE" },
+  { id: "2", name: "Bague NFC Optic N-X", price: 580, desc: "Céramique & NFC furtif. Édition limitée.", icon: Diamond, tag: "ELITE SERIES", sovereignOnly: true },
+  { id: "3", name: "Veste Couture Sovereign", price: 1250, desc: "Haute couture avec 5 puces NFC intégrées.", icon: Shirt, tag: "MASTERPIECE", sovereignOnly: true },
+  { id: "4", name: "Label Couture NFC (x10)", price: 350, desc: "Signez vos vêtements avec votre identité.", icon: Fingerprint, tag: "EXPANSION" },
 ];
 
 // === FLOATING ORB COMPONENT ===
@@ -1079,10 +1092,11 @@ export default function SovereignDashboard() {
                           </div>
                           <div className="flex-1">
                             <span 
-                              className="text-[10px] px-2 py-1 rounded-full uppercase tracking-wider" 
+                              className="text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider font-bold" 
                               style={{ 
-                                backgroundColor: product.sovereignOnly && isGold ? OBSIDIAN.goldGlow : OBSIDIAN.emeraldGlow, 
-                                color: product.sovereignOnly && isGold ? OBSIDIAN.gold : OBSIDIAN.emerald 
+                                backgroundColor: `${TAG_COLORS[product.tag] || OBSIDIAN.emerald}20`, 
+                                color: TAG_COLORS[product.tag] || OBSIDIAN.emerald,
+                                border: `1px solid ${TAG_COLORS[product.tag] || OBSIDIAN.emerald}40`,
                               }}
                             >
                               {product.tag}
