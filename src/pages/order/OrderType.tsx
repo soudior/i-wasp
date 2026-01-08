@@ -166,7 +166,7 @@ export default function OrderType() {
 
           {/* Products List */}
           <div className="space-y-4 mb-8">
-            {products.map((product) => {
+            {products.map((product, index) => {
               const isSelected = state.productType === product.id;
               const Icon = product.icon;
 
@@ -175,7 +175,10 @@ export default function OrderType() {
                   key={product.id}
                   onClick={() => product.available && handleSelect(product.id)}
                   disabled={!product.available}
-                  className={`relative w-full rounded-2xl overflow-hidden text-left transition-all ${
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.4 }}
+                  className={`group relative w-full rounded-2xl overflow-hidden text-left transition-all duration-300 ${
                     product.available 
                       ? "cursor-pointer" 
                       : "cursor-not-allowed opacity-50"
@@ -183,39 +186,51 @@ export default function OrderType() {
                   style={{
                     backgroundColor: STEALTH.bgCard,
                     border: `2px solid ${isSelected ? STEALTH.accent : STEALTH.border}`,
-                    boxShadow: isSelected ? STEALTH.glow : 'none',
+                    boxShadow: isSelected 
+                      ? `0 0 30px ${STEALTH.accent}40, 0 10px 40px rgba(0,0,0,0.3)` 
+                      : '0 4px 20px rgba(0,0,0,0.2)',
                   }}
-                  whileHover={product.available ? { scale: 1.01 } : {}}
-                  whileTap={product.available ? { scale: 0.99 } : {}}
+                  whileHover={product.available ? { 
+                    scale: 1.02, 
+                    y: -4,
+                    boxShadow: `0 8px 40px rgba(0,0,0,0.4), 0 0 20px ${STEALTH.accent}20`
+                  } : {}}
+                  whileTap={product.available ? { scale: 0.98 } : {}}
                 >
                   {/* Badge Populaire */}
                   {product.popular && (
-                    <div 
-                      className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-semibold z-10"
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.3, type: "spring", stiffness: 500 }}
+                      className="absolute top-3 right-3 px-3 py-1.5 rounded-full text-xs font-bold z-10 shadow-lg"
                       style={{ 
-                        backgroundColor: STEALTH.accent, 
+                        background: `linear-gradient(135deg, ${STEALTH.accent}, ${STEALTH.accent}DD)`,
                         color: STEALTH.bg 
                       }}
                     >
-                      Populaire
-                    </div>
+                      ⭐ Populaire
+                    </motion.div>
                   )}
                   
-                  <div className="flex items-center p-4 gap-4">
-                    {/* Image */}
+                  <div className="flex items-center p-5 gap-5">
+                    {/* Image avec effet */}
                     <div 
-                      className="w-20 h-20 rounded-xl flex-shrink-0 overflow-hidden"
-                      style={{ backgroundColor: STEALTH.bgInput }}
+                      className="relative w-24 h-24 rounded-xl flex-shrink-0 overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                      style={{ 
+                        backgroundColor: STEALTH.bgInput,
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
+                      }}
                     >
                       {product.image ? (
                         <img 
                           src={product.image}
                           alt={product.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Icon className="w-8 h-8" style={{ color: STEALTH.textSecondary }} />
+                          <Icon className="w-10 h-10" style={{ color: STEALTH.textSecondary }} />
                         </div>
                       )}
                     </div>
