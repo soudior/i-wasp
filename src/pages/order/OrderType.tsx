@@ -20,45 +20,51 @@ import nailsImage from "@/assets/nails/nails-hero.png";
 
 interface ProductOption {
   id: string;
-  nameKey: string;
-  descKey: string;
+  name: string;
+  subtitle: string;
+  description: string;
   priceMAD: number;
   icon: React.ElementType;
   image?: string;
   available: boolean;
-  featuresKeys: string[];
+  popular?: boolean;
+  features: string[];
 }
 
 const products: ProductOption[] = [
   {
     id: "pvc",
-    nameKey: "order.pvcCard",
-    descKey: "order.pvcCardDesc",
-    priceMAD: 324, // ~32,41€
+    name: "Carte NFC PVC",
+    subtitle: "L'essentiel premium",
+    description: "Format carte bancaire. Finition mate premium.",
+    priceMAD: 300,
     icon: CreditCard,
     image: cardPVCFront,
     available: true,
-    featuresKeys: ["order.pvcFeature1", "order.pvcFeature2", "order.pvcFeature3"]
+    popular: true,
+    features: ["Design sur mesure", "Finition mat ou brillant", "QR code de secours", "Profil digital illimité"]
   },
   {
     id: "nails",
-    nameKey: "order.nfcNails",
-    descKey: "order.nfcNailsDesc",
-    priceMAD: 546, // ~54,63€
+    name: "Ongles NFC",
+    subtitle: "Innovation beauté",
+    description: "Technologie intégrée. Innovation beauté.",
+    priceMAD: 500,
     icon: Sparkles,
     image: nailsImage,
     available: true,
-    featuresKeys: ["order.nailsFeature1", "order.nailsFeature2", "order.nailsFeature3"]
+    features: ["Pose par professionnels", "Puce invisible intégrée", "Compatible tous smartphones", "Réseau salons partenaires"]
   },
   {
     id: "metal",
-    nameKey: "order.metalCard",
-    descKey: "order.metalCardDesc",
-    priceMAD: 917, // ~91,67€
-    icon: Package,
+    name: "Carte Métal",
+    subtitle: "Le prestige ultime",
+    description: "Finition acier brossé. Premium ultime.",
+    priceMAD: 850,
+    icon: CreditCard,
     image: cardMetalFront,
-    available: false,
-    featuresKeys: ["order.metalFeature1", "order.metalFeature2", "order.metalFeature3"]
+    available: true,
+    features: ["Métal brossé premium", "Gravure laser précise", "Finition or ou argent", "Écrin de présentation"]
   }
 ];
 
@@ -191,7 +197,7 @@ export default function OrderType() {
                       {product.image ? (
                         <img 
                           src={product.image}
-                          alt={t(product.nameKey)}
+                          alt={product.name}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -208,7 +214,7 @@ export default function OrderType() {
                           className="text-base font-semibold"
                           style={{ color: STEALTH.text }}
                         >
-                          {t(product.nameKey)}
+                          {product.name}
                         </h3>
                         {isSelected && (
                           <div 
@@ -235,7 +241,7 @@ export default function OrderType() {
                         className="text-sm mb-2 line-clamp-1"
                         style={{ color: STEALTH.textSecondary }}
                       >
-                        {t(product.descKey)}
+                        {product.description}
                       </p>
 
                       <p 
