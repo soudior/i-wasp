@@ -286,8 +286,8 @@ const App = () => {
                               
                               {/* Cart & Checkout */}
                               <Route path="/cart" element={<Cart />} />
-                              <Route path="/boutique" element={<Boutique />} />
-                              <Route path="/shop" element={<Boutique />} />
+                              <Route path="/boutique" element={<Navigate to="/order/type" replace />} />
+                              <Route path="/shop" element={<Navigate to="/order/type" replace />} />
                               <Route path="/checkout-tunnel" element={<CheckoutTunnel />} />
                               
                               {/* Admin */}
