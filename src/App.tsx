@@ -103,7 +103,6 @@ const Subscription = lazy(() => import("./pages/Subscription"));
 const OrderDetails = lazy(() => import("./pages/OrderDetails"));
 const Orders = lazy(() => import("./pages/Orders"));
 const TrackOrder = lazy(() => import("./pages/TrackOrder"));
-const Boutique = lazy(() => import("./pages/Boutique"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
