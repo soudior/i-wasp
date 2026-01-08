@@ -313,21 +313,59 @@ function OrderOffreContent() {
                         )}
                       </div>
                       
-                      {/* Ideal for hint - shown when selected */}
+                      {/* Ideal for hint + limitations - shown when selected */}
                       <AnimatePresence>
                         {isSelected && (
-                          <motion.p
+                          <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="text-[11px] mt-3 pt-3"
-                            style={{ 
-                              color: STEALTH.accent,
-                              borderTop: `1px solid ${STEALTH.border}`
-                            }}
+                            className="mt-3 pt-3"
+                            style={{ borderTop: `1px solid ${STEALTH.border}` }}
                           >
-                            💡 {offer.idealFor}
-                          </motion.p>
+                            <p 
+                              className="text-[11px] mb-2"
+                              style={{ color: STEALTH.accent }}
+                            >
+                              💡 {offer.idealFor}
+                            </p>
+                            
+                            {/* Subtle limitations for Essentiel */}
+                            {offer.limitations && offer.limitations.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {offer.limitations.map((limitation, i) => (
+                                  <span 
+                                    key={i}
+                                    className="text-[9px] px-2 py-0.5 rounded-full"
+                                    style={{ 
+                                      backgroundColor: `${STEALTH.textMuted}15`,
+                                      color: STEALTH.textMuted
+                                    }}
+                                  >
+                                    {limitation}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {/* Highlights for Signature/Elite */}
+                            {offer.highlights && offer.highlights.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 mt-2">
+                                {offer.highlights.map((highlight, i) => (
+                                  <span 
+                                    key={i}
+                                    className="text-[9px] px-2 py-0.5 rounded-full font-medium"
+                                    style={{ 
+                                      backgroundColor: `${STEALTH.accent}15`,
+                                      color: STEALTH.accent
+                                    }}
+                                  >
+                                    ✓ {highlight}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </motion.div>
                         )}
                       </AnimatePresence>
                     </div>
