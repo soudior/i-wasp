@@ -9,6 +9,7 @@
  * - Arsenal: Produits premium
  * - Sovereign Dock: Navigation mobile fluide
  * - Premium Animations & Effects
+ * - Subscription Integration
  */
 
 import { useState, useEffect, useMemo } from "react";
@@ -16,12 +17,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useStripeSubscription } from "@/hooks/useStripeSubscription";
 import { toast } from "sonner";
 import {
   Globe, Wand2, Flag, ShoppingBag, MessageSquare,
   CreditCard, Diamond, Shirt, Fingerprint, Check,
   Send, Loader2, ArrowRight, Crown, Sparkles,
-  Users, Home, Zap, Radio, ExternalLink
+  Users, Home, Zap, Radio, ExternalLink, Shield,
+  Star, Lock, TrendingUp, Award
 } from "lucide-react";
 import { SovereignCelebration } from "@/components/SovereignCelebration";
 import { SovereignTicker } from "@/components/SovereignTicker";
@@ -42,10 +45,14 @@ const OBSIDIAN = {
   accentMuted: "rgba(165, 169, 180, 0.15)",
   emerald: "#0D9488",
   emeraldGlow: "rgba(13, 148, 136, 0.3)",
+  gold: "#D4AF37",
+  goldGlow: "rgba(212, 175, 55, 0.3)",
   success: "#4ADE80",
   gradient: "linear-gradient(135deg, #A5A9B4, #D1D5DB)",
+  goldGradient: "linear-gradient(135deg, #D4AF37, #F5D76E)",
   shadow: "0 4px 24px rgba(0, 0, 0, 0.4)",
   glow: "0 0 60px rgba(165, 169, 180, 0.2)",
+  goldGlowShadow: "0 0 60px rgba(212, 175, 55, 0.2)",
 };
 
 // === TYPES ===
@@ -71,7 +78,15 @@ interface Product {
   desc: string;
   icon: typeof CreditCard;
   tag: string;
+  sovereignOnly?: boolean;
 }
+
+// === SOVEREIGN TIERS ===
+const SOVEREIGN_TIERS = {
+  MEMBER: { name: "Sovereign Member", icon: Crown, color: OBSIDIAN.accent },
+  ELITE: { name: "Sovereign Elite", icon: Shield, color: OBSIDIAN.emerald },
+  MASTER: { name: "Sovereign Master", icon: Star, color: OBSIDIAN.gold },
+} as const;
 
 // === MASTER IDENTITY ===
 const MASTER_IDENTITY = {
@@ -81,14 +96,15 @@ const MASTER_IDENTITY = {
   phone: "",
   email: "",
   avatar: "S",
-  status: "Sovereign Member"
+  status: "Sovereign Member",
+  tier: "MEMBER" as keyof typeof SOVEREIGN_TIERS,
 };
 
 // === PRODUCTS ARSENAL ===
 const PRODUCTS: Product[] = [
   { id: "1", name: "Sovereign Card Titane", price: 290, desc: "Acier chirurgical, gravure laser premium.", icon: CreditCard, tag: "Must-Have" },
-  { id: "2", name: "Bague NFC Optic N-X", price: 580, desc: "Céramique & NFC furtif. Édition limitée.", icon: Diamond, tag: "Elite Series" },
-  { id: "3", name: "Veste Couture Sovereign", price: 1250, desc: "Haute couture avec 5 puces NFC intégrées.", icon: Shirt, tag: "Masterpiece" },
+  { id: "2", name: "Bague NFC Optic N-X", price: 580, desc: "Céramique & NFC furtif. Édition limitée.", icon: Diamond, tag: "Elite Series", sovereignOnly: true },
+  { id: "3", name: "Veste Couture Sovereign", price: 1250, desc: "Haute couture avec 5 puces NFC intégrées.", icon: Shirt, tag: "Masterpiece", sovereignOnly: true },
   { id: "4", name: "Label Couture NFC (x10)", price: 350, desc: "Signez vos vêtements avec votre identité.", icon: Fingerprint, tag: "Expansion" },
 ];
 
@@ -134,6 +150,7 @@ const GridBackground = () => (
 export default function SovereignDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isGold, subscription } = useStripeSubscription();
   
   // === STATE ===
   const [activeTab, setActiveTab] = useState<string>("home");
@@ -147,6 +164,22 @@ export default function SovereignDashboard() {
   const [cart, setCart] = useState<{ id: string; qty: number }[]>([]);
   const [identity, setIdentity] = useState(MASTER_IDENTITY);
   const [time, setTime] = useState(new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }));
+
+  // Déterminer le tier basé sur l'abonnement
+  const sovereignTier = useMemo(() => {
+    if (isGold && subscription.plan === 'gold_annual') return SOVEREIGN_TIERS.MASTER;
+    if (isGold) return SOVEREIGN_TIERS.ELITE;
+    return SOVEREIGN_TIERS.MEMBER;
+  }, [isGold, subscription.plan]);
+
+  // Stats calculées
+  const sovereignStats = useMemo(() => ({
+    reach: globalReach,
+    members: legacyFlags.length,
+    messages: messages.length,
+    products: PRODUCTS.length,
+    influence: Math.floor(globalReach / 1000),
+  }), [globalReach, legacyFlags.length, messages.length]);
 
   // === REALTIME SUBSCRIPTIONS ===
   useEffect(() => {
@@ -267,7 +300,8 @@ export default function SovereignDashboard() {
       phone: "",
       email: "",
       avatar: magicInput.charAt(0).toUpperCase(),
-      status: "Scellé ✓"
+      status: "Scellé ✓",
+      tier: "ELITE",
     });
     
     setIsMagicLoading(false);
@@ -421,63 +455,135 @@ export default function SovereignDashboard() {
             );
           })}
           
-          {/* Identity Card */}
+          {/* Identity Card - Enhanced with Sovereign Tier */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mt-6 rounded-3xl p-5"
+            className="mt-6 rounded-3xl p-5 relative overflow-hidden"
             style={{
               backgroundColor: OBSIDIAN.bgCard,
-              border: `1px solid ${OBSIDIAN.border}`,
+              border: `1px solid ${isGold ? `${sovereignTier.color}40` : OBSIDIAN.border}`,
+              boxShadow: isGold ? `0 0 40px ${sovereignTier.color}20` : 'none',
             }}
           >
-            <div className="flex items-center gap-3 mb-4">
+            {/* Tier Glow Effect */}
+            {isGold && (
+              <div 
+                className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-20"
+                style={{ backgroundColor: sovereignTier.color }}
+              />
+            )}
+            
+            <div className="relative flex items-center gap-3 mb-4">
               <motion.div
                 animate={{ 
                   boxShadow: [
-                    `0 0 0 0 ${OBSIDIAN.emerald}40`,
-                    `0 0 0 8px ${OBSIDIAN.emerald}00`,
+                    `0 0 0 0 ${sovereignTier.color}40`,
+                    `0 0 0 8px ${sovereignTier.color}00`,
                   ]
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
                 className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-xl"
-                style={{ backgroundColor: OBSIDIAN.emerald, color: "#fff" }}
+                style={{ backgroundColor: sovereignTier.color, color: "#fff" }}
               >
                 {identity.avatar}
               </motion.div>
-              <div>
-                <p className="font-bold" style={{ color: OBSIDIAN.text }}>{identity.name}</p>
-                <p className="text-xs flex items-center gap-1" style={{ color: OBSIDIAN.emerald }}>
-                  <Crown size={10} /> {identity.status}
+              <div className="flex-1">
+                <p className="font-bold flex items-center gap-2" style={{ color: OBSIDIAN.text }}>
+                  {identity.name}
+                  {isGold && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold"
+                      style={{ background: OBSIDIAN.goldGradient, color: OBSIDIAN.bg }}
+                    >
+                      <Award size={8} /> GOLD
+                    </motion.span>
+                  )}
+                </p>
+                <p className="text-xs flex items-center gap-1" style={{ color: sovereignTier.color }}>
+                  <sovereignTier.icon size={10} /> {sovereignTier.name}
                 </p>
               </div>
             </div>
+            
+            {/* Sovereign Benefits */}
+            {isGold && (
+              <div className="mb-4 space-y-1.5">
+                {[
+                  "Accès Arsenal exclusif",
+                  "Legacy Map prioritaire",
+                  "Alliance Chat VIP",
+                ].map((benefit, i) => (
+                  <div key={i} className="flex items-center gap-2 text-[10px]" style={{ color: OBSIDIAN.textSecondary }}>
+                    <Check size={10} style={{ color: sovereignTier.color }} />
+                    {benefit}
+                  </div>
+                ))}
+              </div>
+            )}
+            
             <button
               onClick={() => navigate('/dashboard')}
-              className="w-full py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all hover:bg-white/5"
+              className="w-full py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all hover:bg-white/5"
               style={{ border: `1px solid ${OBSIDIAN.border}`, color: OBSIDIAN.textSecondary }}
             >
               <ExternalLink size={14} />
               Mon Dashboard
             </button>
+            
+            {!isGold && (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/pricing')}
+                className="w-full mt-2 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2"
+                style={{ background: OBSIDIAN.goldGradient, color: OBSIDIAN.bg }}
+              >
+                <Crown size={14} />
+                Devenir Sovereign Elite
+              </motion.button>
+            )}
           </motion.div>
 
-          {/* Alliance Stats */}
+          {/* Alliance Stats - Enhanced */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="rounded-2xl p-4"
+            className="rounded-2xl p-4 space-y-4"
             style={{ backgroundColor: OBSIDIAN.bgCard, border: `1px solid ${OBSIDIAN.border}` }}
           >
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2">
               <Users size={16} style={{ color: OBSIDIAN.accent }} />
               <span className="text-xs uppercase tracking-wider" style={{ color: OBSIDIAN.textMuted }}>Alliance Power</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold" style={{ color: OBSIDIAN.accent }}>{legacyFlags.length}</span>
+              <span className="text-3xl font-bold" style={{ color: OBSIDIAN.accent }}>{sovereignStats.members}</span>
               <span className="text-xs" style={{ color: OBSIDIAN.textMuted }}>membres actifs</span>
+            </div>
+            
+            {/* Influence Score */}
+            <div className="pt-3" style={{ borderTop: `1px solid ${OBSIDIAN.border}` }}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] uppercase tracking-wider" style={{ color: OBSIDIAN.textMuted }}>
+                  Score d'influence
+                </span>
+                <span className="text-xs font-bold" style={{ color: sovereignTier.color }}>
+                  {sovereignStats.influence.toLocaleString()} pts
+                </span>
+              </div>
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: OBSIDIAN.accentMuted }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min((sovereignStats.influence / 30000) * 100, 100)}%` }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                  className="h-full rounded-full"
+                  style={{ background: isGold ? OBSIDIAN.goldGradient : OBSIDIAN.gradient }}
+                />
+              </div>
             </div>
           </motion.div>
         </motion.aside>
@@ -495,8 +601,29 @@ export default function SovereignDashboard() {
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 className="space-y-8"
               >
-                {/* Hero */}
+                {/* Hero - Enhanced with Sovereign Status */}
                 <div className="text-center py-16 relative">
+                  {/* Sovereign Badge */}
+                  {isGold && (
+                    <motion.div
+                      initial={{ scale: 0, y: -20 }}
+                      animate={{ scale: 1, y: 0 }}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+                      style={{ 
+                        background: OBSIDIAN.goldGradient,
+                        boxShadow: OBSIDIAN.goldGlowShadow,
+                      }}
+                    >
+                      <Crown size={14} style={{ color: OBSIDIAN.bg }} />
+                      <span className="text-sm font-bold" style={{ color: OBSIDIAN.bg }}>
+                        {sovereignTier.name}
+                      </span>
+                      <span className="text-xs opacity-80" style={{ color: OBSIDIAN.bg }}>
+                        ✓ Vérifié
+                      </span>
+                    </motion.div>
+                  )}
+                  
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -504,7 +631,7 @@ export default function SovereignDashboard() {
                   >
                     <p
                       className="text-xs uppercase tracking-[0.4em] mb-6"
-                      style={{ color: OBSIDIAN.emerald }}
+                      style={{ color: isGold ? sovereignTier.color : OBSIDIAN.emerald }}
                     >
                       Sovereign Standard World N°1
                     </p>
@@ -513,7 +640,7 @@ export default function SovereignDashboard() {
                       style={{ color: OBSIDIAN.text, fontFamily: "'Playfair Display', serif" }}
                     >
                       Dominez<br />
-                      <span style={{ color: OBSIDIAN.accent }}>L'Espace.</span>
+                      <span style={{ color: isGold ? sovereignTier.color : OBSIDIAN.accent }}>L'Espace.</span>
                     </h1>
                     <p
                       className="max-w-2xl mx-auto text-lg italic mb-10 leading-relaxed"
@@ -536,9 +663,9 @@ export default function SovereignDashboard() {
                       onClick={() => setActiveTab("shop")}
                       className="px-10 py-5 rounded-full font-bold uppercase tracking-wider text-lg"
                       style={{
-                        background: OBSIDIAN.gradient,
+                        background: isGold ? OBSIDIAN.goldGradient : OBSIDIAN.gradient,
                         color: OBSIDIAN.bg,
-                        boxShadow: OBSIDIAN.glow,
+                        boxShadow: isGold ? OBSIDIAN.goldGlowShadow : OBSIDIAN.glow,
                       }}
                     >
                       Ouvrir l'Arsenal
@@ -558,6 +685,32 @@ export default function SovereignDashboard() {
                       Architecte ID
                     </motion.button>
                   </motion.div>
+                  
+                  {/* Quick Stats below CTAs */}
+                  {isGold && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
+                      className="flex justify-center gap-8 mt-10 pt-8"
+                      style={{ borderTop: `1px solid ${OBSIDIAN.border}` }}
+                    >
+                      {[
+                        { label: "Influence", value: `${sovereignStats.influence.toLocaleString()}`, icon: TrendingUp },
+                        { label: "Rang Global", value: "#247", icon: Award },
+                        { label: "Réseau", value: `${sovereignStats.members}`, icon: Users },
+                      ].map((stat, i) => {
+                        const Icon = stat.icon;
+                        return (
+                          <div key={i} className="text-center">
+                            <Icon size={16} className="mx-auto mb-1" style={{ color: sovereignTier.color }} />
+                            <p className="text-lg font-bold" style={{ color: OBSIDIAN.text }}>{stat.value}</p>
+                            <p className="text-[10px] uppercase tracking-wider" style={{ color: OBSIDIAN.textMuted }}>{stat.label}</p>
+                          </div>
+                        );
+                      })}
+                    </motion.div>
+                  )}
                 </div>
 
                 {/* Stats Grid */}
@@ -846,7 +999,7 @@ export default function SovereignDashboard() {
               </motion.div>
             )}
 
-            {/* ARSENAL TAB */}
+            {/* ARSENAL TAB - Enhanced with Sovereign Exclusives */}
             {activeTab === "shop" && (
               <motion.div
                 key="shop"
@@ -857,53 +1010,116 @@ export default function SovereignDashboard() {
               >
                 <div className="text-center py-8">
                   <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: OBSIDIAN.text, fontFamily: "'Playfair Display', serif" }}>
-                    L'Arsenal.<br /><span style={{ color: OBSIDIAN.accent }}>Manufacture.</span>
+                    L'Arsenal.<br /><span style={{ color: isGold ? sovereignTier.color : OBSIDIAN.accent }}>Manufacture.</span>
                   </h2>
                   <p style={{ color: OBSIDIAN.textSecondary }}>
                     Chaque pièce est forgée individuellement pour sceller votre destinée numérique.
                   </p>
+                  {isGold && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full"
+                      style={{ backgroundColor: `${sovereignTier.color}20`, border: `1px solid ${sovereignTier.color}40` }}
+                    >
+                      <Shield size={14} style={{ color: sovereignTier.color }} />
+                      <span className="text-xs font-medium" style={{ color: sovereignTier.color }}>
+                        Accès complet à la collection exclusive
+                      </span>
+                    </motion.div>
+                  )}
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-5">
                   {PRODUCTS.map((product, index) => {
                     const Icon = product.icon;
                     const inCart = cart.find((i) => i.id === product.id);
+                    const isLocked = product.sovereignOnly && !isGold;
+                    
                     return (
                       <motion.div
                         key={product.id}
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: index * 0.1 }}
-                        whileHover={{ y: -4 }}
-                        className="rounded-3xl p-6 transition-all"
-                        style={{ backgroundColor: OBSIDIAN.bgCard, border: `1px solid ${OBSIDIAN.border}` }}
+                        whileHover={!isLocked ? { y: -4 } : {}}
+                        className={`rounded-3xl p-6 transition-all relative overflow-hidden ${isLocked ? 'opacity-75' : ''}`}
+                        style={{ 
+                          backgroundColor: OBSIDIAN.bgCard, 
+                          border: `1px solid ${product.sovereignOnly && isGold ? sovereignTier.color + '40' : OBSIDIAN.border}`,
+                          boxShadow: product.sovereignOnly && isGold ? `0 0 30px ${sovereignTier.color}10` : 'none',
+                        }}
                       >
+                        {/* Sovereign Exclusive Badge */}
+                        {product.sovereignOnly && (
+                          <div 
+                            className="absolute top-0 right-0 px-3 py-1.5 rounded-bl-2xl flex items-center gap-1.5"
+                            style={{ 
+                              background: isGold ? OBSIDIAN.goldGradient : OBSIDIAN.accentMuted,
+                              color: isGold ? OBSIDIAN.bg : OBSIDIAN.textMuted,
+                            }}
+                          >
+                            {isGold ? <Crown size={12} /> : <Lock size={12} />}
+                            <span className="text-[9px] font-bold uppercase">
+                              {isGold ? "Exclusif" : "Sovereign Only"}
+                            </span>
+                          </div>
+                        )}
+                        
                         <div className="flex items-start gap-4 mb-5">
-                          <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ backgroundColor: OBSIDIAN.accentMuted }}>
-                            <Icon size={28} style={{ color: OBSIDIAN.accent }} />
+                          <div 
+                            className="w-14 h-14 rounded-2xl flex items-center justify-center" 
+                            style={{ 
+                              backgroundColor: product.sovereignOnly && isGold 
+                                ? `${sovereignTier.color}20` 
+                                : OBSIDIAN.accentMuted 
+                            }}
+                          >
+                            <Icon size={28} style={{ color: product.sovereignOnly && isGold ? sovereignTier.color : OBSIDIAN.accent }} />
                           </div>
                           <div className="flex-1">
-                            <span className="text-[10px] px-2 py-1 rounded-full uppercase tracking-wider" style={{ backgroundColor: OBSIDIAN.emeraldGlow, color: OBSIDIAN.emerald }}>
+                            <span 
+                              className="text-[10px] px-2 py-1 rounded-full uppercase tracking-wider" 
+                              style={{ 
+                                backgroundColor: product.sovereignOnly && isGold ? OBSIDIAN.goldGlow : OBSIDIAN.emeraldGlow, 
+                                color: product.sovereignOnly && isGold ? OBSIDIAN.gold : OBSIDIAN.emerald 
+                              }}
+                            >
                               {product.tag}
                             </span>
                             <p className="font-bold text-lg mt-2" style={{ color: OBSIDIAN.text }}>{product.name}</p>
                             <p className="text-sm" style={{ color: OBSIDIAN.textMuted }}>{product.desc}</p>
                           </div>
                         </div>
+                        
                         <div className="flex items-center justify-between">
-                          <p className="text-3xl font-bold" style={{ color: OBSIDIAN.accent }}>{product.price}€</p>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => addToCart(product)}
-                            className="px-6 py-3 rounded-full font-bold flex items-center gap-2"
-                            style={{
-                              backgroundColor: inCart ? OBSIDIAN.emerald : OBSIDIAN.accent,
-                              color: inCart ? "#fff" : OBSIDIAN.bg,
-                            }}
-                          >
-                            {inCart ? <><Check size={16} /> x{inCart.qty}</> : "Sceller"}
-                          </motion.button>
+                          <p className="text-3xl font-bold" style={{ color: isLocked ? OBSIDIAN.textMuted : OBSIDIAN.accent }}>
+                            {product.price}€
+                          </p>
+                          {isLocked ? (
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => navigate('/pricing')}
+                              className="px-6 py-3 rounded-full font-bold flex items-center gap-2"
+                              style={{ background: OBSIDIAN.goldGradient, color: OBSIDIAN.bg }}
+                            >
+                              <Lock size={16} /> Débloquer
+                            </motion.button>
+                          ) : (
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => addToCart(product)}
+                              className="px-6 py-3 rounded-full font-bold flex items-center gap-2"
+                              style={{
+                                backgroundColor: inCart ? OBSIDIAN.emerald : (product.sovereignOnly ? sovereignTier.color : OBSIDIAN.accent),
+                                color: inCart ? "#fff" : OBSIDIAN.bg,
+                              }}
+                            >
+                              {inCart ? <><Check size={16} /> x{inCart.qty}</> : "Sceller"}
+                            </motion.button>
+                          )}
                         </div>
                       </motion.div>
                     );
