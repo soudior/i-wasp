@@ -214,22 +214,26 @@ export default function OrderType() {
                   )}
                   
                   <div className="flex items-center p-5 gap-5">
-                    {/* Image avec effet */}
+                    {/* Image avec effet luxe */}
                     <div 
                       className="relative w-24 h-24 rounded-xl flex-shrink-0 overflow-hidden transition-transform duration-300 group-hover:scale-105"
                       style={{ 
-                        backgroundColor: STEALTH.bgInput,
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
+                        background: 'transparent',
                       }}
                     >
                       {product.image ? (
                         <img 
                           src={product.image}
                           alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-2xl"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
+                        <div 
+                          className="w-full h-full flex items-center justify-center rounded-xl"
+                          style={{ 
+                            background: `linear-gradient(135deg, ${STEALTH.bgCard}, ${STEALTH.border})` 
+                          }}
+                        >
                           <Icon className="w-10 h-10" style={{ color: STEALTH.textSecondary }} />
                         </div>
                       )}
