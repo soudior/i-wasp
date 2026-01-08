@@ -188,6 +188,19 @@ export default function OrderType() {
                   whileHover={product.available ? { scale: 1.01 } : {}}
                   whileTap={product.available ? { scale: 0.99 } : {}}
                 >
+                  {/* Badge Populaire */}
+                  {product.popular && (
+                    <div 
+                      className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-semibold z-10"
+                      style={{ 
+                        backgroundColor: STEALTH.accent, 
+                        color: STEALTH.bg 
+                      }}
+                    >
+                      Populaire
+                    </div>
+                  )}
+                  
                   <div className="flex items-center p-4 gap-4">
                     {/* Image */}
                     <div 
