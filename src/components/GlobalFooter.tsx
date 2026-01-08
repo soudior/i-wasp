@@ -17,6 +17,7 @@ const STEALTH = {
 
 const footerLinks = {
   navigation: [
+    { label: "Boutique", href: "/boutique" },
     { label: "Produits NFC", href: "/produits" },
     { label: "Fonctionnalités", href: "/features" },
     { label: "Tarifs", href: "/pricing" },
