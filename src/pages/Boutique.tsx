@@ -2,7 +2,7 @@
  * Boutique - IWASP NFC Products Shop
  * 
  * Premium Apple-like product showcase with CTAs to order tunnel.
- * Follows Cupertino design: minimal, airy, high-end.
+ * Follows design system tokens for consistent theming.
  */
 
 import { Link } from "react-router-dom";
@@ -38,7 +38,6 @@ const products = [
       "Livraison sous 5 jours"
     ],
     popular: false,
-    color: "from-slate-900 to-slate-700"
   },
   {
     id: "metal",
@@ -55,7 +54,6 @@ const products = [
       "Écrin de présentation"
     ],
     popular: true,
-    color: "from-amber-600 to-yellow-500"
   },
   {
     id: "nails",
@@ -72,7 +70,6 @@ const products = [
       "Réseau de salons partenaires"
     ],
     popular: false,
-    color: "from-pink-500 to-rose-400"
   }
 ];
 
@@ -96,7 +93,7 @@ const benefits = [
 
 export default function Boutique() {
   return (
-    <div className="min-h-screen bg-[#F5F5F7]">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-6 text-center">
         <motion.div
@@ -105,10 +102,10 @@ export default function Boutique() {
           transition={{ duration: 0.6 }}
           className="max-w-3xl mx-auto"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-[#1D1D1F] tracking-tight mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
             Produits NFC
           </h1>
-          <p className="text-lg md:text-xl text-[#8E8E93] max-w-xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto">
             Connectez le monde réel au digital. 
             Un simple geste suffit.
           </p>
@@ -118,7 +115,7 @@ export default function Boutique() {
       {/* Benefits Bar */}
       <section className="pb-12 px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-card rounded-2xl p-6 border border-border">
             <div className="grid grid-cols-3 gap-4">
               {benefits.map((benefit, index) => (
                 <motion.div
@@ -128,9 +125,9 @@ export default function Boutique() {
                   transition={{ delay: index * 0.1 }}
                   className="text-center"
                 >
-                  <benefit.icon className="w-6 h-6 text-[#007AFF] mx-auto mb-2" />
-                  <h3 className="text-sm font-semibold text-[#1D1D1F]">{benefit.title}</h3>
-                  <p className="text-xs text-[#8E8E93] hidden md:block">{benefit.description}</p>
+                  <benefit.icon className="w-6 h-6 text-primary mx-auto mb-2" />
+                  <h3 className="text-sm font-semibold text-foreground">{benefit.title}</h3>
+                  <p className="text-xs text-muted-foreground hidden md:block">{benefit.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -153,7 +150,7 @@ export default function Boutique() {
                 {/* Popular Badge */}
                 {product.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                    <span className="bg-[#007AFF] text-white text-xs font-medium px-3 py-1 rounded-full">
+                    <span className="bg-primary text-primary-foreground text-xs font-medium px-3 py-1 rounded-full">
                       Populaire
                     </span>
                   </div>
@@ -161,15 +158,12 @@ export default function Boutique() {
 
                 {/* Card */}
                 <div className={`
-                  bg-white rounded-3xl overflow-hidden shadow-sm
-                  transition-all duration-300 hover:shadow-xl hover:-translate-y-1
-                  ${product.popular ? 'ring-2 ring-[#007AFF]' : ''}
+                  bg-card rounded-3xl overflow-hidden border border-border
+                  transition-all duration-300 hover:border-primary/50 hover:-translate-y-1
+                  ${product.popular ? 'ring-2 ring-primary' : ''}
                 `}>
                   {/* Product Image */}
-                  <div className={`
-                    h-56 bg-gradient-to-br ${product.color}
-                    flex items-center justify-center p-4 overflow-hidden
-                  `}>
+                  <div className="h-56 bg-secondary flex items-center justify-center p-4 overflow-hidden">
                     <img 
                       src={product.image} 
                       alt={product.name}
@@ -180,19 +174,19 @@ export default function Boutique() {
                   {/* Content */}
                   <div className="p-6">
                     <div className="mb-4">
-                      <h2 className="text-xl font-bold text-[#1D1D1F]">{product.name}</h2>
-                      <p className="text-sm text-[#8E8E93]">{product.subtitle}</p>
+                      <h2 className="text-xl font-bold text-foreground">{product.name}</h2>
+                      <p className="text-sm text-muted-foreground">{product.subtitle}</p>
                     </div>
 
-                    <p className="text-sm text-[#1D1D1F]/80 mb-4 line-clamp-2">
+                    <p className="text-sm text-foreground/80 mb-4 line-clamp-2">
                       {product.description}
                     </p>
 
                     {/* Features */}
                     <ul className="space-y-2 mb-6">
                       {product.features.map((feature) => (
-                        <li key={feature} className="flex items-center gap-2 text-sm text-[#8E8E93]">
-                          <Check className="w-4 h-4 text-[#007AFF] flex-shrink-0" />
+                        <li key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Check className="w-4 h-4 text-primary flex-shrink-0" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -200,10 +194,10 @@ export default function Boutique() {
 
                     {/* Price */}
                     <div className="flex items-baseline gap-1 mb-4">
-                      <span className="text-3xl font-bold text-[#1D1D1F]">
+                      <span className="text-3xl font-bold text-foreground">
                         {product.price}
                       </span>
-                      <span className="text-lg text-[#8E8E93]">{product.currency}</span>
+                      <span className="text-lg text-muted-foreground">{product.currency}</span>
                     </div>
 
                     {/* CTA */}
@@ -212,8 +206,8 @@ export default function Boutique() {
                         className={`
                           w-full h-12 rounded-xl font-medium
                           ${product.popular 
-                            ? 'bg-[#007AFF] hover:bg-[#0066CC] text-white' 
-                            : 'bg-[#1D1D1F] hover:bg-[#1D1D1F]/90 text-white'
+                            ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
+                            : 'bg-foreground text-background hover:bg-foreground/90'
                           }
                         `}
                       >
@@ -237,15 +231,15 @@ export default function Boutique() {
           viewport={{ once: true }}
           className="max-w-2xl mx-auto text-center"
         >
-          <div className="bg-white rounded-3xl p-8 shadow-sm">
-            <h2 className="text-2xl font-bold text-[#1D1D1F] mb-2">
+          <div className="bg-card rounded-3xl p-8 border border-border">
+            <h2 className="text-2xl font-bold text-foreground mb-2">
               Besoin d'aide pour choisir ?
             </h2>
-            <p className="text-[#8E8E93] mb-6">
+            <p className="text-muted-foreground mb-6">
               Notre équipe est là pour vous accompagner dans votre projet.
             </p>
             <Link to="/contact">
-              <Button variant="outline" className="rounded-xl border-[#1D1D1F]/20">
+              <Button variant="outline" className="rounded-xl">
                 Nous contacter
               </Button>
             </Link>
@@ -255,7 +249,7 @@ export default function Boutique() {
 
       {/* Footer */}
       <footer className="pb-8 text-center">
-        <p className="text-xs text-[#8E8E93]">
+        <p className="text-xs text-muted-foreground">
           Powered by IWASP
         </p>
       </footer>
