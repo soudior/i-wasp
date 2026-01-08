@@ -9,9 +9,9 @@ import { useTranslation } from "react-i18next";
 import { STEALTH } from "@/lib/stealthPalette";
 import { WorldClockGlobe } from "@/components/WorldClockGlobe";
 import { CurrencySelector } from "@/components/CurrencySelector";
-import cardBlackMatte from "@/assets/cards/card-black-matte.webp";
-import cardNavyExecutive from "@/assets/cards/card-navy-executive.png";
-
+import cardPVCFront from "@/assets/products/card-pvc-front.png";
+import cardMetalFront from "@/assets/products/card-metal-front.png";
+import nailsImage from "@/assets/nails/nails-hero.png";
 /**
  * OrderType - Sélection du type de produit NFC
  * Étape 0 du tunnel de commande - Design IWASP Stealth Luxury
@@ -36,7 +36,7 @@ const products: ProductOption[] = [
     descKey: "order.pvcCardDesc",
     priceMAD: 324, // ~32,41€
     icon: CreditCard,
-    image: cardBlackMatte,
+    image: cardPVCFront,
     available: true,
     featuresKeys: ["order.pvcFeature1", "order.pvcFeature2", "order.pvcFeature3"]
   },
@@ -46,7 +46,7 @@ const products: ProductOption[] = [
     descKey: "order.nfcNailsDesc",
     priceMAD: 546, // ~54,63€
     icon: Sparkles,
-    image: cardNavyExecutive,
+    image: nailsImage,
     available: true,
     featuresKeys: ["order.nailsFeature1", "order.nailsFeature2", "order.nailsFeature3"]
   },
@@ -56,6 +56,7 @@ const products: ProductOption[] = [
     descKey: "order.metalCardDesc",
     priceMAD: 917, // ~91,67€
     icon: Package,
+    image: cardMetalFront,
     available: false,
     featuresKeys: ["order.metalFeature1", "order.metalFeature2", "order.metalFeature3"]
   }
