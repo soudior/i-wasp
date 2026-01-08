@@ -17,8 +17,8 @@ import {
 import { Button } from "@/components/ui/button";
 
 // Product images
-import cardPVC from "@/assets/cards/card-black-matte.png";
-import cardMetal from "@/assets/cards/card-gold-accent.png";
+import cardPVCFront from "@/assets/products/card-pvc-front.png";
+import cardMetalFront from "@/assets/products/card-metal-front.png";
 import nailsHero from "@/assets/nails/nails-hero.png";
 
 // Product data
@@ -30,7 +30,7 @@ const products = [
     description: "Carte professionnelle en PVC haute qualité avec puce NFC intégrée.",
     price: 29,
     currency: "€",
-    image: cardPVC,
+    image: cardPVCFront,
     features: [
       "Impression recto-verso",
       "Puce NFC haute fréquence",
@@ -46,7 +46,7 @@ const products = [
     description: "Carte en métal brossé avec gravure laser et finition premium.",
     price: 89,
     currency: "€",
-    image: cardMetal,
+    image: cardMetalFront,
     features: [
       "Métal brossé premium",
       "Gravure laser précise",
