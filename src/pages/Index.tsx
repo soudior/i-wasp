@@ -136,34 +136,35 @@ const Index = () => {
           style={{ backgroundColor: `${STEALTH.emeraldGlow}30` }}
         />
         
-        <div className="relative z-10 container mx-auto px-6 py-16">
-          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 py-12 sm:py-16">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
             
             {/* Left: Content */}
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
+              className="text-center lg:text-left"
             >
               {/* Badge - Explication claire */}
               <div 
-                className="inline-flex items-center gap-3 px-4 py-2 rounded-full border mb-8"
+                className="inline-flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-full border mb-6 sm:mb-8"
                 style={{ 
                   backgroundColor: `${STEALTH.titanium}10`,
                   borderColor: `${STEALTH.titanium}20`
                 }}
               >
-                <CreditCard className="w-4 h-4" style={{ color: STEALTH.platinum }} />
+                <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" style={{ color: STEALTH.platinum }} />
                 <span 
-                  className="text-sm font-medium"
+                  className="text-xs sm:text-sm font-medium"
                   style={{ color: STEALTH.titanium }}
                 >
-                  Carte de visite NFC nouvelle génération
+                  Carte NFC nouvelle génération
                 </span>
               </div>
               
               {/* Titre clair et direct */}
-              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6">
+              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.1] mb-4 sm:mb-6">
                 <span className="text-white">Un tap.</span>
                 <br />
                 <span className="text-white">Vos contacts</span>
@@ -180,7 +181,7 @@ const Index = () => {
               
               {/* Description claire du produit */}
               <p 
-                className="text-lg sm:text-xl max-w-xl leading-relaxed mb-8"
+                className="text-base sm:text-lg lg:text-xl max-w-xl leading-relaxed mb-6 sm:mb-8"
                 style={{ color: STEALTH.titanium }}
               >
                 Remplacez vos cartes de visite papier par une carte NFC élégante. 
@@ -188,46 +189,46 @@ const Index = () => {
               </p>
               
               {/* CTAs principaux */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Link to="/order/type">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
+                <Link to="/order/type" className="w-full sm:w-auto">
                   <Button 
                     size="lg" 
-                    className="w-full sm:w-auto font-semibold px-8 py-6 rounded-xl text-lg gap-3"
+                    className="w-full font-semibold px-6 sm:px-8 py-5 sm:py-6 rounded-xl text-base sm:text-lg gap-2 sm:gap-3"
                     style={{ 
                       background: `linear-gradient(135deg, ${STEALTH.titanium}, ${STEALTH.platinum})`,
                       color: STEALTH.noir
                     }}
                   >
-                    <ShoppingBag className="w-5 h-5" />
+                    <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
                     Commander ma carte
                   </Button>
                 </Link>
-                <Link to="/demo">
+                <Link to="/demo" className="w-full sm:w-auto">
                   <Button 
                     variant="outline"
                     size="lg"
-                    className="w-full sm:w-auto px-8 py-6 rounded-xl text-lg gap-3"
+                    className="w-full px-6 sm:px-8 py-5 sm:py-6 rounded-xl text-base sm:text-lg gap-2 sm:gap-3"
                     style={{ 
                       borderColor: `${STEALTH.titanium}40`,
                       color: 'white'
                     }}
                   >
-                    <Play className="w-5 h-5" />
+                    <Play className="w-4 h-4 sm:w-5 sm:h-5" />
                     Voir une démo
                   </Button>
                 </Link>
               </div>
               
               {/* Trust badges */}
-              <div className="flex items-center gap-6">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6">
                 {[
                   { icon: Shield, text: "RGPD" },
-                  { icon: Zap, text: "Livraison 48h" },
+                  { icon: Zap, text: "48h" },
                   { icon: Star, text: "4.9/5" },
                 ].map((badge) => (
-                  <div key={badge.text} className="flex items-center gap-2">
-                    <badge.icon className="w-4 h-4" style={{ color: STEALTH.platinum }} />
-                    <span className="text-sm" style={{ color: STEALTH.titanium }}>{badge.text}</span>
+                  <div key={badge.text} className="flex items-center gap-1.5 sm:gap-2">
+                    <badge.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color: STEALTH.platinum }} />
+                    <span className="text-xs sm:text-sm" style={{ color: STEALTH.titanium }}>{badge.text}</span>
                   </div>
                 ))}
               </div>
@@ -238,7 +239,7 @@ const Index = () => {
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
+              className="relative hidden lg:block"
             >
               {/* Phone + Card mockup showing the concept */}
               <div className="relative mx-auto w-full max-w-sm">
