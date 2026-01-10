@@ -105,6 +105,7 @@ const Orders = lazy(() => import("./pages/Orders"));
 const TrackOrder = lazy(() => import("./pages/TrackOrder"));
 const WalletPassDownload = lazy(() => import("./pages/WalletPassDownload"));
 const WalletCustomizer = lazy(() => import("./pages/WalletCustomizer"));
+const AppStoreChecklist = lazy(() => import("./pages/AppStoreChecklist"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -294,6 +295,7 @@ const App = () => {
                               {/* Wallet Pass */}
                               <Route path="/pass/:slug" element={<WalletPassDownload />} />
                               <Route path="/wallet-customizer" element={<DashboardGuard><WalletCustomizer /></DashboardGuard>} />
+                              <Route path="/appstore-checklist" element={<AppStoreChecklist />} />
                               
                               {/* Admin */}
                               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
