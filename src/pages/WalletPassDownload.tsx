@@ -7,7 +7,8 @@ import {
   supportsGoogleWallet,
   addToAppleWallet,
   addToGoogleWallet,
-  WalletCardData
+  WalletCardData,
+  WalletStyles
 } from "@/lib/walletService";
 
 type DownloadStatus = "detecting" | "loading" | "success" | "error" | "unsupported";
@@ -39,45 +40,54 @@ export default function WalletPassDownload() {
         setWalletType(isApple ? "apple" : "google");
         setStatus("loading");
 
-        // Fetch card data from database
-        const { data: vcardData, error } = await supabase.rpc("get_vcard_data", {
-          p_slug: slug,
-        });
+        // Fetch complete card data including custom_styles from database
+        const { data: cardRow, error: cardError } = await supabase
+          .from("digital_cards")
+          .select("id, first_name, last_name, title, company, email, phone, website, location, slug, photo_url, linkedin, instagram, twitter, tagline, custom_styles")
+          .eq("slug", slug)
+          .eq("is_active", true)
+          .maybeSingle();
 
-        if (error || !vcardData) {
+        if (cardError || !cardRow) {
           setStatus("error");
           setErrorMessage("Carte introuvable");
           return;
         }
 
-        const cardData = vcardData as {
-          first_name: string;
-          last_name: string;
-          title?: string;
-          company?: string;
-          email?: string;
-          phone?: string;
-          slug: string;
-        };
-
         // Prepare wallet data
         const walletData: WalletCardData = {
-          id: slug,
-          firstName: cardData.first_name,
-          lastName: cardData.last_name,
-          title: cardData.title || undefined,
-          company: cardData.company || undefined,
-          email: cardData.email || undefined,
-          phone: cardData.phone || undefined,
-          slug: cardData.slug,
+          id: cardRow.id,
+          firstName: cardRow.first_name,
+          lastName: cardRow.last_name,
+          title: cardRow.title || undefined,
+          company: cardRow.company || undefined,
+          email: cardRow.email || undefined,
+          phone: cardRow.phone || undefined,
+          website: cardRow.website || undefined,
+          location: cardRow.location || undefined,
+          slug: cardRow.slug,
+          photoUrl: cardRow.photo_url || undefined,
+          linkedin: cardRow.linkedin || undefined,
+          instagram: cardRow.instagram || undefined,
+          twitter: cardRow.twitter || undefined,
+          tagline: cardRow.tagline || undefined,
         };
 
-        // Download appropriate pass
+        // Extract wallet styles from custom_styles
+        const customStyles = cardRow.custom_styles as Record<string, unknown> | null;
+        const walletStyles: WalletStyles | undefined = customStyles?.wallet 
+          ? (customStyles.wallet as WalletStyles) 
+          : undefined;
+
+        console.log("Wallet data:", walletData);
+        console.log("Wallet styles:", walletStyles);
+
+        // Download appropriate pass with custom styles
         let success = false;
         if (isApple) {
-          success = await addToAppleWallet(walletData);
+          success = await addToAppleWallet(walletData, walletStyles);
         } else {
-          success = await addToGoogleWallet(walletData);
+          success = await addToGoogleWallet(walletData, walletStyles);
         }
 
         setStatus(success ? "success" : "error");

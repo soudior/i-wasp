@@ -17,6 +17,22 @@ interface CardData {
   location?: string;
   slug: string;
   photoUrl?: string;
+  linkedin?: string;
+  instagram?: string;
+  twitter?: string;
+  tagline?: string;
+}
+
+interface WalletStyles {
+  backgroundColor?: string;
+  labelColor?: string;
+  foregroundColor?: string;
+  showTitle?: boolean;
+  showCompany?: boolean;
+  showPhone?: boolean;
+  showEmail?: boolean;
+  showWebsite?: boolean;
+  showLocation?: boolean;
 }
 
 // Base64URL encode for JWT
@@ -44,7 +60,7 @@ async function createGoogleWalletJWT(
   const claims = {
     iss: serviceAccount.client_email,
     aud: 'google',
-    origins: ['https://i-wasp.com'],
+    origins: ['https://i-wasp.com', 'https://lovable.dev'],
     typ: 'savetowallet',
     iat: now,
     payload: payload
@@ -98,18 +114,24 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           error: 'Service non configuré',
-          message: 'Le compte de service Google Wallet n\'est pas configuré. Veuillez contacter l\'administrateur.',
+          message: 'Le compte de service Google Wallet n\'est pas configuré.',
           fallback: true
         }),
         { 
-          status: 503, 
+          status: 200, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
     }
 
-    const { cardData } = await req.json() as { cardData: CardData };
+    const { cardData, walletStyles } = await req.json() as { 
+      cardData: CardData;
+      walletStyles?: WalletStyles;
+    };
+    
+    const styles = walletStyles || {};
     console.log('Generating Google Wallet pass for:', cardData.firstName, cardData.lastName);
+    console.log('Using wallet styles:', styles);
 
     // Parse service account to get issuer ID
     const serviceAccount = JSON.parse(serviceAccountJson);
@@ -120,7 +142,86 @@ serve(async (req) => {
 
     // Create unique IDs for class and object
     const classId = `${issuerId}.iwasp_business_card`;
-    const objectId = `${issuerId}.${cardData.id.replace(/-/g, '_')}`;
+    const objectId = `${issuerId}.${cardData.id.replace(/-/g, '_')}_${Date.now()}`;
+
+    // Apply custom background color
+    const backgroundColor = styles.backgroundColor || "#121212";
+
+    // Build text modules based on visibility settings
+    const textModulesData: Array<{ id: string; header: string; body: string }> = [];
+
+    if (styles.showCompany !== false && cardData.company) {
+      textModulesData.push({
+        id: "company",
+        header: "Entreprise",
+        body: cardData.company
+      });
+    }
+
+    if (styles.showTitle !== false && cardData.title) {
+      textModulesData.push({
+        id: "title",
+        header: "Fonction",
+        body: cardData.title
+      });
+    }
+
+    if (styles.showPhone !== false && cardData.phone) {
+      textModulesData.push({
+        id: "phone",
+        header: "Téléphone",
+        body: cardData.phone
+      });
+    }
+
+    if (styles.showEmail !== false && cardData.email) {
+      textModulesData.push({
+        id: "email",
+        header: "Email",
+        body: cardData.email
+      });
+    }
+
+    if (styles.showLocation !== false && cardData.location) {
+      textModulesData.push({
+        id: "location",
+        header: "Adresse",
+        body: cardData.location
+      });
+    }
+
+    // Build links module
+    const uris: Array<{ uri: string; description: string; id: string }> = [
+      {
+        uri: publicUrl,
+        description: "Voir la carte numérique",
+        id: "digital_card"
+      }
+    ];
+
+    if (styles.showWebsite !== false && cardData.website) {
+      uris.push({
+        uri: cardData.website.startsWith('http') ? cardData.website : `https://${cardData.website}`,
+        description: "Site web",
+        id: "website"
+      });
+    }
+
+    if (cardData.linkedin) {
+      uris.push({
+        uri: cardData.linkedin.startsWith('http') ? cardData.linkedin : `https://linkedin.com/in/${cardData.linkedin}`,
+        description: "LinkedIn",
+        id: "linkedin"
+      });
+    }
+
+    if (cardData.instagram) {
+      uris.push({
+        uri: `https://instagram.com/${cardData.instagram.replace('@', '')}`,
+        description: "Instagram",
+        id: "instagram"
+      });
+    }
 
     // Google Wallet Generic Pass structure
     const genericClass = {
@@ -177,21 +278,10 @@ serve(async (req) => {
       }
     };
 
-    const genericObject = {
+    const genericObject: Record<string, unknown> = {
       id: objectId,
       classId: classId,
       state: "ACTIVE",
-      heroImage: cardData.photoUrl ? {
-        sourceUri: {
-          uri: cardData.photoUrl
-        },
-        contentDescription: {
-          defaultValue: {
-            language: "fr-FR",
-            value: `Photo de ${cardData.firstName} ${cardData.lastName}`
-          }
-        }
-      } : undefined,
       cardTitle: {
         defaultValue: {
           language: "fr-FR",
@@ -201,7 +291,7 @@ serve(async (req) => {
       subheader: {
         defaultValue: {
           language: "fr-FR",
-          value: cardData.company || "IWASP"
+          value: cardData.tagline || (cardData.company || "IWASP")
         }
       },
       header: {
@@ -210,54 +300,32 @@ serve(async (req) => {
           value: `${cardData.firstName} ${cardData.lastName}`
         }
       },
-      textModulesData: [
-        {
-          id: "company",
-          header: "Entreprise",
-          body: cardData.company || ""
-        },
-        {
-          id: "title",
-          header: "Fonction",
-          body: cardData.title || ""
-        },
-        {
-          id: "phone",
-          header: "Téléphone",
-          body: cardData.phone || ""
-        },
-        {
-          id: "email",
-          header: "Email",
-          body: cardData.email || ""
-        },
-        {
-          id: "location",
-          header: "Adresse",
-          body: cardData.location || ""
-        }
-      ],
+      textModulesData,
       linksModuleData: {
-        uris: [
-          {
-            uri: publicUrl,
-            description: "Voir la carte numérique",
-            id: "digital_card"
-          },
-          ...(cardData.website ? [{
-            uri: cardData.website.startsWith('http') ? cardData.website : `https://${cardData.website}`,
-            description: "Site web",
-            id: "website"
-          }] : [])
-        ]
+        uris
       },
       barcode: {
         type: "QR_CODE",
         value: publicUrl,
         alternateText: cardData.slug
       },
-      hexBackgroundColor: "#121212"
+      hexBackgroundColor: backgroundColor
     };
+
+    // Add hero image if available
+    if (cardData.photoUrl) {
+      genericObject.heroImage = {
+        sourceUri: {
+          uri: cardData.photoUrl
+        },
+        contentDescription: {
+          defaultValue: {
+            language: "fr-FR",
+            value: `Photo de ${cardData.firstName} ${cardData.lastName}`
+          }
+        }
+      };
+    }
 
     // Create the JWT payload
     const jwtPayload = {
@@ -294,7 +362,7 @@ serve(async (req) => {
         fallback: true
       }),
       { 
-        status: 500, 
+        status: 200, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );

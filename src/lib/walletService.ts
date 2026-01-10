@@ -20,6 +20,18 @@ export interface WalletCardData {
   tagline?: string;
 }
 
+export interface WalletStyles {
+  backgroundColor?: string;
+  labelColor?: string;
+  foregroundColor?: string;
+  showTitle?: boolean;
+  showCompany?: boolean;
+  showPhone?: boolean;
+  showEmail?: boolean;
+  showWebsite?: boolean;
+  showLocation?: boolean;
+}
+
 interface WalletResponse {
   success?: boolean;
   passUrl?: string;
@@ -56,12 +68,13 @@ function downloadVCardFallback(cardData: WalletCardData, walletType: 'apple' | '
  * Calls the backend edge function which uses PassKit.io
  * Falls back to vCard download if the service is unavailable
  */
-export async function addToAppleWallet(cardData: WalletCardData): Promise<boolean> {
+export async function addToAppleWallet(cardData: WalletCardData, walletStyles?: WalletStyles): Promise<boolean> {
   try {
     console.log('Requesting Apple Wallet pass for:', cardData.firstName, cardData.lastName);
+    console.log('With custom styles:', walletStyles);
     
     const { data, error } = await supabase.functions.invoke<WalletResponse>('apple-wallet', {
-      body: { cardData }
+      body: { cardData, walletStyles }
     });
 
     if (error) {
@@ -105,12 +118,13 @@ export async function addToAppleWallet(cardData: WalletCardData): Promise<boolea
  * Calls the backend edge function which generates a signed JWT
  * Falls back to vCard download if the service is unavailable
  */
-export async function addToGoogleWallet(cardData: WalletCardData): Promise<boolean> {
+export async function addToGoogleWallet(cardData: WalletCardData, walletStyles?: WalletStyles): Promise<boolean> {
   try {
     console.log('Requesting Google Wallet pass for:', cardData.firstName, cardData.lastName);
+    console.log('With custom styles:', walletStyles);
     
     const { data, error } = await supabase.functions.invoke<WalletResponse>('google-wallet', {
-      body: { cardData }
+      body: { cardData, walletStyles }
     });
 
     if (error) {
