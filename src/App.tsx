@@ -103,6 +103,7 @@ const Subscription = lazy(() => import("./pages/Subscription"));
 const OrderDetails = lazy(() => import("./pages/OrderDetails"));
 const Orders = lazy(() => import("./pages/Orders"));
 const TrackOrder = lazy(() => import("./pages/TrackOrder"));
+const WalletPassDownload = lazy(() => import("./pages/WalletPassDownload"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -288,6 +289,9 @@ const App = () => {
                               <Route path="/boutique" element={<Navigate to="/order/type" replace />} />
                               <Route path="/shop" element={<Navigate to="/order/type" replace />} />
                               <Route path="/checkout-tunnel" element={<CheckoutTunnel />} />
+                              
+                              {/* Wallet Pass Direct Download */}
+                              <Route path="/pass/:slug" element={<WalletPassDownload />} />
                               
                               {/* Admin */}
                               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
