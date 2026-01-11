@@ -10,60 +10,59 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════════
-       i-WASP DESIGN SYSTEM — MIDNIGHT EMERALD & BRUSHED BRONZE
-       Ultra-Luxe Stratosphérique — Inspiré Apple, Hermès, Porsche
+       i-WASP DESIGN SYSTEM — DEEP BLACK & SOFT GOLD
+       Ultra-Luxe Premium — Inspiré V1CE, Cardynale, NFC Luxe
        
        ═══════════════════════════════════════════════════════════════════
-       PALETTE "MIDNIGHT EMERALD & BRUSHED BRONZE"
+       PALETTE "DEEP BLACK & SOFT GOLD"
        ═══════════════════════════════════════════════════════════════════
-       - Midnight Base     : #050708 (Noir profond bleu-vert)
-       - Midnight Surface  : #0C1014 (Surface élevée)
-       - Emerald Accent    : #1B4D3E (Émeraude de minuit)
-       - Emerald Glow      : #2D7A5F (Émeraude lumineux)
-       - Bronze Primary    : #B8926A (Bronze brossé)
-       - Bronze Light      : #D4AF7F (Bronze clair)
-       - Cream Text        : #FAF7F2 (Crème chaud)
-       - Silver Text       : #8A9299 (Argent mat)
+       - Deep Black       : #050608 (Noir très profond)
+       - Anthracite Card  : #15181D (Gris anthracite cartes)
+       - Soft Gold        : #D1A75B (Or doux luxe)
+       - Gold Light       : #E4C88A (Or clair)
+       - Copper Alt       : #C68B5F (Cuivre alternatif)
+       - Pure White       : #FFFFFF (Texte principal)
+       - Silver Text      : #9CA3AF (Texte secondaire 65%)
+       - Muted Text       : #6B7280 (Texte tertiaire)
        
-       Évoque : Exclusivité, technologie furtive, confiance absolue
+       Évoque : Exclusivité, luxe discret, technologie premium
        ═══════════════════════════════════════════════════════════════════ */
     
     /* ══════════════════════════════════════════════════════════════════
-       STEALTH LUXURY — NOIR ÉMERAUDE & TITANE BROSSÉ
-       Palette sans jaune/or - Luxe furtif type Audemars Piguet
+       CORE PALETTE — DEEP BLACK & SOFT GOLD
        ══════════════════════════════════════════════════════════════════ */
     
-    --iwasp-noir: 160 20% 2%;               /* #050807 - Noir Émeraude Profond */
-    --iwasp-noir-elevated: 160 18% 4%;      /* #0A0F0D - Surface élevée */
-    --iwasp-blanc: 0 0% 98%;                /* #FAFAFA - Blanc pur */
-    --iwasp-blanc-pur: 0 0% 100%;           /* #FFFFFF - Blanc pur (inputs) */
+    --iwasp-noir: 220 20% 2%;               /* #050608 - Noir très profond */
+    --iwasp-noir-elevated: 220 15% 8%;      /* #15181D - Anthracite cartes */
+    --iwasp-noir-surface: 220 14% 12%;      /* #1A1E25 - Surface élevée */
+    --iwasp-blanc: 0 0% 100%;               /* #FFFFFF - Blanc pur */
+    --iwasp-blanc-cream: 45 20% 98%;        /* #FDFCFA - Blanc crème */
     
-    /* Argent Titane — CTA, accents, focus (remplace le bronze) */
-    --iwasp-bronze: 220 6% 67%;             /* #A5A9B4 - Argent Titane */
-    --iwasp-bronze-light: 220 8% 82%;       /* #D1D5DB - Platine */
-    --iwasp-bronze-glow: 220 7% 76%;        /* #C4C8CF - Titane lumineux */
+    /* Or Doux Luxe — CTA, accents, focus, badges */
+    --iwasp-gold: 40 55% 59%;               /* #D1A75B - Or doux */
+    --iwasp-gold-light: 42 60% 72%;         /* #E4C88A - Or clair */
+    --iwasp-gold-glow: 40 50% 45%;          /* #A98B4A - Or profond */
+    --iwasp-copper: 25 50% 56%;             /* #C68B5F - Cuivre alternatif */
     
-    /* Émeraude Furtif — Accent secondaire, profondeur */
-    --iwasp-emerald: 160 20% 6%;            /* #0A1210 - Émeraude furtif */
-    --iwasp-emerald-glow: 160 18% 14%;      /* #1A2B26 - Émeraude glow */
-    
-    --iwasp-gris-texte: 220 6% 67%;         /* #A5A9B4 - Argent Titane */
-    --iwasp-gris-bordure: 160 15% 10%;      /* Bordures émeraude subtiles */
+    /* Texte hiérarchie */
+    --iwasp-gris-texte: 220 9% 63%;         /* #9CA3AF - Secondaire 65% */
+    --iwasp-gris-muted: 220 8% 46%;         /* #6B7280 - Tertiaire */
+    --iwasp-gris-bordure: 220 12% 16%;      /* #232830 - Bordures subtiles */
     
     /* États système */
-    --iwasp-erreur: 0 72% 51%;              /* Rouge erreur */
-    --iwasp-success: 160 45% 33%;           /* Émeraude succès */
+    --iwasp-erreur: 0 72% 51%;              /* Rouge erreur doux */
+    --iwasp-success: 142 71% 45%;           /* Vert succès */
     
     /* ══════════════════════════════════════════════════════════════════
-       SURFACES — Ultra-Luxe Midnight
+       SURFACES — Deep Black Luxury
        ══════════════════════════════════════════════════════════════════ */
-    --surface-bg: var(--iwasp-noir);             /* Fond principal */
-    --surface-card: var(--iwasp-noir-elevated);  /* Surface carte */
-    --surface-elevated: 210 12% 9%;              /* Légère élévation */
-    --surface-overlay: 210 10% 12%;              /* Overlay */
+    --surface-bg: var(--iwasp-noir);             /* Fond principal #050608 */
+    --surface-card: var(--iwasp-noir-elevated);  /* Surface carte #15181D */
+    --surface-elevated: var(--iwasp-noir-surface); /* Élévation */
+    --surface-overlay: 220 12% 18%;              /* Overlay */
     
     /* ══════════════════════════════════════════════════════════════════
-       TOKENS SÉMANTIQUES — MIDNIGHT EMERALD & BRONZE
+       TOKENS SÉMANTIQUES — DEEP BLACK & SOFT GOLD
        ══════════════════════════════════════════════════════════════════ */
     --background: var(--iwasp-noir);
     --foreground: var(--iwasp-blanc);
@@ -74,91 +73,79 @@
     --popover: var(--iwasp-noir-elevated);
     --popover-foreground: var(--iwasp-blanc);
     
-    /* Primary = Bronze brossé (pour CTA et boutons principaux) */
-    --primary: var(--iwasp-bronze);
-    --primary-foreground: 210 18% 3%;
+    /* Primary = Or doux (pour CTA et boutons principaux) */
+    --primary: var(--iwasp-gold);
+    --primary-foreground: 220 20% 6%;
     
-    --secondary: var(--iwasp-emerald);
+    --secondary: var(--iwasp-noir-surface);
     --secondary-foreground: var(--iwasp-blanc);
     
     --muted: var(--iwasp-noir-elevated);
     --muted-foreground: var(--iwasp-gris-texte);
     
-    /* Accent = Émeraude de minuit */
-    --accent: var(--iwasp-emerald);
-    --accent-foreground: var(--iwasp-blanc);
+    /* Accent = Or doux */
+    --accent: var(--iwasp-gold);
+    --accent-foreground: 220 20% 6%;
     
     --destructive: var(--iwasp-erreur);
     --destructive-foreground: var(--iwasp-blanc);
     
     --border: var(--iwasp-gris-bordure);
-    --input: var(--iwasp-blanc-pur);
+    --input: var(--iwasp-blanc);
     --input-foreground: var(--iwasp-noir);
-    --ring: var(--iwasp-bronze);
+    --ring: var(--iwasp-gold);
     
     /* ══════════════════════════════════════════════════════════════════
-       RADIUS — Premium Luxe
+       RADIUS — Premium Luxe (18-24px cards)
        ══════════════════════════════════════════════════════════════════ */
-    --radius: 0.75rem;
-    --radius-card: 1.25rem;
-    --radius-btn: 0.5rem;
+    --radius: 0.75rem;        /* 12px base */
+    --radius-card: 1.125rem;  /* 18px cards */
+    --radius-card-lg: 1.5rem; /* 24px large cards */
+    --radius-btn: 9999px;     /* Pill shape for CTA */
     
     /* ══════════════════════════════════════════════════════════════════
-       PALETTE CARTE NFC PHYSIQUE — Ultra-Luxe
+       OMBRES — Deep shadows with soft gold glow
        ══════════════════════════════════════════════════════════════════ */
-    --carte-recto: var(--iwasp-noir);
-    --carte-verso: var(--iwasp-noir-elevated);
-    --carte-texture: 210 12% 9%;
-    --carte-logo: var(--iwasp-blanc);
-    --carte-texte: var(--iwasp-blanc);
-    --carte-secondaire: var(--iwasp-gris-texte);
-    --carte-accent: var(--iwasp-bronze);
+    --shadow-sm: 0 1px 2px hsl(220 20% 2% / 0.5);
+    --shadow-md: 0 4px 12px hsl(220 20% 2% / 0.6);
+    --shadow-lg: 0 8px 24px hsl(220 20% 2% / 0.7);
+    --shadow-card: 0 18px 45px rgba(0, 0, 0, 0.6);
+    --shadow-elevated: 0 24px 60px rgba(0, 0, 0, 0.7);
+    --shadow-gold-glow: 0 0 40px hsl(40 55% 59% / 0.15);
+    --shadow-gold-intense: 0 0 60px hsl(40 55% 59% / 0.25);
+
+    /* ══════════════════════════════════════════════════════════════════
+       TYPOGRAPHIE — Premium Sans-Serif (General Sans style)
+       H1: 40-48px, weight 600/700
+       H2: 28-32px, weight 600
+       Body: 15-16px, line-height 1.6
+       Secondary: 13-14px, opacity 65-75%
+       ══════════════════════════════════════════════════════════════════ */
+    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+    --tracking-tight: -0.02em;
+    --tracking-wide: 0.08em;
 
     /* Surface tokens */
     --surface-0: var(--iwasp-noir);
     --surface-1: var(--iwasp-noir-elevated);
-    --surface-2: 210 12% 9%;
+    --surface-2: var(--iwasp-noir-surface);
     --surface-3: var(--iwasp-gris-bordure);
     
-    /* Glass - Midnight theme avec reflet émeraude */
-    --glass: 160 20% 95%;
+    /* Glass - Deep black avec reflet or subtil */
+    --glass: 40 55% 95%;
     --glass-opacity: 0.03;
-    --glass-border: 160 20% 30%;
+    --glass-border: 40 30% 30%;
 
-    /* ══════════════════════════════════════════════════════════════════
-       OMBRES — Midnight avec lueur émeraude/bronze subtile
-       ══════════════════════════════════════════════════════════════════ */
-    --shadow-sm: 0 1px 2px hsl(210 20% 2% / 0.5);
-    --shadow-md: 0 4px 12px hsl(210 20% 2% / 0.6);
-    --shadow-lg: 0 8px 24px hsl(210 20% 2% / 0.7);
-    --shadow-card: 
-      0 2px 8px hsl(210 20% 2% / 0.5),
-      0 0 0 1px hsl(160 20% 30% / 0.1);
-    --shadow-elevated:
-      0 8px 32px hsl(210 20% 2% / 0.6),
-      0 0 0 1px hsl(32 35% 57% / 0.05);
-    --shadow-bronze-glow:
-      0 0 40px hsl(32 45% 50% / 0.15);
-    --shadow-emerald-glow:
-      0 0 60px hsl(160 45% 25% / 0.2);
-
-    /* ══════════════════════════════════════════════════════════════════
-       TYPOGRAPHIE — Ultra-Luxe (Playfair + SF Pro)
-       ══════════════════════════════════════════════════════════════════ */
-    --font-display: 'Playfair Display', 'Georgia', serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
-    --tracking-tight: -0.03em;
-    --tracking-wide: 0.12em;
-
-    /* Sidebar - Midnight theme */
+    /* Sidebar */
     --sidebar-background: var(--iwasp-noir);
     --sidebar-foreground: var(--iwasp-blanc);
-    --sidebar-primary: var(--iwasp-bronze);
+    --sidebar-primary: var(--iwasp-gold);
     --sidebar-primary-foreground: var(--iwasp-noir);
-    --sidebar-accent: var(--iwasp-emerald);
+    --sidebar-accent: var(--iwasp-noir-surface);
     --sidebar-accent-foreground: var(--iwasp-blanc);
     --sidebar-border: var(--iwasp-gris-bordure);
-    --sidebar-ring: var(--iwasp-bronze);
+    --sidebar-ring: var(--iwasp-gold);
     
     /* Mobile-first: Safe area insets */
     --safe-area-top: env(safe-area-inset-top, 0px);
@@ -175,26 +162,36 @@
     --ios-home-indicator-height: max(34px, env(safe-area-inset-bottom, 0px));
 
     /* ══════════════════════════════════════════════════════════════════
-       SPACING SYSTEM - 8px base
+       SPACING SYSTEM - Premium spacing
+       Section margins: 96-120px
+       Card spacing: 16-24px
+       Card padding: 24-28px vertical, 24-32px horizontal
        ══════════════════════════════════════════════════════════════════ */
     --space-xs: 0.25rem;
     --space-sm: 0.5rem;
     --space-md: 1rem;
-    --space-lg: 1.25rem;
-    --space-xl: 1.5rem;
-    --space-2xl: 2rem;
-    --space-section: 2rem;
-    --space-module: 1.25rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-section: 6rem;     /* 96px between sections */
+    --space-section-lg: 7.5rem; /* 120px large sections */
+    --space-module: 1.5rem;
 
     /* ══════════════════════════════════════════════════════════════════
-       ANIMATION TIMING - Ultra-smooth luxury
+       ANIMATION TIMING - Smooth luxury 150-200ms
        ══════════════════════════════════════════════════════════════════ */
-    --duration-fast: 200ms;
-    --duration-normal: 300ms;
-    --duration-slow: 500ms;
+    --duration-fast: 150ms;
+    --duration-normal: 200ms;
+    --duration-slow: 300ms;
     --easing-default: cubic-bezier(0.25, 0.1, 0.25, 1);
     --easing-in-out: cubic-bezier(0.42, 0, 0.58, 1);
     --easing-luxury: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* ══════════════════════════════════════════════════════════════════
+       MAX WIDTH - Premium content width 960-1100px
+       ══════════════════════════════════════════════════════════════════ */
+    --max-content-width: 1100px;
+    --max-content-narrow: 960px;
   }
   
   /* ══════════════════════════════════════════════════════════════════
@@ -304,6 +301,224 @@
   /* iOS momentum scroll when overflow scrolling inside a container */
   .scrolling-touch {
     -webkit-overflow-scrolling: touch;
+  }
+  
+  /* ══════════════════════════════════════════════════════════════════
+     PREMIUM CARD UTILITIES — V1CE / Cardynale style
+     ══════════════════════════════════════════════════════════════════ */
+  
+  /* Premium offer card - anthracite with gold accent */
+  .card-offer {
+    background: #15181D;
+    border-radius: 18px;
+    border: 1px solid transparent;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
+    padding: 24px 28px;
+    transition: all 200ms ease-out;
+  }
+  
+  .card-offer:hover {
+    transform: scale(1.02);
+    filter: brightness(1.05);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+  }
+  
+  .card-offer.selected,
+  .card-offer[data-selected="true"] {
+    border-color: #D1A75B;
+    box-shadow: 
+      0 18px 45px rgba(0, 0, 0, 0.6),
+      0 0 30px rgba(209, 167, 91, 0.15);
+  }
+  
+  /* Popular badge */
+  .badge-popular {
+    background: linear-gradient(135deg, #D1A75B, #E4C88A);
+    color: #050608;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+  }
+  
+  /* Gold accent text */
+  .text-gold {
+    color: #D1A75B;
+  }
+  
+  .text-gold-light {
+    color: #E4C88A;
+  }
+  
+  /* Premium CTA button - pill shape, gold background */
+  .btn-premium {
+    background: linear-gradient(135deg, #D1A75B, #C9A054);
+    color: #050608;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 14px 32px;
+    border-radius: 999px;
+    border: none;
+    transition: all 200ms ease-out;
+    box-shadow: 0 4px 20px rgba(209, 167, 91, 0.25);
+  }
+  
+  .btn-premium:hover {
+    background: linear-gradient(135deg, #E4C88A, #D1A75B);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(209, 167, 91, 0.35);
+  }
+  
+  /* Secondary button - outline style */
+  .btn-secondary-premium {
+    background: transparent;
+    color: #FFFFFF;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 14px 32px;
+    border-radius: 999px;
+    border: 1px solid #2D3748;
+    transition: all 200ms ease-out;
+  }
+  
+  .btn-secondary-premium:hover {
+    border-color: #D1A75B;
+    color: #D1A75B;
+  }
+  
+  /* Step progress bar */
+  .step-bar {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+  }
+  
+  .step-bar-segment {
+    height: 4px;
+    flex: 1;
+    background: #2D3748;
+    border-radius: 2px;
+    transition: background 200ms ease-out;
+  }
+  
+  .step-bar-segment.active {
+    background: #D1A75B;
+  }
+  
+  /* Icon bullet point */
+  .bullet-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #9CA3AF;
+  }
+  
+  .bullet-icon svg {
+    width: 16px;
+    height: 16px;
+    color: #D1A75B;
+    flex-shrink: 0;
+  }
+  
+  /* Premium content width */
+  .max-w-premium {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  
+  .max-w-premium-narrow {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  
+  /* Section spacing */
+  .section-spacing {
+    padding-top: 96px;
+    padding-bottom: 96px;
+  }
+  
+  .section-spacing-lg {
+    padding-top: 120px;
+    padding-bottom: 120px;
+  }
+  
+  /* Typography scales */
+  .text-display {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  
+  @media (min-width: 768px) {
+    .text-display {
+      font-size: 48px;
+    }
+  }
+  
+  .text-heading {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  
+  @media (min-width: 768px) {
+    .text-heading {
+      font-size: 32px;
+    }
+  }
+  
+  .text-body {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  
+  @media (min-width: 768px) {
+    .text-body {
+      font-size: 16px;
+    }
+  }
+  
+  .text-secondary {
+    font-size: 13px;
+    color: #9CA3AF;
+    opacity: 0.75;
+  }
+  
+  @media (min-width: 768px) {
+    .text-secondary {
+      font-size: 14px;
+    }
+  }
+  
+  /* Loading spinner for CTA */
+  .loading-line {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #D1A75B, transparent);
+    animation: loading-slide 1.5s infinite;
+  }
+  
+  @keyframes loading-slide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  /* Form validation states */
+  .input-success {
+    border-color: #22C55E !important;
+  }
+  
+  .input-error {
+    border-color: #EF4444 !important;
+  }
+  
+  .error-message {
+    color: #F87171;
+    font-size: 13px;
+    margin-top: 4px;
   }
 }
 

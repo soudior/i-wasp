@@ -21,8 +21,8 @@ export default {
       },
       colors: {
         /* ═══════════════════════════════════════════════════════════════
-           i-WASP DESIGN SYSTEM — MIDNIGHT EMERALD & BRUSHED BRONZE
-           Ultra-Luxe Stratosphérique — Inspiré Apple, Hermès, Porsche
+           i-WASP DESIGN SYSTEM — DEEP BLACK & SOFT GOLD
+           Ultra-Luxe Premium — Inspiré V1CE, Cardynale
            ═══════════════════════════════════════════════════════════════ */
         
         /* Semantic tokens */
@@ -78,47 +78,45 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE ULTRA-LUXE — MIDNIGHT EMERALD & BRUSHED BRONZE
-           + BLUE ABYSS + PEARL SAND
+           PALETTE ULTRA-LUXE — DEEP BLACK & SOFT GOLD
            ══════════════════════════════════════════════════════════════ */
         iwasp: {
-          /* STEALTH LUXURY - Noir Émeraude & Titane Brossé */
-          midnight: "#050807",               /* Noir Émeraude Profond */
-          "midnight-elevated": "#0A0F0D",    /* Surface secondaire émeraude */
-          cream: "#FAFAFA",                  /* Blanc pur */
-          silver: "#A5A9B4",                 /* Argent Titane */
-          bronze: "#A5A9B4",                 /* Titane (remplace bronze) */
-          "bronze-light": "#D1D5DB",         /* Platine */
-          "bronze-glow": "#C4C8CF",          /* Titane lumineux */
-          titanium: "#A5A9B4",               /* Argent Titane primaire */
-          platinum: "#D1D5DB",               /* Platine */
-          emerald: "#0A1210",                /* Émeraude profond furtif */
-          "emerald-glow": "#1A2B26",         /* Émeraude glow subtil */
-          "emerald-mist": "#0D1815",         /* Émeraude brume */
-          /* Blue Abyss - Le Monde */
-          abyss: "#0A1628",                  /* Bleu abysse profond */
-          "abyss-light": "#0F2340",          /* Bleu abysse clair */
-          "abyss-glow": "#1E3A5F",           /* Bleu abysse lumineux */
-          ocean: "#2563EB",                  /* Bleu océan accent */
-          /* Pearl Sand - L'Héritage */
-          pearl: "#FAF8F5",                  /* Blanc perle */
-          sand: "#E8E4DD",                   /* Sable clair */
-          "sand-warm": "#D4CFC4",            /* Sable chaud */
-          stone: "#8B8680",                  /* Pierre texte */
+          /* Deep Black Luxury */
+          midnight: "#050608",               /* Noir très profond */
+          "midnight-elevated": "#15181D",    /* Anthracite cartes */
+          "midnight-surface": "#1A1E25",     /* Surface élevée */
+          cream: "#FFFFFF",                  /* Blanc pur */
+          
+          /* Soft Gold Accent */
+          gold: "#D1A75B",                   /* Or doux principal */
+          "gold-light": "#E4C88A",           /* Or clair */
+          "gold-glow": "#A98B4A",            /* Or profond */
+          copper: "#C68B5F",                 /* Cuivre alternatif */
+          
+          /* Text hierarchy */
+          silver: "#9CA3AF",                 /* Texte secondaire 65% */
+          muted: "#6B7280",                  /* Texte tertiaire */
+          
+          /* Legacy compatibility */
+          bronze: "#D1A75B",
+          "bronze-light": "#E4C88A",
+          titanium: "#9CA3AF",
+          platinum: "#D1D5DB",
+          emerald: "#1A1E25",
+          "emerald-glow": "#2D3748",
         },
         
         /* ══════════════════════════════════════════════════════════════
            PALETTE CARTE NFC — Ultra-Luxe
            ══════════════════════════════════════════════════════════════ */
         carte: {
-          recto: "#050708",                  /* Midnight base */
-          verso: "#0C1014",                  /* Surface secondaire */
-          texture: "#111518",                /* Texture subtile */
-          logo: "#FAF7F2",                   /* Logo crème */
-          texte: "#FAF7F2",                  /* Texte crème */
-          secondaire: "#8A9299",             /* Texte secondaire argent */
-          accent: "#B8926A",                 /* Bronze brossé */
-          emerald: "#1B4D3E",                /* Accent émeraude */
+          recto: "#050608",                  /* Deep black base */
+          verso: "#15181D",                  /* Anthracite surface */
+          texture: "#1A1E25",                /* Texture subtile */
+          logo: "#FFFFFF",                   /* Logo blanc */
+          texte: "#FFFFFF",                  /* Texte blanc */
+          secondaire: "#9CA3AF",             /* Texte secondaire */
+          accent: "#D1A75B",                 /* Or doux accent */
         },
       },
       borderRadius: {
