@@ -59,3 +59,9 @@ verify_jwt = false
 
 [functions.send-push-notification]
 verify_jwt = true
+
+[functions.send-push-to-subscribers]
+verify_jwt = false
+
+[functions.create-client-account]
+verify_jwt = true
