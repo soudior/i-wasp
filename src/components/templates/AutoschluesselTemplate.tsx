@@ -9,10 +9,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Phone, MessageCircle, UserPlus, Key, Shield, Wrench, Car, Cog, MapPin, Wifi, Compass, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
+import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import autoschluesselBg from "@/assets/clients/autoschluessel-service-bg.jpg";
 import autoschluesselGebiet from "@/assets/clients/autoschluessel-gebiet.jpeg";
 
 interface AutoschluesselTemplateProps {
+  cardId?: string;
   data?: {
     phone?: string;
     whatsapp?: string;
@@ -37,7 +39,7 @@ const cleanPhoneNumber = (phone: string): string => {
   return phone.replace(/[^0-9]/g, '');
 };
 
-export function AutoschluesselTemplate({ data }: AutoschluesselTemplateProps) {
+export function AutoschluesselTemplate({ cardId, data }: AutoschluesselTemplateProps) {
   const [activeTab, setActiveTab] = useState<TabType>("kontakt");
   const [showFullImage, setShowFullImage] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -372,6 +374,15 @@ END:VCARD`;
           100% { transform: translateX(100%); }
         }
       `}</style>
+      
+      {/* Push Notification Opt-In */}
+      {cardId && (
+        <PushNotificationOptIn 
+          cardId={cardId}
+          ownerName={data?.firstName ? `${data.firstName} ${data.lastName || ''}`.trim() : "Autoschlüssel Service"}
+          variant="floating"
+        />
+      )}
     </div>
   );
 }

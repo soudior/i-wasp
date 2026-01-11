@@ -28,6 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useCardActionUrl, useIncrementCardView } from "@/hooks/usePublicCard";
 import { IWASPBrandingFooter } from "@/components/IWASPBrandingFooter";
+import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import { downloadVCard, VCardData } from "@/lib/vcard";
 import { StoryRing } from "@/components/StoryRing";
 import { usePublicMultipleStories } from "@/hooks/useMultipleStories";
@@ -537,6 +538,13 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
         {/* IWASP Branding */}
         <IWASPBrandingFooter variant="dark" />
       </div>
+      
+      {/* Push Notification Opt-In */}
+      <PushNotificationOptIn 
+        cardId={card.id}
+        ownerName={`${card.first_name} ${card.last_name}`}
+        variant="floating"
+      />
     </div>
   );
 }
