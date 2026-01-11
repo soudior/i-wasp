@@ -179,6 +179,7 @@ const PublicCard = () => {
   if (template === 'autoschluessel') {
     return (
       <AutoschluesselTemplate 
+        cardId={card.id}
         data={{
           phone: card.has_phone ? undefined : undefined, // Data comes from template
           whatsapp: card.has_whatsapp ? undefined : undefined,

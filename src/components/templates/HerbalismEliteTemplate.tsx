@@ -15,6 +15,7 @@ import { VCardGoldButton } from "@/components/VCardGoldButton";
 import { StoriesSection, useCardStories } from "@/components/templates/StoriesSection";
 import { IntroVideoSection } from "@/components/templates/IntroVideoSection";
 import { IWASPBrandingInline } from "@/components/IWASPBrandingFooter";
+import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import { cn } from "@/lib/utils";
 
 // Types
@@ -875,6 +876,15 @@ export function HerbalismEliteTemplate({
           />
         )}
       </AnimatePresence>
+      
+      {/* Push Notification Opt-In */}
+      {cardId && (
+        <PushNotificationOptIn 
+          cardId={cardId}
+          ownerName={data.brandName}
+          variant="floating"
+        />
+      )}
     </div>
   );
 }
