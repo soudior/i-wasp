@@ -26,13 +26,46 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { IWASPBrandBadge } from "@/components/templates/IWASPBrandBadge";
 
+// Kompass Logo SVG Component
+const KompassLogo = ({ className = "" }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 200 40" 
+    className={className}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <text
+      x="0"
+      y="30"
+      fontFamily="Arial, sans-serif"
+      fontWeight="bold"
+      fontSize="28"
+      fill="#E31937"
+      letterSpacing="-1"
+    >
+      KOMPASS
+    </text>
+    <text
+      x="0"
+      y="38"
+      fontFamily="Arial, sans-serif"
+      fontSize="6"
+      fill="#666"
+    >
+      Your route to business worldwide
+    </text>
+  </svg>
+);
+
 const profileData = {
   identity: {
     fullName: "Charles Lazimi",
     role: "Info Pro",
     company: "Kompass France",
     location: "Boulogne-Billancourt, France",
-    verified: true
+    verified: true,
+    // Placeholder - replace with actual photo URL when uploaded
+    photoUrl: null as string | null
   },
   contact: {
     phone: "0621622530",
@@ -132,32 +165,45 @@ END:VCARD`;
         {/* Main Card */}
         <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] overflow-hidden">
           
+          {/* Kompass Logo Header */}
+          <div className="bg-white px-6 pt-4 pb-2 flex justify-center border-b border-gray-100">
+            <KompassLogo className="h-10 w-auto" />
+          </div>
+          
           {/* Header - Kompass Blue */}
-          <div className="bg-gradient-to-br from-[#004B93] to-[#003366] px-6 py-8 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[#004B93] to-[#003366] px-6 py-6 relative overflow-hidden">
             {/* Decorative elements */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-0 right-0 w-40 h-40 bg-white/30 rounded-full -translate-y-1/2 translate-x-1/2" />
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/20 rounded-full translate-y-1/2 -translate-x-1/2" />
             </div>
 
-            {/* Avatar with monogram */}
+            {/* Avatar with photo or monogram */}
             <motion.div 
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.4 }}
               className="relative z-10 flex justify-center mb-4"
             >
-              <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-lg">
-                <span className="text-3xl font-bold text-white">CL</span>
-              </div>
+              {profileData.identity.photoUrl ? (
+                <img 
+                  src={profileData.identity.photoUrl} 
+                  alt={profileData.identity.fullName}
+                  className="w-24 h-24 rounded-2xl object-cover border-2 border-white/30 shadow-xl"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30 shadow-xl">
+                  <span className="text-4xl font-bold text-white">CL</span>
+                </div>
+              )}
               {profileData.identity.verified && (
                 <motion.div 
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.5, type: "spring" }}
-                  className="absolute -bottom-1 -right-1"
+                  className="absolute -bottom-2 -right-2"
                 >
-                  <div className="bg-emerald-500 rounded-full p-1 shadow-lg">
+                  <div className="bg-emerald-500 rounded-full p-1.5 shadow-lg border-2 border-white">
                     <CheckCircle2 className="w-4 h-4 text-white" />
                   </div>
                 </motion.div>
