@@ -645,6 +645,54 @@ export type Database = {
         }
         Relationships: []
       }
+      push_notification_logs: {
+        Row: {
+          body: string
+          card_id: string
+          created_at: string
+          failed_count: number
+          id: string
+          sent_count: number
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          card_id: string
+          created_at?: string
+          failed_count?: number
+          id?: string
+          sent_count?: number
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          card_id?: string
+          created_at?: string
+          failed_count?: number
+          id?: string
+          sent_count?: number
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_notification_logs_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "digital_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "push_notification_logs_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "public_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       push_subscriptions: {
         Row: {
           auth_key: string
