@@ -1053,6 +1053,32 @@ const Dashboard = () => {
           </DialogHeader>
           
           <div className="space-y-4 pt-4">
+            {/* Quick templates */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Modèles rapides</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { icon: "🎉", title: "Nouveauté", body: "Découvrez notre dernière actualité !" },
+                  { icon: "💼", title: "Rappel", body: "N'oubliez pas de me contacter pour votre projet" },
+                  { icon: "🎁", title: "Offre spéciale", body: "Profitez d'une offre exclusive limitée dans le temps" },
+                  { icon: "👋", title: "Restons en contact", body: "Je suis disponible pour échanger avec vous" },
+                ].map((template, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setPushTitle(template.title);
+                      setPushMessage(template.body);
+                    }}
+                    className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors text-left"
+                  >
+                    <span className="text-lg">{template.icon}</span>
+                    <span className="text-xs font-medium text-foreground truncate">{template.title}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Card selector */}
             {cards.length > 1 && (
               <div className="space-y-2">
