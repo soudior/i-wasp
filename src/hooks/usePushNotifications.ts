@@ -14,9 +14,8 @@ interface PushSubscriptionState {
   permission: NotificationPermission | null;
 }
 
-// VAPID public key - this should match the private key in your edge function
-// You can generate a key pair at: https://web-push-codelab.glitch.me/
-const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
+// VAPID public key - matches the private key in the edge function
+const VAPID_PUBLIC_KEY = 'BKPG55qfcSMyf2ot_WtrcPgQmBhgXp_4a3JfJwRQUUwgALI-OWXhfFN_Jmx6iYemIU0j48FJ-VQGoCa-3iq3K9s';
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);

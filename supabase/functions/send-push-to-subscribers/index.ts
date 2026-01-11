@@ -10,11 +10,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Web Push VAPID keys - these should match the public key in the frontend
-// Generate at: https://web-push-codelab.glitch.me/
-const VAPID_PUBLIC_KEY = "BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U";
+// Web Push VAPID keys - generated for i-wasp
+const VAPID_PUBLIC_KEY = "BKPG55qfcSMyf2ot_WtrcPgQmBhgXp_4a3JfJwRQUUwgALI-OWXhfFN_Jmx6iYemIU0j48FJ-VQGoCa-3iq3K9s";
 const VAPID_PRIVATE_KEY = Deno.env.get("VAPID_PRIVATE_KEY") || "";
-const VAPID_SUBJECT = "mailto:contact@i-wasp.com";
+const VAPID_SUBJECT = "mailto:ssouhail.92@gmail.com";
 
 interface PushSubscription {
   id: string;
