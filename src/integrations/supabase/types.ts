@@ -645,6 +645,57 @@ export type Database = {
         }
         Relationships: []
       }
+      push_subscriptions: {
+        Row: {
+          auth_key: string
+          card_id: string
+          created_at: string
+          endpoint: string
+          id: string
+          is_active: boolean
+          last_used_at: string | null
+          p256dh_key: string
+          user_agent: string | null
+        }
+        Insert: {
+          auth_key: string
+          card_id: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          is_active?: boolean
+          last_used_at?: string | null
+          p256dh_key: string
+          user_agent?: string | null
+        }
+        Update: {
+          auth_key?: string
+          card_id?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          is_active?: boolean
+          last_used_at?: string | null
+          p256dh_key?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "digital_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "push_subscriptions_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "public_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rental_properties: {
         Row: {
           address: string | null

@@ -21,6 +21,7 @@ import VCardAirbnbBookingTemplate from "@/components/templates/VCardAirbnbBookin
 import { DarkLuxuryBusinessTemplate } from "@/components/templates/DarkLuxuryBusinessTemplate";
 import { IWASPBrandBadgeMinimal } from "@/components/templates/IWASPBrandBadge";
 import { IWASPBrandingFooter } from "@/components/IWASPBrandingFooter";
+import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import DualBrandShowcase from "./DualBrandShowcase";
 import MaisonBOpticCard from "./MaisonBOpticCard";
 
@@ -425,6 +426,13 @@ const PublicCard = () => {
       
       {/* Global IWASP Branding Footer */}
       <IWASPBrandingFooter variant={customStyles?.theme === "dark" ? "dark" : "light"} />
+      
+      {/* Push Notification Opt-In */}
+      <PushNotificationOptIn 
+        cardId={card.id}
+        ownerName={fullName}
+        variant="floating"
+      />
     </div>
   );
 };
