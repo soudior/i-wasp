@@ -819,6 +819,63 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_push_notifications: {
+        Row: {
+          body: string
+          card_id: string
+          created_at: string
+          failed_count: number | null
+          id: string
+          scheduled_at: string
+          sent_at: string | null
+          sent_count: number | null
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          card_id: string
+          created_at?: string
+          failed_count?: number | null
+          id?: string
+          scheduled_at: string
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          card_id?: string
+          created_at?: string
+          failed_count?: number | null
+          id?: string
+          scheduled_at?: string
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_push_notifications_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "digital_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduled_push_notifications_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "public_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       story_analytics: {
         Row: {
           created_at: string

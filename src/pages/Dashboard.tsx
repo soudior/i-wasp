@@ -23,6 +23,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useSendPushNotification } from "@/hooks/usePushNotifications";
 import { usePushSubscribers } from "@/hooks/usePushSubscribers";
 import { usePushNotificationLogs, useCreatePushNotificationLog } from "@/hooks/usePushNotificationLogs";
+import { useScheduledNotifications, useCreateScheduledNotification, useDeleteScheduledNotification } from "@/hooks/useScheduledNotifications";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -42,7 +43,7 @@ import {
   ChevronRight, Loader2, Settings, Zap,
   Bell, Send, Mail, MessageSquare, Download,
   BarChart3, MousePointerClick, QrCode, Link2,
-  Sparkles, Crown
+  Sparkles, Crown, Clock, Calendar, X
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -83,6 +84,9 @@ const Dashboard = () => {
   const { data: pushSubscribers } = usePushSubscribers();
   const { data: pushLogs = [] } = usePushNotificationLogs();
   const createPushLog = useCreatePushNotificationLog();
+  const { data: scheduledNotifications = [] } = useScheduledNotifications();
+  const createScheduledNotification = useCreateScheduledNotification();
+  const deleteScheduledNotification = useDeleteScheduledNotification();
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [walletCardId, setWalletCardId] = useState<string | null>(null);
@@ -91,6 +95,9 @@ const Dashboard = () => {
   const [pushTitle, setPushTitle] = useState("");
   const [pushMessage, setPushMessage] = useState("");
   const [pushCardId, setPushCardId] = useState<string | null>(null);
+  const [isScheduled, setIsScheduled] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState("");
+  const [scheduledTime, setScheduledTime] = useState("");
   const { sendNotification, isLoading: pushSending } = useSendPushNotification();
 
   const walletCard = cards.find(c => c.id === walletCardId);
@@ -880,6 +887,44 @@ const Dashboard = () => {
                     </Card>
                   )}
 
+                  {/* Scheduled notifications */}
+                  {scheduledNotifications.filter(n => n.status === 'pending').length > 0 && (
+                    <Card className="bg-card border-border/50 p-6 col-span-full">
+                      <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                        <Clock size={18} className="text-blue-500" />
+                        Notifications programmées
+                      </h3>
+                      <div className="space-y-3">
+                        {scheduledNotifications
+                          .filter(n => n.status === 'pending')
+                          .slice(0, 5)
+                          .map((notif) => (
+                            <div 
+                              key={notif.id}
+                              className="flex items-center justify-between p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm text-foreground truncate">{notif.title}</p>
+                                <p className="text-xs text-muted-foreground truncate">{notif.body}</p>
+                                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 flex items-center gap-1">
+                                  <Calendar size={12} />
+                                  {format(new Date(notif.scheduled_at), "dd MMM yyyy 'à' HH:mm", { locale: fr })}
+                                </p>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                onClick={() => deleteScheduledNotification.mutate(notif.id)}
+                              >
+                                <X size={16} />
+                              </Button>
+                            </div>
+                          ))}
+                      </div>
+                    </Card>
+                  )}
+
                   {/* Automation */}
                   <Card className="bg-card border-border/50 p-6">
                     <div className="flex items-start gap-4">
@@ -1048,6 +1093,40 @@ const Dashboard = () => {
               />
             </div>
 
+            {/* Schedule toggle */}
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isScheduled}
+                  onChange={(e) => setIsScheduled(e.target.checked)}
+                  className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+                />
+                <span className="text-sm font-medium text-foreground flex items-center gap-1">
+                  <Clock size={14} />
+                  Programmer l'envoi
+                </span>
+              </label>
+              
+              {isScheduled && (
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={scheduledDate}
+                    onChange={(e) => setScheduledDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  />
+                  <input
+                    type="time"
+                    value={scheduledTime}
+                    onChange={(e) => setScheduledTime(e.target.value)}
+                    className="w-28 px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  />
+                </div>
+              )}
+            </div>
+
             {/* Preview */}
             {(pushTitle || pushMessage) && (
               <div className="p-4 rounded-xl bg-secondary/50 border border-border">
@@ -1068,44 +1147,70 @@ const Dashboard = () => {
                 setShowPushModal(false);
                 setPushTitle("");
                 setPushMessage("");
+                setIsScheduled(false);
+                setScheduledDate("");
+                setScheduledTime("");
               }}
             >
               Annuler
             </Button>
             <Button
               className="flex-1 gap-2"
-              disabled={!pushTitle || !pushMessage || pushSending || cards.length === 0}
+              disabled={!pushTitle || !pushMessage || pushSending || cards.length === 0 || (isScheduled && (!scheduledDate || !scheduledTime))}
               onClick={async () => {
                 if (cards.length === 0) return;
                 const cardId = pushCardId || cards[0].id;
-                const result = await sendNotification(cardId, pushTitle, pushMessage);
                 
-                // Log the notification
-                await createPushLog.mutateAsync({
-                  card_id: cardId,
-                  title: pushTitle,
-                  body: pushMessage,
-                  sent_count: result.sent,
-                  failed_count: result.failed,
-                });
-                
-                if (result.sent > 0) {
-                  toast.success(`${result.sent} notification(s) envoyée(s) !`);
-                } else if (result.failed === 0 && result.sent === 0) {
-                  toast.info("Aucun abonné aux notifications pour le moment");
+                if (isScheduled && scheduledDate && scheduledTime) {
+                  // Schedule the notification
+                  const scheduledAt = new Date(`${scheduledDate}T${scheduledTime}`).toISOString();
+                  await createScheduledNotification.mutateAsync({
+                    card_id: cardId,
+                    title: pushTitle,
+                    body: pushMessage,
+                    scheduled_at: scheduledAt,
+                  });
+                  toast.success("Notification programmée !");
                 } else {
-                  toast.error("Erreur lors de l'envoi");
+                  // Send immediately
+                  const result = await sendNotification(cardId, pushTitle, pushMessage);
+                  
+                  // Log the notification
+                  await createPushLog.mutateAsync({
+                    card_id: cardId,
+                    title: pushTitle,
+                    body: pushMessage,
+                    sent_count: result.sent,
+                    failed_count: result.failed,
+                  });
+                  
+                  if (result.sent > 0) {
+                    toast.success(`${result.sent} notification(s) envoyée(s) !`);
+                  } else if (result.failed === 0 && result.sent === 0) {
+                    toast.info("Aucun abonné aux notifications pour le moment");
+                  } else {
+                    toast.error("Erreur lors de l'envoi");
+                  }
                 }
+                
                 setShowPushModal(false);
                 setPushTitle("");
                 setPushMessage("");
                 setPushCardId(null);
+                setIsScheduled(false);
+                setScheduledDate("");
+                setScheduledTime("");
               }}
             >
-              {pushSending ? (
+              {pushSending || createScheduledNotification.isPending ? (
                 <>
                   <Loader2 size={14} className="animate-spin" />
-                  Envoi...
+                  {isScheduled ? "Programmation..." : "Envoi..."}
+                </>
+              ) : isScheduled ? (
+                <>
+                  <Clock size={14} />
+                  Programmer
                 </>
               ) : (
                 <>
