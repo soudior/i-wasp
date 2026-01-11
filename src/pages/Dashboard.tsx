@@ -20,6 +20,7 @@ import { useLeads } from "@/hooks/useLeads";
 import { useScans } from "@/hooks/useScans";
 import { useUserOrders } from "@/hooks/useOrders";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useSendPushNotification } from "@/hooks/usePushNotifications";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -81,6 +82,10 @@ const Dashboard = () => {
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [walletCardId, setWalletCardId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("cards");
+  const [showPushModal, setShowPushModal] = useState(false);
+  const [pushTitle, setPushTitle] = useState("");
+  const [pushMessage, setPushMessage] = useState("");
+  const { sendNotification, isLoading: pushSending } = useSendPushNotification();
 
   const walletCard = cards.find(c => c.id === walletCardId);
 
@@ -808,20 +813,21 @@ const Dashboard = () => {
                       <div className="flex-1">
                         <h3 className="font-semibold text-foreground mb-1">Notifications Push</h3>
                         <p className="text-sm text-muted-foreground mb-4">
-                          Envoyez des notifications push aux visiteurs qui ont installé votre profil.
+                          Envoyez des notifications aux visiteurs qui ont activé les alertes sur votre profil.
                         </p>
                         <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs">
-                            Bientôt disponible
+                          <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                            Actif
                           </Badge>
                         </div>
                         <Button 
                           className="mt-4 w-full gap-2" 
                           variant="outline"
-                          disabled
+                          onClick={() => setShowPushModal(true)}
+                          disabled={cards.length === 0}
                         >
                           <Bell size={14} />
-                          Activer les Push
+                          Envoyer une notification
                         </Button>
                       </div>
                     </div>
@@ -938,6 +944,100 @@ const Dashboard = () => {
           <p className="text-xs text-muted-foreground text-center pt-4">
             Votre carte sera accessible directement depuis votre téléphone
           </p>
+        </DialogContent>
+      </Dialog>
+
+      {/* Push Notification modal */}
+      <Dialog open={showPushModal} onOpenChange={setShowPushModal}>
+        <DialogContent className="bg-card border-border max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-foreground flex items-center gap-2">
+              <Bell size={20} className="text-purple-500" />
+              Envoyer une notification
+            </DialogTitle>
+            <DialogDescription>
+              Envoyez une notification push à tous les abonnés de votre carte
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Titre</label>
+              <input
+                type="text"
+                value={pushTitle}
+                onChange={(e) => setPushTitle(e.target.value)}
+                placeholder="Ex: Nouveauté !"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Message</label>
+              <textarea
+                value={pushMessage}
+                onChange={(e) => setPushMessage(e.target.value)}
+                placeholder="Ex: Découvrez notre nouvelle offre..."
+                rows={3}
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+              />
+            </div>
+
+            {/* Preview */}
+            {(pushTitle || pushMessage) && (
+              <div className="p-4 rounded-xl bg-secondary/50 border border-border">
+                <p className="text-xs text-muted-foreground mb-2">Aperçu</p>
+                <div className="bg-background rounded-lg p-3 border border-border shadow-sm">
+                  <p className="font-semibold text-sm text-foreground">{pushTitle || "Titre..."}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{pushMessage || "Message..."}</p>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex gap-2 pt-4">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => {
+                setShowPushModal(false);
+                setPushTitle("");
+                setPushMessage("");
+              }}
+            >
+              Annuler
+            </Button>
+            <Button
+              className="flex-1 gap-2"
+              disabled={!pushTitle || !pushMessage || pushSending || cards.length === 0}
+              onClick={async () => {
+                if (cards.length === 0) return;
+                const result = await sendNotification(cards[0].id, pushTitle, pushMessage);
+                if (result.sent > 0) {
+                  toast.success(`${result.sent} notification(s) envoyée(s) !`);
+                } else if (result.failed === 0 && result.sent === 0) {
+                  toast.info("Aucun abonné aux notifications pour le moment");
+                } else {
+                  toast.error("Erreur lors de l'envoi");
+                }
+                setShowPushModal(false);
+                setPushTitle("");
+                setPushMessage("");
+              }}
+            >
+              {pushSending ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  Envoi...
+                </>
+              ) : (
+                <>
+                  <Send size={14} />
+                  Envoyer
+                </>
+              )}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
