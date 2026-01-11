@@ -90,6 +90,7 @@ const Dashboard = () => {
   const [showPushModal, setShowPushModal] = useState(false);
   const [pushTitle, setPushTitle] = useState("");
   const [pushMessage, setPushMessage] = useState("");
+  const [pushCardId, setPushCardId] = useState<string | null>(null);
   const { sendNotification, isLoading: pushSending } = useSendPushNotification();
 
   const walletCard = cards.find(c => c.id === walletCardId);
@@ -1007,6 +1008,24 @@ const Dashboard = () => {
           </DialogHeader>
           
           <div className="space-y-4 pt-4">
+            {/* Card selector */}
+            {cards.length > 1 && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Carte cible</label>
+                <select
+                  value={pushCardId || cards[0]?.id || ""}
+                  onChange={(e) => setPushCardId(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  {cards.map((card) => (
+                    <option key={card.id} value={card.id}>
+                      {card.first_name} {card.last_name} {pushSubscribers?.byCard[card.id] ? `(${pushSubscribers.byCard[card.id]} abonnés)` : "(0 abonnés)"}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Titre</label>
               <input
@@ -1058,7 +1077,7 @@ const Dashboard = () => {
               disabled={!pushTitle || !pushMessage || pushSending || cards.length === 0}
               onClick={async () => {
                 if (cards.length === 0) return;
-                const cardId = cards[0].id;
+                const cardId = pushCardId || cards[0].id;
                 const result = await sendNotification(cardId, pushTitle, pushMessage);
                 
                 // Log the notification
@@ -1080,6 +1099,7 @@ const Dashboard = () => {
                 setShowPushModal(false);
                 setPushTitle("");
                 setPushMessage("");
+                setPushCardId(null);
               }}
             >
               {pushSending ? (
