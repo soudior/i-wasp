@@ -186,21 +186,21 @@ function OrderIdentiteContent() {
                 style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
-                Étape 2 sur 6
+                Étape 3 sur 5 – Vos informations de contact
               </motion.p>
               <motion.h1 
                 className="text-3xl md:text-4xl font-display font-bold mb-3"
                 style={{ color: STEALTH.text }}
                 variants={itemVariants}
               >
-                Votre identité digitale
+                Vos informations de contact
               </motion.h1>
               <motion.p 
                 className="text-lg"
                 style={{ color: STEALTH.textSecondary }}
                 variants={itemVariants}
               >
-                Ces informations seront visibles sur votre carte publique
+                Ces informations seront visibles sur votre profil numérique
               </motion.p>
             </motion.div>
 

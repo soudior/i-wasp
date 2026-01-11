@@ -35,14 +35,14 @@ const products: ProductOption[] = [
   {
     id: "pvc",
     name: "Carte NFC PVC",
-    subtitle: "L'essentiel premium",
+    subtitle: "Populaire",
     description: "Format carte bancaire. Finition mate premium.",
     priceMAD: 300,
     icon: CreditCard,
     image: cardPVCFront,
     available: true,
     popular: true,
-    features: ["Design sur mesure", "Finition mat ou brillant", "QR code de secours", "Profil digital illimité"]
+    features: ["Parfait pour le réseautage quotidien", "Solide et élégant", "QR code de secours", "Profil digital illimité"]
   },
   {
     id: "nails",
@@ -53,18 +53,18 @@ const products: ProductOption[] = [
     icon: Sparkles,
     image: nailsImage,
     available: true,
-    features: ["Pose par professionnels", "Puce invisible intégrée", "Compatible tous smartphones", "Réseau salons partenaires"]
+    features: ["Idéal pour salons, créateurs, artistes", "Un simple geste de la main", "Compatible tous smartphones", "Réseau salons partenaires"]
   },
   {
     id: "metal",
     name: "Carte Métal",
-    subtitle: "Le prestige ultime",
+    subtitle: "Premium ultime",
     description: "Finition acier brossé. Premium ultime.",
     priceMAD: 850,
     icon: CreditCard,
     image: cardMetalFront,
     available: true,
-    features: ["Métal brossé premium", "Gravure laser précise", "Finition or ou argent", "Écrin de présentation"]
+    features: ["Effet waouh garanti", "Pour dirigeants et VIP", "Gravure laser précise", "Écrin de présentation"]
   }
 ];
 
@@ -153,14 +153,20 @@ export default function OrderType() {
               <WorldClockGlobe />
             </div>
             
+            <p 
+              className="text-xs uppercase tracking-widest mb-2"
+              style={{ color: STEALTH.accent }}
+            >
+              Étape 2 sur 5 – Choisissez votre support
+            </p>
             <h1 
               className="text-2xl font-bold tracking-tight mb-3"
               style={{ color: STEALTH.text }}
             >
-              {t("order.chooseSupport")}
+              Choisissez votre support
             </h1>
             <p style={{ color: STEALTH.textSecondary }}>
-              {t("order.nfcTechnology")}
+              Technologie NFC intégrée. Tous vos supports sont reliés au même profil numérique.
             </p>
           </div>
 

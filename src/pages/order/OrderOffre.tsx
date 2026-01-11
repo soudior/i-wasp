@@ -40,21 +40,21 @@ interface OfferDetail {
   isPopular?: boolean;
 }
 
-// Détails complets des offres avec indication claire de la valeur
+// Détails complets des offres avec textes optimisés
 const offerDetails: OfferDetail[] = [
   {
     id: "essentiel",
     icon: Star,
     title: "Essentiel",
-    subtitle: "Votre identité digitale de base",
+    subtitle: "Votre identité numérique de base",
     priceMAD: 277,
-    description: "Parfait si vous débutez et voulez simplement partager vos coordonnées.",
-    idealFor: "Particuliers, premiers pas dans le networking digital",
+    description: "Parfait pour commencer avec le networking digital.",
+    idealFor: "Idéal pour commencer",
     features: [
       { label: "Carte NFC standard", included: true, icon: Star },
-      { label: "Profil digital", included: true, icon: Link2 },
+      { label: "Profil numérique complet", included: true, icon: Link2 },
       { label: "Jusqu'à 3 liens", included: true, icon: Link2 },
-      { label: "QR Code de secours", included: true, icon: Check },
+      { label: "Accès à votre tableau de bord i‑wasp", included: true, icon: Check },
     ],
     limitations: [
       "Mises à jour limitées",
@@ -70,16 +70,14 @@ const offerDetails: OfferDetail[] = [
     subtitle: "L'expérience complète",
     priceMAD: 555,
     isPopular: true,
-    description: "Pour les professionnels qui veulent maximiser leur impact et suivre leurs résultats.",
-    idealFor: "Entrepreneurs, commerciaux, indépendants actifs",
+    description: "Pour les professionnels qui veulent maximiser leur impact.",
+    idealFor: "Populaire",
     features: [
-      { label: "Carte NFC Premium", included: true, icon: Sparkles },
-      { label: "Liens illimités", included: true, icon: Link2 },
+      { label: "Carte NFC premium", included: true, icon: Sparkles },
+      { label: "Liens illimités (réseaux, WhatsApp, site, catalogue…)", included: true, icon: Link2 },
       { label: "Galerie photo/vidéo", included: true, icon: Image },
-      { label: "Mises à jour illimitées", included: true, icon: RefreshCw },
-      { label: "Statistiques de visites", included: true, highlight: true, icon: BarChart3 },
-      { label: "Capture automatique de contacts", included: true, highlight: true, icon: Users },
-      { label: "Support prioritaire", included: true, icon: Headphones },
+      { label: "Collecte de leads incluse", included: true, highlight: true, icon: Users },
+      { label: "Statistiques de vos taps", included: true, highlight: true, icon: BarChart3 },
     ],
     highlights: [
       "Voyez qui consulte votre profil",
@@ -93,19 +91,18 @@ const offerDetails: OfferDetail[] = [
     title: "Élite",
     subtitle: "Service sur-mesure",
     priceMAD: 925,
-    description: "Un accompagnement personnalisé pour votre équipe ou votre marque.",
-    idealFor: "Équipes, entreprises, événements",
+    description: "Accompagnement personnalisé pour votre équipe ou marque.",
+    idealFor: "Sur devis possible pour entreprises",
     features: [
-      { label: "Tout Signature inclus", included: true, icon: Check },
-      { label: "Design personnalisé", included: true, icon: Palette },
-      { label: "Formation incluse", included: true, icon: Headphones },
-      { label: "Interlocuteur dédié", included: true, icon: Crown },
-      { label: "Cartes pour l'équipe", included: true, icon: Users },
+      { label: "Toute l'offre Signature", included: true, icon: Check },
+      { label: "Design personnalisé de carte (avec votre équipe)", included: true, icon: Palette },
+      { label: "Mise en place de scénarios de relance (email/WhatsApp)", included: true, icon: RefreshCw },
+      { label: "Accompagnement personnalisé", included: true, icon: Headphones },
     ],
     highlights: [
       "Branding entreprise unifié",
       "Gestion centralisée",
-      "SLA garanti",
+      "Interlocuteur dédié",
     ],
   },
 ];
@@ -181,16 +178,16 @@ function OrderOffreContent() {
               className="text-xs uppercase tracking-widest mb-2"
               style={{ color: STEALTH.accent }}
             >
-              Étape 1 sur 5
+              Étape 1 sur 5 – Choisissez votre expérience
             </p>
             <h1 
               className="text-2xl font-bold tracking-tight mb-2"
               style={{ color: STEALTH.text }}
             >
-              Choisissez votre offre
+              Choisissez votre expérience
             </h1>
             <p style={{ color: STEALTH.textSecondary }}>
-              La carte NFC est incluse
+              La carte NFC est incluse dans toutes les offres
             </p>
           </div>
 
