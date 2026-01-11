@@ -21,6 +21,7 @@ import { useScans } from "@/hooks/useScans";
 import { useUserOrders } from "@/hooks/useOrders";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useSendPushNotification } from "@/hooks/usePushNotifications";
+import { usePushSubscribers } from "@/hooks/usePushSubscribers";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -78,6 +79,7 @@ const Dashboard = () => {
   const { isPremium } = useSubscription();
   const updateCard = useUpdateCard();
   const deleteCard = useDeleteCard();
+  const { data: pushSubscribers } = usePushSubscribers();
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [walletCardId, setWalletCardId] = useState<string | null>(null);
@@ -816,6 +818,9 @@ const Dashboard = () => {
                           Envoyez des notifications aux visiteurs qui ont activé les alertes sur votre profil.
                         </p>
                         <div className="flex items-center gap-2">
+                          <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+                            {pushSubscribers?.total || 0} abonnés
+                          </Badge>
                           <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
                             Actif
                           </Badge>
