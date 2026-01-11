@@ -73,7 +73,7 @@ export function FunnelStep({
   }, [currentStep]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-deep-black">
       <Navbar />
       
       <PageTransition>
@@ -89,11 +89,11 @@ export function FunnelStep({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <h1 className="text-2xl md:text-3xl font-display font-bold mb-2">
+              <h1 className="text-display text-off-white mb-2">
                 {title}
               </h1>
               {subtitle && (
-                <p className="text-muted-foreground">
+                <p className="text-soft-gray">
                   {subtitle}
                 </p>
               )}
@@ -111,7 +111,7 @@ export function FunnelStep({
         </main>
 
         {/* Fixed Bottom Navigation - Toujours visible */}
-        <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-lg border-t border-border z-40">
+        <div className="fixed bottom-0 left-0 right-0 bg-deep-black/95 backdrop-blur-lg border-t border-anthracite-light z-40">
           <div className="max-w-2xl mx-auto px-4 py-4 safe-area-inset-bottom">
             {/* Optional footer content */}
             {footerContent && (
@@ -125,8 +125,8 @@ export function FunnelStep({
               {showBack && onBack && (
                 <motion.button
                   onClick={onBack}
-                  className="flex items-center justify-center gap-2 px-4 h-14 rounded-2xl 
-                    text-muted-foreground hover:text-foreground hover:bg-muted/50
+                  className="flex items-center justify-center gap-2 px-4 h-14 rounded-full 
+                    text-soft-gray hover:text-off-white hover:bg-anthracite/50
                     transition-colors touch-manipulation"
                   whileTap={{ scale: 0.98 }}
                 >

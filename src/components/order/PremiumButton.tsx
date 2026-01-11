@@ -75,13 +75,13 @@ export const PremiumButton = forwardRef<HTMLButtonElement, PremiumButtonProps>(
       // Base styles - VERROUILLÉ
       "relative inline-flex items-center justify-center gap-2",
       "font-semibold text-center",
-      "rounded-2xl",
-      "transition-colors duration-150",
+      "rounded-full", // Pill shape for luxury
+      "transition-all duration-200",
       "touch-manipulation", // Disable 300ms delay
       "select-none", // Prevent text selection
       "-webkit-tap-highlight-color-transparent", // Remove iOS tap highlight
       "active:scale-[0.98]", // Instant feedback
-      "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+      "focus:outline-none focus-visible:ring-2 focus-visible:ring-soft-gold/50",
       
       // Sizes
       size === "default" && "h-12 px-6 text-base",
@@ -91,24 +91,25 @@ export const PremiumButton = forwardRef<HTMLButtonElement, PremiumButtonProps>(
       // Width
       fullWidth && "w-full",
       
-      // Variants
+      // Variants using design system
       variant === "primary" && [
-        "bg-gradient-to-r from-primary to-amber-500",
-        "text-primary-foreground",
-        "shadow-lg shadow-primary/25",
-        "hover:shadow-xl hover:shadow-primary/30",
+        "bg-gradient-to-r from-soft-gold to-copper",
+        "text-deep-black",
+        "shadow-lg shadow-soft-gold/25",
+        "hover:shadow-xl hover:shadow-soft-gold/30",
+        "hover:brightness-110",
         "disabled:opacity-50 disabled:cursor-not-allowed",
       ],
       variant === "secondary" && [
-        "bg-secondary",
-        "text-secondary-foreground",
-        "border border-border",
-        "hover:bg-secondary/80",
+        "bg-anthracite",
+        "text-off-white",
+        "border border-anthracite-light",
+        "hover:bg-anthracite-light",
       ],
       variant === "ghost" && [
         "bg-transparent",
-        "text-foreground",
-        "hover:bg-muted",
+        "text-off-white",
+        "hover:bg-anthracite/50",
       ],
       
       className
