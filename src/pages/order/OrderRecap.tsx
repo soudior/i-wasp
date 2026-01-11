@@ -209,20 +209,20 @@ function OrderRecapContent() {
                 style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
-                Étape 5 sur 6
+                Étape 4 sur 5 – Récapitulatif de votre commande
               </motion.p>
               <motion.h1 
                 className="text-2xl md:text-3xl font-display font-bold mb-2"
                 style={{ color: STEALTH.text }}
                 variants={itemVariants}
               >
-                Récapitulatif
+                Récapitulatif de votre commande
               </motion.h1>
               <motion.p 
                 style={{ color: STEALTH.textSecondary }}
                 variants={itemVariants}
               >
-                Vérifiez et choisissez votre mode de paiement
+                Vos données sont protégées et modifiables à tout moment depuis votre espace i‑wasp
               </motion.p>
             </motion.div>
 
