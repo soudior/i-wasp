@@ -14,14 +14,17 @@ import {
   ChevronUp,
   Sparkles,
   Apple,
-  Info
+  Info,
+  Wand2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
+import { IconGenerator } from "@/components/IconGenerator";
 
 interface ChecklistItem {
   id: string;
@@ -643,6 +646,38 @@ export default function AppStoreChecklist() {
             </Collapsible>
           );
         })}
+
+        {/* Icon Generator Tool */}
+        <Card className="mt-6 border-primary/20 bg-primary/5">
+          <CardHeader className="py-4">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Wand2 className="h-5 w-5 text-primary" />
+              Générateur d'icônes
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0 pb-4">
+            <p className="text-sm text-muted-foreground mb-4">
+              Uploadez une image 1024×1024 et générez automatiquement toutes les tailles requises pour iOS et Android.
+            </p>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="w-full">
+                  <Image className="h-4 w-4 mr-2" />
+                  Générer les icônes
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Wand2 className="h-5 w-5" />
+                    Générateur d'icônes App Store
+                  </DialogTitle>
+                </DialogHeader>
+                <IconGenerator />
+              </DialogContent>
+            </Dialog>
+          </CardContent>
+        </Card>
 
         {/* Quick Links */}
         <Card className="mt-6">
