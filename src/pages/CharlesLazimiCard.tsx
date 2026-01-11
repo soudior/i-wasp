@@ -414,18 +414,29 @@ END:VCARD`;
           </div>
         </div>
 
-        {/* IWASP Branding */}
-        <motion.div
+        {/* IWASP Branding - Clickable */}
+        <motion.a
+          href="https://i-wasp.com"
+          target="_blank"
+          rel="noopener noreferrer"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.1 }}
-          className="mt-6 flex justify-center"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="mt-8 flex flex-col items-center gap-1 group cursor-pointer"
         >
-          <div className="flex items-center gap-2 text-[#8E8E93] text-xs">
+          <div className="flex items-center gap-2 text-[#8E8E93] text-xs group-hover:text-[#1D1D1F] transition-colors">
             <span>Powered by</span>
-            <IWASPBrandBadge variant="light" />
+            <span className="font-semibold text-[#1D1D1F] group-hover:text-[#007AFF] transition-colors">
+              i-wasp.com
+            </span>
           </div>
-        </motion.div>
+          <div className="flex items-center gap-1.5 text-[10px] text-[#8E8E93]/70">
+            <div className="w-1 h-1 rounded-full bg-emerald-500" />
+            <span>Tap. Connect. Empower.</span>
+          </div>
+        </motion.a>
       </motion.div>
     </div>
   );
