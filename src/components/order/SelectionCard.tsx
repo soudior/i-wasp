@@ -59,11 +59,8 @@ export function SelectionCard({
     <motion.button
       onClick={handleClick}
       className={cn(
-        // Base
-        "relative w-full text-left rounded-2xl border-2 overflow-hidden",
-        "transition-all duration-200",
-        "touch-manipulation select-none",
-        "-webkit-tap-highlight-color-transparent",
+        // Use card-offer class from design system
+        "card-offer",
         
         // Size variants
         size === "compact" && "p-4",
@@ -71,9 +68,7 @@ export function SelectionCard({
         size === "large" && "p-6",
         
         // Selection state
-        isSelected
-          ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-          : "border-border bg-card hover:border-primary/50 hover:shadow-md",
+        isSelected && "card-offer-selected",
         
         className
       )}
@@ -85,15 +80,15 @@ export function SelectionCard({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center z-10"
+          className="absolute top-3 right-3 w-6 h-6 rounded-full bg-soft-gold flex items-center justify-center z-10"
         >
-          <Check size={14} className="text-primary-foreground" strokeWidth={3} />
+          <Check size={14} className="text-deep-black" strokeWidth={3} />
         </motion.div>
       )}
 
       {/* Badge */}
       {badge && (
-        <div className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold z-10">
+        <div className="badge-popular z-10">
           {badge}
         </div>
       )}
@@ -119,10 +114,10 @@ export function SelectionCard({
             size === "compact" && "w-10 h-10",
             size === "default" && "w-12 h-12",
             size === "large" && "w-14 h-14",
-            isSelected ? "bg-primary/20" : "bg-primary/10"
+            isSelected ? "bg-soft-gold/20" : "bg-anthracite-light"
           )}>
             <div className={cn(
-              "text-primary",
+              isSelected ? "text-soft-gold" : "text-soft-gray",
               size === "compact" && "[&>svg]:w-5 [&>svg]:h-5",
               size === "default" && "[&>svg]:w-6 [&>svg]:h-6",
               size === "large" && "[&>svg]:w-7 [&>svg]:h-7",
@@ -135,7 +130,7 @@ export function SelectionCard({
         {/* Text content */}
         <div className="flex-1 min-w-0">
           <h3 className={cn(
-            "font-semibold",
+            "font-semibold text-off-white",
             size === "compact" && "text-base",
             size === "default" && "text-lg",
             size === "large" && "text-xl",
@@ -144,14 +139,14 @@ export function SelectionCard({
           </h3>
           
           {subtitle && (
-            <p className="text-sm text-primary mt-0.5">
+            <p className="text-sm text-soft-gold mt-0.5">
               {subtitle}
             </p>
           )}
           
           {description && (
             <p className={cn(
-              "text-muted-foreground mt-1",
+              "text-soft-gray mt-1",
               size === "compact" && "text-xs",
               size === "default" && "text-sm",
               size === "large" && "text-sm",
