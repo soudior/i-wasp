@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { IWASPBrandBadge } from "@/components/templates/IWASPBrandBadge";
+import charlesPhoto from "@/assets/clients/charles-lazimi.jpeg";
 
 // Kompass Logo SVG Component
 const KompassLogo = ({ className = "" }: { className?: string }) => (
@@ -64,8 +64,7 @@ const profileData = {
     company: "Kompass France",
     location: "Boulogne-Billancourt, France",
     verified: true,
-    // Placeholder - replace with actual photo URL when uploaded
-    photoUrl: null as string | null
+    photoUrl: charlesPhoto
   },
   contact: {
     phone: "0621622530",
