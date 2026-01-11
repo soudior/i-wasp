@@ -22,6 +22,7 @@ import { useUserOrders } from "@/hooks/useOrders";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useSendPushNotification } from "@/hooks/usePushNotifications";
 import { usePushSubscribers } from "@/hooks/usePushSubscribers";
+import { usePushNotificationLogs, useCreatePushNotificationLog } from "@/hooks/usePushNotificationLogs";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -80,6 +81,8 @@ const Dashboard = () => {
   const updateCard = useUpdateCard();
   const deleteCard = useDeleteCard();
   const { data: pushSubscribers } = usePushSubscribers();
+  const { data: pushLogs = [] } = usePushNotificationLogs();
+  const createPushLog = useCreatePushNotificationLog();
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [walletCardId, setWalletCardId] = useState<string | null>(null);
@@ -838,6 +841,44 @@ const Dashboard = () => {
                     </div>
                   </Card>
 
+                  {/* Push notification history */}
+                  {pushLogs.length > 0 && (
+                    <Card className="bg-card border-border/50 p-6 col-span-full">
+                      <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                        <BarChart3 size={18} className="text-purple-500" />
+                        Historique des notifications
+                      </h3>
+                      <div className="space-y-3">
+                        {pushLogs.slice(0, 5).map((log) => (
+                          <div 
+                            key={log.id}
+                            className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/50"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm text-foreground truncate">{log.title}</p>
+                              <p className="text-xs text-muted-foreground truncate">{log.body}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {format(new Date(log.created_at), "dd MMM yyyy 'à' HH:mm", { locale: fr })}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2 ml-4">
+                              {log.sent_count > 0 && (
+                                <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                  {log.sent_count} ✓
+                                </Badge>
+                              )}
+                              {log.failed_count > 0 && (
+                                <Badge variant="secondary" className="text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                  {log.failed_count} ✗
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                  )}
+
                   {/* Automation */}
                   <Card className="bg-card border-border/50 p-6">
                     <div className="flex items-start gap-4">
@@ -1017,7 +1058,18 @@ const Dashboard = () => {
               disabled={!pushTitle || !pushMessage || pushSending || cards.length === 0}
               onClick={async () => {
                 if (cards.length === 0) return;
-                const result = await sendNotification(cards[0].id, pushTitle, pushMessage);
+                const cardId = cards[0].id;
+                const result = await sendNotification(cardId, pushTitle, pushMessage);
+                
+                // Log the notification
+                await createPushLog.mutateAsync({
+                  card_id: cardId,
+                  title: pushTitle,
+                  body: pushMessage,
+                  sent_count: result.sent,
+                  failed_count: result.failed,
+                });
+                
                 if (result.sent > 0) {
                   toast.success(`${result.sent} notification(s) envoyée(s) !`);
                 } else if (result.failed === 0 && result.sent === 0) {
