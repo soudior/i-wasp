@@ -1,16 +1,12 @@
 /**
  * Features Page — Fonctionnalités i-wasp
- * 
- * Palette Stealth Luxury:
- * - Noir Émeraude: #050807
- * - Argent Titane: #A5A9B4
- * - Platine: #D1D5DB
+ * Style: Haute Couture Digitale - Noir Couture unifié
  */
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ClubNavbar } from "@/components/ClubNavbar";
-import { GlobalFooter } from "@/components/GlobalFooter";
+import { CoutureNavbar } from "@/components/CoutureNavbar";
+import { CoutureFooter } from "@/components/CoutureFooter";
 import { motion } from "framer-motion";
 import { 
   Smartphone, 
@@ -27,13 +23,14 @@ import {
   CheckCircle2
 } from "lucide-react";
 
-// Stealth Luxury Colors
-const STEALTH = {
-  noir: "#050807",
-  noirElevated: "#0A0F0D",
-  titanium: "#A5A9B4",
-  platinum: "#D1D5DB",
-  emeraldGlow: "#1A2B26",
+// Noir Couture Palette — Harmonisé avec tout le site
+const NOIR_COUTURE = {
+  jet: "#0A0A0A",          // Fond principal
+  jetElevated: "#111111",  // Fond élevé
+  silk: "#F6F5F2",         // Texte principal ivoire
+  muted: "#9B9B9B",        // Texte secondaire gris cendre
+  platinum: "#7E7E7E",     // Accent platine mat
+  border: "#1A1A1A",       // Bordures subtiles
 };
 
 const features = [
@@ -96,53 +93,55 @@ const compatibility = [
 
 export default function Features() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: STEALTH.noir, color: 'white' }}>
-      <ClubNavbar />
+    <div className="min-h-screen" style={{ backgroundColor: NOIR_COUTURE.jet, color: NOIR_COUTURE.silk }}>
+      <CoutureNavbar />
       
       {/* Hero */}
       <section className="relative py-32 px-4 overflow-hidden">
-        {/* Glow effect */}
+        {/* Subtle glow effect */}
         <div 
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[200px]"
-          style={{ backgroundColor: `${STEALTH.titanium}08` }}
+          style={{ backgroundColor: `${NOIR_COUTURE.muted}08` }}
         />
         
         <div className="relative max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
           >
             <div 
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-8"
               style={{ 
-                backgroundColor: `${STEALTH.titanium}10`,
-                borderColor: `${STEALTH.titanium}30`
+                backgroundColor: `${NOIR_COUTURE.muted}08`,
+                borderColor: NOIR_COUTURE.border
               }}
             >
-              <Zap className="w-4 h-4" style={{ color: STEALTH.platinum }} />
-              <span className="text-sm font-medium" style={{ color: STEALTH.platinum }}>Fonctionnalités</span>
+              <Zap className="w-4 h-4" style={{ color: NOIR_COUTURE.muted }} />
+              <span className="text-xs uppercase tracking-[0.15em] font-light" style={{ color: NOIR_COUTURE.muted }}>
+                Fonctionnalités
+              </span>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
-              Tout ce dont vous avez besoin pour
-              <span className="block" style={{ color: STEALTH.platinum }}>impressionner</span>
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-light mb-6 tracking-tight">
+              Tout ce dont vous avez besoin
+              <span className="block italic" style={{ color: NOIR_COUTURE.muted }}>pour impressionner</span>
             </h1>
             
-            <p className="text-xl max-w-2xl mx-auto mb-10" style={{ color: `${STEALTH.titanium}99` }}>
+            <p className="text-lg md:text-xl max-w-2xl mx-auto mb-12 font-light" style={{ color: NOIR_COUTURE.muted }}>
               Une carte NFC intelligente + un profil digital puissant + des analytics en temps réel. 
-              Tout en un seul abonnement.
             </p>
             
             <Link to="/order/type">
               <Button 
                 size="lg" 
-                className="px-8 py-6 text-lg font-semibold"
+                className="px-8 py-6 text-sm uppercase tracking-[0.1em] font-medium transition-all duration-500"
                 style={{ 
-                  background: `linear-gradient(135deg, ${STEALTH.titanium}, ${STEALTH.platinum})`,
-                  color: STEALTH.noir
+                  backgroundColor: NOIR_COUTURE.silk,
+                  color: NOIR_COUTURE.jet,
                 }}
               >
-                Créer ma Carte NFC
+                Créer ma Carte
               </Button>
             </Link>
           </motion.div>
@@ -150,7 +149,7 @@ export default function Features() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-16 px-4" style={{ backgroundColor: STEALTH.noirElevated }}>
+      <section className="py-20 px-4" style={{ backgroundColor: NOIR_COUTURE.jetElevated }}>
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, i) => (
@@ -159,25 +158,24 @@ export default function Features() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="p-6 rounded-2xl border transition-all duration-200"
+                transition={{ delay: i * 0.05, duration: 0.6 }}
+                className="p-6 rounded-2xl border transition-all duration-500 group"
                 style={{ 
-                  backgroundColor: `${STEALTH.noir}80`,
-                  borderColor: feature.highlight ? `${STEALTH.titanium}40` : `${STEALTH.titanium}20`,
-                  boxShadow: feature.highlight ? `0 0 40px ${STEALTH.titanium}10` : 'none'
+                  backgroundColor: NOIR_COUTURE.jet,
+                  borderColor: feature.highlight ? `${NOIR_COUTURE.muted}40` : NOIR_COUTURE.border,
                 }}
               >
                 <div 
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all duration-500"
                   style={{ 
-                    backgroundColor: feature.highlight ? STEALTH.titanium : `${STEALTH.titanium}20`,
-                    color: feature.highlight ? STEALTH.noir : STEALTH.platinum
+                    backgroundColor: feature.highlight ? NOIR_COUTURE.silk : `${NOIR_COUTURE.muted}15`,
+                    color: feature.highlight ? NOIR_COUTURE.jet : NOIR_COUTURE.silk
                   }}
                 >
-                  <feature.icon className="w-6 h-6" />
+                  <feature.icon className="w-5 h-5" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p style={{ color: `${STEALTH.titanium}99` }}>{feature.description}</p>
+                <h3 className="text-lg font-medium mb-2 tracking-tight">{feature.title}</h3>
+                <p className="text-sm font-light leading-relaxed" style={{ color: NOIR_COUTURE.muted }}>{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -185,38 +183,38 @@ export default function Features() {
       </section>
 
       {/* Compatibility */}
-      <section className="py-16 px-4" style={{ backgroundColor: STEALTH.noir }}>
+      <section className="py-20 px-4" style={{ backgroundColor: NOIR_COUTURE.jet }}>
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
           >
-            <Globe className="w-12 h-12 mx-auto mb-6" style={{ color: STEALTH.platinum }} />
-            <h2 className="text-3xl font-bold mb-4">
+            <Globe className="w-10 h-10 mx-auto mb-6" style={{ color: NOIR_COUTURE.muted }} />
+            <h2 className="font-display text-2xl md:text-3xl font-light mb-4 tracking-tight">
               Compatible avec tous vos appareils
             </h2>
-            <p className="mb-10 max-w-xl mx-auto" style={{ color: `${STEALTH.titanium}99` }}>
-              i-Wasp fonctionne avec 100% des smartphones modernes équipés NFC. 
-              Et grâce au QR code intégré, même sans NFC, ça marche.
+            <p className="mb-12 max-w-xl mx-auto font-light" style={{ color: NOIR_COUTURE.muted }}>
+              i-wasp fonctionne avec 100% des smartphones modernes équipés NFC.
             </p>
             
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-3">
               {compatibility.map((device, i) => (
                 <motion.div 
                   key={i}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
+                  transition={{ delay: i * 0.05, duration: 0.4 }}
                   className="flex items-center gap-2 px-4 py-2 rounded-full border"
                   style={{ 
-                    backgroundColor: `${STEALTH.noirElevated}`,
-                    borderColor: `${STEALTH.titanium}30`
+                    backgroundColor: NOIR_COUTURE.jetElevated,
+                    borderColor: NOIR_COUTURE.border
                   }}
                 >
-                  <CheckCircle2 className="w-4 h-4" style={{ color: STEALTH.platinum }} />
-                  <span className="text-sm">{device.name}</span>
+                  <CheckCircle2 className="w-4 h-4" style={{ color: NOIR_COUTURE.muted }} />
+                  <span className="text-sm font-light">{device.name}</span>
                 </motion.div>
               ))}
             </div>
@@ -225,44 +223,46 @@ export default function Features() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4" style={{ backgroundColor: STEALTH.noirElevated }}>
+      <section className="py-24 px-4" style={{ backgroundColor: NOIR_COUTURE.jetElevated }}>
         <div className="max-w-3xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="p-8 md:p-12 rounded-3xl border"
+            transition={{ duration: 0.8 }}
+            className="p-10 md:p-16 rounded-3xl border"
             style={{ 
-              background: `linear-gradient(135deg, ${STEALTH.titanium}, ${STEALTH.platinum})`,
-              borderColor: `${STEALTH.platinum}40`
+              backgroundColor: NOIR_COUTURE.silk,
+              borderColor: `${NOIR_COUTURE.muted}30`
             }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: STEALTH.noir }}>
+            <h2 className="font-display text-2xl md:text-3xl font-light mb-4 tracking-tight" style={{ color: NOIR_COUTURE.jet }}>
               Prêt à moderniser votre networking ?
             </h2>
-            <p className="mb-8 max-w-xl mx-auto" style={{ color: `${STEALTH.noir}B3` }}>
+            <p className="mb-10 max-w-xl mx-auto font-light" style={{ color: NOIR_COUTURE.platinum }}>
               Rejoignez des milliers de professionnels qui ont déjà adopté la carte de visite du futur.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/order/type">
                 <Button 
                   size="lg" 
-                  className="font-semibold px-8"
+                  className="font-medium px-8 text-sm uppercase tracking-[0.1em]"
                   style={{ 
-                    backgroundColor: STEALTH.noir,
-                    color: 'white'
+                    backgroundColor: NOIR_COUTURE.jet,
+                    color: NOIR_COUTURE.silk
                   }}
                 >
-                  Créer ma Carte NFC
+                  Créer ma Carte
                 </Button>
               </Link>
               <Link to="/pricing">
                 <Button 
                   variant="outline" 
                   size="lg"
+                  className="text-sm uppercase tracking-[0.1em]"
                   style={{ 
-                    borderColor: `${STEALTH.noir}40`,
-                    color: STEALTH.noir
+                    borderColor: NOIR_COUTURE.jet,
+                    color: NOIR_COUTURE.jet
                   }}
                 >
                   Voir les tarifs
@@ -273,7 +273,7 @@ export default function Features() {
         </div>
       </section>
       
-      <GlobalFooter variant="dark" />
+      <CoutureFooter />
     </div>
   );
 }
