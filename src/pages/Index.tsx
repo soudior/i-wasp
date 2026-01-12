@@ -166,14 +166,18 @@ const Index = () => {
         className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
         style={{ backgroundColor: STEALTH.noir }}
       >
-        {/* Ambient effects */}
+        {/* Ambient cyan halos */}
         <div 
-          className="absolute top-0 left-1/4 w-[800px] h-[800px] rounded-full blur-[200px]"
-          style={{ backgroundColor: `${STEALTH.titanium}08` }}
+          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full blur-[150px] opacity-20"
+          style={{ backgroundColor: STEALTH.accent }}
         />
         <div 
-          className="absolute bottom-0 right-1/4 w-[600px] h-[600px] rounded-full blur-[180px]"
-          style={{ backgroundColor: `${STEALTH.emeraldGlow}30` }}
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full blur-[180px] opacity-15"
+          style={{ backgroundColor: STEALTH.accent }}
+        />
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full blur-[200px] opacity-10"
+          style={{ backgroundColor: STEALTH.accent }}
         />
         
         <div className="relative z-10 container mx-auto px-4 sm:px-6 py-12 sm:py-16">
@@ -422,10 +426,15 @@ const Index = () => {
           SECTION 2: COMMENT ÇA MARCHE — 3 étapes
           ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="py-24 overflow-hidden"
+        className="py-24 overflow-hidden relative"
         style={{ backgroundColor: STEALTH.noirElevated }}
       >
-        <div className="container mx-auto px-6">
+        {/* Subtle cyan halo */}
+        <div 
+          className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[200px] opacity-10"
+          style={{ backgroundColor: STEALTH.accent }}
+        />
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -488,10 +497,15 @@ const Index = () => {
           SECTION 3: POUR QUI — Audiences cibles
           ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="py-24 overflow-hidden"
+        className="py-24 overflow-hidden relative"
         style={{ backgroundColor: STEALTH.noir }}
       >
-        <div className="container mx-auto px-6">
+        {/* Subtle cyan halo */}
+        <div 
+          className="absolute bottom-0 left-1/4 w-[600px] h-[600px] rounded-full blur-[200px] opacity-15"
+          style={{ backgroundColor: STEALTH.accent }}
+        />
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -541,10 +555,15 @@ const Index = () => {
           SECTION 4: MACHINE À LEADS — Capture de contacts
           ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="py-24 overflow-hidden"
+        className="py-24 overflow-hidden relative"
         style={{ backgroundColor: STEALTH.noirElevated }}
       >
-        <div className="container mx-auto px-6">
+        {/* Subtle cyan halo */}
+        <div 
+          className="absolute top-1/2 left-0 w-[400px] h-[400px] rounded-full blur-[180px] opacity-10 -translate-y-1/2"
+          style={{ backgroundColor: STEALTH.accent }}
+        />
+        <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -609,10 +628,19 @@ const Index = () => {
           SECTION 5: OFFRES TEASER — Choisissez votre expérience
           ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="py-24 overflow-hidden"
+        className="py-24 overflow-hidden relative"
         style={{ backgroundColor: STEALTH.noir }}
       >
-        <div className="container mx-auto px-6">
+        {/* Multiple subtle cyan halos */}
+        <div 
+          className="absolute top-1/4 right-0 w-[500px] h-[500px] rounded-full blur-[180px] opacity-15"
+          style={{ backgroundColor: STEALTH.accent }}
+        />
+        <div 
+          className="absolute bottom-0 left-1/3 w-[400px] h-[400px] rounded-full blur-[200px] opacity-10"
+          style={{ backgroundColor: STEALTH.accent }}
+        />
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -715,10 +743,15 @@ const Index = () => {
           SECTION 6: FAQ — Questions fréquentes
           ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="py-24 overflow-hidden"
+        className="py-24 overflow-hidden relative"
         style={{ backgroundColor: STEALTH.noirElevated }}
       >
-        <div className="container mx-auto px-6">
+        {/* Subtle cyan halo */}
+        <div 
+          className="absolute top-1/3 right-1/4 w-[450px] h-[450px] rounded-full blur-[180px] opacity-12"
+          style={{ backgroundColor: STEALTH.accent }}
+        />
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -783,10 +816,15 @@ const Index = () => {
           SECTION 7: CTA FINAL
           ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="py-24 overflow-hidden"
+        className="py-24 overflow-hidden relative"
         style={{ backgroundColor: STEALTH.noir }}
       >
-        <div className="container mx-auto px-6">
+        {/* Centered cyan halo */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[200px] opacity-15"
+          style={{ backgroundColor: STEALTH.accent }}
+        />
+        <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
