@@ -53,97 +53,71 @@ export default function HomeLuxeMax() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: COUTURE.silk }}>
-      <CoutureNavbar />
-
+      
       {/* ═══════════════════════════════════════════════════════════════════
-          HERO - Ivoire avec texture, minimaliste
-      ═══════════════════════════════════════════════════════════════════ */}
-      <section className="min-h-[50vh] flex items-end justify-center px-8 pt-32 pb-8 relative overflow-hidden">
-        <HoneycombTexture />
-        
-        <motion.div 
-          className="text-center relative z-10"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2 }}
-        >
-          <span 
-            className="text-[10px] uppercase tracking-[0.4em] mb-6 block font-light"
-            style={{ color: COUTURE.textMuted }}
-          >
-            Maison d'identité digitale
-          </span>
-        </motion.div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          HERO NOIR - Section principale avec headline
+          HERO NOIR — Full-screen, silent, authoritative
+          First impression: entering a luxury fashion maison
       ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="min-h-[70vh] flex items-center justify-center px-8 py-24 relative overflow-hidden"
+        className="h-screen flex flex-col items-center justify-center px-8 relative overflow-hidden"
         style={{ backgroundColor: COUTURE.jet }}
       >
-        <HoneycombTexture dark />
+        {/* Honeycomb texture — tone-on-tone, barely visible */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.4' stroke-opacity='0.035'/%3E%3C/svg%3E")`,
+            backgroundSize: '56px 100px',
+          }}
+        />
         
+        {/* Navbar overlay — absolute positioned */}
+        <div className="absolute top-0 left-0 right-0 z-20">
+          <CoutureNavbar />
+        </div>
+        
+        {/* Central content — one idea, silence, authority */}
         <motion.div 
-          className="text-center max-w-[700px] relative z-10"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.2 }}
+          className="text-center relative z-10 max-w-[800px]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2, ease: "easeOut" }}
         >
           <h1 
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-[1.1] tracking-tight mb-10 italic"
-            style={{ color: COUTURE.gold }}
+            className="font-display text-3xl md:text-4xl lg:text-5xl font-light leading-[1.2] tracking-tight italic"
+            style={{ color: COUTURE.silk }}
           >
-            La carte des décideurs.
+            L'identité digitale,
+            <br />
+            <span style={{ color: COUTURE.gold }}>élevée au rang d'art.</span>
           </h1>
-          
-          <p 
-            className="text-lg md:text-xl font-light leading-relaxed max-w-[480px] mx-auto mb-14"
-            style={{ color: COUTURE.textMuted }}
+        </motion.div>
+        
+        {/* Single discreet CTA — bottom center */}
+        <motion.div 
+          className="absolute bottom-16 left-0 right-0 flex justify-center z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 1.5 }}
+        >
+          <Link 
+            to="/order/offre"
+            className="text-[11px] uppercase tracking-[0.25em] font-light transition-all duration-700 pb-1"
+            style={{ 
+              color: COUTURE.textMuted,
+              borderBottom: `1px solid ${COUTURE.textMuted}40`,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = COUTURE.gold;
+              e.currentTarget.style.borderBottomColor = COUTURE.gold;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = COUTURE.textMuted;
+              e.currentTarget.style.borderBottomColor = `${COUTURE.textMuted}40`;
+            }}
           >
-            Votre réseau mérite mieux qu'un bout de papier.
-          </p>
-          
-          <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 1 }}
-          >
-            <Link to="/order/offre">
-              <button
-                className="group px-10 py-4 text-sm uppercase tracking-[0.15em] font-medium transition-all duration-500 flex items-center gap-3"
-                style={{ 
-                  backgroundColor: `${COUTURE.gold}15`,
-                  border: `1px solid ${COUTURE.gold}40`,
-                  color: COUTURE.gold,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = `${COUTURE.gold}25`;
-                  e.currentTarget.style.borderColor = COUTURE.gold;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = `${COUTURE.gold}15`;
-                  e.currentTarget.style.borderColor = `${COUTURE.gold}40`;
-                }}
-              >
-                Créer mon profil
-                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </button>
-            </Link>
-            
-            <Link 
-              to="/demo"
-              className="flex items-center gap-2 text-sm uppercase tracking-[0.1em] font-light transition-colors duration-400"
-              style={{ color: COUTURE.textMuted }}
-              onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.silk}
-              onMouseLeave={(e) => e.currentTarget.style.color = COUTURE.textMuted}
-            >
-              <Play className="w-3.5 h-3.5" />
-              Voir la démo
-            </Link>
-          </motion.div>
+            Découvrir
+          </Link>
         </motion.div>
       </section>
 
