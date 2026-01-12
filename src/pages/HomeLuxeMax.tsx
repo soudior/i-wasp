@@ -128,13 +128,25 @@ export default function HomeLuxeMax() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
           className="relative"
+          style={{ perspective: "1000px" }}
         >
-          <img 
+          <motion.img 
             src={cardFront} 
             alt="Carte i-wasp" 
-            className="w-[280px] md:w-[360px] lg:w-[420px] h-auto drop-shadow-2xl"
+            className="w-[280px] md:w-[360px] lg:w-[420px] h-auto cursor-pointer"
             style={{
               filter: "drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5))",
+              transformStyle: "preserve-3d",
+            }}
+            whileHover={{ 
+              rotateY: 8,
+              rotateX: -5,
+              scale: 1.02,
+              filter: "drop-shadow(0 35px 60px rgba(0, 0, 0, 0.6))",
+            }}
+            transition={{ 
+              duration: 0.6, 
+              ease: [0.22, 1, 0.36, 1] 
             }}
           />
         </motion.div>
