@@ -29,10 +29,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, Suspense, lazy } from "react";
 import { Navbar } from "@/components/Navbar";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { useAuth } from "@/contexts/AuthContext";
+
+// Lazy load the 3D animation for performance
+const NFCAnimation3D = lazy(() => import("@/components/NFCAnimation3D"));
 
 // Comment ça marche - 3 étapes simples
 const howItWorks = [
@@ -208,34 +211,35 @@ const Index = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          DEMO VISUELLE — Montrer comment ça marche
+          DEMO VISUELLE — Animation 3D du tap NFC
           ═══════════════════════════════════════════════════════════════════ */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 bg-muted/30">
         <div className="max-w-5xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             
-            {/* Visuel de la carte - Responsive */}
+            {/* Animation 3D du tap NFC */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               className="relative order-2 lg:order-1"
             >
-              {/* Carte NFC simulée - Taille responsive */}
-              <div className="relative mx-auto w-64 sm:w-72 h-40 sm:h-44 rounded-2xl bg-gradient-to-br from-foreground to-foreground/80 shadow-2xl p-5 sm:p-6 text-background">
-                <div className="flex items-center justify-between mb-6 sm:mb-8">
-                  <span className="text-base sm:text-lg font-semibold">i-wasp</span>
-                  <Wifi className="w-5 h-5 sm:w-6 sm:h-6 opacity-60" />
+              <div className="relative mx-auto w-full max-w-[320px] sm:max-w-[380px] aspect-square rounded-3xl overflow-hidden bg-gradient-to-b from-background to-muted/50 shadow-xl">
+                <Suspense 
+                  fallback={
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-2xl bg-muted animate-pulse" />
+                    </div>
+                  }
+                >
+                  <NFCAnimation3D className="w-full h-full" />
+                </Suspense>
+                
+                {/* Badge indicatif */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-foreground/90 text-background px-4 py-2 rounded-full text-xs sm:text-sm font-medium shadow-lg backdrop-blur-sm flex items-center gap-2">
+                  <Wifi className="w-4 h-4" />
+                  <span>Tap NFC en action</span>
                 </div>
-                <div className="absolute bottom-5 sm:bottom-6 left-5 sm:left-6 right-5 sm:right-6">
-                  <div className="text-[11px] sm:text-xs opacity-60 mb-1">Votre nom ici</div>
-                  <div className="text-[13px] sm:text-sm font-medium">CEO · Votre Entreprise</div>
-                </div>
-              </div>
-              
-              {/* Badge NFC - Responsive position */}
-              <div className="absolute -right-2 sm:-right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-medium shadow-lg">
-                NFC intégré
               </div>
             </motion.div>
             
