@@ -37,6 +37,7 @@ import {
   Package
 } from "lucide-react";
 import { toast } from "sonner";
+import { HoneycombBackground } from "@/components/HoneycombBackground";
 
 // Import card images
 import cardBlackMatte from "@/assets/cards/card-black-matte.png";
@@ -802,7 +803,10 @@ export default function OrderFunnel() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Haute Couture Honeycomb Background */}
+      <HoneycombBackground opacity={0.03} showDots />
+      
       <Navbar />
 
       <main className="pt-24 pb-32">

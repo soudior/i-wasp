@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, MeshDistortMaterial } from "@react-three/drei";
 import * as THREE from "three";
+import { HoneycombBackground } from "@/components/HoneycombBackground";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // 3D COMPONENTS - Minimal, refined
@@ -227,7 +228,10 @@ export default function HomeLuxeMax() {
   ];
 
   return (
-    <div className="min-h-screen bg-luxe-void">
+    <div className="min-h-screen bg-luxe-void relative">
+      {/* Haute Couture Honeycomb Background */}
+      <HoneycombBackground opacity={0.04} showDots />
+      
       <LuxeNavbar />
 
       {/* ═══════════════════════════════════════════════════════════════════
