@@ -21,8 +21,8 @@ export default {
       },
       colors: {
         /* ═══════════════════════════════════════════════════════════════
-           i-WASP DESIGN SYSTEM — DEEP BLACK & SOFT GOLD
-           Ultra-Luxe Premium — Inspiré V1CE, Cardynale
+           i-WASP DESIGN SYSTEM — LUXE MAX
+           Ultra-Luxe Premium — Blue Night & Cyan
            ═══════════════════════════════════════════════════════════════ */
         
         /* Semantic tokens */
@@ -78,73 +78,66 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE ULTRA-LUXE — DEEP BLACK & SOFT GOLD
+           PALETTE LUXE MAX — Blue Night & Cyan
            ══════════════════════════════════════════════════════════════ */
         iwasp: {
-          /* Deep Black Luxury */
-          midnight: "#050608",               /* Noir très profond */
-          "midnight-elevated": "#15181D",    /* Anthracite cartes */
-          "midnight-surface": "#1A1E25",     /* Surface élevée */
-          cream: "#FFFFFF",                  /* Blanc pur */
+          /* Blue Night Luxury */
+          midnight: "#020819",               /* Blue night fond */
+          "midnight-elevated": "#0A1020",    /* Surface élevée */
+          "midnight-surface": "#0F1628",     /* Cards */
+          cream: "#E8ECF4",                  /* Off-white */
+          white: "#F0F4FA",                  /* Near white */
           
-          /* Soft Gold Accent */
-          gold: "#D1A75B",                   /* Or doux principal */
-          "gold-light": "#E4C88A",           /* Or clair */
-          "gold-glow": "#A98B4A",            /* Or profond */
-          copper: "#C68B5F",                 /* Cuivre alternatif */
+          /* Cyan Accent */
+          cyan: "#4DF3FF",                   /* Cyan principal */
+          "cyan-light": "#7DF7FF",           /* Cyan clair */
+          "cyan-glow": "#2ED3E0",            /* Cyan profond */
+          blue: "#4A7BFF",                   /* Bleu électrique */
           
           /* Text hierarchy */
-          silver: "#9CA3AF",                 /* Texte secondaire 65% */
-          muted: "#6B7280",                  /* Texte tertiaire */
+          silver: "#8A9AB4",                 /* Texte secondaire */
+          muted: "#5A6A84",                  /* Texte tertiaire */
           
-          /* Legacy compatibility */
-          bronze: "#D1A75B",
-          "bronze-light": "#E4C88A",
-          titanium: "#9CA3AF",
-          platinum: "#D1D5DB",
-          emerald: "#1A1E25",
-          "emerald-glow": "#2D3748",
+          /* Legacy compatibility - mapped to new palette */
+          bronze: "#4DF3FF",
+          "bronze-light": "#7DF7FF",
+          titanium: "#8A9AB4",
+          platinum: "#E8ECF4",
+          emerald: "#0F1628",
+          "emerald-glow": "#1A2030",
+          gold: "#4DF3FF",
+          "gold-light": "#7DF7FF",
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE DIGITAL CONCIERGE — Bleu Nuit & Cyan Néon
-           ══════════════════════════════════════════════════════════════ */
-        concierge: {
-          night: "#020819",                   /* Bleu nuit fond */
-          purple: "#181528",                  /* Violet profond secondaire */
-          surface: "#0A1628",                 /* Surface élevée */
-          cyan: "#4DF3FF",                    /* Cyan néon principal */
-          blue: "#4A7BFF",                    /* Bleu électrique */
-          "cyan-glow": "#2EE3EE",             /* Cyan sombre */
-          "blue-glow": "#3366E6",             /* Bleu profond */
-        },
-        
-        /* ══════════════════════════════════════════════════════════════
-           PALETTE LUXE MAX — Désaturé, Sophistiqué
+           PALETTE LUXE MAX — Direct Access
            ══════════════════════════════════════════════════════════════ */
         luxe: {
-          void: "#040609",                    /* Near-black with blue undertone */
-          deep: "#0A0D14",                    /* Elevated surface */
-          surface: "#121620",                 /* Cards and panels */
+          void: "#020819",                    /* Blue night fond */
+          deep: "#0A1020",                    /* Elevated surface */
+          surface: "#0F1628",                 /* Cards and panels */
           glow: "#1A2030",                    /* Subtle highlight */
-          cyan: "#7DD3E8",                    /* Desaturated cyan */
-          blue: "#6B8FD4",                    /* Soft blue accent */
-          silver: "#8A919C",                  /* Secondary text */
-          mist: "#C4CAD4",                    /* Primary text */
-          white: "#F0F2F5",                   /* Headlines */
+          cyan: "#4DF3FF",                    /* Primary accent */
+          "cyan-light": "#7DF7FF",            /* Light accent */
+          "cyan-dark": "#2ED3E0",             /* Dark accent */
+          blue: "#4A7BFF",                    /* Blue alt */
+          silver: "#8A9AB4",                  /* Secondary text */
+          mist: "#5A6A84",                    /* Muted text */
+          white: "#E8ECF4",                   /* Primary text */
+          pure: "#F0F4FA",                    /* Headlines */
         },
         
         /* ══════════════════════════════════════════════════════════════
            PALETTE CARTE NFC — Ultra-Luxe
            ══════════════════════════════════════════════════════════════ */
         carte: {
-          recto: "#050608",                  /* Deep black base */
-          verso: "#15181D",                  /* Anthracite surface */
-          texture: "#1A1E25",                /* Texture subtile */
-          logo: "#FFFFFF",                   /* Logo blanc */
-          texte: "#FFFFFF",                  /* Texte blanc */
-          secondaire: "#9CA3AF",             /* Texte secondaire */
-          accent: "#D1A75B",                 /* Or doux accent */
+          recto: "#020819",                  /* Blue night base */
+          verso: "#0A1020",                  /* Elevated surface */
+          texture: "#0F1628",                /* Texture subtile */
+          logo: "#E8ECF4",                   /* Logo off-white */
+          texte: "#E8ECF4",                  /* Texte off-white */
+          secondaire: "#8A9AB4",             /* Texte secondaire */
+          accent: "#4DF3FF",                 /* Cyan accent */
         },
       },
       borderRadius: {
