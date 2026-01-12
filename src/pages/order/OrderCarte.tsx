@@ -32,19 +32,92 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 // Import official i-Wasp logo for back preview
 import iwaspLogo from "@/assets/iwasp-logo.png";
 
-// Card material options based on client type
+// Premium card material definitions with marketing copy
+interface CardMaterial {
+  id: string;
+  label: string;
+  tagline: string;
+  description: string;
+  price: number;
+  badge?: string;
+  features: string[];
+}
+
+const PREMIUM_MATERIALS: Record<string, CardMaterial> = {
+  "pvc-soft-touch": {
+    id: "pvc-soft-touch",
+    label: "Luxe Soft-Touch",
+    tagline: "La discrétion haut de gamme",
+    description: "Carte PVC soft-touch noir profond + profil numérique complet i-Wasp, idéale pour les marques haut de gamme qui aiment la discrétion.",
+    price: 0,
+    features: ["PVC soft-touch noir", "Finition veloutée", "Logo doré ou vernis sélectif"],
+  },
+  "metal-noir": {
+    id: "metal-noir",
+    label: "Signature Métal",
+    tagline: "L'excellence gravée",
+    description: "Carte métal NFC noir mat gravée + profil digital complet i-Wasp. Pensée pour les décideurs qui veulent une présence physique et digitale irréprochable.",
+    price: 150,
+    badge: "Premium",
+    features: ["Métal noir mat", "Gravure laser or/argent", "Finition ultra-premium"],
+  },
+  "bois-eco-luxe": {
+    id: "bois-eco-luxe",
+    label: "Éco-Luxe Bois",
+    tagline: "L'élégance responsable",
+    description: "Carte bois foncé gravée pour une option éco-luxe. L'alliance parfaite entre raffinement et responsabilité environnementale.",
+    price: 120,
+    badge: "Éco",
+    features: ["Bois foncé naturel", "Gravure laser", "Finition éco-responsable"],
+  },
+  "metal-gold": {
+    id: "metal-gold",
+    label: "Prestige Or",
+    tagline: "L'ultime expression du luxe",
+    description: "Carte métal avec finition or 24 carats. L'édition la plus exclusive pour ceux qui n'acceptent que l'excellence absolue.",
+    price: 300,
+    badge: "Exclusive",
+    features: ["Métal premium", "Finition or 24 carats", "Édition limitée"],
+  },
+};
+
+// Card materials by client type with marketing positioning
 const CARD_MATERIALS = {
   particulier: [
-    { id: "pvc", label: "PVC Premium", description: "Carte résistante et élégante", price: 0 },
+    PREMIUM_MATERIALS["pvc-soft-touch"],
   ],
   independant: [
-    { id: "pvc", label: "PVC Premium", description: "Carte résistante et élégante", price: 0 },
-    { id: "metal", label: "Métal brossé", description: "Finition haut de gamme", price: 50, badge: "Pro" },
+    PREMIUM_MATERIALS["pvc-soft-touch"],
+    PREMIUM_MATERIALS["metal-noir"],
+    PREMIUM_MATERIALS["bois-eco-luxe"],
   ],
   entreprise: [
-    { id: "pvc", label: "PVC Premium", description: "Carte résistante et élégante", price: 0 },
-    { id: "metal", label: "Métal brossé", description: "Finition haut de gamme", price: 50, badge: "Pro" },
-    { id: "metal-gold", label: "Métal doré", description: "Edition prestige", price: 100, badge: "Luxe" },
+    PREMIUM_MATERIALS["pvc-soft-touch"],
+    PREMIUM_MATERIALS["metal-noir"],
+    PREMIUM_MATERIALS["bois-eco-luxe"],
+    PREMIUM_MATERIALS["metal-gold"],
+  ],
+};
+
+// Pack definitions for B2B
+const PACK_OPTIONS = {
+  particulier: [
+    { qty: 1, label: "1 carte", pricePerCard: 0 },
+    { qty: 2, label: "2 cartes", pricePerCard: 0, discount: "-10%" },
+    { qty: 3, label: "3 cartes", pricePerCard: 0, discount: "-15%" },
+  ],
+  independant: [
+    { qty: 1, label: "1 carte", pricePerCard: 0 },
+    { qty: 5, label: "Pack Pro 5", pricePerCard: 0, discount: "-15%", badge: "Pro" },
+    { qty: 10, label: "Pack Pro 10", pricePerCard: 0, discount: "-20%", badge: "Pro" },
+    { qty: 25, label: "Pack Pro 25", pricePerCard: 0, discount: "-25%", badge: "Best" },
+  ],
+  entreprise: [
+    { qty: 10, label: "Équipe 10", pricePerCard: 0, badge: "Start" },
+    { qty: 25, label: "Équipe 25", pricePerCard: 0, discount: "-15%", badge: "Pro" },
+    { qty: 50, label: "Équipe 50", pricePerCard: 0, discount: "-25%", badge: "Best" },
+    { qty: 100, label: "Prestige 100", pricePerCard: 0, discount: "-35%", badge: "Elite" },
+    { qty: 250, label: "Enterprise 250+", pricePerCard: 0, discount: "-40%", badge: "VIP" },
   ],
 };
 
@@ -203,19 +276,19 @@ function OrderCarteContent() {
                   onChange={setCardDesign}
                 />
 
-                {/* Material Selection - B2B options */}
+                {/* Premium Material Selection */}
                 {cardMaterials.length > 1 && (
                   <div 
-                    className="rounded-2xl p-4"
+                    className="rounded-2xl p-5"
                     style={{ 
                       backgroundColor: STEALTH.bgCard,
                       border: `1px solid ${STEALTH.border}`
                     }}
                   >
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2 mb-4">
                       <Layers className="w-4 h-4" style={{ color: STEALTH.accent }} />
                       <span className="text-sm font-semibold" style={{ color: STEALTH.text }}>
-                        Matériau
+                        Choisissez votre finition
                       </span>
                       <span 
                         className="ml-auto text-xs px-2 py-0.5 rounded-full"
@@ -224,59 +297,96 @@ function OrderCarteContent() {
                           color: STEALTH.accent 
                         }}
                       >
-                        {clientType === "entreprise" ? "Options B2B" : "Options Pro"}
+                        {clientType === "entreprise" ? "Collection B2B" : "Collection Pro"}
                       </span>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {cardMaterials.map((material) => {
                         const isSelected = selectedMaterial === material.id;
                         return (
                           <button
                             key={material.id}
                             onClick={() => setSelectedMaterial(material.id)}
-                            className="w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left"
+                            className="w-full p-4 rounded-xl border-2 transition-all text-left group"
                             style={{
                               borderColor: isSelected ? STEALTH.accent : STEALTH.border,
                               backgroundColor: isSelected ? STEALTH.accentMuted : 'transparent',
+                              boxShadow: isSelected ? `0 0 20px ${STEALTH.accent}20` : 'none',
                             }}
                           >
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <span 
-                                  className="text-sm font-medium"
-                                  style={{ color: STEALTH.text }}
-                                >
-                                  {material.label}
-                                </span>
-                                {material.badge && (
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 space-y-1.5">
+                                <div className="flex items-center gap-2 flex-wrap">
                                   <span 
-                                    className="text-[10px] px-1.5 py-0.5 rounded-full"
+                                    className="font-semibold"
+                                    style={{ color: isSelected ? STEALTH.accent : STEALTH.text }}
+                                  >
+                                    {material.label}
+                                  </span>
+                                  {material.badge && (
+                                    <span 
+                                      className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                                      style={{ 
+                                        backgroundColor: material.badge === "Exclusive" ? "#C68B5F" : STEALTH.accent, 
+                                        color: STEALTH.bg 
+                                      }}
+                                    >
+                                      {material.badge}
+                                    </span>
+                                  )}
+                                </div>
+                                <p 
+                                  className="text-xs italic"
+                                  style={{ color: STEALTH.accent }}
+                                >
+                                  "{material.tagline}"
+                                </p>
+                                <p 
+                                  className="text-xs leading-relaxed"
+                                  style={{ color: STEALTH.textSecondary }}
+                                >
+                                  {material.description}
+                                </p>
+                                {/* Features */}
+                                <div className="flex flex-wrap gap-1 pt-1">
+                                  {material.features.map((feature, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="text-[10px] px-2 py-0.5 rounded-full"
+                                      style={{
+                                        backgroundColor: `${STEALTH.border}50`,
+                                        color: STEALTH.textSecondary,
+                                      }}
+                                    >
+                                      {feature}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="text-right flex flex-col items-end gap-2">
+                                {material.price === 0 ? (
+                                  <span 
+                                    className="text-xs font-medium px-2 py-1 rounded-lg"
                                     style={{ 
-                                      backgroundColor: STEALTH.accent, 
-                                      color: STEALTH.bg 
+                                      backgroundColor: `${STEALTH.success}20`,
+                                      color: STEALTH.success 
                                     }}
                                   >
-                                    {material.badge}
+                                    Inclus
+                                  </span>
+                                ) : (
+                                  <span 
+                                    className="text-sm font-bold"
+                                    style={{ color: STEALTH.accent }}
+                                  >
+                                    +{material.price} MAD
                                   </span>
                                 )}
+                                {isSelected && (
+                                  <CheckCircle2 className="w-5 h-5" style={{ color: STEALTH.accent }} />
+                                )}
                               </div>
-                              <span 
-                                className="text-xs"
-                                style={{ color: STEALTH.textSecondary }}
-                              >
-                                {material.description}
-                              </span>
                             </div>
-                            <div className="text-right">
-                              {material.price === 0 ? (
-                                <span className="text-xs" style={{ color: STEALTH.textSecondary }}>Inclus</span>
-                              ) : (
-                                <span className="text-xs" style={{ color: STEALTH.accent }}>+{material.price} MAD</span>
-                              )}
-                            </div>
-                            {isSelected && (
-                              <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: STEALTH.accent }} />
-                            )}
                           </button>
                         );
                       })}
@@ -284,56 +394,97 @@ function OrderCarteContent() {
                   </div>
                 )}
 
-                {/* Quantity Selection - B2B options */}
+                {/* Pack/Quantity Selection with B2B badges */}
                 {quantityOptions.length > 3 && (
                   <div 
-                    className="rounded-2xl p-4"
+                    className="rounded-2xl p-5"
                     style={{ 
                       backgroundColor: STEALTH.bgCard,
                       border: `1px solid ${STEALTH.border}`
                     }}
                   >
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2 mb-4">
                       <Package className="w-4 h-4" style={{ color: STEALTH.accent }} />
                       <span className="text-sm font-semibold" style={{ color: STEALTH.text }}>
-                        Quantité
+                        {clientType === "entreprise" ? "Pack Équipe Prestige" : "Quantité"}
                       </span>
+                      {clientType === "entreprise" && (
+                        <span 
+                          className="ml-auto text-xs px-2 py-0.5 rounded-full"
+                          style={{ 
+                            backgroundColor: STEALTH.accentMuted, 
+                            color: STEALTH.accent 
+                          }}
+                        >
+                          + Dashboard Manager inclus
+                        </span>
+                      )}
                     </div>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                      {quantityOptions.map((qty) => {
-                        const isSelected = selectedQuantity === qty;
+                    <p 
+                      className="text-xs mb-3"
+                      style={{ color: STEALTH.textSecondary }}
+                    >
+                      {clientType === "entreprise" 
+                        ? "Pack de cartes premium coordonnées pour votre équipe + Dashboard Manager pour suivre l'utilisation et les contacts générés."
+                        : "Sélectionnez la quantité souhaitée"}
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {PACK_OPTIONS[clientType].map((pack) => {
+                        const isSelected = selectedQuantity === pack.qty;
                         return (
                           <button
-                            key={qty}
-                            onClick={() => setSelectedQuantity(qty)}
-                            className="p-3 rounded-xl border-2 transition-all text-center"
+                            key={pack.qty}
+                            onClick={() => setSelectedQuantity(pack.qty)}
+                            className="p-3 rounded-xl border-2 transition-all text-center relative"
                             style={{
                               borderColor: isSelected ? STEALTH.accent : STEALTH.border,
                               backgroundColor: isSelected ? STEALTH.accentMuted : 'transparent',
                             }}
                           >
+                            {pack.badge && (
+                              <span 
+                                className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] px-2 py-0.5 rounded-full font-medium"
+                                style={{ 
+                                  backgroundColor: pack.badge === "Best" || pack.badge === "VIP" ? STEALTH.accent : STEALTH.border, 
+                                  color: pack.badge === "Best" || pack.badge === "VIP" ? STEALTH.bg : STEALTH.text 
+                                }}
+                              >
+                                {pack.badge}
+                              </span>
+                            )}
                             <span 
-                              className="text-lg font-bold"
+                              className="text-lg font-bold block"
                               style={{ color: isSelected ? STEALTH.accent : STEALTH.text }}
                             >
-                              {qty}
+                              {pack.qty}
                             </span>
                             <span 
-                              className="block text-[10px]"
+                              className="text-[10px] block"
                               style={{ color: STEALTH.textSecondary }}
                             >
-                              carte{qty > 1 ? 's' : ''}
+                              {pack.label}
                             </span>
+                            {pack.discount && (
+                              <span 
+                                className="text-[10px] font-medium"
+                                style={{ color: STEALTH.success }}
+                              >
+                                {pack.discount}
+                              </span>
+                            )}
                           </button>
                         );
                       })}
                     </div>
                     {selectedQuantity >= 25 && (
                       <p 
-                        className="text-xs mt-2 text-center"
-                        style={{ color: STEALTH.success }}
+                        className="text-xs mt-3 text-center p-2 rounded-lg"
+                        style={{ 
+                          backgroundColor: `${STEALTH.success}15`,
+                          color: STEALTH.success 
+                        }}
                       >
-                        💰 Tarif dégressif appliqué pour {selectedQuantity}+ cartes
+                        ✨ Tarif dégressif appliqué • Dashboard Manager offert
                       </p>
                     )}
                   </div>
