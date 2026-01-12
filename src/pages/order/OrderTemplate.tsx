@@ -2,90 +2,49 @@
  * Step 2: Choix du template
  * /order/template
  * 
- * Sélection du template de profil digital
- * Style Luxe Max
+ * Style: Haute Couture Digitale — Noir, minimaliste, silencieux
  */
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
-import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from "@/components/order";
-import { Navbar } from "@/components/Navbar";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { STEALTH } from "@/lib/stealthPalette";
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  Check,
-  Sparkles,
-  User,
-  Building2,
-  Briefcase,
-  Crown,
-  Hotel,
-  Star,
-  Palette
-} from "lucide-react";
+import { Check, ArrowLeft } from "lucide-react";
+import { COUTURE } from "@/lib/hauteCouturePalette";
 
-// Template options
 interface TemplateOption {
   id: string;
   name: string;
   description: string;
-  icon: React.ElementType;
-  preview: string; // Color for preview
-  badge?: string;
-  forOffers?: string[]; // Restrict to certain offers
+  preview: string;
+  isSignature?: boolean;
 }
 
 const templates: TemplateOption[] = [
   {
     id: "signature",
     name: "Signature",
-    description: "Élégant et minimaliste, parfait pour les professionnels",
-    icon: User,
+    description: "Élégant et minimaliste",
     preview: "#1a1a2e",
   },
   {
     id: "dark-luxury",
     name: "Dark Luxury",
-    description: "Fond sombre premium avec accents dorés",
-    icon: Crown,
+    description: "Noir premium, accents dorés",
     preview: "#0d0d0d",
-    badge: "Populaire",
+    isSignature: true,
   },
   {
     id: "executive",
     name: "Executive",
-    description: "Design corporate pour les dirigeants et entreprises",
-    icon: Briefcase,
+    description: "Design corporate",
     preview: "#1e3a5f",
   },
   {
     id: "boutique",
     name: "Boutique",
-    description: "Idéal pour les commerces et artisans",
-    icon: Building2,
+    description: "Commerces et artisans",
     preview: "#2d3436",
-  },
-  {
-    id: "hotel-concierge",
-    name: "Hôtel & Concierge",
-    description: "Pour l'hôtellerie et les services VIP",
-    icon: Hotel,
-    preview: "#1a1a2e",
-    forOffers: ["signature", "alliance"],
-  },
-  {
-    id: "ultra-luxe",
-    name: "Ultra Luxe",
-    description: "Le summum du raffinement digital",
-    icon: Sparkles,
-    preview: "#050505",
-    badge: "Premium",
-    forOffers: ["alliance"],
   },
 ];
 
@@ -93,13 +52,7 @@ function OrderTemplateContent() {
   const navigate = useNavigate();
   const { state, setSelectedTemplate, nextStep, prevStep } = useOrderFunnel();
   const [isNavigating, setIsNavigating] = useState(false);
-  const [selectedId, setSelectedId] = useState<string>(state.selectedTemplate || "signature");
-
-  // Filter templates based on selected offer
-  const availableTemplates = templates.filter(t => {
-    if (!t.forOffers) return true;
-    return state.selectedOffer && t.forOffers.includes(state.selectedOffer);
-  });
+  const [selectedId, setSelectedId] = useState<string>(state.selectedTemplate || "dark-luxury");
 
   const handleSelectTemplate = (templateId: string) => {
     setSelectedId(templateId);
@@ -108,7 +61,6 @@ function OrderTemplateContent() {
   const handleContinue = async () => {
     if (isNavigating || state.isTransitioning) return;
     setIsNavigating(true);
-    
     setSelectedTemplate(selectedId);
     await nextStep();
   };
@@ -119,208 +71,202 @@ function OrderTemplateContent() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: STEALTH.bg }}>
-      <Navbar />
-      
-      {/* Subtle cyan halo */}
+    <div className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
+      {/* Honeycomb texture */}
       <div 
-        className="fixed top-1/4 right-0 w-[400px] h-[400px] rounded-full blur-[200px] opacity-10 pointer-events-none"
-        style={{ backgroundColor: STEALTH.accent }}
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.4' stroke-opacity='0.04'/%3E%3C/svg%3E")`,
+          backgroundSize: '56px 100px',
+        }}
       />
 
-      <PageTransition>
-        <main className="pt-24 pb-32 px-4">
-          <div className="max-w-4xl mx-auto">
-            {/* Progress Bar */}
-            <OrderProgressBar currentStep={3} />
+      {/* Header */}
+      <header className="relative z-10 px-6 py-6">
+        <div className="max-w-3xl mx-auto flex items-center justify-between">
+          <button 
+            onClick={handleBack}
+            className="flex items-center gap-2 transition-all duration-500"
+            style={{ color: COUTURE.textMuted }}
+            onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.silk}
+            onMouseLeave={(e) => e.currentTarget.style.color = COUTURE.textMuted}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-[11px] uppercase tracking-[0.15em]">Retour</span>
+          </button>
+          
+          <Link 
+            to="/"
+            className="font-display text-lg tracking-[0.1em]"
+            style={{ color: COUTURE.silk }}
+          >
+            i-wasp
+          </Link>
+          
+          <div className="w-16" />
+        </div>
+      </header>
 
-            {/* Header */}
-            <motion.div 
-              className="text-center mb-10"
-              variants={contentVariants}
-              initial="initial"
-              animate="animate"
+      {/* Progress indicator */}
+      <div className="relative z-10 px-6 mb-12">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center gap-3 justify-center">
+            <span 
+              className="text-[10px] uppercase tracking-[0.3em]"
+              style={{ color: COUTURE.gold }}
             >
-              <motion.p 
-                className="text-sm tracking-widest uppercase mb-3"
-                style={{ color: STEALTH.accent }}
-                variants={itemVariants}
-              >
-                Étape 3 sur 7
-              </motion.p>
-              <motion.h1 
-                className="text-3xl md:text-4xl font-display font-bold mb-3"
-                style={{ color: STEALTH.text }}
-                variants={itemVariants}
-              >
-                Choisissez votre template
-              </motion.h1>
-              <motion.p 
-                className="text-base max-w-xl mx-auto"
-                style={{ color: STEALTH.textSecondary }}
-                variants={itemVariants}
-              >
-                Le design de votre profil digital. Vous pourrez le personnaliser ensuite.
-              </motion.p>
-            </motion.div>
-
-            {/* Templates Grid */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10"
+              02
+            </span>
+            <div 
+              className="w-12 h-px"
+              style={{ backgroundColor: `${COUTURE.gold}40` }}
+            />
+            <span 
+              className="text-[10px] uppercase tracking-[0.2em]"
+              style={{ color: COUTURE.textMuted }}
             >
-              {availableTemplates.map((template, index) => {
-                const isSelected = selectedId === template.id;
-                const Icon = template.icon;
-
-                return (
-                  <motion.button
-                    key={template.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 * index }}
-                    onClick={() => handleSelectTemplate(template.id)}
-                    className="relative rounded-2xl overflow-hidden text-left transition-all duration-300"
-                    style={{
-                      border: isSelected 
-                        ? `2px solid ${STEALTH.accent}` 
-                        : `1px solid ${STEALTH.border}`,
-                      backgroundColor: STEALTH.bgCard,
-                      boxShadow: isSelected ? STEALTH.glow : "none",
-                    }}
-                  >
-                    {/* Preview area */}
-                    <div 
-                      className="h-32 relative"
-                      style={{ backgroundColor: template.preview }}
-                    >
-                      {/* Gradient overlay */}
-                      <div 
-                        className="absolute inset-0"
-                        style={{
-                          background: `linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(0,0,0,0.3) 100%)`
-                        }}
-                      />
-                      
-                      {/* Template icon */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div 
-                          className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                          style={{ 
-                            backgroundColor: "rgba(255,255,255,0.1)",
-                            backdropFilter: "blur(8px)"
-                          }}
-                        >
-                          <Icon className="w-8 h-8" style={{ color: "rgba(255,255,255,0.8)" }} />
-                        </div>
-                      </div>
-
-                      {/* Badge */}
-                      {template.badge && (
-                        <Badge 
-                          className="absolute top-3 right-3"
-                          style={{ 
-                            backgroundColor: STEALTH.accent, 
-                            color: STEALTH.bg 
-                          }}
-                        >
-                          {template.badge === "Premium" && <Star className="w-3 h-3 mr-1" />}
-                          {template.badge}
-                        </Badge>
-                      )}
-
-                      {/* Selection check */}
-                      {isSelected && (
-                        <motion.div 
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute top-3 left-3 w-7 h-7 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: STEALTH.accent }}
-                        >
-                          <Check className="w-4 h-4" style={{ color: STEALTH.bg }} />
-                        </motion.div>
-                      )}
-                    </div>
-
-                    {/* Info */}
-                    <div className="p-4">
-                      <h3 
-                        className="font-semibold mb-1"
-                        style={{ color: STEALTH.text }}
-                      >
-                        {template.name}
-                      </h3>
-                      <p 
-                        className="text-sm line-clamp-2"
-                        style={{ color: STEALTH.textSecondary }}
-                      >
-                        {template.description}
-                      </p>
-                    </div>
-                  </motion.button>
-                );
-              })}
-            </motion.div>
-
-            {/* Navigation Buttons */}
-            <div className="flex gap-4 max-w-md mx-auto">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={handleBack}
-                disabled={isNavigating || state.isTransitioning}
-                className="flex-1 rounded-full py-6 gap-2"
-                style={{ 
-                  borderColor: STEALTH.border,
-                  color: STEALTH.text
-                }}
-              >
-                <ArrowLeft className="w-5 h-5" />
-                Retour
-              </Button>
-              
-              <Button
-                size="lg"
-                onClick={handleContinue}
-                disabled={!selectedId || isNavigating || state.isTransitioning}
-                className="flex-[2] rounded-full py-6 gap-2 font-semibold"
-                style={{ 
-                  backgroundColor: STEALTH.accent,
-                  color: STEALTH.bg
-                }}
-              >
-                Continuer
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </div>
+              Template
+            </span>
           </div>
-        </main>
-      </PageTransition>
+        </div>
+      </div>
 
-      {/* Fixed bottom CTA for mobile */}
+      {/* Main content */}
+      <main className="relative z-10 px-6 pb-32">
+        <div className="max-w-3xl mx-auto">
+          {/* Title */}
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5 }}
+          >
+            <h1 
+              className="font-display text-2xl md:text-3xl font-light italic mb-4"
+              style={{ color: COUTURE.silk }}
+            >
+              Votre <span style={{ color: COUTURE.gold }}>univers visuel.</span>
+            </h1>
+            <p 
+              className="text-sm font-light"
+              style={{ color: COUTURE.textMuted }}
+            >
+              Personnalisable à l'étape suivante.
+            </p>
+          </motion.div>
+
+          {/* Templates Grid */}
+          <div className="grid grid-cols-2 gap-4">
+            {templates.map((template, i) => {
+              const isSelected = selectedId === template.id;
+              
+              return (
+                <motion.button
+                  key={template.id}
+                  onClick={() => handleSelectTemplate(template.id)}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.08, duration: 0.8 }}
+                  className="text-left transition-all duration-700 relative overflow-hidden"
+                  style={{
+                    border: `1px solid ${isSelected ? `${COUTURE.gold}60` : COUTURE.jetSoft}`,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.borderColor = `${COUTURE.gold}30`;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.borderColor = COUTURE.jetSoft;
+                    }
+                  }}
+                >
+                  {/* Preview area */}
+                  <div 
+                    className="h-28 md:h-36 relative"
+                    style={{ backgroundColor: template.preview }}
+                  >
+                    {/* Gradient overlay */}
+                    <div 
+                      className="absolute inset-0"
+                      style={{
+                        background: `linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%, rgba(0,0,0,0.2) 100%)`
+                      }}
+                    />
+
+                    {/* Signature badge */}
+                    {template.isSignature && (
+                      <span 
+                        className="absolute top-3 right-3 px-2 py-0.5 text-[8px] uppercase tracking-[0.15em]"
+                        style={{ 
+                          backgroundColor: COUTURE.gold,
+                          color: COUTURE.jet,
+                        }}
+                      >
+                        Populaire
+                      </span>
+                    )}
+
+                    {/* Selection check */}
+                    {isSelected && (
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute top-3 left-3 w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: COUTURE.gold }}
+                      >
+                        <Check className="w-3 h-3" style={{ color: COUTURE.jet }} />
+                      </motion.div>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div 
+                    className="p-4"
+                    style={{ backgroundColor: isSelected ? `${COUTURE.gold}08` : 'transparent' }}
+                  >
+                    <h3 
+                      className="font-display text-sm font-light mb-1"
+                      style={{ color: isSelected ? COUTURE.gold : COUTURE.silk }}
+                    >
+                      {template.name}
+                    </h3>
+                    <p 
+                      className="text-[11px]"
+                      style={{ color: COUTURE.textMuted }}
+                    >
+                      {template.description}
+                    </p>
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+      </main>
+
+      {/* Fixed CTA */}
       <div 
-        className="fixed bottom-0 left-0 right-0 p-4 md:hidden z-50"
+        className="fixed bottom-0 left-0 right-0 z-20 px-6 py-6"
         style={{ 
-          backgroundColor: STEALTH.bg,
-          borderTop: `1px solid ${STEALTH.border}`,
-          backdropFilter: "blur(20px)"
+          backgroundColor: COUTURE.jet,
+          borderTop: `1px solid ${COUTURE.jetSoft}`,
         }}
       >
-        <Button
-          size="lg"
-          onClick={handleContinue}
-          disabled={!selectedId || isNavigating || state.isTransitioning}
-          className="w-full rounded-full py-6 gap-2 font-semibold"
-          style={{ 
-            backgroundColor: STEALTH.accent,
-            color: STEALTH.bg
-          }}
-        >
-          Continuer
-          <ArrowRight className="w-5 h-5" />
-        </Button>
+        <div className="max-w-3xl mx-auto flex justify-center">
+          <button
+            onClick={handleContinue}
+            disabled={!selectedId || isNavigating || state.isTransitioning}
+            className="text-[11px] uppercase tracking-[0.25em] font-light transition-all duration-700 pb-1 disabled:opacity-30 disabled:cursor-not-allowed"
+            style={{ 
+              color: selectedId ? COUTURE.gold : COUTURE.textMuted,
+              borderBottom: `1px solid ${selectedId ? `${COUTURE.gold}60` : 'transparent'}`,
+            }}
+          >
+            Continuer
+          </button>
+        </div>
       </div>
     </div>
   );
