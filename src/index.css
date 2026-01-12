@@ -307,77 +307,140 @@
      PREMIUM CARD UTILITIES — V1CE / Cardynale style
      ══════════════════════════════════════════════════════════════════ */
   
-  /* Premium offer card - anthracite with gold accent */
+  /* Premium offer card - futuristic with neon glow */
   .card-offer {
-    background: #15181D;
+    background: #0F1118;
     border-radius: 18px;
-    border: 1px solid transparent;
+    border: 1px solid rgba(255, 190, 10, 0.1);
     box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
     padding: 24px 28px;
     transition: all 200ms ease-out;
+    position: relative;
+  }
+  
+  .card-offer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255, 190, 10, 0.2), rgba(168, 85, 247, 0.1));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 200ms ease-out;
   }
   
   .card-offer:hover {
     transform: scale(1.02);
     filter: brightness(1.05);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+    box-shadow: 
+      0 24px 60px rgba(0, 0, 0, 0.7),
+      0 0 40px rgba(255, 190, 10, 0.08);
+  }
+  
+  .card-offer:hover::before {
+    opacity: 1;
   }
   
   .card-offer.selected,
   .card-offer[data-selected="true"] {
-    border-color: #D1A75B;
+    border-color: #FFBE0A;
     box-shadow: 
       0 18px 45px rgba(0, 0, 0, 0.6),
-      0 0 30px rgba(209, 167, 91, 0.15);
+      0 0 40px rgba(255, 190, 10, 0.2);
   }
   
-  /* Popular badge */
+  /* Popular badge - neon gold */
   .badge-popular {
-    background: linear-gradient(135deg, #D1A75B, #E4C88A);
-    color: #050608;
+    background: linear-gradient(135deg, #FFBE0A, #FFD633);
+    color: #07080D;
     font-size: 11px;
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 999px;
     letter-spacing: 0.02em;
+    box-shadow: 0 0 20px rgba(255, 190, 10, 0.3);
+  }
+  
+  /* Purple badge variant */
+  .badge-purple {
+    background: linear-gradient(135deg, #A855F7, #C084FC);
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
   }
   
   /* Gold accent text */
   .text-gold {
-    color: #D1A75B;
+    color: #FFBE0A;
   }
   
   .text-gold-light {
-    color: #E4C88A;
+    color: #FFD633;
   }
   
-  /* Premium CTA button - pill shape, gold background */
+  /* Neon purple text */
+  .text-neon-purple {
+    color: #A855F7;
+  }
+  
+  /* Premium CTA button - neon gold gradient */
   .btn-premium {
-    background: linear-gradient(135deg, #D1A75B, #C9A054);
-    color: #050608;
+    background: linear-gradient(135deg, #FFBE0A, #FFD633);
+    color: #07080D;
     font-weight: 600;
     font-size: 15px;
     padding: 14px 32px;
     border-radius: 999px;
     border: none;
     transition: all 200ms ease-out;
-    box-shadow: 0 4px 20px rgba(209, 167, 91, 0.25);
+    box-shadow: 0 4px 20px rgba(255, 190, 10, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-premium::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    transform: rotate(45deg);
+    transition: transform 600ms ease-out;
   }
   
   .btn-premium:hover {
-    background: linear-gradient(135deg, #E4C88A, #D1A75B);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 30px rgba(209, 167, 91, 0.35);
+    background: linear-gradient(135deg, #FFD633, #FFBE0A);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px rgba(255, 190, 10, 0.4);
   }
   
-  /* Secondary button - outline style */
+  .btn-premium:hover::before {
+    transform: rotate(45deg) translateX(100%);
+  }
+  
+  /* Secondary button - purple outline */
   .btn-secondary-premium {
     background: transparent;
-    color: #FFFFFF;
+    color: #A855F7;
     font-weight: 500;
     font-size: 15px;
     padding: 14px 32px;
     border-radius: 999px;
+    border: 1px solid rgba(168, 85, 247, 0.5);
     border: 1px solid #2D3748;
     transition: all 200ms ease-out;
   }
