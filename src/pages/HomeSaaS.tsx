@@ -35,10 +35,136 @@ import {
   Mic,
   Link2,
   UserPlus,
-  Smartphone
+  Smartphone,
+  Menu,
+  X as XIcon
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+
+// ═══════════════════════════════════════════════════════════════════════════
+// NAVBAR COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+const navLinks = [
+  { label: "Comment ça marche", href: "#how-it-works" },
+  { label: "Stories 24h", href: "#stories" },
+  { label: "Notifications", href: "#notifications" },
+  { label: "Gamification", href: "#gamification" },
+  { label: "Pour qui", href: "#for-who" },
+  { label: "FAQ", href: "#faq" },
+];
+
+function SaaSNavbar() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const scrollToSection = (href: string) => {
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+    setMobileMenuOpen(false);
+  };
+
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#07080D]/80 backdrop-blur-xl border-b border-white/5">
+      <div className="max-w-[1200px] mx-auto px-4">
+        <div className="flex items-center justify-between h-16 md:h-20">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 group">
+            <span className="text-xl font-bold text-white tracking-tight">
+              i-wasp
+            </span>
+            <svg 
+              viewBox="0 0 24 24" 
+              className="h-5 w-5 text-gold-500"
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round"
+            >
+              <path d="M5 12a4 4 0 0 1 4-4" />
+              <path d="M5 12a8 8 0 0 1 8-8" />
+              <path d="M5 12a12 12 0 0 1 12-12" />
+              <circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none" />
+            </svg>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-1">
+            {navLinks.map((link) => (
+              <button
+                key={link.href}
+                onClick={() => scrollToSection(link.href)}
+                className="px-4 py-2 text-sm text-[#9CA3AF] hover:text-white transition-colors rounded-lg hover:bg-white/5"
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Desktop CTAs */}
+          <div className="hidden md:flex items-center gap-3">
+            <Link to="/login">
+              <Button variant="ghost" className="text-[#9CA3AF] hover:text-white hover:bg-white/5">
+                Connexion
+              </Button>
+            </Link>
+            <Link to="/order/type">
+              <Button className="btn-premium">
+                Créer mon profil
+              </Button>
+            </Link>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
+          >
+            {mobileMenuOpen ? <XIcon className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden bg-[#0F1118] border-t border-white/5 overflow-hidden"
+          >
+            <div className="px-4 py-4 space-y-1">
+              {navLinks.map((link) => (
+                <button
+                  key={link.href}
+                  onClick={() => scrollToSection(link.href)}
+                  className="w-full text-left px-4 py-3 text-[#9CA3AF] hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  {link.label}
+                </button>
+              ))}
+              <div className="pt-4 border-t border-white/10 space-y-2">
+                <Link to="/login" className="block">
+                  <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/5">
+                    Connexion
+                  </Button>
+                </Link>
+                <Link to="/order/type" className="block">
+                  <Button className="w-full btn-premium">
+                    Créer mon profil
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DATA STRUCTURES
@@ -184,10 +310,13 @@ export default function HomeSaaS() {
 
   return (
     <div className="min-h-screen bg-[#07080D]">
+      {/* Navbar */}
+      <SaaSNavbar />
+
       {/* ═══════════════════════════════════════════════════════════════════
           HERO SECTION
       ═══════════════════════════════════════════════════════════════════ */}
-      <section className="relative pt-24 pb-20 md:pt-32 md:pb-28 px-4 overflow-hidden">
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 px-4 overflow-hidden">
         {/* Background effects - neon glows */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-gold-500/10 rounded-full blur-[150px]" />
@@ -348,7 +477,7 @@ export default function HomeSaaS() {
       {/* ═══════════════════════════════════════════════════════════════════
           COMMENT ÇA MARCHE - 3 ÉTAPES
       ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-4">
+      <section id="how-it-works" className="py-24 md:py-32 px-4 scroll-mt-24">
         <div className="max-w-[1100px] mx-auto">
           <motion.div 
             className="text-center mb-16"
@@ -402,7 +531,7 @@ export default function HomeSaaS() {
       {/* ═══════════════════════════════════════════════════════════════════
           STORIES 24H & RELANCES INTELLIGENTES
       ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-4 bg-gradient-to-b from-[#0F1118]/50 to-transparent">
+      <section id="stories" className="py-24 md:py-32 px-4 bg-gradient-to-b from-[#0F1118]/50 to-transparent scroll-mt-24">
         <div className="max-w-[1100px] mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left: Content */}
@@ -514,7 +643,7 @@ export default function HomeSaaS() {
       {/* ═══════════════════════════════════════════════════════════════════
           NOTIFICATIONS PUSH & ANALYTICS
       ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-4">
+      <section id="notifications" className="py-24 md:py-32 px-4 scroll-mt-24">
         <div className="max-w-[1100px] mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left: Notification mockups */}
@@ -622,7 +751,7 @@ export default function HomeSaaS() {
       {/* ═══════════════════════════════════════════════════════════════════
           GAMIFICATION & MISSIONS
       ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-4 bg-gradient-to-b from-[#0F1118]/50 to-transparent">
+      <section id="gamification" className="py-24 md:py-32 px-4 bg-gradient-to-b from-[#0F1118]/50 to-transparent scroll-mt-24">
         <div className="max-w-[1100px] mx-auto">
           <motion.div 
             className="text-center mb-16"
@@ -737,7 +866,7 @@ export default function HomeSaaS() {
       {/* ═══════════════════════════════════════════════════════════════════
           POUR QUI ?
       ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-4">
+      <section id="for-who" className="py-24 md:py-32 px-4 scroll-mt-24">
         <div className="max-w-[1100px] mx-auto">
           <motion.div 
             className="text-center mb-16"
@@ -845,7 +974,7 @@ export default function HomeSaaS() {
       {/* ═══════════════════════════════════════════════════════════════════
           FAQ
       ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-4">
+      <section id="faq" className="py-24 md:py-32 px-4 scroll-mt-24">
         <div className="max-w-[800px] mx-auto">
           <motion.div 
             className="text-center mb-16"
