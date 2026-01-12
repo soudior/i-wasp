@@ -1,4 +1,6 @@
-import { motion } from "framer-motion";
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, X } from "lucide-react";
 import { CoutureNavbar } from "@/components/CoutureNavbar";
 import { CoutureFooter } from "@/components/CoutureFooter";
 import {
@@ -110,7 +112,57 @@ const faqCategories = [
   },
 ];
 
+// Highlight matching text
+function HighlightText({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <>{text}</>;
+  
+  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const parts = text.split(regex);
+  
+  return (
+    <>
+      {parts.map((part, i) => 
+        regex.test(part) ? (
+          <mark 
+            key={i} 
+            className="bg-transparent font-medium"
+            style={{ color: NOIR_COUTURE.ivory }}
+          >
+            {part}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  );
+}
+
 export default function FAQ() {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter FAQs based on search query
+  const filteredCategories = useMemo(() => {
+    if (!searchQuery.trim()) return faqCategories;
+
+    const query = searchQuery.toLowerCase();
+    return faqCategories
+      .map((category) => ({
+        ...category,
+        faqs: category.faqs.filter(
+          (faq) =>
+            faq.question.toLowerCase().includes(query) ||
+            faq.answer.toLowerCase().includes(query)
+        ),
+      }))
+      .filter((category) => category.faqs.length > 0);
+  }, [searchQuery]);
+
+  const totalResults = filteredCategories.reduce(
+    (acc, cat) => acc + cat.faqs.length,
+    0
+  );
+
   return (
     <div 
       className="min-h-screen"
@@ -119,7 +171,7 @@ export default function FAQ() {
       <CoutureNavbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 relative overflow-hidden">
+      <section className="pt-32 pb-12 relative overflow-hidden">
         {/* Honeycomb pattern */}
         <div 
           className="absolute inset-0 opacity-[0.02]"
@@ -148,12 +200,80 @@ export default function FAQ() {
               Questions fréquentes
             </h1>
             <p 
-              className="text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed"
+              className="text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed mb-12"
               style={{ color: NOIR_COUTURE.ash }}
             >
-              Tout ce que vous devez savoir sur les cartes de visite NFC i-wasp. 
-              Trouvez rapidement les réponses à vos questions.
+              Tout ce que vous devez savoir sur les cartes de visite NFC i-wasp.
             </p>
+
+            {/* Search Bar */}
+            <div className="max-w-xl mx-auto">
+              <div 
+                className="relative group"
+              >
+                <div 
+                  className="absolute inset-0 rounded-2xl transition-all duration-500 opacity-0 group-focus-within:opacity-100"
+                  style={{
+                    background: `linear-gradient(135deg, rgba(246, 245, 242, 0.05), rgba(246, 245, 242, 0.02))`,
+                  }}
+                />
+                <div 
+                  className="relative flex items-center rounded-2xl transition-all duration-300"
+                  style={{ 
+                    backgroundColor: NOIR_COUTURE.surface,
+                    border: `1px solid ${NOIR_COUTURE.border}`,
+                  }}
+                >
+                  <Search 
+                    className="w-5 h-5 ml-5 flex-shrink-0 transition-colors duration-300"
+                    style={{ color: NOIR_COUTURE.ash }}
+                  />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Rechercher une question..."
+                    className="flex-1 bg-transparent px-4 py-5 text-base font-light outline-none placeholder:transition-opacity placeholder:duration-300 focus:placeholder:opacity-50"
+                    style={{ 
+                      color: NOIR_COUTURE.ivory,
+                    }}
+                  />
+                  <AnimatePresence>
+                    {searchQuery && (
+                      <motion.button
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.2 }}
+                        onClick={() => setSearchQuery("")}
+                        className="mr-4 p-1.5 rounded-full transition-colors duration-300 hover:bg-white/5"
+                        style={{ color: NOIR_COUTURE.ash }}
+                      >
+                        <X className="w-4 h-4" />
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Search Results Count */}
+              <AnimatePresence>
+                {searchQuery && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="mt-4 text-sm font-light"
+                    style={{ color: NOIR_COUTURE.ash }}
+                  >
+                    {totalResults === 0
+                      ? "Aucun résultat trouvé"
+                      : `${totalResults} résultat${totalResults > 1 ? "s" : ""} trouvé${totalResults > 1 ? "s" : ""}`}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -161,65 +281,112 @@ export default function FAQ() {
       {/* FAQ Content */}
       <section className="pb-32 relative">
         <div className="max-w-3xl mx-auto px-6">
-          {faqCategories.map((category, categoryIndex) => (
-            <motion.div
-              key={category.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ 
-                duration: 0.6, 
-                delay: categoryIndex * 0.1,
-                ease: [0.16, 1, 0.3, 1] 
-              }}
-              className="mb-16 last:mb-0"
-            >
-              {/* Category Title */}
-              <h2 
-                className="font-serif text-2xl md:text-3xl font-light mb-8 tracking-tight"
-                style={{ color: NOIR_COUTURE.ivory }}
+          <AnimatePresence mode="wait">
+            {filteredCategories.length === 0 ? (
+              <motion.div
+                key="no-results"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+                className="text-center py-20"
               >
-                {category.title}
-              </h2>
-
-              {/* FAQ Accordion */}
-              <div 
-                className="rounded-2xl overflow-hidden"
-                style={{ 
-                  backgroundColor: NOIR_COUTURE.surface,
-                  border: `1px solid ${NOIR_COUTURE.border}`,
-                }}
+                <div 
+                  className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+                  style={{ backgroundColor: NOIR_COUTURE.surface }}
+                >
+                  <Search className="w-8 h-8" style={{ color: NOIR_COUTURE.ash }} />
+                </div>
+                <h3 
+                  className="font-serif text-2xl font-light mb-3"
+                  style={{ color: NOIR_COUTURE.ivory }}
+                >
+                  Aucune question trouvée
+                </h3>
+                <p 
+                  className="text-base font-light"
+                  style={{ color: NOIR_COUTURE.ash }}
+                >
+                  Essayez avec d'autres mots-clés ou{" "}
+                  <button 
+                    onClick={() => setSearchQuery("")}
+                    className="underline hover:no-underline transition-all"
+                    style={{ color: NOIR_COUTURE.ivory }}
+                  >
+                    réinitialisez la recherche
+                  </button>
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
               >
-                <Accordion type="single" collapsible className="w-full">
-                  {category.faqs.map((faq, faqIndex) => (
-                    <AccordionItem
-                      key={faqIndex}
-                      value={`${categoryIndex}-${faqIndex}`}
-                      className="border-b last:border-b-0"
-                      style={{ borderColor: NOIR_COUTURE.border }}
+                {filteredCategories.map((category, categoryIndex) => (
+                  <motion.div
+                    key={category.title}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ 
+                      duration: 0.6, 
+                      delay: categoryIndex * 0.1,
+                      ease: [0.16, 1, 0.3, 1] 
+                    }}
+                    className="mb-16 last:mb-0"
+                  >
+                    {/* Category Title */}
+                    <h2 
+                      className="font-serif text-2xl md:text-3xl font-light mb-8 tracking-tight"
+                      style={{ color: NOIR_COUTURE.ivory }}
                     >
-                      <AccordionTrigger 
-                        className="px-6 py-5 text-left hover:no-underline group transition-colors duration-300"
-                        style={{ color: NOIR_COUTURE.ivory }}
-                      >
-                        <span className="text-base md:text-lg font-light tracking-tight group-hover:opacity-70 transition-opacity duration-300">
-                          {faq.question}
-                        </span>
-                      </AccordionTrigger>
-                      <AccordionContent className="px-6 pb-6">
-                        <p 
-                          className="text-base font-light leading-relaxed"
-                          style={{ color: NOIR_COUTURE.ash }}
-                        >
-                          {faq.answer}
-                        </p>
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </div>
-            </motion.div>
-          ))}
+                      {category.title}
+                    </h2>
+
+                    {/* FAQ Accordion */}
+                    <div 
+                      className="rounded-2xl overflow-hidden"
+                      style={{ 
+                        backgroundColor: NOIR_COUTURE.surface,
+                        border: `1px solid ${NOIR_COUTURE.border}`,
+                      }}
+                    >
+                      <Accordion type="single" collapsible className="w-full">
+                        {category.faqs.map((faq, faqIndex) => (
+                          <AccordionItem
+                            key={faqIndex}
+                            value={`${categoryIndex}-${faqIndex}`}
+                            className="border-b last:border-b-0"
+                            style={{ borderColor: NOIR_COUTURE.border }}
+                          >
+                            <AccordionTrigger 
+                              className="px-6 py-5 text-left hover:no-underline group transition-colors duration-300"
+                              style={{ color: NOIR_COUTURE.ivory }}
+                            >
+                              <span className="text-base md:text-lg font-light tracking-tight group-hover:opacity-70 transition-opacity duration-300">
+                                <HighlightText text={faq.question} query={searchQuery} />
+                              </span>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-6 pb-6">
+                              <p 
+                                className="text-base font-light leading-relaxed"
+                                style={{ color: NOIR_COUTURE.ash }}
+                              >
+                                <HighlightText text={faq.answer} query={searchQuery} />
+                              </p>
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
 
