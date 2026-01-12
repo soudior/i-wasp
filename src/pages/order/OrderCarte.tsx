@@ -12,7 +12,8 @@ import { useOrderFunnel, OrderFunnelGuard, CardPersonalization } from "@/context
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { ArrowLeft, Upload, Check, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
-import iwaspLogo from "@/assets/iwasp-logo.png";
+import cardFront from "@/assets/card-front.png";
+import cardBack from "@/assets/card-back.png";
 
 interface CardMaterial {
   id: string;
@@ -136,17 +137,13 @@ function OrderCarteContent() {
 
               {/* Card preview */}
               <div 
-                className="mx-auto mb-8 p-1"
+                className="mx-auto mb-8 rounded-xl overflow-hidden"
                 style={{ 
                   maxWidth: '280px',
-                  aspectRatio: '85.6/54',
-                  backgroundColor: '#0B0B0B',
                   boxShadow: `0 20px 40px rgba(0,0,0,0.5)`,
                 }}
               >
-                <div className="w-full h-full flex items-center justify-center">
-                  <img src={iwaspLogo} alt="i-Wasp" className="w-1/3 opacity-80" />
-                </div>
+                <img src={cardFront} alt="Carte i-Wasp" className="w-full h-auto" />
               </div>
 
               <p className="text-sm font-light mb-2" style={{ color: COUTURE.silk }}>
@@ -267,45 +264,34 @@ function OrderCarteContent() {
                   >
                     {/* Front */}
                     <div
-                      className="absolute inset-0 flex items-center justify-center"
+                      className="absolute inset-0 rounded-xl overflow-hidden"
                       style={{
                         backfaceVisibility: 'hidden',
-                        backgroundColor: '#0B0B0B',
                         boxShadow: `0 25px 50px rgba(0,0,0,0.6)`,
                       }}
                     >
                       {logoUrl ? (
-                        <img src={logoUrl} alt="Votre logo" className="w-2/5 object-contain" />
+                        <div 
+                          className="w-full h-full flex items-center justify-center"
+                          style={{ backgroundColor: '#0B0B0B' }}
+                        >
+                          <img src={logoUrl} alt="Votre logo" className="w-2/5 object-contain" />
+                        </div>
                       ) : (
-                        <img src={iwaspLogo} alt="i-Wasp" className="w-1/3 opacity-80" />
+                        <img src={cardFront} alt="Carte i-Wasp recto" className="w-full h-full object-cover" />
                       )}
-                      
-                      {/* NFC badge */}
-                      <div 
-                        className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 text-[8px] uppercase tracking-[0.15em]"
-                        style={{ 
-                          backgroundColor: 'rgba(255,255,255,0.08)',
-                          color: 'rgba(255,255,255,0.5)',
-                        }}
-                      >
-                        NFC
-                      </div>
                     </div>
 
                     {/* Back */}
                     <div
-                      className="absolute inset-0"
+                      className="absolute inset-0 rounded-xl overflow-hidden"
                       style={{
                         backfaceVisibility: 'hidden',
                         transform: 'rotateY(180deg)',
-                        backgroundColor: '#0B0B0B',
                         boxShadow: `0 25px 50px rgba(0,0,0,0.6)`,
                       }}
                     >
-                      <div className="absolute top-[15%] left-0 right-0 h-[12%]" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} />
-                      <div className="absolute bottom-[15%] left-1/2 -translate-x-1/2 w-[20%]">
-                        <img src={iwaspLogo} alt="i-Wasp" className="w-full opacity-50" />
-                      </div>
+                      <img src={cardBack} alt="Carte i-Wasp verso" className="w-full h-full object-cover" />
                     </div>
                   </motion.div>
 

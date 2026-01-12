@@ -17,6 +17,8 @@ interface TemplateOption {
   name: string;
   description: string;
   preview: string;
+  accent?: string;
+  pattern?: "diagonal" | "honeycomb" | "grid" | "dots";
   isSignature?: boolean;
 }
 
@@ -25,26 +27,33 @@ const templates: TemplateOption[] = [
     id: "signature",
     name: "Signature",
     description: "Élégant et minimaliste",
-    preview: "#1a1a2e",
+    preview: "linear-gradient(145deg, #2a2a4a 0%, #1a1a2e 50%, #0d0d1a 100%)",
+    pattern: "diagonal",
   },
   {
     id: "dark-luxury",
     name: "Dark Luxury",
     description: "Noir premium, accents dorés",
-    preview: "#0d0d0d",
+    preview: "linear-gradient(145deg, #1a1a1a 0%, #0d0d0d 50%, #050505 100%)",
+    accent: "#D4AF37",
+    pattern: "honeycomb",
     isSignature: true,
   },
   {
     id: "executive",
     name: "Executive",
     description: "Design corporate",
-    preview: "#1e3a5f",
+    preview: "linear-gradient(145deg, #1e4a6f 0%, #1e3a5f 50%, #0d1f35 100%)",
+    accent: "#87CEEB",
+    pattern: "grid",
   },
   {
     id: "boutique",
     name: "Boutique",
     description: "Commerces et artisans",
-    preview: "#2d3436",
+    preview: "linear-gradient(145deg, #4a3f35 0%, #2d2620 50%, #1a1512 100%)",
+    accent: "#C9A96E",
+    pattern: "dots",
   },
 ];
 
@@ -184,16 +193,53 @@ function OrderTemplateContent() {
                 >
                   {/* Preview area */}
                   <div 
-                    className="h-28 md:h-36 relative"
-                    style={{ backgroundColor: template.preview }}
+                    className="h-28 md:h-36 relative overflow-hidden"
+                    style={{ background: template.preview }}
                   >
-                    {/* Gradient overlay */}
-                    <div 
-                      className="absolute inset-0"
-                      style={{
-                        background: `linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%, rgba(0,0,0,0.2) 100%)`
-                      }}
-                    />
+                    {/* Pattern overlay based on template type */}
+                    {template.pattern === "honeycomb" && (
+                      <div 
+                        className="absolute inset-0 opacity-20"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cpath d='M14 0L0 8.5V24.5L14 33L28 24.5V8.5L14 0zM14 16.5L28 25V41L14 49L0 41V25L14 16.5z' fill='${encodeURIComponent(template.accent || "#D4AF37")}' fill-opacity='0.4'/%3E%3C/svg%3E")`,
+                          backgroundSize: '20px 35px',
+                        }}
+                      />
+                    )}
+                    {template.pattern === "diagonal" && (
+                      <div 
+                        className="absolute inset-0 opacity-15"
+                        style={{
+                          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,255,255,0.1) 8px, rgba(255,255,255,0.1) 16px)`,
+                        }}
+                      />
+                    )}
+                    {template.pattern === "grid" && (
+                      <div 
+                        className="absolute inset-0 opacity-20"
+                        style={{
+                          backgroundImage: `linear-gradient(${template.accent || "#87CEEB"}20 1px, transparent 1px), linear-gradient(90deg, ${template.accent || "#87CEEB"}20 1px, transparent 1px)`,
+                          backgroundSize: '16px 16px',
+                        }}
+                      />
+                    )}
+                    {template.pattern === "dots" && (
+                      <div 
+                        className="absolute inset-0 opacity-25"
+                        style={{
+                          backgroundImage: `radial-gradient(${template.accent || "#C9A96E"} 1px, transparent 1px)`,
+                          backgroundSize: '12px 12px',
+                        }}
+                      />
+                    )}
+
+                    {/* Accent line */}
+                    {template.accent && (
+                      <div 
+                        className="absolute bottom-0 left-0 right-0 h-0.5"
+                        style={{ backgroundColor: template.accent }}
+                      />
+                    )}
 
                     {/* Signature badge */}
                     {template.isSignature && (
