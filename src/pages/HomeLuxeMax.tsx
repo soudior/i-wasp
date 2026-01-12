@@ -5,16 +5,31 @@
  * 
  * Hero: Full-screen, silent, authoritative, timeless
  * Like entering a 5-star luxury fashion maison
+ * 
+ * Parallax: Subtle depth effects between sections
  */
 
+import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { CoutureFooter } from "@/components/CoutureFooter";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 
 export default function HomeLuxeMax() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Parallax for hero section
+  const { scrollYProgress: heroProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"]
+  });
+  
+  const heroTextY = useTransform(heroProgress, [0, 1], [0, 150]);
+  const heroOpacity = useTransform(heroProgress, [0, 0.5], [1, 0]);
+  const honeycombY = useTransform(heroProgress, [0, 1], [0, 50]);
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
+    <div ref={containerRef} className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
       
       {/* ═══════════════════════════════════════════════════════════════════
           HERO NOIR — Full-screen, silent, authoritative, timeless
@@ -24,10 +39,11 @@ export default function HomeLuxeMax() {
         className="h-screen flex flex-col items-center justify-center px-8 relative overflow-hidden"
         style={{ backgroundColor: COUTURE.jet }}
       >
-        {/* Honeycomb texture — tone-on-tone, barely visible 3-4% */}
-        <div 
+        {/* Honeycomb texture with parallax */}
+        <motion.div 
           className="absolute inset-0 pointer-events-none"
           style={{
+            y: honeycombY,
             backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.5' stroke-opacity='0.035'/%3E%3C/svg%3E")`,
             backgroundSize: '56px 100px',
           }}
@@ -39,6 +55,7 @@ export default function HomeLuxeMax() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1.5 }}
+          style={{ opacity: heroOpacity }}
         >
           <Link 
             to="/"
@@ -49,12 +66,13 @@ export default function HomeLuxeMax() {
           </Link>
         </motion.div>
         
-        {/* Central content — ONE headline, silence, authority */}
+        {/* Central content with parallax */}
         <motion.div 
           className="text-center relative z-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 2.5, ease: [0.22, 1, 0.36, 1] }}
+          style={{ y: heroTextY, opacity: heroOpacity }}
         >
           <h1 
             className="font-display text-3xl md:text-4xl lg:text-5xl font-light leading-[1.3] tracking-tight"
@@ -65,12 +83,13 @@ export default function HomeLuxeMax() {
           </h1>
         </motion.div>
         
-        {/* Single discreet CTA — bottom center */}
+        {/* Single discreet CTA with parallax */}
         <motion.div 
           className="absolute bottom-20 left-0 right-0 flex justify-center z-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2, duration: 1.5 }}
+          style={{ opacity: heroOpacity }}
         >
           <Link 
             to="/order/offre"
@@ -94,18 +113,15 @@ export default function HomeLuxeMax() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          MANIFESTE — One silent thought
+          MANIFESTE — One silent thought with parallax
       ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="min-h-[70vh] flex items-center justify-center px-8 relative"
-        style={{ backgroundColor: COUTURE.silk }}
-      >
+      <ParallaxSection backgroundColor={COUTURE.silk}>
         <motion.blockquote 
           className="text-center max-w-[600px]"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 2 }}
+          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
         >
           <p 
             className="font-display text-2xl md:text-3xl font-light italic leading-[1.5]"
@@ -116,29 +132,18 @@ export default function HomeLuxeMax() {
             <span style={{ color: COUTURE.gold }}>ne se répète jamais."</span>
           </p>
         </motion.blockquote>
-      </section>
+      </ParallaxSection>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          ESSENCE — Three words
+          ESSENCE — Three words with staggered parallax
       ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="min-h-[50vh] flex items-center justify-center px-8 relative overflow-hidden"
-        style={{ backgroundColor: COUTURE.jet }}
-      >
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.5' stroke-opacity='0.035'/%3E%3C/svg%3E")`,
-            backgroundSize: '56px 100px',
-          }}
-        />
-        
+      <ParallaxSection backgroundColor={COUTURE.jet} hasHoneycomb>
         <motion.div 
           className="text-center relative z-10"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 2 }}
+          transition={{ duration: 1.5 }}
         >
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
             {["Créer", "Partager", "Convertir"].map((word, i) => (
@@ -146,31 +151,28 @@ export default function HomeLuxeMax() {
                 key={word}
                 className="font-display text-xl md:text-2xl font-light italic"
                 style={{ color: i === 1 ? COUTURE.gold : COUTURE.textMuted }}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.4, duration: 1.5 }}
+                transition={{ delay: i * 0.2, duration: 1, ease: [0.22, 1, 0.36, 1] }}
               >
                 {word}
               </motion.span>
             ))}
           </div>
         </motion.div>
-      </section>
+      </ParallaxSection>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          SILENCE — Empty space
+          SILENCE — Empty space with floating effect
       ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="py-32 md:py-48 px-8"
-        style={{ backgroundColor: COUTURE.silk }}
-      >
+      <ParallaxSection backgroundColor={COUTURE.silk} minHeight="py-32 md:py-48">
         <motion.div 
           className="max-w-[400px] mx-auto text-center"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 2 }}
+          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
         >
           <p 
             className="text-sm font-light leading-[2] tracking-wide"
@@ -179,29 +181,18 @@ export default function HomeLuxeMax() {
             Une carte. Un geste. Mille connexions.
           </p>
         </motion.div>
-      </section>
+      </ParallaxSection>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          CTA FINAL — Authority
+          CTA FINAL — Authority with subtle reveal
       ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="min-h-[40vh] flex items-center justify-center px-8 relative overflow-hidden"
-        style={{ backgroundColor: COUTURE.jet }}
-      >
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.5' stroke-opacity='0.035'/%3E%3C/svg%3E")`,
-            backgroundSize: '56px 100px',
-          }}
-        />
-        
+      <ParallaxSection backgroundColor={COUTURE.jet} hasHoneycomb minHeight="min-h-[40vh]">
         <motion.div 
           className="text-center relative z-10"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, scale: 0.98 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 2 }}
+          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
         >
           <Link 
             to="/order/offre"
@@ -222,9 +213,62 @@ export default function HomeLuxeMax() {
             Entrer
           </Link>
         </motion.div>
-      </section>
+      </ParallaxSection>
 
       <CoutureFooter />
     </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PARALLAX SECTION COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+interface ParallaxSectionProps {
+  children: React.ReactNode;
+  backgroundColor: string;
+  hasHoneycomb?: boolean;
+  minHeight?: string;
+}
+
+function ParallaxSection({ 
+  children, 
+  backgroundColor, 
+  hasHoneycomb = false,
+  minHeight = "min-h-[60vh]"
+}: ParallaxSectionProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+  
+  // Subtle parallax for content
+  const contentY = useTransform(scrollYProgress, [0, 1], [30, -30]);
+  // Honeycomb moves slower for depth
+  const honeycombY = useTransform(scrollYProgress, [0, 1], [0, -20]);
+
+  return (
+    <section 
+      ref={sectionRef}
+      className={`${minHeight} flex items-center justify-center px-8 relative overflow-hidden`}
+      style={{ backgroundColor }}
+    >
+      {hasHoneycomb && (
+        <motion.div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            y: honeycombY,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.5' stroke-opacity='0.035'/%3E%3C/svg%3E")`,
+            backgroundSize: '56px 100px',
+          }}
+        />
+      )}
+      
+      <motion.div style={{ y: contentY }} className="relative z-10">
+        {children}
+      </motion.div>
+    </section>
   );
 }
