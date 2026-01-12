@@ -31,7 +31,7 @@ function OrderCarteContent() {
   const [isNavigating, setIsNavigating] = useState(false);
   const [showBack, setShowBack] = useState(false);
   
-  const [selectedMaterial, setSelectedMaterial] = useState(state.cardPersonalization?.finish || "soft-touch");
+  const [selectedMaterial, setSelectedMaterial] = useState(state.cardPersonalization?.fileName || "soft-touch");
   const [logoUrl, setLogoUrl] = useState<string | null>(state.cardPersonalization?.imageUrl || null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -71,9 +71,9 @@ function OrderCarteContent() {
     setIsNavigating(true);
 
     const personalization: CardPersonalization = {
-      visualType: logoUrl ? "logo" : "iwasp",
-      material: selectedMaterial,
-      imageUrl: logoUrl || undefined,
+      visualType: logoUrl ? "logo" : "photo",
+      imageUrl: logoUrl || "",
+      fileName: selectedMaterial,
     };
 
     setCardPersonalization(personalization);
