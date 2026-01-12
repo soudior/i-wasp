@@ -107,6 +107,19 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
+           PALETTE DIGITAL CONCIERGE — Bleu Nuit & Cyan Néon
+           ══════════════════════════════════════════════════════════════ */
+        concierge: {
+          night: "#020819",                   /* Bleu nuit fond */
+          purple: "#181528",                  /* Violet profond secondaire */
+          surface: "#0A1628",                 /* Surface élevée */
+          cyan: "#4DF3FF",                    /* Cyan néon principal */
+          blue: "#4A7BFF",                    /* Bleu électrique */
+          "cyan-glow": "#2EE3EE",             /* Cyan sombre */
+          "blue-glow": "#3366E6",             /* Bleu profond */
+        },
+        
+        /* ══════════════════════════════════════════════════════════════
            PALETTE CARTE NFC — Ultra-Luxe
            ══════════════════════════════════════════════════════════════ */
         carte: {
