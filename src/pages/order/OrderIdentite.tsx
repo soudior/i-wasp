@@ -2,65 +2,45 @@
  * Step 2: Identité digitale
  * /order/identite
  * 
- * IWASP Premium Luxury — Simplified Contact Form
+ * Style: Haute Couture Digitale — Noir, minimaliste
  */
 
 import { useState, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useOrderFunnel, DigitalIdentity, OrderFunnelGuard, ClientType } from "@/contexts/OrderFunnelContext";
+import { Link } from "react-router-dom";
+import { useOrderFunnel, DigitalIdentity, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from "@/components/order";
-import { LoadingButton } from "@/components/ui/LoadingButton";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { STEALTH } from "@/lib/stealthPalette";
+import { COUTURE } from "@/lib/hauteCouturePalette";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   ArrowLeft, 
-  ArrowRight, 
   User, 
   Phone,
   Mail,
   MessageCircle,
   Globe,
-  MapPin,
-  Navigation,
   Loader2,
-  CheckCircle2,
-  AlertCircle,
   Plus,
   Linkedin,
   Instagram,
-  Twitter,
-  Youtube,
-  Facebook,
   Link2,
-  Quote,
-  Eye,
-  FileText,
   Camera,
   X,
-  Upload,
+  Eye,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 
-// Helper to upload photo to Supabase Storage
 async function uploadPhotoToStorage(dataUrl: string, fileName: string): Promise<string | null> {
   try {
-    // Convert data URL to blob
     const response = await fetch(dataUrl);
     const blob = await response.blob();
-    
-    // Generate unique file name
     const timestamp = Date.now();
     const uniqueFileName = `order-photos/${timestamp}-${fileName}`;
     
-    // Upload to Supabase Storage
     const { data, error } = await supabase.storage
       .from("card-assets")
       .upload(uniqueFileName, blob, {
@@ -69,12 +49,8 @@ async function uploadPhotoToStorage(dataUrl: string, fileName: string): Promise<
         contentType: blob.type,
       });
     
-    if (error) {
-      console.error("Upload error:", error);
-      return null;
-    }
+    if (error) return null;
     
-    // Get public URL
     const { data: urlData } = supabase.storage
       .from("card-assets")
       .getPublicUrl(data.path);
@@ -86,7 +62,6 @@ async function uploadPhotoToStorage(dataUrl: string, fileName: string): Promise<
   }
 }
 
-// Validation helpers
 const validateEmail = (email: string): boolean => {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return re.test(email.toLowerCase());
@@ -97,23 +72,10 @@ const validatePhone = (phone: string): boolean => {
   return cleaned.length >= 8 && /^[\+]?[0-9]+$/.test(cleaned);
 };
 
-// Additional social links options
-const ADDITIONAL_LINKS = [
-  { id: "twitter", label: "Twitter / X", icon: Twitter, placeholder: "@username" },
-  { id: "youtube", label: "YouTube", icon: Youtube, placeholder: "youtube.com/@channel" },
-  { id: "facebook", label: "Facebook", icon: Facebook, placeholder: "facebook.com/page" },
-  { id: "tiktok", label: "TikTok", icon: Link2, placeholder: "@username" },
-  { id: "calendly", label: "Calendly", icon: Link2, placeholder: "calendly.com/vous" },
-  { id: "other", label: "Autre lien", icon: Link2, placeholder: "https://..." },
-];
-
 function OrderIdentiteContent() {
   const { state, setDigitalIdentity, nextStep, prevStep } = useOrderFunnel();
   const [isNavigating, setIsNavigating] = useState(false);
-  const [showAdditionalLinks, setShowAdditionalLinks] = useState(false);
-  const [additionalLinks, setAdditionalLinks] = useState<Record<string, string>>({});
   const [mobileView, setMobileView] = useState<"form" | "preview">("form");
-
 
   const [formData, setFormData] = useState<DigitalIdentity>(
     state.digitalIdentity || {
@@ -139,10 +101,8 @@ function OrderIdentiteContent() {
 
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
-
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  // Geolocation
   const handleGeoSuccess = useCallback((geoData: any) => {
     const lat = geoData.latitude;
     const lng = geoData.longitude;
@@ -163,10 +123,8 @@ function OrderIdentiteContent() {
     onSuccess: handleGeoSuccess,
   });
 
-  // Validation
   const errors = useMemo(() => {
     const errs: Record<string, string> = {};
-    
     if (!formData.firstName.trim()) errs.firstName = "Prénom requis";
     if (!formData.lastName.trim()) errs.lastName = "Nom requis";
     if (!formData.email.trim()) {
@@ -179,7 +137,6 @@ function OrderIdentiteContent() {
     } else if (!validatePhone(formData.phone)) {
       errs.phone = "Téléphone invalide";
     }
-    
     return errs;
   }, [formData]);
 
@@ -193,18 +150,15 @@ function OrderIdentiteContent() {
     setTouched(prev => ({ ...prev, [field]: true }));
   };
 
-  // Photo upload handler
   const handlePhotoUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast.error("Veuillez sélectionner une image");
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("L'image doit faire moins de 5 Mo");
       return;
@@ -217,7 +171,7 @@ function OrderIdentiteContent() {
       const dataUrl = e.target?.result as string;
       handleChange("photoUrl", dataUrl);
       setIsUploadingPhoto(false);
-      toast.success("Photo ajoutée !");
+      toast.success("Photo ajoutée");
     };
     reader.onerror = () => {
       toast.error("Erreur lors du chargement");
@@ -251,7 +205,6 @@ function OrderIdentiteContent() {
 
     let finalPhotoUrl = formData.photoUrl;
 
-    // Upload photo to Supabase Storage if it's a data URL
     if (formData.photoUrl && formData.photoUrl.startsWith("data:")) {
       toast.loading("Upload de la photo...", { id: "photo-upload" });
       
@@ -260,15 +213,14 @@ function OrderIdentiteContent() {
       
       if (uploadedUrl) {
         finalPhotoUrl = uploadedUrl;
-        toast.success("Photo uploadée !", { id: "photo-upload" });
+        toast.success("Photo uploadée", { id: "photo-upload" });
       } else {
-        toast.error("Échec de l'upload photo", { id: "photo-upload" });
+        toast.error("Échec de l'upload", { id: "photo-upload" });
         setIsNavigating(false);
         return;
       }
     }
 
-    // Normalize data
     const normalizedData: DigitalIdentity = {
       clientType: formData.clientType,
       firstName: formData.firstName.trim(),
@@ -293,315 +245,146 @@ function OrderIdentiteContent() {
     await nextStep();
   };
 
-  // Input styles for dark theme
   const inputStyles = {
-    backgroundColor: STEALTH.bgInput,
-    borderColor: STEALTH.border,
-    color: STEALTH.text,
+    backgroundColor: 'transparent',
+    borderColor: COUTURE.jetSoft,
+    color: COUTURE.silk,
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: STEALTH.bg }}>
-      <Navbar />
-      
-      <PageTransition>
-        <main className="pt-24 pb-32 px-4">
-          <div className="max-w-6xl mx-auto">
-            {/* Progress Bar */}
-            <div className="max-w-2xl mx-auto lg:max-w-none">
-              <OrderProgressBar currentStep={2} />
-            </div>
+    <div className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
+      {/* Honeycomb texture */}
+      <div 
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.4' stroke-opacity='0.04'/%3E%3C/svg%3E")`,
+          backgroundSize: '56px 100px',
+        }}
+      />
 
-            {/* Header */}
-            <motion.div 
-              className="text-center mb-10"
-              variants={contentVariants}
-              initial="initial"
-              animate="animate"
+      {/* Header */}
+      <header className="relative z-10 px-6 py-6">
+        <div className="max-w-3xl mx-auto flex items-center justify-between">
+          <button 
+            onClick={() => prevStep()}
+            className="flex items-center gap-2 transition-all duration-500"
+            style={{ color: COUTURE.textMuted }}
+            onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.silk}
+            onMouseLeave={(e) => e.currentTarget.style.color = COUTURE.textMuted}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-[11px] uppercase tracking-[0.15em]">Retour</span>
+          </button>
+          
+          <Link 
+            to="/"
+            className="font-display text-lg tracking-[0.1em]"
+            style={{ color: COUTURE.silk }}
+          >
+            i-wasp
+          </Link>
+          
+          <div className="w-16" />
+        </div>
+      </header>
+
+      {/* Progress indicator */}
+      <div className="relative z-10 px-6 mb-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center gap-3 justify-center">
+            <span 
+              className="text-[10px] uppercase tracking-[0.3em]"
+              style={{ color: COUTURE.gold }}
             >
-              <motion.p 
-                className="text-sm tracking-widest uppercase mb-3"
-                style={{ color: STEALTH.accent }}
-                variants={itemVariants}
+              02
+            </span>
+            <div 
+              className="w-12 h-px"
+              style={{ backgroundColor: `${COUTURE.gold}40` }}
+            />
+            <span 
+              className="text-[10px] uppercase tracking-[0.2em]"
+              style={{ color: COUTURE.textMuted }}
+            >
+              Identité
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile toggle */}
+      <div className="lg:hidden relative z-10 px-6 mb-6">
+        <div className="max-w-3xl mx-auto">
+          <div 
+            className="flex p-1"
+            style={{ 
+              backgroundColor: COUTURE.jetSoft,
+              border: `1px solid ${COUTURE.jetMuted}`,
+            }}
+          >
+            <button
+              onClick={() => setMobileView("form")}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[11px] uppercase tracking-[0.1em] transition-all"
+              style={{
+                backgroundColor: mobileView === "form" ? COUTURE.gold : 'transparent',
+                color: mobileView === "form" ? COUTURE.jet : COUTURE.textMuted,
+              }}
+            >
+              <FileText size={14} />
+              Formulaire
+            </button>
+            <button
+              onClick={() => setMobileView("preview")}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[11px] uppercase tracking-[0.1em] transition-all"
+              style={{
+                backgroundColor: mobileView === "preview" ? COUTURE.gold : 'transparent',
+                color: mobileView === "preview" ? COUTURE.jet : COUTURE.textMuted,
+              }}
+            >
+              <Eye size={14} />
+              Aperçu
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <main className="relative z-10 px-6 pb-32">
+        <div className="max-w-4xl mx-auto">
+          {/* Title */}
+          <motion.div 
+            className="text-center mb-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5 }}
+          >
+            <h1 
+              className="font-display text-2xl md:text-3xl font-light italic mb-3"
+              style={{ color: COUTURE.silk }}
+            >
+              Votre <span style={{ color: COUTURE.gold }}>identité.</span>
+            </h1>
+            <p 
+              className="text-sm font-light"
+              style={{ color: COUTURE.textMuted }}
+            >
+              Ces informations apparaîtront sur votre profil i‑wasp
+            </p>
+          </motion.div>
+
+          {/* Two column layout */}
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Form */}
+            <div className={mobileView === "preview" ? "hidden lg:block" : ""}>
+              <motion.div 
+                className="space-y-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.8 }}
               >
-                Étape 2 sur 7
-              </motion.p>
-              <motion.h1 
-                className="text-3xl md:text-4xl font-display font-bold mb-3"
-                style={{ color: STEALTH.text }}
-                variants={itemVariants}
-              >
-                Coordonnées & présence en ligne
-              </motion.h1>
-              <motion.p 
-                className="text-base"
-                style={{ color: STEALTH.textSecondary }}
-                variants={itemVariants}
-              >
-                Ces informations seront visibles sur votre profil numérique i‑wasp
-              </motion.p>
-            </motion.div>
-
-            {/* Mobile Toggle & Compact Preview */}
-            <div className="lg:hidden mb-6">
-              {/* Toggle Buttons */}
-              <div 
-                className="flex rounded-2xl p-1 mb-4"
-                style={{ backgroundColor: STEALTH.bgCard }}
-              >
-                <button
-                  onClick={() => setMobileView("form")}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all"
-                  style={{
-                    backgroundColor: mobileView === "form" ? STEALTH.accent : "transparent",
-                    color: mobileView === "form" ? STEALTH.bg : STEALTH.textSecondary,
-                  }}
-                >
-                  <FileText size={16} />
-                  Formulaire
-                </button>
-                <button
-                  onClick={() => setMobileView("preview")}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all"
-                  style={{
-                    backgroundColor: mobileView === "preview" ? STEALTH.accent : "transparent",
-                    color: mobileView === "preview" ? STEALTH.bg : STEALTH.textSecondary,
-                  }}
-                >
-                  <Eye size={16} />
-                  Aperçu
-                </button>
-              </div>
-
-              {/* Mobile Preview (when selected) */}
-              <AnimatePresence mode="wait">
-                {mobileView === "preview" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="rounded-3xl p-6 relative overflow-hidden"
-                    style={{ 
-                      backgroundColor: STEALTH.bgCard,
-                      border: `1px solid ${STEALTH.border}`
-                    }}
-                  >
-                    {/* Gradient overlay */}
-                    <div 
-                      className="absolute inset-0 opacity-30"
-                      style={{
-                        background: `radial-gradient(circle at top right, ${STEALTH.accent}15, transparent 60%)`
-                      }}
-                    />
-
-                    <div className="relative z-10 text-center space-y-4">
-                      {/* Avatar */}
-                      <div 
-                        className="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-2xl font-bold overflow-hidden"
-                        style={{ 
-                          backgroundColor: STEALTH.bgInput,
-                          color: STEALTH.accent,
-                          border: `2px solid ${STEALTH.border}`
-                        }}
-                      >
-                        {formData.photoUrl ? (
-                          <img 
-                            src={formData.photoUrl} 
-                            alt="Photo" 
-                            className="w-full h-full object-cover"
-                          />
-                        ) : formData.firstName && formData.lastName ? (
-                          `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`.toUpperCase()
-                        ) : (
-                          <User size={28} style={{ color: STEALTH.textMuted }} />
-                        )}
-                      </div>
-
-                      {/* Name */}
-                      <div>
-                        <h3 
-                          className="text-xl font-display font-bold"
-                          style={{ color: STEALTH.text }}
-                        >
-                          {formData.firstName || formData.lastName 
-                            ? `${formData.firstName} ${formData.lastName}`.trim()
-                            : "Votre nom"
-                          }
-                        </h3>
-                        
-                        {(formData.title || formData.company) && (
-                          <p 
-                            className="text-sm mt-1"
-                            style={{ color: STEALTH.textSecondary }}
-                          >
-                            {formData.title}
-                            {formData.title && formData.company && " · "}
-                            {formData.company}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Tagline */}
-                      {formData.tagline && (
-                        <p
-                          className="text-sm italic px-2"
-                          style={{ color: STEALTH.textMuted }}
-                        >
-                          "{formData.tagline}"
-                        </p>
-                      )}
-
-                      {/* Contact Icons */}
-                      <div className="flex justify-center gap-2 pt-1">
-                        {formData.phone && (
-                          <div 
-                            className="w-9 h-9 rounded-full flex items-center justify-center"
-                            style={{ backgroundColor: STEALTH.bgInput }}
-                          >
-                            <Phone size={14} style={{ color: STEALTH.accent }} />
-                          </div>
-                        )}
-                        {formData.email && (
-                          <div 
-                            className="w-9 h-9 rounded-full flex items-center justify-center"
-                            style={{ backgroundColor: STEALTH.bgInput }}
-                          >
-                            <Mail size={14} style={{ color: STEALTH.accent }} />
-                          </div>
-                        )}
-                        {formData.whatsapp && (
-                          <div 
-                            className="w-9 h-9 rounded-full flex items-center justify-center"
-                            style={{ backgroundColor: STEALTH.bgInput }}
-                          >
-                            <MessageCircle size={14} style={{ color: STEALTH.accent }} />
-                          </div>
-                        )}
-                        {formData.linkedin && (
-                          <div 
-                            className="w-9 h-9 rounded-full flex items-center justify-center"
-                            style={{ backgroundColor: STEALTH.bgInput }}
-                          >
-                            <Linkedin size={14} style={{ color: STEALTH.accent }} />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Two Column Layout */}
-            <div className="grid lg:grid-cols-5 gap-8">
-              {/* Left Column - Form (hidden on mobile when preview is active) */}
-              <div className={`lg:col-span-3 ${mobileView === "preview" ? "hidden lg:block" : ""}`}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="space-y-8"
-                >
-              {/* Client Type Selection */}
-              <div 
-                className="rounded-3xl p-6"
-                style={{ 
-                  backgroundColor: STEALTH.bgCard,
-                  border: `1px solid ${STEALTH.border}`
-                }}
-              >
-                <div 
-                  className="flex items-center gap-2 text-lg font-semibold mb-4"
-                  style={{ color: STEALTH.text }}
-                >
-                  <User size={20} style={{ color: STEALTH.accent }} />
-                  Type de client
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { id: "particulier", label: "Particulier", icon: "👤" },
-                    { id: "independant", label: "Indépendant", icon: "💼" },
-                    { id: "entreprise", label: "Entreprise", icon: "🏢" },
-                  ].map((type) => (
-                    <button
-                      key={type.id}
-                      type="button"
-                      onClick={() => handleChange("clientType", type.id as ClientType)}
-                      className="p-4 rounded-xl text-center transition-all duration-200"
-                      style={{
-                        backgroundColor: formData.clientType === type.id ? STEALTH.accent : STEALTH.bgInput,
-                        border: `2px solid ${formData.clientType === type.id ? STEALTH.accent : STEALTH.border}`,
-                        color: formData.clientType === type.id ? STEALTH.bg : STEALTH.text,
-                      }}
-                    >
-                      <span className="text-2xl mb-2 block">{type.icon}</span>
-                      <span className="text-sm font-medium">{type.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Personal Info */}
-              <div 
-                className="rounded-3xl p-6"
-                style={{ 
-                  backgroundColor: STEALTH.bgCard,
-                  border: `1px solid ${STEALTH.border}`
-                }}
-              >
-                <div 
-                  className="flex items-center gap-2 text-lg font-semibold mb-5"
-                  style={{ color: STEALTH.text }}
-                >
-                  <User size={20} style={{ color: STEALTH.accent }} />
-                  Identité
-                </div>
-                <div className="space-y-5">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName" style={{ color: STEALTH.text }}>Prénom *</Label>
-                      <Input
-                        id="firstName"
-                        value={formData.firstName}
-                        onChange={(e) => handleChange("firstName", e.target.value)}
-                        onBlur={() => handleBlur("firstName")}
-                        placeholder="Marie"
-                        className="rounded-xl h-12"
-                        style={inputStyles}
-                      />
-                      {touched.firstName && errors.firstName && (
-                        <p className="text-xs flex items-center gap-1" style={{ color: STEALTH.error }}>
-                          <AlertCircle size={12} />
-                          {errors.firstName}
-                        </p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName" style={{ color: STEALTH.text }}>Nom *</Label>
-                      <Input
-                        id="lastName"
-                        value={formData.lastName}
-                        onChange={(e) => handleChange("lastName", e.target.value)}
-                        onBlur={() => handleBlur("lastName")}
-                        placeholder="Laurent"
-                        className="rounded-xl h-12"
-                        style={inputStyles}
-                      />
-                      {touched.lastName && errors.lastName && (
-                        <p className="text-xs flex items-center gap-1" style={{ color: STEALTH.error }}>
-                          <AlertCircle size={12} />
-                          {errors.lastName}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Photo Upload */}
-                  <div className="space-y-2">
-                    <Label className="flex items-center gap-2" style={{ color: STEALTH.text }}>
-                      <Camera size={14} style={{ color: STEALTH.accent }} />
-                      Photo de profil
-                    </Label>
+                {/* Photo */}
+                <div className="flex justify-center mb-8">
+                  <div className="relative">
                     <input
                       ref={photoInputRef}
                       type="file"
@@ -609,670 +392,346 @@ function OrderIdentiteContent() {
                       onChange={handlePhotoUpload}
                       className="hidden"
                     />
-                    
-                    {formData.photoUrl ? (
-                      <div className="flex items-center gap-4">
-                        <div 
-                          className="w-16 h-16 rounded-full overflow-hidden"
-                          style={{ border: `2px solid ${STEALTH.accent}` }}
-                        >
-                          <img 
-                            src={formData.photoUrl} 
-                            alt="Photo" 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => photoInputRef.current?.click()}
-                            className="rounded-xl"
-                            style={{ borderColor: STEALTH.border, color: STEALTH.text }}
-                          >
-                            <Camera size={14} className="mr-2" />
-                            Changer
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleRemovePhoto}
-                            className="rounded-xl"
-                            style={{ color: STEALTH.error }}
-                          >
-                            <X size={14} />
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
+                    <button
+                      onClick={() => photoInputRef.current?.click()}
+                      disabled={isUploadingPhoto}
+                      className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden transition-all duration-500"
+                      style={{ 
+                        backgroundColor: COUTURE.jetSoft,
+                        border: `1px solid ${COUTURE.jetMuted}`,
+                      }}
+                    >
+                      {isUploadingPhoto ? (
+                        <Loader2 className="w-6 h-6 animate-spin" style={{ color: COUTURE.gold }} />
+                      ) : formData.photoUrl ? (
+                        <img 
+                          src={formData.photoUrl} 
+                          alt="Photo" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Camera className="w-6 h-6" style={{ color: COUTURE.textMuted }} />
+                      )}
+                    </button>
+                    {formData.photoUrl && (
                       <button
-                        type="button"
-                        onClick={() => photoInputRef.current?.click()}
-                        disabled={isUploadingPhoto}
-                        className="w-full flex items-center justify-center gap-3 p-4 rounded-xl border-2 border-dashed transition-all hover:border-solid"
-                        style={{ 
-                          borderColor: STEALTH.border,
-                          backgroundColor: STEALTH.bgInput,
-                          color: STEALTH.textSecondary 
-                        }}
+                        onClick={handleRemovePhoto}
+                        className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: COUTURE.gold }}
                       >
-                        {isUploadingPhoto ? (
-                          <Loader2 size={20} className="animate-spin" style={{ color: STEALTH.accent }} />
-                        ) : (
-                          <Camera size={20} style={{ color: STEALTH.accent }} />
-                        )}
-                        <span className="text-sm">
-                          {isUploadingPhoto ? "Chargement..." : "Ajouter une photo"}
-                        </span>
+                        <X className="w-3 h-3" style={{ color: COUTURE.jet }} />
                       </button>
                     )}
-                    <p className="text-xs" style={{ color: STEALTH.textMuted }}>
-                      Recommandé : photo carrée, min 200×200px
-                    </p>
-                  </div>
-
-                  {/* Phrase emblème */}
-                  <div className="space-y-2">
-                    <Label htmlFor="tagline" className="flex items-center gap-2" style={{ color: STEALTH.text }}>
-                      <Quote size={14} style={{ color: STEALTH.accent }} />
-                      Phrase emblème
-                    </Label>
-                    <Input
-                      id="tagline"
-                      value={formData.tagline || ""}
-                      onChange={(e) => handleChange("tagline", e.target.value.slice(0, 80))}
-                      placeholder="L'excellence en toute simplicité"
-                      className="rounded-xl h-12"
-                      style={inputStyles}
-                      maxLength={80}
-                    />
-                    <p className="text-xs flex justify-between" style={{ color: STEALTH.textMuted }}>
-                      <span>Une phrase qui vous représente</span>
-                      <span>{(formData.tagline?.length || 0)}/80</span>
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="title" style={{ color: STEALTH.text }}>Fonction</Label>
-                      <Input
-                        id="title"
-                        value={formData.title || ""}
-                        onChange={(e) => handleChange("title", e.target.value)}
-                        placeholder="Directrice Générale"
-                        className="rounded-xl h-12"
-                        style={inputStyles}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="company" style={{ color: STEALTH.text }}>Entreprise</Label>
-                      <Input
-                        id="company"
-                        value={formData.company || ""}
-                        onChange={(e) => handleChange("company", e.target.value)}
-                        placeholder="Ma Société"
-                        className="rounded-xl h-12"
-                        style={inputStyles}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="bio" style={{ color: STEALTH.text }}>Bio courte</Label>
-                    <Textarea
-                      id="bio"
-                      value={formData.bio || ""}
-                      onChange={(e) => handleChange("bio", e.target.value)}
-                      placeholder="Quelques mots sur vous ou votre activité professionnelle..."
-                      rows={3}
-                      maxLength={200}
-                      className="rounded-xl"
-                      style={inputStyles}
-                    />
-                    <p className="text-xs text-right" style={{ color: STEALTH.textMuted }}>
-                      {(formData.bio?.length || 0)}/200
-                    </p>
                   </div>
                 </div>
-              </div>
 
-              {/* ═══════════════════════════════════════════════════════════
-                 BLOC 1: CONTACT DIRECT
-                 ═══════════════════════════════════════════════════════════ */}
-              <div 
-                className="rounded-3xl p-6"
-                style={{ 
-                  backgroundColor: STEALTH.bgCard,
-                  border: `1px solid ${STEALTH.border}`
-                }}
-              >
-                <div 
-                  className="flex items-center gap-2 text-lg font-semibold mb-2"
-                  style={{ color: STEALTH.text }}
-                >
-                  <Phone size={20} style={{ color: STEALTH.accent }} />
-                  Contact direct
-                </div>
-                <p 
-                  className="text-sm mb-6"
-                  style={{ color: STEALTH.textSecondary }}
-                >
-                  Vos coordonnées principales pour être contacté
-                </p>
-
-                <div className="space-y-5">
-                  {/* Phone */}
+                {/* Name fields */}
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="flex items-center gap-2" style={{ color: STEALTH.text }}>
-                      <Phone size={14} style={{ color: STEALTH.accent }} />
-                      Téléphone *
+                    <Label className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+                      Prénom *
                     </Label>
                     <Input
-                      id="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => handleChange("phone", e.target.value)}
-                      onBlur={() => handleBlur("phone")}
-                      placeholder="+33 6 12 34 56 78"
-                      className="rounded-xl h-12"
+                      value={formData.firstName}
+                      onChange={(e) => handleChange("firstName", e.target.value)}
+                      onBlur={() => handleBlur("firstName")}
+                      placeholder="Votre prénom"
+                      className="rounded-none border-0 border-b bg-transparent focus:ring-0"
                       style={inputStyles}
                     />
-                    {touched.phone && errors.phone && (
-                      <p className="text-xs flex items-center gap-1" style={{ color: STEALTH.error }}>
-                        <AlertCircle size={12} />
-                        {errors.phone}
-                      </p>
+                    {touched.firstName && errors.firstName && (
+                      <p className="text-[10px]" style={{ color: "#8B4049" }}>{errors.firstName}</p>
                     )}
                   </div>
-
-                  {/* Email */}
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="flex items-center gap-2" style={{ color: STEALTH.text }}>
-                      <Mail size={14} style={{ color: STEALTH.accent }} />
-                      Email *
+                    <Label className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+                      Nom *
                     </Label>
                     <Input
-                      id="email"
+                      value={formData.lastName}
+                      onChange={(e) => handleChange("lastName", e.target.value)}
+                      onBlur={() => handleBlur("lastName")}
+                      placeholder="Votre nom"
+                      className="rounded-none border-0 border-b bg-transparent focus:ring-0"
+                      style={inputStyles}
+                    />
+                    {touched.lastName && errors.lastName && (
+                      <p className="text-[10px]" style={{ color: "#8B4049" }}>{errors.lastName}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Title & Company */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+                      Titre
+                    </Label>
+                    <Input
+                      value={formData.title || ""}
+                      onChange={(e) => handleChange("title", e.target.value)}
+                      placeholder="CEO, Consultant..."
+                      className="rounded-none border-0 border-b bg-transparent focus:ring-0"
+                      style={inputStyles}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+                      Entreprise
+                    </Label>
+                    <Input
+                      value={formData.company || ""}
+                      onChange={(e) => handleChange("company", e.target.value)}
+                      placeholder="Votre société"
+                      className="rounded-none border-0 border-b bg-transparent focus:ring-0"
+                      style={inputStyles}
+                    />
+                  </div>
+                </div>
+
+                {/* Contact */}
+                <div className="space-y-4 pt-4">
+                  <div className="space-y-2">
+                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                      <Mail className="w-3 h-3" /> Email *
+                    </Label>
+                    <Input
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleChange("email", e.target.value)}
                       onBlur={() => handleBlur("email")}
-                      placeholder="prenom.nom@entreprise.com"
-                      className="rounded-xl h-12"
+                      placeholder="vous@email.com"
+                      className="rounded-none border-0 border-b bg-transparent focus:ring-0"
                       style={inputStyles}
                     />
                     {touched.email && errors.email && (
-                      <p className="text-xs flex items-center gap-1" style={{ color: STEALTH.error }}>
-                        <AlertCircle size={12} />
-                        {errors.email}
+                      <p className="text-[10px]" style={{ color: "#8B4049" }}>{errors.email}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                      <Phone className="w-3 h-3" /> Téléphone *
+                    </Label>
+                    <Input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => handleChange("phone", e.target.value)}
+                      onBlur={() => handleBlur("phone")}
+                      placeholder="+212 6 00 00 00 00"
+                      className="rounded-none border-0 border-b bg-transparent focus:ring-0"
+                      style={inputStyles}
+                    />
+                    {touched.phone && errors.phone && (
+                      <p className="text-[10px]" style={{ color: "#8B4049" }}>{errors.phone}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Social */}
+                <div className="space-y-4 pt-4">
+                  <div className="space-y-2">
+                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                      <MessageCircle className="w-3 h-3" /> WhatsApp
+                    </Label>
+                    <Input
+                      value={formData.whatsapp || ""}
+                      onChange={(e) => handleChange("whatsapp", e.target.value)}
+                      placeholder="+212 6 00 00 00 00"
+                      className="rounded-none border-0 border-b bg-transparent focus:ring-0"
+                      style={inputStyles}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                      <Instagram className="w-3 h-3" /> Instagram
+                    </Label>
+                    <Input
+                      value={formData.instagram || ""}
+                      onChange={(e) => handleChange("instagram", e.target.value)}
+                      placeholder="@votre_compte"
+                      className="rounded-none border-0 border-b bg-transparent focus:ring-0"
+                      style={inputStyles}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                      <Linkedin className="w-3 h-3" /> LinkedIn
+                    </Label>
+                    <Input
+                      value={formData.linkedin || ""}
+                      onChange={(e) => handleChange("linkedin", e.target.value)}
+                      placeholder="linkedin.com/in/vous"
+                      className="rounded-none border-0 border-b bg-transparent focus:ring-0"
+                      style={inputStyles}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                      <Globe className="w-3 h-3" /> Site web
+                    </Label>
+                    <Input
+                      value={formData.website || ""}
+                      onChange={(e) => handleChange("website", e.target.value)}
+                      placeholder="https://votresite.com"
+                      className="rounded-none border-0 border-b bg-transparent focus:ring-0"
+                      style={inputStyles}
+                    />
+                  </div>
+                </div>
+
+                {/* Bio */}
+                <div className="space-y-2 pt-4">
+                  <Label className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+                    Tagline
+                  </Label>
+                  <Textarea
+                    value={formData.tagline || ""}
+                    onChange={(e) => handleChange("tagline", e.target.value.slice(0, 80))}
+                    placeholder="Votre signature en une phrase..."
+                    rows={2}
+                    className="rounded-none border bg-transparent focus:ring-0 resize-none"
+                    style={inputStyles}
+                  />
+                  <p className="text-[10px] text-right" style={{ color: COUTURE.textMuted }}>
+                    {(formData.tagline || "").length}/80
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Preview */}
+            <div className={mobileView === "form" ? "hidden lg:block" : ""}>
+              <motion.div 
+                className="sticky top-24 p-8"
+                style={{ 
+                  backgroundColor: COUTURE.jetSoft,
+                  border: `1px solid ${COUTURE.jetMuted}`,
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.8 }}
+              >
+                <div className="text-center space-y-4">
+                  {/* Avatar */}
+                  <div 
+                    className="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-xl font-light overflow-hidden"
+                    style={{ 
+                      backgroundColor: COUTURE.jet,
+                      border: `1px solid ${COUTURE.jetMuted}`,
+                      color: COUTURE.gold,
+                    }}
+                  >
+                    {formData.photoUrl ? (
+                      <img 
+                        src={formData.photoUrl} 
+                        alt="Photo" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : formData.firstName && formData.lastName ? (
+                      `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`.toUpperCase()
+                    ) : (
+                      <User size={24} style={{ color: COUTURE.textMuted }} />
+                    )}
+                  </div>
+
+                  {/* Name */}
+                  <div>
+                    <h3 
+                      className="font-display text-xl font-light"
+                      style={{ color: COUTURE.silk }}
+                    >
+                      {formData.firstName || formData.lastName 
+                        ? `${formData.firstName} ${formData.lastName}`.trim()
+                        : "Votre nom"
+                      }
+                    </h3>
+                    
+                    {(formData.title || formData.company) && (
+                      <p 
+                        className="text-sm mt-1 font-light"
+                        style={{ color: COUTURE.textMuted }}
+                      >
+                        {formData.title}
+                        {formData.title && formData.company && " · "}
+                        {formData.company}
                       </p>
                     )}
                   </div>
 
-                  {/* WhatsApp */}
-                  <div className="space-y-2">
-                    <Label htmlFor="whatsapp" className="flex items-center gap-2" style={{ color: STEALTH.text }}>
-                      <MessageCircle size={14} style={{ color: STEALTH.accent }} />
-                      WhatsApp
-                      <Badge 
-                        className="ml-2 text-[10px] font-normal"
-                        style={{ 
-                          backgroundColor: STEALTH.accentMuted, 
-                          color: STEALTH.accent,
-                          border: 'none'
-                        }}
-                      >
-                        Recommandé
-                      </Badge>
-                    </Label>
-                    <Input
-                      id="whatsapp"
-                      type="tel"
-                      value={formData.whatsapp || ""}
-                      onChange={(e) => handleChange("whatsapp", e.target.value)}
-                      placeholder="+33 6 12 34 56 78"
-                      className="rounded-xl h-12"
-                      style={inputStyles}
-                    />
-                    <p 
-                      className="text-xs"
-                      style={{ color: STEALTH.textMuted }}
+                  {/* Tagline */}
+                  {formData.tagline && (
+                    <p
+                      className="text-sm italic font-light px-4"
+                      style={{ color: COUTURE.gold }}
                     >
-                      Permet d'envoyer des relances en un clic depuis i‑wasp
+                      "{formData.tagline}"
                     </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* ═══════════════════════════════════════════════════════════
-                 BLOC 2: RÉSEAUX & WEB
-                 ═══════════════════════════════════════════════════════════ */}
-              <div 
-                className="rounded-3xl p-6"
-                style={{ 
-                  backgroundColor: STEALTH.bgCard,
-                  border: `1px solid ${STEALTH.border}`
-                }}
-              >
-                <div 
-                  className="flex items-center gap-2 text-lg font-semibold mb-2"
-                  style={{ color: STEALTH.text }}
-                >
-                  <Globe size={20} style={{ color: STEALTH.accent }} />
-                  Réseaux & Web
-                </div>
-                <p 
-                  className="text-sm mb-6"
-                  style={{ color: STEALTH.textSecondary }}
-                >
-                  Votre présence en ligne
-                </p>
-
-                <div className="space-y-5">
-                  {/* LinkedIn */}
-                  <div className="space-y-2">
-                    <Label htmlFor="linkedin" className="flex items-center gap-2" style={{ color: STEALTH.text }}>
-                      <Linkedin size={14} style={{ color: STEALTH.accent }} />
-                      LinkedIn
-                    </Label>
-                    <Input
-                      id="linkedin"
-                      value={formData.linkedin || ""}
-                      onChange={(e) => handleChange("linkedin", e.target.value)}
-                      placeholder="linkedin.com/in/votre-profil"
-                      className="rounded-xl h-12"
-                      style={inputStyles}
-                    />
-                  </div>
-
-                  {/* Instagram */}
-                  <div className="space-y-2">
-                    <Label htmlFor="instagram" className="flex items-center gap-2" style={{ color: STEALTH.text }}>
-                      <Instagram size={14} style={{ color: STEALTH.accent }} />
-                      Instagram
-                    </Label>
-                    <div className="relative">
-                      <span 
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-sm"
-                        style={{ color: STEALTH.textMuted }}
-                      >
-                        @
-                      </span>
-                      <Input
-                        id="instagram"
-                        value={formData.instagram || ""}
-                        onChange={(e) => handleChange("instagram", e.target.value.replace("@", ""))}
-                        placeholder="votre_compte"
-                        className="pl-8 rounded-xl h-12"
-                        style={inputStyles}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Website */}
-                  <div className="space-y-2">
-                    <Label htmlFor="website" className="flex items-center gap-2" style={{ color: STEALTH.text }}>
-                      <Globe size={14} style={{ color: STEALTH.accent }} />
-                      Site web
-                    </Label>
-                    <Input
-                      id="website"
-                      value={formData.website || ""}
-                      onChange={(e) => handleChange("website", e.target.value)}
-                      placeholder="www.votresite.com"
-                      className="rounded-xl h-12"
-                      style={inputStyles}
-                    />
-                  </div>
-
-                  {/* Additional Links Toggle */}
-                  <AnimatePresence>
-                    {!showAdditionalLinks && (
-                      <motion.button
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        type="button"
-                        onClick={() => setShowAdditionalLinks(true)}
-                        className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed transition-all"
-                        style={{ 
-                          borderColor: STEALTH.border,
-                          color: STEALTH.textSecondary 
-                        }}
-                      >
-                        <Plus size={16} />
-                        <span className="text-sm">Ajouter un autre lien</span>
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Additional Links */}
-                  <AnimatePresence>
-                    {showAdditionalLinks && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="space-y-4 pt-4 border-t"
-                        style={{ borderColor: STEALTH.border }}
-                      >
-                        <p 
-                          className="text-xs font-medium uppercase tracking-wide"
-                          style={{ color: STEALTH.textMuted }}
-                        >
-                          Liens additionnels
-                        </p>
-                        {ADDITIONAL_LINKS.slice(0, 3).map((link) => (
-                          <div key={link.id} className="space-y-2">
-                            <Label className="flex items-center gap-2 text-sm" style={{ color: STEALTH.text }}>
-                              <link.icon size={14} style={{ color: STEALTH.textMuted }} />
-                              {link.label}
-                            </Label>
-                            <Input
-                              value={additionalLinks[link.id] || ""}
-                              onChange={(e) => setAdditionalLinks(prev => ({ ...prev, [link.id]: e.target.value }))}
-                              placeholder={link.placeholder}
-                              className="rounded-xl h-11"
-                              style={inputStyles}
-                            />
-                          </div>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-
-              {/* Geolocation - Optional */}
-              <div 
-                className="rounded-3xl p-6"
-                style={{ 
-                  backgroundColor: STEALTH.bgCard,
-                  border: `1px solid ${STEALTH.border}`
-                }}
-              >
-                <div 
-                  className="flex items-center gap-2 text-lg font-semibold mb-2"
-                  style={{ color: STEALTH.text }}
-                >
-                  <MapPin size={20} style={{ color: STEALTH.accent }} />
-                  Géolocalisation
-                  {formData.latitude && (
-                    <CheckCircle2 className="h-5 w-5 ml-auto" style={{ color: STEALTH.success }} />
                   )}
-                </div>
-                <p 
-                  className="text-sm mb-4"
-                  style={{ color: STEALTH.textSecondary }}
-                >
-                  Ajoutez votre position pour générer un lien Google Maps automatique
-                </p>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => geolocation.getCurrentPosition()}
-                  disabled={geolocation.isLoading}
-                  className="w-full h-12 gap-2 border-2 border-dashed rounded-xl"
-                  style={{ 
-                    borderColor: STEALTH.borderActive,
-                    backgroundColor: 'transparent',
-                    color: STEALTH.text
-                  }}
-                >
-                  {geolocation.isLoading ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" style={{ color: STEALTH.accent }} />
-                      <span>Localisation en cours...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Navigation className="h-5 w-5" style={{ color: STEALTH.accent }} />
-                      <span>Utiliser ma position actuelle</span>
-                    </>
-                  )}
-                </Button>
-
-                {geolocation.error && (
-                  <p className="text-xs mt-2" style={{ color: STEALTH.error }}>{geolocation.error}</p>
-                )}
-
-                {formData.googleMapsUrl && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-3 p-3 rounded-xl text-sm flex items-center gap-2"
-                    style={{ 
-                      backgroundColor: STEALTH.successBg,
-                      color: STEALTH.success
-                    }}
-                  >
-                    <CheckCircle2 className="h-4 w-4" />
-                    Position enregistrée
-                  </motion.div>
-                )}
-              </div>
-
-              {/* Concierge Note */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="text-center px-4"
-              >
-                <p 
-                  className="text-sm italic"
-                  style={{ color: STEALTH.textMuted }}
-                >
-                  Nous utiliserons ces informations pour faciliter vos relances et vos stories 24h après chaque rencontre.
-                </p>
-              </motion.div>
-            </motion.div>
-
-                {/* Navigation */}
-                <motion.div 
-                  className="flex justify-between items-center mt-10"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <Button 
-                    variant="ghost" 
-                    onClick={prevStep}
-                    disabled={state.isTransitioning}
-                    className="gap-2"
-                    style={{ color: STEALTH.textSecondary }}
-                  >
-                    <ArrowLeft size={18} />
-                    Retour
-                  </Button>
-                  <LoadingButton
-                    size="xl"
-                    onClick={handleContinue}
-                    disabled={!isValid || state.isTransitioning}
-                    isLoading={isNavigating}
-                    loadingText="Chargement..."
-                    className="px-8 rounded-full font-semibold disabled:opacity-50"
-                    style={{ 
-                      backgroundColor: STEALTH.accent,
-                      color: STEALTH.bg
-                    }}
-                  >
-                    Continuer
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </LoadingButton>
-                </motion.div>
-              </div>
-
-              {/* Right Column - Live Preview */}
-              <div className="lg:col-span-2 hidden lg:block">
-                <div className="sticky top-28">
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    {/* Preview Label */}
-                    <p 
-                      className="text-xs uppercase tracking-widest mb-4 text-center"
-                      style={{ color: STEALTH.textMuted }}
-                    >
-                      Aperçu en temps réel
-                    </p>
-
-                    {/* Card Preview */}
-                    <div 
-                      className="rounded-3xl p-8 relative overflow-hidden"
-                      style={{ 
-                        backgroundColor: STEALTH.bgCard,
-                        border: `1px solid ${STEALTH.border}`,
-                        boxShadow: STEALTH.shadowCard
-                      }}
-                    >
-                      {/* Subtle gradient overlay */}
+                  {/* Contact Icons */}
+                  <div className="flex justify-center gap-3 pt-2">
+                    {formData.phone && (
                       <div 
-                        className="absolute inset-0 opacity-30"
-                        style={{
-                          background: `radial-gradient(circle at top right, ${STEALTH.accent}15, transparent 60%)`
-                        }}
-                      />
-
-                      {/* Content */}
-                      <div className="relative z-10 text-center space-y-6">
-                        {/* Avatar with photo */}
-                        <div 
-                          className="w-24 h-24 rounded-full mx-auto flex items-center justify-center text-3xl font-bold overflow-hidden"
-                          style={{ 
-                            backgroundColor: STEALTH.bgInput,
-                            color: STEALTH.accent,
-                            border: `2px solid ${STEALTH.border}`
-                          }}
-                        >
-                          {formData.photoUrl ? (
-                            <img 
-                              src={formData.photoUrl} 
-                              alt="Photo" 
-                              className="w-full h-full object-cover"
-                            />
-                          ) : formData.firstName && formData.lastName ? (
-                            `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`.toUpperCase()
-                          ) : (
-                            <User size={32} style={{ color: STEALTH.textMuted }} />
-                          )}
-                        </div>
-
-                        {/* Name */}
-                        <div>
-                          <h3 
-                            className="text-2xl font-display font-bold"
-                            style={{ color: STEALTH.text }}
-                          >
-                            {formData.firstName || formData.lastName 
-                              ? `${formData.firstName} ${formData.lastName}`.trim()
-                              : "Votre nom"
-                            }
-                          </h3>
-                          
-                          {/* Title & Company */}
-                          {(formData.title || formData.company) && (
-                            <p 
-                              className="text-sm mt-1"
-                              style={{ color: STEALTH.textSecondary }}
-                            >
-                              {formData.title}
-                              {formData.title && formData.company && " · "}
-                              {formData.company}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Tagline */}
-                        {formData.tagline && (
-                          <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-sm italic px-4"
-                            style={{ color: STEALTH.textMuted }}
-                          >
-                            "{formData.tagline}"
-                          </motion.p>
-                        )}
-
-                        {/* Contact Icons Preview */}
-                        <div className="flex justify-center gap-3 pt-2">
-                          {formData.phone && (
-                            <div 
-                              className="w-10 h-10 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: STEALTH.bgInput }}
-                            >
-                              <Phone size={16} style={{ color: STEALTH.accent }} />
-                            </div>
-                          )}
-                          {formData.email && (
-                            <div 
-                              className="w-10 h-10 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: STEALTH.bgInput }}
-                            >
-                              <Mail size={16} style={{ color: STEALTH.accent }} />
-                            </div>
-                          )}
-                          {formData.whatsapp && (
-                            <div 
-                              className="w-10 h-10 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: STEALTH.bgInput }}
-                            >
-                              <MessageCircle size={16} style={{ color: STEALTH.accent }} />
-                            </div>
-                          )}
-                          {formData.linkedin && (
-                            <div 
-                              className="w-10 h-10 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: STEALTH.bgInput }}
-                            >
-                              <Linkedin size={16} style={{ color: STEALTH.accent }} />
-                            </div>
-                          )}
-                          {formData.instagram && (
-                            <div 
-                              className="w-10 h-10 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: STEALTH.bgInput }}
-                            >
-                              <Instagram size={16} style={{ color: STEALTH.accent }} />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Location if set */}
-                        {formData.googleMapsUrl && (
-                          <div 
-                            className="flex items-center justify-center gap-2 text-xs"
-                            style={{ color: STEALTH.success }}
-                          >
-                            <MapPin size={12} />
-                            Position enregistrée
-                          </div>
-                        )}
+                        className="w-10 h-10 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: COUTURE.jet }}
+                      >
+                        <Phone size={16} style={{ color: COUTURE.gold }} />
                       </div>
-                    </div>
-
-                    {/* Powered by badge */}
-                    <p 
-                      className="text-xs text-center mt-4"
-                      style={{ color: STEALTH.textMuted }}
-                    >
-                      Powered by <span style={{ color: STEALTH.accent }}>IWASP</span>
-                    </p>
-                  </motion.div>
+                    )}
+                    {formData.email && (
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: COUTURE.jet }}
+                      >
+                        <Mail size={16} style={{ color: COUTURE.gold }} />
+                      </div>
+                    )}
+                    {formData.whatsapp && (
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: COUTURE.jet }}
+                      >
+                        <MessageCircle size={16} style={{ color: COUTURE.gold }} />
+                      </div>
+                    )}
+                    {formData.linkedin && (
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: COUTURE.jet }}
+                      >
+                        <Linkedin size={16} style={{ color: COUTURE.gold }} />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
-        </main>
-      </PageTransition>
+        </div>
+      </main>
 
-      <Footer />
+      {/* Fixed CTA */}
+      <div 
+        className="fixed bottom-0 left-0 right-0 z-20 px-6 py-6"
+        style={{ 
+          backgroundColor: COUTURE.jet,
+          borderTop: `1px solid ${COUTURE.jetSoft}`,
+        }}
+      >
+        <div className="max-w-3xl mx-auto flex justify-center">
+          <button
+            onClick={handleContinue}
+            disabled={!isValid || isNavigating || state.isTransitioning}
+            className="text-[11px] uppercase tracking-[0.25em] font-light transition-all duration-700 pb-1 disabled:opacity-30 disabled:cursor-not-allowed"
+            style={{ 
+              color: isValid ? COUTURE.gold : COUTURE.textMuted,
+              borderBottom: `1px solid ${isValid ? `${COUTURE.gold}60` : 'transparent'}`,
+            }}
+          >
+            {isNavigating ? "Chargement..." : "Continuer"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
