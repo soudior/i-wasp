@@ -47,36 +47,19 @@ function OrderRecapContent() {
     setPaymentInfo({ method: paymentMethod });
 
     try {
-      let userId = user?.id;
-      let userEmail = user?.email;
       const { firstName, lastName, email, phone, title, company, whatsapp, instagram, linkedin, website, bio } = state.digitalIdentity || {};
 
-      if (!user && email) {
-        const tempPassword = `iwasp_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-        
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email,
-          password: tempPassword,
-          options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-            data: {
-              first_name: firstName,
-              last_name: lastName,
-            }
-          }
-        });
-
-        if (authError) {
-          console.error("Auto signup error:", authError);
-          if (!authError.message.includes("already registered")) {
-            throw authError;
-          }
-        } else if (authData.user) {
-          userId = authData.user.id;
-          userEmail = authData.user.email;
-          toast.success("Compte créé");
-        }
+      // Sécurité/UX: si l'email appartient déjà à un compte (ou si l'utilisateur n'est pas connecté),
+      // on demande une connexion au lieu de tenter un "auto-signup".
+      if (!user) {
+        setIsProcessing(false);
+        toast.error("Veuillez vous connecter pour finaliser votre commande");
+        navigate(`/login?redirect=${encodeURIComponent("/order/recap")}`);
+        return;
       }
+
+      const userId = user.id;
+      const userEmail = user.email;
 
       if (userId && firstName && lastName) {
         const slug = generateSlug(firstName, lastName);
@@ -90,7 +73,7 @@ function OrderRecapContent() {
             last_name: lastName,
             title: title || null,
             company: company || null,
-            email: email || null,
+            email: (email || userEmail) || null,
             phone: phone || null,
             whatsapp: whatsapp || null,
             instagram: instagram || null,
@@ -136,9 +119,9 @@ function OrderRecapContent() {
         shipping_city: state.shippingInfo?.city,
         shipping_postal_code: "",
         shipping_country: "MA",
-        customer_email: email,
+        customer_email: (email || userEmail) || null,
         payment_method: paymentMethod,
-        user_id: userId, // Pass the user ID for newly created users
+        user_id: userId,
       });
 
       if (paymentMethod === "stripe" && order?.id) {
