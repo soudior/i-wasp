@@ -15,8 +15,10 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { CoutureFooter } from "@/components/CoutureFooter";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { PartnersSection } from "@/components/PartnersSection";
+import { useState } from "react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import cardFront from "@/assets/card-front.png";
+import cardBack from "@/assets/card-back.png";
 
 export default function HomeLuxeMax() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -118,39 +120,7 @@ export default function HomeLuxeMax() {
       {/* ═══════════════════════════════════════════════════════════════════
           CARTE — Single, high-end visual. Silent. Isolated. Editorial.
       ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="py-24 md:py-40 flex items-center justify-center"
-        style={{ backgroundColor: COUTURE.jet }}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-          className="relative"
-          style={{ perspective: "1000px" }}
-        >
-          <motion.img 
-            src={cardFront} 
-            alt="Carte i-wasp" 
-            className="w-[280px] md:w-[360px] lg:w-[420px] h-auto cursor-pointer"
-            style={{
-              filter: "drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5))",
-              transformStyle: "preserve-3d",
-            }}
-            whileHover={{ 
-              rotateY: 8,
-              rotateX: -5,
-              scale: 1.02,
-              filter: "drop-shadow(0 35px 60px rgba(0, 0, 0, 0.6))",
-            }}
-            transition={{ 
-              duration: 0.6, 
-              ease: [0.22, 1, 0.36, 1] 
-            }}
-          />
-        </motion.div>
-      </section>
+      <CardFlipSection />
 
       {/* ═══════════════════════════════════════════════════════════════════
           MANIFESTE — One silent thought with parallax
@@ -267,6 +237,61 @@ export default function HomeLuxeMax() {
 
       <CoutureFooter />
     </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CARD FLIP SECTION COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+function CardFlipSection() {
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  return (
+    <section 
+      className="py-24 md:py-40 flex items-center justify-center"
+      style={{ backgroundColor: COUTURE.jet }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+        className="relative cursor-pointer"
+        style={{ perspective: "1200px" }}
+        onMouseEnter={() => setIsFlipped(true)}
+        onMouseLeave={() => setIsFlipped(false)}
+      >
+        <motion.div
+          className="relative w-[280px] md:w-[360px] lg:w-[420px]"
+          style={{ transformStyle: "preserve-3d" }}
+          animate={{ rotateY: isFlipped ? 180 : 0 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* Front */}
+          <motion.img 
+            src={cardFront} 
+            alt="Carte i-wasp - Recto" 
+            className="w-full h-auto"
+            style={{
+              filter: "drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5))",
+              backfaceVisibility: "hidden",
+            }}
+          />
+          {/* Back */}
+          <motion.img 
+            src={cardBack} 
+            alt="Carte i-wasp - Verso" 
+            className="w-full h-auto absolute top-0 left-0"
+            style={{
+              filter: "drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5))",
+              backfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+            }}
+          />
+        </motion.div>
+      </motion.div>
+    </section>
   );
 }
 
