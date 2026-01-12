@@ -5,7 +5,7 @@
  * IWASP Premium Luxury — Simplified Contact Form
  */
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOrderFunnel, DigitalIdentity, OrderFunnelGuard, ClientType } from "@/contexts/OrderFunnelContext";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -42,6 +42,8 @@ import {
   Quote,
   Eye,
   FileText,
+  Camera,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -80,6 +82,7 @@ function OrderIdentiteContent() {
       firstName: "",
       lastName: "",
       tagline: "",
+      photoUrl: "",
       title: "",
       company: "",
       phone: "",
@@ -94,6 +97,9 @@ function OrderIdentiteContent() {
       googleMapsUrl: "",
     }
   );
+
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
@@ -148,6 +154,46 @@ function OrderIdentiteContent() {
     setTouched(prev => ({ ...prev, [field]: true }));
   };
 
+  // Photo upload handler
+  const handlePhotoUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Veuillez sélectionner une image");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'image doit faire moins de 5 Mo");
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      handleChange("photoUrl", dataUrl);
+      setIsUploadingPhoto(false);
+      toast.success("Photo ajoutée !");
+    };
+    reader.onerror = () => {
+      toast.error("Erreur lors du chargement");
+      setIsUploadingPhoto(false);
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
+  const handleRemovePhoto = useCallback(() => {
+    handleChange("photoUrl", "");
+    if (photoInputRef.current) {
+      photoInputRef.current.value = "";
+    }
+  }, []);
+
   const handleContinue = async () => {
     if (isNavigating || state.isTransitioning) return;
     
@@ -170,6 +216,7 @@ function OrderIdentiteContent() {
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
       tagline: formData.tagline?.trim()?.slice(0, 80),
+      photoUrl: formData.photoUrl,
       title: formData.title?.trim(),
       company: formData.company?.trim(),
       phone: formData.phone.trim(),
@@ -292,17 +339,24 @@ function OrderIdentiteContent() {
                     <div className="relative z-10 text-center space-y-4">
                       {/* Avatar */}
                       <div 
-                        className="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-2xl font-bold"
+                        className="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-2xl font-bold overflow-hidden"
                         style={{ 
                           backgroundColor: STEALTH.bgInput,
                           color: STEALTH.accent,
                           border: `2px solid ${STEALTH.border}`
                         }}
                       >
-                        {formData.firstName && formData.lastName 
-                          ? `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`.toUpperCase()
-                          : <User size={28} style={{ color: STEALTH.textMuted }} />
-                        }
+                        {formData.photoUrl ? (
+                          <img 
+                            src={formData.photoUrl} 
+                            alt="Photo" 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : formData.firstName && formData.lastName ? (
+                          `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`.toUpperCase()
+                        ) : (
+                          <User size={28} style={{ color: STEALTH.textMuted }} />
+                        )}
                       </div>
 
                       {/* Name */}
@@ -484,7 +538,84 @@ function OrderIdentiteContent() {
                     </div>
                   </div>
 
-                  {/* Phrase emblème - NEW FIELD */}
+                  {/* Photo Upload */}
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2" style={{ color: STEALTH.text }}>
+                      <Camera size={14} style={{ color: STEALTH.accent }} />
+                      Photo de profil
+                    </Label>
+                    <input
+                      ref={photoInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                    />
+                    
+                    {formData.photoUrl ? (
+                      <div className="flex items-center gap-4">
+                        <div 
+                          className="w-16 h-16 rounded-full overflow-hidden"
+                          style={{ border: `2px solid ${STEALTH.accent}` }}
+                        >
+                          <img 
+                            src={formData.photoUrl} 
+                            alt="Photo" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => photoInputRef.current?.click()}
+                            className="rounded-xl"
+                            style={{ borderColor: STEALTH.border, color: STEALTH.text }}
+                          >
+                            <Camera size={14} className="mr-2" />
+                            Changer
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleRemovePhoto}
+                            className="rounded-xl"
+                            style={{ color: STEALTH.error }}
+                          >
+                            <X size={14} />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => photoInputRef.current?.click()}
+                        disabled={isUploadingPhoto}
+                        className="w-full flex items-center justify-center gap-3 p-4 rounded-xl border-2 border-dashed transition-all hover:border-solid"
+                        style={{ 
+                          borderColor: STEALTH.border,
+                          backgroundColor: STEALTH.bgInput,
+                          color: STEALTH.textSecondary 
+                        }}
+                      >
+                        {isUploadingPhoto ? (
+                          <Loader2 size={20} className="animate-spin" style={{ color: STEALTH.accent }} />
+                        ) : (
+                          <Camera size={20} style={{ color: STEALTH.accent }} />
+                        )}
+                        <span className="text-sm">
+                          {isUploadingPhoto ? "Chargement..." : "Ajouter une photo"}
+                        </span>
+                      </button>
+                    )}
+                    <p className="text-xs" style={{ color: STEALTH.textMuted }}>
+                      Recommandé : photo carrée, min 200×200px
+                    </p>
+                  </div>
+
+                  {/* Phrase emblème */}
                   <div className="space-y-2">
                     <Label htmlFor="tagline" className="flex items-center gap-2" style={{ color: STEALTH.text }}>
                       <Quote size={14} style={{ color: STEALTH.accent }} />
@@ -952,19 +1083,26 @@ function OrderIdentiteContent() {
 
                       {/* Content */}
                       <div className="relative z-10 text-center space-y-6">
-                        {/* Avatar placeholder */}
+                        {/* Avatar with photo */}
                         <div 
-                          className="w-24 h-24 rounded-full mx-auto flex items-center justify-center text-3xl font-bold"
+                          className="w-24 h-24 rounded-full mx-auto flex items-center justify-center text-3xl font-bold overflow-hidden"
                           style={{ 
                             backgroundColor: STEALTH.bgInput,
                             color: STEALTH.accent,
                             border: `2px solid ${STEALTH.border}`
                           }}
                         >
-                          {formData.firstName && formData.lastName 
-                            ? `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`.toUpperCase()
-                            : <User size={32} style={{ color: STEALTH.textMuted }} />
-                          }
+                          {formData.photoUrl ? (
+                            <img 
+                              src={formData.photoUrl} 
+                              alt="Photo" 
+                              className="w-full h-full object-cover"
+                            />
+                          ) : formData.firstName && formData.lastName ? (
+                            `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`.toUpperCase()
+                          ) : (
+                            <User size={32} style={{ color: STEALTH.textMuted }} />
+                          )}
                         </div>
 
                         {/* Name */}

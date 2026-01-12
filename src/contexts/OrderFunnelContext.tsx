@@ -48,6 +48,7 @@ export interface DigitalIdentity {
   firstName: string;
   lastName: string;
   tagline?: string;         // Phrase emblème (max 80 caractères)
+  photoUrl?: string;        // Photo de profil (data URL ou URL)
   title?: string;           // Fonction
   company?: string;         // Entreprise
   phone: string;
