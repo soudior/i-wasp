@@ -206,8 +206,8 @@ const App = () => {
                               <Route path="/forgot-password" element={<ForgotPassword />} />
                               <Route path="/reset-password" element={<ResetPassword />} />
                               
-                              {/* Guest card creation */}
-                              <Route path="/create" element={<GuestCardCreator />} />
+                              {/* Guest card creation - redirect to order funnel */}
+                              <Route path="/create" element={<Navigate to="/order/offre" replace />} />
                               <Route path="/success" element={<CardSuccess />} />
                               <Route path="/guide" element={<UserGuide />} />
                               <Route path="/templates" element={<Templates />} />
