@@ -30,9 +30,10 @@ export function CoutureNavbar() {
 
   const navLinks = [
     { href: "/", label: "Accueil" },
+    { href: "/maison", label: "La Maison" },
     { href: "/features", label: "Fonctionnalités" },
     { href: "/pricing", label: "Tarifs" },
-    { href: "/order/type", label: "Commander", highlight: true },
+    { href: "/order/offre", label: "Découvrir", highlight: true },
   ];
 
   useEffect(() => {
