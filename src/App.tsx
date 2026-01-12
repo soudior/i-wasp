@@ -55,6 +55,7 @@ const Templates = lazy(() => import("./pages/Templates"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Install = lazy(() => import("./pages/Install"));
 const Help = lazy(() => import("./pages/Help"));
+const FAQ = lazy(() => import("./pages/FAQ"));
 const DemoDashboard = lazy(() => import("./pages/DemoDashboard"));
 const Nails = lazy(() => import("./pages/Nails"));
 const Partenaires = lazy(() => import("./pages/Partenaires"));
@@ -214,7 +215,7 @@ const App = () => {
                               <Route path="/templates" element={<Templates />} />
                               <Route path="/install" element={<Install />} />
                               <Route path="/help" element={<Help />} />
-                              <Route path="/faq" element={<Help />} />
+                              <Route path="/faq" element={<FAQ />} />
                               <Route path="/demo-dashboard" element={<DemoDashboard />} />
                               <Route path="/nails" element={<Nails />} />
                               <Route path="/partenaires" element={<Partenaires />} />
