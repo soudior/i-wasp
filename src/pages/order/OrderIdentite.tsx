@@ -7,7 +7,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
-import { useOrderFunnel, DigitalIdentity, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
+import { useOrderFunnel, DigitalIdentity, OrderFunnelGuard, ClientType } from "@/contexts/OrderFunnelContext";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -49,6 +49,7 @@ function OrderIdentiteContent() {
 
   const [formData, setFormData] = useState<DigitalIdentity>(
     state.digitalIdentity || {
+      clientType: "particulier",
       firstName: "",
       lastName: "",
       title: "",
@@ -137,6 +138,7 @@ function OrderIdentiteContent() {
 
     // Normalize data
     const normalizedData: DigitalIdentity = {
+      clientType: formData.clientType,
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
       title: formData.title?.trim(),
@@ -211,6 +213,45 @@ function OrderIdentiteContent() {
               transition={{ delay: 0.1 }}
               className="space-y-6"
             >
+              {/* Client Type Selection */}
+              <div 
+                className="rounded-3xl p-6"
+                style={{ 
+                  backgroundColor: STEALTH.bgCard,
+                  border: `1px solid ${STEALTH.border}`
+                }}
+              >
+                <div 
+                  className="flex items-center gap-2 text-lg font-semibold mb-4"
+                  style={{ color: STEALTH.text }}
+                >
+                  <User size={20} style={{ color: STEALTH.accent }} />
+                  Type de client *
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { id: "particulier", label: "Particulier", icon: "👤" },
+                    { id: "independant", label: "Indépendant", icon: "💼" },
+                    { id: "entreprise", label: "Entreprise", icon: "🏢" },
+                  ].map((type) => (
+                    <button
+                      key={type.id}
+                      type="button"
+                      onClick={() => handleChange("clientType", type.id as ClientType)}
+                      className="p-4 rounded-xl text-center transition-all duration-200"
+                      style={{
+                        backgroundColor: formData.clientType === type.id ? STEALTH.accent : STEALTH.bgInput,
+                        border: `2px solid ${formData.clientType === type.id ? STEALTH.accent : STEALTH.border}`,
+                        color: formData.clientType === type.id ? STEALTH.bg : STEALTH.text,
+                      }}
+                    >
+                      <span className="text-2xl mb-2 block">{type.icon}</span>
+                      <span className="text-sm font-medium">{type.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Personal Info */}
               <div 
                 className="rounded-3xl p-6"

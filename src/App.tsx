@@ -273,8 +273,8 @@ const App = () => {
                               <Route path="/setup" element={<FirstCardSetup />} />
                               
                               {/* NEW ORDER FUNNEL - 7 steps STRICT */}
-                              <Route path="/order" element={<Navigate to="/order/type" replace />} />
-                              <Route path="/order/type" element={<OrderType />} />
+                              <Route path="/order" element={<Navigate to="/order/offre" replace />} />
+                              <Route path="/order/type" element={<Navigate to="/order/offre" replace />} />
                               <Route path="/order/offre" element={<OrderOffre />} />
                               <Route path="/order/identite" element={<OrderIdentite />} />
                               <Route path="/order/carte" element={<OrderCarte />} />
