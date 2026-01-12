@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { CoutureFooter } from "@/components/CoutureFooter";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
+import { PartnersSection } from "@/components/PartnersSection";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 
 export default function HomeLuxeMax() {
@@ -134,6 +135,11 @@ export default function HomeLuxeMax() {
           </p>
         </motion.blockquote>
       </ParallaxSection>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          PARTENAIRES — Logos clients with elegant monograms
+      ═══════════════════════════════════════════════════════════════════ */}
+      <PartnersSection />
 
       {/* ═══════════════════════════════════════════════════════════════════
           ESSENCE — Three words with staggered parallax
