@@ -1,8 +1,8 @@
 /**
  * Index / Home Page — i-wasp Landing
  * 
- * Refonte complète avec les nouveaux textes copywriting
- * Hero + Comment ça marche + Pour qui + Machine à leads + Offres teaser + FAQ
+ * Design épuré, lisible, compréhensible immédiatement
+ * Mode clair par défaut avec support dark mode
  */
 
 import { Link } from "react-router-dom";
@@ -11,144 +11,107 @@ import {
   Sparkles, 
   Zap, 
   Users, 
-  Bell, 
-  Shield, 
   Check,
   Star,
-  Globe,
-  Target,
-  BarChart3,
-  Smartphone,
-  Palette,
-  Crown,
   CreditCard,
   Wifi,
-  QrCode,
   ShoppingBag,
   Play,
-  Building2,
-  PartyPopper,
-  Hotel,
   Briefcase,
-  UserPlus,
   Share2,
-  MessageCircle,
   Phone,
   Mail,
-  LayoutDashboard,
-  HelpCircle,
-  ChevronDown
+  Linkedin,
+  ChevronDown,
+  Clock,
+  Shield,
+  TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRef, useState } from "react";
-import { ClubNavbar } from "@/components/ClubNavbar";
+import { Navbar } from "@/components/Navbar";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { useAuth } from "@/contexts/AuthContext";
-
-// Import unified Luxe Max palette
-import { STEALTH } from "@/lib/stealthPalette";
-import { HoneycombBackground } from "@/components/HoneycombBackground";
 
 // Comment ça marche - 3 étapes simples
 const howItWorks = [
   {
-    step: "01",
-    title: "Choisissez votre offre",
-    description: "Choisissez votre offre et votre support NFC.",
+    step: "1",
+    title: "Commandez votre carte",
+    description: "Choisissez votre design et recevez votre carte NFC en 48h.",
     icon: ShoppingBag,
   },
   {
-    step: "02", 
-    title: "Personnalisez",
-    description: "Personnalisez votre profil digital en quelques secondes.",
-    icon: Palette,
+    step: "2", 
+    title: "Créez votre profil",
+    description: "Ajoutez vos infos, réseaux sociaux et liens en 2 minutes.",
+    icon: Users,
   },
   {
-    step: "03",
-    title: "Partagez",
-    description: "Partagez par un tap, un QR ou un lien. Vos leads arrivent directement dans votre espace i‑wasp.",
-    icon: Share2,
-  },
-];
-
-// Pour qui
-const targetAudiences = [
-  {
-    icon: Briefcase,
-    title: "Entrepreneurs & indépendants",
-    description: "Networking quotidien, impressionner vos prospects dès le premier contact.",
-  },
-  {
-    icon: Hotel,
-    title: "Hôtellerie & luxe",
-    description: "Concierges, directeurs d'établissements, expériences VIP.",
-  },
-  {
-    icon: PartyPopper,
-    title: "Événementiel & vie nocturne",
-    description: "DJ, organisateurs, clubs. Partagez vos infos en un geste.",
+    step: "3",
+    title: "Partagez d'un tap",
+    description: "Approchez votre carte d'un téléphone. C'est tout.",
+    icon: Wifi,
   },
 ];
 
-// Offres teaser
-const offersTeaser = [
+// Avantages clés
+const benefits = [
   {
-    id: "essentiel",
-    icon: Star,
+    icon: Zap,
+    title: "Instantané",
+    description: "Un tap suffit pour partager toutes vos coordonnées.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Professionnel",
+    description: "Impressionnez vos contacts avec une carte premium.",
+  },
+  {
+    icon: Shield,
+    title: "Écologique",
+    description: "Fini les cartes papier jetées. Une seule carte pour toujours.",
+  },
+];
+
+// Offres
+const offers = [
+  {
     name: "Essentiel",
-    tagline: "Votre identité numérique de base",
-    price: "277 MAD",
-    badge: "Idéal pour commencer",
-    features: ["Carte NFC standard", "Profil digital complet", "Jusqu'à 3 liens", "Accès tableau de bord"],
+    price: "277",
+    description: "Pour bien commencer",
+    features: ["Carte NFC blanche", "Profil digital", "3 liens", "QR code"],
   },
   {
-    id: "signature",
-    icon: Sparkles,
     name: "Signature",
-    tagline: "L'expérience complète",
-    price: "555 MAD",
-    badge: "Populaire",
-    isPopular: true,
-    features: ["Carte NFC premium", "Liens illimités", "Galerie photo/vidéo", "Collecte de leads", "Statistiques"],
+    price: "555",
+    description: "Notre best-seller",
+    popular: true,
+    features: ["Carte NFC premium", "Liens illimités", "Photos & vidéos", "Capture de leads", "Statistiques"],
   },
   {
-    id: "elite",
-    icon: Crown,
     name: "Élite",
-    tagline: "Service sur mesure",
-    price: "925 MAD",
-    badge: "Sur devis pour entreprises",
-    features: ["Tout Signature inclus", "Design personnalisé", "Scénarios de relance", "Accompagnement dédié"],
+    price: "925",
+    description: "Sur mesure",
+    features: ["Design personnalisé", "Tout Signature inclus", "Support prioritaire", "Formation incluse"],
   },
 ];
 
 // FAQ
 const faqs = [
   {
-    question: "La carte est-elle compatible avec tous les smartphones ?",
-    answer: "Oui ! La technologie NFC fonctionne avec tous les iPhone (XS et +) et tous les smartphones Android récents. Aucune app à installer.",
+    question: "Est-ce compatible avec tous les téléphones ?",
+    answer: "Oui. Tous les iPhone récents (XS et +) et smartphones Android. Aucune application à installer.",
   },
   {
-    question: "Mes données sont-elles sécurisées ?",
-    answer: "Absolument. Vos données sont hébergées en Europe, chiffrées, et nous sommes conformes au RGPD. Vous contrôlez tout depuis votre espace.",
+    question: "Puis-je modifier mes informations ?",
+    answer: "Oui, à tout moment depuis votre espace. Les modifications sont instantanées.",
   },
   {
-    question: "Quels sont les délais de livraison ?",
-    answer: "Livraison gratuite au Maroc sous 48h-72h. Nous expédions également à l'international sur demande.",
+    question: "Comment ça marche exactement ?",
+    answer: "Approchez votre carte du téléphone de votre contact. Votre profil s'affiche automatiquement dans son navigateur.",
   },
-  {
-    question: "Puis-je modifier mes informations après la commande ?",
-    answer: "Oui, vous pouvez modifier votre profil digital à tout moment depuis votre espace i-wasp. Les changements sont instantanés.",
-  },
-];
-
-// Quick access links for logged-in users
-const quickLinks = [
-  { href: "/dashboard", label: "Mon Dashboard", icon: LayoutDashboard },
-  { href: "/order/offre", label: "Commander", icon: ShoppingBag },
-  { href: "/card-studio", label: "Éditer ma Carte", icon: Palette },
-  { href: "/settings", label: "Paramètres", icon: Crown },
 ];
 
 const Index = () => {
@@ -157,339 +120,309 @@ const Index = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   
   return (
-    <div ref={containerRef} className="relative" style={{ backgroundColor: STEALTH.noir }}>
-      {/* Haute Couture Honeycomb Background */}
-      <HoneycombBackground opacity={0.04} showDots />
-      
-      <ClubNavbar />
+    <div ref={containerRef} className="bg-background min-h-screen">
+      <Navbar />
 
       {/* ═══════════════════════════════════════════════════════════════════
-          SECTION 1: HERO — Comprendre en 5 secondes
+          HERO — Message clair en 3 secondes
           ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
-        style={{ backgroundColor: STEALTH.noir }}
-      >
-        {/* Ambient cyan halos */}
-        <div 
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full blur-[150px] opacity-20"
-          style={{ backgroundColor: STEALTH.accent }}
-        />
-        <div 
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full blur-[180px] opacity-15"
-          style={{ backgroundColor: STEALTH.accent }}
-        />
-        <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full blur-[200px] opacity-10"
-          style={{ backgroundColor: STEALTH.accent }}
-        />
-        
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 py-12 sm:py-16">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
-            
-            {/* Left: Content */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center lg:text-left"
-            >
-              {/* Badge */}
-              <div 
-                className="inline-flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-full border mb-6 sm:mb-8"
-                style={{ 
-                  backgroundColor: `${STEALTH.titanium}10`,
-                  borderColor: `${STEALTH.titanium}20`
-                }}
-              >
-                <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" style={{ color: STEALTH.platinum }} />
-                <span 
-                  className="text-xs sm:text-sm font-medium"
-                  style={{ color: STEALTH.titanium }}
-                >
-                  Carte NFC nouvelle génération
-                </span>
-              </div>
-              
-              {/* Titre principal - NOUVEAU */}
-              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.1] mb-4 sm:mb-6">
-                <span className="text-white">Une carte NFC.</span>
-                <br />
-                <span className="text-white">Appuyez un peu.</span>
-                <br />
-                <span 
-                  className="text-transparent bg-clip-text"
-                  style={{ 
-                    backgroundImage: `linear-gradient(135deg, ${STEALTH.accent}, ${STEALTH.platinum})`
-                  }}
-                >
-                  Tout votre monde connecté.
-                </span>
-              </h1>
-              
-              {/* Sous-titre - NOUVEAU */}
-              <p 
-                className="text-base sm:text-lg lg:text-xl max-w-xl leading-relaxed mb-6 sm:mb-8"
-                style={{ color: STEALTH.titanium }}
-              >
-                i‑wasp remplace vos cartes papier par une identité numérique de luxe qui capture vos leads, 
-                envoie des notifications et pilote tout votre réseau NFC depuis un seul espace.
-              </p>
-              
-              {/* CTAs principaux - NOUVEAU */}
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
-                <Link to="/order/offre" className="w-full sm:w-auto">
-                  <Button 
-                    size="lg" 
-                    className="w-full font-semibold px-6 sm:px-8 py-5 sm:py-6 rounded-xl text-base sm:text-lg gap-2 sm:gap-3"
-                    style={{ 
-                      background: `linear-gradient(135deg, ${STEALTH.accent}, ${STEALTH.platinum})`,
-                      color: STEALTH.noir
-                    }}
-                  >
-                    <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
-                    Créer ma carte maintenant
-                  </Button>
-                </Link>
-                <Link to="/demo" className="w-full sm:w-auto">
-                  <Button 
-                    variant="outline"
-                    size="lg"
-                    className="w-full px-6 sm:px-8 py-5 sm:py-6 rounded-xl text-base sm:text-lg gap-2 sm:gap-3"
-                    style={{ 
-                      borderColor: `${STEALTH.titanium}40`,
-                      color: 'white'
-                    }}
-                  >
-                    <Play className="w-4 h-4 sm:w-5 sm:h-5" />
-                    Voir une démo en 30 secondes
-                  </Button>
-                </Link>
-              </div>
-              
-              {/* Micro-preuve - NOUVEAU */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Check className="w-4 h-4" style={{ color: STEALTH.accent }} />
-                  <span className="text-xs sm:text-sm" style={{ color: STEALTH.titanium }}>Livraison gratuite au Maroc</span>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Check className="w-4 h-4" style={{ color: STEALTH.accent }} />
-                  <span className="text-xs sm:text-sm" style={{ color: STEALTH.titanium }}>Paiement à la livraison</span>
-                </div>
-              </div>
-            </motion.div>
-            
-            {/* Right: Visual */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative hidden lg:block"
-            >
-              <div className="relative mx-auto w-full max-w-sm">
-                <div 
-                  className="absolute inset-0 rounded-[3rem] blur-3xl"
-                  style={{ backgroundColor: `${STEALTH.titanium}20` }}
-                />
-                
-                {/* NFC Card */}
-                <motion.div
-                  className="absolute -left-8 top-1/4 z-20"
-                  animate={{ 
-                    y: [0, -10, 0],
-                    rotate: [-5, -3, -5]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <div 
-                    className="w-48 h-28 rounded-xl border shadow-2xl p-4 flex flex-col justify-between"
-                    style={{ 
-                      background: `linear-gradient(135deg, ${STEALTH.noirElevated}, ${STEALTH.noir})`,
-                      borderColor: `${STEALTH.titanium}40`
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Crown className="w-4 h-4" style={{ color: STEALTH.accent }} />
-                      <span className="text-xs font-medium text-white">i-Wasp</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Wifi className="w-5 h-5" style={{ color: STEALTH.titanium }} />
-                      <span className="text-[10px]" style={{ color: STEALTH.titanium }}>NFC</span>
-                    </div>
-                  </div>
-                </motion.div>
-                
-                {/* Phone frame */}
-                <div 
-                  className="relative rounded-[2.5rem] p-3 border mx-auto"
-                  style={{ 
-                    backgroundColor: STEALTH.noir,
-                    borderColor: `${STEALTH.titanium}30`
-                  }}
-                >
-                  <div 
-                    className="rounded-[2rem] overflow-hidden aspect-[9/16] relative"
-                    style={{ 
-                      background: `linear-gradient(180deg, ${STEALTH.noirElevated}, ${STEALTH.noir})`
-                    }}
-                  >
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full" />
-                    
-                    <div className="pt-14 px-6 text-center">
-                      <motion.div
-                        className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
-                        style={{ backgroundColor: `${STEALTH.titanium}20` }}
-                        animate={{ scale: [1, 1.1, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        <Wifi className="w-8 h-8" style={{ color: STEALTH.platinum }} />
-                      </motion.div>
-                      
-                      <div 
-                        className="w-20 h-20 rounded-full mx-auto mb-3 border-2"
-                        style={{ 
-                          background: `linear-gradient(135deg, ${STEALTH.titanium}30, ${STEALTH.titanium}10)`,
-                          borderColor: STEALTH.titanium
-                        }}
-                      />
-                      
-                      <h3 className="font-display text-lg text-white font-semibold mb-1">Votre Nom</h3>
-                      <p className="text-xs mb-4" style={{ color: STEALTH.titanium }}>CEO · Votre Entreprise</p>
-                      
-                      <div className="grid grid-cols-3 gap-2 mb-4">
-                        {[Phone, Mail, Globe].map((Icon, i) => (
-                          <div 
-                            key={i}
-                            className="aspect-square rounded-lg flex items-center justify-center"
-                            style={{ backgroundColor: `${STEALTH.titanium}20` }}
-                          >
-                            <Icon className="w-4 h-4" style={{ color: STEALTH.platinum }} />
-                          </div>
-                        ))}
-                      </div>
-                      
-                      <div 
-                        className="p-3 rounded-xl text-sm font-medium"
-                        style={{ 
-                          backgroundColor: STEALTH.accent,
-                          color: STEALTH.noir
-                        }}
-                      >
-                        Ajouter aux contacts
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+      <section className="pt-32 pb-20 px-6">
+        <div className="max-w-5xl mx-auto text-center">
           
-          {/* Quick access for logged-in users */}
-          {user && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="mt-16 max-w-4xl mx-auto"
-            >
-              <div 
-                className="p-6 rounded-2xl border"
-                style={{ 
-                  backgroundColor: `${STEALTH.noirElevated}80`,
-                  borderColor: `${STEALTH.titanium}20`
-                }}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">Accès rapide</h3>
-                  <span className="text-sm" style={{ color: STEALTH.titanium }}>Bonjour, {user.email?.split('@')[0]}</span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {quickLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      to={link.href}
-                      className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200"
-                      style={{ 
-                        backgroundColor: `${STEALTH.titanium}10`,
-                        color: STEALTH.titanium
-                      }}
-                    >
-                      <link.icon className="w-5 h-5" style={{ color: STEALTH.platinum }} />
-                      <span className="text-sm font-medium">{link.label}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
+          {/* Badge simple */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-8"
+          >
+            <CreditCard className="w-4 h-4" />
+            <span className="text-sm font-medium">Carte de visite NFC</span>
+          </motion.div>
+          
+          {/* Titre principal — TRÈS LISIBLE */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground leading-tight mb-6"
+          >
+            Partagez vos contacts
+            <br />
+            <span className="text-primary">en un seul geste</span>
+          </motion.h1>
+          
+          {/* Sous-titre — Direct et compréhensible */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+          >
+            Une carte NFC premium qui remplace vos cartes de visite papier.
+            <br className="hidden sm:block" />
+            Approchez, tapez, connectez. Simple comme bonjour.
+          </motion.p>
+          
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+          >
+            <Link to="/order/offre">
+              <Button size="lg" className="w-full sm:w-auto text-base px-8 py-6 gap-2">
+                <ShoppingBag className="w-5 h-5" />
+                Commander ma carte
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+            <Link to="/demo">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto text-base px-8 py-6 gap-2">
+                <Play className="w-5 h-5" />
+                Voir une démo
+              </Button>
+            </Link>
+          </motion.div>
+          
+          {/* Preuves sociales simples */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground"
+          >
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-primary" />
+              <span>Livraison gratuite au Maroc</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-primary" />
+              <span>Paiement à la livraison</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-primary" />
+              <span>Garantie satisfait ou remboursé</span>
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          SECTION 2: COMMENT ÇA MARCHE — 3 étapes
+          DEMO VISUELLE — Montrer comment ça marche
           ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="py-24 overflow-hidden relative"
-        style={{ backgroundColor: STEALTH.noirElevated }}
-      >
-        {/* Subtle cyan halo */}
-        <div 
-          className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[200px] opacity-10"
-          style={{ backgroundColor: STEALTH.accent }}
-        />
-        <div className="container mx-auto px-6 relative z-10">
+      <section className="py-16 px-6 bg-muted/30">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            
+            {/* Visuel de la carte */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              {/* Carte NFC simulée */}
+              <div className="relative mx-auto w-72 h-44 rounded-2xl bg-gradient-to-br from-foreground to-foreground/80 shadow-2xl p-6 text-background">
+                <div className="flex items-center justify-between mb-8">
+                  <span className="text-lg font-semibold">i-wasp</span>
+                  <Wifi className="w-6 h-6 opacity-60" />
+                </div>
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="text-xs opacity-60 mb-1">Votre nom ici</div>
+                  <div className="text-sm font-medium">CEO · Votre Entreprise</div>
+                </div>
+              </div>
+              
+              {/* Badge NFC */}
+              <div className="absolute -right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-xs font-medium shadow-lg">
+                NFC intégré
+              </div>
+            </motion.div>
+            
+            {/* Explication */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-6">
+                Comment ça marche ?
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+                Approchez simplement votre carte du téléphone de votre contact.
+                Votre profil digital s'ouvre instantanément dans son navigateur.
+                Il peut enregistrer vos coordonnées en un clic.
+              </p>
+              
+              <div className="space-y-4">
+                {howItWorks.map((step, index) => (
+                  <div key={step.step} className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center flex-shrink-0">
+                      {step.step}
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-foreground mb-1">{step.title}</h3>
+                      <p className="text-muted-foreground text-sm">{step.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          AVANTAGES — Pourquoi choisir i-wasp
+          ═══════════════════════════════════════════════════════════════════ */}
+      <section className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span 
-              className="text-sm tracking-[0.3em] uppercase mb-4 block"
-              style={{ color: STEALTH.accent }}
-            >
-              Simple & Rapide
-            </span>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold mb-6 text-white">
-              Comment ça marche ?
+            <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-4">
+              Pourquoi passer au NFC ?
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Une solution moderne pour les professionnels qui veulent se démarquer.
+            </p>
+          </motion.div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {benefits.map((benefit, index) => (
+              <motion.div
+                key={benefit.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="text-center p-8 rounded-2xl bg-card border border-border"
+              >
+                <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-6">
+                  <benefit.icon className="w-7 h-7" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground mb-3">{benefit.title}</h3>
+                <p className="text-muted-foreground">{benefit.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          OFFRES — Tarifs clairs
+          ═══════════════════════════════════════════════════════════════════ */}
+      <section className="py-20 px-6 bg-muted/30">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-4">
+              Nos offres
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Choisissez la formule qui vous correspond.
+            </p>
+          </motion.div>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {offers.map((offer, index) => (
+              <motion.div
+                key={offer.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className={`relative p-8 rounded-2xl bg-card border-2 ${
+                  offer.popular ? 'border-primary shadow-lg' : 'border-border'
+                }`}
+              >
+                {offer.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-medium px-4 py-1 rounded-full">
+                    Populaire
+                  </div>
+                )}
+                
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">{offer.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">{offer.description}</p>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-4xl font-bold text-foreground">{offer.price}</span>
+                    <span className="text-muted-foreground">MAD</span>
+                  </div>
+                </div>
+                
+                <ul className="space-y-3 mb-8">
+                  {offer.features.map((feature) => (
+                    <li key={feature} className="flex items-center gap-3 text-sm">
+                      <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                      <span className="text-foreground">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                <Link to="/order/offre" className="block">
+                  <Button 
+                    className="w-full" 
+                    variant={offer.popular ? "default" : "outline"}
+                  >
+                    Choisir {offer.name}
+                  </Button>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          FAQ — Questions fréquentes
+          ═══════════════════════════════════════════════════════════════════ */}
+      <section className="py-20 px-6">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-4">
+              Questions fréquentes
             </h2>
           </motion.div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {howItWorks.map((item, index) => (
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
               <motion.div
-                key={item.step}
-                initial={{ opacity: 0, y: 40 }}
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
-                className="text-center relative"
+                transition={{ delay: index * 0.05 }}
+                className="border border-border rounded-xl overflow-hidden"
               >
-                <div 
-                  className="text-6xl font-display font-bold mb-4"
-                  style={{ color: `${STEALTH.accent}30` }}
+                <button
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  className="w-full flex items-center justify-between p-5 text-left bg-card hover:bg-muted/50 transition-colors"
                 >
-                  {item.step}
-                </div>
-                
-                <div 
-                  className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${STEALTH.accent}20, ${STEALTH.accent}05)`,
-                  }}
-                >
-                  <item.icon className="w-8 h-8" style={{ color: STEALTH.accent }} />
-                </div>
-                
-                <h3 className="text-2xl font-semibold text-white mb-3">{item.title}</h3>
-                <p style={{ color: STEALTH.titanium }}>{item.description}</p>
-                
-                {index < howItWorks.length - 1 && (
-                  <div 
-                    className="hidden md:block absolute top-12 left-[60%] w-[80%] h-px"
-                    style={{ backgroundColor: `${STEALTH.titanium}20` }}
+                  <span className="font-medium text-foreground pr-4">{faq.question}</span>
+                  <ChevronDown 
+                    className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform ${
+                      openFaq === index ? 'rotate-180' : ''
+                    }`} 
                   />
+                </button>
+                {openFaq === index && (
+                  <div className="px-5 pb-5 text-muted-foreground bg-card">
+                    {faq.answer}
+                  </div>
                 )}
               </motion.div>
             ))}
@@ -498,395 +431,36 @@ const Index = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          SECTION 3: POUR QUI — Audiences cibles
+          CTA FINAL — Appel à l'action
           ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="py-24 overflow-hidden relative"
-        style={{ backgroundColor: STEALTH.noir }}
-      >
-        {/* Subtle cyan halo */}
-        <div 
-          className="absolute bottom-0 left-1/4 w-[600px] h-[600px] rounded-full blur-[200px] opacity-15"
-          style={{ backgroundColor: STEALTH.accent }}
-        />
-        <div className="container mx-auto px-6 relative z-10">
+      <section className="py-20 px-6 bg-foreground text-background">
+        <div className="max-w-3xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
           >
-            <span 
-              className="text-sm tracking-[0.3em] uppercase mb-4 block"
-              style={{ color: STEALTH.accent }}
-            >
-              Pour vous
-            </span>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold mb-6 text-white">
-              Conçu pour les pros qui veulent aller plus loin
+            <h2 className="text-3xl sm:text-4xl font-semibold mb-6">
+              Prêt à passer au digital ?
             </h2>
+            <p className="text-lg opacity-80 mb-8 max-w-xl mx-auto">
+              Rejoignez les professionnels qui ont déjà adopté la carte de visite du futur.
+            </p>
+            <Link to="/order/offre">
+              <Button 
+                size="lg" 
+                className="bg-background text-foreground hover:bg-background/90 text-base px-8 py-6 gap-2"
+              >
+                <ShoppingBag className="w-5 h-5" />
+                Commander maintenant
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </motion.div>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {targetAudiences.map((audience, index) => (
-              <motion.div
-                key={audience.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="p-8 rounded-3xl border text-center"
-                style={{ 
-                  backgroundColor: STEALTH.noirElevated,
-                  borderColor: `${STEALTH.titanium}20`
-                }}
-              >
-                <div 
-                  className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center"
-                  style={{ backgroundColor: `${STEALTH.accent}15` }}
-                >
-                  <audience.icon className="w-8 h-8" style={{ color: STEALTH.accent }} />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-3">{audience.title}</h3>
-                <p style={{ color: STEALTH.titanium }}>{audience.description}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          SECTION 4: MACHINE À LEADS — Capture de contacts
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="py-24 overflow-hidden relative"
-        style={{ backgroundColor: STEALTH.noirElevated }}
-      >
-        {/* Subtle cyan halo */}
-        <div 
-          className="absolute top-1/2 left-0 w-[400px] h-[400px] rounded-full blur-[180px] opacity-10 -translate-y-1/2"
-          style={{ backgroundColor: STEALTH.accent }}
-        />
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <span 
-                className="text-sm tracking-[0.3em] uppercase mb-4 block"
-                style={{ color: STEALTH.accent }}
-              >
-                Fonctionnalités
-              </span>
-              <h2 className="font-display text-4xl sm:text-5xl font-bold mb-6 text-white">
-                Pas seulement une carte : une machine à leads
-              </h2>
-              <p 
-                className="text-xl max-w-2xl mx-auto"
-                style={{ color: STEALTH.titanium }}
-              >
-                À chaque clic, votre profil propose : Enregistrer contact, suivre sur les réseaux, 
-                et laisser ses coordonnées. Tous les leads sont centralisés dans votre espace i‑wasp 
-                pour relances, campagnes et notifications.
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="grid sm:grid-cols-3 gap-6"
-            >
-              {[
-                { icon: UserPlus, title: "Capture leads", desc: "Collectez automatiquement les coordonnées de vos visiteurs" },
-                { icon: BarChart3, title: "Statistiques", desc: "Voyez qui consulte votre profil en temps réel" },
-                { icon: Bell, title: "Notifications", desc: "Envoyez des campagnes ciblées à vos contacts" },
-              ].map((feature, index) => (
-                <div 
-                  key={feature.title}
-                  className="p-6 rounded-2xl border text-center"
-                  style={{ 
-                    backgroundColor: `${STEALTH.noir}50`,
-                    borderColor: `${STEALTH.titanium}20`
-                  }}
-                >
-                  <div 
-                    className="w-12 h-12 rounded-xl mx-auto mb-4 flex items-center justify-center"
-                    style={{ backgroundColor: `${STEALTH.accent}20` }}
-                  >
-                    <feature.icon className="w-6 h-6" style={{ color: STEALTH.accent }} />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                  <p className="text-sm" style={{ color: STEALTH.titanium }}>{feature.desc}</p>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          SECTION 5: OFFRES TEASER — Choisissez votre expérience
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="py-24 overflow-hidden relative"
-        style={{ backgroundColor: STEALTH.noir }}
-      >
-        {/* Multiple subtle cyan halos */}
-        <div 
-          className="absolute top-1/4 right-0 w-[500px] h-[500px] rounded-full blur-[180px] opacity-15"
-          style={{ backgroundColor: STEALTH.accent }}
-        />
-        <div 
-          className="absolute bottom-0 left-1/3 w-[400px] h-[400px] rounded-full blur-[200px] opacity-10"
-          style={{ backgroundColor: STEALTH.accent }}
-        />
-        <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <span 
-              className="text-sm tracking-[0.3em] uppercase mb-4 block"
-              style={{ color: STEALTH.accent }}
-            >
-              Nos offres
-            </span>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold mb-6 text-white">
-              Choisissez votre expérience
-            </h2>
-          </motion.div>
-          
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {offersTeaser.map((offer, index) => {
-              const Icon = offer.icon;
-              return (
-                <motion.div
-                  key={offer.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`relative p-6 rounded-3xl border ${
-                    offer.isPopular ? 'ring-2 ring-[#D4AF37]' : ''
-                  }`}
-                  style={{ 
-                    backgroundColor: STEALTH.noirElevated,
-                    borderColor: offer.isPopular ? STEALTH.accent : `${STEALTH.titanium}20`,
-                  }}
-                >
-                  {/* Badge */}
-                  <div 
-                    className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-semibold"
-                    style={{ 
-                      background: offer.isPopular 
-                        ? `linear-gradient(135deg, ${STEALTH.accent}, ${STEALTH.platinum})`
-                        : STEALTH.noirElevated,
-                      color: offer.isPopular ? STEALTH.noir : STEALTH.titanium,
-                      border: offer.isPopular ? 'none' : `1px solid ${STEALTH.titanium}30`
-                    }}
-                  >
-                    {offer.badge}
-                  </div>
-                  
-                  <div className="text-center pt-4">
-                    <div 
-                      className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-                      style={{ 
-                        backgroundColor: offer.isPopular ? STEALTH.accent : `${STEALTH.titanium}20`
-                      }}
-                    >
-                      <Icon 
-                        className="w-7 h-7" 
-                        style={{ color: offer.isPopular ? STEALTH.noir : STEALTH.platinum }} 
-                      />
-                    </div>
-                    
-                    <h3 className="text-2xl font-bold text-white mb-1">{offer.name}</h3>
-                    <p className="text-sm mb-4" style={{ color: STEALTH.titanium }}>{offer.tagline}</p>
-                    
-                    <div className="text-3xl font-bold mb-6" style={{ color: STEALTH.accent }}>
-                      {offer.price}
-                    </div>
-                    
-                    <ul className="space-y-2 mb-6 text-left">
-                      {offer.features.map((feature, i) => (
-                        <li key={i} className="flex items-center gap-2 text-sm" style={{ color: STEALTH.titanium }}>
-                          <Check className="w-4 h-4 flex-shrink-0" style={{ color: STEALTH.accent }} />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    <Link to="/order/offre">
-                      <Button 
-                        className="w-full rounded-xl py-5"
-                        style={{ 
-                          backgroundColor: offer.isPopular ? STEALTH.accent : `${STEALTH.titanium}20`,
-                          color: offer.isPopular ? STEALTH.noir : 'white'
-                        }}
-                      >
-                        Choisir {offer.name}
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </Link>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          SECTION 6: FAQ — Questions fréquentes
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="py-24 overflow-hidden relative"
-        style={{ backgroundColor: STEALTH.noirElevated }}
-      >
-        {/* Subtle cyan halo */}
-        <div 
-          className="absolute top-1/3 right-1/4 w-[450px] h-[450px] rounded-full blur-[180px] opacity-12"
-          style={{ backgroundColor: STEALTH.accent }}
-        />
-        <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <span 
-              className="text-sm tracking-[0.3em] uppercase mb-4 block"
-              style={{ color: STEALTH.accent }}
-            >
-              FAQ
-            </span>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold mb-6 text-white">
-              Questions fréquentes
-            </h2>
-          </motion.div>
-          
-          <div className="max-w-2xl mx-auto space-y-4">
-            {faqs.map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="rounded-2xl border overflow-hidden"
-                style={{ 
-                  backgroundColor: STEALTH.noir,
-                  borderColor: `${STEALTH.titanium}20`
-                }}
-              >
-                <button
-                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="w-full p-5 flex items-center justify-between text-left"
-                >
-                  <span className="font-medium text-white">{faq.question}</span>
-                  <ChevronDown 
-                    className={`w-5 h-5 transition-transform ${openFaq === index ? 'rotate-180' : ''}`}
-                    style={{ color: STEALTH.titanium }}
-                  />
-                </button>
-                <AnimatePresence>
-                  {openFaq === index && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="px-5 pb-5"
-                    >
-                      <p style={{ color: STEALTH.titanium }}>{faq.answer}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          SECTION 7: CTA FINAL
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="py-24 overflow-hidden relative"
-        style={{ backgroundColor: STEALTH.noir }}
-      >
-        {/* Centered cyan halo */}
-        <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[200px] opacity-15"
-          style={{ backgroundColor: STEALTH.accent }}
-        />
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center p-10 sm:p-16 rounded-3xl border relative overflow-hidden"
-              style={{ 
-                background: `linear-gradient(135deg, ${STEALTH.accent}15, ${STEALTH.accent}05)`,
-                borderColor: `${STEALTH.accent}40`
-              }}
-            >
-              <div 
-                className="absolute top-0 right-0 w-96 h-96 rounded-full blur-[150px] opacity-50"
-                style={{ backgroundColor: `${STEALTH.accent}20` }}
-              />
-              
-              <div className="relative z-10">
-                <Crown className="w-12 h-12 mx-auto mb-6" style={{ color: STEALTH.accent }} />
-                <h2 className="font-display text-3xl sm:text-4xl font-bold mb-4 text-white">
-                  Prêt à vous démarquer ?
-                </h2>
-                <p 
-                  className="text-lg mb-3"
-                  style={{ color: STEALTH.titanium }}
-                >
-                  Carte NFC + Profil digital + Gestion complète
-                </p>
-                <p className="mb-8">
-                  <span className="text-4xl font-bold" style={{ color: STEALTH.accent }}>À partir de 277 MAD</span>
-                </p>
-                
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Link to="/order/offre">
-                    <Button 
-                      size="lg" 
-                      className="font-semibold px-10 py-6 rounded-xl text-lg gap-3"
-                      style={{ 
-                        background: `linear-gradient(135deg, ${STEALTH.accent}, ${STEALTH.platinum})`,
-                        color: STEALTH.noir
-                      }}
-                    >
-                      <ShoppingBag className="w-5 h-5" />
-                      Commander maintenant
-                    </Button>
-                  </Link>
-                </div>
-                
-                {/* Micro-preuve finale */}
-                <p className="mt-6 text-sm" style={{ color: STEALTH.titanium }}>
-                  Livraison gratuite au Maroc · Paiement à la livraison disponible
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-      
-      <GlobalFooter variant="dark" />
+      <GlobalFooter />
     </div>
   );
 };
