@@ -1,11 +1,12 @@
 /**
- * Step 6: Confirmation
+ * Step 7: Confirmation
  * /order/confirmation
+ * 
+ * Style: Haute Couture Digitale — Noir, minimaliste extrême
  * 
  * - Vérification du paiement Stripe si applicable
  * - Compte créé automatiquement
  * - Accès immédiat à la carte digitale
- * - Partage activé (WhatsApp, lien, QR)
  */
 
 import { useEffect, useState } from "react";
@@ -13,27 +14,13 @@ import { motion } from "framer-motion";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { PageTransition, contentVariants, itemVariants } from "@/components/order";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { COUTURE } from "@/lib/hauteCouturePalette";
 import { 
-  CheckCircle2,
-  Share2,
-  ExternalLink,
-  QrCode,
-  MessageCircle,
-  User,
-  CreditCard,
-  Sparkles,
+  Check,
   ArrowRight,
-  Smartphone,
-  Truck,
+  MessageCircle,
   Loader2,
-  XCircle,
-  AlertCircle
+  X
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
@@ -59,7 +46,6 @@ function OrderConfirmationContent() {
   // Verify payment on mount
   useEffect(() => {
     const verifyPayment = async () => {
-      // If COD or no session, mark as COD
       if (!sessionId || paymentParam !== "success") {
         setPaymentStatus("cod");
         triggerConfetti();
@@ -80,11 +66,11 @@ function OrderConfirmationContent() {
             currency: data.currency,
             customerEmail: data.customerEmail,
           });
-          toast.success("Paiement confirmé !");
+          toast.success("Paiement confirmé");
           triggerConfetti();
         } else {
           setPaymentStatus("failed");
-          toast.error("Le paiement n'a pas pu être vérifié");
+          toast.error("Paiement non vérifié");
         }
       } catch (err) {
         console.error("Payment verification error:", err);
@@ -96,23 +82,23 @@ function OrderConfirmationContent() {
   }, [sessionId, paymentParam]);
 
   const triggerConfetti = () => {
-    const duration = 3000;
+    const duration = 2500;
     const end = Date.now() + duration;
 
     const frame = () => {
       confetti({
-        particleCount: 3,
+        particleCount: 2,
         angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors: ['#FFC700', '#FFD700', '#FFED4A']
+        spread: 45,
+        origin: { x: 0, y: 0.6 },
+        colors: ['#AF8E56', '#C4A672', '#D4C4A8']
       });
       confetti({
-        particleCount: 3,
+        particleCount: 2,
         angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors: ['#FFC700', '#FFD700', '#FFED4A']
+        spread: 45,
+        origin: { x: 1, y: 0.6 },
+        colors: ['#AF8E56', '#C4A672', '#D4C4A8']
       });
 
       if (Date.now() < end) {
@@ -130,7 +116,7 @@ function OrderConfirmationContent() {
 
   const handleShareWhatsApp = () => {
     const name = `${state.digitalIdentity?.firstName} ${state.digitalIdentity?.lastName}`;
-    const message = `Découvrez ma nouvelle carte de visite digitale i-Wasp ! 🚀\n\nUne carte NFC qui simplifie le networking.\n\n- ${name}`;
+    const message = `Découvrez ma nouvelle carte de visite digitale i-Wasp.\n\n— ${name}`;
     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
   };
@@ -145,23 +131,27 @@ function OrderConfirmationContent() {
   // Loading state
   if (paymentStatus === "loading") {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <main className="pt-24 pb-32 px-4">
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="mb-8">
-              <div className="w-24 h-24 mx-auto rounded-full bg-muted flex items-center justify-center">
-                <Loader2 className="w-12 h-12 text-[#FFC700] animate-spin" />
-              </div>
-            </div>
-            <h1 className="text-2xl font-bold mb-4">Vérification du paiement...</h1>
-            <p className="text-muted-foreground">Veuillez patienter quelques instants</p>
-            <div className="mt-8 space-y-3">
-              <Skeleton className="h-24 w-full" />
-              <Skeleton className="h-32 w-full" />
-            </div>
-          </div>
-        </main>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: COUTURE.jet }}>
+        {/* Honeycomb texture */}
+        <div 
+          className="fixed inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.4' stroke-opacity='0.04'/%3E%3C/svg%3E")`,
+            backgroundSize: '56px 100px',
+          }}
+        />
+        
+        <div className="relative z-10 text-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          >
+            <Loader2 className="w-8 h-8 mx-auto mb-8" style={{ color: COUTURE.gold }} />
+          </motion.div>
+          <p className="text-[11px] uppercase tracking-[0.3em]" style={{ color: COUTURE.textMuted }}>
+            Vérification
+          </p>
+        </div>
       </div>
     );
   }
@@ -169,278 +159,247 @@ function OrderConfirmationContent() {
   // Failed payment state
   if (paymentStatus === "failed") {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <main className="pt-24 pb-32 px-4">
-          <div className="max-w-2xl mx-auto text-center">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="mb-8"
+      <div className="min-h-screen flex items-center justify-center px-6" style={{ backgroundColor: COUTURE.jet }}>
+        {/* Honeycomb texture */}
+        <div 
+          className="fixed inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.4' stroke-opacity='0.04'/%3E%3C/svg%3E")`,
+            backgroundSize: '56px 100px',
+          }}
+        />
+        
+        <div className="relative z-10 text-center max-w-md">
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="w-16 h-16 mx-auto mb-10 rounded-full flex items-center justify-center"
+            style={{ border: `1px solid ${COUTURE.textMuted}40` }}
+          >
+            <X className="w-6 h-6" style={{ color: COUTURE.textMuted }} />
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 1 }}
+            className="font-display text-2xl font-light italic mb-4"
+            style={{ color: COUTURE.silk }}
+          >
+            Paiement non confirmé.
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 1 }}
+            className="text-sm font-light mb-12"
+            style={{ color: COUTURE.textMuted }}
+          >
+            Votre commande a été enregistrée. Notre équipe vous contactera.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 1 }}
+            className="flex flex-col gap-4"
+          >
+            <button
+              onClick={handleGoToDashboard}
+              className="text-[11px] uppercase tracking-[0.25em] font-light transition-all duration-700 pb-1 mx-auto"
+              style={{ 
+                color: COUTURE.gold,
+                borderBottom: `1px solid ${COUTURE.gold}60`,
+              }}
             >
-              <div className="w-24 h-24 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
-                <XCircle className="w-14 h-14 text-red-500" />
-              </div>
-            </motion.div>
-            <h1 className="text-2xl font-bold mb-4">Problème de paiement</h1>
-            <p className="text-muted-foreground mb-8">
-              Nous n'avons pas pu vérifier votre paiement. Votre commande a été enregistrée.
-            </p>
-            <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30 mb-8">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-yellow-500" />
-                <p className="text-sm text-left">
-                  Notre équipe vous contactera par WhatsApp pour finaliser votre commande.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
-                onClick={handleGoToDashboard}
-                className="bg-[#FFC700] hover:bg-[#FFC700]/90 text-black"
-              >
-                <User className="mr-2 h-5 w-5" />
-                Accéder à mon profil
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => navigate("/order/recap")}
-              >
-                Réessayer le paiement
-              </Button>
-            </div>
-          </div>
-        </main>
-        <Footer />
+              Accéder à mon profil
+            </button>
+            <button
+              onClick={() => navigate("/order/recap")}
+              className="text-[11px] uppercase tracking-[0.15em] font-light transition-all duration-500"
+              style={{ color: COUTURE.textMuted }}
+            >
+              Réessayer
+            </button>
+          </motion.div>
+        </div>
       </div>
     );
   }
 
   // Success state (verified or COD)
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      <PageTransition>
-        <main className="pt-24 pb-32 px-4">
-          <div className="max-w-2xl mx-auto text-center">
-            {/* Success Animation */}
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", duration: 0.6 }}
-              className="mb-8"
-            >
-              <div className="w-24 h-24 mx-auto rounded-full bg-[#FFC700] flex items-center justify-center">
-                <CheckCircle2 className="w-14 h-14 text-black" />
-              </div>
-            </motion.div>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: COUTURE.jet }}>
+      {/* Honeycomb texture */}
+      <div 
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.4' stroke-opacity='0.04'/%3E%3C/svg%3E")`,
+          backgroundSize: '56px 100px',
+        }}
+      />
 
-            {/* Header */}
-            <motion.div 
-              variants={contentVariants}
-              initial="initial"
-              animate="animate"
-            >
-              <motion.h1 
-                className="text-3xl md:text-4xl font-display font-bold mb-4"
-                variants={itemVariants}
-              >
-                Commande confirmée ! 🎉
-              </motion.h1>
-              
-              {/* Payment Verified Badge */}
-              {paymentStatus === "verified" && (
-                <motion.div
-                  variants={itemVariants}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 mb-2"
-                >
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  <span className="text-sm font-medium text-green-400">
-                    Paiement vérifié
-                    {paymentDetails?.amountTotal && paymentDetails?.currency && (
-                      <span className="ml-1">
-                        • {formatAmount(paymentDetails.amountTotal, paymentDetails.currency)}
-                      </span>
-                    )}
-                  </span>
-                </motion.div>
-              )}
-              
-              {/* Immediate Access Banner */}
-              <motion.div
-                variants={itemVariants}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 mb-4"
-              >
-                <Sparkles className="w-4 h-4 text-green-500" />
-                <span className="text-sm font-medium text-green-400">
-                  Votre carte digitale est active immédiatement
-                </span>
-              </motion.div>
-              
-              <motion.p 
-                className="text-muted-foreground text-lg mb-8"
-                variants={itemVariants}
-              >
-                Votre carte physique est en cours de fabrication
-              </motion.p>
-            </motion.div>
+      {/* Header */}
+      <header className="relative z-10 px-6 py-6">
+        <div className="max-w-3xl mx-auto flex items-center justify-center">
+          <Link to="/" className="font-display text-lg tracking-[0.1em]" style={{ color: COUTURE.silk }}>
+            i-wasp
+          </Link>
+        </div>
+      </header>
 
-            {/* Order Info Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <Card className="bg-card border-border mb-8">
-                <CardContent className="p-6">
-                  <div className="grid gap-4 sm:grid-cols-3 text-left">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#FFC700]/20 flex items-center justify-center">
-                        <CreditCard className="w-5 h-5 text-[#FFC700]" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Production</p>
-                        <p className="font-medium">2-3 jours</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#FFC700]/20 flex items-center justify-center">
-                        <Share2 className="w-5 h-5 text-[#FFC700]" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Livraison</p>
-                        <p className="font-medium">48-72h</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#FFC700]/20 flex items-center justify-center">
-                        {paymentStatus === "verified" ? (
-                          <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        ) : (
-                          <Sparkles className="w-5 h-5 text-[#FFC700]" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Paiement</p>
-                        <p className="font-medium">
-                          {paymentStatus === "verified" ? "Confirmé ✓" : "À la livraison"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+      {/* Main content */}
+      <main className="relative z-10 flex-1 flex items-center justify-center px-6 py-12">
+        <div className="max-w-md w-full text-center">
+          {/* Success icon */}
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="w-20 h-20 mx-auto mb-12 rounded-full flex items-center justify-center"
+            style={{ 
+              backgroundColor: COUTURE.gold,
+              boxShadow: `0 0 60px ${COUTURE.gold}30`
+            }}
+          >
+            <Check className="w-8 h-8" style={{ color: COUTURE.jet }} />
+          </motion.div>
 
-            {/* What's Next */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="mb-8"
-            >
-              <h2 className="text-xl font-semibold mb-4">Ce qui se passe maintenant</h2>
-              <div className="space-y-3 text-left">
-                {/* Step 1 - Digital card active NOW */}
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-green-500/10 border border-green-500/30">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-4 h-4 text-black" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-green-400">Votre carte digitale est active</p>
-                    <p className="text-sm text-muted-foreground">
-                      Partagez-la dès maintenant via lien, QR code ou WhatsApp
-                    </p>
-                  </div>
-                  <Smartphone className="w-5 h-5 text-green-500 flex-shrink-0" />
-                </div>
-                
-                {/* Step 2 - Account created */}
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-[#FFC700]/10 border border-[#FFC700]/30">
-                  <div className="w-6 h-6 rounded-full bg-[#FFC700] flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-bold text-black">✓</span>
-                  </div>
-                  <div>
-                    <p className="font-medium">Votre compte a été créé</p>
-                    <p className="text-sm text-muted-foreground">
-                      Accédez à votre tableau de bord pour personnaliser votre profil
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Step 3 - Physical card in production */}
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-card border border-border">
-                  <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Truck className="w-3 h-3 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-muted-foreground">Carte physique en fabrication</p>
-                    <p className="text-sm text-muted-foreground">
-                      Livraison sous 48-72h
-                      {paymentStatus === "cod" && " · Paiement à la réception"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+          {/* Title */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 1.2 }}
+            className="font-display text-3xl md:text-4xl font-light italic mb-4"
+            style={{ color: COUTURE.silk }}
+          >
+            Bienvenue.
+          </motion.h1>
 
-            {/* Action Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="space-y-4"
-            >
-              <Button
-                size="lg"
-                onClick={handleGoToDashboard}
-                className="w-full sm:w-auto px-8 rounded-full bg-[#FFC700] hover:bg-[#FFC700]/90 text-black font-semibold"
-              >
-                <User className="mr-2 h-5 w-5" />
-                Accéder à mon profil
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 1 }}
+            className="text-sm font-light mb-3"
+            style={{ color: COUTURE.textMuted }}
+          >
+            Votre carte digitale est <span style={{ color: COUTURE.gold }}>active</span>.
+          </motion.p>
 
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button
-                  variant="outline"
-                  onClick={handleShareWhatsApp}
-                  className="gap-2"
-                >
-                  <MessageCircle className="h-4 w-4 text-green-500" />
-                  Partager sur WhatsApp
-                </Button>
-                <Button
-                  variant="outline"
-                  asChild
-                  className="gap-2"
-                >
-                  <Link to="/guide">
-                    <QrCode className="h-4 w-4" />
-                    Voir le guide
-                    <ExternalLink className="h-3 w-3" />
-                  </Link>
-                </Button>
-              </div>
-            </motion.div>
-
-            {/* Support */}
+          {/* Payment verified badge */}
+          {paymentStatus === "verified" && paymentDetails?.amountTotal && paymentDetails?.currency && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="mt-12 p-4 rounded-xl bg-card border border-border"
+              transition={{ delay: 1, duration: 1 }}
+              className="inline-flex items-center gap-2 mb-8"
             >
-              <p className="text-sm text-muted-foreground">
-                Des questions ? Notre équipe vous contactera par WhatsApp pour confirmer votre commande.
-              </p>
+              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: COUTURE.success }} />
+              <span className="text-[10px] uppercase tracking-[0.15em]" style={{ color: COUTURE.textMuted }}>
+                {formatAmount(paymentDetails.amountTotal, paymentDetails.currency)}
+              </span>
             </motion.div>
-          </div>
-        </main>
-      </PageTransition>
+          )}
 
-      <Footer />
+          {/* Steps */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 1 }}
+            className="mb-16 space-y-4"
+          >
+            {/* Digital card active */}
+            <div 
+              className="p-5 text-left"
+              style={{ 
+                backgroundColor: `${COUTURE.gold}08`,
+                border: `1px solid ${COUTURE.gold}20`,
+              }}
+            >
+              <div className="flex items-center gap-4">
+                <div 
+                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: COUTURE.gold }}
+                >
+                  <Check className="w-4 h-4" style={{ color: COUTURE.jet }} />
+                </div>
+                <div>
+                  <p className="font-light" style={{ color: COUTURE.silk }}>Carte digitale active</p>
+                  <p className="text-[11px]" style={{ color: COUTURE.textMuted }}>Partagez-la dès maintenant</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Physical card */}
+            <div 
+              className="p-5 text-left"
+              style={{ 
+                border: `1px solid ${COUTURE.jetSoft}`,
+              }}
+            >
+              <div className="flex items-center gap-4">
+                <div 
+                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ border: `1px solid ${COUTURE.textMuted}40` }}
+                >
+                  <span className="text-[10px]" style={{ color: COUTURE.textMuted }}>02</span>
+                </div>
+                <div>
+                  <p className="font-light" style={{ color: COUTURE.textMuted }}>Carte physique en production</p>
+                  <p className="text-[11px]" style={{ color: COUTURE.textMuted }}>
+                    Livraison sous 48-72h
+                    {paymentStatus === "cod" && " · Paiement à la réception"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.6, duration: 1 }}
+            className="space-y-6"
+          >
+            <button
+              onClick={handleGoToDashboard}
+              className="w-full py-4 flex items-center justify-center gap-3 text-[11px] uppercase tracking-[0.2em] font-light transition-all duration-700"
+              style={{ 
+                backgroundColor: COUTURE.gold,
+                color: COUTURE.jet,
+              }}
+            >
+              <span>Mon profil</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={handleShareWhatsApp}
+              className="flex items-center justify-center gap-2 mx-auto text-[11px] uppercase tracking-[0.15em] font-light transition-all duration-500 pb-1"
+              style={{ 
+                color: COUTURE.textMuted,
+                borderBottom: `1px solid ${COUTURE.textMuted}30`,
+              }}
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>Partager</span>
+            </button>
+          </motion.div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="relative z-10 px-6 py-8">
+        <div className="text-center">
+          <p className="text-[10px] uppercase tracking-[0.2em]" style={{ color: COUTURE.textMuted }}>
+            Powered by <span style={{ color: COUTURE.gold }}>i-wasp</span>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
