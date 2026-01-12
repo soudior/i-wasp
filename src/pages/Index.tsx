@@ -1,469 +1,324 @@
 /**
- * Index / Home Page — i-wasp Landing
+ * Index / Home Page — i-wasp Haute Couture Digitale
  * 
- * Design épuré, lisible, compréhensible immédiatement
- * Mode clair par défaut avec support dark mode
+ * Maison d'identité professionnelle digitale
+ * Ultra chic, minimal, luxe inégalable
+ * Noir couture, grands espaces vides, calme absolu
  */
 
 import { Link } from "react-router-dom";
-import { 
-  ArrowRight, 
-  Sparkles, 
-  Zap, 
-  Users, 
-  Check,
-  Star,
-  CreditCard,
-  Wifi,
-  ShoppingBag,
-  Play,
-  Briefcase,
-  Share2,
-  Phone,
-  Mail,
-  Linkedin,
-  ChevronDown,
-  Clock,
-  Shield,
-  TrendingUp
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { useRef, useState, Suspense, lazy } from "react";
-import { Navbar } from "@/components/Navbar";
-import { GlobalFooter } from "@/components/GlobalFooter";
-import { useAuth } from "@/contexts/AuthContext";
+import { useRef } from "react";
 
-// Lazy load the 3D animation for performance
-const NFCAnimation3D = lazy(() => import("@/components/NFCAnimation3D"));
+// Animation variants - Slow, luxurious
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 1.2 }
+  }
+};
 
-// Comment ça marche - 3 étapes simples
-const howItWorks = [
-  {
-    step: "1",
-    title: "Commandez votre carte",
-    description: "Choisissez votre design et recevez votre carte NFC en 48h.",
-    icon: ShoppingBag,
-  },
-  {
-    step: "2", 
-    title: "Créez votre profil",
-    description: "Ajoutez vos infos, réseaux sociaux et liens en 2 minutes.",
-    icon: Users,
-  },
-  {
-    step: "3",
-    title: "Partagez d'un tap",
-    description: "Approchez votre carte d'un téléphone. C'est tout.",
-    icon: Wifi,
-  },
-];
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { duration: 1.5 }
+  }
+};
 
-// Avantages clés
-const benefits = [
-  {
-    icon: Zap,
-    title: "Instantané",
-    description: "Un tap suffit pour partager toutes vos coordonnées.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Professionnel",
-    description: "Impressionnez vos contacts avec une carte premium.",
-  },
-  {
-    icon: Shield,
-    title: "Écologique",
-    description: "Fini les cartes papier jetées. Une seule carte pour toujours.",
-  },
-];
-
-// Offres
-const offers = [
-  {
-    name: "Essentiel",
-    price: "277",
-    description: "Pour bien commencer",
-    features: ["Carte NFC blanche", "Profil digital", "3 liens", "QR code"],
-  },
-  {
-    name: "Signature",
-    price: "555",
-    description: "Notre best-seller",
-    popular: true,
-    features: ["Carte NFC premium", "Liens illimités", "Photos & vidéos", "Capture de leads", "Statistiques"],
-  },
-  {
-    name: "Élite",
-    price: "925",
-    description: "Sur mesure",
-    features: ["Design personnalisé", "Tout Signature inclus", "Support prioritaire", "Formation incluse"],
-  },
-];
-
-// FAQ
-const faqs = [
-  {
-    question: "Est-ce compatible avec tous les téléphones ?",
-    answer: "Oui. Tous les iPhone récents (XS et +) et smartphones Android. Aucune application à installer.",
-  },
-  {
-    question: "Puis-je modifier mes informations ?",
-    answer: "Oui, à tout moment depuis votre espace. Les modifications sont instantanées.",
-  },
-  {
-    question: "Comment ça marche exactement ?",
-    answer: "Approchez votre carte du téléphone de votre contact. Votre profil s'affiche automatiquement dans son navigateur.",
-  },
-];
+const stagger = {
+  visible: {
+    transition: { staggerChildren: 0.2 }
+  }
+};
 
 const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
   
   return (
-    <div ref={containerRef} className="bg-background min-h-screen">
-      <Navbar />
+    <div ref={containerRef} className="bg-background min-h-screen text-foreground selection:bg-foreground selection:text-background">
+      
+      {/* ═══════════════════════════════════════════════════════════════════
+          NAVIGATION — Ultra minimal
+          ═══════════════════════════════════════════════════════════════════ */}
+      <motion.nav 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 0.5 }}
+        className="fixed top-0 left-0 right-0 z-50 px-6 sm:px-12 py-6 sm:py-8"
+      >
+        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
+          <Link to="/" className="text-foreground font-serif text-xl sm:text-2xl tracking-wide">
+            i-wasp
+          </Link>
+          <Link 
+            to="/order/offre"
+            className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-700"
+          >
+            Commander
+          </Link>
+        </div>
+      </motion.nav>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          HERO — Message clair en 3 secondes
+          HERO — Une idée, un écran
+          Confiance silencieuse, calme absolu
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="pt-24 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto text-center">
-          
-          {/* Badge simple */}
+      <section className="min-h-screen flex flex-col justify-center px-6 sm:px-12 pt-24">
+        <div className="max-w-[1400px] mx-auto w-full">
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 text-primary mb-6 sm:mb-8"
+            initial="hidden"
+            animate="visible"
+            variants={stagger}
+            className="max-w-4xl"
           >
-            <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="text-xs sm:text-sm font-medium">Carte de visite NFC</span>
+            {/* Surtitre éditorial */}
+            <motion.p 
+              variants={fadeUp}
+              className="text-xs sm:text-sm tracking-[0.3em] uppercase text-muted-foreground mb-8 sm:mb-12"
+            >
+              Haute couture digitale
+            </motion.p>
+            
+            {/* Titre principal — Serif éditorial */}
+            <motion.h1 
+              variants={fadeUp}
+              className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-light leading-[1.1] tracking-tight mb-8 sm:mb-12"
+            >
+              Votre identité,
+              <br />
+              <span className="italic">sublimée.</span>
+            </motion.h1>
+            
+            {/* Sous-titre — Discret, précis */}
+            <motion.p 
+              variants={fadeUp}
+              className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed mb-12 sm:mb-16"
+            >
+              Une carte NFC d'exception pour les professionnels 
+              qui ne font aucun compromis.
+            </motion.p>
+            
+            {/* CTA — Sobre, élégant */}
+            <motion.div variants={fadeUp}>
+              <Link 
+                to="/order/offre"
+                className="group inline-flex items-center gap-4 sm:gap-6"
+              >
+                <span className="text-sm sm:text-base tracking-[0.15em] uppercase border-b border-foreground/30 pb-1 group-hover:border-foreground transition-colors duration-700">
+                  Découvrir
+                </span>
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-2 transition-transform duration-700" />
+              </Link>
+            </motion.div>
           </motion.div>
-          
-          {/* Titre principal — TRÈS LISIBLE sur mobile */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-[1.75rem] leading-[1.2] sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground sm:leading-tight mb-4 sm:mb-6"
+        </div>
+        
+        {/* Scroll indicator */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2, duration: 1 }}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2"
+        >
+          <div className="w-px h-16 bg-gradient-to-b from-transparent via-muted-foreground/30 to-transparent" />
+        </motion.div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          STATEMENT — Une phrase, un écran
+          Le vide est une matière noble
+          ═══════════════════════════════════════════════════════════════════ */}
+      <section className="min-h-screen flex items-center justify-center px-6 sm:px-12">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-20%" }}
+          variants={fadeIn}
+          className="max-w-3xl text-center"
+        >
+          <p className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light leading-[1.4] tracking-tight">
+            "Nous créons des pièces numériques 
+            <span className="italic"> intemporelles</span>, 
+            pensées comme des objets de haute couture."
+          </p>
+        </motion.div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          PRINCIPES — Trois piliers, rythme lent
+          ═══════════════════════════════════════════════════════════════════ */}
+      <section className="py-32 sm:py-48 px-6 sm:px-12">
+        <div className="max-w-[1400px] mx-auto">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-10%" }}
+            variants={stagger}
+            className="grid md:grid-cols-3 gap-16 sm:gap-12 md:gap-8"
           >
-            Partagez vos contacts
-            <br />
-            <span className="text-primary">en un seul geste</span>
-          </motion.h1>
-          
-          {/* Sous-titre — Direct et compréhensible */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed px-2"
-          >
-            Une carte NFC premium qui remplace vos cartes de visite papier.
-            <span className="hidden sm:inline"> Approchez, tapez, connectez.</span>
-          </motion.p>
-          
-          {/* CTAs - Plus gros sur mobile pour faciliter le tap */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 px-2"
-          >
-            <Link to="/order/offre" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full text-[15px] sm:text-base h-14 sm:h-auto px-6 sm:px-8 sm:py-6 gap-2 font-medium">
-                <ShoppingBag className="w-5 h-5" />
-                Commander ma carte
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
-            <Link to="/demo" className="w-full sm:w-auto">
-              <Button variant="outline" size="lg" className="w-full text-[15px] sm:text-base h-14 sm:h-auto px-6 sm:px-8 sm:py-6 gap-2">
-                <Play className="w-5 h-5" />
-                Voir une démo
-              </Button>
-            </Link>
-          </motion.div>
-          
-          {/* Preuves sociales - Stack sur très petit écran */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-6 text-[13px] sm:text-sm text-muted-foreground"
-          >
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-primary flex-shrink-0" />
-              <span>Livraison gratuite au Maroc</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-primary flex-shrink-0" />
-              <span>Paiement à la livraison</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-primary flex-shrink-0" />
-              <span>Satisfait ou remboursé</span>
-            </div>
+            {[
+              { number: "01", title: "Sobre", description: "Aucun effet superflu. Chaque détail a sa raison d'être." },
+              { number: "02", title: "Précise", description: "Une exécution irréprochable, jusqu'au dernier pixel." },
+              { number: "03", title: "Durable", description: "Une seule carte. Pour toujours." }
+            ].map((item) => (
+              <motion.div 
+                key={item.number}
+                variants={fadeUp}
+                className="border-t border-foreground/10 pt-8"
+              >
+                <span className="text-xs tracking-[0.3em] text-muted-foreground mb-6 block">
+                  {item.number}
+                </span>
+                <h3 className="font-serif text-2xl sm:text-3xl font-light mb-4 tracking-tight">
+                  {item.title}
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          DEMO VISUELLE — Animation 3D du tap NFC
+          OFFRE — Épuré à l'essentiel
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 sm:py-16 px-4 sm:px-6 bg-muted/30">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            
-            {/* Animation 3D du tap NFC */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="relative order-2 lg:order-1"
+      <section className="py-32 sm:py-48 px-6 sm:px-12 border-t border-foreground/5">
+        <div className="max-w-[1400px] mx-auto">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-10%" }}
+            variants={stagger}
+          >
+            <motion.p 
+              variants={fadeUp}
+              className="text-xs sm:text-sm tracking-[0.3em] uppercase text-muted-foreground mb-6"
             >
-              <div className="relative mx-auto w-full max-w-[320px] sm:max-w-[380px] aspect-square rounded-3xl overflow-hidden bg-gradient-to-b from-background to-muted/50 shadow-xl">
-                <Suspense 
-                  fallback={
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="w-20 h-20 rounded-2xl bg-muted animate-pulse" />
-                    </div>
-                  }
+              L'essentiel
+            </motion.p>
+            
+            <motion.h2 
+              variants={fadeUp}
+              className="font-serif text-3xl sm:text-4xl md:text-5xl font-light tracking-tight mb-16 sm:mb-24"
+            >
+              Ce que vous recevez
+            </motion.h2>
+            
+            <motion.div 
+              variants={fadeUp}
+              className="grid sm:grid-cols-2 gap-8 sm:gap-12 max-w-3xl"
+            >
+              {[
+                "Carte NFC premium, finition mate",
+                "Profil digital personnalisé",
+                "Liens et contacts illimités",
+                "Modifications instantanées",
+                "Statistiques de consultation",
+                "Support dédié"
+              ].map((item, index) => (
+                <div 
+                  key={index}
+                  className="flex items-baseline gap-6 py-4 border-b border-foreground/5"
                 >
-                  <NFCAnimation3D className="w-full h-full" />
-                </Suspense>
-                
-                {/* Badge indicatif */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-foreground/90 text-background px-4 py-2 rounded-full text-xs sm:text-sm font-medium shadow-lg backdrop-blur-sm flex items-center gap-2">
-                  <Wifi className="w-4 h-4" />
-                  <span>Tap NFC en action</span>
+                  <span className="text-xs text-muted-foreground/50">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span className="text-sm sm:text-base">
+                    {item}
+                  </span>
                 </div>
-              </div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          TARIF — Simple, transparent
+          ═══════════════════════════════════════════════════════════════════ */}
+      <section className="py-32 sm:py-48 px-6 sm:px-12">
+        <div className="max-w-[1400px] mx-auto">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-10%" }}
+            variants={stagger}
+            className="max-w-2xl"
+          >
+            <motion.p 
+              variants={fadeUp}
+              className="text-xs sm:text-sm tracking-[0.3em] uppercase text-muted-foreground mb-6"
+            >
+              Investissement
+            </motion.p>
+            
+            <motion.div variants={fadeUp} className="mb-12">
+              <span className="font-serif text-6xl sm:text-7xl md:text-8xl font-light tracking-tight">
+                555
+              </span>
+              <span className="text-xl sm:text-2xl text-muted-foreground ml-2">
+                MAD
+              </span>
             </motion.div>
             
-            {/* Explication - Responsive */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="order-1 lg:order-2"
+            <motion.p 
+              variants={fadeUp}
+              className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-12"
             >
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-4 sm:mb-6">
-                Comment ça marche ?
-              </h2>
-              <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
-                Approchez votre carte du téléphone de votre contact.
-                Votre profil s'ouvre instantanément.
-              </p>
-              
-              <div className="space-y-3 sm:space-y-4">
-                {howItWorks.map((step) => (
-                  <div key={step.step} className="flex items-start gap-3 sm:gap-4">
-                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center flex-shrink-0 text-sm sm:text-base">
-                      {step.step}
-                    </div>
-                    <div className="pt-1">
-                      <h3 className="font-medium text-foreground mb-0.5 sm:mb-1 text-[15px] sm:text-base">{step.title}</h3>
-                      <p className="text-muted-foreground text-[13px] sm:text-sm leading-relaxed">{step.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              Tout inclus. Pas d'abonnement. 
+              <br className="hidden sm:block" />
+              Livraison offerte au Maroc.
+            </motion.p>
+            
+            <motion.div variants={fadeUp}>
+              <Link 
+                to="/order/offre"
+                className="inline-block bg-foreground text-background px-12 py-5 text-sm tracking-[0.15em] uppercase hover:opacity-80 transition-opacity duration-700"
+              >
+                Commander
+              </Link>
             </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          AVANTAGES — Pourquoi choisir i-wasp
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-10 sm:mb-16"
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-3 sm:mb-4">
-              Pourquoi passer au NFC ?
-            </h2>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
-              Une solution moderne pour les professionnels.
-            </p>
           </motion.div>
-          
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-            {benefits.map((benefit, index) => (
-              <motion.div
-                key={benefit.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="text-center p-6 sm:p-8 rounded-2xl bg-card border border-border"
-              >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                  <benefit.icon className="w-6 h-6 sm:w-7 sm:h-7" />
-                </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2 sm:mb-3">{benefit.title}</h3>
-                <p className="text-[13px] sm:text-sm text-muted-foreground leading-relaxed">{benefit.description}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          OFFRES — Tarifs clairs
+          FOOTER — Minimal
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-muted/30">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-10 sm:mb-16"
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-3 sm:mb-4">
-              Nos offres
-            </h2>
-            <p className="text-base sm:text-lg text-muted-foreground">
-              Choisissez la formule qui vous correspond.
+      <footer className="py-12 sm:py-16 px-6 sm:px-12 border-t border-foreground/5">
+        <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8">
+          <div>
+            <span className="font-serif text-lg tracking-wide">i-wasp</span>
+            <p className="text-xs text-muted-foreground mt-2 tracking-wide">
+              Haute couture digitale
             </p>
-          </motion.div>
-          
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-            {offers.map((offer, index) => (
-              <motion.div
-                key={offer.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className={`relative p-5 sm:p-6 md:p-8 rounded-2xl bg-card border-2 ${
-                  offer.popular ? 'border-primary shadow-lg' : 'border-border'
-                }`}
-              >
-                {offer.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[11px] sm:text-xs font-medium px-3 sm:px-4 py-1 rounded-full whitespace-nowrap">
-                    Populaire
-                  </div>
-                )}
-                
-                <div className="text-center mb-5 sm:mb-6">
-                  <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-1.5 sm:mb-2">{offer.name}</h3>
-                  <p className="text-[13px] sm:text-sm text-muted-foreground mb-3 sm:mb-4">{offer.description}</p>
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-3xl sm:text-4xl font-bold text-foreground">{offer.price}</span>
-                    <span className="text-sm text-muted-foreground">MAD</span>
-                  </div>
-                </div>
-                
-                <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
-                  {offer.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2.5 sm:gap-3 text-[13px] sm:text-sm">
-                      <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground leading-snug">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                <Link to="/order/offre" className="block">
-                  <Button 
-                    className="w-full h-11 sm:h-10 text-[13px] sm:text-sm" 
-                    variant={offer.popular ? "default" : "outline"}
-                  >
-                    Choisir {offer.name}
-                  </Button>
-                </Link>
-              </motion.div>
-            ))}
           </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          FAQ — Questions fréquentes
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12"
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-3 sm:mb-4">
-              Questions fréquentes
-            </h2>
-          </motion.div>
           
-          <div className="space-y-3 sm:space-y-4">
-            {faqs.map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="border border-border rounded-xl overflow-hidden"
-              >
-                <button
-                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="w-full flex items-center justify-between p-4 sm:p-5 text-left bg-card hover:bg-muted/50 transition-colors"
-                >
-                  <span className="font-medium text-foreground pr-3 sm:pr-4 text-[14px] sm:text-base leading-snug">{faq.question}</span>
-                  <ChevronDown 
-                    className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform ${
-                      openFaq === index ? 'rotate-180' : ''
-                    }`} 
-                  />
-                </button>
-                {openFaq === index && (
-                  <div className="px-4 sm:px-5 pb-4 sm:pb-5 text-[13px] sm:text-sm text-muted-foreground bg-card leading-relaxed">
-                    {faq.answer}
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          CTA FINAL — Appel à l'action
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-foreground text-background">
-        <div className="max-w-3xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-4 sm:mb-6">
-              Prêt à passer au digital ?
-            </h2>
-            <p className="text-base sm:text-lg opacity-80 mb-6 sm:mb-8 max-w-xl mx-auto px-2">
-              Rejoignez les professionnels qui ont adopté la carte de visite du futur.
-            </p>
-            <Link to="/order/offre">
-              <Button 
-                size="lg" 
-                className="bg-background text-foreground hover:bg-background/90 text-[15px] sm:text-base h-14 sm:h-auto px-6 sm:px-8 sm:py-6 gap-2 w-full sm:w-auto"
-              >
-                <ShoppingBag className="w-5 h-5" />
-                Commander maintenant
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 text-xs sm:text-sm text-muted-foreground">
+            <Link to="/contact" className="hover:text-foreground transition-colors duration-500">
+              Contact
             </Link>
-          </motion.div>
+            <Link to="/mentions-legales" className="hover:text-foreground transition-colors duration-500">
+              Mentions légales
+            </Link>
+            <Link to="/cgv" className="hover:text-foreground transition-colors duration-500">
+              CGV
+            </Link>
+          </div>
         </div>
-      </section>
-
-      <GlobalFooter />
+        
+        <div className="max-w-[1400px] mx-auto mt-16 pt-8 border-t border-foreground/5">
+          <p className="text-xs text-muted-foreground/50 tracking-wide">
+            © 2025 i-wasp. Tous droits réservés.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
