@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,19 +15,30 @@ import {
   QrCode,
   Share2
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { QRCodeSVG } from "qrcode.react";
+import { SovereignCelebration } from "@/components/SovereignCelebration";
 
 export default function OrderConfirmation() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const orderNumber = searchParams.get("order");
+  const [showCelebration, setShowCelebration] = useState(false);
 
-  // Confetti celebration on mount
+  // Premium celebration on mount
   useEffect(() => {
     if (!orderNumber) return;
     
+    // Trigger sovereign celebration
+    setShowCelebration(true);
+    
+    // Hide celebration after animation
+    const timer = setTimeout(() => {
+      setShowCelebration(false);
+    }, 2500);
+    
+    // Confetti celebration
     const duration = 2500;
     const end = Date.now() + duration;
 
@@ -37,14 +48,14 @@ export default function OrderConfirmation() {
         angle: 60,
         spread: 55,
         origin: { x: 0, y: 0.8 },
-        colors: ["#22c55e", "#10b981", "#FFD700", "#FFFFFF"],
+        colors: ["#A5A9B4", "#D1D5DB", "#FFFFFF", "#1D1D1F"],
       });
       confetti({
         particleCount: 4,
         angle: 120,
         spread: 55,
         origin: { x: 1, y: 0.8 },
-        colors: ["#22c55e", "#10b981", "#FFD700", "#FFFFFF"],
+        colors: ["#A5A9B4", "#D1D5DB", "#FFFFFF", "#1D1D1F"],
       });
 
       if (Date.now() < end) {
@@ -52,15 +63,17 @@ export default function OrderConfirmation() {
       }
     };
 
-    // Initial burst
+    // Initial burst with premium colors
     confetti({
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ["#22c55e", "#10b981", "#FFD700"],
+      colors: ["#A5A9B4", "#D1D5DB", "#FFFFFF"],
     });
 
     frame();
+    
+    return () => clearTimeout(timer);
   }, [orderNumber]);
 
   // Redirect if no order number
@@ -92,6 +105,9 @@ export default function OrderConfirmation() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center px-4 py-12">
+      {/* Premium Sovereign Celebration */}
+      <SovereignCelebration active={showCelebration} />
+      
       {/* Background effects */}
       <div className="absolute inset-0 bg-grid opacity-20" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] orb opacity-30 animate-pulse-glow" />
