@@ -44,6 +44,7 @@ const EliteDashboard = lazy(() => import("./pages/EliteDashboard"));
 const GuestCardCreator = lazy(() => import("./pages/GuestCardCreator"));
 const FinalizeCard = lazy(() => import("./pages/FinalizeCard"));
 const HomeSaaS = lazy(() => import("./pages/HomeSaaS"));
+const HomeLuxeMax = lazy(() => import("./pages/HomeLuxeMax"));
 const Index = lazy(() => import("./pages/Index"));
 const Demo = lazy(() => import("./pages/Demo"));
 const Cart = lazy(() => import("./pages/Cart"));
@@ -176,8 +177,9 @@ const App = () => {
                           <Suspense fallback={<RouteLoader />}>
                             <Routes>
                             {/* HOME */}
-                            <Route path="/" element={<Index />} />
+                            <Route path="/" element={<HomeLuxeMax />} />
                             <Route path="/legacy" element={<HomeSaaS />} />
+                            <Route path="/classic" element={<Index />} />
                             
                             {/* NEW PAGES - Final structure */}
                             <Route path="/produits" element={<ProduitsNFC />} />
