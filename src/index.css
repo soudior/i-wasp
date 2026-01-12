@@ -123,18 +123,17 @@
     --shadow-gold-subtle: 0 0 20px rgba(175, 142, 86, 0.1);
 
     /* ══════════════════════════════════════════════════════════════════
-       TYPOGRAPHIE — Extra-Light avec kerning large
-       Titres: Ultra-léger (200), tracking 0.3-0.5em
-       Corps: Regular (400), aéré
-       Accents: Serif italic pour mots-clés
+       TYPOGRAPHIE — Lisible & Luxueuse
+       DM Sans: Moderne, très lisible, élégant
+       Cormorant Garamond: Serif raffiné pour accents
        ══════════════════════════════════════════════════════════════════ */
-    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
-    --font-accent: 'Playfair Display', Georgia, serif;
+    --font-display: 'DM Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+    --font-accent: 'Cormorant Garamond', Georgia, serif;
     --tracking-tight: -0.01em;
-    --tracking-normal: 0.02em;
-    --tracking-wide: 0.15em;
-    --tracking-ultra: 0.35em;
+    --tracking-normal: 0.01em;
+    --tracking-wide: 0.08em;
+    --tracking-ultra: 0.15em;
 
     /* Surface tokens */
     --surface-0: var(--couture-silk);
@@ -313,39 +312,56 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
-    font-weight: 300;
+    font-weight: 400;
     letter-spacing: 0.01em;
+    line-height: 1.6;
     min-height: 100dvh;
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Titres: Extra-Light avec kerning très large */
+  /* Titres: Élégants mais lisibles */
   h1 {
     font-family: var(--font-display);
-    font-weight: 200;
-    letter-spacing: var(--tracking-ultra);
-    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    line-height: 1.1;
   }
   
   h2 {
     font-family: var(--font-display);
-    font-weight: 200;
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: var(--tracking-normal);
+    line-height: 1.2;
   }
   
-  h3, h4, h5, h6 {
+  h3 {
     font-family: var(--font-display);
-    font-weight: 300;
-    letter-spacing: var(--tracking-wide);
+    font-weight: 500;
+    letter-spacing: var(--tracking-normal);
+    line-height: 1.3;
   }
   
-  /* Accent serif italic pour mots-clés */
+  h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: var(--tracking-normal);
+    line-height: 1.4;
+  }
+  
+  /* Paragraphes lisibles */
+  p {
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+  }
+  
+  /* Accent serif pour élégance */
   em, .accent-text {
     font-family: var(--font-accent);
     font-style: italic;
-    font-weight: 400;
+    font-weight: 500;
   }
   
   /* Touch mobile */
@@ -555,52 +571,58 @@
     padding-bottom: 160px;
   }
   
-  /* Typography scales - Massive titles, small body */
+  /* Typography scales - Lisibles et élégantes */
   .text-display {
-    font-size: 48px;
-    font-weight: 200;
-    line-height: 1.0;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-  }
-  
-  @media (min-width: 768px) {
-    .text-display {
-      font-size: 72px;
-    }
-  }
-  
-  .text-heading {
-    font-size: 24px;
-    font-weight: 200;
-    line-height: 1.2;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-  
-  @media (min-width: 768px) {
-    .text-heading {
-      font-size: 32px;
-    }
-  }
-  
-  .text-body {
-    font-size: 13px;
-    font-weight: 300;
-    line-height: 1.8;
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 1.1;
     letter-spacing: 0.02em;
   }
   
   @media (min-width: 768px) {
+    .text-display {
+      font-size: 56px;
+    }
+  }
+  
+  .text-heading {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+  }
+  
+  @media (min-width: 768px) {
+    .text-heading {
+      font-size: 28px;
+    }
+  }
+  
+  .text-body {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+  }
+  
+  @media (min-width: 768px) {
     .text-body {
-      font-size: 14px;
+      font-size: 16px;
     }
   }
   
   .text-secondary {
-    font-size: 12px;
-    color: #9A9A98;
-    letter-spacing: 0.05em;
+    font-size: 14px;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+    letter-spacing: 0.01em;
+    line-height: 1.6;
+  }
+  
+  .text-small {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
   }
   
   .loading-line {
