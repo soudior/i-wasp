@@ -40,6 +40,8 @@ import {
   Facebook,
   Link2,
   Quote,
+  Eye,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -69,6 +71,8 @@ function OrderIdentiteContent() {
   const [isNavigating, setIsNavigating] = useState(false);
   const [showAdditionalLinks, setShowAdditionalLinks] = useState(false);
   const [additionalLinks, setAdditionalLinks] = useState<Record<string, string>>({});
+  const [mobileView, setMobileView] = useState<"form" | "preview">("form");
+
 
   const [formData, setFormData] = useState<DigitalIdentity>(
     state.digitalIdentity || {
@@ -233,10 +237,153 @@ function OrderIdentiteContent() {
               </motion.p>
             </motion.div>
 
+            {/* Mobile Toggle & Compact Preview */}
+            <div className="lg:hidden mb-6">
+              {/* Toggle Buttons */}
+              <div 
+                className="flex rounded-2xl p-1 mb-4"
+                style={{ backgroundColor: STEALTH.bgCard }}
+              >
+                <button
+                  onClick={() => setMobileView("form")}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all"
+                  style={{
+                    backgroundColor: mobileView === "form" ? STEALTH.accent : "transparent",
+                    color: mobileView === "form" ? STEALTH.bg : STEALTH.textSecondary,
+                  }}
+                >
+                  <FileText size={16} />
+                  Formulaire
+                </button>
+                <button
+                  onClick={() => setMobileView("preview")}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all"
+                  style={{
+                    backgroundColor: mobileView === "preview" ? STEALTH.accent : "transparent",
+                    color: mobileView === "preview" ? STEALTH.bg : STEALTH.textSecondary,
+                  }}
+                >
+                  <Eye size={16} />
+                  Aperçu
+                </button>
+              </div>
+
+              {/* Mobile Preview (when selected) */}
+              <AnimatePresence mode="wait">
+                {mobileView === "preview" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="rounded-3xl p-6 relative overflow-hidden"
+                    style={{ 
+                      backgroundColor: STEALTH.bgCard,
+                      border: `1px solid ${STEALTH.border}`
+                    }}
+                  >
+                    {/* Gradient overlay */}
+                    <div 
+                      className="absolute inset-0 opacity-30"
+                      style={{
+                        background: `radial-gradient(circle at top right, ${STEALTH.accent}15, transparent 60%)`
+                      }}
+                    />
+
+                    <div className="relative z-10 text-center space-y-4">
+                      {/* Avatar */}
+                      <div 
+                        className="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-2xl font-bold"
+                        style={{ 
+                          backgroundColor: STEALTH.bgInput,
+                          color: STEALTH.accent,
+                          border: `2px solid ${STEALTH.border}`
+                        }}
+                      >
+                        {formData.firstName && formData.lastName 
+                          ? `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`.toUpperCase()
+                          : <User size={28} style={{ color: STEALTH.textMuted }} />
+                        }
+                      </div>
+
+                      {/* Name */}
+                      <div>
+                        <h3 
+                          className="text-xl font-display font-bold"
+                          style={{ color: STEALTH.text }}
+                        >
+                          {formData.firstName || formData.lastName 
+                            ? `${formData.firstName} ${formData.lastName}`.trim()
+                            : "Votre nom"
+                          }
+                        </h3>
+                        
+                        {(formData.title || formData.company) && (
+                          <p 
+                            className="text-sm mt-1"
+                            style={{ color: STEALTH.textSecondary }}
+                          >
+                            {formData.title}
+                            {formData.title && formData.company && " · "}
+                            {formData.company}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Tagline */}
+                      {formData.tagline && (
+                        <p
+                          className="text-sm italic px-2"
+                          style={{ color: STEALTH.textMuted }}
+                        >
+                          "{formData.tagline}"
+                        </p>
+                      )}
+
+                      {/* Contact Icons */}
+                      <div className="flex justify-center gap-2 pt-1">
+                        {formData.phone && (
+                          <div 
+                            className="w-9 h-9 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: STEALTH.bgInput }}
+                          >
+                            <Phone size={14} style={{ color: STEALTH.accent }} />
+                          </div>
+                        )}
+                        {formData.email && (
+                          <div 
+                            className="w-9 h-9 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: STEALTH.bgInput }}
+                          >
+                            <Mail size={14} style={{ color: STEALTH.accent }} />
+                          </div>
+                        )}
+                        {formData.whatsapp && (
+                          <div 
+                            className="w-9 h-9 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: STEALTH.bgInput }}
+                          >
+                            <MessageCircle size={14} style={{ color: STEALTH.accent }} />
+                          </div>
+                        )}
+                        {formData.linkedin && (
+                          <div 
+                            className="w-9 h-9 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: STEALTH.bgInput }}
+                          >
+                            <Linkedin size={14} style={{ color: STEALTH.accent }} />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {/* Two Column Layout */}
             <div className="grid lg:grid-cols-5 gap-8">
-              {/* Left Column - Form */}
-              <div className="lg:col-span-3">
+              {/* Left Column - Form (hidden on mobile when preview is active) */}
+              <div className={`lg:col-span-3 ${mobileView === "preview" ? "hidden lg:block" : ""}`}>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
