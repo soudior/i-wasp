@@ -197,9 +197,11 @@ function OrderIdentiteContent() {
       
       <PageTransition>
         <main className="pt-24 pb-32 px-4">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             {/* Progress Bar */}
-            <OrderProgressBar currentStep={2} />
+            <div className="max-w-2xl mx-auto lg:max-w-none">
+              <OrderProgressBar currentStep={2} />
+            </div>
 
             {/* Header */}
             <motion.div 
@@ -231,13 +233,16 @@ function OrderIdentiteContent() {
               </motion.p>
             </motion.div>
 
-            {/* Form */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="space-y-8"
-            >
+            {/* Two Column Layout */}
+            <div className="grid lg:grid-cols-5 gap-8">
+              {/* Left Column - Form */}
+              <div className="lg:col-span-3">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="space-y-8"
+                >
               {/* Client Type Selection */}
               <div 
                 className="rounded-3xl p-6"
@@ -730,39 +735,196 @@ function OrderIdentiteContent() {
               </motion.div>
             </motion.div>
 
-            {/* Navigation */}
-            <motion.div 
-              className="flex justify-between items-center mt-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <Button 
-                variant="ghost" 
-                onClick={prevStep}
-                disabled={state.isTransitioning}
-                className="gap-2"
-                style={{ color: STEALTH.textSecondary }}
-              >
-                <ArrowLeft size={18} />
-                Retour
-              </Button>
-              <LoadingButton
-                size="xl"
-                onClick={handleContinue}
-                disabled={!isValid || state.isTransitioning}
-                isLoading={isNavigating}
-                loadingText="Chargement..."
-                className="px-8 rounded-full font-semibold disabled:opacity-50"
-                style={{ 
-                  backgroundColor: STEALTH.accent,
-                  color: STEALTH.bg
-                }}
-              >
-                Continuer
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </LoadingButton>
-            </motion.div>
+                {/* Navigation */}
+                <motion.div 
+                  className="flex justify-between items-center mt-10"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Button 
+                    variant="ghost" 
+                    onClick={prevStep}
+                    disabled={state.isTransitioning}
+                    className="gap-2"
+                    style={{ color: STEALTH.textSecondary }}
+                  >
+                    <ArrowLeft size={18} />
+                    Retour
+                  </Button>
+                  <LoadingButton
+                    size="xl"
+                    onClick={handleContinue}
+                    disabled={!isValid || state.isTransitioning}
+                    isLoading={isNavigating}
+                    loadingText="Chargement..."
+                    className="px-8 rounded-full font-semibold disabled:opacity-50"
+                    style={{ 
+                      backgroundColor: STEALTH.accent,
+                      color: STEALTH.bg
+                    }}
+                  >
+                    Continuer
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </LoadingButton>
+                </motion.div>
+              </div>
+
+              {/* Right Column - Live Preview */}
+              <div className="lg:col-span-2 hidden lg:block">
+                <div className="sticky top-28">
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    {/* Preview Label */}
+                    <p 
+                      className="text-xs uppercase tracking-widest mb-4 text-center"
+                      style={{ color: STEALTH.textMuted }}
+                    >
+                      Aperçu en temps réel
+                    </p>
+
+                    {/* Card Preview */}
+                    <div 
+                      className="rounded-3xl p-8 relative overflow-hidden"
+                      style={{ 
+                        backgroundColor: STEALTH.bgCard,
+                        border: `1px solid ${STEALTH.border}`,
+                        boxShadow: STEALTH.shadowCard
+                      }}
+                    >
+                      {/* Subtle gradient overlay */}
+                      <div 
+                        className="absolute inset-0 opacity-30"
+                        style={{
+                          background: `radial-gradient(circle at top right, ${STEALTH.accent}15, transparent 60%)`
+                        }}
+                      />
+
+                      {/* Content */}
+                      <div className="relative z-10 text-center space-y-6">
+                        {/* Avatar placeholder */}
+                        <div 
+                          className="w-24 h-24 rounded-full mx-auto flex items-center justify-center text-3xl font-bold"
+                          style={{ 
+                            backgroundColor: STEALTH.bgInput,
+                            color: STEALTH.accent,
+                            border: `2px solid ${STEALTH.border}`
+                          }}
+                        >
+                          {formData.firstName && formData.lastName 
+                            ? `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`.toUpperCase()
+                            : <User size={32} style={{ color: STEALTH.textMuted }} />
+                          }
+                        </div>
+
+                        {/* Name */}
+                        <div>
+                          <h3 
+                            className="text-2xl font-display font-bold"
+                            style={{ color: STEALTH.text }}
+                          >
+                            {formData.firstName || formData.lastName 
+                              ? `${formData.firstName} ${formData.lastName}`.trim()
+                              : "Votre nom"
+                            }
+                          </h3>
+                          
+                          {/* Title & Company */}
+                          {(formData.title || formData.company) && (
+                            <p 
+                              className="text-sm mt-1"
+                              style={{ color: STEALTH.textSecondary }}
+                            >
+                              {formData.title}
+                              {formData.title && formData.company && " · "}
+                              {formData.company}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Tagline */}
+                        {formData.tagline && (
+                          <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-sm italic px-4"
+                            style={{ color: STEALTH.textMuted }}
+                          >
+                            "{formData.tagline}"
+                          </motion.p>
+                        )}
+
+                        {/* Contact Icons Preview */}
+                        <div className="flex justify-center gap-3 pt-2">
+                          {formData.phone && (
+                            <div 
+                              className="w-10 h-10 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: STEALTH.bgInput }}
+                            >
+                              <Phone size={16} style={{ color: STEALTH.accent }} />
+                            </div>
+                          )}
+                          {formData.email && (
+                            <div 
+                              className="w-10 h-10 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: STEALTH.bgInput }}
+                            >
+                              <Mail size={16} style={{ color: STEALTH.accent }} />
+                            </div>
+                          )}
+                          {formData.whatsapp && (
+                            <div 
+                              className="w-10 h-10 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: STEALTH.bgInput }}
+                            >
+                              <MessageCircle size={16} style={{ color: STEALTH.accent }} />
+                            </div>
+                          )}
+                          {formData.linkedin && (
+                            <div 
+                              className="w-10 h-10 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: STEALTH.bgInput }}
+                            >
+                              <Linkedin size={16} style={{ color: STEALTH.accent }} />
+                            </div>
+                          )}
+                          {formData.instagram && (
+                            <div 
+                              className="w-10 h-10 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: STEALTH.bgInput }}
+                            >
+                              <Instagram size={16} style={{ color: STEALTH.accent }} />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Location if set */}
+                        {formData.googleMapsUrl && (
+                          <div 
+                            className="flex items-center justify-center gap-2 text-xs"
+                            style={{ color: STEALTH.success }}
+                          >
+                            <MapPin size={12} />
+                            Position enregistrée
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Powered by badge */}
+                    <p 
+                      className="text-xs text-center mt-4"
+                      style={{ color: STEALTH.textMuted }}
+                    >
+                      Powered by <span style={{ color: STEALTH.accent }}>IWASP</span>
+                    </p>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
           </div>
         </main>
       </PageTransition>
