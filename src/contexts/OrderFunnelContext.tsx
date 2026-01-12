@@ -30,8 +30,12 @@ export const OFFERS: OfferConfig[] = [
   { id: "elite", name: "Élite", price: 92500, priceCurrency: "MAD" },         // ~92,5€
 ];
 
+// Client type (step 2: type of customer)
+export type ClientType = "particulier" | "independant" | "entreprise";
+
 // Digital identity (step 2: public profile)
 export interface DigitalIdentity {
+  clientType: ClientType;
   firstName: string;
   lastName: string;
   title?: string;           // Fonction

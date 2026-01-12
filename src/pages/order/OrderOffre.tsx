@@ -127,11 +127,11 @@ function OrderOffreContent() {
       <header className="sticky top-0 z-40 backdrop-blur-lg bg-deep-black/90 border-b border-anthracite-light">
         <div className="container mx-auto px-5 py-4 flex items-center justify-between">
           <button 
-            onClick={() => navigate("/order/type")}
+            onClick={() => navigate("/")}
             className="flex items-center gap-2 transition-colors text-soft-gray hover:text-off-white"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">Retour</span>
+            <span className="text-sm font-medium">Accueil</span>
           </button>
           
           <div className="flex items-center gap-3">
