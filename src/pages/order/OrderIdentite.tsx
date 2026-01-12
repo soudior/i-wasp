@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { STEALTH } from "@/lib/stealthPalette";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -44,8 +45,46 @@ import {
   FileText,
   Camera,
   X,
+  Upload,
 } from "lucide-react";
 import { toast } from "sonner";
+
+// Helper to upload photo to Supabase Storage
+async function uploadPhotoToStorage(dataUrl: string, fileName: string): Promise<string | null> {
+  try {
+    // Convert data URL to blob
+    const response = await fetch(dataUrl);
+    const blob = await response.blob();
+    
+    // Generate unique file name
+    const timestamp = Date.now();
+    const uniqueFileName = `order-photos/${timestamp}-${fileName}`;
+    
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from("card-assets")
+      .upload(uniqueFileName, blob, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: blob.type,
+      });
+    
+    if (error) {
+      console.error("Upload error:", error);
+      return null;
+    }
+    
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from("card-assets")
+      .getPublicUrl(data.path);
+    
+    return urlData.publicUrl;
+  } catch (err) {
+    console.error("Photo upload failed:", err);
+    return null;
+  }
+}
 
 // Validation helpers
 const validateEmail = (email: string): boolean => {
@@ -210,13 +249,32 @@ function OrderIdentiteContent() {
 
     setIsNavigating(true);
 
+    let finalPhotoUrl = formData.photoUrl;
+
+    // Upload photo to Supabase Storage if it's a data URL
+    if (formData.photoUrl && formData.photoUrl.startsWith("data:")) {
+      toast.loading("Upload de la photo...", { id: "photo-upload" });
+      
+      const fileName = `${formData.firstName}-${formData.lastName}`.toLowerCase().replace(/\s+/g, "-") + ".jpg";
+      const uploadedUrl = await uploadPhotoToStorage(formData.photoUrl, fileName);
+      
+      if (uploadedUrl) {
+        finalPhotoUrl = uploadedUrl;
+        toast.success("Photo uploadée !", { id: "photo-upload" });
+      } else {
+        toast.error("Échec de l'upload photo", { id: "photo-upload" });
+        setIsNavigating(false);
+        return;
+      }
+    }
+
     // Normalize data
     const normalizedData: DigitalIdentity = {
       clientType: formData.clientType,
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
       tagline: formData.tagline?.trim()?.slice(0, 80),
-      photoUrl: formData.photoUrl,
+      photoUrl: finalPhotoUrl,
       title: formData.title?.trim(),
       company: formData.company?.trim(),
       phone: formData.phone.trim(),
