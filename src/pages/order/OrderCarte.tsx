@@ -111,7 +111,7 @@ function EssentielCardView({ onContinue, isNavigating }: { onContinue: () => voi
       <PageTransition>
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-2xl mx-auto">
-            <OrderProgressBar currentStep={3} />
+            <OrderProgressBar currentStep={4} />
 
             {/* Header */}
             <motion.div 
@@ -125,7 +125,7 @@ function EssentielCardView({ onContinue, isNavigating }: { onContinue: () => voi
                 style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
-                Étape 3 sur 6
+                Étape 4 sur 7
               </motion.p>
               <motion.h1 
                 className="text-2xl md:text-3xl font-display font-bold mb-3"
@@ -634,7 +634,7 @@ function LuxuryCardConfigurator() {
       <PageTransition>
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-6xl mx-auto">
-            <OrderProgressBar currentStep={3} />
+            <OrderProgressBar currentStep={4} />
 
             {/* Header */}
             <motion.div 
@@ -1049,7 +1049,7 @@ function OrderCarteContent() {
 
 export default function OrderCarte() {
   return (
-    <OrderFunnelGuard step={3}>
+    <OrderFunnelGuard step={4}>
       <OrderCarteContent />
     </OrderFunnelGuard>
   );

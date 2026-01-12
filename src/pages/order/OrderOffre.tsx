@@ -240,7 +240,7 @@ function OrderOffreContent() {
           {/* Title */}
           <div className="text-center mb-8">
             <p className="text-xs uppercase tracking-widest mb-2 text-soft-gold">
-              Étape 1 sur 6 – Choisissez votre expérience
+              Étape 1 sur 7 – Choisissez votre expérience
             </p>
             <h1 className="text-2xl md:text-3xl font-bold text-off-white mb-2">
               Choisissez votre expérience
