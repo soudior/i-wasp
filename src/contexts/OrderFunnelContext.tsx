@@ -14,7 +14,10 @@ import { createContext, useContext, useState, useCallback, ReactNode, useEffect,
 import { useNavigate } from "react-router-dom";
 
 // Offer types
-export type OfferType = "essentiel" | "signature" | "elite";
+export type OfferType = "essentiel" | "signature" | "alliance";
+
+// Pack vitrine (upsell)
+export type VitrinePackType = "none" | "solo" | "equipe";
 
 // Offer configuration
 export interface OfferConfig {
@@ -25,9 +28,15 @@ export interface OfferConfig {
 }
 
 export const OFFERS: OfferConfig[] = [
-  { id: "essentiel", name: "Essentiel", price: 27700, priceCurrency: "MAD" }, // ~27,69€
-  { id: "signature", name: "Signature", price: 55500, priceCurrency: "MAD" }, // ~55,46€
-  { id: "elite", name: "Élite", price: 92500, priceCurrency: "MAD" },         // ~92,5€
+  { id: "essentiel", name: "Essentiel", price: 27700, priceCurrency: "MAD" },
+  { id: "signature", name: "Signature", price: 55500, priceCurrency: "MAD" },
+  { id: "alliance", name: "Alliance", price: 92500, priceCurrency: "MAD" },
+];
+
+export const VITRINE_PACKS = [
+  { id: "none" as VitrinePackType, name: "Sans pack", price: 0, priceCurrency: "MAD" },
+  { id: "solo" as VitrinePackType, name: "Pack Vitrine Solo", price: 150000, priceCurrency: "MAD" },
+  { id: "equipe" as VitrinePackType, name: "Pack Vitrine Équipe", price: 300000, priceCurrency: "MAD" },
 ];
 
 // Client type (step 2: type of customer)
