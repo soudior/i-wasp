@@ -463,8 +463,19 @@ export function OrderFunnelGuard({
   // Block rendering during transition or if not ready yet
   if (!isReady || state.isTransitioning) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#080808' }}>
+        {/* Honeycomb background */}
+        <div 
+          className="fixed inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.5' stroke-opacity='0.04'/%3E%3C/svg%3E")`,
+            backgroundSize: '56px 100px',
+          }}
+        />
+        <div 
+          className="w-8 h-8 border border-t-transparent rounded-full animate-spin relative z-10"
+          style={{ borderColor: '#AF8E5640', borderTopColor: 'transparent' }}
+        />
       </div>
     );
   }
@@ -472,8 +483,18 @@ export function OrderFunnelGuard({
   // If can't access after ready, show loading while redirecting
   if (!canAccessStep(step)) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#080808' }}>
+        <div 
+          className="fixed inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.5' stroke-opacity='0.04'/%3E%3C/svg%3E")`,
+            backgroundSize: '56px 100px',
+          }}
+        />
+        <div 
+          className="w-8 h-8 border border-t-transparent rounded-full animate-spin relative z-10"
+          style={{ borderColor: '#AF8E5640', borderTopColor: 'transparent' }}
+        />
       </div>
     );
   }
