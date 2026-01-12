@@ -47,6 +47,7 @@ export interface DigitalIdentity {
   clientType: ClientType;
   firstName: string;
   lastName: string;
+  tagline?: string;         // Phrase emblème (max 80 caractères)
   title?: string;           // Fonction
   company?: string;         // Entreprise
   phone: string;
@@ -102,8 +103,8 @@ export interface OrderFunnelState {
 // Step paths (7 steps now)
 const STEP_PATHS = [
   "/order/offre",        // Step 1: Offer selection
-  "/order/template",     // Step 2: Template selection (NEW)
-  "/order/identite",     // Step 3: Digital identity
+  "/order/identite",     // Step 2: Digital identity (MOVED UP)
+  "/order/template",     // Step 3: Template selection
   "/order/carte",        // Step 4: Card personalization
   "/order/livraison",    // Step 5: Shipping + Payment
   "/order/recap",        // Step 6: Summary
@@ -112,8 +113,8 @@ const STEP_PATHS = [
 
 export const STEP_LABELS = [
   "Offre",
-  "Template",
   "Identité",
+  "Template",
   "Carte",
   "Livraison",
   "Récap",
@@ -189,22 +190,24 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
   }, [state]);
 
   // Check if a step can be accessed (strict - no bypass)
+  // Order: 1=Offre, 2=Identité, 3=Template, 4=Carte, 5=Livraison, 6=Récap, 7=Confirmation
   const canAccessStep = useCallback((step: number): boolean => {
     if (step === 1) return true;
     if (step === 2) return state.selectedOffer !== null;
-    if (step === 3) return state.selectedOffer !== null && state.selectedTemplate !== null;
-    if (step === 4) return state.selectedOffer !== null && state.selectedTemplate !== null && state.digitalIdentity !== null;
-    if (step === 5) return state.selectedOffer !== null && state.selectedTemplate !== null && state.digitalIdentity !== null && state.cardPersonalization !== null;
-    if (step === 6) return state.selectedOffer !== null && state.selectedTemplate !== null && state.digitalIdentity !== null && state.cardPersonalization !== null && state.shippingInfo !== null;
+    if (step === 3) return state.selectedOffer !== null && state.digitalIdentity !== null;
+    if (step === 4) return state.selectedOffer !== null && state.digitalIdentity !== null && state.selectedTemplate !== null;
+    if (step === 5) return state.selectedOffer !== null && state.digitalIdentity !== null && state.selectedTemplate !== null && state.cardPersonalization !== null;
+    if (step === 6) return state.selectedOffer !== null && state.digitalIdentity !== null && state.selectedTemplate !== null && state.cardPersonalization !== null && state.shippingInfo !== null;
     if (step === 7) return state.isComplete;
     return false;
   }, [state]);
 
   // Get first incomplete step
+  // Order: 1=Offre, 2=Identité, 3=Template, 4=Carte, 5=Livraison, 6=Récap, 7=Confirmation
   const getFirstIncompleteStep = useCallback((): number => {
     if (!state.selectedOffer) return 1;
-    if (!state.selectedTemplate) return 2;
-    if (!state.digitalIdentity) return 3;
+    if (!state.digitalIdentity) return 2;
+    if (!state.selectedTemplate) return 3;
     if (!state.cardPersonalization) return 4;
     if (!state.shippingInfo) return 5;
     if (!state.isComplete) return 6;
@@ -243,20 +246,20 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  // Set template (step 2) - NEW
-  const setSelectedTemplate = useCallback((template: string) => {
-    setState(prev => ({
-      ...prev,
-      selectedTemplate: template,
-      currentStep: Math.max(prev.currentStep, 2),
-    }));
-  }, []);
-
-  // Set digital identity (step 3)
+  // Set digital identity (step 2) - NOW STEP 2
   const setDigitalIdentity = useCallback((identity: DigitalIdentity) => {
     setState(prev => ({
       ...prev,
       digitalIdentity: identity,
+      currentStep: Math.max(prev.currentStep, 2),
+    }));
+  }, []);
+
+  // Set template (step 3) - NOW STEP 3
+  const setSelectedTemplate = useCallback((template: string) => {
+    setState(prev => ({
+      ...prev,
+      selectedTemplate: template,
       currentStep: Math.max(prev.currentStep, 3),
     }));
   }, []);
@@ -360,14 +363,15 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
   }, [state.currentStep, state.isTransitioning, goToStep]);
 
   // Validate current step
+  // Order: 1=Offre, 2=Identité, 3=Template, 4=Carte, 5=Livraison, 6=Récap, 7=Confirmation
   const validateCurrentStep = useCallback((): boolean => {
     switch (state.currentStep) {
       case 1:
         return state.selectedOffer !== null;
       case 2:
-        return state.selectedTemplate !== null;
-      case 3:
         return state.digitalIdentity !== null;
+      case 3:
+        return state.selectedTemplate !== null;
       case 4:
         return state.cardPersonalization !== null;
       case 5:
