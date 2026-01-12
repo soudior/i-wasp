@@ -30,7 +30,12 @@ import {
   Star,
   Award,
   TrendingUp,
-  Send
+  Send,
+  Video,
+  Mic,
+  Link2,
+  UserPlus,
+  Smartphone
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -43,101 +48,123 @@ const howItWorks = [
   {
     step: "01",
     icon: Sparkles,
-    title: "Crée ton profil",
-    description: "Renseigne tes infos, ajoute vidéo, liens et réseaux. Ton identité digitale premium en 5 minutes."
+    title: "Crée ta carte vivante",
+    description: "Centralisez votre profil, vos liens, vos offres et vos documents dans une carte digitale NFC qui se met à jour en temps réel. Vous changez de contenu, la carte change instantanément."
   },
   {
     step: "02",
     icon: Wifi,
     title: "Partage en un tap",
-    description: "Un simple tap NFC ou scan QR suffit. Ton profil s'ouvre instantanément sur le téléphone de ton contact."
+    description: "Approchez votre carte d'un smartphone ou partagez un QR. Tes infos s'enregistrent en un geste, avec un mini-profil clair et actionnable pour votre contact."
   },
   {
     step: "03",
     icon: Target,
-    title: "Pilote ton réseau",
-    description: "Reçois des notifications, envoie des relances, analyse qui s'intéresse à toi. Ne laisse plus mourir un contact."
+    title: "Laisse le concierge faire le reste",
+    description: "Stories, relances, rappels, stats : i-wasp s'occupe du suivi et te prévient quand c'est le bon moment pour relancer."
   }
 ];
 
-const features24h = [
-  { icon: Eye, text: "Voir qui a consulté ta story" },
-  { icon: Target, text: "Suivre les clics sur ton CTA" },
-  { icon: Calendar, text: "Compter les RDV générés" },
-  { icon: FileText, text: "Partager docs & offres limitées" }
+const storiesFeatures = [
+  { 
+    icon: Sparkles, 
+    text: "Story automatique : résumé de la rencontre + prochaines étapes, visible 24h par ton contact." 
+  },
+  { 
+    icon: Video, 
+    text: "Story personnalisable : ajoute une courte vidéo, une note vocale ou un lien (Calendly, offre, PDF)." 
+  },
+  { 
+    icon: Calendar, 
+    text: "Appel à l'action intégré : « Réserver un appel », « Découvrir l'offre », « Télécharger la présentation »." 
+  }
 ];
 
 const pushFeatures = [
   {
     icon: Eye,
     title: "Contact revisite ta carte",
-    description: "Marie vient de revisiter ton profil et a cliqué sur LinkedIn.",
+    description: "« X vient d'ouvrir ta présentation », « Y vient de revisiter ta carte »",
     color: "text-gold-500"
   },
   {
-    icon: FileText,
-    title: "Document ouvert",
-    description: "Pierre a passé 3 minutes sur ta présentation PDF.",
+    icon: Clock,
+    title: "Suggestions de timing",
+    description: "« C'est le bon moment pour lui écrire » en fonction de ses habitudes de consultation.",
     color: "text-purple-400"
   },
   {
-    icon: Bell,
-    title: "Contact inactif détecté",
-    description: "5 contacts n'ont pas eu d'interaction depuis 14 jours.",
-    color: "text-orange-400"
+    icon: BarChart3,
+    title: "Tableau de bord clair",
+    description: "Contacts rencontrés, taux de réponses, rendez-vous générés, « score de santé » de ton réseau.",
+    color: "text-green-400"
   }
+];
+
+const gamificationPoints = [
+  { action: "Contact qualifié", points: "+1 pt" },
+  { action: "Relance envoyée", points: "+2 pts" },
+  { action: "Rendez-vous confirmé", points: "+5 pts" }
 ];
 
 const gamificationBadges = [
   { icon: Trophy, name: "Networker du mois", description: "Top 10% des utilisateurs actifs", color: "bg-gradient-to-br from-gold-500 to-gold-600" },
-  { icon: Users, name: "100 contacts suivis", description: "Réseau en pleine croissance", color: "bg-gradient-to-br from-purple-500 to-purple-600" },
-  { icon: CheckCircle2, name: "0 contact oublié", description: "Aucun lead négligé sur 30 jours", color: "bg-gradient-to-br from-green-500 to-green-600" }
+  { icon: Star, name: "Closer salon X", description: "Champion d'un événement", color: "bg-gradient-to-br from-purple-500 to-purple-600" },
+  { icon: Users, name: "100 contacts suivis", description: "Sans en oublier un seul", color: "bg-gradient-to-br from-green-500 to-green-600" }
 ];
 
 const missions = [
   "Ajouter une note à 5 contacts",
-  "Planifier 3 RDV depuis i-wasp",
-  "Relancer 10 contacts inactifs"
+  "Relancer 10 contacts inactifs",
+  "Planifier 3 RDV cette semaine"
 ];
 
 const targetAudiences = [
   {
     icon: Briefcase,
-    title: "Freelances & Indépendants",
-    description: "Impressionne tes prospects dès le premier contact et suis chaque lead sans effort."
+    title: "Freelances & experts",
+    description: "Coachs, consultants, créateurs, formateurs."
   },
   {
     icon: Building2,
-    title: "Équipes Commerciales",
-    description: "Immobilier, banque, assurance, B2B — équipe toute ton équipe avec un outil qui convertit."
+    title: "Commerciaux & agences",
+    description: "Immobilier, finance, assurances, B2B."
   },
   {
     icon: Hotel,
-    title: "Hôtellerie & Événementiel",
-    description: "Conciergerie, accueil VIP, salons — offre une expérience premium à chaque rencontre."
+    title: "Hôtellerie & événementiel",
+    description: "Conciergerie, réception, salons, VIP."
   }
+];
+
+const comparisonClassic = [
+  "Partagent les coordonnées",
+  "Profil de page statique",
+  "Aucun suivi, aucun rappel"
+];
+
+const comparisonIwasp = [
+  "Stories 24h, contenu dynamique et offres limitées",
+  "Relances intelligentes, push, analytics et timeline de chaque relation",
+  "Gamification, missions, intros automatiques entre les bons contacts"
 ];
 
 const faqs = [
   {
-    question: "Comment fonctionne la carte NFC i-wasp ?",
-    answer: "Ta carte NFC i-wasp contient une puce programmée avec l'URL de ton profil. Quand quelqu'un approche son téléphone, ton profil s'ouvre instantanément — aucune app requise."
+    question: "Est-ce que mes contacts doivent installer une application ?",
+    answer: "Non. Un simple tap NFC ou scan de QR ouvre votre profil dans leur navigateur."
   },
   {
-    question: "Qu'est-ce que les Stories 24h ?",
-    answer: "Après chaque rencontre, une story éphémère est créée automatiquement pour ton contact. Tu peux y ajouter un message, une vidéo, un lien vers Calendly ou une offre limitée. Elle expire après 24h pour créer l'urgence."
+    question: "Et si je change d'offre, de numéro ou de poste ?",
+    answer: "Tu modifies ton profil i-wasp, toutes tes cartes physiques affichent instantanément les nouvelles infos."
   },
   {
-    question: "Comment fonctionnent les relances intelligentes ?",
-    answer: "Notre IA détecte quand un contact revisite ta carte, ouvre un document ou reste inactif trop longtemps. Elle te propose alors 2-3 messages de relance personnalisés à envoyer en un tap via WhatsApp, email ou LinkedIn."
+    question: "Est-ce que c'est sécurisé ?",
+    answer: "Les données sont hébergées sur des serveurs sécurisés et tu contrôles ce que chaque contact peut voir."
   },
   {
     question: "C'est compatible avec tous les téléphones ?",
     answer: "Oui. Tous les iPhone depuis le 7 et la majorité des Android supportent le NFC. En cas de doute, un QR code de secours est toujours disponible."
-  },
-  {
-    question: "Puis-je modifier mon profil après avoir reçu ma carte ?",
-    answer: "Absolument. Ta carte pointe vers ton profil en ligne. Tu peux le modifier autant que tu veux — les changements sont instantanés, sans réimprimer."
   }
 ];
 
@@ -193,20 +220,16 @@ export default function HomeSaaS() {
             
             {/* Headline */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-white leading-[1.1] tracking-tight">
-              Le concierge digital
+              La carte qui travaille
               <span className="block mt-2 bg-gradient-to-r from-gold-400 via-gold-500 to-purple-400 bg-clip-text text-transparent">
-                de ton réseau.
+                pour ton réseau, 24h/24.
               </span>
             </h1>
             
-            <p className="text-lg text-[#8B8D98] italic mb-4">
-              Pas une simple carte NFC.
-            </p>
-            
             {/* Subheadline */}
             <p className="text-xl md:text-2xl text-[#9CA3AF] max-w-3xl mx-auto mb-10 leading-relaxed">
-              Stories 24h, relances intelligentes, notifications push et analytiques 
-              pour ne plus jamais laisser mourir un contact.
+              i-wasp transforme ta carte NFC en concierge digital : stories 24h après chaque rencontre, 
+              relances intelligentes, notifications push et analytiques pour ne plus jamais laisser mourir un contact.
             </p>
             
             {/* Visual flow: Tap → Story → Notif → RDV */}
@@ -239,7 +262,7 @@ export default function HomeSaaS() {
             
             {/* CTAs */}
             <motion.div 
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
@@ -261,6 +284,17 @@ export default function HomeSaaS() {
                 </Button>
               </Link>
             </motion.div>
+            
+            {/* Reassurance text */}
+            <motion.p 
+              className="text-[#8B8D98] text-sm mb-8 flex items-center justify-center gap-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+            >
+              <Smartphone className="w-4 h-4" />
+              Aucune application obligatoire pour vos contacts. Un tap ou un scan, et tout se passe dans leur navigateur.
+            </motion.p>
             
             {/* Trust badges */}
             <motion.div 
@@ -323,10 +357,10 @@ export default function HomeSaaS() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-              Comment ça marche
+              En 3 étapes simples
             </h2>
             <p className="text-[#9CA3AF] text-lg max-w-2xl mx-auto">
-              En 3 étapes simples, passe au networking du futur.
+              Passe au networking du futur en quelques minutes.
             </p>
           </motion.div>
           
@@ -382,30 +416,44 @@ export default function HomeSaaS() {
                 Stories 24h
               </div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
-                Après chaque rencontre,
-                <span className="block text-purple-400">une story qui convertit.</span>
+                Stories 24h après
+                <span className="block text-purple-400">chaque rencontre</span>
               </h2>
               <p className="text-[#9CA3AF] text-lg mb-8 leading-relaxed">
-                Chaque scan génère automatiquement une story personnalisée visible 24h avec un call-to-action 
-                (prendre RDV, télécharger un doc, offre limitée). Le contact reste engagé, tu restes mémorable.
+                Après chaque nouveau contact, i-wasp crée une histoire dédiée à cette relation pour garder 
+                la rencontre fraîche dans les esprits.
               </p>
               
-              <div className="space-y-4">
-                {features24h.map((item, i) => (
+              <div className="space-y-4 mb-8">
+                {storiesFeatures.map((item, i) => (
                   <motion.div 
                     key={i} 
-                    className="flex items-center gap-4"
+                    className="flex items-start gap-4"
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
                   >
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-gold-500/10 flex items-center justify-center border border-white/5">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-gold-500/10 flex items-center justify-center border border-white/5 flex-shrink-0 mt-1">
                       <item.icon className="w-5 h-5 text-purple-400" />
                     </div>
-                    <span className="text-white">{item.text}</span>
+                    <span className="text-[#9CA3AF]">{item.text}</span>
                   </motion.div>
                 ))}
+              </div>
+              
+              {/* Relances intelligentes sub-section */}
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-gold-500/10 to-transparent border border-gold-500/20">
+                <p className="text-gold-400 font-medium mb-3 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Relances intelligentes
+                </p>
+                <p className="text-[#9CA3AF] text-sm mb-4">
+                  L'IA vous propose 2 à 3 messages de relance prêts à envoyer (formel, direct, amical).
+                </p>
+                <p className="text-[#8B8D98] text-sm">
+                  En un clic vous envoyez par email, WhatsApp ou message LinkedIn.
+                </p>
               </div>
             </motion.div>
             
@@ -455,7 +503,7 @@ export default function HomeSaaS() {
                 
                 <Button className="w-full btn-premium gap-2">
                   <Calendar className="w-4 h-4" />
-                  Prendre rendez-vous
+                  Réserver un appel
                 </Button>
               </div>
             </motion.div>
@@ -523,6 +571,9 @@ export default function HomeSaaS() {
                   <Button size="sm" variant="outline" className="border-white/20 text-white hover:bg-white/5 text-xs py-2 px-4 rounded-full">
                     Email
                   </Button>
+                  <Button size="sm" variant="outline" className="border-white/20 text-white hover:bg-white/5 text-xs py-2 px-4 rounded-full">
+                    LinkedIn
+                  </Button>
                 </div>
               </motion.div>
             </motion.div>
@@ -539,12 +590,11 @@ export default function HomeSaaS() {
                 Notifications intelligentes
               </div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
-                Ne laisse plus un 
-                <span className="block text-gold-400">contact refroidir.</span>
+                Tu sais qui te regarde,
+                <span className="block text-gold-400">et quand.</span>
               </h2>
               <p className="text-[#9CA3AF] text-lg mb-8 leading-relaxed">
-                Reçois une notification quand un contact revisite ta carte, ouvre un document ou clique sur un lien. 
-                L'IA te propose 2-3 messages de relance personnalisés à envoyer en un tap.
+                i-wasp te notifie dès qu'un contact revient sur ta carte, ouvre un document ou clique sur un lien important.
               </p>
               
               <div className="p-5 rounded-2xl bg-gradient-to-r from-purple-500/10 to-transparent border border-purple-500/20 mb-6">
@@ -558,7 +608,7 @@ export default function HomeSaaS() {
               </div>
               
               <div className="flex flex-wrap gap-2">
-                {["WhatsApp", "Email", "LinkedIn", "SMS"].map((channel, i) => (
+                {["WhatsApp", "Email", "LinkedIn", "Web Push"].map((channel, i) => (
                   <span key={i} className="px-4 py-2 rounded-full bg-[#0F1118] border border-white/10 text-sm text-[#9CA3AF]">
                     {channel}
                   </span>
@@ -585,22 +635,37 @@ export default function HomeSaaS() {
               Gamification
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-              Transforme ton networking
-              <span className="block text-gold-400">en jeu.</span>
+              Le networking devient un jeu
+              <span className="block text-gold-400">(mais rentable)</span>
             </h2>
             <p className="text-[#9CA3AF] text-lg max-w-2xl mx-auto">
-              Gagne des badges, complète des missions hebdomadaires et surveille la santé de ton réseau.
+              i-wasp transforme ta discipline de suivi en missions simples avec points, badges et objectifs hebdomadaires.
             </p>
           </motion.div>
           
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Badges */}
+            {/* Points & Badges */}
             <motion.div
               className="card-offer p-8"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
+              {/* Points system */}
+              <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+                <Star className="w-5 h-5 text-gold-400" />
+                Système de points
+              </h3>
+              <div className="space-y-3 mb-8">
+                {gamificationPoints.map((item, i) => (
+                  <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-[#07080D]/50 border border-white/5">
+                    <span className="text-[#9CA3AF]">{item.action}</span>
+                    <span className="text-gold-400 font-medium">{item.points}</span>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Badges */}
               <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
                 <Award className="w-5 h-5 text-gold-400" />
                 Badges à débloquer
@@ -681,10 +746,11 @@ export default function HomeSaaS() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-              Pour qui ?
+              Pensé pour ceux dont le réseau
+              <span className="block text-gold-400">est le business</span>
             </h2>
             <p className="text-[#9CA3AF] text-lg max-w-2xl mx-auto">
-              i-wasp s'adapte à tous les professionnels qui veulent maximiser leur réseau.
+              Si ton chiffre dépend de la qualité de ton réseau et de ton suivi, i-wasp devient ton meilleur assistant.
             </p>
           </motion.div>
           
@@ -710,9 +776,76 @@ export default function HomeSaaS() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          FAQ
+          COMPARAISON : CARTE CLASSIQUE VS I-WASP
       ═══════════════════════════════════════════════════════════════════ */}
       <section className="py-24 md:py-32 px-4 bg-gradient-to-b from-[#0F1118]/50 to-transparent">
+        <div className="max-w-[1100px] mx-auto">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+              Bien plus qu'une
+              <span className="block text-gold-400">carte NFC</span>
+            </h2>
+          </motion.div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Classic Card */}
+            <motion.div
+              className="p-8 rounded-3xl bg-[#0F1118]/80 border border-white/10"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-[#1a1b20] flex items-center justify-center">
+                  <X className="w-6 h-6 text-[#8B8D98]" />
+                </div>
+                <h3 className="text-xl font-semibold text-[#8B8D98]">Cartes classiques</h3>
+              </div>
+              <div className="space-y-4">
+                {comparisonClassic.map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-[#07080D]/50 border border-white/5">
+                    <X className="w-5 h-5 text-red-400/60 flex-shrink-0" />
+                    <span className="text-[#8B8D98]">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+            
+            {/* i-wasp Concierge */}
+            <motion.div
+              className="p-8 rounded-3xl bg-gradient-to-br from-gold-500/10 to-purple-500/10 border border-gold-500/30"
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-500 to-gold-600 flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-[#07080D]" />
+                </div>
+                <h3 className="text-xl font-semibold text-white">Conciergerie i-wasp</h3>
+              </div>
+              <div className="space-y-4">
+                {comparisonIwasp.map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-[#07080D]/50 border border-gold-500/20">
+                    <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <span className="text-white">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          FAQ
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section className="py-24 md:py-32 px-4">
         <div className="max-w-[800px] mx-auto">
           <motion.div 
             className="text-center mb-16"
