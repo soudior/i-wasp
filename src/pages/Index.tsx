@@ -48,6 +48,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 // Import unified Luxe Max palette
 import { STEALTH } from "@/lib/stealthPalette";
+import { HoneycombBackground } from "@/components/HoneycombBackground";
 
 // Comment ça marche - 3 étapes simples
 const howItWorks = [
@@ -157,6 +158,9 @@ const Index = () => {
   
   return (
     <div ref={containerRef} className="relative" style={{ backgroundColor: STEALTH.noir }}>
+      {/* Haute Couture Honeycomb Background */}
+      <HoneycombBackground opacity={0.04} showDots />
+      
       <ClubNavbar />
 
       {/* ═══════════════════════════════════════════════════════════════════
