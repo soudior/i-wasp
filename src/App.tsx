@@ -91,6 +91,7 @@ const AdminCardGenerator = lazy(() => import("./pages/AdminCardGenerator"));
 // NEW Order funnel pages - 7 steps strict flow
 const OrderType = lazy(() => import("./pages/order/OrderType"));
 const OrderOffre = lazy(() => import("./pages/order/OrderOffre"));
+const OrderTemplate = lazy(() => import("./pages/order/OrderTemplate"));
 const OrderIdentite = lazy(() => import("./pages/order/OrderIdentite"));
 const OrderCarte = lazy(() => import("./pages/order/OrderCarte"));
 const OrderLivraison = lazy(() => import("./pages/order/OrderLivraison"));
@@ -276,6 +277,7 @@ const App = () => {
                               <Route path="/order" element={<Navigate to="/order/offre" replace />} />
                               <Route path="/order/type" element={<Navigate to="/order/offre" replace />} />
                               <Route path="/order/offre" element={<OrderOffre />} />
+                              <Route path="/order/template" element={<OrderTemplate />} />
                               <Route path="/order/identite" element={<OrderIdentite />} />
                               <Route path="/order/carte" element={<OrderCarte />} />
                               <Route path="/order/livraison" element={<OrderLivraison />} />

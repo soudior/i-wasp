@@ -195,7 +195,7 @@ function OrderRecapContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-lg mx-auto">
             {/* Progress Bar */}
-            <OrderProgressBar currentStep={5} />
+            <OrderProgressBar currentStep={6} />
 
             {/* Header */}
             <motion.div 
@@ -209,7 +209,7 @@ function OrderRecapContent() {
                 style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
-                Étape 4 sur 5 – Récapitulatif de votre commande
+                Étape 6 sur 7 – Récapitulatif de votre commande
               </motion.p>
               <motion.h1 
                 className="text-2xl md:text-3xl font-display font-bold mb-2"
@@ -461,7 +461,7 @@ function OrderRecapContent() {
 
 export default function OrderRecap() {
   return (
-    <OrderFunnelGuard step={5}>
+    <OrderFunnelGuard step={6}>
       <OrderRecapContent />
     </OrderFunnelGuard>
   );

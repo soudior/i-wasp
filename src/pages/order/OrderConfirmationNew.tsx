@@ -447,7 +447,7 @@ function OrderConfirmationContent() {
 
 export default function OrderConfirmationNew() {
   return (
-    <OrderFunnelGuard step={6}>
+    <OrderFunnelGuard step={7}>
       <OrderConfirmationContent />
     </OrderFunnelGuard>
   );

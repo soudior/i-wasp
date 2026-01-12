@@ -196,7 +196,7 @@ function OrderIdentiteContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-2xl mx-auto">
             {/* Progress Bar */}
-            <OrderProgressBar currentStep={2} />
+            <OrderProgressBar currentStep={3} />
 
             {/* Header */}
             <motion.div 
@@ -210,7 +210,7 @@ function OrderIdentiteContent() {
                 style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
-                Étape 2 sur 6
+                Étape 3 sur 7
               </motion.p>
               <motion.h1 
                 className="text-3xl md:text-4xl font-display font-bold mb-3"
@@ -750,7 +750,7 @@ function OrderIdentiteContent() {
 
 export default function OrderIdentite() {
   return (
-    <OrderFunnelGuard step={2}>
+    <OrderFunnelGuard step={3}>
       <OrderIdentiteContent />
     </OrderFunnelGuard>
   );

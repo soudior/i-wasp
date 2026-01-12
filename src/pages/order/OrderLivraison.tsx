@@ -155,7 +155,7 @@ function OrderLivraisonContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-2xl mx-auto">
             {/* Progress Bar */}
-            <OrderProgressBar currentStep={4} />
+            <OrderProgressBar currentStep={5} />
 
             {/* Header */}
             <motion.div 
@@ -169,7 +169,7 @@ function OrderLivraisonContent() {
                 style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
-                Étape 4 sur 6
+                Étape 5 sur 7
               </motion.p>
               <motion.h1 
                 className="text-3xl md:text-4xl font-display font-bold mb-3"
@@ -618,7 +618,7 @@ function OrderLivraisonContent() {
 
 export default function OrderLivraison() {
   return (
-    <OrderFunnelGuard step={4}>
+    <OrderFunnelGuard step={5}>
       <OrderLivraisonContent />
     </OrderFunnelGuard>
   );
