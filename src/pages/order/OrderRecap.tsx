@@ -6,7 +6,7 @@
  */
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useOrderFunnel, OrderFunnelGuard, OFFERS } from "@/contexts/OrderFunnelContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { ArrowLeft, MapPin, CreditCard, Banknote, Check } from "lucide-react";
 import { toast } from "sonner";
+import { OrderLoader } from "@/components/order/OrderLoader";
 
 type PaymentMethod = "stripe" | "cod";
 
@@ -172,7 +173,18 @@ function OrderRecapContent() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
+    <>
+      {/* Order Processing Loader */}
+      <AnimatePresence>
+        {isProcessing && (
+          <OrderLoader 
+            message="Création de votre commande"
+            submessage="Préparation en cours..."
+          />
+        )}
+      </AnimatePresence>
+
+      <div className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
       {/* Honeycomb texture */}
       <div 
         className="fixed inset-0 pointer-events-none"
@@ -437,6 +449,7 @@ function OrderRecapContent() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
