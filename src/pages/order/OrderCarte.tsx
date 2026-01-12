@@ -2,224 +2,92 @@
  * Step 3: Personnalisation carte physique
  * /order/carte
  * 
- * IWASP Stealth Luxury Design
+ * IWASP Premium Luxury — Simplified Card Editor
+ * - Essentiel: Carte standard incluse (skip customization)
+ * - Signature/Alliance: Model choice + Logo upload + Position
  */
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { useOrderFunnel, OrderFunnelGuard, CardPersonalization } from "@/contexts/OrderFunnelContext";
+import { useOrderFunnel, OrderFunnelGuard, CardPersonalization, OfferType } from "@/contexts/OrderFunnelContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { OrderProgressBar, PageTransition, contentVariants, itemVariants } from "@/components/order";
 import { LoadingButton } from "@/components/ui/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CardDesignEditor, CardDesignConfig, defaultCardDesignConfig } from "@/components/order/CardDesignEditor";
 import { STEALTH } from "@/lib/stealthPalette";
 import { 
   ArrowRight, 
   ArrowLeft,
-  Lock,
-  Sparkles,
-  Eye,
-  FlipHorizontal,
-  Layers,
-  Package,
   CheckCircle2,
+  Upload,
+  Image as ImageIcon,
+  Layers,
+  CreditCard,
+  AlignCenter,
+  AlignStartVertical,
+  Sparkles,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
-// Import official i-Wasp logo for back preview
+// Import official i-Wasp logo for preview
 import iwaspLogo from "@/assets/iwasp-logo.png";
 
-// Premium card material definitions with marketing copy
-interface CardMaterial {
+// Simplified card models
+interface CardModel {
   id: string;
   label: string;
-  tagline: string;
   description: string;
   price: number;
   badge?: string;
-  features: string[];
 }
 
-const PREMIUM_MATERIALS: Record<string, CardMaterial> = {
-  "pvc-soft-touch": {
-    id: "pvc-soft-touch",
-    label: "Luxe Soft-Touch",
-    tagline: "La discrétion haut de gamme",
-    description: "Carte PVC soft-touch noir profond + profil numérique complet i-Wasp, idéale pour les marques haut de gamme qui aiment la discrétion.",
+const CARD_MODELS: CardModel[] = [
+  {
+    id: "standard",
+    label: "Standard",
+    description: "Carte PVC classique, résistante et élégante",
     price: 0,
-    features: ["PVC soft-touch noir", "Finition veloutée", "Logo doré ou vernis sélectif"],
   },
-  "metal-noir": {
-    id: "metal-noir",
-    label: "Signature Métal",
-    tagline: "L'excellence gravée",
-    description: "Carte métal NFC noir mat gravée + profil digital complet i-Wasp. Pensée pour les décideurs qui veulent une présence physique et digitale irréprochable.",
+  {
+    id: "soft-touch",
+    label: "Soft-Touch",
+    description: "Finition veloutée noir profond, toucher premium",
+    price: 50,
+    badge: "Populaire",
+  },
+  {
+    id: "metal",
+    label: "Métal",
+    description: "Carte métal noir mat gravée, ultra-premium",
     price: 150,
     badge: "Premium",
-    features: ["Métal noir mat", "Gravure laser or/argent", "Finition ultra-premium"],
   },
-  "bois-eco-luxe": {
-    id: "bois-eco-luxe",
-    label: "Éco-Luxe Bois",
-    tagline: "L'élégance responsable",
-    description: "Carte bois foncé gravée pour une option éco-luxe. L'alliance parfaite entre raffinement et responsabilité environnementale.",
-    price: 120,
-    badge: "Éco",
-    features: ["Bois foncé naturel", "Gravure laser", "Finition éco-responsable"],
-  },
-  "metal-gold": {
-    id: "metal-gold",
-    label: "Prestige Or",
-    tagline: "L'ultime expression du luxe",
-    description: "Carte métal avec finition or 24 carats. L'édition la plus exclusive pour ceux qui n'acceptent que l'excellence absolue.",
-    price: 300,
-    badge: "Exclusive",
-    features: ["Métal premium", "Finition or 24 carats", "Édition limitée"],
-  },
-};
+];
 
-// Card materials by client type with marketing positioning
-const CARD_MATERIALS = {
-  particulier: [
-    PREMIUM_MATERIALS["pvc-soft-touch"],
-  ],
-  independant: [
-    PREMIUM_MATERIALS["pvc-soft-touch"],
-    PREMIUM_MATERIALS["metal-noir"],
-    PREMIUM_MATERIALS["bois-eco-luxe"],
-  ],
-  entreprise: [
-    PREMIUM_MATERIALS["pvc-soft-touch"],
-    PREMIUM_MATERIALS["metal-noir"],
-    PREMIUM_MATERIALS["bois-eco-luxe"],
-    PREMIUM_MATERIALS["metal-gold"],
-  ],
-};
+// Logo position options
+type LogoPosition = "center" | "corner";
 
-// Pack definitions for B2B
-const PACK_OPTIONS = {
-  particulier: [
-    { qty: 1, label: "1 carte", pricePerCard: 0 },
-    { qty: 2, label: "2 cartes", pricePerCard: 0, discount: "-10%" },
-    { qty: 3, label: "3 cartes", pricePerCard: 0, discount: "-15%" },
-  ],
-  independant: [
-    { qty: 1, label: "1 carte", pricePerCard: 0 },
-    { qty: 5, label: "Pack Pro 5", pricePerCard: 0, discount: "-15%", badge: "Pro" },
-    { qty: 10, label: "Pack Pro 10", pricePerCard: 0, discount: "-20%", badge: "Pro" },
-    { qty: 25, label: "Pack Pro 25", pricePerCard: 0, discount: "-25%", badge: "Best" },
-  ],
-  entreprise: [
-    { qty: 10, label: "Équipe 10", pricePerCard: 0, badge: "Start" },
-    { qty: 25, label: "Équipe 25", pricePerCard: 0, discount: "-15%", badge: "Pro" },
-    { qty: 50, label: "Équipe 50", pricePerCard: 0, discount: "-25%", badge: "Best" },
-    { qty: 100, label: "Prestige 100", pricePerCard: 0, discount: "-35%", badge: "Elite" },
-    { qty: 250, label: "Enterprise 250+", pricePerCard: 0, discount: "-40%", badge: "VIP" },
-  ],
-};
+const LOGO_POSITIONS: { id: LogoPosition; label: string; icon: typeof AlignCenter }[] = [
+  { id: "center", label: "Centré", icon: AlignCenter },
+  { id: "corner", label: "Coin supérieur", icon: AlignStartVertical },
+];
 
-const QUANTITY_OPTIONS = {
-  particulier: [1, 2, 3],
-  independant: [1, 5, 10, 25],
-  entreprise: [10, 25, 50, 100, 250],
-};
-
-function OrderCarteContent() {
-  const { state, setCardPersonalization, nextStep, prevStep } = useOrderFunnel();
-  const [isNavigating, setIsNavigating] = useState(false);
-  const [showBack, setShowBack] = useState(false);
-  
-  // Get client type from state
-  const clientType = state.digitalIdentity?.clientType || "particulier";
-  const cardMaterials = CARD_MATERIALS[clientType];
-  const quantityOptions = QUANTITY_OPTIONS[clientType];
-  
-  // Selected material and quantity
-  const [selectedMaterial, setSelectedMaterial] = useState(cardMaterials[0].id);
-  const [selectedQuantity, setSelectedQuantity] = useState(quantityOptions[0]);
-  
-  // Card design config
-  const [cardDesign, setCardDesign] = useState<CardDesignConfig>(() => {
-    if (state.cardPersonalization?.imageUrl) {
-      return {
-        logoUrl: state.cardPersonalization.imageUrl,
-        logoX: 50,
-        logoY: 50,
-        logoScale: 1,
-        isFullBleed: false,
-        fileName: state.cardPersonalization.fileName || "",
-      };
-    }
-    return defaultCardDesignConfig;
-  });
-
-  const handleContinue = async () => {
-    if (!cardDesign.logoUrl || isNavigating || state.isTransitioning) return;
-    
-    setIsNavigating(true);
-    
-    const cardData: CardPersonalization = {
-      visualType: "logo",
-      imageUrl: cardDesign.logoUrl,
-      fileName: cardDesign.fileName,
-    };
-    
-    setCardPersonalization(cardData);
-    await nextStep();
-  };
-
-  const canContinue = cardDesign.logoUrl !== null;
-
-  // Card back preview component
-  const CardBackPreview = () => (
-    <div
-      className="relative rounded-xl overflow-hidden"
-      style={{
-        aspectRatio: 85.6 / 54,
-        backgroundColor: STEALTH.bgCard,
-        boxShadow: STEALTH.shadowLg,
-      }}
-    >
-      {/* Centered i-Wasp logo */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <img
-          src={iwaspLogo}
-          alt="i-Wasp"
-          className="w-1/2 h-auto object-contain opacity-90"
-        />
-      </div>
-      
-      {/* NFC indicator */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-        <Badge 
-          className="text-[10px] border-none"
-          style={{ 
-            backgroundColor: STEALTH.accentMuted, 
-            color: STEALTH.textSecondary 
-          }}
-        >
-          NFC activé
-        </Badge>
-      </div>
-    </div>
-  );
-
+// Essentiel offer: Simple card included message
+function EssentielCardView({ onContinue, isNavigating }: { onContinue: () => void; isNavigating: boolean }) {
   return (
     <div className="min-h-screen" style={{ backgroundColor: STEALTH.bg }}>
       <Navbar />
       
       <PageTransition>
         <main className="pt-24 pb-32 px-4">
-          <div className="max-w-4xl mx-auto">
-            {/* Progress Bar */}
+          <div className="max-w-2xl mx-auto">
             <OrderProgressBar currentStep={3} />
 
             {/* Header */}
             <motion.div 
-              className="text-center mb-8"
+              className="text-center mb-10"
               variants={contentVariants}
               initial="initial"
               animate="animate"
@@ -232,566 +100,122 @@ function OrderCarteContent() {
                 Étape 3 sur 6
               </motion.p>
               <motion.h1 
-                className="text-2xl md:text-3xl font-display font-bold mb-2"
+                className="text-2xl md:text-3xl font-display font-bold mb-3"
                 style={{ color: STEALTH.text }}
                 variants={itemVariants}
               >
-                Personnalisez votre carte
+                Votre carte i‑wasp
               </motion.h1>
-              <motion.p 
-                style={{ color: STEALTH.textSecondary }}
-                variants={itemVariants}
-              >
-                Uploadez votre logo et positionnez-le sur la carte officielle i-Wasp
-              </motion.p>
             </motion.div>
 
-            <div className="grid lg:grid-cols-2 gap-8">
-              {/* Left: Card Design Editor */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-                className="space-y-4"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div 
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: STEALTH.accentMuted }}
-                  >
-                    <Sparkles className="w-5 h-5" style={{ color: STEALTH.accent }} />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm" style={{ color: STEALTH.text }}>
-                      Éditeur de carte
-                    </p>
-                    <p className="text-xs" style={{ color: STEALTH.textSecondary }}>
-                      Glissez pour positionner votre logo
-                    </p>
-                  </div>
-                </div>
-
-                <CardDesignEditor
-                  value={cardDesign}
-                  onChange={setCardDesign}
-                />
-
-                {/* Premium Material Selection */}
-                {cardMaterials.length > 1 && (
-                  <div 
-                    className="rounded-2xl p-5"
-                    style={{ 
-                      backgroundColor: STEALTH.bgCard,
-                      border: `1px solid ${STEALTH.border}`
-                    }}
-                  >
-                    <div className="flex items-center gap-2 mb-4">
-                      <Layers className="w-4 h-4" style={{ color: STEALTH.accent }} />
-                      <span className="text-sm font-semibold" style={{ color: STEALTH.text }}>
-                        Choisissez votre finition
-                      </span>
-                      <span 
-                        className="ml-auto text-xs px-2 py-0.5 rounded-full"
-                        style={{ 
-                          backgroundColor: STEALTH.accentMuted, 
-                          color: STEALTH.accent 
-                        }}
-                      >
-                        {clientType === "entreprise" ? "Collection B2B" : "Collection Pro"}
-                      </span>
-                    </div>
-                    <div className="space-y-3">
-                      {cardMaterials.map((material) => {
-                        const isSelected = selectedMaterial === material.id;
-                        return (
-                          <button
-                            key={material.id}
-                            onClick={() => setSelectedMaterial(material.id)}
-                            className="w-full p-4 rounded-xl border-2 transition-all text-left group"
-                            style={{
-                              borderColor: isSelected ? STEALTH.accent : STEALTH.border,
-                              backgroundColor: isSelected ? STEALTH.accentMuted : 'transparent',
-                              boxShadow: isSelected ? `0 0 20px ${STEALTH.accent}20` : 'none',
-                            }}
-                          >
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="flex-1 space-y-1.5">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <span 
-                                    className="font-semibold"
-                                    style={{ color: isSelected ? STEALTH.accent : STEALTH.text }}
-                                  >
-                                    {material.label}
-                                  </span>
-                                  {material.badge && (
-                                    <span 
-                                      className="text-[10px] px-2 py-0.5 rounded-full font-medium"
-                                      style={{ 
-                                        backgroundColor: material.badge === "Exclusive" ? "#C68B5F" : STEALTH.accent, 
-                                        color: STEALTH.bg 
-                                      }}
-                                    >
-                                      {material.badge}
-                                    </span>
-                                  )}
-                                </div>
-                                <p 
-                                  className="text-xs italic"
-                                  style={{ color: STEALTH.accent }}
-                                >
-                                  "{material.tagline}"
-                                </p>
-                                <p 
-                                  className="text-xs leading-relaxed"
-                                  style={{ color: STEALTH.textSecondary }}
-                                >
-                                  {material.description}
-                                </p>
-                                {/* Features */}
-                                <div className="flex flex-wrap gap-1 pt-1">
-                                  {material.features.map((feature, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="text-[10px] px-2 py-0.5 rounded-full"
-                                      style={{
-                                        backgroundColor: `${STEALTH.border}50`,
-                                        color: STEALTH.textSecondary,
-                                      }}
-                                    >
-                                      {feature}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                              <div className="text-right flex flex-col items-end gap-2">
-                                {material.price === 0 ? (
-                                  <span 
-                                    className="text-xs font-medium px-2 py-1 rounded-lg"
-                                    style={{ 
-                                      backgroundColor: `${STEALTH.success}20`,
-                                      color: STEALTH.success 
-                                    }}
-                                  >
-                                    Inclus
-                                  </span>
-                                ) : (
-                                  <span 
-                                    className="text-sm font-bold"
-                                    style={{ color: STEALTH.accent }}
-                                  >
-                                    +{material.price} MAD
-                                  </span>
-                                )}
-                                {isSelected && (
-                                  <CheckCircle2 className="w-5 h-5" style={{ color: STEALTH.accent }} />
-                                )}
-                              </div>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Pack/Quantity Selection with B2B badges */}
-                {quantityOptions.length > 3 && (
-                  <div 
-                    className="rounded-2xl p-5"
-                    style={{ 
-                      backgroundColor: STEALTH.bgCard,
-                      border: `1px solid ${STEALTH.border}`
-                    }}
-                  >
-                    <div className="flex items-center gap-2 mb-4">
-                      <Package className="w-4 h-4" style={{ color: STEALTH.accent }} />
-                      <span className="text-sm font-semibold" style={{ color: STEALTH.text }}>
-                        {clientType === "entreprise" ? "Pack Équipe Prestige" : "Quantité"}
-                      </span>
-                      {clientType === "entreprise" && (
-                        <span 
-                          className="ml-auto text-xs px-2 py-0.5 rounded-full"
-                          style={{ 
-                            backgroundColor: STEALTH.accentMuted, 
-                            color: STEALTH.accent 
-                          }}
-                        >
-                          + Dashboard Manager inclus
-                        </span>
-                      )}
-                    </div>
-                    <p 
-                      className="text-xs mb-3"
-                      style={{ color: STEALTH.textSecondary }}
-                    >
-                      {clientType === "entreprise" 
-                        ? "Pack de cartes premium coordonnées pour votre équipe + Dashboard Manager pour suivre l'utilisation et les contacts générés."
-                        : "Sélectionnez la quantité souhaitée"}
-                    </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {PACK_OPTIONS[clientType].map((pack) => {
-                        const isSelected = selectedQuantity === pack.qty;
-                        return (
-                          <button
-                            key={pack.qty}
-                            onClick={() => setSelectedQuantity(pack.qty)}
-                            className="p-3 rounded-xl border-2 transition-all text-center relative"
-                            style={{
-                              borderColor: isSelected ? STEALTH.accent : STEALTH.border,
-                              backgroundColor: isSelected ? STEALTH.accentMuted : 'transparent',
-                            }}
-                          >
-                            {pack.badge && (
-                              <span 
-                                className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] px-2 py-0.5 rounded-full font-medium"
-                                style={{ 
-                                  backgroundColor: pack.badge === "Best" || pack.badge === "VIP" ? STEALTH.accent : STEALTH.border, 
-                                  color: pack.badge === "Best" || pack.badge === "VIP" ? STEALTH.bg : STEALTH.text 
-                                }}
-                              >
-                                {pack.badge}
-                              </span>
-                            )}
-                            <span 
-                              className="text-lg font-bold block"
-                              style={{ color: isSelected ? STEALTH.accent : STEALTH.text }}
-                            >
-                              {pack.qty}
-                            </span>
-                            <span 
-                              className="text-[10px] block"
-                              style={{ color: STEALTH.textSecondary }}
-                            >
-                              {pack.label}
-                            </span>
-                            {pack.discount && (
-                              <span 
-                                className="text-[10px] font-medium"
-                                style={{ color: STEALTH.success }}
-                              >
-                                {pack.discount}
-                              </span>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {selectedQuantity >= 25 && (
-                      <p 
-                        className="text-xs mt-3 text-center p-2 rounded-lg"
-                        style={{ 
-                          backgroundColor: `${STEALTH.success}15`,
-                          color: STEALTH.success 
-                        }}
-                      >
-                        ✨ Tarif dégressif appliqué • Dashboard Manager offert
-                      </p>
-                    )}
-                  </div>
-                )}
-              </motion.div>
-
-              {/* Right: Preview & Info */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                className="space-y-6"
-              >
-                {/* Preview Section */}
-                <div 
-                  className="rounded-2xl p-6 sticky top-24"
-                  style={{ 
-                    backgroundColor: STEALTH.bgCard,
-                    border: `1px solid ${STEALTH.border}`
-                  }}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <Badge 
-                      className="text-xs"
-                      style={{ 
-                        backgroundColor: STEALTH.accentMuted, 
-                        color: STEALTH.accent,
-                        border: `1px solid ${STEALTH.borderActive}`
-                      }}
-                    >
-                      {showBack ? "Verso" : "Recto"} • Aperçu fidèle
-                    </Badge>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowBack(!showBack)}
-                      className="h-8 gap-1 text-xs"
-                      style={{ color: STEALTH.textSecondary }}
-                    >
-                      <FlipHorizontal className="w-3 h-3" />
-                      {showBack ? "Voir recto" : "Voir verso"}
-                    </Button>
-                  </div>
-
-                  {/* Card Preview with 3D Flip */}
-                  <div 
-                    className="relative"
-                    style={{ perspective: "1000px" }}
-                  >
-                    <motion.div
-                      className="relative w-full"
-                      animate={{ rotateY: showBack ? 180 : 0 }}
-                      transition={{ duration: 0.6, ease: "easeInOut" }}
-                      style={{ transformStyle: "preserve-3d" }}
-                    >
-                      {/* Front Side */}
-                      <div style={{ backfaceVisibility: "hidden" }}>
-                        {!showBack && (
-                          <div
-                            className="relative rounded-xl overflow-hidden"
-                            style={{
-                              aspectRatio: 85.6 / 54,
-                              backgroundColor: "#0B0B0B",
-                              boxShadow: STEALTH.shadowLg,
-                            }}
-                          >
-                            {/* Fixed i-Wasp Logo */}
-                            <div
-                              className="absolute z-30 pointer-events-none"
-                              style={{
-                                top: "8%",
-                                right: "5%",
-                                width: "18%",
-                              }}
-                            >
-                              <img
-                                src={iwaspLogo}
-                                alt="i-Wasp"
-                                className="w-full h-auto object-contain"
-                                style={{ opacity: 0.9 }}
-                              />
-                            </div>
-
-                            {/* User Logo */}
-                            {cardDesign.logoUrl && (
-                              cardDesign.isFullBleed ? (
-                                <img
-                                  src={cardDesign.logoUrl}
-                                  alt="Votre logo"
-                                  className="absolute inset-0 w-full h-full object-cover"
-                                  style={{ zIndex: 5 }}
-                                />
-                              ) : (
-                                <div
-                                  className="absolute"
-                                  style={{
-                                    left: `${cardDesign.logoX}%`,
-                                    top: `${cardDesign.logoY}%`,
-                                    transform: "translate(-50%, -50%)",
-                                    zIndex: 5,
-                                    maxWidth: `${40 * cardDesign.logoScale}%`,
-                                    maxHeight: `${40 * cardDesign.logoScale}%`,
-                                  }}
-                                >
-                                  <img
-                                    src={cardDesign.logoUrl}
-                                    alt="Votre logo"
-                                    className="max-w-full max-h-full object-contain drop-shadow-lg"
-                                  />
-                                </div>
-                              )
-                            )}
-
-                            {/* Placeholder if no logo */}
-                            {!cardDesign.logoUrl && (
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <p style={{ color: STEALTH.textMuted }}>
-                                  Uploadez votre logo
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Back Side */}
-                      <div 
-                        className="absolute inset-0"
-                        style={{ 
-                          backfaceVisibility: "hidden",
-                          transform: "rotateY(180deg)",
-                        }}
-                      >
-                        {showBack && <CardBackPreview />}
-                      </div>
-                    </motion.div>
-                  </div>
-
-                  {/* Info badges */}
-                  <div className="flex flex-wrap gap-2 mt-4 justify-center">
-                    <Badge 
-                      className="text-[10px]"
-                      style={{ 
-                        backgroundColor: STEALTH.accentMuted, 
-                        color: STEALTH.textSecondary 
-                      }}
-                    >
-                      <Lock className="w-2.5 h-2.5 mr-1" />
-                      i-Wasp protégé
-                    </Badge>
-                    <Badge 
-                      className="text-[10px]"
-                      style={{ 
-                        backgroundColor: STEALTH.accentMuted, 
-                        color: STEALTH.textSecondary 
-                      }}
-                    >
-                      Format carte de crédit
-                    </Badge>
-                    <Badge 
-                      className="text-[10px]"
-                      style={{ 
-                        backgroundColor: STEALTH.accentMuted, 
-                        color: STEALTH.textSecondary 
-                      }}
-                    >
-                      PVC premium
-                    </Badge>
-                  </div>
-
-                  {/* Zoom preview */}
-                  {cardDesign.logoUrl && (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="w-full mt-4 gap-2"
-                          style={{ 
-                            borderColor: STEALTH.border,
-                            color: STEALTH.text,
-                            backgroundColor: 'transparent'
-                          }}
-                        >
-                          <Eye className="w-4 h-4" />
-                          Aperçu grande taille
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent 
-                        className="max-w-2xl p-6"
-                        style={{ 
-                          backgroundColor: STEALTH.bg,
-                          borderColor: STEALTH.border
-                        }}
-                      >
-                        <div
-                          className="relative rounded-xl overflow-hidden"
-                          style={{
-                            aspectRatio: 85.6 / 54,
-                            backgroundColor: "#0B0B0B",
-                            boxShadow: STEALTH.shadowLg,
-                          }}
-                        >
-                          {/* Fixed i-Wasp Logo */}
-                          <div
-                            className="absolute z-30"
-                            style={{
-                              top: "8%",
-                              right: "5%",
-                              width: "18%",
-                            }}
-                          >
-                            <img
-                              src={iwaspLogo}
-                              alt="i-Wasp"
-                              className="w-full h-auto object-contain"
-                              style={{ opacity: 0.9 }}
-                            />
-                          </div>
-
-                          {/* User Logo */}
-                          {cardDesign.isFullBleed ? (
-                            <img
-                              src={cardDesign.logoUrl}
-                              alt="Votre logo"
-                              className="absolute inset-0 w-full h-full object-cover"
-                              style={{ zIndex: 5 }}
-                            />
-                          ) : (
-                            <div
-                              className="absolute"
-                              style={{
-                                left: `${cardDesign.logoX}%`,
-                                top: `${cardDesign.logoY}%`,
-                                transform: "translate(-50%, -50%)",
-                                zIndex: 5,
-                                maxWidth: `${40 * cardDesign.logoScale}%`,
-                                maxHeight: `${40 * cardDesign.logoScale}%`,
-                              }}
-                            >
-                              <img
-                                src={cardDesign.logoUrl}
-                                alt="Votre logo"
-                                className="max-w-full max-h-full object-contain drop-shadow-lg"
-                              />
-                            </div>
-                          )}
-                        </div>
-                        <p 
-                          className="text-center text-sm mt-4"
-                          style={{ color: STEALTH.textSecondary }}
-                        >
-                          Voici exactement la carte que vous recevrez
-                        </p>
-                      </DialogContent>
-                    </Dialog>
-                  )}
-                </div>
-
-                {/* Validation message */}
-                {!canContinue && (
-                  <div 
-                    className="text-center text-sm p-4 rounded-xl"
-                    style={{ 
-                      backgroundColor: STEALTH.accentMuted,
-                      color: STEALTH.textSecondary
-                    }}
-                  >
-                    <p>Uploadez votre logo pour continuer</p>
-                  </div>
-                )}
-              </motion.div>
-            </div>
-
-            {/* Navigation Buttons */}
+            {/* Standard Card Included */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-8 max-w-4xl mx-auto"
+              transition={{ delay: 0.2 }}
+              className="rounded-3xl p-8 text-center"
+              style={{ 
+                backgroundColor: STEALTH.bgCard,
+                border: `1px solid ${STEALTH.border}`
+              }}
             >
-              <Button
-                variant="outline"
-                onClick={prevStep}
-                className="w-full sm:w-auto gap-2"
-                style={{ 
-                  borderColor: STEALTH.border,
-                  color: STEALTH.textSecondary,
-                  backgroundColor: 'transparent'
-                }}
+              {/* Card Preview */}
+              <div className="relative mx-auto mb-8 max-w-xs">
+                <div
+                  className="relative rounded-2xl overflow-hidden"
+                  style={{
+                    aspectRatio: 85.6 / 54,
+                    backgroundColor: "#0B0B0B",
+                    boxShadow: `0 20px 50px rgba(0,0,0,0.5), 0 0 30px ${STEALTH.accent}10`,
+                  }}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                      src={iwaspLogo}
+                      alt="i-Wasp"
+                      className="w-1/3 h-auto object-contain opacity-90"
+                    />
+                  </div>
+                  <Badge 
+                    className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[10px] border-none"
+                    style={{ 
+                      backgroundColor: STEALTH.accentMuted, 
+                      color: STEALTH.textSecondary 
+                    }}
+                  >
+                    NFC activé
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-3">
+                  <CheckCircle2 className="w-6 h-6" style={{ color: STEALTH.success }} />
+                  <h2 
+                    className="text-xl font-semibold"
+                    style={{ color: STEALTH.text }}
+                  >
+                    Carte standard incluse
+                  </h2>
+                </div>
+
+                <p 
+                  className="text-sm max-w-md mx-auto"
+                  style={{ color: STEALTH.textSecondary }}
+                >
+                  Votre offre Essentiel inclut une carte PVC standard avec le branding i‑wasp. 
+                  Vous recevrez votre carte prête à l'emploi.
+                </p>
+
+                <div 
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm"
+                  style={{ 
+                    backgroundColor: STEALTH.accentMuted,
+                    color: STEALTH.accent
+                  }}
+                >
+                  <CreditCard className="w-4 h-4" />
+                  Design officiel i‑wasp
+                </div>
+
+                <p 
+                  className="text-xs italic pt-4"
+                  style={{ color: STEALTH.textMuted }}
+                >
+                  Passez à l'offre Signature ou Alliance pour personnaliser votre carte avec votre logo.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Navigation */}
+            <motion.div 
+              className="flex justify-between items-center mt-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Button 
+                variant="ghost" 
+                onClick={() => window.history.back()}
+                className="gap-2"
+                style={{ color: STEALTH.textSecondary }}
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft size={18} />
                 Retour
               </Button>
-
               <LoadingButton
-                onClick={handleContinue}
-                disabled={!canContinue}
+                size="xl"
+                onClick={onContinue}
                 isLoading={isNavigating}
-                className="w-full sm:w-auto gap-2 rounded-full"
+                loadingText="Chargement..."
+                className="px-8 rounded-full font-semibold"
                 style={{ 
                   backgroundColor: STEALTH.accent,
                   color: STEALTH.bg
                 }}
               >
                 Continuer
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </LoadingButton>
             </motion.div>
           </div>
@@ -801,6 +225,533 @@ function OrderCarteContent() {
       <Footer />
     </div>
   );
+}
+
+// Signature/Alliance: Full card customization
+function CustomCardEditor() {
+  const { state, setCardPersonalization, nextStep, prevStep } = useOrderFunnel();
+  const [isNavigating, setIsNavigating] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // State
+  const [selectedModel, setSelectedModel] = useState<string>("soft-touch");
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoFileName, setLogoFileName] = useState<string>("");
+  const [logoPosition, setLogoPosition] = useState<LogoPosition>("center");
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Handle file upload
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file
+    const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp", "image/svg+xml"];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Format non supporté. Utilisez PNG, JPG ou SVG.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Fichier trop volumineux (max 5 Mo)");
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setLogoUrl(event.target?.result as string);
+        setLogoFileName(file.name);
+        setIsUploading(false);
+        toast.success("Logo uploadé avec succès");
+      };
+      reader.onerror = () => {
+        toast.error("Erreur lors de la lecture du fichier");
+        setIsUploading(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast.error("Erreur lors de l'upload");
+      setIsUploading(false);
+    }
+  }, []);
+
+  const handleContinue = async () => {
+    if (!logoUrl || isNavigating || state.isTransitioning) return;
+    
+    setIsNavigating(true);
+    
+    const cardData: CardPersonalization = {
+      visualType: "logo",
+      imageUrl: logoUrl,
+      fileName: logoFileName,
+    };
+    
+    setCardPersonalization(cardData);
+    await nextStep();
+  };
+
+  const canContinue = logoUrl !== null;
+
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: STEALTH.bg }}>
+      <Navbar />
+      
+      <PageTransition>
+        <main className="pt-24 pb-32 px-4">
+          <div className="max-w-3xl mx-auto">
+            <OrderProgressBar currentStep={3} />
+
+            {/* Header */}
+            <motion.div 
+              className="text-center mb-10"
+              variants={contentVariants}
+              initial="initial"
+              animate="animate"
+            >
+              <motion.p 
+                className="text-sm tracking-widest uppercase mb-3"
+                style={{ color: STEALTH.accent }}
+                variants={itemVariants}
+              >
+                Étape 3 sur 6
+              </motion.p>
+              <motion.h1 
+                className="text-2xl md:text-3xl font-display font-bold mb-3"
+                style={{ color: STEALTH.text }}
+                variants={itemVariants}
+              >
+                Personnalisez votre carte
+              </motion.h1>
+              <motion.p 
+                style={{ color: STEALTH.textSecondary }}
+                variants={itemVariants}
+              >
+                Choisissez le modèle et ajoutez votre logo
+              </motion.p>
+            </motion.div>
+
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Left: Options */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="space-y-6"
+              >
+                {/* Model Selection */}
+                <div 
+                  className="rounded-2xl p-5"
+                  style={{ 
+                    backgroundColor: STEALTH.bgCard,
+                    border: `1px solid ${STEALTH.border}`
+                  }}
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    <Layers className="w-5 h-5" style={{ color: STEALTH.accent }} />
+                    <span className="font-semibold" style={{ color: STEALTH.text }}>
+                      Modèle de carte
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {CARD_MODELS.map((model) => {
+                      const isSelected = selectedModel === model.id;
+                      return (
+                        <button
+                          key={model.id}
+                          onClick={() => setSelectedModel(model.id)}
+                          className="w-full p-4 rounded-xl border-2 transition-all text-left"
+                          style={{
+                            borderColor: isSelected ? STEALTH.accent : STEALTH.border,
+                            backgroundColor: isSelected ? STEALTH.accentMuted : 'transparent',
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span 
+                                  className="font-semibold"
+                                  style={{ color: isSelected ? STEALTH.accent : STEALTH.text }}
+                                >
+                                  {model.label}
+                                </span>
+                                {model.badge && (
+                                  <Badge
+                                    className="text-[10px] border-none"
+                                    style={{ 
+                                      backgroundColor: STEALTH.accent, 
+                                      color: STEALTH.bg 
+                                    }}
+                                  >
+                                    {model.badge}
+                                  </Badge>
+                                )}
+                              </div>
+                              <p 
+                                className="text-xs mt-1"
+                                style={{ color: STEALTH.textSecondary }}
+                              >
+                                {model.description}
+                              </p>
+                            </div>
+                            <div className="text-right ml-4">
+                              {model.price === 0 ? (
+                                <span 
+                                  className="text-xs font-medium"
+                                  style={{ color: STEALTH.success }}
+                                >
+                                  Inclus
+                                </span>
+                              ) : (
+                                <span 
+                                  className="text-sm font-bold"
+                                  style={{ color: STEALTH.accent }}
+                                >
+                                  +{model.price} MAD
+                                </span>
+                              )}
+                            </div>
+                            {isSelected && (
+                              <CheckCircle2 className="w-5 h-5 ml-3" style={{ color: STEALTH.accent }} />
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Logo Upload */}
+                <div 
+                  className="rounded-2xl p-5"
+                  style={{ 
+                    backgroundColor: STEALTH.bgCard,
+                    border: `1px solid ${STEALTH.border}`
+                  }}
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    <ImageIcon className="w-5 h-5" style={{ color: STEALTH.accent }} />
+                    <span className="font-semibold" style={{ color: STEALTH.text }}>
+                      Votre logo
+                    </span>
+                  </div>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+
+                  {!logoUrl ? (
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="w-full p-8 rounded-xl border-2 border-dashed transition-all flex flex-col items-center gap-3"
+                      style={{ 
+                        borderColor: STEALTH.borderActive,
+                        backgroundColor: 'transparent'
+                      }}
+                    >
+                      <div 
+                        className="w-14 h-14 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: STEALTH.accentMuted }}
+                      >
+                        <Upload className="w-6 h-6" style={{ color: STEALTH.accent }} />
+                      </div>
+                      <div className="text-center">
+                        <p className="font-medium" style={{ color: STEALTH.text }}>
+                          {isUploading ? "Upload en cours..." : "Cliquez pour uploader"}
+                        </p>
+                        <p className="text-xs mt-1" style={{ color: STEALTH.textMuted }}>
+                          PNG, JPG ou SVG • Max 5 Mo
+                        </p>
+                      </div>
+                    </button>
+                  ) : (
+                    <div className="space-y-3">
+                      <div 
+                        className="relative p-4 rounded-xl flex items-center gap-4"
+                        style={{ backgroundColor: STEALTH.bgInput }}
+                      >
+                        <div 
+                          className="w-16 h-16 rounded-lg flex items-center justify-center overflow-hidden"
+                          style={{ backgroundColor: STEALTH.bg }}
+                        >
+                          <img 
+                            src={logoUrl} 
+                            alt="Logo" 
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p 
+                            className="font-medium truncate"
+                            style={{ color: STEALTH.text }}
+                          >
+                            {logoFileName}
+                          </p>
+                          <p className="text-xs flex items-center gap-1" style={{ color: STEALTH.success }}>
+                            <CheckCircle2 className="w-3 h-3" />
+                            Uploadé avec succès
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => fileInputRef.current?.click()}
+                          style={{ color: STEALTH.textSecondary }}
+                        >
+                          Changer
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Logo Position */}
+                {logoUrl && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="rounded-2xl p-5"
+                    style={{ 
+                      backgroundColor: STEALTH.bgCard,
+                      border: `1px solid ${STEALTH.border}`
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-4">
+                      <AlignCenter className="w-5 h-5" style={{ color: STEALTH.accent }} />
+                      <span className="font-semibold" style={{ color: STEALTH.text }}>
+                        Position du logo
+                      </span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      {LOGO_POSITIONS.map((pos) => {
+                        const isSelected = logoPosition === pos.id;
+                        const Icon = pos.icon;
+                        return (
+                          <button
+                            key={pos.id}
+                            onClick={() => setLogoPosition(pos.id)}
+                            className="p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2"
+                            style={{
+                              borderColor: isSelected ? STEALTH.accent : STEALTH.border,
+                              backgroundColor: isSelected ? STEALTH.accentMuted : 'transparent',
+                            }}
+                          >
+                            <Icon 
+                              className="w-6 h-6" 
+                              style={{ color: isSelected ? STEALTH.accent : STEALTH.textSecondary }} 
+                            />
+                            <span 
+                              className="text-sm font-medium"
+                              style={{ color: isSelected ? STEALTH.accent : STEALTH.text }}
+                            >
+                              {pos.label}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+
+              {/* Right: Preview */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="lg:sticky lg:top-24"
+              >
+                <div 
+                  className="rounded-2xl p-6"
+                  style={{ 
+                    backgroundColor: STEALTH.bgCard,
+                    border: `1px solid ${STEALTH.border}`
+                  }}
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles className="w-5 h-5" style={{ color: STEALTH.accent }} />
+                    <span className="font-semibold" style={{ color: STEALTH.text }}>
+                      Aperçu de votre carte
+                    </span>
+                  </div>
+
+                  {/* Card Preview */}
+                  <div
+                    className="relative rounded-2xl overflow-hidden mx-auto"
+                    style={{
+                      aspectRatio: 85.6 / 54,
+                      backgroundColor: "#0B0B0B",
+                      boxShadow: `0 20px 50px rgba(0,0,0,0.5), 0 0 30px ${STEALTH.accent}15`,
+                    }}
+                  >
+                    {/* i-Wasp branding (top right corner) */}
+                    <div
+                      className="absolute z-20 pointer-events-none"
+                      style={{
+                        top: "8%",
+                        right: "5%",
+                        width: "15%",
+                      }}
+                    >
+                      <img
+                        src={iwaspLogo}
+                        alt="i-Wasp"
+                        className="w-full h-auto object-contain opacity-80"
+                      />
+                    </div>
+
+                    {/* User Logo */}
+                    {logoUrl && (
+                      <div
+                        className="absolute z-10"
+                        style={{
+                          ...(logoPosition === "center" ? {
+                            left: "50%",
+                            top: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: "40%",
+                          } : {
+                            left: "8%",
+                            top: "12%",
+                            width: "25%",
+                          })
+                        }}
+                      >
+                        <img
+                          src={logoUrl}
+                          alt="Votre logo"
+                          className="w-full h-auto object-contain"
+                          style={{ maxHeight: logoPosition === "center" ? "60%" : "40%" }}
+                        />
+                      </div>
+                    )}
+
+                    {/* NFC indicator */}
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
+                      <Badge 
+                        className="text-[10px] border-none"
+                        style={{ 
+                          backgroundColor: STEALTH.accentMuted, 
+                          color: STEALTH.textSecondary 
+                        }}
+                      >
+                        NFC activé
+                      </Badge>
+                    </div>
+
+                    {/* Empty state */}
+                    {!logoUrl && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center">
+                          <ImageIcon 
+                            className="w-10 h-10 mx-auto mb-2 opacity-30" 
+                            style={{ color: STEALTH.textMuted }}
+                          />
+                          <p 
+                            className="text-xs opacity-50"
+                            style={{ color: STEALTH.textMuted }}
+                          >
+                            Votre logo ici
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Model info */}
+                  <div 
+                    className="mt-4 p-3 rounded-xl text-center"
+                    style={{ backgroundColor: STEALTH.bgInput }}
+                  >
+                    <p className="text-sm" style={{ color: STEALTH.textSecondary }}>
+                      Modèle: <span style={{ color: STEALTH.text, fontWeight: 500 }}>
+                        {CARD_MODELS.find(m => m.id === selectedModel)?.label}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Navigation */}
+            <motion.div 
+              className="flex justify-between items-center mt-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Button 
+                variant="ghost" 
+                onClick={prevStep}
+                disabled={state.isTransitioning}
+                className="gap-2"
+                style={{ color: STEALTH.textSecondary }}
+              >
+                <ArrowLeft size={18} />
+                Retour
+              </Button>
+              <LoadingButton
+                size="xl"
+                onClick={handleContinue}
+                disabled={!canContinue || state.isTransitioning}
+                isLoading={isNavigating}
+                loadingText="Chargement..."
+                className="px-8 rounded-full font-semibold disabled:opacity-50"
+                style={{ 
+                  backgroundColor: STEALTH.accent,
+                  color: STEALTH.bg
+                }}
+              >
+                Continuer
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </LoadingButton>
+            </motion.div>
+          </div>
+        </main>
+      </PageTransition>
+
+      <Footer />
+    </div>
+  );
+}
+
+// Main component: Route based on selected offer
+function OrderCarteContent() {
+  const { state, setCardPersonalization, nextStep } = useOrderFunnel();
+  const [isNavigating, setIsNavigating] = useState(false);
+  
+  const selectedOffer = state.selectedOffer as OfferType;
+  const isEssentiel = selectedOffer === "essentiel";
+
+  const handleEssentielContinue = async () => {
+    if (isNavigating || state.isTransitioning) return;
+    setIsNavigating(true);
+    
+    // Set default card personalization for Essentiel
+    const cardData: CardPersonalization = {
+      visualType: "logo",
+      imageUrl: "", // Standard card, no custom logo
+      fileName: "standard-iwasp-card",
+    };
+    
+    setCardPersonalization(cardData);
+    await nextStep();
+  };
+
+  if (isEssentiel) {
+    return <EssentielCardView onContinue={handleEssentielContinue} isNavigating={isNavigating} />;
+  }
+
+  return <CustomCardEditor />;
 }
 
 export default function OrderCarte() {
