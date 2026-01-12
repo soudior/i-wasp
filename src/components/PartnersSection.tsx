@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useScroll, useTransform, useAnimationControls } from "framer-motion";
 
 // Noir Haute Couture palette
 const NOIR_COUTURE = {
@@ -132,6 +132,7 @@ function PartnerLogo({ partner }: { partner: typeof partners[0] }) {
 
 export function PartnersSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -167,7 +168,11 @@ export function PartnersSection() {
       </motion.div>
 
       {/* Infinite Scroll Carousel */}
-      <div className="relative">
+      <div 
+        className="relative"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         {/* Gradient masks for smooth edges */}
         <div 
           className="absolute left-0 top-0 bottom-0 w-20 md:w-32 z-10 pointer-events-none"
@@ -182,7 +187,7 @@ export function PartnersSection() {
           }}
         />
 
-        {/* Scrolling container */}
+        {/* Scrolling container with CSS animation for pause support */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -190,28 +195,38 @@ export function PartnersSection() {
           transition={{ duration: 1, delay: 0.2 }}
           className="overflow-hidden"
         >
-          <motion.div
-            className="flex items-center"
-            animate={{
-              x: [0, -50 * partners.length * 4],
-            }}
-            transition={{
-              x: {
-                duration: 40,
-                repeat: Infinity,
-                ease: "linear",
-              },
-            }}
+          <div
+            className="flex items-center carousel-scroll"
             style={{
               width: "fit-content",
+              animationPlayState: isHovered ? "paused" : "running",
             }}
           >
             {/* Render partners multiple times for seamless loop */}
             {[...duplicatedPartners, ...duplicatedPartners].map((partner, index) => (
-              <PartnerLogo key={`${partner.name}-${index}`} partner={partner} />
+              <motion.div
+                key={`${partner.name}-${index}`}
+                animate={{ 
+                  scale: isHovered ? 1.05 : 1,
+                }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <PartnerLogo partner={partner} />
+              </motion.div>
             ))}
-          </motion.div>
+          </div>
         </motion.div>
+
+        {/* CSS Keyframes for infinite scroll */}
+        <style>{`
+          @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .carousel-scroll {
+            animation: scroll-left 35s linear infinite;
+          }
+        `}</style>
       </div>
 
       {/* Decorative line */}
