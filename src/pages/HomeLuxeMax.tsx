@@ -16,6 +16,7 @@ import { CoutureFooter } from "@/components/CoutureFooter";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { PartnersSection } from "@/components/PartnersSection";
 import { COUTURE } from "@/lib/hauteCouturePalette";
+import cardFront from "@/assets/card-front.png";
 
 export default function HomeLuxeMax() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -111,6 +112,31 @@ export default function HomeLuxeMax() {
           >
             Créer mon identité
           </Link>
+        </motion.div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          CARTE — Single, high-end visual. Silent. Isolated. Editorial.
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section 
+        className="py-24 md:py-40 flex items-center justify-center"
+        style={{ backgroundColor: COUTURE.jet }}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+          className="relative"
+        >
+          <img 
+            src={cardFront} 
+            alt="Carte i-wasp" 
+            className="w-[280px] md:w-[360px] lg:w-[420px] h-auto drop-shadow-2xl"
+            style={{
+              filter: "drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5))",
+            }}
+          />
         </motion.div>
       </section>
 
