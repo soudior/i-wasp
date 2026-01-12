@@ -137,6 +137,7 @@ function OrderRecapContent() {
         shipping_country: "MA",
         customer_email: email,
         payment_method: paymentMethod,
+        user_id: userId, // Pass the user ID for newly created users
       });
 
       if (paymentMethod === "stripe" && order?.id) {
