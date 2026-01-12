@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode: false, // Dark mode désactivé - identité visuelle fixe
+  darkMode: false, // Theme fixe - Haute Couture light
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
@@ -14,15 +14,16 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Playfair Display', 'Georgia', 'serif'],
+        display: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
         body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        accent: ['Playfair Display', 'Georgia', 'serif'],
         playfair: ['Playfair Display', 'Georgia', 'serif'],
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
       },
       colors: {
         /* ═══════════════════════════════════════════════════════════════
-           i-WASP DESIGN SYSTEM — LUXE MAX
-           Ultra-Luxe Premium — Blue Night & Cyan
+           i-WASP DESIGN SYSTEM — HAUTE COUTURE DIGITALE
+           Quiet Luxury — Silk, Jet Black, Sanded Gold
            ═══════════════════════════════════════════════════════════════ */
         
         /* Semantic tokens */
@@ -78,103 +79,140 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE LUXE MAX — Blue Night & Cyan
+           PALETTE HAUTE COUTURE
            ══════════════════════════════════════════════════════════════ */
-        iwasp: {
-          /* Blue Night Luxury */
-          midnight: "#020819",               /* Blue night fond */
-          "midnight-elevated": "#0A1020",    /* Surface élevée */
-          "midnight-surface": "#0F1628",     /* Cards */
-          cream: "#E8ECF4",                  /* Off-white */
-          white: "#F0F4FA",                  /* Near white */
+        couture: {
+          /* Silk - Warm whites */
+          silk: "#FBFBFA",
+          "silk-warm": "#F8F7F4",
+          "silk-pure": "#FFFFFF",
           
-          /* Cyan Accent */
-          cyan: "#4DF3FF",                   /* Cyan principal */
-          "cyan-light": "#7DF7FF",           /* Cyan clair */
-          "cyan-glow": "#2ED3E0",            /* Cyan profond */
-          blue: "#4A7BFF",                   /* Bleu électrique */
+          /* Jet Black */
+          jet: "#080808",
+          "jet-soft": "#1A1A1A",
+          "jet-muted": "#2D2D2D",
+          
+          /* Sanded Gold - Matte, not shiny */
+          gold: "#AF8E56",
+          "gold-light": "#C4A672",
+          "gold-muted": "#D4C4A8",
           
           /* Text hierarchy */
-          silver: "#8A9AB4",                 /* Texte secondaire */
-          muted: "#5A6A84",                  /* Texte tertiaire */
+          text: "#080808",
+          "text-secondary": "#5A5A58",
+          "text-muted": "#9A9A98",
+          "text-subtle": "#BDBDBB",
           
-          /* Legacy compatibility - mapped to new palette */
-          bronze: "#4DF3FF",
-          "bronze-light": "#7DF7FF",
-          titanium: "#8A9AB4",
-          platinum: "#E8ECF4",
-          emerald: "#0F1628",
-          "emerald-glow": "#1A2030",
-          gold: "#4DF3FF",
-          "gold-light": "#7DF7FF",
+          /* Borders */
+          border: "rgba(8, 8, 8, 0.06)",
+          "border-hover": "rgba(8, 8, 8, 0.12)",
+          "border-active": "rgba(175, 142, 86, 0.4)",
+          
+          /* Status */
+          success: "#4A7C59",
+          error: "#8B4049",
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE LUXE MAX — Direct Access
+           IWASP PALETTE — Mapped to Haute Couture
+           ══════════════════════════════════════════════════════════════ */
+        iwasp: {
+          cream: "#FBFBFA",
+          white: "#FFFFFF",
+          midnight: "#080808",
+          "midnight-elevated": "#1A1A1A",
+          "midnight-surface": "#2D2D2D",
+          
+          /* Gold accent */
+          gold: "#AF8E56",
+          "gold-light": "#C4A672",
+          cyan: "#AF8E56",
+          "cyan-light": "#C4A672",
+          "cyan-glow": "#D4C4A8",
+          blue: "#5A5A58",
+          
+          silver: "#5A5A58",
+          muted: "#9A9A98",
+          
+          /* Legacy compatibility */
+          bronze: "#AF8E56",
+          "bronze-light": "#C4A672",
+          titanium: "#5A5A58",
+          platinum: "#FBFBFA",
+          emerald: "#F8F7F4",
+          "emerald-glow": "#FBFBFA",
+        },
+        
+        /* ══════════════════════════════════════════════════════════════
+           LUXE PALETTE — Mapped to Haute Couture
            ══════════════════════════════════════════════════════════════ */
         luxe: {
-          void: "#020819",                    /* Blue night fond */
-          deep: "#0A1020",                    /* Elevated surface */
-          surface: "#0F1628",                 /* Cards and panels */
-          glow: "#1A2030",                    /* Subtle highlight */
-          cyan: "#4DF3FF",                    /* Primary accent */
-          "cyan-light": "#7DF7FF",            /* Light accent */
-          "cyan-dark": "#2ED3E0",             /* Dark accent */
-          blue: "#4A7BFF",                    /* Blue alt */
-          silver: "#8A9AB4",                  /* Secondary text */
-          mist: "#5A6A84",                    /* Muted text */
-          white: "#E8ECF4",                   /* Primary text */
-          pure: "#F0F4FA",                    /* Headlines */
+          void: "#FBFBFA",
+          deep: "#F8F7F4",
+          surface: "#FFFFFF",
+          glow: "#F5F5F3",
+          cyan: "#AF8E56",
+          "cyan-light": "#C4A672",
+          "cyan-dark": "#8A7345",
+          blue: "#5A5A58",
+          silver: "#5A5A58",
+          mist: "#9A9A98",
+          white: "#080808",
+          pure: "#080808",
         },
         
         /* ══════════════════════════════════════════════════════════════
-           PALETTE CARTE NFC — Ultra-Luxe
+           CARTE NFC PALETTE
            ══════════════════════════════════════════════════════════════ */
         carte: {
-          recto: "#020819",                  /* Blue night base */
-          verso: "#0A1020",                  /* Elevated surface */
-          texture: "#0F1628",                /* Texture subtile */
-          logo: "#E8ECF4",                   /* Logo off-white */
-          texte: "#E8ECF4",                  /* Texte off-white */
-          secondaire: "#8A9AB4",             /* Texte secondaire */
-          accent: "#4DF3FF",                 /* Cyan accent */
+          recto: "#FBFBFA",
+          verso: "#F8F7F4",
+          texture: "#FFFFFF",
+          logo: "#080808",
+          texte: "#080808",
+          secondaire: "#5A5A58",
+          accent: "#AF8E56",
         },
         
-        /* ══════════════════════════════════════════════════════════════
-           LEGACY ALIASES — Mapped to Luxe Max
-           ══════════════════════════════════════════════════════════════ */
-        "deep-black": "#020819",
-        "anthracite": "#0A1020",
-        "anthracite-dark": "#0A1020",
-        "anthracite-light": "rgba(77, 243, 255, 0.08)",
-        "soft-gold": "#4DF3FF",
-        "off-white": "#E8ECF4",
-        "soft-gray": "#8A9AB4",
-        "muted-gray": "#5A6A84",
+        /* Legacy aliases */
+        "deep-black": "#080808",
+        "anthracite": "#1A1A1A",
+        "anthracite-dark": "#2D2D2D",
+        "anthracite-light": "rgba(175, 142, 86, 0.08)",
+        "soft-gold": "#AF8E56",
+        "off-white": "#FBFBFA",
+        "soft-gray": "#5A5A58",
+        "muted-gray": "#9A9A98",
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        xl: "0.875rem",    /* 14px - IWASP standard */
-        "2xl": "1rem",      /* 16px */
-        "3xl": "1.125rem",  /* 18px - IWASP cards */
-        "4xl": "1.5rem",    /* 24px */
-        full: "9999px",     /* Pill shape */
+        xl: "0px",        /* Angles droits */
+        "2xl": "0px",
+        "3xl": "0px",
+        "4xl": "0px",
+        full: "0px",      /* Pas de pill shape */
       },
       letterSpacing: {
         tighter: "-0.02em",
-        tight: "-0.01em",   /* IWASP default for titles */
+        tight: "-0.01em",
+        normal: "0.02em",
+        wide: "0.15em",
+        wider: "0.25em",
+        widest: "0.35em",
+        ultra: "0.5em",
       },
       transitionDuration: {
-        fast: "180ms",
-        normal: "200ms",
-        slow: "220ms",
+        fast: "600ms",
+        normal: "1000ms",
+        slow: "1500ms",
+        slower: "2000ms",
       },
       transitionTimingFunction: {
-        "iwasp": "cubic-bezier(0.42, 0, 0.58, 1)",
+        "iwasp": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "luxury": "cubic-bezier(0.22, 1, 0.36, 1)",
       },
-      /* ANIMATIONS DISABLED FOR PRODUCTION - STATIC UI */
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -184,33 +222,37 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "fade-in-slow": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "shimmer": {
+          "0%": { transform: "translateX(-100%) rotate(45deg)" },
+          "100%": { transform: "translateX(100%) rotate(45deg)" },
+        },
+        "hex-rotate": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(180deg)" },
+        },
       },
       animation: {
-        "accordion-down": "accordion-down 0ms",
-        "accordion-up": "accordion-up 0ms",
-        "fade-in": "none",
-        "fade-up": "none",
-        "fade-down": "none",
-        "fade-left": "none",
-        "fade-right": "none",
-        "scale-in": "none",
-        "scale-up": "none",
-        "float-3d": "none",
-        "float-subtle": "none",
-        "pulse-glow": "none",
-        "shimmer": "none",
-        "spin-slow": "none",
-        "card-enter": "none",
+        "accordion-down": "accordion-down 600ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "accordion-up": "accordion-up 600ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "fade-in": "fade-in-slow 1500ms cubic-bezier(0.22, 1, 0.36, 1) forwards",
+        "fade-up": "fade-in-slow 1500ms cubic-bezier(0.22, 1, 0.36, 1) forwards",
+        "shimmer": "shimmer 2000ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "hex-rotate": "hex-rotate 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards",
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'gradient-iwasp': 'linear-gradient(135deg, hsl(138 100% 62%), hsl(138 100% 55%))',
+        'gradient-iwasp': 'linear-gradient(135deg, #AF8E56, #C4A672)',
       },
       boxShadow: {
-        'glass': '0 4px 20px hsl(0 0% 0% / 0.35), 0 0 0 1px hsl(0 0% 100% / 0.03)',
-        'elevated': '0 8px 32px hsl(0 0% 0% / 0.4), 0 0 0 1px hsl(0 0% 100% / 0.05)',
-        'iwasp': '0 4px 20px hsl(138 100% 62% / 0.2)',
+        'glass': '0 2px 12px rgba(8, 8, 8, 0.03)',
+        'elevated': '0 8px 32px rgba(8, 8, 8, 0.05)',
+        'iwasp': '0 4px 20px rgba(175, 142, 86, 0.1)',
+        'gold-subtle': '0 0 30px rgba(175, 142, 86, 0.08)',
       },
     },
   },
