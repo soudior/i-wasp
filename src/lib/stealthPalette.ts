@@ -23,6 +23,10 @@ export const STEALTH = {
   bgInput: "#0A1020",
   bgElevated: "#0F1628",
   
+  // Legacy aliases for compatibility
+  noir: "#020819",
+  noirElevated: "#0A1020",
+  
   // Borders - Subtle cyan tints
   border: "rgba(77, 243, 255, 0.08)",
   borderHover: "rgba(77, 243, 255, 0.15)",
@@ -33,11 +37,18 @@ export const STEALTH = {
   textSecondary: "#8A9AB4",
   textMuted: "#5A6A84",
   
+  // Legacy text aliases
+  titanium: "#8A9AB4",
+  platinum: "#E8ECF4",
+  
   // Accent - Cyan electric
   accent: "#4DF3FF",
   accentHover: "#7DF7FF",
   accentMuted: "rgba(77, 243, 255, 0.12)",
   accentDark: "#2ED3E0",
+  
+  // Legacy accent
+  emeraldGlow: "rgba(77, 243, 255, 0.15)",
   
   // Status colors
   success: "#4ADE80",
