@@ -71,6 +71,21 @@ export const COUTURE = {
   glassBorder: "rgba(8, 8, 8, 0.04)",
 } as const;
 
+// Alias for component usage
+export const HAUTE_COUTURE = {
+  colors: {
+    silk: COUTURE.silk,
+    jetBlack: COUTURE.jet,
+    sandedGold: COUTURE.gold,
+    mist: COUTURE.textMuted,
+    whisper: COUTURE.surfaceMuted,
+  },
+  shadows: {
+    card: COUTURE.shadowCard,
+    elevated: COUTURE.shadowElevated,
+  },
+} as const;
+
 // CSS-in-JS styles for inputs
 export const coutureInputStyles = {
   backgroundColor: COUTURE.surfaceElevated,
