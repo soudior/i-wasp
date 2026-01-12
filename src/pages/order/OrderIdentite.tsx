@@ -39,6 +39,7 @@ import {
   Youtube,
   Facebook,
   Link2,
+  Quote,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -74,6 +75,7 @@ function OrderIdentiteContent() {
       clientType: "particulier",
       firstName: "",
       lastName: "",
+      tagline: "",
       title: "",
       company: "",
       phone: "",
@@ -163,6 +165,7 @@ function OrderIdentiteContent() {
       clientType: formData.clientType,
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
+      tagline: formData.tagline?.trim()?.slice(0, 80),
       title: formData.title?.trim(),
       company: formData.company?.trim(),
       phone: formData.phone.trim(),
@@ -196,7 +199,7 @@ function OrderIdentiteContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-2xl mx-auto">
             {/* Progress Bar */}
-            <OrderProgressBar currentStep={3} />
+            <OrderProgressBar currentStep={2} />
 
             {/* Header */}
             <motion.div 
@@ -210,7 +213,7 @@ function OrderIdentiteContent() {
                 style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
-                Étape 3 sur 7
+                Étape 2 sur 7
               </motion.p>
               <motion.h1 
                 className="text-3xl md:text-4xl font-display font-bold mb-3"
@@ -327,6 +330,27 @@ function OrderIdentiteContent() {
                         </p>
                       )}
                     </div>
+                  </div>
+
+                  {/* Phrase emblème - NEW FIELD */}
+                  <div className="space-y-2">
+                    <Label htmlFor="tagline" className="flex items-center gap-2" style={{ color: STEALTH.text }}>
+                      <Quote size={14} style={{ color: STEALTH.accent }} />
+                      Phrase emblème
+                    </Label>
+                    <Input
+                      id="tagline"
+                      value={formData.tagline || ""}
+                      onChange={(e) => handleChange("tagline", e.target.value.slice(0, 80))}
+                      placeholder="L'excellence en toute simplicité"
+                      className="rounded-xl h-12"
+                      style={inputStyles}
+                      maxLength={80}
+                    />
+                    <p className="text-xs flex justify-between" style={{ color: STEALTH.textMuted }}>
+                      <span>Une phrase qui vous représente</span>
+                      <span>{(formData.tagline?.length || 0)}/80</span>
+                    </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -750,7 +774,7 @@ function OrderIdentiteContent() {
 
 export default function OrderIdentite() {
   return (
-    <OrderFunnelGuard step={3}>
+    <OrderFunnelGuard step={2}>
       <OrderIdentiteContent />
     </OrderFunnelGuard>
   );

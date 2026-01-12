@@ -132,7 +132,7 @@ function OrderTemplateContent() {
         <main className="pt-24 pb-32 px-4">
           <div className="max-w-4xl mx-auto">
             {/* Progress Bar */}
-            <OrderProgressBar currentStep={2} />
+            <OrderProgressBar currentStep={3} />
 
             {/* Header */}
             <motion.div 
@@ -146,7 +146,7 @@ function OrderTemplateContent() {
                 style={{ color: STEALTH.accent }}
                 variants={itemVariants}
               >
-                Étape 2 sur 7
+                Étape 3 sur 7
               </motion.p>
               <motion.h1 
                 className="text-3xl md:text-4xl font-display font-bold mb-3"
@@ -328,7 +328,7 @@ function OrderTemplateContent() {
 
 export default function OrderTemplate() {
   return (
-    <OrderFunnelGuard step={2}>
+    <OrderFunnelGuard step={3}>
       <OrderTemplateContent />
     </OrderFunnelGuard>
   );
