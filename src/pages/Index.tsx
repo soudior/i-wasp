@@ -126,25 +126,25 @@ const Index = () => {
       {/* ═══════════════════════════════════════════════════════════════════
           HERO — Message clair en 3 secondes
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="pt-32 pb-20 px-6">
+      <section className="pt-24 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto text-center">
           
           {/* Badge simple */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-8"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 text-primary mb-6 sm:mb-8"
           >
-            <CreditCard className="w-4 h-4" />
-            <span className="text-sm font-medium">Carte de visite NFC</span>
+            <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="text-xs sm:text-sm font-medium">Carte de visite NFC</span>
           </motion.div>
           
-          {/* Titre principal — TRÈS LISIBLE */}
+          {/* Titre principal — TRÈS LISIBLE sur mobile */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground leading-tight mb-6"
+            className="text-[1.75rem] leading-[1.2] sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground sm:leading-tight mb-4 sm:mb-6"
           >
             Partagez vos contacts
             <br />
@@ -156,53 +156,52 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed px-2"
           >
             Une carte NFC premium qui remplace vos cartes de visite papier.
-            <br className="hidden sm:block" />
-            Approchez, tapez, connectez. Simple comme bonjour.
+            <span className="hidden sm:inline"> Approchez, tapez, connectez.</span>
           </motion.p>
           
-          {/* CTAs */}
+          {/* CTAs - Plus gros sur mobile pour faciliter le tap */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 px-2"
           >
-            <Link to="/order/offre">
-              <Button size="lg" className="w-full sm:w-auto text-base px-8 py-6 gap-2">
+            <Link to="/order/offre" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full text-[15px] sm:text-base h-14 sm:h-auto px-6 sm:px-8 sm:py-6 gap-2 font-medium">
                 <ShoppingBag className="w-5 h-5" />
                 Commander ma carte
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Link to="/demo">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto text-base px-8 py-6 gap-2">
+            <Link to="/demo" className="w-full sm:w-auto">
+              <Button variant="outline" size="lg" className="w-full text-[15px] sm:text-base h-14 sm:h-auto px-6 sm:px-8 sm:py-6 gap-2">
                 <Play className="w-5 h-5" />
                 Voir une démo
               </Button>
             </Link>
           </motion.div>
           
-          {/* Preuves sociales simples */}
+          {/* Preuves sociales - Stack sur très petit écran */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground"
+            className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-6 text-[13px] sm:text-sm text-muted-foreground"
           >
             <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-primary" />
+              <Check className="w-4 h-4 text-primary flex-shrink-0" />
               <span>Livraison gratuite au Maroc</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-primary" />
+              <Check className="w-4 h-4 text-primary flex-shrink-0" />
               <span>Paiement à la livraison</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-primary" />
-              <span>Garantie satisfait ou remboursé</span>
+              <Check className="w-4 h-4 text-primary flex-shrink-0" />
+              <span>Satisfait ou remboursé</span>
             </div>
           </motion.div>
         </div>
@@ -211,59 +210,59 @@ const Index = () => {
       {/* ═══════════════════════════════════════════════════════════════════
           DEMO VISUELLE — Montrer comment ça marche
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-16 px-6 bg-muted/30">
+      <section className="py-12 sm:py-16 px-4 sm:px-6 bg-muted/30">
         <div className="max-w-5xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             
-            {/* Visuel de la carte */}
+            {/* Visuel de la carte - Responsive */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative"
+              className="relative order-2 lg:order-1"
             >
-              {/* Carte NFC simulée */}
-              <div className="relative mx-auto w-72 h-44 rounded-2xl bg-gradient-to-br from-foreground to-foreground/80 shadow-2xl p-6 text-background">
-                <div className="flex items-center justify-between mb-8">
-                  <span className="text-lg font-semibold">i-wasp</span>
-                  <Wifi className="w-6 h-6 opacity-60" />
+              {/* Carte NFC simulée - Taille responsive */}
+              <div className="relative mx-auto w-64 sm:w-72 h-40 sm:h-44 rounded-2xl bg-gradient-to-br from-foreground to-foreground/80 shadow-2xl p-5 sm:p-6 text-background">
+                <div className="flex items-center justify-between mb-6 sm:mb-8">
+                  <span className="text-base sm:text-lg font-semibold">i-wasp</span>
+                  <Wifi className="w-5 h-5 sm:w-6 sm:h-6 opacity-60" />
                 </div>
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="text-xs opacity-60 mb-1">Votre nom ici</div>
-                  <div className="text-sm font-medium">CEO · Votre Entreprise</div>
+                <div className="absolute bottom-5 sm:bottom-6 left-5 sm:left-6 right-5 sm:right-6">
+                  <div className="text-[11px] sm:text-xs opacity-60 mb-1">Votre nom ici</div>
+                  <div className="text-[13px] sm:text-sm font-medium">CEO · Votre Entreprise</div>
                 </div>
               </div>
               
-              {/* Badge NFC */}
-              <div className="absolute -right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-xs font-medium shadow-lg">
+              {/* Badge NFC - Responsive position */}
+              <div className="absolute -right-2 sm:-right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-medium shadow-lg">
                 NFC intégré
               </div>
             </motion.div>
             
-            {/* Explication */}
+            {/* Explication - Responsive */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              className="order-1 lg:order-2"
             >
-              <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-6">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-4 sm:mb-6">
                 Comment ça marche ?
               </h2>
-              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                Approchez simplement votre carte du téléphone de votre contact.
-                Votre profil digital s'ouvre instantanément dans son navigateur.
-                Il peut enregistrer vos coordonnées en un clic.
+              <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
+                Approchez votre carte du téléphone de votre contact.
+                Votre profil s'ouvre instantanément.
               </p>
               
-              <div className="space-y-4">
-                {howItWorks.map((step, index) => (
-                  <div key={step.step} className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center flex-shrink-0">
+              <div className="space-y-3 sm:space-y-4">
+                {howItWorks.map((step) => (
+                  <div key={step.step} className="flex items-start gap-3 sm:gap-4">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center flex-shrink-0 text-sm sm:text-base">
                       {step.step}
                     </div>
-                    <div>
-                      <h3 className="font-medium text-foreground mb-1">{step.title}</h3>
-                      <p className="text-muted-foreground text-sm">{step.description}</p>
+                    <div className="pt-1">
+                      <h3 className="font-medium text-foreground mb-0.5 sm:mb-1 text-[15px] sm:text-base">{step.title}</h3>
+                      <p className="text-muted-foreground text-[13px] sm:text-sm leading-relaxed">{step.description}</p>
                     </div>
                   </div>
                 ))}
@@ -276,23 +275,23 @@ const Index = () => {
       {/* ═══════════════════════════════════════════════════════════════════
           AVANTAGES — Pourquoi choisir i-wasp
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-6">
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-3 sm:mb-4">
               Pourquoi passer au NFC ?
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Une solution moderne pour les professionnels qui veulent se démarquer.
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
+              Une solution moderne pour les professionnels.
             </p>
           </motion.div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             {benefits.map((benefit, index) => (
               <motion.div
                 key={benefit.title}
@@ -300,13 +299,13 @@ const Index = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="text-center p-8 rounded-2xl bg-card border border-border"
+                className="text-center p-6 sm:p-8 rounded-2xl bg-card border border-border"
               >
-                <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-6">
-                  <benefit.icon className="w-7 h-7" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                  <benefit.icon className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">{benefit.title}</h3>
-                <p className="text-muted-foreground">{benefit.description}</p>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2 sm:mb-3">{benefit.title}</h3>
+                <p className="text-[13px] sm:text-sm text-muted-foreground leading-relaxed">{benefit.description}</p>
               </motion.div>
             ))}
           </div>
@@ -316,23 +315,23 @@ const Index = () => {
       {/* ═══════════════════════════════════════════════════════════════════
           OFFRES — Tarifs clairs
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-6 bg-muted/30">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-muted/30">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-3 sm:mb-4">
               Nos offres
             </h2>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-base sm:text-lg text-muted-foreground">
               Choisissez la formule qui vous correspond.
             </p>
           </motion.div>
           
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {offers.map((offer, index) => (
               <motion.div
                 key={offer.name}
@@ -340,37 +339,37 @@ const Index = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className={`relative p-8 rounded-2xl bg-card border-2 ${
+                className={`relative p-5 sm:p-6 md:p-8 rounded-2xl bg-card border-2 ${
                   offer.popular ? 'border-primary shadow-lg' : 'border-border'
                 }`}
               >
                 {offer.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-medium px-4 py-1 rounded-full">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[11px] sm:text-xs font-medium px-3 sm:px-4 py-1 rounded-full whitespace-nowrap">
                     Populaire
                   </div>
                 )}
                 
-                <div className="text-center mb-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">{offer.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{offer.description}</p>
+                <div className="text-center mb-5 sm:mb-6">
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-1.5 sm:mb-2">{offer.name}</h3>
+                  <p className="text-[13px] sm:text-sm text-muted-foreground mb-3 sm:mb-4">{offer.description}</p>
                   <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-4xl font-bold text-foreground">{offer.price}</span>
-                    <span className="text-muted-foreground">MAD</span>
+                    <span className="text-3xl sm:text-4xl font-bold text-foreground">{offer.price}</span>
+                    <span className="text-sm text-muted-foreground">MAD</span>
                   </div>
                 </div>
                 
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
                   {offer.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-3 text-sm">
-                      <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                      <span className="text-foreground">{feature}</span>
+                    <li key={feature} className="flex items-start gap-2.5 sm:gap-3 text-[13px] sm:text-sm">
+                      <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-foreground leading-snug">{feature}</span>
                     </li>
                   ))}
                 </ul>
                 
                 <Link to="/order/offre" className="block">
                   <Button 
-                    className="w-full" 
+                    className="w-full h-11 sm:h-10 text-[13px] sm:text-sm" 
                     variant={offer.popular ? "default" : "outline"}
                   >
                     Choisir {offer.name}
@@ -385,20 +384,20 @@ const Index = () => {
       {/* ═══════════════════════════════════════════════════════════════════
           FAQ — Questions fréquentes
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-6">
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-8 sm:mb-12"
           >
-            <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-3 sm:mb-4">
               Questions fréquentes
             </h2>
           </motion.div>
           
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {faqs.map((faq, index) => (
               <motion.div
                 key={index}
@@ -410,9 +409,9 @@ const Index = () => {
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="w-full flex items-center justify-between p-5 text-left bg-card hover:bg-muted/50 transition-colors"
+                  className="w-full flex items-center justify-between p-4 sm:p-5 text-left bg-card hover:bg-muted/50 transition-colors"
                 >
-                  <span className="font-medium text-foreground pr-4">{faq.question}</span>
+                  <span className="font-medium text-foreground pr-3 sm:pr-4 text-[14px] sm:text-base leading-snug">{faq.question}</span>
                   <ChevronDown 
                     className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform ${
                       openFaq === index ? 'rotate-180' : ''
@@ -420,7 +419,7 @@ const Index = () => {
                   />
                 </button>
                 {openFaq === index && (
-                  <div className="px-5 pb-5 text-muted-foreground bg-card">
+                  <div className="px-4 sm:px-5 pb-4 sm:pb-5 text-[13px] sm:text-sm text-muted-foreground bg-card leading-relaxed">
                     {faq.answer}
                   </div>
                 )}
@@ -433,23 +432,23 @@ const Index = () => {
       {/* ═══════════════════════════════════════════════════════════════════
           CTA FINAL — Appel à l'action
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-6 bg-foreground text-background">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-foreground text-background">
         <div className="max-w-3xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl sm:text-4xl font-semibold mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-4 sm:mb-6">
               Prêt à passer au digital ?
             </h2>
-            <p className="text-lg opacity-80 mb-8 max-w-xl mx-auto">
-              Rejoignez les professionnels qui ont déjà adopté la carte de visite du futur.
+            <p className="text-base sm:text-lg opacity-80 mb-6 sm:mb-8 max-w-xl mx-auto px-2">
+              Rejoignez les professionnels qui ont adopté la carte de visite du futur.
             </p>
             <Link to="/order/offre">
               <Button 
                 size="lg" 
-                className="bg-background text-foreground hover:bg-background/90 text-base px-8 py-6 gap-2"
+                className="bg-background text-foreground hover:bg-background/90 text-[15px] sm:text-base h-14 sm:h-auto px-6 sm:px-8 sm:py-6 gap-2 w-full sm:w-auto"
               >
                 <ShoppingBag className="w-5 h-5" />
                 Commander maintenant
