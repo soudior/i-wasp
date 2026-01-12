@@ -13,6 +13,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { CoutureFooter } from "@/components/CoutureFooter";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 
 export default function HomeLuxeMax() {
@@ -182,6 +183,11 @@ export default function HomeLuxeMax() {
           </p>
         </motion.div>
       </ParallaxSection>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          TÉMOIGNAGES — Social proof with noir haute couture style
+      ═══════════════════════════════════════════════════════════════════ */}
+      <TestimonialsSection />
 
       {/* ═══════════════════════════════════════════════════════════════════
           CTA FINAL — Authority with subtle reveal
