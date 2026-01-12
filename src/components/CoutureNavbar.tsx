@@ -1,6 +1,6 @@
 /**
  * CoutureNavbar - Navigation Haute Couture Digitale
- * Style: Ultra minimal, typographie éditoriale, glassmorphism subtil
+ * Style: Ultra minimal, noir couture, typographie éditoriale
  */
 
 import { useState, useEffect } from "react";
@@ -16,7 +16,17 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { SubscriptionBadge } from "@/components/SubscriptionBadge";
 import { SubscriptionUpgrade } from "@/components/SubscriptionUpgrade";
 import { motion, AnimatePresence } from "framer-motion";
-import { COUTURE } from "@/lib/hauteCouturePalette";
+
+// Noir Couture Palette - Consistent with design system
+const NOIR_COUTURE = {
+  background: "#0A0A0A",
+  backgroundGlass: "rgba(10, 10, 10, 0.9)",
+  ivoire: "#F6F5F2",
+  cendre: "#9B9B9B",
+  platine: "#7E7E7E",
+  border: "rgba(255, 255, 255, 0.08)",
+  borderHover: "rgba(255, 255, 255, 0.15)",
+} as const;
 
 export function CoutureNavbar() {
   const { t } = useTranslation();
@@ -53,10 +63,10 @@ export function CoutureNavbar() {
     <header
       className="fixed top-0 left-0 right-0 z-50 transition-all"
       style={{
-        backgroundColor: isScrolled ? COUTURE.glass : "transparent",
+        backgroundColor: isScrolled ? NOIR_COUTURE.backgroundGlass : "transparent",
         backdropFilter: isScrolled ? "blur(20px)" : "none",
         WebkitBackdropFilter: isScrolled ? "blur(20px)" : "none",
-        borderBottom: isScrolled ? `0.5px solid ${COUTURE.glassBorder}` : "none",
+        borderBottom: isScrolled ? `0.5px solid ${NOIR_COUTURE.border}` : "none",
         transitionDuration: "800ms",
         transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
       }}
@@ -66,14 +76,14 @@ export function CoutureNavbar() {
           {/* Logo - Typography éditoriale */}
           <Link to="/" className="flex items-center gap-3 group">
             <span 
-              className="font-display text-xl tracking-tight"
-              style={{ color: COUTURE.jet }}
+              className="font-serif text-xl tracking-wide"
+              style={{ color: NOIR_COUTURE.ivoire }}
             >
               i-wasp
             </span>
             <span 
               className="hidden sm:inline text-[10px] uppercase tracking-[0.3em] font-light"
-              style={{ color: COUTURE.textMuted }}
+              style={{ color: NOIR_COUTURE.cendre }}
             >
               Digital Identity
             </span>
@@ -88,10 +98,10 @@ export function CoutureNavbar() {
                 className="relative px-5 py-2 text-sm transition-all"
                 style={{
                   color: link.highlight 
-                    ? COUTURE.gold 
+                    ? NOIR_COUTURE.ivoire 
                     : location.pathname === link.href 
-                    ? COUTURE.jet 
-                    : COUTURE.textSecondary,
+                    ? NOIR_COUTURE.ivoire 
+                    : NOIR_COUTURE.cendre,
                   fontWeight: link.highlight ? 500 : 400,
                   letterSpacing: "0.02em",
                   transitionDuration: "600ms",
@@ -102,7 +112,7 @@ export function CoutureNavbar() {
                   <motion.div
                     layoutId="activeNav"
                     className="absolute bottom-0 left-5 right-5 h-px"
-                    style={{ backgroundColor: COUTURE.jet }}
+                    style={{ backgroundColor: NOIR_COUTURE.ivoire }}
                     transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                   />
                 )}
@@ -121,7 +131,7 @@ export function CoutureNavbar() {
               to="/cart" 
               className="relative p-2 transition-colors"
               style={{ 
-                color: COUTURE.textSecondary,
+                color: NOIR_COUTURE.cendre,
                 transitionDuration: "400ms",
               }}
             >
@@ -130,8 +140,8 @@ export function CoutureNavbar() {
                 <span 
                   className="absolute -top-0.5 -right-0.5 w-4 h-4 text-[10px] font-medium flex items-center justify-center"
                   style={{ 
-                    backgroundColor: COUTURE.jet, 
-                    color: COUTURE.silk,
+                    backgroundColor: NOIR_COUTURE.ivoire, 
+                    color: NOIR_COUTURE.background,
                   }}
                 >
                   {totalItems > 9 ? "9+" : totalItems}
@@ -151,8 +161,8 @@ export function CoutureNavbar() {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="gap-2 font-normal"
-                      style={{ color: COUTURE.textSecondary }}
+                      className="gap-2 font-normal hover:bg-white/5"
+                      style={{ color: NOIR_COUTURE.cendre }}
                     >
                       <LayoutDashboard size={14} />
                       {t("nav.dashboard")}
@@ -162,8 +172,8 @@ export function CoutureNavbar() {
                     variant="ghost"
                     size="sm" 
                     onClick={handleLogout} 
-                    className="gap-2 font-normal"
-                    style={{ color: COUTURE.textSecondary }}
+                    className="gap-2 font-normal hover:bg-white/5"
+                    style={{ color: NOIR_COUTURE.cendre }}
                   >
                     <LogOut size={14} />
                   </Button>
@@ -174,8 +184,8 @@ export function CoutureNavbar() {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      className="font-normal"
-                      style={{ color: COUTURE.textSecondary }}
+                      className="font-normal hover:bg-white/5"
+                      style={{ color: NOIR_COUTURE.cendre }}
                     >
                       {t("nav.login")}
                     </Button>
@@ -185,8 +195,8 @@ export function CoutureNavbar() {
                       size="sm" 
                       className="font-normal px-5"
                       style={{ 
-                        backgroundColor: COUTURE.jet,
-                        color: COUTURE.silk,
+                        backgroundColor: NOIR_COUTURE.ivoire,
+                        color: NOIR_COUTURE.background,
                       }}
                     >
                       {t("nav.signup")}
@@ -202,15 +212,15 @@ export function CoutureNavbar() {
             <Link 
               to="/cart" 
               className="relative p-2"
-              style={{ color: COUTURE.textSecondary }}
+              style={{ color: NOIR_COUTURE.cendre }}
             >
               <ShoppingCart size={18} strokeWidth={1.5} />
               {totalItems > 0 && (
                 <span 
                   className="absolute -top-0.5 -right-0.5 w-4 h-4 text-[10px] font-medium flex items-center justify-center"
                   style={{ 
-                    backgroundColor: COUTURE.jet, 
-                    color: COUTURE.silk,
+                    backgroundColor: NOIR_COUTURE.ivoire, 
+                    color: NOIR_COUTURE.background,
                   }}
                 >
                   {totalItems}
@@ -219,7 +229,7 @@ export function CoutureNavbar() {
             </Link>
             <button
               className="p-2 transition-colors"
-              style={{ color: COUTURE.jet }}
+              style={{ color: NOIR_COUTURE.ivoire }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <X size={22} strokeWidth={1.5} /> : <Menu size={22} strokeWidth={1.5} />}
@@ -227,7 +237,7 @@ export function CoutureNavbar() {
           </div>
         </div>
 
-        {/* Mobile Menu - Full screen overlay */}
+        {/* Mobile Menu - Full screen overlay - NOIR COUTURE */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
@@ -236,7 +246,7 @@ export function CoutureNavbar() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="fixed inset-0 top-[65px] lg:hidden z-40"
-              style={{ backgroundColor: COUTURE.silk }}
+              style={{ backgroundColor: NOIR_COUTURE.background }}
             >
               <div className="container mx-auto px-8 py-12">
                 <div className="flex flex-col gap-6">
@@ -253,9 +263,9 @@ export function CoutureNavbar() {
                     >
                       <Link
                         to={link.href}
-                        className="block text-2xl font-light transition-colors"
+                        className="block text-2xl font-serif font-light transition-colors"
                         style={{
-                          color: link.highlight ? COUTURE.gold : COUTURE.jet,
+                          color: link.highlight ? NOIR_COUTURE.ivoire : NOIR_COUTURE.ivoire,
                           letterSpacing: "0.02em",
                         }}
                         onClick={() => setIsMobileMenuOpen(false)}
@@ -267,7 +277,7 @@ export function CoutureNavbar() {
                   
                   <motion.div 
                     className="pt-8 mt-8 flex flex-col gap-4"
-                    style={{ borderTop: `1px solid ${COUTURE.border}` }}
+                    style={{ borderTop: `1px solid ${NOIR_COUTURE.border}` }}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
@@ -284,8 +294,8 @@ export function CoutureNavbar() {
                           <Button 
                             className="w-full gap-2 font-normal"
                             style={{ 
-                              backgroundColor: COUTURE.jet,
-                              color: COUTURE.silk,
+                              backgroundColor: NOIR_COUTURE.ivoire,
+                              color: NOIR_COUTURE.background,
                             }}
                           >
                             <LayoutDashboard size={16} />
@@ -296,8 +306,9 @@ export function CoutureNavbar() {
                           variant="outline"
                           className="w-full gap-2 font-normal"
                           style={{ 
-                            borderColor: COUTURE.border,
-                            color: COUTURE.textSecondary,
+                            borderColor: NOIR_COUTURE.border,
+                            color: NOIR_COUTURE.cendre,
+                            backgroundColor: "transparent",
                           }}
                           onClick={() => {
                             handleLogout();
@@ -315,8 +326,9 @@ export function CoutureNavbar() {
                             variant="outline" 
                             className="w-full font-normal"
                             style={{ 
-                              borderColor: COUTURE.border,
-                              color: COUTURE.textSecondary,
+                              borderColor: NOIR_COUTURE.border,
+                              color: NOIR_COUTURE.cendre,
+                              backgroundColor: "transparent",
                             }}
                           >
                             {t("nav.login")}
@@ -326,8 +338,8 @@ export function CoutureNavbar() {
                           <Button 
                             className="w-full font-normal"
                             style={{ 
-                              backgroundColor: COUTURE.jet,
-                              color: COUTURE.silk,
+                              backgroundColor: NOIR_COUTURE.ivoire,
+                              color: NOIR_COUTURE.background,
                             }}
                           >
                             {t("nav.signup")}
