@@ -4,29 +4,108 @@ import nfcCardWaxSeal from "@/assets/nfc-card-wax-seal.png";
 
 const WHATSAPP_ORDER_URL = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20une%20carte%20NFC%20i-wasp.";
 
+// Stagger container for progressive reveal
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+// Individual text line reveal
+const lineVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 40,
+    filter: "blur(10px)",
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.8,
+      ease: "easeOut" as const,
+    },
+  },
+};
+
+// Word-by-word reveal for headline
+const wordVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 30,
+    rotateX: 45,
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    rotateX: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut" as const,
+    },
+  },
+};
+
 export function HeroSection() {
+  const headlineWords1 = ["Partagez", "vos", "contacts"];
+  const headlineWords2 = ["en", "un", "seul", "geste."];
+
   return (
     <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden bg-background transition-colors duration-300">
       <div className="container mx-auto px-6 py-24 lg:py-32">
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+        <motion.div 
+          className="flex flex-col items-center text-center max-w-4xl mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           
-          {/* Headline - Apple-like large typography */}
+          {/* Headline - Progressive word reveal */}
           <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="text-[2.5rem] sm:text-[3.5rem] lg:text-[4.5rem] font-semibold leading-[1.05] tracking-[-0.02em] text-foreground"
+            style={{ perspective: "1000px" }}
           >
-            Partagez vos contacts
-            <br />
-            <span className="text-muted-foreground">en un seul geste.</span>
+            <motion.span 
+              className="block"
+              variants={containerVariants}
+            >
+              {headlineWords1.map((word, index) => (
+                <motion.span
+                  key={index}
+                  variants={wordVariants}
+                  className="inline-block mr-[0.25em]"
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </motion.span>
+            <motion.span 
+              className="block text-muted-foreground"
+              variants={containerVariants}
+            >
+              {headlineWords2.map((word, index) => (
+                <motion.span
+                  key={index}
+                  variants={wordVariants}
+                  className="inline-block mr-[0.25em]"
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </motion.span>
           </motion.h1>
 
-          {/* Subheadline */}
+          {/* Subheadline - Blur reveal */}
           <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+            variants={lineVariants}
             className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl leading-relaxed"
           >
             Une carte NFC premium. Un achat unique. Votre profil digital inclus à vie.
@@ -34,9 +113,7 @@ export function HeroSection() {
 
           {/* Single CTA */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+            variants={lineVariants}
             className="mt-10"
           >
             <a 
@@ -55,9 +132,7 @@ export function HeroSection() {
 
           {/* NFC Card with subtle animation */}
           <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            variants={lineVariants}
             className="mt-16 lg:mt-20 relative"
           >
             {/* Subtle glow behind card - adapts to theme */}
@@ -115,14 +190,12 @@ export function HeroSection() {
 
           {/* Minimal trust line */}
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            variants={lineVariants}
             className="mt-12 text-sm text-muted-foreground/70"
           >
             Compatible tous smartphones · Apple & Google Wallet
           </motion.p>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
