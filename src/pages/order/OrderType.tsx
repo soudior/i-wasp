@@ -1,18 +1,16 @@
 /**
  * OrderType - Sélection du type de produit NFC
- * Étape 0 du tunnel de commande - Design IWASP Deep Black & Soft Gold Luxury
- * Internationalized with auto-detected language/currency
+ * 
+ * Style: Haute Couture Digitale — Noir, minimaliste, silencieux
  */
 
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
-import { CreditCard, Sparkles, Package, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { useOrderFunnel } from "@/contexts/OrderFunnelContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { useTranslation } from "react-i18next";
-import { WorldClockGlobe } from "@/components/WorldClockGlobe";
-import { CurrencySelector } from "@/components/CurrencySelector";
+import { Check, ArrowLeft } from "lucide-react";
+import { COUTURE } from "@/lib/hauteCouturePalette";
 import cardPVCFront from "@/assets/products/card-pvc-front.png";
 import cardMetalFront from "@/assets/products/card-metal-front.png";
 import nailsImage from "@/assets/nails/nails-hero.png";
@@ -20,50 +18,38 @@ import nailsImage from "@/assets/nails/nails-hero.png";
 interface ProductOption {
   id: string;
   name: string;
-  subtitle: string;
   description: string;
   priceMAD: number;
-  icon: React.ElementType;
   image?: string;
   available: boolean;
-  popular?: boolean;
-  features: string[];
+  isSignature?: boolean;
 }
 
 const products: ProductOption[] = [
   {
     id: "pvc",
-    name: "Carte NFC PVC",
-    subtitle: "Populaire",
+    name: "Carte PVC",
     description: "Format carte bancaire. Finition mate premium.",
     priceMAD: 300,
-    icon: CreditCard,
     image: cardPVCFront,
     available: true,
-    popular: true,
-    features: ["Parfait pour le réseautage quotidien", "Solide et élégant", "QR code de secours", "Profil digital illimité"]
+    isSignature: true,
   },
   {
     id: "nails",
     name: "Ongles NFC",
-    subtitle: "Innovation beauté",
     description: "Technologie intégrée. Innovation beauté.",
     priceMAD: 500,
-    icon: Sparkles,
     image: nailsImage,
     available: true,
-    features: ["Idéal pour salons, créateurs, artistes", "Un simple geste de la main", "Compatible tous smartphones", "Réseau salons partenaires"]
   },
   {
     id: "metal",
     name: "Carte Métal",
-    subtitle: "Premium ultime",
     description: "Finition acier brossé. Premium ultime.",
     priceMAD: 850,
-    icon: CreditCard,
     image: cardMetalFront,
     available: true,
-    features: ["Effet waouh garanti", "Pour dirigeants et VIP", "Gravure laser précise", "Écrin de présentation"]
   }
 ];
 
@@ -71,10 +57,8 @@ export default function OrderType() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { state, setProductType } = useOrderFunnel();
-  const { formatAmount, currency, currencySymbol } = useCurrency();
-  const { t } = useTranslation();
+  const { formatAmount } = useCurrency();
 
-  // Pré-sélection si paramètre URL
   useEffect(() => {
     const productParam = searchParams.get("product");
     if (productParam && products.find(p => p.id === productParam && p.available)) {
@@ -93,69 +77,95 @@ export default function OrderType() {
   };
 
   return (
-    <div className="min-h-screen bg-deep-black">
+    <div className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
+      {/* Honeycomb texture */}
+      <div 
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.4' stroke-opacity='0.04'/%3E%3C/svg%3E")`,
+          backgroundSize: '56px 100px',
+        }}
+      />
+
       {/* Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-lg bg-deep-black/90 border-b border-anthracite-light">
-        <div className="container mx-auto px-5 py-4 flex items-center justify-between">
+      <header className="relative z-10 px-6 py-6">
+        <div className="max-w-3xl mx-auto flex items-center justify-between">
           <button 
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 transition-colors text-soft-gray hover:text-off-white"
+            className="flex items-center gap-2 transition-all duration-500"
+            style={{ color: COUTURE.textMuted }}
+            onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.silk}
+            onMouseLeave={(e) => e.currentTarget.style.color = COUTURE.textMuted}
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">{t("order.back")}</span>
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-[11px] uppercase tracking-[0.15em]">Accueil</span>
           </button>
           
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-soft-gold">
-              <span className="font-bold text-sm text-deep-black">iW</span>
-            </div>
-            <span className="font-semibold text-off-white">{t("order.title")}</span>
-          </div>
+          <Link 
+            to="/"
+            className="font-display text-lg tracking-[0.1em]"
+            style={{ color: COUTURE.silk }}
+          >
+            i-wasp
+          </Link>
           
-          {/* Currency Selector + World Clock */}
-          <div className="flex items-center gap-2">
-            <CurrencySelector variant="stealth" />
-            <WorldClockGlobe compact className="hidden sm:flex" />
-          </div>
+          <div className="w-16" />
         </div>
       </header>
 
-      {/* Progress bar */}
-      <div className="step-bar">
-        <div className="step-bar-fill" style={{ width: '10%' }} />
+      {/* Progress indicator */}
+      <div className="relative z-10 px-6 mb-12">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center gap-3 justify-center">
+            <span 
+              className="text-[10px] uppercase tracking-[0.3em]"
+              style={{ color: COUTURE.gold }}
+            >
+              00
+            </span>
+            <div 
+              className="w-12 h-px"
+              style={{ backgroundColor: `${COUTURE.gold}40` }}
+            />
+            <span 
+              className="text-[10px] uppercase tracking-[0.2em]"
+              style={{ color: COUTURE.textMuted }}
+            >
+              Support
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* Content */}
-      <main className="container mx-auto px-5 py-10 max-w-premium">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          {/* Title with Globe */}
-          <div className="text-center mb-10">
-            {/* Mobile Globe + Currency */}
-            <div className="flex justify-center items-center gap-3 mb-4 sm:hidden">
-              <WorldClockGlobe />
-            </div>
-            
-            <p className="text-xs uppercase tracking-widest mb-2 text-soft-gold">
-              Étape 2 sur 5 – Choisissez votre support
-            </p>
-            <h1 className="text-display text-off-white mb-3">
-              Choisissez votre support
+      {/* Main content */}
+      <main className="relative z-10 px-6 pb-32">
+        <div className="max-w-3xl mx-auto">
+          {/* Title */}
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5 }}
+          >
+            <h1 
+              className="font-display text-2xl md:text-3xl font-light italic mb-4"
+              style={{ color: COUTURE.silk }}
+            >
+              Choisissez votre <span style={{ color: COUTURE.gold }}>support.</span>
             </h1>
-            <p className="text-soft-gray">
-              Technologie NFC intégrée. Tous vos supports sont reliés au même profil numérique.
+            <p 
+              className="text-sm font-light"
+              style={{ color: COUTURE.textMuted }}
+            >
+              Tous reliés au même profil numérique.
             </p>
-          </div>
+          </motion.div>
 
-          {/* Products List */}
-          <div className="space-y-4 mb-8">
-            {products.map((product, index) => {
+          {/* Products */}
+          <div className="space-y-4">
+            {products.map((product, i) => {
               const isSelected = state.productType === product.id;
-              const Icon = product.icon;
-
+              
               return (
                 <motion.button
                   key={product.id}
@@ -163,101 +173,115 @@ export default function OrderType() {
                   disabled={!product.available}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.4 }}
-                  className={`card-offer group ${
-                    !product.available ? 'opacity-50 cursor-not-allowed' : ''
-                  } ${isSelected ? 'card-offer-selected' : ''}`}
+                  transition={{ delay: i * 0.1, duration: 0.8 }}
+                  className="w-full text-left p-5 transition-all duration-700 relative flex items-center gap-6 disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{
+                    backgroundColor: isSelected ? `${COUTURE.gold}08` : 'transparent',
+                    border: `1px solid ${isSelected ? `${COUTURE.gold}60` : COUTURE.jetSoft}`,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSelected && product.available) {
+                      e.currentTarget.style.borderColor = `${COUTURE.gold}30`;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.borderColor = COUTURE.jetSoft;
+                    }
+                  }}
                 >
-                  {/* Badge Populaire */}
-                  {product.popular && (
-                    <motion.div 
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.3, type: "spring", stiffness: 500 }}
-                      className="badge-popular"
+                  {/* Signature badge */}
+                  {product.isSignature && (
+                    <span 
+                      className="absolute top-0 right-5 -translate-y-1/2 px-3 py-0.5 text-[8px] uppercase tracking-[0.15em]"
+                      style={{ 
+                        backgroundColor: COUTURE.gold,
+                        color: COUTURE.jet,
+                      }}
                     >
-                      ⭐ Populaire
-                    </motion.div>
+                      Populaire
+                    </span>
                   )}
-                  
-                  <div className="flex items-center p-5 gap-5">
-                    {/* Image avec effet luxe */}
-                    <div className="relative w-24 h-24 rounded-xl flex-shrink-0 overflow-hidden transition-transform duration-300 group-hover:scale-105">
-                      {product.image ? (
-                        <img 
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
-                          style={{ 
-                            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))'
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center rounded-xl bg-anthracite">
-                          <Icon className="w-10 h-10 text-soft-gray" />
-                        </div>
-                      )}
-                    </div>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-base font-semibold text-off-white">
-                          {product.name}
-                        </h3>
-                        {isSelected && (
-                          <div className="w-6 h-6 rounded-full flex items-center justify-center bg-soft-gold">
-                            <Check className="w-4 h-4 text-deep-black" />
-                          </div>
-                        )}
-                        {!product.available && (
-                          <span className="text-xs px-2 py-1 rounded-full bg-anthracite-light text-soft-gray">
-                            {t("order.comingSoon")}
-                          </span>
-                        )}
-                      </div>
-                      
-                      <p className="text-sm mb-2 line-clamp-1 text-soft-gray">
-                        {product.description}
-                      </p>
+                  {/* Image */}
+                  <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
+                    {product.image && (
+                      <img 
+                        src={product.image}
+                        alt={product.name}
+                        className="max-w-full max-h-full object-contain"
+                        style={{ 
+                          filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'
+                        }}
+                      />
+                    )}
+                  </div>
 
-                      <p className={`text-base font-semibold ${isSelected ? 'text-soft-gold' : 'text-off-white'}`}>
-                        {formatAmount(product.priceMAD)}
-                      </p>
-                    </div>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <h3 
+                      className="font-display text-lg font-light mb-1"
+                      style={{ color: isSelected ? COUTURE.gold : COUTURE.silk }}
+                    >
+                      {product.name}
+                    </h3>
+                    <p 
+                      className="text-xs font-light"
+                      style={{ color: COUTURE.textMuted }}
+                    >
+                      {product.description}
+                    </p>
+                  </div>
+
+                  {/* Price & check */}
+                  <div className="flex items-center gap-4">
+                    <span 
+                      className="text-lg font-light tabular-nums"
+                      style={{ color: isSelected ? COUTURE.gold : COUTURE.silk }}
+                    >
+                      {formatAmount(product.priceMAD)}
+                    </span>
+                    
+                    {isSelected && (
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="w-7 h-7 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: COUTURE.gold }}
+                      >
+                        <Check className="w-4 h-4" style={{ color: COUTURE.jet }} />
+                      </motion.div>
+                    )}
                   </div>
                 </motion.button>
               );
             })}
           </div>
-
-          {/* CTA Desktop */}
-          <div className="hidden md:flex justify-center">
-            <button
-              onClick={handleContinue}
-              disabled={!state.productType}
-              className="btn-premium disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {t("order.continue")}
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
-        </motion.div>
+        </div>
       </main>
 
-      {/* Sticky CTA Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 backdrop-blur-lg md:hidden z-40 safe-area-bottom bg-deep-black/90 border-t border-anthracite-light">
-        <button
-          onClick={handleContinue}
-          disabled={!state.productType}
-          className="btn-premium w-full disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          {state.productType ? t("order.continue") : t("order.selectProduct")}
-          <ArrowRight className="w-5 h-5" />
-        </button>
+      {/* Fixed CTA */}
+      <div 
+        className="fixed bottom-0 left-0 right-0 z-20 px-6 py-6"
+        style={{ 
+          backgroundColor: COUTURE.jet,
+          borderTop: `1px solid ${COUTURE.jetSoft}`,
+        }}
+      >
+        <div className="max-w-3xl mx-auto flex justify-center">
+          <button
+            onClick={handleContinue}
+            disabled={!state.productType}
+            className="text-[11px] uppercase tracking-[0.25em] font-light transition-all duration-700 pb-1 disabled:opacity-30 disabled:cursor-not-allowed"
+            style={{ 
+              color: state.productType ? COUTURE.gold : COUTURE.textMuted,
+              borderBottom: `1px solid ${state.productType ? `${COUTURE.gold}60` : 'transparent'}`,
+            }}
+          >
+            Continuer
+          </button>
+        </div>
       </div>
-      
-      <div className="h-24 md:hidden" />
     </div>
   );
 }
