@@ -8,10 +8,11 @@
  * INTERDIT sur /card/*, checkout, dashboard.
  */
 
-import { Suspense, useRef, useMemo } from "react";
+import { Suspense, useRef, useMemo, useEffect, useCallback } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { RoundedBox, Float } from "@react-three/drei";
 import * as THREE from "three";
+import { triggerHaptic } from "@/hooks/useHapticFeedback";
 
 // Créer une texture du logo i-wasp via Canvas
 function createLogoTexture(): THREE.CanvasTexture {
@@ -113,12 +114,17 @@ function NFCCard() {
   );
 }
 
-// Téléphone animé
-function Phone() {
+// Téléphone animé avec haptic feedback
+interface PhoneProps {
+  onTap?: () => void;
+}
+
+function Phone({ onTap }: PhoneProps) {
   const groupRef = useRef<THREE.Group>(null);
   const waveRef1 = useRef<THREE.Mesh>(null);
   const waveRef2 = useRef<THREE.Mesh>(null);
   const waveRef3 = useRef<THREE.Mesh>(null);
+  const lastTapTime = useRef(0);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
@@ -130,6 +136,16 @@ function Phone() {
       groupRef.current.position.y = 1.2 + yOffset;
       groupRef.current.position.z = 0.8 + zOffset;
       groupRef.current.rotation.x = -0.5 + Math.sin(t * 0.6) * 0.05;
+      
+      // Détecter le moment du "tap" (quand le téléphone est au plus proche)
+      const tapThreshold = 0.72; // z position when closest to card
+      const currentZ = 0.8 + zOffset;
+      const timeSinceLastTap = t - lastTapTime.current;
+      
+      if (currentZ <= tapThreshold && timeSinceLastTap > 2) {
+        lastTapTime.current = t;
+        onTap?.();
+      }
     }
 
     // Animation des ondes NFC
@@ -216,8 +232,12 @@ function Phone() {
   );
 }
 
-// Scène complète
-function Scene() {
+// Scène complète avec callback haptic
+interface SceneProps {
+  onTap?: () => void;
+}
+
+function Scene({ onTap }: SceneProps) {
   return (
     <>
       {/* Éclairage */}
@@ -228,7 +248,7 @@ function Scene() {
 
       {/* Objets */}
       <NFCCard />
-      <Phone />
+      <Phone onTap={onTap} />
     </>
   );
 }
@@ -239,6 +259,11 @@ interface NFCAnimation3DProps {
 }
 
 export function NFCAnimation3D({ className = "" }: NFCAnimation3DProps) {
+  // Callback pour déclencher le haptic feedback
+  const handleTap = useCallback(() => {
+    triggerHaptic('success');
+  }, []);
+
   return (
     <div 
       className={`relative overflow-hidden ${className}`}
@@ -256,7 +281,7 @@ export function NFCAnimation3D({ className = "" }: NFCAnimation3DProps) {
           style={{ background: "#F7F7F5" }}
           gl={{ antialias: true, alpha: true }}
         >
-          <Scene />
+          <Scene onTap={handleTap} />
         </Canvas>
       </Suspense>
 
