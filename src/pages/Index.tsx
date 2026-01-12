@@ -46,15 +46,8 @@ import { ClubNavbar } from "@/components/ClubNavbar";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Stealth Luxury Colors
-const STEALTH = {
-  noir: "#050807",
-  noirElevated: "#0A0F0D",
-  titanium: "#A5A9B4",
-  platinum: "#D1D5DB",
-  emeraldGlow: "#1A2B26",
-  accent: "#D4AF37",
-};
+// Import unified Luxe Max palette
+import { STEALTH } from "@/lib/stealthPalette";
 
 // Comment ça marche - 3 étapes simples
 const howItWorks = [

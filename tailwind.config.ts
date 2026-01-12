@@ -139,6 +139,18 @@ export default {
           secondaire: "#8A9AB4",             /* Texte secondaire */
           accent: "#4DF3FF",                 /* Cyan accent */
         },
+        
+        /* ══════════════════════════════════════════════════════════════
+           LEGACY ALIASES — Mapped to Luxe Max
+           ══════════════════════════════════════════════════════════════ */
+        "deep-black": "#020819",
+        "anthracite": "#0A1020",
+        "anthracite-dark": "#0A1020",
+        "anthracite-light": "rgba(77, 243, 255, 0.08)",
+        "soft-gold": "#4DF3FF",
+        "off-white": "#E8ECF4",
+        "soft-gray": "#8A9AB4",
+        "muted-gray": "#5A6A84",
       },
       borderRadius: {
         lg: "var(--radius)",
