@@ -120,6 +120,21 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════════
+           PALETTE LUXE MAX — Désaturé, Sophistiqué
+           ══════════════════════════════════════════════════════════════ */
+        luxe: {
+          void: "#040609",                    /* Near-black with blue undertone */
+          deep: "#0A0D14",                    /* Elevated surface */
+          surface: "#121620",                 /* Cards and panels */
+          glow: "#1A2030",                    /* Subtle highlight */
+          cyan: "#7DD3E8",                    /* Desaturated cyan */
+          blue: "#6B8FD4",                    /* Soft blue accent */
+          silver: "#8A919C",                  /* Secondary text */
+          mist: "#C4CAD4",                    /* Primary text */
+          white: "#F0F2F5",                   /* Headlines */
+        },
+        
+        /* ══════════════════════════════════════════════════════════════
            PALETTE CARTE NFC — Ultra-Luxe
            ══════════════════════════════════════════════════════════════ */
         carte: {
