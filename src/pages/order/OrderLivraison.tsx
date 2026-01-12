@@ -33,19 +33,54 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-const addressTypes = [
-  { id: "domicile" as const, icon: Home, label: "Domicile" },
-  { id: "entreprise" as const, icon: Building, label: "Entreprise" },
-  { id: "hotel" as const, icon: Hotel, label: "Hôtel" },
-];
+// Address types based on client type
+const ADDRESS_TYPES_BY_CLIENT = {
+  particulier: [
+    { id: "domicile" as const, icon: Home, label: "Domicile" },
+    { id: "hotel" as const, icon: Hotel, label: "Hôtel" },
+  ],
+  independant: [
+    { id: "domicile" as const, icon: Home, label: "Domicile" },
+    { id: "entreprise" as const, icon: Building, label: "Bureau" },
+    { id: "hotel" as const, icon: Hotel, label: "Hôtel" },
+  ],
+  entreprise: [
+    { id: "entreprise" as const, icon: Building, label: "Siège social" },
+    { id: "domicile" as const, icon: Home, label: "Autre adresse" },
+  ],
+};
+
+// Delivery options based on client type
+const DELIVERY_OPTIONS = {
+  particulier: [
+    { id: "standard", label: "Livraison standard", delay: "48h-72h", price: 0 },
+  ],
+  independant: [
+    { id: "standard", label: "Livraison standard", delay: "48h-72h", price: 0 },
+    { id: "express", label: "Livraison express", delay: "24h", price: 30, badge: "Rapide" },
+  ],
+  entreprise: [
+    { id: "standard", label: "Livraison standard", delay: "48h-72h", price: 0 },
+    { id: "express", label: "Livraison express", delay: "24h", price: 30, badge: "Rapide" },
+    { id: "premium", label: "Livraison premium", delay: "Même jour (Casablanca)", price: 80, badge: "VIP" },
+  ],
+};
 
 function OrderLivraisonContent() {
   const { state, setShippingInfo, setPaymentInfo, nextStep, prevStep } = useOrderFunnel();
   const [isNavigating, setIsNavigating] = useState(false);
+  
+  // Get client type and corresponding options
+  const clientType = state.digitalIdentity?.clientType || "particulier";
+  const addressTypes = ADDRESS_TYPES_BY_CLIENT[clientType];
+  const deliveryOptions = DELIVERY_OPTIONS[clientType];
+  
+  // Selected delivery option
+  const [selectedDelivery, setSelectedDelivery] = useState(deliveryOptions[0].id);
 
   const [formData, setFormData] = useState<ShippingInfo>(
     state.shippingInfo || {
-      addressType: "domicile",
+      addressType: addressTypes[0].id,
       address: "",
       city: "",
       country: "Maroc",
@@ -194,7 +229,7 @@ function OrderLivraisonContent() {
                   {/* Address Type */}
                   <div className="space-y-2">
                     <Label style={{ color: STEALTH.text }}>Type d'adresse</Label>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className={`grid gap-3 ${addressTypes.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
                       {addressTypes.map((type) => {
                         const isSelected = formData.addressType === type.id;
                         const Icon = type.icon;
@@ -308,7 +343,111 @@ function OrderLivraisonContent() {
                 </div>
               </div>
 
-              {/* Payment Method */}
+              {/* Delivery Options - Conditional based on client type */}
+              {deliveryOptions.length > 1 && (
+                <div 
+                  className="rounded-3xl p-6"
+                  style={{ 
+                    backgroundColor: STEALTH.bgCard,
+                    border: `1px solid ${STEALTH.border}`
+                  }}
+                >
+                  <div 
+                    className="flex items-center gap-2 text-lg font-semibold mb-4"
+                    style={{ color: STEALTH.text }}
+                  >
+                    <Truck size={20} style={{ color: STEALTH.accent }} />
+                    Mode de livraison
+                    {clientType !== "particulier" && (
+                      <span 
+                        className="ml-2 text-xs px-2 py-0.5 rounded-full"
+                        style={{ 
+                          backgroundColor: STEALTH.accentMuted, 
+                          color: STEALTH.accent 
+                        }}
+                      >
+                        {clientType === "entreprise" ? "Options B2B" : "Options Pro"}
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-3">
+                    {deliveryOptions.map((option) => {
+                      const isSelected = selectedDelivery === option.id;
+                      return (
+                        <button
+                          key={option.id}
+                          onClick={() => setSelectedDelivery(option.id)}
+                          className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left"
+                          style={{
+                            borderColor: isSelected ? STEALTH.accent : STEALTH.border,
+                            backgroundColor: isSelected ? STEALTH.accentMuted : STEALTH.bgCard,
+                          }}
+                        >
+                          <div 
+                            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{ 
+                              backgroundColor: isSelected ? STEALTH.accent : STEALTH.bgInput
+                            }}
+                          >
+                            <Truck 
+                              className="w-5 h-5" 
+                              style={{ color: isSelected ? STEALTH.bg : STEALTH.textSecondary }} 
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span 
+                                className="font-semibold"
+                                style={{ color: STEALTH.text }}
+                              >
+                                {option.label}
+                              </span>
+                              {option.badge && (
+                                <span 
+                                  className="text-xs px-2 py-0.5 rounded-full"
+                                  style={{ 
+                                    backgroundColor: STEALTH.accentMuted, 
+                                    color: STEALTH.accent 
+                                  }}
+                                >
+                                  {option.badge}
+                                </span>
+                              )}
+                            </div>
+                            <span 
+                              className="text-sm"
+                              style={{ color: STEALTH.textSecondary }}
+                            >
+                              Délai: {option.delay}
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            {option.price === 0 ? (
+                              <span 
+                                className="text-sm font-medium"
+                                style={{ color: STEALTH.success }}
+                              >
+                                Gratuit
+                              </span>
+                            ) : (
+                              <span 
+                                className="text-sm font-medium"
+                                style={{ color: STEALTH.text }}
+                              >
+                                +{option.price} MAD
+                              </span>
+                            )}
+                          </div>
+                          {isSelected && (
+                            <CheckCircle2 className="h-5 w-5 flex-shrink-0" style={{ color: STEALTH.accent }} />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div 
                 className="rounded-3xl p-6"
                 style={{ 

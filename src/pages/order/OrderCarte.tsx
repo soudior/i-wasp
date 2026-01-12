@@ -23,16 +23,50 @@ import {
   Sparkles,
   Eye,
   FlipHorizontal,
+  Layers,
+  Package,
+  CheckCircle2,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 // Import official i-Wasp logo for back preview
 import iwaspLogo from "@/assets/iwasp-logo.png";
 
+// Card material options based on client type
+const CARD_MATERIALS = {
+  particulier: [
+    { id: "pvc", label: "PVC Premium", description: "Carte résistante et élégante", price: 0 },
+  ],
+  independant: [
+    { id: "pvc", label: "PVC Premium", description: "Carte résistante et élégante", price: 0 },
+    { id: "metal", label: "Métal brossé", description: "Finition haut de gamme", price: 50, badge: "Pro" },
+  ],
+  entreprise: [
+    { id: "pvc", label: "PVC Premium", description: "Carte résistante et élégante", price: 0 },
+    { id: "metal", label: "Métal brossé", description: "Finition haut de gamme", price: 50, badge: "Pro" },
+    { id: "metal-gold", label: "Métal doré", description: "Edition prestige", price: 100, badge: "Luxe" },
+  ],
+};
+
+const QUANTITY_OPTIONS = {
+  particulier: [1, 2, 3],
+  independant: [1, 5, 10, 25],
+  entreprise: [10, 25, 50, 100, 250],
+};
+
 function OrderCarteContent() {
   const { state, setCardPersonalization, nextStep, prevStep } = useOrderFunnel();
   const [isNavigating, setIsNavigating] = useState(false);
   const [showBack, setShowBack] = useState(false);
+  
+  // Get client type from state
+  const clientType = state.digitalIdentity?.clientType || "particulier";
+  const cardMaterials = CARD_MATERIALS[clientType];
+  const quantityOptions = QUANTITY_OPTIONS[clientType];
+  
+  // Selected material and quantity
+  const [selectedMaterial, setSelectedMaterial] = useState(cardMaterials[0].id);
+  const [selectedQuantity, setSelectedQuantity] = useState(quantityOptions[0]);
   
   // Card design config
   const [cardDesign, setCardDesign] = useState<CardDesignConfig>(() => {
@@ -168,6 +202,142 @@ function OrderCarteContent() {
                   value={cardDesign}
                   onChange={setCardDesign}
                 />
+
+                {/* Material Selection - B2B options */}
+                {cardMaterials.length > 1 && (
+                  <div 
+                    className="rounded-2xl p-4"
+                    style={{ 
+                      backgroundColor: STEALTH.bgCard,
+                      border: `1px solid ${STEALTH.border}`
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <Layers className="w-4 h-4" style={{ color: STEALTH.accent }} />
+                      <span className="text-sm font-semibold" style={{ color: STEALTH.text }}>
+                        Matériau
+                      </span>
+                      <span 
+                        className="ml-auto text-xs px-2 py-0.5 rounded-full"
+                        style={{ 
+                          backgroundColor: STEALTH.accentMuted, 
+                          color: STEALTH.accent 
+                        }}
+                      >
+                        {clientType === "entreprise" ? "Options B2B" : "Options Pro"}
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      {cardMaterials.map((material) => {
+                        const isSelected = selectedMaterial === material.id;
+                        return (
+                          <button
+                            key={material.id}
+                            onClick={() => setSelectedMaterial(material.id)}
+                            className="w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left"
+                            style={{
+                              borderColor: isSelected ? STEALTH.accent : STEALTH.border,
+                              backgroundColor: isSelected ? STEALTH.accentMuted : 'transparent',
+                            }}
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span 
+                                  className="text-sm font-medium"
+                                  style={{ color: STEALTH.text }}
+                                >
+                                  {material.label}
+                                </span>
+                                {material.badge && (
+                                  <span 
+                                    className="text-[10px] px-1.5 py-0.5 rounded-full"
+                                    style={{ 
+                                      backgroundColor: STEALTH.accent, 
+                                      color: STEALTH.bg 
+                                    }}
+                                  >
+                                    {material.badge}
+                                  </span>
+                                )}
+                              </div>
+                              <span 
+                                className="text-xs"
+                                style={{ color: STEALTH.textSecondary }}
+                              >
+                                {material.description}
+                              </span>
+                            </div>
+                            <div className="text-right">
+                              {material.price === 0 ? (
+                                <span className="text-xs" style={{ color: STEALTH.textSecondary }}>Inclus</span>
+                              ) : (
+                                <span className="text-xs" style={{ color: STEALTH.accent }}>+{material.price} MAD</span>
+                              )}
+                            </div>
+                            {isSelected && (
+                              <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: STEALTH.accent }} />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Quantity Selection - B2B options */}
+                {quantityOptions.length > 3 && (
+                  <div 
+                    className="rounded-2xl p-4"
+                    style={{ 
+                      backgroundColor: STEALTH.bgCard,
+                      border: `1px solid ${STEALTH.border}`
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <Package className="w-4 h-4" style={{ color: STEALTH.accent }} />
+                      <span className="text-sm font-semibold" style={{ color: STEALTH.text }}>
+                        Quantité
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                      {quantityOptions.map((qty) => {
+                        const isSelected = selectedQuantity === qty;
+                        return (
+                          <button
+                            key={qty}
+                            onClick={() => setSelectedQuantity(qty)}
+                            className="p-3 rounded-xl border-2 transition-all text-center"
+                            style={{
+                              borderColor: isSelected ? STEALTH.accent : STEALTH.border,
+                              backgroundColor: isSelected ? STEALTH.accentMuted : 'transparent',
+                            }}
+                          >
+                            <span 
+                              className="text-lg font-bold"
+                              style={{ color: isSelected ? STEALTH.accent : STEALTH.text }}
+                            >
+                              {qty}
+                            </span>
+                            <span 
+                              className="block text-[10px]"
+                              style={{ color: STEALTH.textSecondary }}
+                            >
+                              carte{qty > 1 ? 's' : ''}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {selectedQuantity >= 25 && (
+                      <p 
+                        className="text-xs mt-2 text-center"
+                        style={{ color: STEALTH.success }}
+                      >
+                        💰 Tarif dégressif appliqué pour {selectedQuantity}+ cartes
+                      </p>
+                    )}
+                  </div>
+                )}
               </motion.div>
 
               {/* Right: Preview & Info */}
