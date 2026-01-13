@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, LayoutDashboard, LogOut, ShoppingCart } from "lucide-react";
+import { Menu, X, LayoutDashboard, LogOut, ShoppingCart, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
@@ -41,7 +41,7 @@ export function CoutureNavbar() {
   const navLinks = [
     { href: "/", label: "Accueil" },
     { href: "/maison", label: "La Maison" },
-    { href: "/web-studio", label: "Web Studio" },
+    { href: "/web-studio", label: "Web Studio", icon: Wand2 },
     { href: "/features", label: "Fonctionnalités" },
     { href: "/pricing", label: "Tarifs" },
     { href: "/order/offre", label: "Découvrir", highlight: true },
@@ -96,7 +96,7 @@ export function CoutureNavbar() {
               <Link
                 key={link.href}
                 to={link.href}
-                className="relative px-5 py-2 text-sm transition-all"
+                className="relative px-5 py-2 text-sm transition-all flex items-center gap-1.5"
                 style={{
                   color: link.highlight 
                     ? NOIR_COUTURE.ivoire 
@@ -108,6 +108,7 @@ export function CoutureNavbar() {
                   transitionDuration: "600ms",
                 }}
               >
+                {link.icon && <link.icon size={14} strokeWidth={1.5} />}
                 {link.label}
                 {location.pathname === link.href && !link.highlight && (
                   <motion.div
@@ -264,13 +265,14 @@ export function CoutureNavbar() {
                     >
                       <Link
                         to={link.href}
-                        className="block text-2xl font-serif font-light transition-colors"
+                        className="flex items-center gap-3 text-2xl font-serif font-light transition-colors"
                         style={{
                           color: link.highlight ? NOIR_COUTURE.ivoire : NOIR_COUTURE.ivoire,
                           letterSpacing: "0.02em",
                         }}
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
+                        {link.icon && <link.icon size={20} strokeWidth={1.5} />}
                         {link.label}
                       </Link>
                     </motion.div>
