@@ -30,6 +30,7 @@ import {
   MessageCircle
 } from "lucide-react";
 import { SUBSCRIPTION_PLANS, FEATURE_COMPARISON } from "@/lib/subscriptionPlans";
+import { QuoteCalculator } from "@/components/pricing/QuoteCalculator";
 
 // Palette Premium Noir & Or
 const COLORS = {
@@ -473,6 +474,9 @@ export default function Pricing() {
                 </div>
               </div>
             </section>
+
+            {/* Quote Calculator */}
+            <QuoteCalculator currency={currency} />
           </motion.div>
         ) : (
           <motion.div
