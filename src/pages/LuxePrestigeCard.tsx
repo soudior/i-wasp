@@ -58,6 +58,30 @@ const PROPERTIES = [
   },
 ];
 
+// Véhicules de luxe
+const VEHICLES = [
+  {
+    name: "Bentley Bentayga",
+    type: "SUV de Luxe",
+    photo: "/images/luxe-prestige/bentley-bentayga.jpg",
+  },
+  {
+    name: "Mercedes S-Class",
+    type: "Berline Executive",
+    photo: "/images/luxe-prestige/mercedes-s-class.jpg",
+  },
+  {
+    name: "Mercedes V Mansory",
+    type: "Van VIP",
+    photo: "/images/luxe-prestige/mercedes-v-mansory.jpg",
+  },
+  {
+    name: "Limousine",
+    type: "Transport Prestige",
+    photo: "/images/luxe-prestige/limousine.jpg",
+  },
+];
+
 // Property Gallery Component
 const PropertyGallery: React.FC<{ 
   photos: string[]; 
@@ -455,6 +479,84 @@ END:VCARD`;
               </div>
             </motion.div>
           ))}
+        </div>
+
+        {/* Vehicles Section */}
+        <div 
+          className="p-6"
+          style={{ backgroundColor: LUXE_COLORS.accent }}
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Car size={18} style={{ color: LUXE_COLORS.gold }} />
+            <h2 
+              className="text-lg font-semibold tracking-wide"
+              style={{ color: LUXE_COLORS.gold }}
+            >
+              Nos Véhicules
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {VEHICLES.map((vehicle, index) => (
+              <motion.div
+                key={vehicle.name}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 + index * 0.1 }}
+                className="rounded-xl overflow-hidden cursor-pointer"
+                style={{ 
+                  backgroundColor: LUXE_COLORS.card,
+                  border: `1px solid ${LUXE_COLORS.gold}20`,
+                }}
+                onClick={() => setFullscreenGallery({
+                  photos: [vehicle.photo],
+                  index: 0,
+                  name: vehicle.name,
+                })}
+              >
+                <div className="aspect-[4/3] relative">
+                  <img
+                    src={vehicle.photo}
+                    alt={vehicle.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                </div>
+                <div className="p-3">
+                  <p 
+                    className="text-sm font-semibold"
+                    style={{ color: LUXE_COLORS.text }}
+                  >
+                    {vehicle.name}
+                  </p>
+                  <p 
+                    className="text-[10px]"
+                    style={{ color: LUXE_COLORS.gold }}
+                  >
+                    {vehicle.type}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* CTA Véhicules */}
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              const message = encodeURIComponent("Bonjour, je souhaite réserver un véhicule de luxe.");
+              window.open(`https://wa.me/${CONTACT.whatsapp}?text=${message}`, "_blank");
+            }}
+            className="w-full mt-4 py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all"
+            style={{ 
+              backgroundColor: LUXE_COLORS.card,
+              color: LUXE_COLORS.gold,
+              border: `1px solid ${LUXE_COLORS.gold}40`,
+            }}
+          >
+            <MessageCircle size={18} />
+            Réserver un véhicule
+          </motion.button>
         </div>
 
         {/* Action Buttons */}
