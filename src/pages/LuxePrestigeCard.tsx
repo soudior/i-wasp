@@ -285,7 +285,10 @@ TITLE:${CONTACT.title}
 TEL;TYPE=CELL:${CONTACT.phone}
 EMAIL:${CONTACT.email}
 ADR;TYPE=WORK:;;${CONTACT.location}
-NOTE:${CONTACT.tagline}
+URL:https://luxeprestige.ma
+URL;TYPE=INSTAGRAM:https://instagram.com/luxeprestige.marrakech
+NOTE:${CONTACT.tagline} - Conciergerie de luxe à Marrakech. Véhicules premium, aviation privée, expériences exclusives.
+PHOTO;VALUE=URI:${window.location.origin}/assets/luxe-prestige-logo.png
 END:VCARD`;
 
     const blob = new Blob([vcard], { type: "text/vcard" });
