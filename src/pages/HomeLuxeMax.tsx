@@ -10,11 +10,12 @@ import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { CoutureFooter } from "@/components/CoutureFooter";
+import { CoutureNavbar } from "@/components/CoutureNavbar";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import cardFront from "@/assets/card-front.png";
 import cardBack from "@/assets/card-back.png";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Wand2, Globe, Zap } from "lucide-react";
 
 // Palette Ultra Luxe
 const LUXE = {
@@ -42,6 +43,7 @@ export default function HomeLuxeMax() {
 
   return (
     <div ref={containerRef} className="min-h-screen" style={{ backgroundColor: LUXE.noir }}>
+      <CoutureNavbar />
       
       {/* ═══════════════════════════════════════════════════════════════════
           HERO — Full-screen, noir absolu, typographie Cartier
@@ -355,6 +357,122 @@ export default function HomeLuxeMax() {
           >
             Livraison gratuite · Satisfait ou remboursé
           </p>
+        </motion.div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          WEB STUDIO — Nouvelle section promotionnelle
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section 
+        className="py-24 md:py-32 px-6 relative overflow-hidden"
+        style={{ backgroundColor: LUXE.noirSoft }}
+      >
+        {/* Gradient accent */}
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            background: `radial-gradient(ellipse at 50% 0%, ${LUXE.or}30 0%, transparent 60%)`,
+          }}
+        />
+        
+        <motion.div 
+          className="max-w-4xl mx-auto text-center relative z-10"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {/* Badge */}
+          <motion.div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
+            style={{ 
+              backgroundColor: `${LUXE.or}15`,
+              border: `1px solid ${LUXE.or}30`,
+            }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <Wand2 size={14} style={{ color: LUXE.or }} />
+            <span 
+              className="text-[11px] uppercase tracking-[0.2em] font-medium"
+              style={{ color: LUXE.or }}
+            >
+              Nouveau Service
+            </span>
+          </motion.div>
+          
+          <h2 
+            className="font-display text-3xl md:text-4xl lg:text-5xl font-light tracking-tight mb-6"
+            style={{ color: LUXE.ivoire }}
+          >
+            Web Studio
+            <span className="italic" style={{ color: LUXE.or }}> IA</span>
+          </h2>
+          
+          <p 
+            className="text-base md:text-lg font-light leading-relaxed max-w-2xl mx-auto mb-10"
+            style={{ color: LUXE.gris }}
+          >
+            Créez votre site web professionnel en quelques minutes grâce à notre intelligence artificielle. 
+            Design premium, prix instantané, livraison express.
+          </p>
+          
+          {/* Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {[
+              { icon: Zap, title: "Génération IA", desc: "Proposition en 30 secondes" },
+              { icon: Globe, title: "Site Complet", desc: "Design + Contenu + Hébergement" },
+              { icon: Wand2, title: "Premium", desc: "À partir de 2 500 MAD" },
+            ].map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                className="p-6 rounded-2xl"
+                style={{ 
+                  backgroundColor: `${LUXE.ivoire}05`,
+                  border: `1px solid ${LUXE.ivoire}10`,
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + i * 0.1 }}
+              >
+                <feature.icon 
+                  size={28} 
+                  strokeWidth={1.5}
+                  style={{ color: LUXE.or }}
+                  className="mx-auto mb-4"
+                />
+                <h3 
+                  className="font-medium text-sm mb-2"
+                  style={{ color: LUXE.ivoire }}
+                >
+                  {feature.title}
+                </h3>
+                <p 
+                  className="text-xs font-light"
+                  style={{ color: LUXE.gris }}
+                >
+                  {feature.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+          
+          {/* CTA */}
+          <Link 
+            to="/web-studio"
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-xl font-medium text-sm transition-all duration-500 hover:scale-105"
+            style={{ 
+              backgroundColor: LUXE.or,
+              color: LUXE.noir,
+            }}
+          >
+            <Wand2 size={18} />
+            Créer mon site web
+            <ArrowRight size={16} />
+          </Link>
         </motion.div>
       </section>
 
