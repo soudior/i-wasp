@@ -8,7 +8,7 @@
 import { motion } from "framer-motion";
 import { Phone, MessageCircle, Mail, MapPin, Plane, Car, Home, Sparkles } from "lucide-react";
 import { useState } from "react";
-
+import luxePrestigeLogo from "@/assets/luxe-prestige-logo.png";
 // Palette ultra-luxe noir et or
 const LUXE_COLORS = {
   background: "#0A0A0A",
@@ -116,18 +116,16 @@ END:VCARD`;
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="w-28 h-28 mx-auto mb-6 rounded-full flex items-center justify-center relative"
+            className="w-28 h-28 mx-auto mb-6 rounded-full flex items-center justify-center relative overflow-hidden"
             style={{ 
-              background: `linear-gradient(135deg, ${LUXE_COLORS.gold}, ${LUXE_COLORS.goldDark})`,
               boxShadow: `0 0 40px ${LUXE_COLORS.gold}40`,
             }}
           >
-            <span 
-              className="text-4xl font-bold"
-              style={{ color: LUXE_COLORS.background }}
-            >
-              LP
-            </span>
+            <img 
+              src={luxePrestigeLogo} 
+              alt="Luxe Prestige" 
+              className="w-full h-full object-cover"
+            />
             {/* Rotating ring */}
             <motion.div
               animate={{ rotate: 360 }}
