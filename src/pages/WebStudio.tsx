@@ -40,7 +40,8 @@ import {
   ArrowRight,
   CheckCircle2,
   Clock,
-  Package
+  Package,
+  Layout
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -1366,61 +1367,267 @@ export default function WebStudio() {
               </div>
             </motion.div>
 
-            {/* Result */}
-            <div className="space-y-6">
+            {/* Result - Spectacular Design */}
+            <motion.div 
+              className="relative"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              {/* Empty state */}
               {!proposal && !isGenerating && (
-                <Card className="h-full min-h-[400px] flex items-center justify-center">
-                  <CardContent className="text-center p-8">
-                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-muted flex items-center justify-center">
-                      <Globe className="w-10 h-10 text-muted-foreground" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                <motion.div 
+                  className="relative h-full min-h-[600px] rounded-3xl overflow-hidden flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: `${STUDIO.noirCard}60`,
+                    border: `1px dashed ${STUDIO.ivoire}15`,
+                  }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  {/* Animated background pattern */}
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    {[...Array(5)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute rounded-full"
+                        style={{
+                          width: 200 + i * 100,
+                          height: 200 + i * 100,
+                          border: `1px solid ${STUDIO.or}05`,
+                          left: "50%",
+                          top: "50%",
+                          transform: "translate(-50%, -50%)",
+                        }}
+                        animate={{
+                          scale: [1, 1.1, 1],
+                          opacity: [0.3, 0.6, 0.3],
+                        }}
+                        transition={{
+                          duration: 4 + i,
+                          repeat: Infinity,
+                          delay: i * 0.5,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  
+                  <div className="relative z-10 text-center p-8">
+                    <motion.div 
+                      className="w-24 h-24 mx-auto mb-8 rounded-3xl flex items-center justify-center relative"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${STUDIO.noirCard} 0%, ${STUDIO.noir} 100%)`,
+                        border: `1px solid ${STUDIO.ivoire}10`,
+                        boxShadow: `0 20px 60px ${STUDIO.noir}`,
+                      }}
+                      animate={{ 
+                        y: [0, -10, 0],
+                        boxShadow: [
+                          `0 20px 60px ${STUDIO.noir}`,
+                          `0 30px 80px ${STUDIO.noir}, 0 0 40px ${STUDIO.or}10`,
+                          `0 20px 60px ${STUDIO.noir}`,
+                        ],
+                      }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                    >
+                      <Globe className="w-10 h-10" style={{ color: STUDIO.gris }} />
+                      
+                      {/* Orbiting dot */}
+                      <motion.div
+                        className="absolute w-3 h-3 rounded-full"
+                        style={{ backgroundColor: STUDIO.or }}
+                        animate={{
+                          rotate: 360,
+                        }}
+                        transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                        initial={{ x: 50 }}
+                      />
+                    </motion.div>
+                    
+                    <h3 
+                      className="text-xl font-light tracking-tight mb-3"
+                      style={{ color: STUDIO.ivoire }}
+                    >
                       Votre proposition apparaîtra ici
                     </h3>
-                    <p className="text-muted-foreground text-sm">
-                      Remplissez le formulaire et cliquez sur "Générer" pour voir 
-                      la magie opérer en quelques secondes.
+                    <p 
+                      className="text-sm max-w-xs mx-auto leading-relaxed"
+                      style={{ color: STUDIO.gris }}
+                    >
+                      Remplissez le formulaire et cliquez sur "Générer" pour voir la magie opérer
                     </p>
-                  </CardContent>
-                </Card>
+                    
+                    {/* Animated arrow pointing to form */}
+                    <motion.div 
+                      className="mt-8 flex items-center justify-center gap-2"
+                      animate={{ x: [-5, 5, -5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <ArrowRight size={16} style={{ color: STUDIO.or, transform: "rotate(180deg)" }} />
+                      <span className="text-xs" style={{ color: STUDIO.or }}>Commencez ici</span>
+                    </motion.div>
+                  </div>
+                </motion.div>
               )}
 
+              {/* Loading state */}
               {isGenerating && (
-                <Card className="min-h-[400px]">
+                <motion.div 
+                  className="rounded-3xl overflow-hidden"
+                  style={{ 
+                    border: `1px solid ${STUDIO.or}20`,
+                    boxShadow: `0 0 60px ${STUDIO.or}10`,
+                  }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                >
                   <GeneratingAnimation />
-                </Card>
+                </motion.div>
               )}
 
+              {/* Result state - Spectacular reveal */}
               {proposal && (
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   className="space-y-6"
                 >
-                  <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "details" | "preview")}>
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="details" className="gap-2">
-                        <FileText className="w-4 h-4" />
-                        Détails
-                      </TabsTrigger>
-                      <TabsTrigger value="preview" className="gap-2">
-                        <Eye className="w-4 h-4" />
-                        Aperçu
-                      </TabsTrigger>
-                    </TabsList>
+                  {/* Success celebration effect */}
+                  <motion.div
+                    className="absolute -inset-20 pointer-events-none"
+                    initial={{ opacity: 1 }}
+                    animate={{ opacity: 0 }}
+                    transition={{ duration: 2, delay: 0.5 }}
+                  >
+                    {[...Array(12)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute w-2 h-2 rounded-full"
+                        style={{
+                          backgroundColor: STUDIO.or,
+                          left: "50%",
+                          top: "50%",
+                        }}
+                        initial={{ scale: 0, x: 0, y: 0 }}
+                        animate={{
+                          scale: [0, 1, 0],
+                          x: Math.cos((i * Math.PI * 2) / 12) * 200,
+                          y: Math.sin((i * Math.PI * 2) / 12) * 200,
+                          opacity: [1, 1, 0],
+                        }}
+                        transition={{
+                          duration: 1,
+                          delay: i * 0.05,
+                          ease: "easeOut",
+                        }}
+                      />
+                    ))}
+                  </motion.div>
+                  
+                  {/* Tabs with premium styling */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "details" | "preview")}>
+                      <div 
+                        className="p-1.5 rounded-2xl mb-6"
+                        style={{ 
+                          backgroundColor: STUDIO.noirCard,
+                          border: `1px solid ${STUDIO.ivoire}10`,
+                        }}
+                      >
+                        <TabsList className="grid w-full grid-cols-2 bg-transparent h-12">
+                          <TabsTrigger 
+                            value="details" 
+                            className="gap-2 rounded-xl data-[state=active]:bg-transparent transition-all duration-300"
+                            style={{
+                              color: activeTab === "details" ? STUDIO.or : STUDIO.gris,
+                              backgroundColor: activeTab === "details" ? `${STUDIO.or}15` : "transparent",
+                              border: activeTab === "details" ? `1px solid ${STUDIO.or}30` : "1px solid transparent",
+                            }}
+                          >
+                            <FileText className="w-4 h-4" />
+                            Détails
+                          </TabsTrigger>
+                          <TabsTrigger 
+                            value="preview" 
+                            className="gap-2 rounded-xl data-[state=active]:bg-transparent transition-all duration-300"
+                            style={{
+                              color: activeTab === "preview" ? STUDIO.or : STUDIO.gris,
+                              backgroundColor: activeTab === "preview" ? `${STUDIO.or}15` : "transparent",
+                              border: activeTab === "preview" ? `1px solid ${STUDIO.or}30` : "1px solid transparent",
+                            }}
+                          >
+                            <Eye className="w-4 h-4" />
+                            Aperçu
+                          </TabsTrigger>
+                        </TabsList>
+                      </div>
 
-                    <TabsContent value="details" className="mt-4">
-                      <Card>
-                        <CardContent className="p-6">
-                          <div className="flex items-start justify-between mb-6">
+                      <TabsContent value="details" className="mt-0">
+                        <motion.div 
+                          className="rounded-3xl p-8 relative overflow-hidden"
+                          style={{ 
+                            backgroundColor: STUDIO.noirCard,
+                            border: `1px solid ${STUDIO.ivoire}10`,
+                            boxShadow: `0 40px 80px ${STUDIO.noir}60`,
+                          }}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3 }}
+                        >
+                          {/* Gradient accent */}
+                          <div 
+                            className="absolute top-0 left-0 right-0 h-1"
+                            style={{
+                              background: `linear-gradient(90deg, ${STUDIO.or}, ${STUDIO.orLight}, ${STUDIO.or})`,
+                            }}
+                          />
+                          
+                          {/* Header */}
+                          <motion.div 
+                            className="flex items-start justify-between mb-8"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                          >
                             <div>
-                              <h3 className="text-2xl font-bold text-foreground">{proposal.siteName}</h3>
-                              <p className="text-muted-foreground">{proposal.tagline}</p>
+                              <motion.h3 
+                                className="text-2xl font-light tracking-tight mb-2"
+                                style={{ color: STUDIO.ivoire }}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.5 }}
+                              >
+                                {proposal.siteName}
+                              </motion.h3>
+                              <motion.p 
+                                className="text-sm"
+                                style={{ color: STUDIO.gris }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.6 }}
+                              >
+                                {proposal.tagline}
+                              </motion.p>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Badge>
+                            <div className="flex items-center gap-3">
+                              <motion.span
+                                className="px-4 py-2 rounded-full text-xs font-medium"
+                                style={{
+                                  backgroundColor: `${STUDIO.or}15`,
+                                  color: STUDIO.or,
+                                  border: `1px solid ${STUDIO.or}30`,
+                                }}
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: 0.7, type: "spring" }}
+                              >
                                 {proposal.complexity.charAt(0).toUpperCase() + proposal.complexity.slice(1)}
-                              </Badge>
+                              </motion.span>
                               <ProposalPdfExport 
                                 proposal={proposal}
                                 priceEur={calculatePrice().eur}
@@ -1429,131 +1636,375 @@ export default function WebStudio() {
                                 formData={formData}
                               />
                             </div>
-                          </div>
+                          </motion.div>
 
-                          <div className="mb-6">
-                            <h4 className="text-sm font-medium text-foreground mb-3">Palette de couleurs</h4>
-                            <div className="flex gap-2">
-                              {Object.entries(proposal.colorPalette).map(([name, color]) => (
-                                <div key={name} className="text-center">
-                                  <div 
-                                    className="w-10 h-10 rounded-lg border border-border shadow-sm"
-                                    style={{ backgroundColor: color }}
-                                  />
-                                  <span className="text-[10px] text-muted-foreground mt-1 block capitalize">
+                          {/* Color palette with reveal animation */}
+                          <motion.div 
+                            className="mb-8"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                          >
+                            <h4 
+                              className="text-xs uppercase tracking-widest mb-4"
+                              style={{ color: STUDIO.gris }}
+                            >
+                              Palette de couleurs
+                            </h4>
+                            <div className="flex gap-3">
+                              {Object.entries(proposal.colorPalette).map(([name, color], idx) => (
+                                <motion.div 
+                                  key={name} 
+                                  className="text-center group"
+                                  initial={{ scale: 0, rotate: -180 }}
+                                  animate={{ scale: 1, rotate: 0 }}
+                                  transition={{ delay: 0.6 + idx * 0.1, type: "spring" }}
+                                >
+                                  <motion.div 
+                                    className="w-12 h-12 rounded-xl shadow-lg cursor-pointer relative overflow-hidden"
+                                    style={{ 
+                                      backgroundColor: color,
+                                      boxShadow: `0 8px 24px ${color}40`,
+                                    }}
+                                    whileHover={{ scale: 1.15, rotate: 5 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                  >
+                                    {/* Shine effect */}
+                                    <motion.div
+                                      className="absolute inset-0 opacity-0 group-hover:opacity-100"
+                                      style={{
+                                        background: `linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)`,
+                                      }}
+                                      animate={{ x: ["-100%", "200%"] }}
+                                      transition={{ duration: 0.6, repeat: Infinity, repeatDelay: 1 }}
+                                    />
+                                  </motion.div>
+                                  <span 
+                                    className="text-[10px] mt-2 block capitalize"
+                                    style={{ color: STUDIO.gris }}
+                                  >
                                     {name}
                                   </span>
-                                </div>
+                                </motion.div>
                               ))}
                             </div>
-                          </div>
+                          </motion.div>
 
-                          <div className="mb-6">
-                            <h4 className="text-sm font-medium text-foreground mb-3">
+                          {/* Pages structure with stagger */}
+                          <motion.div 
+                            className="mb-8"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.7 }}
+                          >
+                            <h4 
+                              className="text-xs uppercase tracking-widest mb-4 flex items-center gap-2"
+                              style={{ color: STUDIO.gris }}
+                            >
+                              <Layout size={14} />
                               Structure du site ({proposal.estimatedPages} pages)
                             </h4>
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                               {proposal.pages.map((page, idx) => (
-                                <div key={idx} className="p-3 rounded-lg bg-muted/50 border border-border">
-                                  <div className="flex items-center justify-between mb-2">
-                                    <span className="font-medium text-foreground text-sm">{page.name}</span>
-                                    <span className="text-xs text-muted-foreground">/{page.slug}</span>
+                                <motion.div 
+                                  key={idx} 
+                                  className="p-4 rounded-xl relative overflow-hidden group"
+                                  style={{ 
+                                    backgroundColor: `${STUDIO.noirSoft}80`,
+                                    border: `1px solid ${STUDIO.ivoire}08`,
+                                  }}
+                                  initial={{ opacity: 0, x: -30 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: 0.8 + idx * 0.1 }}
+                                  whileHover={{ 
+                                    borderColor: `${STUDIO.or}30`,
+                                    x: 5,
+                                  }}
+                                >
+                                  {/* Hover glow */}
+                                  <motion.div
+                                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    style={{
+                                      background: `radial-gradient(circle at left, ${STUDIO.or}10 0%, transparent 50%)`,
+                                    }}
+                                  />
+                                  
+                                  <div className="relative z-10">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <span 
+                                        className="font-medium text-sm"
+                                        style={{ color: STUDIO.ivoire }}
+                                      >
+                                        {page.name}
+                                      </span>
+                                      <span 
+                                        className="text-xs px-2 py-1 rounded-lg"
+                                        style={{ 
+                                          backgroundColor: `${STUDIO.ivoire}05`,
+                                          color: STUDIO.gris,
+                                        }}
+                                      >
+                                        /{page.slug}
+                                      </span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                      {page.sections.map((section, sIdx) => (
+                                        <motion.span 
+                                          key={sIdx} 
+                                          className="text-[10px] px-2 py-1 rounded-lg"
+                                          style={{ 
+                                            backgroundColor: `${STUDIO.or}10`,
+                                            color: STUDIO.or,
+                                            border: `1px solid ${STUDIO.or}20`,
+                                          }}
+                                          initial={{ scale: 0 }}
+                                          animate={{ scale: 1 }}
+                                          transition={{ delay: 0.9 + idx * 0.1 + sIdx * 0.05 }}
+                                        >
+                                          {section.type}
+                                        </motion.span>
+                                      ))}
+                                    </div>
                                   </div>
-                                  <div className="flex flex-wrap gap-1">
-                                    {page.sections.map((section, sIdx) => (
-                                      <Badge key={sIdx} variant="secondary" className="text-[10px]">
-                                        {section.type}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                </div>
+                                </motion.div>
                               ))}
                             </div>
-                          </div>
+                          </motion.div>
 
-                          <div>
-                            <h4 className="text-sm font-medium text-foreground mb-3">Fonctionnalités incluses</h4>
+                          {/* Features with pop animation */}
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 1 }}
+                          >
+                            <h4 
+                              className="text-xs uppercase tracking-widest mb-4 flex items-center gap-2"
+                              style={{ color: STUDIO.gris }}
+                            >
+                              <Sparkles size={14} />
+                              Fonctionnalités incluses
+                            </h4>
                             <div className="flex flex-wrap gap-2">
                               {proposal.features.map((feature, idx) => (
-                                <Badge key={idx} variant="outline" className="text-xs">
-                                  <Check className="w-3 h-3 mr-1" />
+                                <motion.span 
+                                  key={idx} 
+                                  className="text-xs px-3 py-2 rounded-xl flex items-center gap-2"
+                                  style={{ 
+                                    backgroundColor: `${STUDIO.ivoire}05`,
+                                    color: STUDIO.ivoire,
+                                    border: `1px solid ${STUDIO.ivoire}10`,
+                                  }}
+                                  initial={{ scale: 0, rotate: -10 }}
+                                  animate={{ scale: 1, rotate: 0 }}
+                                  transition={{ delay: 1.1 + idx * 0.05, type: "spring" }}
+                                  whileHover={{ 
+                                    scale: 1.05,
+                                    backgroundColor: `${STUDIO.or}15`,
+                                    borderColor: `${STUDIO.or}30`,
+                                  }}
+                                >
+                                  <Check size={12} style={{ color: STUDIO.or }} />
                                   {feature}
-                                </Badge>
+                                </motion.span>
                               ))}
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </TabsContent>
+                          </motion.div>
+                        </motion.div>
+                      </TabsContent>
 
-                    <TabsContent value="preview" className="mt-4">
-                      <WebsitePreview proposal={proposal} />
-                    </TabsContent>
-                  </Tabs>
+                      <TabsContent value="preview" className="mt-0">
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <WebsitePreview proposal={proposal} />
+                        </motion.div>
+                      </TabsContent>
+                    </Tabs>
+                  </motion.div>
 
-                  <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-                    <CardContent className="p-6">
-                      <h4 className="text-sm font-medium text-foreground mb-4">Estimation tarifaire</h4>
-                      
-                      <button
-                        onClick={() => setIsExpress(!isExpress)}
-                        className="w-full mb-4"
+                  {/* Pricing card - Premium design */}
+                  <motion.div 
+                    className="rounded-3xl p-8 relative overflow-hidden"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${STUDIO.noirCard} 0%, ${STUDIO.noir} 100%)`,
+                      border: `1px solid ${STUDIO.or}20`,
+                      boxShadow: `0 40px 80px ${STUDIO.noir}60, 0 0 40px ${STUDIO.or}05`,
+                    }}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    {/* Animated background gradient */}
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        background: `radial-gradient(ellipse at top right, ${STUDIO.or}08 0%, transparent 50%)`,
+                      }}
+                      animate={{
+                        opacity: [0.5, 1, 0.5],
+                      }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                    />
+                    
+                    <div className="relative z-10">
+                      <h4 
+                        className="text-xs uppercase tracking-widest mb-6 flex items-center gap-2"
+                        style={{ color: STUDIO.or }}
                       >
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-background border border-border hover:border-primary/50 transition-colors">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                              isExpress ? 'bg-primary border-primary' : 'border-muted-foreground'
-                            }`}>
-                              {isExpress && <Check className="w-3 h-3 text-primary-foreground" />}
-                            </div>
+                        <Zap size={14} />
+                        Estimation tarifaire
+                      </h4>
+                      
+                      {/* Express option */}
+                      <motion.button
+                        onClick={() => setIsExpress(!isExpress)}
+                        className="w-full mb-6 group"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div 
+                          className="flex items-center justify-between p-5 rounded-2xl transition-all duration-300"
+                          style={{ 
+                            backgroundColor: isExpress ? `${STUDIO.or}15` : `${STUDIO.noirSoft}80`,
+                            border: `1px solid ${isExpress ? STUDIO.or : STUDIO.ivoire}20`,
+                          }}
+                        >
+                          <div className="flex items-center gap-4">
+                            <motion.div 
+                              className="w-6 h-6 rounded-lg flex items-center justify-center transition-colors"
+                              style={{
+                                backgroundColor: isExpress ? STUDIO.or : "transparent",
+                                border: `2px solid ${isExpress ? STUDIO.or : STUDIO.gris}`,
+                              }}
+                              animate={isExpress ? { scale: [1, 1.2, 1] } : {}}
+                              transition={{ duration: 0.3 }}
+                            >
+                              {isExpress && <Check size={14} style={{ color: STUDIO.noir }} />}
+                            </motion.div>
                             <div className="text-left">
                               <div className="flex items-center gap-2">
-                                <Zap className="w-4 h-4 text-primary" />
-                                <span className="font-medium text-foreground text-sm">Livraison Express (24-48h)</span>
+                                <Zap size={16} style={{ color: STUDIO.or }} />
+                                <span 
+                                  className="font-medium text-sm"
+                                  style={{ color: STUDIO.ivoire }}
+                                >
+                                  Livraison Express (24-48h)
+                                </span>
                               </div>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs mt-1" style={{ color: STUDIO.gris }}>
                                 Passez devant la file d'attente
                               </p>
                             </div>
                           </div>
-                          <span className="text-sm font-medium text-primary">+50€ / +500DH</span>
+                          <span 
+                            className="text-sm font-medium px-3 py-1 rounded-lg"
+                            style={{ 
+                              backgroundColor: `${STUDIO.or}15`,
+                              color: STUDIO.or,
+                            }}
+                          >
+                            +50€ / +500DH
+                          </span>
                         </div>
-                      </button>
+                      </motion.button>
 
-                      <div className="p-4 rounded-xl bg-background border border-border mb-4">
+                      {/* Price display */}
+                      <motion.div 
+                        className="p-6 rounded-2xl mb-6"
+                        style={{ 
+                          backgroundColor: `${STUDIO.noirSoft}80`,
+                          border: `1px solid ${STUDIO.ivoire}10`,
+                        }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.6 }}
+                      >
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Total estimé</span>
+                          <span style={{ color: STUDIO.gris }}>Total estimé</span>
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-foreground">
+                            <motion.div 
+                              className="text-3xl font-light tracking-tight"
+                              style={{ 
+                                background: `linear-gradient(135deg, ${STUDIO.or} 0%, ${STUDIO.orLight} 100%)`,
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                              }}
+                              key={calculatePrice().eur}
+                              initial={{ scale: 1.2, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                            >
                               {calculatePrice().eur}€
-                            </div>
-                            <div className="text-sm text-muted-foreground">
+                            </motion.div>
+                            <div className="text-sm" style={{ color: STUDIO.gris }}>
                               {calculatePrice().mad} DH
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
 
-                      <p className="text-xs text-muted-foreground mb-4">
-                        * Prix indicatif. Le devis final dépend des fonctionnalités et 
-                        personnalisations demandées.
+                      <p className="text-xs mb-6" style={{ color: STUDIO.gris }}>
+                        * Prix indicatif. Le devis final dépend des fonctionnalités et personnalisations demandées.
                       </p>
 
+                      {/* CTA buttons */}
                       <div className="space-y-3">
-                        <Button className="w-full" size="lg" onClick={handleContactWhatsApp}>
-                          <MessageCircle className="w-4 h-4 mr-2" />
-                          Commander mon site clé en main
-                        </Button>
-                        <Button variant="outline" className="w-full" size="lg" onClick={handleContactWhatsApp}>
-                          <Eye className="w-4 h-4 mr-2" />
-                          Discuter sur WhatsApp
-                        </Button>
+                        <motion.button
+                          className="w-full h-14 rounded-2xl relative overflow-hidden group"
+                          onClick={handleContactWhatsApp}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <div
+                            className="absolute inset-0"
+                            style={{
+                              background: `linear-gradient(135deg, ${STUDIO.or} 0%, ${STUDIO.orLight} 100%)`,
+                            }}
+                          />
+                          <motion.div
+                            className="absolute inset-0 opacity-0 group-hover:opacity-100"
+                            style={{
+                              background: `linear-gradient(90deg, transparent, ${STUDIO.ivoire}30, transparent)`,
+                            }}
+                            animate={{ x: ["-100%", "200%"] }}
+                            transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5 }}
+                          />
+                          <span 
+                            className="relative z-10 flex items-center justify-center gap-2 font-medium"
+                            style={{ color: STUDIO.noir }}
+                          >
+                            <MessageCircle size={18} />
+                            Commander mon site clé en main
+                          </span>
+                        </motion.button>
+                        
+                        <motion.button
+                          className="w-full h-14 rounded-2xl transition-all duration-300"
+                          style={{ 
+                            backgroundColor: "transparent",
+                            border: `1px solid ${STUDIO.ivoire}20`,
+                            color: STUDIO.ivoire,
+                          }}
+                          onClick={handleContactWhatsApp}
+                          whileHover={{ 
+                            scale: 1.02,
+                            borderColor: STUDIO.or,
+                            color: STUDIO.or,
+                          }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <span className="flex items-center justify-center gap-2">
+                            <Eye size={18} />
+                            Discuter sur WhatsApp
+                          </span>
+                        </motion.button>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </motion.div>
                 </motion.div>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
