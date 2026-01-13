@@ -154,22 +154,50 @@ export default function KechExcluCard() {
               </div>
             </motion.div>
 
-            {/* Titre avec gradient sunset */}
+            {/* Titre avec gradient sunset et shimmer */}
             <div className="w-full py-6 text-center" style={{ background: COLORS.noir }}>
-              <motion.h1
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="text-3xl font-cinzel font-bold tracking-[0.3em] mb-2"
-                style={{
-                  background: `linear-gradient(to bottom, #f9f295 0%, #ffb347 50%, #e0aa3e 100%)`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.5))",
-                }}
+                className="relative inline-block overflow-hidden"
               >
-                KECH EXCLU
-              </motion.h1>
+                <h1
+                  className="text-3xl font-cinzel font-bold tracking-[0.3em] mb-2 relative"
+                  style={{
+                    background: `linear-gradient(to bottom, #f9f295 0%, #ffb347 50%, #e0aa3e 100%)`,
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.5))",
+                  }}
+                >
+                  KECH EXCLU
+                </h1>
+                {/* Shimmer effect */}
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: `linear-gradient(
+                      120deg,
+                      transparent 0%,
+                      transparent 40%,
+                      rgba(255, 255, 255, 0.4) 50%,
+                      transparent 60%,
+                      transparent 100%
+                    )`,
+                    backgroundSize: "200% 100%",
+                  }}
+                  animate={{
+                    backgroundPosition: ["200% 0%", "-200% 0%"],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    repeatDelay: 2,
+                    ease: "easeInOut",
+                  }}
+                />
+              </motion.div>
               
               <div className="flex items-center justify-center gap-4 mb-2">
                 <div className="h-px w-12" style={{ background: `linear-gradient(to right, transparent, ${COLORS.sunsetGold})` }} />
