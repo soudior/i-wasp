@@ -276,19 +276,39 @@ END:VCARD`;
         </div>
       </motion.div>
 
-      {/* Footer */}
+      {/* Footer - i-wasp.com CORPORATION */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
         className="mt-8 text-center"
       >
-        <p 
-          className="text-xs tracking-widest uppercase"
-          style={{ color: `${LUXE_COLORS.gold}60` }}
+        <a 
+          href="https://i-wasp.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 no-underline hover:opacity-100 transition-opacity"
+          style={{ opacity: 0.6 }}
         >
-          Powered by IWASP
-        </p>
+          <span 
+            className="text-xs font-semibold"
+            style={{ 
+              color: LUXE_COLORS.gold,
+              letterSpacing: "0.08em",
+            }}
+          >
+            i-wasp.com
+          </span>
+          <span 
+            className="text-[10px] font-medium uppercase"
+            style={{ 
+              color: `${LUXE_COLORS.gold}80`,
+              letterSpacing: "0.15em",
+            }}
+          >
+            CORPORATION
+          </span>
+        </a>
       </motion.div>
     </div>
   );

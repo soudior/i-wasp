@@ -455,7 +455,7 @@ export default function KechExcluCard() {
             </motion.button>
           </div>
 
-          {/* Footer */}
+          {/* Footer - i-wasp.com CORPORATION */}
           <div 
             className="py-4 text-center"
             style={{ 
@@ -463,12 +463,32 @@ export default function KechExcluCard() {
               borderTop: `1px solid ${COLORS.gold}20`,
             }}
           >
-            <p 
-              className="text-xs"
-              style={{ color: `${COLORS.sand}40` }}
+            <a 
+              href="https://i-wasp.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 no-underline hover:opacity-100 transition-opacity"
+              style={{ opacity: 0.6 }}
             >
-              <span style={{ color: COLORS.gold }}>i-wasp.com</span> corporation
-            </p>
+              <span 
+                className="text-xs font-semibold"
+                style={{ 
+                  color: COLORS.gold,
+                  letterSpacing: "0.08em",
+                }}
+              >
+                i-wasp.com
+              </span>
+              <span 
+                className="text-[10px] font-medium uppercase"
+                style={{ 
+                  color: `${COLORS.sand}60`,
+                  letterSpacing: "0.15em",
+                }}
+              >
+                CORPORATION
+              </span>
+            </a>
           </div>
         </div>
       </motion.div>
