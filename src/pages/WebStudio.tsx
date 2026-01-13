@@ -1,9 +1,11 @@
 /**
  * WebStudio - Générateur de sites web IA
  * Design Premium Noir & Or - Style i-wasp
+ * Supporte les modes clair et sombre
  */
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,10 +14,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { WebsitePreview, GeneratingAnimation, ProposalPdfExport } from "@/components/studio";
+import { WebsitePreview, GeneratingAnimation, ProposalPdfExport, StudioThemeToggle } from "@/components/studio";
 import { CoutureNavbar } from "@/components/CoutureNavbar";
 import { CoutureFooter } from "@/components/CoutureFooter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Sparkles, 
   Zap, 
@@ -45,7 +47,21 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// Palette Premium Noir & Or
+// Palette dynamique selon le thème
+const getStudioColors = (isDark: boolean) => ({
+  noir: isDark ? "#050505" : "#FFFFFF",
+  noirSoft: isDark ? "#0A0A0A" : "#F5F5F7",
+  noirCard: isDark ? "#111111" : "#FFFFFF",
+  or: "#D4A853",
+  orLight: "#E8C87A",
+  orDark: "#B8923C",
+  ivoire: isDark ? "#F5F5F5" : "#1D1D1F",
+  gris: isDark ? "#6B6B6B" : "#8E8E93",
+  grisClair: isDark ? "#9A9A9A" : "#6B6B6B",
+  border: isDark ? "#FFFFFF" : "#000000",
+});
+
+// Palette statique pour compatibilité
 const STUDIO = {
   noir: "#050505",
   noirSoft: "#0A0A0A",
@@ -200,6 +216,12 @@ const EXPRESS_SURCHARGE = { eur: 50, mad: 500 };
 const PAGE_EXTRA = { eur: 30, mad: 300 };
 
 export default function WebStudio() {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+  
+  // Couleurs dynamiques selon le thème
+  const colors = useMemo(() => getStudioColors(isDark), [isDark]);
+  
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     businessType: "",
@@ -338,15 +360,28 @@ export default function WebStudio() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: STUDIO.noir }}>
+    <div 
+      className="min-h-screen transition-colors duration-500" 
+      style={{ backgroundColor: colors.noir }}
+    >
       <CoutureNavbar />
+      
+      {/* Theme Toggle - Fixed position */}
+      <motion.div
+        className="fixed top-24 right-6 z-50"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1 }}
+      >
+        <StudioThemeToggle />
+      </motion.div>
       
       {/* Hero Section - Ultra Premium */}
       <section className="min-h-screen relative overflow-hidden pt-20">
         {/* Animated gradient orbs */}
         <motion.div
           className="absolute top-1/4 left-1/4 w-[700px] h-[700px] rounded-full blur-[180px] pointer-events-none"
-          style={{ backgroundColor: `${STUDIO.or}12` }}
+          style={{ backgroundColor: `${colors.or}12` }}
           animate={{
             x: [0, 80, 0],
             y: [0, -50, 0],
@@ -356,7 +391,7 @@ export default function WebStudio() {
         />
         <motion.div
           className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full blur-[150px] pointer-events-none"
-          style={{ backgroundColor: `${STUDIO.or}08` }}
+          style={{ backgroundColor: `${colors.or}08` }}
           animate={{
             x: [0, -60, 0],
             y: [0, 60, 0],
@@ -371,7 +406,7 @@ export default function WebStudio() {
             key={i}
             className="absolute w-1 h-1 rounded-full pointer-events-none"
             style={{
-              backgroundColor: STUDIO.or,
+              backgroundColor: colors.or,
               left: `${10 + (i * 6)}%`,
               top: `${15 + (i % 5) * 18}%`,
               opacity: 0.4,
@@ -784,14 +819,14 @@ export default function WebStudio() {
       {/* Templates Gallery - Enhanced */}
       <section 
         id="generator"
-        className="py-24 relative overflow-hidden"
-        style={{ backgroundColor: STUDIO.noirSoft }}
+        className="py-24 relative overflow-hidden transition-colors duration-500"
+        style={{ backgroundColor: colors.noirSoft }}
       >
         {/* Subtle gradient accent */}
         <div 
           className="absolute top-0 left-0 right-0 h-40 pointer-events-none"
           style={{
-            background: `linear-gradient(to bottom, ${STUDIO.noir} 0%, transparent 100%)`,
+            background: `linear-gradient(to bottom, ${colors.noir} 0%, transparent 100%)`,
           }}
         />
         
@@ -807,7 +842,7 @@ export default function WebStudio() {
             <div className="flex items-center justify-center gap-4 mb-6">
               <motion.div
                 className="h-px w-12"
-                style={{ backgroundColor: STUDIO.or }}
+                style={{ backgroundColor: colors.or }}
                 initial={{ scaleX: 0, originX: 1 }}
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
@@ -815,13 +850,13 @@ export default function WebStudio() {
               />
               <span 
                 className="text-[10px] uppercase tracking-[0.4em] font-light"
-                style={{ color: STUDIO.or }}
+                style={{ color: colors.or }}
               >
                 Templates
               </span>
               <motion.div
                 className="h-px w-12"
-                style={{ backgroundColor: STUDIO.or }}
+                style={{ backgroundColor: colors.or }}
                 initial={{ scaleX: 0, originX: 0 }}
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
@@ -830,7 +865,7 @@ export default function WebStudio() {
             </div>
             <h2 
               className="font-display text-3xl md:text-4xl font-light tracking-tight"
-              style={{ color: STUDIO.ivoire }}
+              style={{ color: colors.ivoire }}
             >
               Choisissez un template
             </h2>
@@ -921,13 +956,13 @@ export default function WebStudio() {
 
       {/* Generator Section - Ultra Immersive */}
       <section 
-        className="py-24 relative overflow-hidden"
-        style={{ backgroundColor: STUDIO.noir }}
+        className="py-24 relative overflow-hidden transition-colors duration-500"
+        style={{ backgroundColor: colors.noir }}
       >
         {/* Immersive background effects */}
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] rounded-full blur-[200px] pointer-events-none"
-          style={{ backgroundColor: `${STUDIO.or}06` }}
+          style={{ backgroundColor: `${colors.or}06` }}
           animate={{
             scale: [1, 1.2, 1],
             rotate: [0, 180, 360],
@@ -2011,20 +2046,20 @@ export default function WebStudio() {
 
       {/* How it works */}
       <section 
-        className="py-20"
-        style={{ backgroundColor: STUDIO.noirSoft }}
+        className="py-20 transition-colors duration-500"
+        style={{ backgroundColor: colors.noirSoft }}
       >
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center mb-12">
             <span 
               className="text-[10px] uppercase tracking-[0.4em] font-light"
-              style={{ color: STUDIO.or }}
+              style={{ color: colors.or }}
             >
               Processus
             </span>
             <h2 
               className="font-display text-2xl md:text-3xl font-light mt-4 tracking-tight"
-              style={{ color: STUDIO.ivoire }}
+              style={{ color: colors.ivoire }}
             >
               Comment ça marche ?
             </h2>
@@ -2058,26 +2093,26 @@ export default function WebStudio() {
                 <div 
                   className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
                   style={{ 
-                    backgroundColor: `${STUDIO.or}15`,
-                    border: `1px solid ${STUDIO.or}30`,
+                    backgroundColor: `${colors.or}15`,
+                    border: `1px solid ${colors.or}30`,
                   }}
                 >
                   <span 
                     className="text-2xl font-light"
-                    style={{ color: STUDIO.or }}
+                    style={{ color: colors.or }}
                   >
                     {item.step}
                   </span>
                 </div>
                 <h3 
                   className="text-lg font-medium mb-2"
-                  style={{ color: STUDIO.ivoire }}
+                  style={{ color: colors.ivoire }}
                 >
                   {item.title}
                 </h3>
                 <p 
                   className="text-sm font-light"
-                  style={{ color: STUDIO.gris }}
+                  style={{ color: colors.gris }}
                 >
                   {item.description}
                 </p>
