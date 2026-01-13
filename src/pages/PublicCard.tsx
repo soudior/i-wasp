@@ -36,8 +36,14 @@ const PublicCard = () => {
   const cleanedSlug = (slug ?? "")
     .normalize("NFKC")
     .trim()
-    .replace(/[\u0000-\u001F\u007F]/g, "")
+    .replace(/[\u0000-\u001F\u007F\u00A0]/g, "") // Include non-breaking space
+    .replace(/\s+/g, "") // Remove all whitespace
     .toLowerCase();
+
+  // Debug logging for NFC troubleshooting
+  console.log("[PublicCard] Raw slug:", JSON.stringify(slug));
+  console.log("[PublicCard] Cleaned slug:", JSON.stringify(cleanedSlug));
+  console.log("[PublicCard] Slug char codes:", cleanedSlug.split("").map(c => c.charCodeAt(0)));
 
   const { data: card, isLoading, error } = usePublicCard(cleanedSlug);
   const { story } = usePublicStory(card?.id || undefined);
@@ -47,17 +53,20 @@ const PublicCard = () => {
   const [scanRecorded, setScanRecorded] = useState(false);
 
   // Special-case showcase cards that are not stored in the database
-  if (cleanedSlug === "medina-travertin") {
+  // Use includes/startsWith for more robust matching with potential NFC artifacts
+  if (cleanedSlug === "medina-travertin" || cleanedSlug.startsWith("medina-travertin")) {
     return <DualBrandShowcase />;
   }
 
   // Special-case static client card (no DB dependency)
-  if (cleanedSlug === "maison-b-optic") {
+  if (cleanedSlug === "maison-b-optic" || cleanedSlug.startsWith("maison-b-optic")) {
     return <MaisonBOpticCard />;
   }
 
   // Special-case static showcase card (no DB dependency)
-  if (cleanedSlug === "kech-exclu") {
+  // Match various potential NFC artifacts
+  if (cleanedSlug === "kech-exclu" || cleanedSlug.startsWith("kech-exclu") || cleanedSlug.includes("kechexclu")) {
+    console.log("[PublicCard] Matched kech-exclu, rendering KechExcluCard");
     return <KechExcluCard />;
   }
 
