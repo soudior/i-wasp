@@ -2257,13 +2257,21 @@ export default function CardShowcase() {
                         ))}
                       </div>
 
-                      {/* Footer */}
-                      <p 
-                        className="text-center text-[9px] mt-6 tracking-widest uppercase opacity-30"
-                        style={{ color: palette.isDark ? "#fff" : "#1a1a1a" }}
-                      >
-                        Powered by i-wasp
-                      </p>
+                      {/* Footer - i-wasp.com CORPORATION */}
+                      <div className="flex items-center justify-center gap-1 mt-6">
+                        <span 
+                          className="text-[9px] font-semibold"
+                          style={{ color: palette.isDark ? "#fff" : "#1a1a1a", letterSpacing: "0.08em" }}
+                        >
+                          i-wasp.com
+                        </span>
+                        <span 
+                          className="text-[8px] font-medium uppercase opacity-50"
+                          style={{ color: palette.isDark ? "#fff" : "#1a1a1a", letterSpacing: "0.1em" }}
+                        >
+                          CORPORATION
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

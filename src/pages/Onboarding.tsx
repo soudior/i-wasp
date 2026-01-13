@@ -719,9 +719,16 @@ export default function Onboarding() {
                       </div>
                     </div>
 
-                    {/* I-WASP Badge */}
-                    <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="block text-center text-[10px] text-[#8E8E93] mt-4 tracking-wide hover:opacity-80 transition-opacity">
-                      Powered by I-WASP.com
+                    {/* i-wasp.com CORPORATION Badge */}
+                    <a 
+                      href="https://i-wasp.com" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="flex items-center justify-center gap-1 mt-4 hover:opacity-100 transition-opacity"
+                      style={{ opacity: 0.6 }}
+                    >
+                      <span className="text-[10px] font-semibold text-[#1D1D1F]" style={{ letterSpacing: "0.08em" }}>i-wasp.com</span>
+                      <span className="text-[9px] font-medium text-[#8E8E93] uppercase" style={{ letterSpacing: "0.12em" }}>CORPORATION</span>
                     </a>
                   </div>
 

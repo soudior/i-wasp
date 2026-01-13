@@ -173,16 +173,23 @@ export default function NotFound() {
         </motion.div>
       </motion.div>
       
-      {/* Footer branding */}
+      {/* Footer - i-wasp.com CORPORATION */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
         className="absolute bottom-8 text-center"
       >
-        <p className="text-xs text-muted-foreground/50">
-          Powered by <span className="font-medium">IWASP</span>
-        </p>
+        <a 
+          href="https://i-wasp.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-xs hover:opacity-100 transition-opacity"
+          style={{ opacity: 0.5 }}
+        >
+          <span className="font-semibold text-foreground" style={{ letterSpacing: "0.08em" }}>i-wasp.com</span>
+          <span className="font-medium text-muted-foreground uppercase" style={{ letterSpacing: "0.12em", fontSize: "10px" }}>CORPORATION</span>
+        </a>
       </motion.div>
     </div>
   );

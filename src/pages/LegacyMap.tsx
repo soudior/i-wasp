@@ -351,9 +351,16 @@ export default function LegacyMap() {
               <span className="text-sm"><strong>{messages.length}</strong> messages</span>
             </div>
           </div>
-          <p className="text-xs text-[#A5A9B4]">
-            Powered by <span className="font-bold text-white">IWASP</span> Sovereign Network
-          </p>
+          <a 
+            href="https://i-wasp.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs hover:opacity-100 transition-opacity"
+            style={{ opacity: 0.7 }}
+          >
+            <span className="font-semibold text-white" style={{ letterSpacing: "0.08em" }}>i-wasp.com</span>
+            <span className="font-medium text-[#A5A9B4] uppercase" style={{ letterSpacing: "0.12em", fontSize: "10px" }}>CORPORATION</span>
+          </a>
         </div>
       </motion.div>
 

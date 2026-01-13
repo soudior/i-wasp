@@ -218,15 +218,16 @@ export default function OnboardingSuccess() {
         </p>
       </div>
 
-      {/* Footer */}
+      {/* Footer - i-wasp.com CORPORATION */}
       <a 
         href="https://i-wasp.com"
         target="_blank"
         rel="noopener noreferrer"
-        className="absolute bottom-6 text-xs tracking-wider hover:opacity-80 transition-opacity"
-        style={{ color: COLORS.textDim }}
+        className="absolute bottom-6 flex items-center gap-1.5 hover:opacity-100 transition-opacity"
+        style={{ opacity: 0.6 }}
       >
-        Powered by I-WASP.com
+        <span className="text-xs font-semibold" style={{ color: COLORS.text, letterSpacing: "0.08em" }}>i-wasp.com</span>
+        <span className="text-[10px] font-medium uppercase" style={{ color: COLORS.textDim, letterSpacing: "0.12em" }}>CORPORATION</span>
       </a>
     </div>
   );

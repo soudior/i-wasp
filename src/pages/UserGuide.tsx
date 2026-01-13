@@ -318,11 +318,18 @@ export default function UserGuide() {
         </motion.div>
       </section>
 
-      {/* Footer */}
+      {/* Footer - i-wasp.com CORPORATION */}
       <footer className="px-6 py-8 border-t border-white/10 text-center">
-        <p className="text-sm text-white/40">
-          Powered by <span className="text-primary font-medium">IWASP</span> · Tap. Connect. Empower.
-        </p>
+        <a 
+          href="https://i-wasp.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 hover:opacity-100 transition-opacity"
+          style={{ opacity: 0.6 }}
+        >
+          <span className="text-sm font-semibold text-primary" style={{ letterSpacing: "0.08em" }}>i-wasp.com</span>
+          <span className="text-xs font-medium text-white/40 uppercase" style={{ letterSpacing: "0.12em" }}>CORPORATION</span>
+        </a>
       </footer>
     </div>
   );
