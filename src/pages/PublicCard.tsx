@@ -33,18 +33,21 @@ import ibrahimPhoto from "@/assets/clients/ibrahim-herbalism.jpeg";
 const PublicCard = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  // Normalize slug from URL/NFC tags (handles trailing spaces/newlines/control chars)
+  // Normalize slug from URL/NFC tags (handles trailing spaces/newlines/control chars/unicode issues)
   const cleanedSlug = (slug ?? "")
     .normalize("NFKC")
     .trim()
-    .replace(/[\u0000-\u001F\u007F\u00A0]/g, "") // Include non-breaking space
+    .replace(/[\u0000-\u001F\u007F\u00A0\u200B-\u200D\uFEFF]/g, "") // Control chars, NBSP, zero-width chars
     .replace(/\s+/g, "") // Remove all whitespace
+    .replace(/[–—]/g, "-") // Normalize dashes (en-dash, em-dash to hyphen)
+    .replace(/-+/g, "-") // Collapse multiple hyphens
+    .replace(/^-|-$/g, "") // Remove leading/trailing hyphens
     .toLowerCase();
 
   // Debug logging for NFC troubleshooting
   console.log("[PublicCard] Raw slug:", JSON.stringify(slug));
   console.log("[PublicCard] Cleaned slug:", JSON.stringify(cleanedSlug));
-  console.log("[PublicCard] Slug char codes:", cleanedSlug.split("").map(c => c.charCodeAt(0)));
+  console.log("[PublicCard] Raw char codes:", slug?.split("").map(c => c.charCodeAt(0)));
 
   const { data: card, isLoading, error } = usePublicCard(cleanedSlug);
   const { story } = usePublicStory(card?.id || undefined);
@@ -65,8 +68,14 @@ const PublicCard = () => {
   }
 
   // Special-case static showcase card (no DB dependency)
-  // Match various potential NFC artifacts
-  if (cleanedSlug === "kech-exclu" || cleanedSlug.startsWith("kech-exclu") || cleanedSlug.includes("kechexclu")) {
+  // Match various potential NFC artifacts - robust matching
+  const isKechExclu = cleanedSlug === "kech-exclu" || 
+    cleanedSlug === "kechexclu" ||
+    cleanedSlug.startsWith("kech-exclu") || 
+    cleanedSlug.startsWith("kechexclu") ||
+    cleanedSlug.includes("kech") && cleanedSlug.includes("exclu");
+    
+  if (isKechExclu) {
     console.log("[PublicCard] Matched kech-exclu, rendering KechExcluCard");
     return <KechExcluCard />;
   }
