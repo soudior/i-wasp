@@ -115,6 +115,7 @@ const KechExcluCard = lazy(() => import("./pages/KechExcluCard"));
 const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
 const Services = lazy(() => import("./pages/Services"));
 const CartesNFC = lazy(() => import("./pages/CartesNFC"));
+const WebStudio = lazy(() => import("./pages/WebStudio"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -244,6 +245,7 @@ const App = () => {
                               <Route path="/business" element={<Enterprise />} />
                               <Route path="/services" element={<Services />} />
                               <Route path="/cartes-nfc" element={<CartesNFC />} />
+                              <Route path="/web-studio" element={<WebStudio />} />
                               <Route path="/rental-demo" element={<RentalDemo />} />
                               <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
                               <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
