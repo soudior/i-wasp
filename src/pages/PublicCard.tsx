@@ -24,6 +24,7 @@ import { IWASPBrandingFooter } from "@/components/IWASPBrandingFooter";
 import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import DualBrandShowcase from "./DualBrandShowcase";
 import MaisonBOpticCard from "./MaisonBOpticCard";
+import KechExcluCard from "./KechExcluCard";
 
 // Import local profile photo for Herbalism Marrakech
 import ibrahimPhoto from "@/assets/clients/ibrahim-herbalism.jpeg";
@@ -53,6 +54,11 @@ const PublicCard = () => {
   // Special-case static client card (no DB dependency)
   if (cleanedSlug === "maison-b-optic") {
     return <MaisonBOpticCard />;
+  }
+
+  // Special-case static showcase card (no DB dependency)
+  if (cleanedSlug === "kech-exclu") {
+    return <KechExcluCard />;
   }
 
   // Record scan on first load
