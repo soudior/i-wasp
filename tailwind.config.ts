@@ -19,6 +19,7 @@ export default {
         accent: ['Cormorant', 'Georgia', 'serif'],
         serif: ['Cormorant', 'Georgia', 'serif'],
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        cinzel: ['Cinzel', 'Georgia', 'serif'],
       },
       colors: {
         /* ═══════════════════════════════════════════════════════════════

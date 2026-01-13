@@ -160,13 +160,12 @@ export default function KechExcluCard() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="text-3xl font-bold tracking-[0.3em] mb-2"
+                className="text-3xl font-cinzel font-bold tracking-[0.3em] mb-2"
                 style={{
                   background: `linear-gradient(to bottom, #f9f295 0%, #ffb347 50%, #e0aa3e 100%)`,
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.5))",
-                  fontFamily: "'Cinzel', serif",
                 }}
               >
                 KECH EXCLU
