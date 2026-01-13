@@ -3,7 +3,7 @@
  * Génère des propositions de sites web sur-mesure via IA
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,14 +11,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import { WebsitePreview, GeneratingAnimation, ProposalPdfExport } from "@/components/studio";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Sparkles, 
   Zap, 
   Globe, 
   Palette, 
-  Loader2,
   Check,
   Link as LinkIcon,
   MessageCircle,
@@ -33,7 +34,10 @@ import {
   GraduationCap,
   Wrench,
   Eye,
-  Rocket
+  Rocket,
+  History,
+  FileText,
+  Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -203,7 +207,18 @@ export default function WebStudio() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [proposal, setProposal] = useState<WebsiteProposal | null>(null);
   const [isExpress, setIsExpress] = useState(false);
+  const [savedProposalId, setSavedProposalId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"details" | "preview">("details");
   const { toast } = useToast();
+
+  // Generate session ID for non-logged users
+  const [sessionId] = useState(() => {
+    const stored = localStorage.getItem("iwasp_studio_session");
+    if (stored) return stored;
+    const newId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem("iwasp_studio_session", newId);
+    return newId;
+  });
 
   const handleSelectTemplate = (template: Template) => {
     setSelectedTemplate(template.id);
@@ -232,6 +247,7 @@ export default function WebStudio() {
 
     setIsGenerating(true);
     setProposal(null);
+    setSavedProposalId(null);
 
     try {
       const { data, error } = await supabase.functions.invoke("generate-website", {
@@ -242,6 +258,35 @@ export default function WebStudio() {
 
       if (data.proposal) {
         setProposal(data.proposal);
+        
+        // Calculate price for saving
+        const base = PRICING[data.proposal.complexity as keyof typeof PRICING];
+        const extraPages = Math.max(0, data.proposal.estimatedPages - 5);
+        const priceEur = base.base + (extraPages * PAGE_EXTRA.eur);
+        const priceMad = base.baseMAD + (extraPages * PAGE_EXTRA.mad);
+
+        // Save to database
+        try {
+          const { data: savedData, error: saveError } = await supabase
+            .from("website_proposals")
+            .insert({
+              session_id: sessionId,
+              form_data: formData,
+              proposal: data.proposal,
+              is_express: isExpress,
+              price_eur: priceEur,
+              price_mad: priceMad,
+            })
+            .select("id")
+            .single();
+
+          if (!saveError && savedData) {
+            setSavedProposalId(savedData.id);
+          }
+        } catch (saveErr) {
+          console.warn("Could not save proposal:", saveErr);
+        }
+
         toast({
           title: "✨ Site généré !",
           description: "Votre proposition de site web est prête",
@@ -512,96 +557,115 @@ export default function WebStudio() {
               )}
 
               {isGenerating && (
-                <Card className="h-full min-h-[400px] flex items-center justify-center">
-                  <CardContent className="text-center p-8">
-                    <div className="relative w-24 h-24 mx-auto mb-6">
-                      <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
-                      <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-                      <div className="absolute inset-4 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Sparkles className="w-8 h-8 text-primary animate-pulse" />
-                      </div>
-                    </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      L'IA construit votre site...
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
-                      Analyse de votre projet et génération de la proposition
-                    </p>
-                  </CardContent>
+                <Card className="min-h-[400px]">
+                  <GeneratingAnimation />
                 </Card>
               )}
 
               {proposal && (
-                <div className="space-y-6">
-                  {/* Site Details Card */}
-                  <Card>
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-6">
-                        <div>
-                          <h3 className="text-2xl font-bold text-foreground">{proposal.siteName}</h3>
-                          <p className="text-muted-foreground">{proposal.tagline}</p>
-                        </div>
-                        <Badge>
-                          {proposal.complexity.charAt(0).toUpperCase() + proposal.complexity.slice(1)}
-                        </Badge>
-                      </div>
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-6"
+                >
+                  {/* Tabs for Details/Preview */}
+                  <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "details" | "preview")}>
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="details" className="gap-2">
+                        <FileText className="w-4 h-4" />
+                        Détails
+                      </TabsTrigger>
+                      <TabsTrigger value="preview" className="gap-2">
+                        <Eye className="w-4 h-4" />
+                        Aperçu
+                      </TabsTrigger>
+                    </TabsList>
 
-                      {/* Color Palette */}
-                      <div className="mb-6">
-                        <h4 className="text-sm font-medium text-foreground mb-3">Palette de couleurs</h4>
-                        <div className="flex gap-2">
-                          {Object.entries(proposal.colorPalette).map(([name, color]) => (
-                            <div key={name} className="text-center">
-                              <div 
-                                className="w-10 h-10 rounded-lg border border-border shadow-sm"
-                                style={{ backgroundColor: color }}
+                    <TabsContent value="details" className="mt-4">
+                      {/* Site Details Card */}
+                      <Card>
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between mb-6">
+                            <div>
+                              <h3 className="text-2xl font-bold text-foreground">{proposal.siteName}</h3>
+                              <p className="text-muted-foreground">{proposal.tagline}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge>
+                                {proposal.complexity.charAt(0).toUpperCase() + proposal.complexity.slice(1)}
+                              </Badge>
+                              <ProposalPdfExport 
+                                proposal={proposal}
+                                priceEur={calculatePrice().eur}
+                                priceMad={calculatePrice().mad}
+                                isExpress={isExpress}
+                                formData={formData}
                               />
-                              <span className="text-[10px] text-muted-foreground mt-1 block capitalize">
-                                {name}
-                              </span>
                             </div>
-                          ))}
-                        </div>
-                      </div>
+                          </div>
 
-                      {/* Pages */}
-                      <div className="mb-6">
-                        <h4 className="text-sm font-medium text-foreground mb-3">
-                          Structure du site ({proposal.estimatedPages} pages)
-                        </h4>
-                        <div className="space-y-2">
-                          {proposal.pages.map((page, idx) => (
-                            <div key={idx} className="p-3 rounded-lg bg-muted/50 border border-border">
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="font-medium text-foreground text-sm">{page.name}</span>
-                                <span className="text-xs text-muted-foreground">/{page.slug}</span>
-                              </div>
-                              <div className="flex flex-wrap gap-1">
-                                {page.sections.map((section, sIdx) => (
-                                  <Badge key={sIdx} variant="secondary" className="text-[10px]">
-                                    {section.type}
-                                  </Badge>
-                                ))}
-                              </div>
+                          {/* Color Palette */}
+                          <div className="mb-6">
+                            <h4 className="text-sm font-medium text-foreground mb-3">Palette de couleurs</h4>
+                            <div className="flex gap-2">
+                              {Object.entries(proposal.colorPalette).map(([name, color]) => (
+                                <div key={name} className="text-center">
+                                  <div 
+                                    className="w-10 h-10 rounded-lg border border-border shadow-sm"
+                                    style={{ backgroundColor: color }}
+                                  />
+                                  <span className="text-[10px] text-muted-foreground mt-1 block capitalize">
+                                    {name}
+                                  </span>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      </div>
+                          </div>
 
-                      {/* Features */}
-                      <div>
-                        <h4 className="text-sm font-medium text-foreground mb-3">Fonctionnalités incluses</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {proposal.features.map((feature, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
-                              <Check className="w-3 h-3 mr-1" />
-                              {feature}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                          {/* Pages */}
+                          <div className="mb-6">
+                            <h4 className="text-sm font-medium text-foreground mb-3">
+                              Structure du site ({proposal.estimatedPages} pages)
+                            </h4>
+                            <div className="space-y-2">
+                              {proposal.pages.map((page, idx) => (
+                                <div key={idx} className="p-3 rounded-lg bg-muted/50 border border-border">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="font-medium text-foreground text-sm">{page.name}</span>
+                                    <span className="text-xs text-muted-foreground">/{page.slug}</span>
+                                  </div>
+                                  <div className="flex flex-wrap gap-1">
+                                    {page.sections.map((section, sIdx) => (
+                                      <Badge key={sIdx} variant="secondary" className="text-[10px]">
+                                        {section.type}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Features */}
+                          <div>
+                            <h4 className="text-sm font-medium text-foreground mb-3">Fonctionnalités incluses</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {proposal.features.map((feature, idx) => (
+                                <Badge key={idx} variant="outline" className="text-xs">
+                                  <Check className="w-3 h-3 mr-1" />
+                                  {feature}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="preview" className="mt-4">
+                      <WebsitePreview proposal={proposal} />
+                    </TabsContent>
+                  </Tabs>
 
                   {/* Pricing Card */}
                   <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
@@ -667,7 +731,7 @@ export default function WebStudio() {
                       </div>
                     </CardContent>
                   </Card>
-                </div>
+                </motion.div>
               )}
             </div>
           </div>
