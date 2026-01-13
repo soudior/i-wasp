@@ -147,7 +147,7 @@ export function PartnersSection() {
   return (
     <section 
       ref={sectionRef}
-      className="py-24 md:py-32 relative overflow-hidden"
+      className="py-12 md:py-16 relative overflow-hidden"
       style={{ backgroundColor: NOIR_COUTURE.ivory }}
     >
       {/* Section Header */}
@@ -156,7 +156,7 @@ export function PartnersSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-16 px-6"
+        className="text-center mb-8 px-6"
         style={{ y: contentY }}
       >
         <span 
@@ -236,7 +236,7 @@ export function PartnersSection() {
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1.5, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-20 h-px mx-auto max-w-24 origin-center"
+          className="mt-10 h-px mx-auto max-w-24 origin-center"
           style={{ backgroundColor: NOIR_COUTURE.bg, opacity: 0.1 }}
         />
       </div>

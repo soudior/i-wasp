@@ -181,18 +181,18 @@ export default function HomeLuxeMax() {
       </ParallaxSection>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          SILENCE — Empty space with floating effect
+          SILENCE — Compact accent section
       ═══════════════════════════════════════════════════════════════════ */}
-      <ParallaxSection backgroundColor={COUTURE.silk} minHeight="py-32 md:py-48">
+      <ParallaxSection backgroundColor={COUTURE.silk} minHeight="py-16 md:py-20">
         <motion.div 
           className="max-w-[400px] mx-auto text-center"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
         >
           <p 
-            className="text-sm font-light leading-[2] tracking-wide"
+            className="text-sm font-light leading-[1.8] tracking-wide"
             style={{ color: COUTURE.textMuted }}
           >
             Une carte. Un geste. Mille connexions.
@@ -208,7 +208,7 @@ export default function HomeLuxeMax() {
       {/* ═══════════════════════════════════════════════════════════════════
           CTA FINAL — Authority with subtle reveal
       ═══════════════════════════════════════════════════════════════════ */}
-      <ParallaxSection backgroundColor={COUTURE.jet} hasHoneycomb minHeight="min-h-[40vh]">
+      <ParallaxSection backgroundColor={COUTURE.jet} hasHoneycomb minHeight="min-h-[25vh]">
         <motion.div 
           className="text-center relative z-10"
           initial={{ opacity: 0, scale: 0.98 }}
@@ -251,7 +251,7 @@ function CardFlipSection() {
 
   return (
     <section 
-      className="py-24 md:py-40 flex items-center justify-center"
+      className="py-16 md:py-24 flex items-center justify-center"
       style={{ backgroundColor: COUTURE.jet }}
     >
       <motion.div
@@ -312,7 +312,7 @@ function ParallaxSection({
   children, 
   backgroundColor, 
   hasHoneycomb = false,
-  minHeight = "min-h-[60vh]"
+  minHeight = "min-h-[35vh]"
 }: ParallaxSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   

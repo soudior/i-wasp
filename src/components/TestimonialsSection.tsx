@@ -51,7 +51,7 @@ export function TestimonialsSection() {
   return (
     <section 
       ref={sectionRef}
-      className="py-32 md:py-48 relative overflow-hidden"
+      className="py-16 md:py-24 relative overflow-hidden"
       style={{ backgroundColor: NOIR_COUTURE.bg }}
     >
       {/* Honeycomb texture with parallax */}
@@ -71,7 +71,7 @@ export function TestimonialsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center mb-20"
+          className="text-center mb-12"
         >
           <span 
             className="inline-block text-xs tracking-[0.3em] uppercase mb-6"
@@ -178,7 +178,7 @@ export function TestimonialsSection() {
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1.5, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-20 h-px mx-auto max-w-32 origin-center"
+          className="mt-12 h-px mx-auto max-w-32 origin-center"
           style={{ backgroundColor: NOIR_COUTURE.gold, opacity: 0.3 }}
         />
       </div>
