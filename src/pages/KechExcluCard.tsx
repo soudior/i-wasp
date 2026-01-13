@@ -201,12 +201,39 @@ export default function KechExcluCard() {
               
               <div className="flex items-center justify-center gap-4 mb-2">
                 <div className="h-px w-12" style={{ background: `linear-gradient(to right, transparent, ${COLORS.sunsetGold})` }} />
-                <p 
-                  className="text-xs tracking-[0.2em] uppercase"
-                  style={{ color: COLORS.sunsetGold }}
-                >
-                  Luxury Villa Concierge
-                </p>
+                <div className="relative overflow-hidden">
+                  <p 
+                    className="text-xs tracking-[0.2em] uppercase"
+                    style={{ color: COLORS.sunsetGold }}
+                  >
+                    Luxury Villa Concierge
+                  </p>
+                  {/* Shimmer effect */}
+                  <motion.div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: `linear-gradient(
+                        120deg,
+                        transparent 0%,
+                        transparent 40%,
+                        rgba(255, 255, 255, 0.5) 50%,
+                        transparent 60%,
+                        transparent 100%
+                      )`,
+                      backgroundSize: "200% 100%",
+                    }}
+                    animate={{
+                      backgroundPosition: ["200% 0%", "-200% 0%"],
+                    }}
+                    transition={{
+                      duration: 2.5,
+                      repeat: Infinity,
+                      repeatDelay: 3,
+                      ease: "easeInOut",
+                      delay: 1.5,
+                    }}
+                  />
+                </div>
                 <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${COLORS.sunsetGold})` }} />
               </div>
               
