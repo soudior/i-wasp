@@ -111,6 +111,7 @@ const WalletPassDownload = lazy(() => import("./pages/WalletPassDownload"));
 const WalletCustomizer = lazy(() => import("./pages/WalletCustomizer"));
 const AppStoreChecklist = lazy(() => import("./pages/AppStoreChecklist"));
 const CharlesLazimiCard = lazy(() => import("./pages/CharlesLazimiCard"));
+const KechExcluCard = lazy(() => import("./pages/KechExcluCard"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -200,6 +201,7 @@ const App = () => {
                               <Route path="/card/herbalism-marrakech" element={<HerbalismCard />} />
                               <Route path="/card/maison-b-optic" element={<MaisonBOpticCard />} />
                               <Route path="/card/charles-lazimi" element={<CharlesLazimiCard />} />
+                              <Route path="/card/kech-exclu" element={<KechExcluCard />} />
                               <Route path="/card/:slug" element={<PublicCard />} />
                               {/* Auth */}
                               <Route path="/login" element={<Login />} />
