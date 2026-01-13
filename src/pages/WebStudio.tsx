@@ -1,9 +1,10 @@
 /**
  * WebStudio - Générateur de sites web IA
- * Génère des propositions de sites web sur-mesure via IA
+ * Design Premium Noir & Or - Style i-wasp
  */
 
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { WebsitePreview, GeneratingAnimation, ProposalPdfExport } from "@/components/studio";
+import { CoutureNavbar } from "@/components/CoutureNavbar";
+import { CoutureFooter } from "@/components/CoutureFooter";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Sparkles, 
@@ -37,9 +40,26 @@ import {
   Rocket,
   History,
   FileText,
-  Loader2
+  Loader2,
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  Package
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+// Palette Premium Noir & Or
+const STUDIO = {
+  noir: "#050505",
+  noirSoft: "#0A0A0A",
+  noirCard: "#111111",
+  or: "#D4A853",
+  orLight: "#E8C87A",
+  orDark: "#B8923C",
+  ivoire: "#F5F5F5",
+  gris: "#6B6B6B",
+  grisClair: "#9A9A9A",
+};
 
 interface WebsiteProposal {
   siteName: string;
@@ -335,102 +355,420 @@ export default function WebStudio() {
   };
 
   return (
-    <Layout>
-      {/* Hero Section */}
-      <section className="pt-32 pb-16 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        </div>
+    <div className="min-h-screen" style={{ backgroundColor: STUDIO.noir }}>
+      <CoutureNavbar />
+      
+      {/* ═══════════════════════════════════════════════════════════════════
+          HERO PREMIUM — Noir & Or avec Mockup Laptop
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section className="min-h-screen relative overflow-hidden pt-20">
+        {/* Gradient de fond */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: `radial-gradient(ellipse at 70% 30%, ${STUDIO.or}15 0%, transparent 50%), 
+                         radial-gradient(ellipse at 30% 70%, ${STUDIO.or}08 0%, transparent 50%)`,
+          }}
+        />
+        
+        {/* Grain texture */}
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-[0.03]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          }}
+        />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge variant="outline" className="mb-6 px-4 py-2">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Générateur IA
-            </Badge>
-
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
-              Créez votre site en{" "}
-              <span className="text-primary">quelques secondes</span>
-            </h1>
-
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-              Décrivez votre projet, et notre IA génère instantanément une proposition 
-              de site web sur-mesure avec structure, contenu et design.
-            </p>
-
-            {/* Pricing Pills */}
-            <div className="flex flex-wrap justify-center gap-4">
-              <Badge variant="secondary" className="px-4 py-2 text-sm">
-                <Zap className="w-4 h-4 mr-2" />
-                À partir de 200€ / 2000DH
-              </Badge>
-              <Badge variant="secondary" className="px-4 py-2 text-sm">
-                <Rocket className="w-4 h-4 mr-2" />
-                Express 24-48h: +50€ / +500DH
-              </Badge>
-            </div>
+        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-80px)] py-16">
+            
+            {/* Left: Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {/* Badge */}
+              <motion.div
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
+                style={{ 
+                  backgroundColor: `${STUDIO.or}15`,
+                  border: `1px solid ${STUDIO.or}30`,
+                }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Sparkles size={14} style={{ color: STUDIO.or }} />
+                <span 
+                  className="text-[11px] uppercase tracking-[0.2em] font-medium"
+                  style={{ color: STUDIO.or }}
+                >
+                  IA + Expertise humaine
+                </span>
+              </motion.div>
+              
+              {/* Headline */}
+              <h1 
+                className="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-[1.1] tracking-tight mb-6"
+                style={{ color: STUDIO.ivoire }}
+              >
+                Tout votre univers numérique,{" "}
+                <span className="italic" style={{ color: STUDIO.or }}>
+                  clé en main.
+                </span>
+              </h1>
+              
+              {/* Subtitle */}
+              <p 
+                className="text-base md:text-lg font-light leading-relaxed max-w-xl mb-8"
+                style={{ color: STUDIO.gris }}
+              >
+                i-wasp Studio utilise l'IA et son expertise pour créer des sites sur mesure, 
+                prêts à l'emploi : identité, pages, textes et intégrations essentielles.
+              </p>
+              
+              {/* Features list */}
+              <ul className="space-y-3 mb-10">
+                {[
+                  "Sites vitrines et e-commerce sur mesure",
+                  "Génération intelligente de contenu grâce à l'IA",
+                  "Livraison clé en main, prête à l'usage"
+                ].map((feature, i) => (
+                  <motion.li 
+                    key={i}
+                    className="flex items-center gap-3"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + i * 0.1 }}
+                  >
+                    <CheckCircle2 size={18} style={{ color: STUDIO.or }} />
+                    <span 
+                      className="text-sm font-light"
+                      style={{ color: STUDIO.grisClair }}
+                    >
+                      {feature}
+                    </span>
+                  </motion.li>
+                ))}
+              </ul>
+              
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <motion.button
+                  onClick={() => document.getElementById('generator')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="px-8 py-4 rounded-xl font-medium text-sm flex items-center justify-center gap-3 transition-all duration-300 hover:scale-105"
+                  style={{ 
+                    backgroundColor: STUDIO.or,
+                    color: STUDIO.noir,
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Décrire mon projet
+                  <ArrowRight size={16} />
+                </motion.button>
+                
+                <motion.button
+                  onClick={() => window.open("https://wa.me/33626424394?text=Bonjour, je souhaite créer un site web professionnel.", "_blank")}
+                  className="px-8 py-4 rounded-xl font-medium text-sm flex items-center justify-center gap-3 transition-all duration-300"
+                  style={{ 
+                    backgroundColor: "transparent",
+                    color: STUDIO.ivoire,
+                    border: `1px solid ${STUDIO.ivoire}20`,
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <MessageCircle size={16} />
+                  Parler sur WhatsApp
+                </motion.button>
+              </div>
+              
+              {/* Trust badges */}
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <Clock size={14} style={{ color: STUDIO.or }} />
+                  <span className="text-xs" style={{ color: STUDIO.gris }}>Livraison 48h</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Package size={14} style={{ color: STUDIO.or }} />
+                  <span className="text-xs" style={{ color: STUDIO.gris }}>Site complet</span>
+                </div>
+              </div>
+            </motion.div>
+            
+            {/* Right: Laptop Mockup with floating badges */}
+            <motion.div
+              className="relative hidden lg:block"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {/* Laptop Mockup */}
+              <div 
+                className="relative mx-auto"
+                style={{
+                  maxWidth: "550px",
+                }}
+              >
+                {/* Laptop frame */}
+                <div 
+                  className="rounded-t-xl p-2"
+                  style={{ 
+                    backgroundColor: STUDIO.noirCard,
+                    border: `1px solid ${STUDIO.ivoire}10`,
+                  }}
+                >
+                  {/* Screen */}
+                  <div 
+                    className="rounded-lg overflow-hidden aspect-[16/10]"
+                    style={{ 
+                      backgroundColor: STUDIO.noirSoft,
+                      boxShadow: `inset 0 0 30px ${STUDIO.noir}`,
+                    }}
+                  >
+                    {/* Fake website preview */}
+                    <div className="p-4 h-full flex flex-col">
+                      {/* Browser bar */}
+                      <div 
+                        className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg"
+                        style={{ backgroundColor: `${STUDIO.ivoire}05` }}
+                      >
+                        <div className="flex gap-1.5">
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#FF5F57" }} />
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#FFBD2E" }} />
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#28CA41" }} />
+                        </div>
+                        <div 
+                          className="flex-1 text-center text-[10px] px-4 py-1 rounded"
+                          style={{ backgroundColor: `${STUDIO.ivoire}05`, color: STUDIO.gris }}
+                        >
+                          votre-site.com
+                        </div>
+                      </div>
+                      
+                      {/* Fake content */}
+                      <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
+                        <div 
+                          className="w-12 h-12 rounded-xl mb-4 flex items-center justify-center"
+                          style={{ backgroundColor: STUDIO.or }}
+                        >
+                          <span className="font-bold text-lg" style={{ color: STUDIO.noir }}>P</span>
+                        </div>
+                        <div 
+                          className="text-[10px] uppercase tracking-[0.3em] mb-2"
+                          style={{ color: STUDIO.gris }}
+                        >
+                          Premium Agency
+                        </div>
+                        <div 
+                          className="text-xs font-light"
+                          style={{ color: STUDIO.grisClair }}
+                        >
+                          Votre site professionnel
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Laptop base */}
+                <div 
+                  className="h-4 rounded-b-xl mx-6"
+                  style={{ 
+                    backgroundColor: STUDIO.noirCard,
+                    borderBottom: `1px solid ${STUDIO.ivoire}10`,
+                    borderLeft: `1px solid ${STUDIO.ivoire}10`,
+                    borderRight: `1px solid ${STUDIO.ivoire}10`,
+                  }}
+                />
+                <div 
+                  className="h-1 rounded-b-xl mx-16"
+                  style={{ backgroundColor: STUDIO.noirCard }}
+                />
+              </div>
+              
+              {/* Floating Badges */}
+              <motion.div
+                className="absolute -top-4 right-0 px-4 py-2 rounded-full"
+                style={{ 
+                  backgroundColor: STUDIO.noirCard,
+                  border: `1px solid ${STUDIO.or}30`,
+                }}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <span className="flex items-center gap-2 text-xs" style={{ color: STUDIO.or }}>
+                  <Sparkles size={12} />
+                  Généré par IA
+                </span>
+              </motion.div>
+              
+              <motion.div
+                className="absolute top-1/3 -right-4 px-4 py-2 rounded-full"
+                style={{ 
+                  backgroundColor: STUDIO.noirCard,
+                  border: `1px solid ${STUDIO.ivoire}15`,
+                }}
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              >
+                <span className="flex items-center gap-2 text-xs" style={{ color: STUDIO.ivoire }}>
+                  <Zap size={12} />
+                  Prêt à l'emploi
+                </span>
+              </motion.div>
+              
+              <motion.div
+                className="absolute bottom-1/4 -left-4 px-4 py-2 rounded-full"
+                style={{ 
+                  backgroundColor: STUDIO.noirCard,
+                  border: `1px solid ${STUDIO.or}30`,
+                }}
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              >
+                <span className="flex items-center gap-2 text-xs" style={{ color: STUDIO.or }}>
+                  <Package size={12} />
+                  Clé en main
+                </span>
+              </motion.div>
+            </motion.div>
           </div>
+          
+          {/* Scroll indicator */}
+          <motion.div
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5 }}
+          >
+            <span 
+              className="text-[10px] uppercase tracking-[0.3em]"
+              style={{ color: STUDIO.gris }}
+            >
+              Scroll
+            </span>
+            <motion.div
+              className="w-px h-8"
+              style={{ backgroundColor: STUDIO.gris }}
+              animate={{ scaleY: [1, 0.5, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </motion.div>
         </div>
       </section>
 
       {/* Templates Gallery */}
-      <section className="py-12 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-foreground mb-2">
+      <section 
+        id="generator"
+        className="py-20"
+        style={{ backgroundColor: STUDIO.noirSoft }}
+      >
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="text-center mb-12">
+            <span 
+              className="text-[10px] uppercase tracking-[0.4em] font-light"
+              style={{ color: STUDIO.or }}
+            >
+              Templates
+            </span>
+            <h2 
+              className="font-display text-2xl md:text-3xl font-light mt-4 tracking-tight"
+              style={{ color: STUDIO.ivoire }}
+            >
               Choisissez un template pour démarrer
             </h2>
-            <p className="text-muted-foreground">
+            <p 
+              className="text-sm font-light mt-3"
+              style={{ color: STUDIO.gris }}
+            >
               Sélectionnez un style prédéfini ou personnalisez librement
             </p>
           </div>
           
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {TEMPLATES.map((template) => (
-              <button
+              <motion.button
                 key={template.id}
                 onClick={() => handleSelectTemplate(template)}
-                className={`group relative rounded-xl border-2 p-4 transition-all duration-300 text-left ${
-                  selectedTemplate === template.id
-                    ? "border-primary shadow-lg shadow-primary/20 ring-2 ring-primary/30 bg-primary/5"
-                    : "border-border hover:border-primary/50 bg-card"
-                }`}
+                className="group relative rounded-xl p-4 transition-all duration-300 text-left"
+                style={{
+                  backgroundColor: selectedTemplate === template.id ? `${STUDIO.or}10` : STUDIO.noirCard,
+                  border: selectedTemplate === template.id 
+                    ? `2px solid ${STUDIO.or}` 
+                    : `1px solid ${STUDIO.ivoire}10`,
+                }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${template.gradient} flex items-center justify-center mb-3`}>
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center mb-3"
+                  style={{ 
+                    backgroundColor: `${STUDIO.or}20`,
+                    color: STUDIO.or,
+                  }}
+                >
                   {template.icon}
                 </div>
-                <h3 className="font-semibold text-foreground text-sm">{template.name}</h3>
-                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{template.description}</p>
+                <h3 
+                  className="font-medium text-sm"
+                  style={{ color: STUDIO.ivoire }}
+                >
+                  {template.name}
+                </h3>
+                <p 
+                  className="text-xs mt-1 line-clamp-2 font-light"
+                  style={{ color: STUDIO.gris }}
+                >
+                  {template.description}
+                </p>
                 
                 {selectedTemplate === template.id && (
-                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="w-3 h-3 text-primary-foreground" />
+                  <div 
+                    className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: STUDIO.or }}
+                  >
+                    <Check className="w-3 h-3" style={{ color: STUDIO.noir }} />
                   </div>
                 )}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
       </section>
 
       {/* Generator Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
+      <section 
+        className="py-20"
+        style={{ backgroundColor: STUDIO.noir }}
+      >
+        <div className="container mx-auto px-6 lg:px-12">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Form */}
-            <Card>
-              <CardContent className="p-6 lg:p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Palette className="w-5 h-5 text-primary" />
-                  </div>
-                  <h2 className="text-xl font-bold text-foreground">Décrivez votre projet</h2>
+            <div 
+              className="rounded-2xl p-6 lg:p-8"
+              style={{ 
+                backgroundColor: STUDIO.noirCard,
+                border: `1px solid ${STUDIO.ivoire}10`,
+              }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div 
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ backgroundColor: `${STUDIO.or}20` }}
+                >
+                  <Palette className="w-5 h-5" style={{ color: STUDIO.or }} />
                 </div>
+                <h2 
+                  className="text-xl font-medium"
+                  style={{ color: STUDIO.ivoire }}
+                >
+                  Décrivez votre projet
+                </h2>
+              </div>
 
-                <div className="space-y-5">
-                  <div>
+              <div className="space-y-5">
+                <div>
                     <Label htmlFor="businessType">Type d'entreprise / Activité *</Label>
                     <Input
                       id="businessType"
@@ -534,8 +872,8 @@ export default function WebStudio() {
                     </>
                   )}
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Result */}
             <div className="space-y-6">
@@ -739,11 +1077,25 @@ export default function WebStudio() {
       </section>
 
       {/* How it works */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-foreground mb-12">
-            Comment ça marche ?
-          </h2>
+      <section 
+        className="py-20"
+        style={{ backgroundColor: STUDIO.noirSoft }}
+      >
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="text-center mb-12">
+            <span 
+              className="text-[10px] uppercase tracking-[0.4em] font-light"
+              style={{ color: STUDIO.or }}
+            >
+              Processus
+            </span>
+            <h2 
+              className="font-display text-2xl md:text-3xl font-light mt-4 tracking-tight"
+              style={{ color: STUDIO.ivoire }}
+            >
+              Comment ça marche ?
+            </h2>
+          </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             {[
@@ -763,17 +1115,46 @@ export default function WebStudio() {
                 description: "Validez le devis et recevez votre site en quelques jours (24-48h en express)."
               }
             ].map((item) => (
-              <div key={item.step} className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-primary">{item.step}</span>
+              <motion.div 
+                key={item.step} 
+                className="text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <div 
+                  className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: `${STUDIO.or}15`,
+                    border: `1px solid ${STUDIO.or}30`,
+                  }}
+                >
+                  <span 
+                    className="text-2xl font-light"
+                    style={{ color: STUDIO.or }}
+                  >
+                    {item.step}
+                  </span>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{item.title}</h3>
-                <p className="text-muted-foreground text-sm">{item.description}</p>
-              </div>
+                <h3 
+                  className="text-lg font-medium mb-2"
+                  style={{ color: STUDIO.ivoire }}
+                >
+                  {item.title}
+                </h3>
+                <p 
+                  className="text-sm font-light"
+                  style={{ color: STUDIO.gris }}
+                >
+                  {item.description}
+                </p>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
-    </Layout>
+      
+      <CoutureFooter />
+    </div>
   );
 }
