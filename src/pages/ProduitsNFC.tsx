@@ -5,6 +5,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -387,6 +388,9 @@ function CardsCarousel() {
 }
 
 export default function ProduitsNFC() {
+  // SEO
+  SEOHead(SEO_CONFIGS.products);
+  
   return (
     <div className="min-h-screen text-white" style={{ backgroundColor: STEALTH.bg }}>
       <ClubNavbar />

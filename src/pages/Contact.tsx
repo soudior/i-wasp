@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -77,6 +78,9 @@ const contactInfo = [
 ];
 
 export default function Contact() {
+  // SEO
+  SEOHead(SEO_CONFIGS.contact);
+  
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
