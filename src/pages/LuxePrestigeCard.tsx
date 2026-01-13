@@ -28,8 +28,8 @@ const CONTACT = {
   tagline: "L'excellence au service de vos désirs",
   title: "Conciergerie de Luxe",
   location: "Marrakech, Maroc",
-  phone: "+212 600 000 000",
-  whatsapp: "+212600000000",
+  phone: "+212 661 381 626",
+  whatsapp: "212661381626",
   email: "contact@luxeprestige.ma",
   services: [
     { icon: Car, label: "Véhicules de Luxe", desc: "Rolls-Royce, Bentley, Lamborghini" },
