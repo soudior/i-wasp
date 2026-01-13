@@ -289,10 +289,21 @@ const Help = () => {
           </div>
         </motion.div>
 
-        {/* Footer */}
-        <p className="text-center text-muted-foreground text-[12px] mt-8 tracking-widest uppercase">
-          Powered by i-Wasp
-        </p>
+        {/* Footer - i-wasp.com CORPORATION */}
+        <a 
+          href="https://i-wasp.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-1.5 mt-8 hover:opacity-100 transition-opacity"
+          style={{ opacity: 0.6 }}
+        >
+          <span className="text-[12px] font-semibold text-foreground" style={{ letterSpacing: "0.08em" }}>
+            i-wasp.com
+          </span>
+          <span className="text-[10px] font-medium text-muted-foreground uppercase" style={{ letterSpacing: "0.15em" }}>
+            CORPORATION
+          </span>
+        </a>
       </main>
     </div>
   );

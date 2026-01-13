@@ -77,7 +77,7 @@ const translations = {
   getDirections: "Itinéraire",
   chatWithHost: "Discuter avec l'hôte",
   perNight: "/nuit",
-  poweredBy: "Powered by I-WASP.com",
+  poweredBy: "i-wasp.com CORPORATION",
   copyPassword: "Copier",
   scanToConnect: "Scannez pour vous connecter",
   loginRequired: "Connexion requise",

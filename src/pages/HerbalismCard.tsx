@@ -538,15 +538,22 @@ export default function HerbalismCard() {
           </TabsContent>
         </Tabs>
 
-        {/* Powered by I-WASP.com */}
+        {/* i-wasp.com CORPORATION */}
         <motion.div 
           className="mt-6 pb-8 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="text-[10px] tracking-wide hover:opacity-80 transition-opacity" style={{ color: BRAND_COLORS.textLight }}>
-            Powered by <span className="font-semibold">I-WASP.com</span>
+          <a 
+            href="https://i-wasp.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="inline-flex items-center gap-1 hover:opacity-100 transition-opacity"
+            style={{ opacity: 0.6 }}
+          >
+            <span className="text-[10px] font-semibold" style={{ color: BRAND_COLORS.accent, letterSpacing: "0.08em" }}>i-wasp.com</span>
+            <span className="text-[9px] font-medium uppercase" style={{ color: BRAND_COLORS.textLight, letterSpacing: "0.12em" }}>CORPORATION</span>
           </a>
         </motion.div>
       </div>

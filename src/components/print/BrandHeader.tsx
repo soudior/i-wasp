@@ -216,7 +216,7 @@ export const CardBack = forwardRef<HTMLDivElement, CardBackProps>(
           </svg>
         </div>
 
-        {/* Powered by I-WASP.com - bottom center, subtle */}
+        {/* i-wasp.com CORPORATION - bottom center, subtle */}
         <div
           className="absolute bottom-0 left-0 right-0 flex justify-center z-10"
           style={{ paddingBottom: mmToPx(4) }}
@@ -224,14 +224,26 @@ export const CardBack = forwardRef<HTMLDivElement, CardBackProps>(
           <span
             style={{
               fontSize: mmToPx(1.6),
-              fontWeight: 400,
-              letterSpacing: "0.1em",
+              fontWeight: 600,
+              letterSpacing: "0.08em",
               color: background.type === "image" ? "#ffffff" : bgConfig.accentColor,
-              opacity: 0.4,
+              opacity: 0.5,
+            }}
+          >
+            i-wasp.com
+          </span>
+          <span
+            style={{
+              fontSize: mmToPx(1.4),
+              fontWeight: 500,
+              letterSpacing: "0.12em",
+              marginLeft: mmToPx(1),
+              color: background.type === "image" ? "#ffffff" : bgConfig.accentColor,
+              opacity: 0.35,
               textTransform: "uppercase",
             }}
           >
-            Powered by I-WASP.com
+            CORPORATION
           </span>
         </div>
       </div>

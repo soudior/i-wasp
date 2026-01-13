@@ -392,12 +392,15 @@ function OrderConfirmationContent() {
         </div>
       </main>
 
-      {/* Footer */}
+      {/* Footer - i-wasp.com CORPORATION */}
       <footer className="relative z-10 px-6 py-8">
-        <div className="text-center">
-          <p className="text-[10px] uppercase tracking-[0.2em]" style={{ color: COUTURE.textMuted }}>
-            Powered by <span style={{ color: COUTURE.gold }}>i-wasp</span>
-          </p>
+        <div className="flex items-center justify-center gap-1.5">
+          <span className="text-[10px] font-semibold uppercase" style={{ color: COUTURE.gold, letterSpacing: "0.1em" }}>
+            i-wasp.com
+          </span>
+          <span className="text-[9px] font-medium uppercase" style={{ color: COUTURE.textMuted, letterSpacing: "0.15em" }}>
+            CORPORATION
+          </span>
         </div>
       </footer>
     </div>
