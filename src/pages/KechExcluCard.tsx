@@ -5,19 +5,21 @@ import { downloadVCard } from "@/lib/vcard";
 import { toast } from "sonner";
 
 // Images générées
-import kechExcluLogo from "@/assets/kech-exclu-logo.png";
+import kechExcluLogo from "@/assets/kech-exclu-villa-logo.jpg";
 import apartmentImg1 from "@/assets/kech-apartment-1.jpg";
 import apartmentImg2 from "@/assets/kech-apartment-2.jpg";
 import vehicleImg from "@/assets/kech-vehicle-1.jpg";
 import activityImg from "@/assets/kech-activity-1.jpg";
 
-// Palette Marrakech Luxe
+// Palette Sunset Luxe
 const COLORS = {
-  terracotta: "#C4734F",
-  sand: "#E8DCC4", 
-  gold: "#D4A853",
-  noir: "#1A1A1A",
-  palmVert: "#2D5016",
+  sunsetGold: "#ffb347",
+  sunsetOrange: "#ffcc33",
+  deepPurple: "#1a0f1f",
+  noir: "#050505",
+  gold: "#e0aa3e",
+  sand: "#f9f295",
+  terracotta: "#cc7a3e",
 };
 
 const contactData = {
@@ -117,58 +119,76 @@ export default function KechExcluCard() {
             border: `1px solid ${COLORS.gold}30`,
           }}
         >
-          {/* Header avec logo */}
-          <div 
-            className="relative h-48 flex items-center justify-center"
-            style={{
-              background: `linear-gradient(180deg, ${COLORS.terracotta}20 0%, transparent 100%)`,
-            }}
-          >
-            {/* Silhouettes décoratives */}
-            <div className="absolute inset-0 flex items-end justify-center opacity-10">
-              <svg viewBox="0 0 200 60" className="w-full h-20">
-                {/* Palmiers */}
-                <path d="M20 60 L22 40 Q22 35 18 30 Q25 32 22 40 L25 40 Q30 35 26 28 Q32 30 28 38 L30 38 Q35 32 30 25 Q38 28 32 36" fill={COLORS.palmVert}/>
-                <path d="M180 60 L178 40 Q178 35 182 30 Q175 32 178 40 L175 40 Q170 35 174 28 Q168 30 172 38 L170 38 Q165 32 170 25 Q162 28 168 36" fill={COLORS.palmVert}/>
-                {/* Chameau */}
-                <ellipse cx="100" cy="50" rx="15" ry="8" fill={COLORS.terracotta}/>
-                <ellipse cx="90" cy="45" rx="5" ry="8" fill={COLORS.terracotta}/>
-                <circle cx="85" cy="38" r="4" fill={COLORS.terracotta}/>
-              </svg>
-            </div>
-
-            {/* Logo */}
+          {/* Header avec logo villa sunset */}
+          <div className="relative flex flex-col items-center">
+            {/* Image villa sunset */}
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="relative z-10"
+              className="w-full relative"
             >
               <div 
-                className="w-32 h-32 rounded-2xl overflow-hidden flex items-center justify-center"
+                className="w-full h-48 overflow-hidden rounded-t-3xl"
                 style={{ 
-                  boxShadow: `0 8px 32px ${COLORS.gold}40`,
-                  border: `2px solid ${COLORS.gold}50`,
+                  boxShadow: `0 8px 32px ${COLORS.gold}30`,
                 }}
               >
                 <img 
                   src={kechExcluLogo} 
-                  alt="Kech Exclu Logo" 
+                  alt="Kech Exclu - Villa Sunset" 
                   className="w-full h-full object-cover"
                 />
               </div>
+              
+              {/* Badge premium */}
+              <div 
+                className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm"
+                style={{ 
+                  background: `rgba(0,0,0,0.5)`,
+                  color: COLORS.sunsetGold,
+                  border: `1px solid ${COLORS.sunsetGold}60`,
+                }}
+              >
+                Premium
+              </div>
             </motion.div>
 
-            {/* Badge premium */}
-            <div 
-              className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium"
-              style={{ 
-                background: `${COLORS.gold}20`,
-                color: COLORS.gold,
-                border: `1px solid ${COLORS.gold}40`,
-              }}
-            >
-              Premium
+            {/* Titre avec gradient sunset */}
+            <div className="w-full py-6 text-center" style={{ background: COLORS.noir }}>
+              <motion.h1
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-3xl font-bold tracking-[0.3em] mb-2"
+                style={{
+                  background: `linear-gradient(to bottom, #f9f295 0%, #ffb347 50%, #e0aa3e 100%)`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.5))",
+                  fontFamily: "'Cinzel', serif",
+                }}
+              >
+                KECH EXCLU
+              </motion.h1>
+              
+              <div className="flex items-center justify-center gap-4 mb-2">
+                <div className="h-px w-12" style={{ background: `linear-gradient(to right, transparent, ${COLORS.sunsetGold})` }} />
+                <p 
+                  className="text-xs tracking-[0.2em] uppercase"
+                  style={{ color: COLORS.sunsetGold }}
+                >
+                  Luxury Villa Concierge
+                </p>
+                <div className="h-px w-12" style={{ background: `linear-gradient(to left, transparent, ${COLORS.sunsetGold})` }} />
+              </div>
+              
+              <p 
+                className="text-xs tracking-wider"
+                style={{ color: `${COLORS.sunsetGold}80` }}
+              >
+                Marrakech · Signature Experience
+              </p>
             </div>
           </div>
 
