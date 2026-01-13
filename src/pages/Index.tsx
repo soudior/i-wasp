@@ -57,7 +57,7 @@ const Index = () => {
           <div className="flex items-center gap-6 sm:gap-10">
             <Link 
               to="/login"
-              className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-700"
+              className="text-xs sm:text-sm tracking-[0.2em] uppercase border border-foreground/30 px-4 py-2 text-foreground hover:bg-foreground hover:text-background transition-all duration-500"
             >
               Espace Client
             </Link>
