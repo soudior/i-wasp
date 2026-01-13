@@ -3,6 +3,7 @@
  * Style: Ultra minimal, typographie éditoriale, grands espaces
  */
 
+import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { COUTURE } from "@/lib/hauteCouturePalette";
@@ -17,6 +18,11 @@ const footerLinks = {
     { label: "Contact", href: "/contact" },
     { label: "Guide", href: "/user-guide" },
     { label: "FAQ", href: "/help" },
+  ],
+  services: [
+    { label: "Web Studio", href: "/web-studio" },
+    { label: "Cartes NFC", href: "/cartes-nfc" },
+    { label: "Services", href: "/services" },
   ],
   legal: [
     { label: "Mentions légales", href: "/mentions-legales" },
@@ -44,9 +50,11 @@ interface CoutureFooterProps {
   variant?: "dark" | "light";
 }
 
-export function CoutureFooter({ variant = "dark" }: CoutureFooterProps) {
+export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
+  function CoutureFooter({ variant = "dark" }, ref) {
   return (
     <footer 
+      ref={ref}
       className="py-12 md:py-16"
       style={{ 
         backgroundColor: COUTURE.jet,
@@ -100,7 +108,7 @@ export function CoutureFooter({ variant = "dark" }: CoutureFooterProps) {
           </div>
 
           {/* Links sections */}
-          <div className="md:col-span-7 grid grid-cols-3 gap-8">
+          <div className="md:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4">
             {/* Product */}
             <div>
               <h4 
@@ -111,6 +119,34 @@ export function CoutureFooter({ variant = "dark" }: CoutureFooterProps) {
               </h4>
               <ul className="space-y-3">
                 {footerLinks.product.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      to={link.href}
+                      className="text-sm font-light transition-colors"
+                      style={{ 
+                        color: COUTURE.silk,
+                        transitionDuration: "400ms",
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.gold}
+                      onMouseLeave={(e) => e.currentTarget.style.color = COUTURE.silk}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Services */}
+            <div>
+              <h4 
+                className="text-[10px] uppercase tracking-[0.25em] mb-4 font-medium"
+                style={{ color: COUTURE.textMuted }}
+              >
+                Services
+              </h4>
+              <ul className="space-y-3">
+                {footerLinks.services.map((link) => (
                   <li key={link.href}>
                     <Link
                       to={link.href}
@@ -209,4 +245,4 @@ export function CoutureFooter({ variant = "dark" }: CoutureFooterProps) {
       </div>
     </footer>
   );
-}
+});
