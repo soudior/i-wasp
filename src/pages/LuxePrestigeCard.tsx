@@ -6,7 +6,7 @@
  */
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, MessageCircle, Mail, MapPin, Plane, Car, Home, Sparkles, ChevronLeft, ChevronRight, X, Camera } from "lucide-react";
+import { Phone, MessageCircle, Mail, MapPin, Plane, Car, Home, Sparkles, ChevronLeft, ChevronRight, X, Camera, Star, Crown, Globe, Flame } from "lucide-react";
 import { useState, useCallback } from "react";
 import luxePrestigeLogo from "@/assets/luxe-prestige-logo.png";
 
@@ -38,6 +38,31 @@ const CONTACT = {
     { icon: Home, label: "Riads de Prestige", desc: "Villas & Palais exclusifs" },
   ],
 };
+
+// Images d'expériences luxe (URLs haute qualité)
+const EXPERIENCES = [
+  {
+    id: "balloon",
+    title: "Vol en Montgolfière",
+    subtitle: "Survol du désert au lever du soleil",
+    image: "https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?w=800&q=80",
+    icon: Sparkles,
+  },
+  {
+    id: "desert",
+    title: "Safari Désert",
+    subtitle: "Expédition exclusive dans les dunes",
+    image: "https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=800&q=80",
+    icon: Flame,
+  },
+  {
+    id: "spa",
+    title: "Spa & Wellness",
+    subtitle: "Soins traditionnels marocains",
+    image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80",
+    icon: Crown,
+  },
+];
 
 // Logements gérés par Luxe Prestige
 const PROPERTIES = [
@@ -80,6 +105,13 @@ const VEHICLES = [
     type: "Transport Prestige",
     photo: "/images/luxe-prestige/limousine.jpg",
   },
+];
+
+// Hero images pour le carousel
+const HERO_IMAGES = [
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80", // Villa luxe
+  "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&q=80", // Voiture luxe
+  "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=1200&q=80", // Piscine
 ];
 
 // Property Gallery Component
@@ -270,9 +302,19 @@ END:VCARD`;
     window.open(`https://wa.me/${CONTACT.whatsapp}?text=${message}`, "_blank");
   };
 
+  const [heroIndex, setHeroIndex] = useState(0);
+
+  // Auto-rotate hero images
+  useState(() => {
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  });
+
   return (
     <div 
-      className="min-h-screen flex flex-col items-center justify-start py-8 px-4"
+      className="min-h-screen flex flex-col items-center justify-start"
       style={{ backgroundColor: LUXE_COLORS.background }}
     >
       {/* Luxury pattern background */}
@@ -283,37 +325,69 @@ END:VCARD`;
         }}
       />
 
-      {/* Main Card */}
+      {/* Hero Section - Immersive */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="w-full max-w-md relative z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="w-full relative h-[45vh] min-h-[320px] overflow-hidden"
       >
-        {/* Header with Logo */}
+        {/* Hero Image with Ken Burns effect */}
+        <motion.div
+          key={heroIndex}
+          initial={{ scale: 1.1, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.5 }}
+          className="absolute inset-0"
+        >
+          <img
+            src={HERO_IMAGES[heroIndex]}
+            alt="Luxe Prestige"
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+        
+        {/* Gradient overlay */}
         <div 
-          className="rounded-t-3xl p-8 text-center relative overflow-hidden"
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(to bottom, transparent 30%, ${LUXE_COLORS.background} 100%)`,
+          }}
+        />
+        
+        {/* Premium Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+          className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md"
           style={{ 
-            backgroundColor: LUXE_COLORS.card,
-            borderBottom: `2px solid ${LUXE_COLORS.gold}`,
+            backgroundColor: `${LUXE_COLORS.gold}20`,
+            border: `1px solid ${LUXE_COLORS.gold}40`,
           }}
         >
-          {/* Gold accent line */}
-          <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1"
-            style={{ 
-              background: `linear-gradient(90deg, transparent, ${LUXE_COLORS.gold}, transparent)`,
-            }}
-          />
+          <Crown size={14} style={{ color: LUXE_COLORS.gold }} />
+          <span 
+            className="text-xs font-semibold tracking-wider uppercase"
+            style={{ color: LUXE_COLORS.gold }}
+          >
+            Premium
+          </span>
+        </motion.div>
 
-          {/* Logo */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="w-28 h-28 mx-auto mb-6 rounded-full flex items-center justify-center relative overflow-hidden"
+        {/* Logo floating on hero */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-20"
+        >
+          <div
+            className="w-28 h-28 rounded-full overflow-hidden flex items-center justify-center"
             style={{ 
-              boxShadow: `0 0 40px ${LUXE_COLORS.gold}40`,
+              boxShadow: `0 0 40px ${LUXE_COLORS.gold}50, 0 8px 32px rgba(0,0,0,0.5)`,
+              border: `3px solid ${LUXE_COLORS.gold}`,
             }}
           >
             <img 
@@ -321,14 +395,40 @@ END:VCARD`;
               alt="Luxe Prestige" 
               className="w-full h-full object-cover"
             />
-            {/* Rotating ring */}
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0 rounded-full border-2 border-dashed"
-              style={{ borderColor: `${LUXE_COLORS.goldLight}40` }}
+          </div>
+        </motion.div>
+
+        {/* Hero indicators */}
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-2">
+          {HERO_IMAGES.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setHeroIndex(idx)}
+              className="w-2 h-2 rounded-full transition-all duration-300"
+              style={{ 
+                backgroundColor: idx === heroIndex ? LUXE_COLORS.gold : `${LUXE_COLORS.text}30`,
+                width: idx === heroIndex ? 24 : 8,
+              }}
             />
-          </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Main Card - continues from hero */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        className="w-full max-w-md relative z-10 px-4 -mt-4"
+      >
+        {/* Header with Name */}
+        <div 
+          className="rounded-t-3xl pt-16 pb-8 px-8 text-center relative overflow-hidden"
+          style={{ 
+            backgroundColor: LUXE_COLORS.card,
+            borderBottom: `2px solid ${LUXE_COLORS.gold}`,
+          }}
+        >
 
           {/* Name */}
           <h1 
@@ -359,6 +459,24 @@ END:VCARD`;
             <MapPin size={14} style={{ color: LUXE_COLORS.gold }} />
             <span className="text-sm" style={{ color: LUXE_COLORS.textMuted }}>
               {CONTACT.location}
+            </span>
+          </div>
+          
+          {/* 5-star rating */}
+          <div className="flex items-center justify-center gap-1 mt-4">
+            {[...Array(5)].map((_, i) => (
+              <Star 
+                key={i} 
+                size={14} 
+                fill={LUXE_COLORS.gold}
+                style={{ color: LUXE_COLORS.gold }}
+              />
+            ))}
+            <span 
+              className="ml-2 text-xs"
+              style={{ color: LUXE_COLORS.textMuted }}
+            >
+              Service d'exception
             </span>
           </div>
         </div>
@@ -401,7 +519,87 @@ END:VCARD`;
           ))}
         </div>
 
-        {/* Properties Section - Dar Al Bahja */}
+        {/* Experiences Section - Visual cards */}
+        <div 
+          className="p-6"
+          style={{ backgroundColor: LUXE_COLORS.card }}
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles size={18} style={{ color: LUXE_COLORS.gold }} />
+            <h2 
+              className="text-lg font-semibold tracking-wide"
+              style={{ color: LUXE_COLORS.gold }}
+            >
+              Expériences Uniques
+            </h2>
+          </div>
+
+          <div className="space-y-3">
+            {EXPERIENCES.map((exp, index) => (
+              <motion.div
+                key={exp.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + index * 0.15 }}
+                className="relative rounded-2xl overflow-hidden cursor-pointer group"
+                style={{ 
+                  border: `1px solid ${LUXE_COLORS.gold}20`,
+                }}
+                onClick={() => {
+                  const message = encodeURIComponent(`Bonjour, je souhaite réserver : ${exp.title}`);
+                  window.open(`https://wa.me/${CONTACT.whatsapp}?text=${message}`, "_blank");
+                }}
+              >
+                <div className="relative h-32">
+                  <img
+                    src={exp.image}
+                    alt={exp.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div 
+                    className="absolute inset-0"
+                    style={{
+                      background: `linear-gradient(to right, ${LUXE_COLORS.background}ee 0%, ${LUXE_COLORS.background}80 50%, transparent 100%)`,
+                    }}
+                  />
+                  
+                  {/* Content overlay */}
+                  <div className="absolute inset-0 p-4 flex flex-col justify-center">
+                    <div 
+                      className="w-10 h-10 rounded-full flex items-center justify-center mb-2"
+                      style={{ 
+                        backgroundColor: `${LUXE_COLORS.gold}20`,
+                        border: `1px solid ${LUXE_COLORS.gold}40`,
+                      }}
+                    >
+                      <exp.icon size={18} style={{ color: LUXE_COLORS.gold }} />
+                    </div>
+                    <h3 
+                      className="text-base font-semibold mb-1"
+                      style={{ color: LUXE_COLORS.text }}
+                    >
+                      {exp.title}
+                    </h3>
+                    <p 
+                      className="text-xs"
+                      style={{ color: LUXE_COLORS.textMuted }}
+                    >
+                      {exp.subtitle}
+                    </p>
+                  </div>
+                  
+                  {/* Arrow indicator */}
+                  <div 
+                    className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <ChevronRight size={24} style={{ color: LUXE_COLORS.gold }} />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
         <div 
           className="p-6"
           style={{ backgroundColor: LUXE_COLORS.card }}
