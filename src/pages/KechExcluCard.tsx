@@ -57,25 +57,13 @@ const galleryImages = [
 export default function KechExcluCard() {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
 
-  const handleCall = () => {
-    window.location.href = `tel:${contactData.phone}`;
-  };
+  // URLs directes pour iOS Safari
+  const callUrl = `tel:${contactData.phone}`;
+  const emailUrl = `mailto:${contactData.email}`;
+  const whatsappUrl = `https://wa.me/${contactData.whatsapp}`;
+  const instagramUrl = `https://instagram.com/${contactData.instagram}`;
+  const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(contactData.location)}`;
 
-  const handleEmail = () => {
-    window.location.href = `mailto:${contactData.email}`;
-  };
-
-  const handleWhatsApp = () => {
-    window.open(`https://wa.me/${contactData.whatsapp}`, "_blank");
-  };
-
-  const handleInstagram = () => {
-    window.open(`https://instagram.com/${contactData.instagram}`, "_blank");
-  };
-
-  const handleMaps = () => {
-    window.open(`https://maps.google.com/?q=${encodeURIComponent(contactData.location)}`, "_blank");
-  };
 
   const handleAddContact = () => {
     try {
@@ -375,11 +363,11 @@ export default function KechExcluCard() {
           <div className="px-6 pb-6 space-y-3">
             {/* Boutons principaux */}
             <div className="grid grid-cols-2 gap-3">
-              <motion.button
+              <motion.a
+                href={callUrl}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={handleCall}
-                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl font-medium text-sm transition-all"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl font-medium text-sm transition-all no-underline"
                 style={{ 
                   background: COLORS.gold,
                   color: COLORS.noir,
@@ -387,12 +375,14 @@ export default function KechExcluCard() {
               >
                 <Phone size={18} />
                 Appeler
-              </motion.button>
-              <motion.button
+              </motion.a>
+              <motion.a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={handleWhatsApp}
-                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl font-medium text-sm transition-all"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl font-medium text-sm transition-all no-underline"
                 style={{ 
                   background: "#25D366",
                   color: "#fff",
@@ -400,16 +390,16 @@ export default function KechExcluCard() {
               >
                 <MessageCircle size={18} />
                 WhatsApp
-              </motion.button>
+              </motion.a>
             </div>
 
             {/* Boutons secondaires */}
             <div className="grid grid-cols-3 gap-3">
-              <motion.button
+              <motion.a
+                href={emailUrl}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handleEmail}
-                className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all"
+                className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all no-underline"
                 style={{ 
                   background: `${COLORS.sand}10`,
                   border: `1px solid ${COLORS.sand}20`,
@@ -417,12 +407,14 @@ export default function KechExcluCard() {
               >
                 <Mail size={20} style={{ color: COLORS.sand }} />
                 <span className="text-xs" style={{ color: `${COLORS.sand}80` }}>Email</span>
-              </motion.button>
-              <motion.button
+              </motion.a>
+              <motion.a
+                href={instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handleInstagram}
-                className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all"
+                className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all no-underline"
                 style={{ 
                   background: `${COLORS.sand}10`,
                   border: `1px solid ${COLORS.sand}20`,
@@ -430,12 +422,14 @@ export default function KechExcluCard() {
               >
                 <Instagram size={20} style={{ color: COLORS.sand }} />
                 <span className="text-xs" style={{ color: `${COLORS.sand}80` }}>Instagram</span>
-              </motion.button>
-              <motion.button
+              </motion.a>
+              <motion.a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handleMaps}
-                className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all"
+                className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all no-underline"
                 style={{ 
                   background: `${COLORS.sand}10`,
                   border: `1px solid ${COLORS.sand}20`,
@@ -443,7 +437,7 @@ export default function KechExcluCard() {
               >
                 <MapPin size={20} style={{ color: COLORS.sand }} />
                 <span className="text-xs" style={{ color: `${COLORS.sand}80` }}>Maps</span>
-              </motion.button>
+              </motion.a>
             </div>
 
             {/* Ajouter contact */}
