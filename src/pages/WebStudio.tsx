@@ -340,104 +340,213 @@ export default function WebStudio() {
     <div className="min-h-screen" style={{ backgroundColor: STUDIO.noir }}>
       <CoutureNavbar />
       
-      {/* Hero Section */}
+      {/* Hero Section - Ultra Premium */}
       <section className="min-h-screen relative overflow-hidden pt-20">
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: `radial-gradient(ellipse at 70% 30%, ${STUDIO.or}15 0%, transparent 50%), 
-                         radial-gradient(ellipse at 30% 70%, ${STUDIO.or}08 0%, transparent 50%)`,
+        {/* Animated gradient orbs */}
+        <motion.div
+          className="absolute top-1/4 left-1/4 w-[700px] h-[700px] rounded-full blur-[180px] pointer-events-none"
+          style={{ backgroundColor: `${STUDIO.or}12` }}
+          animate={{
+            x: [0, 80, 0],
+            y: [0, -50, 0],
+            scale: [1, 1.2, 1],
           }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full blur-[150px] pointer-events-none"
+          style={{ backgroundColor: `${STUDIO.or}08` }}
+          animate={{
+            x: [0, -60, 0],
+            y: [0, 60, 0],
+            scale: [1, 1.15, 1],
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 3 }}
         />
         
+        {/* Floating particles */}
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 rounded-full pointer-events-none"
+            style={{
+              backgroundColor: STUDIO.or,
+              left: `${10 + (i * 6)}%`,
+              top: `${15 + (i % 5) * 18}%`,
+              opacity: 0.4,
+            }}
+            animate={{
+              y: [0, -40, 0],
+              opacity: [0.2, 0.6, 0.2],
+              scale: [1, 1.5, 1],
+            }}
+            transition={{
+              duration: 5 + (i % 3),
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.4,
+            }}
+          />
+        ))}
+        
+        {/* Grain texture */}
         <div 
           className="absolute inset-0 pointer-events-none opacity-[0.03]"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           }}
         />
+        
+        {/* Decorative lines */}
+        <motion.div
+          className="absolute top-24 left-8 md:left-16 w-px h-24"
+          style={{ backgroundColor: `${STUDIO.or}40` }}
+          initial={{ scaleY: 0, originY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ duration: 1.5, delay: 0.8 }}
+        />
+        <motion.div
+          className="absolute top-24 right-8 md:right-16 w-px h-24"
+          style={{ backgroundColor: `${STUDIO.or}40` }}
+          initial={{ scaleY: 0, originY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ duration: 1.5, delay: 1 }}
+        />
 
         <div className="container mx-auto px-6 lg:px-12 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-80px)] py-16">
             
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             >
+              {/* Badge with glow */}
               <motion.div
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full mb-8 relative"
                 style={{ 
                   backgroundColor: `${STUDIO.or}15`,
-                  border: `1px solid ${STUDIO.or}30`,
+                  border: `1px solid ${STUDIO.or}40`,
                 }}
-                initial={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+                transition={{ delay: 0.3 }}
               >
+                <motion.div
+                  className="absolute inset-0 rounded-full"
+                  style={{ backgroundColor: `${STUDIO.or}20` }}
+                  animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
                 <Sparkles size={14} style={{ color: STUDIO.or }} />
                 <span 
-                  className="text-[11px] uppercase tracking-[0.2em] font-medium"
+                  className="text-[11px] uppercase tracking-[0.2em] font-medium relative z-10"
                   style={{ color: STUDIO.or }}
                 >
                   IA + Expertise humaine
                 </span>
               </motion.div>
               
-              <h1 
-                className="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-[1.1] tracking-tight mb-6"
-                style={{ color: STUDIO.ivoire }}
-              >
-                Tout votre univers numérique,{" "}
-                <span className="italic" style={{ color: STUDIO.or }}>
-                  clé en main.
-                </span>
-              </h1>
+              {/* Title with staggered reveal */}
+              <div className="overflow-hidden mb-6">
+                <motion.h1 
+                  className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light leading-[1.05] tracking-tight"
+                  style={{ color: STUDIO.ivoire }}
+                  initial={{ y: 80, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  Tout votre univers
+                  <br />
+                  numérique,{" "}
+                  <span className="italic" style={{ color: STUDIO.or }}>
+                    clé en main.
+                  </span>
+                </motion.h1>
+              </div>
               
-              <p 
-                className="text-base md:text-lg font-light leading-relaxed max-w-xl mb-8"
+              {/* Decorative line */}
+              <motion.div
+                className="w-16 h-px mb-8"
+                style={{ backgroundColor: STUDIO.or }}
+                initial={{ scaleX: 0, originX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1, delay: 0.8 }}
+              />
+              
+              <motion.p 
+                className="text-base md:text-lg font-light leading-relaxed max-w-xl mb-10"
                 style={{ color: STUDIO.gris }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9, duration: 1 }}
               >
                 i-wasp Studio utilise l'IA et son expertise pour créer des sites sur mesure, 
                 prêts à l'emploi : identité, pages, textes et intégrations essentielles.
-              </p>
+              </motion.p>
               
-              <ul className="space-y-3 mb-10">
+              {/* Feature list with icons */}
+              <ul className="space-y-4 mb-12">
                 {[
-                  "Sites vitrines et e-commerce sur mesure",
-                  "Génération intelligente de contenu grâce à l'IA",
-                  "Livraison clé en main, prête à l'usage"
+                  { icon: Globe, text: "Sites vitrines et e-commerce sur mesure" },
+                  { icon: Sparkles, text: "Génération intelligente de contenu grâce à l'IA" },
+                  { icon: Package, text: "Livraison clé en main, prête à l'usage" }
                 ].map((feature, i) => (
                   <motion.li 
                     key={i}
-                    className="flex items-center gap-3"
-                    initial={{ opacity: 0, x: -20 }}
+                    className="flex items-center gap-4"
+                    initial={{ opacity: 0, x: -30 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 + i * 0.1 }}
+                    transition={{ delay: 1 + i * 0.15 }}
                   >
-                    <CheckCircle2 size={18} style={{ color: STUDIO.or }} />
+                    <div 
+                      className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ 
+                        backgroundColor: `${STUDIO.or}10`,
+                        border: `1px solid ${STUDIO.or}30`,
+                      }}
+                    >
+                      <feature.icon size={18} style={{ color: STUDIO.or }} />
+                    </div>
                     <span 
                       className="text-sm font-light"
                       style={{ color: STUDIO.grisClair }}
                     >
-                      {feature}
+                      {feature.text}
                     </span>
                   </motion.li>
                 ))}
               </ul>
               
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              {/* CTA Buttons */}
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 mb-10"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.4 }}
+              >
                 <motion.button
                   onClick={() => document.getElementById('generator')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="px-8 py-4 rounded-xl font-medium text-sm flex items-center justify-center gap-3 transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 rounded-xl font-medium text-sm flex items-center justify-center gap-3 relative overflow-hidden group"
                   style={{ 
-                    backgroundColor: STUDIO.or,
+                    background: `linear-gradient(135deg, ${STUDIO.or} 0%, ${STUDIO.orLight} 100%)`,
                     color: STUDIO.noir,
+                    boxShadow: `0 8px 32px ${STUDIO.or}40`,
                   }}
+                  whileHover={{ scale: 1.02, boxShadow: `0 12px 40px ${STUDIO.or}50` }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  Décrire mon projet
-                  <ArrowRight size={16} />
+                  <span className="relative z-10">Décrire mon projet</span>
+                  <ArrowRight size={16} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+                  {/* Shimmer effect */}
+                  <motion.div
+                    className="absolute inset-0"
+                    style={{
+                      background: `linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)`,
+                    }}
+                    animate={{ x: ["-100%", "200%"] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  />
                 </motion.button>
                 
                 <motion.button
@@ -446,249 +555,362 @@ export default function WebStudio() {
                   style={{ 
                     backgroundColor: "transparent",
                     color: STUDIO.ivoire,
-                    border: `1px solid ${STUDIO.ivoire}20`,
+                    border: `1px solid ${STUDIO.ivoire}25`,
+                  }}
+                  whileHover={{ 
+                    borderColor: `${STUDIO.or}50`,
+                    backgroundColor: `${STUDIO.or}10`,
                   }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <MessageCircle size={16} />
                   Parler sur WhatsApp
                 </motion.button>
-              </div>
+              </motion.div>
               
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2">
-                  <Clock size={14} style={{ color: STUDIO.or }} />
-                  <span className="text-xs" style={{ color: STUDIO.gris }}>Livraison 48h</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Package size={14} style={{ color: STUDIO.or }} />
-                  <span className="text-xs" style={{ color: STUDIO.gris }}>Site complet</span>
-                </div>
-              </div>
+              {/* Trust badges */}
+              <motion.div 
+                className="flex items-center gap-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.6 }}
+              >
+                {[
+                  { icon: Clock, text: "Livraison 48h" },
+                  { icon: Package, text: "Site complet" },
+                  { icon: Zap, text: "Express 24h" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <item.icon size={14} style={{ color: STUDIO.or }} />
+                    <span className="text-xs font-light" style={{ color: STUDIO.gris }}>{item.text}</span>
+                  </div>
+                ))}
+              </motion.div>
             </motion.div>
             
+            {/* Laptop Mockup - Enhanced */}
             <motion.div
               className="relative hidden lg:block"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, x: 50, rotateY: -10 }}
+              animate={{ opacity: 1, x: 0, rotateY: 0 }}
+              transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
+              {/* Glow behind laptop */}
+              <motion.div
+                className="absolute inset-0 rounded-3xl blur-[100px] pointer-events-none"
+                style={{ backgroundColor: `${STUDIO.or}20` }}
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{ duration: 5, repeat: Infinity }}
+              />
+              
               <div 
                 className="relative mx-auto"
-                style={{ maxWidth: "550px" }}
+                style={{ maxWidth: "550px", perspective: "1000px" }}
               >
-                <div 
-                  className="rounded-t-xl p-2"
-                  style={{ 
-                    backgroundColor: STUDIO.noirCard,
-                    border: `1px solid ${STUDIO.ivoire}10`,
-                  }}
+                <motion.div
+                  whileHover={{ rotateY: 5, rotateX: -2 }}
+                  transition={{ duration: 0.4 }}
                 >
                   <div 
-                    className="rounded-lg overflow-hidden aspect-[16/10]"
+                    className="rounded-t-2xl p-3"
                     style={{ 
-                      backgroundColor: STUDIO.noirSoft,
-                      boxShadow: `inset 0 0 30px ${STUDIO.noir}`,
+                      backgroundColor: STUDIO.noirCard,
+                      border: `1px solid ${STUDIO.ivoire}15`,
+                      boxShadow: `0 40px 80px ${STUDIO.noir}80`,
                     }}
                   >
-                    <div className="p-4 h-full flex flex-col">
-                      <div 
-                        className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg"
-                        style={{ backgroundColor: `${STUDIO.ivoire}05` }}
-                      >
-                        <div className="flex gap-1.5">
-                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#FF5F57" }} />
-                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#FFBD2E" }} />
-                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#28CA41" }} />
-                        </div>
+                    <div 
+                      className="rounded-xl overflow-hidden aspect-[16/10]"
+                      style={{ 
+                        backgroundColor: STUDIO.noirSoft,
+                        boxShadow: `inset 0 0 40px ${STUDIO.noir}`,
+                      }}
+                    >
+                      <div className="p-5 h-full flex flex-col">
+                        {/* Browser bar */}
                         <div 
-                          className="flex-1 text-center text-[10px] px-4 py-1 rounded"
-                          style={{ backgroundColor: `${STUDIO.ivoire}05`, color: STUDIO.gris }}
+                          className="flex items-center gap-3 mb-4 px-4 py-2.5 rounded-lg"
+                          style={{ backgroundColor: `${STUDIO.ivoire}05` }}
                         >
-                          votre-site.com
+                          <div className="flex gap-2">
+                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "#FF5F57" }} />
+                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "#FFBD2E" }} />
+                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "#28CA41" }} />
+                          </div>
+                          <div 
+                            className="flex-1 text-center text-[11px] px-6 py-1.5 rounded-lg"
+                            style={{ backgroundColor: `${STUDIO.ivoire}05`, color: STUDIO.gris }}
+                          >
+                            votre-site-premium.com
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
-                        <div 
-                          className="w-12 h-12 rounded-xl mb-4 flex items-center justify-center"
-                          style={{ backgroundColor: STUDIO.or }}
-                        >
-                          <span className="font-bold text-lg" style={{ color: STUDIO.noir }}>P</span>
-                        </div>
-                        <div 
-                          className="text-[10px] uppercase tracking-[0.3em] mb-2"
-                          style={{ color: STUDIO.gris }}
-                        >
-                          Premium Agency
-                        </div>
-                        <div 
-                          className="text-xs font-light"
-                          style={{ color: STUDIO.grisClair }}
-                        >
-                          Votre site professionnel
+                        
+                        {/* Fake website content */}
+                        <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
+                          <motion.div 
+                            className="w-14 h-14 rounded-2xl mb-5 flex items-center justify-center"
+                            style={{ 
+                              background: `linear-gradient(135deg, ${STUDIO.or} 0%, ${STUDIO.orLight} 100%)`,
+                              boxShadow: `0 8px 24px ${STUDIO.or}40`,
+                            }}
+                            animate={{ rotate: [0, 5, 0, -5, 0] }}
+                            transition={{ duration: 6, repeat: Infinity }}
+                          >
+                            <span className="font-bold text-xl" style={{ color: STUDIO.noir }}>W</span>
+                          </motion.div>
+                          <div 
+                            className="text-[11px] uppercase tracking-[0.4em] mb-3"
+                            style={{ color: STUDIO.or }}
+                          >
+                            Web Studio
+                          </div>
+                          <div 
+                            className="text-sm font-light"
+                            style={{ color: STUDIO.grisClair }}
+                          >
+                            Votre site professionnel
+                          </div>
+                          
+                          {/* Fake navigation dots */}
+                          <div className="flex gap-2 mt-6">
+                            {[1, 2, 3].map((i) => (
+                              <div 
+                                key={i}
+                                className="w-2 h-2 rounded-full"
+                                style={{ backgroundColor: i === 1 ? STUDIO.or : `${STUDIO.ivoire}20` }}
+                              />
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                
-                <div 
-                  className="h-4 rounded-b-xl mx-6"
-                  style={{ 
-                    backgroundColor: STUDIO.noirCard,
-                    borderBottom: `1px solid ${STUDIO.ivoire}10`,
-                    borderLeft: `1px solid ${STUDIO.ivoire}10`,
-                    borderRight: `1px solid ${STUDIO.ivoire}10`,
-                  }}
-                />
-                <div 
-                  className="h-1 rounded-b-xl mx-16"
-                  style={{ backgroundColor: STUDIO.noirCard }}
-                />
+                  
+                  {/* Laptop base */}
+                  <div 
+                    className="h-5 rounded-b-2xl mx-8"
+                    style={{ 
+                      backgroundColor: STUDIO.noirCard,
+                      borderBottom: `1px solid ${STUDIO.ivoire}15`,
+                      borderLeft: `1px solid ${STUDIO.ivoire}15`,
+                      borderRight: `1px solid ${STUDIO.ivoire}15`,
+                    }}
+                  />
+                  <div 
+                    className="h-1.5 rounded-b-xl mx-20"
+                    style={{ backgroundColor: STUDIO.noirCard }}
+                  />
+                </motion.div>
               </div>
               
+              {/* Floating Badges - Enhanced */}
               <motion.div
-                className="absolute -top-4 right-0 px-4 py-2 rounded-full"
+                className="absolute -top-2 right-4 px-5 py-2.5 rounded-full backdrop-blur-sm"
                 style={{ 
-                  backgroundColor: STUDIO.noirCard,
-                  border: `1px solid ${STUDIO.or}30`,
+                  backgroundColor: `${STUDIO.noirCard}90`,
+                  border: `1px solid ${STUDIO.or}40`,
+                  boxShadow: `0 8px 24px ${STUDIO.noir}60`,
                 }}
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
-                <span className="flex items-center gap-2 text-xs" style={{ color: STUDIO.or }}>
-                  <Sparkles size={12} />
+                <span className="flex items-center gap-2 text-xs font-medium" style={{ color: STUDIO.or }}>
+                  <Sparkles size={14} />
                   Généré par IA
                 </span>
               </motion.div>
               
               <motion.div
-                className="absolute top-1/3 -right-4 px-4 py-2 rounded-full"
+                className="absolute top-1/3 -right-2 px-5 py-2.5 rounded-full backdrop-blur-sm"
                 style={{ 
-                  backgroundColor: STUDIO.noirCard,
-                  border: `1px solid ${STUDIO.ivoire}15`,
+                  backgroundColor: `${STUDIO.noirCard}90`,
+                  border: `1px solid ${STUDIO.ivoire}20`,
+                  boxShadow: `0 8px 24px ${STUDIO.noir}60`,
                 }}
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
               >
-                <span className="flex items-center gap-2 text-xs" style={{ color: STUDIO.ivoire }}>
-                  <Zap size={12} />
+                <span className="flex items-center gap-2 text-xs font-medium" style={{ color: STUDIO.ivoire }}>
+                  <Zap size={14} />
                   Prêt à l'emploi
                 </span>
               </motion.div>
               
               <motion.div
-                className="absolute bottom-1/4 -left-4 px-4 py-2 rounded-full"
+                className="absolute bottom-1/4 -left-2 px-5 py-2.5 rounded-full backdrop-blur-sm"
                 style={{ 
-                  backgroundColor: STUDIO.noirCard,
-                  border: `1px solid ${STUDIO.or}30`,
+                  backgroundColor: `${STUDIO.noirCard}90`,
+                  border: `1px solid ${STUDIO.or}40`,
+                  boxShadow: `0 8px 24px ${STUDIO.noir}60`,
                 }}
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
               >
-                <span className="flex items-center gap-2 text-xs" style={{ color: STUDIO.or }}>
-                  <Package size={12} />
+                <span className="flex items-center gap-2 text-xs font-medium" style={{ color: STUDIO.or }}>
+                  <Package size={14} />
                   Clé en main
                 </span>
               </motion.div>
             </motion.div>
           </div>
           
+          {/* Scroll indicator */}
           <motion.div
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2 }}
           >
             <span 
-              className="text-[10px] uppercase tracking-[0.3em]"
+              className="text-[10px] uppercase tracking-[0.4em] font-light"
               style={{ color: STUDIO.gris }}
             >
               Scroll
             </span>
             <motion.div
-              className="w-px h-8"
-              style={{ backgroundColor: STUDIO.gris }}
-              animate={{ scaleY: [1, 0.5, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-px h-10"
+              style={{ backgroundColor: STUDIO.or }}
+              animate={{ scaleY: [1, 0.4, 1], opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2, repeat: Infinity }}
             />
           </motion.div>
         </div>
       </section>
 
-      {/* Templates Gallery */}
+      {/* Templates Gallery - Enhanced */}
       <section 
         id="generator"
-        className="py-20"
+        className="py-24 relative overflow-hidden"
         style={{ backgroundColor: STUDIO.noirSoft }}
       >
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="text-center mb-12">
-            <span 
-              className="text-[10px] uppercase tracking-[0.4em] font-light"
-              style={{ color: STUDIO.or }}
-            >
-              Templates
-            </span>
+        {/* Subtle gradient accent */}
+        <div 
+          className="absolute top-0 left-0 right-0 h-40 pointer-events-none"
+          style={{
+            background: `linear-gradient(to bottom, ${STUDIO.noir} 0%, transparent 100%)`,
+          }}
+        />
+        
+        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+          {/* Section header with animation */}
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <motion.div
+                className="h-px w-12"
+                style={{ backgroundColor: STUDIO.or }}
+                initial={{ scaleX: 0, originX: 1 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              />
+              <span 
+                className="text-[10px] uppercase tracking-[0.4em] font-light"
+                style={{ color: STUDIO.or }}
+              >
+                Templates
+              </span>
+              <motion.div
+                className="h-px w-12"
+                style={{ backgroundColor: STUDIO.or }}
+                initial={{ scaleX: 0, originX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              />
+            </div>
             <h2 
-              className="font-display text-2xl md:text-3xl font-light mt-4 tracking-tight"
+              className="font-display text-3xl md:text-4xl font-light tracking-tight"
               style={{ color: STUDIO.ivoire }}
             >
-              Choisissez un template pour démarrer
+              Choisissez un template
             </h2>
             <p 
-              className="text-sm font-light mt-3"
+              className="text-sm font-light mt-4 max-w-md mx-auto"
               style={{ color: STUDIO.gris }}
             >
-              Sélectionnez un style prédéfini ou personnalisez librement
+              Sélectionnez un style prédéfini ou personnalisez librement votre projet
             </p>
-          </div>
+          </motion.div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {TEMPLATES.map((template) => (
+          {/* Templates grid - Enhanced */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
+            {TEMPLATES.map((template, index) => (
               <motion.button
                 key={template.id}
                 onClick={() => handleSelectTemplate(template)}
-                className="group relative rounded-xl p-4 transition-all duration-300 text-left"
+                className="group relative rounded-2xl p-5 transition-all duration-500 text-left overflow-hidden"
                 style={{
-                  backgroundColor: selectedTemplate === template.id ? `${STUDIO.or}10` : STUDIO.noirCard,
+                  backgroundColor: selectedTemplate === template.id ? `${STUDIO.or}12` : STUDIO.noirCard,
                   border: selectedTemplate === template.id 
                     ? `2px solid ${STUDIO.or}` 
-                    : `1px solid ${STUDIO.ivoire}10`,
+                    : `1px solid ${STUDIO.ivoire}08`,
                 }}
-                whileHover={{ scale: 1.02 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+                whileHover={{ 
+                  scale: 1.03, 
+                  borderColor: `${STUDIO.or}50`,
+                  boxShadow: `0 20px 40px ${STUDIO.noir}80`,
+                }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div 
-                  className="w-10 h-10 rounded-lg flex items-center justify-center mb-3"
-                  style={{ 
-                    backgroundColor: `${STUDIO.or}20`,
-                    color: STUDIO.or,
+                {/* Hover glow effect */}
+                <motion.div
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: `radial-gradient(circle at 50% 0%, ${STUDIO.or}15 0%, transparent 70%)`,
                   }}
-                >
-                  {template.icon}
+                />
+                
+                <div className="relative z-10">
+                  <div 
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110"
+                    style={{ 
+                      backgroundColor: `${STUDIO.or}15`,
+                      border: `1px solid ${STUDIO.or}25`,
+                      color: STUDIO.or,
+                    }}
+                  >
+                    {template.icon}
+                  </div>
+                  <h3 
+                    className="font-medium text-sm mb-1"
+                    style={{ color: STUDIO.ivoire }}
+                  >
+                    {template.name}
+                  </h3>
+                  <p 
+                    className="text-xs line-clamp-2 font-light"
+                    style={{ color: STUDIO.gris }}
+                  >
+                    {template.description}
+                  </p>
                 </div>
-                <h3 
-                  className="font-medium text-sm"
-                  style={{ color: STUDIO.ivoire }}
-                >
-                  {template.name}
-                </h3>
-                <p 
-                  className="text-xs mt-1 line-clamp-2 font-light"
-                  style={{ color: STUDIO.gris }}
-                >
-                  {template.description}
-                </p>
                 
                 {selectedTemplate === template.id && (
-                  <div 
-                    className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: STUDIO.or }}
+                  <motion.div 
+                    className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${STUDIO.or} 0%, ${STUDIO.orLight} 100%)`,
+                      boxShadow: `0 4px 12px ${STUDIO.or}50`,
+                    }}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
                   >
-                    <Check className="w-3 h-3" style={{ color: STUDIO.noir }} />
-                  </div>
+                    <Check className="w-3.5 h-3.5" style={{ color: STUDIO.noir }} />
+                  </motion.div>
                 )}
               </motion.button>
             ))}
