@@ -41,6 +41,7 @@ export function CoutureNavbar() {
   const navLinks = [
     { href: "/", label: "Accueil" },
     { href: "/maison", label: "La Maison" },
+    { href: "/web-studio", label: "Web Studio" },
     { href: "/features", label: "Fonctionnalités" },
     { href: "/pricing", label: "Tarifs" },
     { href: "/order/offre", label: "Découvrir", highlight: true },
