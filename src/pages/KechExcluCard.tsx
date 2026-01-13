@@ -50,7 +50,7 @@ const galleryImages = [
   { src: apartmentImg2, label: "Riad avec Piscine", category: "Hébergement" },
   { src: vehicleImg, label: "4x4 Premium", category: "Véhicules" },
   { src: activityImg, label: "Buggy Désert", category: "Activités" },
-  { src: nfcCardImg, label: "Carte NFC Premium", category: "Digital" },
+  { src: nfcCardImg, label: "Carte NFC I-WASP", category: "Digital" },
   { src: websiteImg, label: "Site Vitrine", category: "Digital" },
 ];
 
