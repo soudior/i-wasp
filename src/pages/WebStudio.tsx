@@ -918,142 +918,453 @@ export default function WebStudio() {
         </div>
       </section>
 
-      {/* Generator Section */}
+      {/* Generator Section - Ultra Immersive */}
       <section 
-        className="py-20"
+        className="py-24 relative overflow-hidden"
         style={{ backgroundColor: STUDIO.noir }}
       >
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-            {/* Form */}
-            <div 
-              className="rounded-2xl p-6 lg:p-8"
-              style={{ 
-                backgroundColor: STUDIO.noirCard,
-                border: `1px solid ${STUDIO.ivoire}10`,
+        {/* Immersive background effects */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] rounded-full blur-[200px] pointer-events-none"
+          style={{ backgroundColor: `${STUDIO.or}06` }}
+          animate={{
+            scale: [1, 1.2, 1],
+            rotate: [0, 180, 360],
+          }}
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+        />
+        
+        {/* Floating orbs */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 rounded-full pointer-events-none"
+            style={{
+              backgroundColor: STUDIO.or,
+              left: `${15 + i * 15}%`,
+              top: `${20 + (i % 3) * 25}%`,
+              opacity: 0.3,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              x: [0, (i % 2 === 0 ? 20 : -20), 0],
+              opacity: [0.2, 0.5, 0.2],
+            }}
+            transition={{
+              duration: 6 + i,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.5,
+            }}
+          />
+        ))}
+        
+        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+          {/* Section Header */}
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.div
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full mb-6"
+              style={{
+                backgroundColor: `${STUDIO.or}15`,
+                border: `1px solid ${STUDIO.or}30`,
               }}
+              initial={{ scale: 0.8, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div 
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ backgroundColor: `${STUDIO.or}20` }}
-                >
-                  <Palette className="w-5 h-5" style={{ color: STUDIO.or }} />
-                </div>
-                <h2 
-                  className="text-xl font-medium"
-                  style={{ color: STUDIO.ivoire }}
-                >
-                  Décrivez votre projet
-                </h2>
-              </div>
-
-              <div className="space-y-5">
-                <div>
-                  <Label htmlFor="businessType">Type d'entreprise / Activité *</Label>
-                  <Input
-                    id="businessType"
-                    placeholder="Ex: Restaurant gastronomique, Photographe..."
-                    value={formData.businessType}
-                    onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="businessName">Nom de l'entreprise</Label>
-                  <Input
-                    id="businessName"
-                    placeholder="Votre nom ou nom de marque"
-                    value={formData.businessName}
-                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Description du projet</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Décrivez votre activité, vos objectifs, votre cible..."
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="mt-1 min-h-[100px]"
-                  />
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="style">Style souhaité</Label>
-                    <Input
-                      id="style"
-                      placeholder="Moderne, Élégant, Minimaliste..."
-                      value={formData.style}
-                      onChange={(e) => setFormData({ ...formData, style: e.target.value })}
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="colors">Couleurs préférées</Label>
-                    <Input
-                      id="colors"
-                      placeholder="Noir et or, Bleu marine..."
-                      value={formData.colors}
-                      onChange={(e) => setFormData({ ...formData, colors: e.target.value })}
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-border">
-                  <p className="text-sm text-muted-foreground mb-3 flex items-center gap-2">
-                    <LinkIcon className="w-4 h-4" />
-                    Optionnel : Analysez un site ou vos réseaux
-                  </p>
-                  <div className="space-y-3">
-                    <div>
-                      <Label htmlFor="websiteUrl">URL de site existant</Label>
-                      <Input
-                        id="websiteUrl"
-                        placeholder="https://votre-site-actuel.com"
-                        value={formData.websiteUrl}
-                        onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="socialLinks">Réseaux sociaux</Label>
-                      <Input
-                        id="socialLinks"
-                        placeholder="@instagram, facebook.com/page..."
-                        value={formData.socialLinks}
-                        onChange={(e) => setFormData({ ...formData, socialLinks: e.target.value })}
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <Button 
-                className="w-full mt-6" 
-                size="lg"
-                onClick={handleGenerate}
-                disabled={isGenerating}
+              <motion.div
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
               >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Génération en cours...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Générer ma proposition
-                  </>
-                )}
-              </Button>
-            </div>
+                <Sparkles size={14} style={{ color: STUDIO.or }} />
+              </motion.div>
+              <span className="text-xs uppercase tracking-widest" style={{ color: STUDIO.or }}>
+                Créateur intelligent
+              </span>
+            </motion.div>
+            
+            <h2 
+              className="text-3xl lg:text-4xl font-light tracking-tight mb-4"
+              style={{ color: STUDIO.ivoire }}
+            >
+              Décrivez votre{" "}
+              <span 
+                className="font-medium"
+                style={{
+                  background: `linear-gradient(135deg, ${STUDIO.or} 0%, ${STUDIO.orLight} 100%)`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                vision
+              </span>
+            </h2>
+            <p className="text-sm max-w-lg mx-auto" style={{ color: STUDIO.gris }}>
+              Notre IA analyse vos besoins et crée une proposition sur mesure en quelques secondes
+            </p>
+          </motion.div>
+          
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
+            {/* Form - Premium Immersive Design */}
+            <motion.div 
+              className="relative"
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              {/* Glow effect behind form */}
+              <motion.div
+                className="absolute -inset-4 rounded-[2rem] pointer-events-none"
+                style={{ 
+                  background: `radial-gradient(ellipse at center, ${STUDIO.or}08 0%, transparent 70%)`,
+                }}
+                animate={{
+                  opacity: [0.5, 0.8, 0.5],
+                }}
+                transition={{ duration: 4, repeat: Infinity }}
+              />
+              
+              <div 
+                className="relative rounded-3xl p-8 lg:p-10 backdrop-blur-xl"
+                style={{ 
+                  backgroundColor: `${STUDIO.noirCard}95`,
+                  border: `1px solid ${STUDIO.or}15`,
+                  boxShadow: `
+                    0 40px 100px ${STUDIO.noir}80,
+                    inset 0 1px 0 ${STUDIO.ivoire}08
+                  `,
+                }}
+              >
+                {/* Form header with animated icon */}
+                <div className="flex items-center gap-4 mb-8">
+                  <motion.div 
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center relative overflow-hidden"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${STUDIO.or}20 0%, ${STUDIO.or}10 100%)`,
+                      border: `1px solid ${STUDIO.or}30`,
+                    }}
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    {/* Shimmer effect */}
+                    <motion.div
+                      className="absolute inset-0"
+                      style={{
+                        background: `linear-gradient(90deg, transparent, ${STUDIO.or}20, transparent)`,
+                      }}
+                      animate={{ x: [-100, 100] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                    <Palette className="w-6 h-6 relative z-10" style={{ color: STUDIO.or }} />
+                  </motion.div>
+                  <div>
+                    <h3 
+                      className="text-xl font-medium tracking-tight"
+                      style={{ color: STUDIO.ivoire }}
+                    >
+                      Votre projet
+                    </h3>
+                    <p className="text-xs mt-0.5" style={{ color: STUDIO.gris }}>
+                      Remplissez les champs pour personnaliser
+                    </p>
+                  </div>
+                </div>
+
+                {/* Form fields with stagger animation */}
+                <div className="space-y-6">
+                  {/* Business type field - Required */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1 }}
+                    className="group"
+                  >
+                    <Label 
+                      htmlFor="businessType" 
+                      className="flex items-center gap-2 mb-2"
+                    >
+                      <span className="text-sm" style={{ color: STUDIO.ivoire }}>Type d'entreprise</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ 
+                        backgroundColor: `${STUDIO.or}20`,
+                        color: STUDIO.or,
+                      }}>
+                        Requis
+                      </span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="businessType"
+                        placeholder="Ex: Restaurant gastronomique, Photographe..."
+                        value={formData.businessType}
+                        onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
+                        className="h-14 pl-5 pr-12 text-base rounded-xl transition-all duration-300 focus:ring-2"
+                        style={{
+                          backgroundColor: `${STUDIO.noirSoft}80`,
+                          border: `1px solid ${STUDIO.ivoire}10`,
+                          color: STUDIO.ivoire,
+                        }}
+                      />
+                      <motion.div 
+                        className="absolute right-4 top-1/2 -translate-y-1/2"
+                        animate={formData.businessType ? { scale: [1, 1.2, 1] } : {}}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {formData.businessType && (
+                          <CheckCircle2 size={18} style={{ color: STUDIO.or }} />
+                        )}
+                      </motion.div>
+                    </div>
+                  </motion.div>
+
+                  {/* Business name field */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.15 }}
+                  >
+                    <Label htmlFor="businessName" className="mb-2 block">
+                      <span className="text-sm" style={{ color: STUDIO.ivoire }}>Nom de l'entreprise</span>
+                    </Label>
+                    <Input
+                      id="businessName"
+                      placeholder="Votre nom ou nom de marque"
+                      value={formData.businessName}
+                      onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                      className="h-14 pl-5 text-base rounded-xl transition-all duration-300"
+                      style={{
+                        backgroundColor: `${STUDIO.noirSoft}80`,
+                        border: `1px solid ${STUDIO.ivoire}10`,
+                        color: STUDIO.ivoire,
+                      }}
+                    />
+                  </motion.div>
+
+                  {/* Description field */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <Label htmlFor="description" className="mb-2 block">
+                      <span className="text-sm" style={{ color: STUDIO.ivoire }}>Description du projet</span>
+                    </Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Décrivez votre activité, vos objectifs, votre cible..."
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      className="min-h-[120px] p-5 text-base rounded-xl transition-all duration-300 resize-none"
+                      style={{
+                        backgroundColor: `${STUDIO.noirSoft}80`,
+                        border: `1px solid ${STUDIO.ivoire}10`,
+                        color: STUDIO.ivoire,
+                      }}
+                    />
+                  </motion.div>
+
+                  {/* Style and colors row */}
+                  <motion.div 
+                    className="grid sm:grid-cols-2 gap-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.25 }}
+                  >
+                    <div>
+                      <Label htmlFor="style" className="mb-2 block">
+                        <span className="text-sm" style={{ color: STUDIO.ivoire }}>Style souhaité</span>
+                      </Label>
+                      <Input
+                        id="style"
+                        placeholder="Moderne, Élégant..."
+                        value={formData.style}
+                        onChange={(e) => setFormData({ ...formData, style: e.target.value })}
+                        className="h-14 pl-5 text-base rounded-xl"
+                        style={{
+                          backgroundColor: `${STUDIO.noirSoft}80`,
+                          border: `1px solid ${STUDIO.ivoire}10`,
+                          color: STUDIO.ivoire,
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="colors" className="mb-2 block">
+                        <span className="text-sm" style={{ color: STUDIO.ivoire }}>Couleurs préférées</span>
+                      </Label>
+                      <Input
+                        id="colors"
+                        placeholder="Noir et or, Bleu..."
+                        value={formData.colors}
+                        onChange={(e) => setFormData({ ...formData, colors: e.target.value })}
+                        className="h-14 pl-5 text-base rounded-xl"
+                        style={{
+                          backgroundColor: `${STUDIO.noirSoft}80`,
+                          border: `1px solid ${STUDIO.ivoire}10`,
+                          color: STUDIO.ivoire,
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+
+                  {/* Optional section with collapsible design */}
+                  <motion.div 
+                    className="pt-6 mt-6"
+                    style={{ borderTop: `1px solid ${STUDIO.ivoire}08` }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <div className="flex items-center gap-3 mb-5">
+                      <div 
+                        className="w-8 h-8 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: `${STUDIO.ivoire}08` }}
+                      >
+                        <LinkIcon size={14} style={{ color: STUDIO.gris }} />
+                      </div>
+                      <span className="text-xs uppercase tracking-widest" style={{ color: STUDIO.gris }}>
+                        Optionnel — Analyse approfondie
+                      </span>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="websiteUrl" className="mb-2 block">
+                          <span className="text-sm" style={{ color: STUDIO.grisClair }}>URL existante</span>
+                        </Label>
+                        <Input
+                          id="websiteUrl"
+                          placeholder="https://votre-site-actuel.com"
+                          value={formData.websiteUrl}
+                          onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
+                          className="h-12 pl-5 text-sm rounded-xl"
+                          style={{
+                            backgroundColor: `${STUDIO.noirSoft}50`,
+                            border: `1px solid ${STUDIO.ivoire}08`,
+                            color: STUDIO.ivoire,
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="socialLinks" className="mb-2 block">
+                          <span className="text-sm" style={{ color: STUDIO.grisClair }}>Réseaux sociaux</span>
+                        </Label>
+                        <Input
+                          id="socialLinks"
+                          placeholder="@instagram, facebook.com/page..."
+                          value={formData.socialLinks}
+                          onChange={(e) => setFormData({ ...formData, socialLinks: e.target.value })}
+                          className="h-12 pl-5 text-sm rounded-xl"
+                          style={{
+                            backgroundColor: `${STUDIO.noirSoft}50`,
+                            border: `1px solid ${STUDIO.ivoire}08`,
+                            color: STUDIO.ivoire,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Premium Generate Button */}
+                <motion.div
+                  className="mt-10"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <motion.button
+                    className="w-full relative group overflow-hidden rounded-2xl"
+                    style={{ height: "64px" }}
+                    onClick={handleGenerate}
+                    disabled={isGenerating}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {/* Button background with gradient */}
+                    <div
+                      className="absolute inset-0 transition-all duration-500"
+                      style={{
+                        background: isGenerating 
+                          ? `linear-gradient(135deg, ${STUDIO.noirCard} 0%, ${STUDIO.noirSoft} 100%)`
+                          : `linear-gradient(135deg, ${STUDIO.or} 0%, ${STUDIO.orLight} 50%, ${STUDIO.or} 100%)`,
+                        backgroundSize: "200% 100%",
+                      }}
+                    />
+                    
+                    {/* Shimmer effect */}
+                    {!isGenerating && (
+                      <motion.div
+                        className="absolute inset-0 opacity-40"
+                        style={{
+                          background: `linear-gradient(90deg, transparent, ${STUDIO.ivoire}40, transparent)`,
+                        }}
+                        animate={{ x: ["-100%", "200%"] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+                      />
+                    )}
+                    
+                    {/* Button content */}
+                    <div className="relative z-10 flex items-center justify-center gap-3 font-medium text-base">
+                      {isGenerating ? (
+                        <>
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          >
+                            <Loader2 size={20} style={{ color: STUDIO.or }} />
+                          </motion.div>
+                          <span style={{ color: STUDIO.ivoire }}>Génération en cours...</span>
+                        </>
+                      ) : (
+                        <>
+                          <motion.div
+                            animate={{ rotate: [0, 15, -15, 0] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                          >
+                            <Sparkles size={20} style={{ color: STUDIO.noir }} />
+                          </motion.div>
+                          <span style={{ color: STUDIO.noir }}>Générer ma proposition</span>
+                          <ArrowRight size={18} style={{ color: STUDIO.noir }} />
+                        </>
+                      )}
+                    </div>
+                    
+                    {/* Glow effect on hover */}
+                    <motion.div
+                      className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
+                      style={{
+                        background: `radial-gradient(circle, ${STUDIO.or}40 0%, transparent 70%)`,
+                        filter: "blur(20px)",
+                      }}
+                    />
+                  </motion.button>
+                  
+                  {/* Helper text */}
+                  <motion.p 
+                    className="text-center mt-4 text-xs flex items-center justify-center gap-2"
+                    style={{ color: STUDIO.gris }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    <Clock size={12} />
+                    Résultat en moins de 30 secondes
+                  </motion.p>
+                </motion.div>
+              </div>
+            </motion.div>
 
             {/* Result */}
             <div className="space-y-6">
