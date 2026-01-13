@@ -7,7 +7,7 @@
  */
 
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRef } from "react";
 
@@ -57,8 +57,9 @@ const Index = () => {
           <div className="flex items-center gap-6 sm:gap-10">
             <Link 
               to="/login"
-              className="text-xs sm:text-sm tracking-[0.2em] uppercase border border-foreground/30 px-4 py-2 text-foreground hover:bg-foreground hover:text-background transition-all duration-500"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm tracking-[0.2em] uppercase border border-foreground/30 px-4 py-2 text-foreground hover:bg-foreground hover:text-background transition-all duration-500"
             >
+              <User className="w-4 h-4" />
               Espace Client
             </Link>
             <Link 
