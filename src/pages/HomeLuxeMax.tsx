@@ -1,12 +1,9 @@
 /**
- * HomeLuxeMax — Haute Couture Digitale
- * Style: Ultra chic, éditorial, minimalisme extrême
- * Palette: Noir Couture #080808 / Or Sablé #AF8E56
+ * HomeLuxeMax — ULTRA LUXE N°1 MONDIAL
+ * Style: Noir absolu, typographie Dior/Cartier, minimalisme extrême
+ * Alternance sections claires/sombres pour rythme visuel
  * 
- * Hero: Full-screen, silent, authoritative, timeless
- * Like entering a 5-star luxury fashion maison
- * 
- * Parallax: Subtle depth effects between sections
+ * Inspiré: Hermès, Cartier, Dior - Le plus haut niveau de luxe digital
  */
 
 import { useRef, useState } from "react";
@@ -14,228 +11,352 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { CoutureFooter } from "@/components/CoutureFooter";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
-import { PartnersSection } from "@/components/PartnersSection";
-import { COUTURE } from "@/lib/hauteCouturePalette";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import cardFront from "@/assets/card-front.png";
 import cardBack from "@/assets/card-back.png";
+import { ArrowRight } from "lucide-react";
+
+// Palette Ultra Luxe
+const LUXE = {
+  noir: "#050505",
+  noirSoft: "#0A0A0A",
+  ivoire: "#F8F7F5",
+  ivoireSoft: "#EFEDE8",
+  or: "#B8956C",
+  orLight: "#D4B896",
+  gris: "#6B6B6B",
+  grisClair: "#9A9A9A",
+};
 
 export default function HomeLuxeMax() {
-  // SEO
   SEOHead(SEO_CONFIGS.home);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Parallax for hero section
   const { scrollYProgress: heroProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
   
-  const heroTextY = useTransform(heroProgress, [0, 1], [0, 150]);
-  const heroOpacity = useTransform(heroProgress, [0, 0.5], [1, 0]);
-  const honeycombY = useTransform(heroProgress, [0, 1], [0, 50]);
+  const heroTextY = useTransform(heroProgress, [0, 1], [0, 100]);
+  const heroOpacity = useTransform(heroProgress, [0, 0.4], [1, 0]);
 
   return (
-    <div ref={containerRef} className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
+    <div ref={containerRef} className="min-h-screen" style={{ backgroundColor: LUXE.noir }}>
       
       {/* ═══════════════════════════════════════════════════════════════════
-          HERO NOIR — Full-screen, silent, authoritative, timeless
-          One headline. One CTA. Nothing else.
+          HERO — Full-screen, noir absolu, typographie Cartier
       ═══════════════════════════════════════════════════════════════════ */}
-      <section 
-        className="h-screen flex flex-col items-center justify-center px-8 relative overflow-hidden"
-        style={{ backgroundColor: COUTURE.jet }}
-      >
-        {/* Honeycomb texture with parallax */}
-        <motion.div 
-          className="absolute inset-0 pointer-events-none"
+      <section className="h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden">
+        
+        {/* Grain texture ultra subtil */}
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-[0.03]"
           style={{
-            y: honeycombY,
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.5' stroke-opacity='0.035'/%3E%3C/svg%3E")`,
-            backgroundSize: '56px 100px',
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           }}
         />
         
-        {/* Brand mark — minimal, top center */}
+        {/* Brand mark — ultra minimal */}
         <motion.div 
-          className="absolute top-8 left-0 right-0 flex justify-center z-20"
+          className="absolute top-10 left-0 right-0 flex justify-center z-20"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 1.5 }}
+          transition={{ delay: 0.3, duration: 2 }}
           style={{ opacity: heroOpacity }}
         >
           <Link 
             to="/"
-            className="font-display text-sm tracking-[0.3em] uppercase font-light"
-            style={{ color: COUTURE.textMuted }}
+            className="text-[11px] tracking-[0.5em] uppercase font-light"
+            style={{ color: LUXE.grisClair }}
           >
             i-wasp
           </Link>
         </motion.div>
         
-        {/* Central content with parallax */}
+        {/* Central headline */}
         <motion.div 
-          className="text-center relative z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2.5, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center relative z-10 max-w-4xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           style={{ y: heroTextY, opacity: heroOpacity }}
         >
           <h1 
-            className="font-display text-3xl md:text-4xl lg:text-5xl font-light leading-[1.3] tracking-tight"
-            style={{ color: COUTURE.silk }}
+            className="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-[1.15] tracking-tight"
+            style={{ color: LUXE.ivoire }}
           >
-            <span className="italic">La carte des </span>
-            <span className="italic" style={{ color: COUTURE.gold }}>décideurs.</span>
+            L'identité digitale
+            <br />
+            <span className="italic" style={{ color: LUXE.or }}>des leaders.</span>
           </h1>
+          
+          <motion.p
+            className="mt-8 text-sm md:text-base font-light tracking-wide max-w-md mx-auto"
+            style={{ color: LUXE.gris }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 1.5 }}
+          >
+            Une carte NFC premium pour ceux qui marquent leur époque.
+          </motion.p>
         </motion.div>
         
-        {/* Single discreet CTA with parallax */}
+        {/* CTA discret */}
         <motion.div 
-          className="absolute bottom-20 left-0 right-0 flex justify-center z-10"
+          className="absolute bottom-16 left-0 right-0 flex justify-center z-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2, duration: 1.5 }}
+          transition={{ delay: 1.5, duration: 1.5 }}
           style={{ opacity: heroOpacity }}
         >
           <Link 
             to="/order/offre"
-            className="text-[11px] uppercase tracking-[0.25em] font-light transition-all duration-1000 pb-1"
-            style={{ 
-              color: COUTURE.textMuted,
-              borderBottom: `1px solid ${COUTURE.textMuted}30`,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = COUTURE.gold;
-              e.currentTarget.style.borderBottomColor = COUTURE.gold;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = COUTURE.textMuted;
-              e.currentTarget.style.borderBottomColor = `${COUTURE.textMuted}30`;
-            }}
+            className="group flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] font-light transition-all duration-700"
+            style={{ color: LUXE.grisClair }}
           >
-            Créer mon identité
+            <span className="group-hover:text-white transition-colors duration-700">Découvrir</span>
+            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-500" />
           </Link>
         </motion.div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          CARTE — Single, high-end visual. Silent. Isolated. Editorial.
+          CARTE — Section ivoire, contraste élégant
       ═══════════════════════════════════════════════════════════════════ */}
-      <CardFlipSection />
+      <section style={{ backgroundColor: LUXE.ivoire }}>
+        <div className="py-24 md:py-32">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span 
+              className="text-[10px] uppercase tracking-[0.4em] font-light"
+              style={{ color: LUXE.or }}
+            >
+              La carte
+            </span>
+            <h2 
+              className="font-display text-3xl md:text-4xl font-light mt-4 tracking-tight"
+              style={{ color: LUXE.noir }}
+            >
+              Un objet d'exception
+            </h2>
+          </motion.div>
+          
+          <CardFlipSection variant="light" />
+          
+          <motion.div 
+            className="text-center mt-16 px-6"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 1 }}
+          >
+            <p 
+              className="text-sm font-light max-w-md mx-auto"
+              style={{ color: LUXE.gris }}
+            >
+              PVC mat premium. Technologie NFC intégrée. 
+              <br className="hidden md:block" />
+              Design sur-mesure selon vos exigences.
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          MANIFESTE — One silent thought with parallax
+          MANIFESTE — Section noire, citation impactante
       ═══════════════════════════════════════════════════════════════════ */}
-      <ParallaxSection backgroundColor={COUTURE.silk}>
+      <section 
+        className="py-24 md:py-32 flex items-center justify-center px-6"
+        style={{ backgroundColor: LUXE.noir }}
+      >
         <motion.blockquote 
-          className="text-center max-w-[600px]"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          className="text-center max-w-2xl"
+          initial={{ opacity: 0, scale: 0.98 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
         >
           <p 
-            className="font-display text-2xl md:text-3xl font-light italic leading-[1.5]"
-            style={{ color: COUTURE.jet }}
+            className="font-display text-2xl md:text-3xl lg:text-4xl font-light italic leading-[1.4]"
+            style={{ color: LUXE.ivoire }}
           >
-            "Une première impression
+            "La première impression
             <br />
-            <span style={{ color: COUTURE.gold }}>ne se répète jamais."</span>
+            <span style={{ color: LUXE.or }}>ne se répète jamais."</span>
           </p>
+          <div 
+            className="w-12 h-px mx-auto mt-10"
+            style={{ backgroundColor: LUXE.or }}
+          />
         </motion.blockquote>
-      </ParallaxSection>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          PARTENAIRES — Logos clients with elegant monograms
+          AVANTAGES — Section ivoire, trois piliers
       ═══════════════════════════════════════════════════════════════════ */}
-      <PartnersSection />
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          ESSENCE — Three words with staggered parallax
-      ═══════════════════════════════════════════════════════════════════ */}
-      <ParallaxSection backgroundColor={COUTURE.jet} hasHoneycomb>
+      <section 
+        className="py-24 md:py-32 px-6"
+        style={{ backgroundColor: LUXE.ivoire }}
+      >
         <motion.div 
-          className="text-center relative z-10"
+          className="max-w-4xl mx-auto"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1.5 }}
+          transition={{ duration: 1 }}
         >
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
-            {["Créer", "Partager", "Convertir"].map((word, i) => (
-              <motion.span
-                key={word}
-                className="font-display text-xl md:text-2xl font-light italic"
-                style={{ color: i === 1 ? COUTURE.gold : COUTURE.textMuted }}
+          <div className="text-center mb-16">
+            <span 
+              className="text-[10px] uppercase tracking-[0.4em] font-light"
+              style={{ color: LUXE.or }}
+            >
+              Pourquoi nous
+            </span>
+            <h2 
+              className="font-display text-3xl md:text-4xl font-light mt-4 tracking-tight"
+              style={{ color: LUXE.noir }}
+            >
+              L'excellence en trois mots
+            </h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-12 md:gap-16">
+            {[
+              { title: "Créer", desc: "Un profil digital unique, à votre image exacte." },
+              { title: "Partager", desc: "Un simple tap pour transmettre votre identité." },
+              { title: "Convertir", desc: "Des contacts qualifiés, pas de cartes perdues." },
+            ].map((item, i) => (
+              <motion.div
+                key={item.title}
+                className="text-center"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.2, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ delay: i * 0.15, duration: 1, ease: [0.16, 1, 0.3, 1] }}
               >
-                {word}
-              </motion.span>
+                <h3 
+                  className="font-display text-xl md:text-2xl font-light italic mb-4"
+                  style={{ color: i === 1 ? LUXE.or : LUXE.noir }}
+                >
+                  {item.title}
+                </h3>
+                <p 
+                  className="text-sm font-light leading-relaxed"
+                  style={{ color: LUXE.gris }}
+                >
+                  {item.desc}
+                </p>
+              </motion.div>
             ))}
           </div>
         </motion.div>
-      </ParallaxSection>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          SILENCE — Compact accent section
+          STATS — Section noire, chiffres d'autorité
       ═══════════════════════════════════════════════════════════════════ */}
-      <ParallaxSection backgroundColor={COUTURE.silk} minHeight="py-16 md:py-20">
+      <section 
+        className="py-20 md:py-24 px-6"
+        style={{ backgroundColor: LUXE.noir }}
+      >
         <motion.div 
-          className="max-w-[400px] mx-auto text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-4xl mx-auto"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1 }}
         >
-          <p 
-            className="text-sm font-light leading-[1.8] tracking-wide"
-            style={{ color: COUTURE.textMuted }}
-          >
-            Une carte. Un geste. Mille connexions.
-          </p>
+          <div className="grid grid-cols-3 gap-8 text-center">
+            {[
+              { value: "2500+", label: "Professionnels" },
+              { value: "98%", label: "Satisfaction" },
+              { value: "15+", label: "Pays" },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.8 }}
+              >
+                <span 
+                  className="font-display text-2xl md:text-3xl lg:text-4xl font-light"
+                  style={{ color: LUXE.or }}
+                >
+                  {stat.value}
+                </span>
+                <p 
+                  className="text-[10px] md:text-xs uppercase tracking-[0.2em] mt-2"
+                  style={{ color: LUXE.grisClair }}
+                >
+                  {stat.label}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
-      </ParallaxSection>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          TÉMOIGNAGES — Social proof with noir haute couture style
+          TÉMOIGNAGES
       ═══════════════════════════════════════════════════════════════════ */}
       <TestimonialsSection />
 
       {/* ═══════════════════════════════════════════════════════════════════
-          CTA FINAL — Authority with subtle reveal
+          CTA FINAL — Noir, autorité absolue
       ═══════════════════════════════════════════════════════════════════ */}
-      <ParallaxSection backgroundColor={COUTURE.jet} hasHoneycomb minHeight="min-h-[25vh]">
+      <section 
+        className="py-24 md:py-32 flex flex-col items-center justify-center px-6"
+        style={{ backgroundColor: LUXE.noir }}
+      >
         <motion.div 
-          className="text-center relative z-10"
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          className="text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
         >
+          <h2 
+            className="font-display text-2xl md:text-3xl lg:text-4xl font-light mb-8"
+            style={{ color: LUXE.ivoire }}
+          >
+            Prêt à vous démarquer ?
+          </h2>
+          
           <Link 
             to="/order/offre"
-            className="inline-block text-[11px] uppercase tracking-[0.25em] font-light transition-all duration-1000 pb-1"
+            className="inline-flex items-center gap-3 px-10 py-4 text-[11px] uppercase tracking-[0.3em] font-light transition-all duration-700 border"
             style={{ 
-              color: COUTURE.textMuted,
-              borderBottom: `1px solid ${COUTURE.textMuted}30`,
+              color: LUXE.noir,
+              backgroundColor: LUXE.or,
+              borderColor: LUXE.or,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = COUTURE.gold;
-              e.currentTarget.style.borderBottomColor = COUTURE.gold;
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = LUXE.or;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = COUTURE.textMuted;
-              e.currentTarget.style.borderBottomColor = `${COUTURE.textMuted}30`;
+              e.currentTarget.style.backgroundColor = LUXE.or;
+              e.currentTarget.style.color = LUXE.noir;
             }}
           >
-            Entrer
+            <span>Créer ma carte</span>
+            <ArrowRight className="w-3 h-3" />
           </Link>
+          
+          <p 
+            className="mt-8 text-xs font-light"
+            style={{ color: LUXE.gris }}
+          >
+            Livraison gratuite · Satisfait ou remboursé
+          </p>
         </motion.div>
-      </ParallaxSection>
+      </section>
 
       <CoutureFooter />
     </div>
@@ -243,32 +364,38 @@ export default function HomeLuxeMax() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CARD FLIP SECTION COMPONENT
+// CARD FLIP SECTION
 // ═══════════════════════════════════════════════════════════════════════════
 
-function CardFlipSection() {
+interface CardFlipProps {
+  variant?: 'light' | 'dark';
+}
+
+function CardFlipSection({ variant = 'dark' }: CardFlipProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  
+  const shadowColor = variant === 'light' 
+    ? 'rgba(0, 0, 0, 0.15)' 
+    : 'rgba(0, 0, 0, 0.6)';
 
   return (
-    <section 
-      className="py-16 md:py-24 flex items-center justify-center"
-      style={{ backgroundColor: COUTURE.jet }}
-    >
+    <div className="flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
         className="relative cursor-pointer"
         style={{ perspective: "1200px" }}
         onMouseEnter={() => setIsFlipped(true)}
         onMouseLeave={() => setIsFlipped(false)}
+        onClick={() => setIsFlipped(!isFlipped)}
       >
         <motion.div
-          className="relative w-[280px] md:w-[360px] lg:w-[420px]"
+          className="relative w-[300px] md:w-[380px] lg:w-[440px]"
           style={{ transformStyle: "preserve-3d" }}
           animate={{ rotateY: isFlipped ? 180 : 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Front */}
           <motion.img 
@@ -276,7 +403,7 @@ function CardFlipSection() {
             alt="Carte i-wasp - Recto" 
             className="w-full h-auto"
             style={{
-              filter: "drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5))",
+              filter: `drop-shadow(0 30px 60px ${shadowColor})`,
               backfaceVisibility: "hidden",
             }}
           />
@@ -286,66 +413,24 @@ function CardFlipSection() {
             alt="Carte i-wasp - Verso" 
             className="w-full h-auto absolute top-0 left-0"
             style={{
-              filter: "drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5))",
+              filter: `drop-shadow(0 30px 60px ${shadowColor})`,
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
             }}
           />
         </motion.div>
+        
+        {/* Hint */}
+        <motion.p
+          className="text-center mt-6 text-[10px] uppercase tracking-[0.3em]"
+          style={{ color: variant === 'light' ? LUXE.grisClair : LUXE.gris }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 1 }}
+        >
+          {isFlipped ? 'Verso' : 'Survoler pour voir le verso'}
+        </motion.p>
       </motion.div>
-    </section>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// PARALLAX SECTION COMPONENT
-// ═══════════════════════════════════════════════════════════════════════════
-
-interface ParallaxSectionProps {
-  children: React.ReactNode;
-  backgroundColor: string;
-  hasHoneycomb?: boolean;
-  minHeight?: string;
-}
-
-function ParallaxSection({ 
-  children, 
-  backgroundColor, 
-  hasHoneycomb = false,
-  minHeight = "min-h-[35vh]"
-}: ParallaxSectionProps) {
-  const sectionRef = useRef<HTMLElement>(null);
-  
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"]
-  });
-  
-  // Subtle parallax for content
-  const contentY = useTransform(scrollYProgress, [0, 1], [30, -30]);
-  // Honeycomb moves slower for depth
-  const honeycombY = useTransform(scrollYProgress, [0, 1], [0, -20]);
-
-  return (
-    <section 
-      ref={sectionRef}
-      className={`${minHeight} flex items-center justify-center px-8 relative overflow-hidden`}
-      style={{ backgroundColor }}
-    >
-      {hasHoneycomb && (
-        <motion.div 
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            y: honeycombY,
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.5' stroke-opacity='0.035'/%3E%3C/svg%3E")`,
-            backgroundSize: '56px 100px',
-          }}
-        />
-      )}
-      
-      <motion.div style={{ y: contentY }} className="relative z-10">
-        {children}
-      </motion.div>
-    </section>
+    </div>
   );
 }
