@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, Mail, MessageCircle, Instagram, MapPin, Car, Trees, Sun, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Phone, Mail, MessageCircle, Instagram, MapPin, Car, Trees, Sun, ChevronLeft, ChevronRight, X, CreditCard, Globe } from "lucide-react";
 import { downloadVCard } from "@/lib/vcard";
 import { toast } from "sonner";
 
@@ -39,6 +39,8 @@ const services = [
   { icon: Car, label: "Location Véhicules", desc: "Voitures & Motos" },
   { icon: Trees, label: "Appartements", desc: "Location saisonnière" },
   { icon: Sun, label: "Activités", desc: "Excursions & Aventures" },
+  { icon: CreditCard, label: "Cartes NFC", desc: "Cartes de visite digitales" },
+  { icon: Globe, label: "Sites Vitrines", desc: "Création sur mesure" },
 ];
 
 const galleryImages = [
