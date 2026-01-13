@@ -1,6 +1,7 @@
 /**
  * Dashboard Client i-wasp
  * 
+ * Design: Apple-like, minimaliste, haute couture
  * Sections:
  * - Mes cartes & supports
  * - Mes leads (avec export CSV)
@@ -11,7 +12,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,12 +25,8 @@ import { useSendPushNotification } from "@/hooks/usePushNotifications";
 import { usePushSubscribers } from "@/hooks/usePushSubscribers";
 import { usePushNotificationLogs, useCreatePushNotificationLog } from "@/hooks/usePushNotificationLogs";
 import { useScheduledNotifications, useCreateScheduledNotification, useDeleteScheduledNotification } from "@/hooks/useScheduledNotifications";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { 
   generateAppleWalletPass, 
@@ -39,11 +36,11 @@ import {
   Plus, CreditCard, Users, Eye, 
   MoreVertical, Wallet,
   Wifi, WifiOff, Pencil, Trash2, ExternalLink, Copy,
-  Apple, Smartphone, ShoppingBag, TrendingUp,
+  Apple, Smartphone, ShoppingBag, 
   ChevronRight, Loader2, Settings, Zap,
   Bell, Send, Mail, MessageSquare, Download,
-  BarChart3, MousePointerClick, QrCode, Link2,
-  Sparkles, Crown, Clock, Calendar, X
+  MousePointerClick, Link2, ArrowRight,
+  Sparkles, Crown, Clock, Calendar, X, LogOut
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -70,6 +67,22 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+// Animation variants - slow, luxurious
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.8 }
+  }
+};
+
+const stagger = {
+  visible: {
+    transition: { staggerChildren: 0.15 }
+  }
+};
+
 const Dashboard = () => {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
@@ -90,7 +103,7 @@ const Dashboard = () => {
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [walletCardId, setWalletCardId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("cards");
+  const [activeSection, setActiveSection] = useState<"cards" | "leads" | "stats" | "campaigns">("cards");
   const [showPushModal, setShowPushModal] = useState(false);
   const [pushTitle, setPushTitle] = useState("");
   const [pushMessage, setPushMessage] = useState("");
@@ -175,42 +188,10 @@ const Dashboard = () => {
 
   const userName = user?.user_metadata?.first_name || user?.email?.split("@")[0] || "Utilisateur";
 
-  // Stats cards
-  const statsData = [
-    { 
-      label: "Taps NFC", 
-      value: totalScans, 
-      icon: MousePointerClick, 
-      color: "text-blue-500",
-      description: "Scans de vos cartes"
-    },
-    { 
-      label: "Visites profil", 
-      value: totalViews, 
-      icon: Eye, 
-      color: "text-purple-500",
-      description: "Vues de vos profils"
-    },
-    { 
-      label: "Leads collectés", 
-      value: totalLeads, 
-      icon: Users, 
-      color: "text-green-500",
-      description: "Contacts capturés"
-    },
-    { 
-      label: "Taux conversion", 
-      value: `${conversionRate}%`, 
-      icon: TrendingUp, 
-      color: "text-orange-500",
-      description: "Leads / Visites"
-    },
-  ];
-
   // Recent leads (last 5)
   const recentLeads = leads.slice(0, 5);
 
-  // Get most clicked links (mock for now)
+  // Top links mock
   const topLinks = [
     { label: "WhatsApp", clicks: Math.floor(totalViews * 0.4), icon: MessageSquare },
     { label: "Email", clicks: Math.floor(totalViews * 0.25), icon: Mail },
@@ -218,783 +199,786 @@ const Dashboard = () => {
     { label: "Site web", clicks: Math.floor(totalViews * 0.15), icon: ExternalLink },
   ];
 
+  const navItems = [
+    { id: "cards", label: "Cartes", count: cards.length },
+    { id: "leads", label: "Leads", count: totalLeads },
+    { id: "stats", label: "Statistiques" },
+    { id: "campaigns", label: "Campagnes" },
+  ] as const;
+
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <div className="min-h-screen bg-background text-foreground selection:bg-foreground selection:text-background">
       
-      <main className="pt-24 pb-16">
-        <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+      {/* ═══════════════════════════════════════════════════════════════════
+          NAVIGATION — Ultra minimal
+          ═══════════════════════════════════════════════════════════════════ */}
+      <motion.nav 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 0.3 }}
+        className="fixed top-0 left-0 right-0 z-50 px-6 sm:px-12 py-6 sm:py-8 bg-background/80 backdrop-blur-xl border-b border-foreground/5"
+      >
+        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
+          <Link to="/" className="text-foreground font-serif text-xl sm:text-2xl tracking-wide">
+            i-wasp
+          </Link>
+          <div className="flex items-center gap-4 sm:gap-8">
+            <Link to="/settings">
+              <button className="text-muted-foreground hover:text-foreground transition-colors duration-500">
+                <Settings size={18} />
+              </button>
+            </Link>
+            <button 
+              onClick={() => signOut()}
+              className="text-xs sm:text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-500 flex items-center gap-2"
+            >
+              <LogOut size={14} />
+              <span className="hidden sm:inline">Déconnexion</span>
+            </button>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* Main Content */}
+      <main className="pt-32 pb-24 px-6 sm:px-12">
+        <div className="max-w-[1400px] mx-auto">
           
-          {/* Header */}
+          {/* ═══════════════════════════════════════════════════════════════════
+              HEADER — Bienvenue
+              ═══════════════════════════════════════════════════════════════════ */}
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
+            initial="hidden"
+            animate="visible"
+            variants={stagger}
+            className="mb-16 sm:mb-24"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                  Bonjour, {userName}
-                </h1>
-                <p className="text-muted-foreground">
-                  Votre tableau de bord i-wasp
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Link to="/create">
-                  <Button className="gap-2 bg-primary text-primary-foreground">
-                    <Plus size={18} />
-                    Nouvelle carte
-                  </Button>
-                </Link>
-              </div>
-            </div>
+            <motion.p 
+              variants={fadeUp}
+              className="text-xs sm:text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4"
+            >
+              Bienvenue
+            </motion.p>
+            <motion.h1 
+              variants={fadeUp}
+              className="font-serif text-3xl sm:text-5xl md:text-6xl font-light tracking-tight mb-6"
+            >
+              {userName}
+            </motion.h1>
+            <motion.p 
+              variants={fadeUp}
+              className="text-base sm:text-lg text-muted-foreground max-w-xl"
+            >
+              Gérez vos cartes digitales et suivez vos performances.
+            </motion.p>
           </motion.div>
 
-          {/* Navigation Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid h-auto p-1">
-              <TabsTrigger value="cards" className="gap-2 py-2.5">
-                <CreditCard size={16} />
-                <span className="hidden sm:inline">Mes cartes</span>
-                <span className="sm:hidden">Cartes</span>
-              </TabsTrigger>
-              <TabsTrigger value="leads" className="gap-2 py-2.5">
-                <Users size={16} />
-                <span className="hidden sm:inline">Mes leads</span>
-                <span className="sm:hidden">Leads</span>
-                {totalLeads > 0 && (
-                  <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
-                    {totalLeads}
-                  </Badge>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="stats" className="gap-2 py-2.5">
-                <BarChart3 size={16} />
-                <span className="hidden sm:inline">Statistiques</span>
-                <span className="sm:hidden">Stats</span>
-              </TabsTrigger>
-              <TabsTrigger value="campaigns" className="gap-2 py-2.5">
-                <Bell size={16} />
-                <span className="hidden sm:inline">Campagnes</span>
-                <span className="sm:hidden">Notifs</span>
-              </TabsTrigger>
-            </TabsList>
-
-            {/* ═══════════════════════════════════════════════════════════════════
-                TAB 1: MES CARTES & SUPPORTS
-                ═══════════════════════════════════════════════════════════════════ */}
-            <TabsContent value="cards" className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+          {/* ═══════════════════════════════════════════════════════════════════
+              STATS OVERVIEW — Grandes métriques
+              ═══════════════════════════════════════════════════════════════════ */}
+          <motion.div 
+            initial="hidden"
+            animate="visible"
+            variants={stagger}
+            className="grid grid-cols-2 md:grid-cols-4 gap-px bg-foreground/5 rounded-2xl overflow-hidden mb-16 sm:mb-24"
+          >
+            {[
+              { label: "Cartes", value: cards.length, icon: CreditCard },
+              { label: "Vues", value: totalViews, icon: Eye },
+              { label: "Leads", value: totalLeads, icon: Users },
+              { label: "Conversion", value: `${conversionRate}%`, icon: MousePointerClick },
+            ].map((stat, i) => (
+              <motion.div 
+                key={stat.label}
+                variants={fadeUp}
+                className="bg-background p-6 sm:p-10"
               >
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  {[
-                    { label: "Cartes actives", value: cards.length, icon: CreditCard, color: "text-primary" },
-                    { label: "Vues totales", value: totalViews, icon: Eye, color: "text-blue-500" },
-                    { label: "Leads", value: totalLeads, icon: Users, color: "text-green-500" },
-                    { label: "NFC actifs", value: cards.filter(c => c.nfc_enabled).length, icon: Wifi, color: "text-purple-500" },
-                  ].map((stat) => (
-                    <Card key={stat.label} className="bg-card border-border/50">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <stat.icon size={16} className={stat.color} />
-                          <span className="text-xs text-muted-foreground">{stat.label}</span>
-                        </div>
-                        <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                <stat.icon size={20} className="text-muted-foreground mb-4" />
+                <p className="font-serif text-3xl sm:text-4xl md:text-5xl font-light tracking-tight mb-2">
+                  {stat.value}
+                </p>
+                <p className="text-xs sm:text-sm text-muted-foreground tracking-wide">
+                  {stat.label}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
 
-                {/* Cards List */}
-                {cardsLoading ? (
-                  <div className="flex justify-center py-16">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  </div>
-                ) : cards.length === 0 ? (
-                  <Card className="p-12 text-center border-dashed border-2 border-border/50">
-                    <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-secondary flex items-center justify-center">
-                      <CreditCard size={28} className="text-muted-foreground" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      Créez votre première carte
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
-                      Votre identité digitale premium vous attend
-                    </p>
-                    <Link to="/create">
-                      <Button className="gap-2 bg-primary text-primary-foreground">
-                        <Plus size={18} />
-                        Créer ma carte
-                      </Button>
-                    </Link>
-                  </Card>
-                ) : (
-                  <div className="grid gap-4">
-                    {cards.map((card) => (
-                      <Card 
-                        key={card.id}
-                        className="p-5 bg-card border-border/50 hover:border-border transition-all"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-2xl bg-secondary overflow-hidden flex-shrink-0">
-                              {card.photo_url ? (
-                                <img 
-                                  src={card.photo_url} 
-                                  alt={card.first_name}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                                  <CreditCard size={24} />
-                                </div>
+          {/* ═══════════════════════════════════════════════════════════════════
+              SECTION TABS — Navigation minimaliste
+              ═══════════════════════════════════════════════════════════════════ */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="flex flex-wrap gap-6 sm:gap-12 mb-12 sm:mb-16 border-b border-foreground/5 pb-6"
+          >
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveSection(item.id)}
+                className={`text-sm sm:text-base tracking-wide transition-colors duration-500 pb-2 relative ${
+                  activeSection === item.id 
+                    ? "text-foreground" 
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {item.label}
+                {'count' in item && item.count > 0 && (
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    {item.count}
+                  </span>
+                )}
+                {activeSection === item.id && (
+                  <motion.div 
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-px bg-foreground"
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
+              </button>
+            ))}
+          </motion.div>
+
+          {/* ═══════════════════════════════════════════════════════════════════
+              SECTION: MES CARTES
+              ═══════════════════════════════════════════════════════════════════ */}
+          {activeSection === "cards" && (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={stagger}
+            >
+              {/* New card CTA */}
+              <motion.div variants={fadeUp} className="flex items-center justify-between mb-10">
+                <h2 className="font-serif text-2xl sm:text-3xl font-light tracking-tight">
+                  Mes cartes
+                </h2>
+                <Link to="/create">
+                  <button className="inline-flex items-center gap-3 text-xs sm:text-sm tracking-[0.15em] uppercase border border-foreground/30 px-5 py-3 hover:bg-foreground hover:text-background transition-all duration-500">
+                    <Plus size={16} />
+                    Nouvelle carte
+                  </button>
+                </Link>
+              </motion.div>
+
+              {/* Cards Grid */}
+              {cardsLoading ? (
+                <div className="flex justify-center py-24">
+                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+              ) : cards.length === 0 ? (
+                <motion.div 
+                  variants={fadeUp}
+                  className="py-24 text-center border border-foreground/10 rounded-2xl"
+                >
+                  <CreditCard size={40} className="mx-auto text-muted-foreground mb-6" />
+                  <h3 className="font-serif text-2xl font-light mb-3">Créez votre première carte</h3>
+                  <p className="text-muted-foreground text-sm mb-8 max-w-sm mx-auto">
+                    Votre identité digitale premium vous attend
+                  </p>
+                  <Link to="/create">
+                    <button className="inline-flex items-center gap-3 bg-foreground text-background px-8 py-4 text-sm tracking-[0.15em] uppercase hover:opacity-80 transition-opacity duration-500">
+                      <Plus size={16} />
+                      Créer ma carte
+                    </button>
+                  </Link>
+                </motion.div>
+              ) : (
+                <div className="space-y-4">
+                  {cards.map((card, index) => (
+                    <motion.div 
+                      key={card.id}
+                      variants={fadeUp}
+                      custom={index}
+                      className="group p-6 sm:p-8 border border-foreground/10 rounded-2xl hover:border-foreground/30 transition-all duration-500"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-5 sm:gap-8">
+                          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-muted overflow-hidden flex-shrink-0">
+                            {card.photo_url ? (
+                              <img 
+                                src={card.photo_url} 
+                                alt={card.first_name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                                <CreditCard size={24} />
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div>
+                            <h3 className="font-serif text-xl sm:text-2xl font-light tracking-tight mb-1">
+                              {card.first_name} {card.last_name}
+                            </h3>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              {card.title || card.company || "Carte digitale"}
+                            </p>
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1.5">
+                                <Eye size={12} />
+                                {card.view_count || 0} vues
+                              </span>
+                              <span className="flex items-center gap-1.5">
+                                <Users size={12} />
+                                {leads.filter(l => l.card_id === card.id).length} leads
+                              </span>
+                              {card.nfc_enabled && (
+                                <span className="flex items-center gap-1.5 text-foreground">
+                                  <Zap size={12} />
+                                  NFC
+                                </span>
                               )}
                             </div>
-                            
-                            <div>
-                              <h3 className="font-semibold text-foreground">
-                                {card.first_name} {card.last_name}
-                              </h3>
-                              <p className="text-sm text-muted-foreground">
-                                {card.title || card.company || "Carte digitale"}
-                              </p>
-                              <div className="flex items-center gap-3 mt-1">
-                                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <Eye size={12} />
-                                  {card.view_count || 0}
-                                </span>
-                                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <Users size={12} />
-                                  {leads.filter(l => l.card_id === card.id).length}
-                                </span>
-                                {card.nfc_enabled && (
-                                  <Badge variant="secondary" className="text-xs gap-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                    <Zap size={10} />
-                                    NFC
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              className="hidden sm:flex gap-1 text-muted-foreground hover:text-foreground"
-                              onClick={() => window.open(`/c/${card.slug}`, '_blank')}
-                            >
-                              <ExternalLink size={14} />
-                              Voir
-                            </Button>
-                            
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9">
-                                  <MoreVertical size={18} />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-48">
-                                <DropdownMenuItem onClick={() => navigate(`/create?edit=${card.id}`)}>
-                                  <Pencil size={14} className="mr-2" />
-                                  Modifier
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleToggleNFC(card.id, card.nfc_enabled)}>
-                                  {card.nfc_enabled ? (
-                                    <>
-                                      <WifiOff size={14} className="mr-2" />
-                                      Désactiver NFC
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Wifi size={14} className="mr-2" />
-                                      Activer NFC
-                                    </>
-                                  )}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleCopyLink(card.slug)}>
-                                  <Copy size={14} className="mr-2" />
-                                  Copier le lien
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => window.open(`/c/${card.slug}`, '_blank')}>
-                                  <ExternalLink size={14} className="mr-2" />
-                                  Ouvrir
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => handleAddToWallet(card.id)}>
-                                  <Wallet size={14} className="mr-2" />
-                                  Ajouter au Wallet
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem 
-                                  className="text-destructive"
-                                  onClick={() => setDeleteCardId(card.id)}
-                                >
-                                  <Trash2 size={14} className="mr-2" />
-                                  Supprimer
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
                           </div>
                         </div>
-                      </Card>
+
+                        <div className="flex items-center gap-3">
+                          <button 
+                            onClick={() => window.open(`/c/${card.slug}`, '_blank')}
+                            className="hidden sm:flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-500"
+                          >
+                            Voir
+                            <ArrowRight size={14} />
+                          </button>
+                          
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors">
+                                <MoreVertical size={18} />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48 bg-background border-foreground/10">
+                              <DropdownMenuItem onClick={() => navigate(`/create?edit=${card.id}`)}>
+                                <Pencil size={14} className="mr-2" />
+                                Modifier
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleToggleNFC(card.id, card.nfc_enabled)}>
+                                {card.nfc_enabled ? (
+                                  <>
+                                    <WifiOff size={14} className="mr-2" />
+                                    Désactiver NFC
+                                  </>
+                                ) : (
+                                  <>
+                                    <Wifi size={14} className="mr-2" />
+                                    Activer NFC
+                                  </>
+                                )}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleCopyLink(card.slug)}>
+                                <Copy size={14} className="mr-2" />
+                                Copier le lien
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => window.open(`/c/${card.slug}`, '_blank')}>
+                                <ExternalLink size={14} className="mr-2" />
+                                Ouvrir
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => handleAddToWallet(card.id)}>
+                                <Wallet size={14} className="mr-2" />
+                                Ajouter au Wallet
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                className="text-destructive"
+                                onClick={() => setDeleteCardId(card.id)}
+                              >
+                                <Trash2 size={14} className="mr-2" />
+                                Supprimer
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+              {/* Orders Section */}
+              {orders.length > 0 && (
+                <motion.div variants={fadeUp} className="mt-16">
+                  <div className="flex items-center justify-between mb-8">
+                    <h3 className="font-serif text-xl sm:text-2xl font-light tracking-tight">
+                      Commandes récentes
+                    </h3>
+                    <Link to="/orders" className="text-xs sm:text-sm tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-500 flex items-center gap-2">
+                      Voir tout
+                      <ChevronRight size={14} />
+                    </Link>
+                  </div>
+                  <div className="space-y-3">
+                    {orders.slice(0, 3).map((order) => {
+                      const statusConfig: Record<string, { label: string }> = {
+                        pending: { label: "En attente" },
+                        paid: { label: "Payée" },
+                        in_production: { label: "Production" },
+                        shipped: { label: "Expédiée" },
+                        delivered: { label: "Livrée" },
+                      };
+                      const status = statusConfig[order.status] || statusConfig.pending;
+                      
+                      return (
+                        <Link 
+                          key={order.id} 
+                          to={`/orders/${order.id}`}
+                          className="flex items-center justify-between p-5 border border-foreground/10 rounded-xl hover:border-foreground/30 transition-all duration-500"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                              <ShoppingBag size={18} className="text-muted-foreground" />
+                            </div>
+                            <div>
+                              <p className="font-medium">#{order.order_number}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {(order.total_price_cents / 100).toFixed(0)} {order.currency}
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-xs tracking-wide uppercase text-muted-foreground">
+                            {status.label}
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════════
+              SECTION: MES LEADS
+              ═══════════════════════════════════════════════════════════════════ */}
+          {activeSection === "leads" && (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={stagger}
+            >
+              <motion.div variants={fadeUp} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+                <div>
+                  <h2 className="font-serif text-2xl sm:text-3xl font-light tracking-tight mb-2">
+                    Mes leads
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Contacts collectés via vos cartes NFC
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={handleExportLeads}
+                    disabled={leads.length === 0}
+                    className="inline-flex items-center gap-2 text-xs sm:text-sm tracking-[0.15em] uppercase border border-foreground/30 px-4 py-2.5 hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Download size={14} />
+                    Export CSV
+                  </button>
+                </div>
+              </motion.div>
+
+              {leads.length === 0 ? (
+                <motion.div 
+                  variants={fadeUp}
+                  className="py-24 text-center border border-foreground/10 rounded-2xl"
+                >
+                  <Users size={40} className="mx-auto text-muted-foreground mb-6" />
+                  <h3 className="font-serif text-2xl font-light mb-3">Aucun lead pour le moment</h3>
+                  <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+                    Les contacts qui interagissent avec votre carte apparaîtront ici
+                  </p>
+                </motion.div>
+              ) : (
+                <>
+                  {/* Stats mini */}
+                  <motion.div 
+                    variants={fadeUp}
+                    className="grid grid-cols-3 gap-px bg-foreground/5 rounded-xl overflow-hidden mb-10"
+                  >
+                    <div className="bg-background p-6 text-center">
+                      <p className="font-serif text-3xl font-light mb-1">{leads.length}</p>
+                      <p className="text-xs text-muted-foreground">Total</p>
+                    </div>
+                    <div className="bg-background p-6 text-center">
+                      <p className="font-serif text-3xl font-light mb-1">
+                        {leads.filter(l => l.status === "new").length}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Nouveaux</p>
+                    </div>
+                    <div className="bg-background p-6 text-center">
+                      <p className="font-serif text-3xl font-light mb-1">
+                        {leads.filter(l => l.consent_given).length}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Consentis</p>
+                    </div>
+                  </motion.div>
+
+                  {/* Leads list */}
+                  <div className="space-y-3">
+                    {recentLeads.map((lead, index) => (
+                      <motion.div 
+                        key={lead.id}
+                        variants={fadeUp}
+                        className="flex items-center justify-between p-5 border border-foreground/10 rounded-xl"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                            <span className="text-sm font-medium">
+                              {lead.name?.charAt(0)?.toUpperCase() || "?"}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-medium">{lead.name || "Anonyme"}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {lead.email || lead.phone || "—"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          {lead.consent_given && (
+                            <span className="text-xs text-muted-foreground">RGPD ✓</span>
+                          )}
+                          <span className="text-xs text-muted-foreground">
+                            {format(new Date(lead.created_at), "dd MMM", { locale: fr })}
+                          </span>
+                        </div>
+                      </motion.div>
                     ))}
                   </div>
-                )}
 
-                {/* Orders Section */}
-                {orders.length > 0 && (
-                  <div className="mt-8">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-foreground">Commandes récentes</h3>
-                      <Link to="/orders">
-                        <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground">
-                          Voir tout <ChevronRight size={14} />
-                        </Button>
+                  {leads.length > 5 && (
+                    <motion.div variants={fadeUp} className="text-center mt-8">
+                      <Link to="/leads">
+                        <button className="inline-flex items-center gap-3 text-sm tracking-[0.15em] uppercase border border-foreground/30 px-6 py-3 hover:bg-foreground hover:text-background transition-all duration-500">
+                          Voir les {leads.length} leads
+                          <ChevronRight size={14} />
+                        </button>
                       </Link>
-                    </div>
-                    <Card className="divide-y divide-border/50">
-                      {orders.slice(0, 3).map((order) => {
-                        const statusConfig: Record<string, { label: string; color: string }> = {
-                          pending: { label: "En attente", color: "bg-amber-100 text-amber-700" },
-                          paid: { label: "Payée", color: "bg-green-100 text-green-700" },
-                          in_production: { label: "Production", color: "bg-purple-100 text-purple-700" },
-                          shipped: { label: "Expédiée", color: "bg-blue-100 text-blue-700" },
-                          delivered: { label: "Livrée", color: "bg-emerald-100 text-emerald-700" },
-                        };
-                        const status = statusConfig[order.status] || statusConfig.pending;
-                        
-                        return (
-                          <Link 
-                            key={order.id} 
-                            to={`/orders/${order.id}`}
-                            className="p-4 flex items-center justify-between hover:bg-secondary/50 transition-colors block"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
-                                <ShoppingBag size={18} className="text-muted-foreground" />
-                              </div>
-                              <div>
-                                <p className="font-medium text-foreground">#{order.order_number}</p>
-                                <p className="text-sm text-muted-foreground">
-                                  {(order.total_price_cents / 100).toFixed(0)} {order.currency}
-                                </p>
-                              </div>
-                            </div>
-                            <Badge className={status.color}>{status.label}</Badge>
-                          </Link>
-                        );
-                      })}
-                    </Card>
-                  </div>
-                )}
+                    </motion.div>
+                  )}
+                </>
+              )}
+            </motion.div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════════
+              SECTION: STATISTIQUES
+              ═══════════════════════════════════════════════════════════════════ */}
+          {activeSection === "stats" && (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={stagger}
+            >
+              <motion.div variants={fadeUp} className="mb-10">
+                <h2 className="font-serif text-2xl sm:text-3xl font-light tracking-tight mb-2">
+                  Statistiques
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Performance de vos cartes NFC
+                </p>
               </motion.div>
-            </TabsContent>
 
-            {/* ═══════════════════════════════════════════════════════════════════
-                TAB 2: MES LEADS
-                ═══════════════════════════════════════════════════════════════════ */}
-            <TabsContent value="leads" className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                {/* Header with export */}
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-xl font-semibold text-foreground">Mes leads</h2>
-                    <p className="text-sm text-muted-foreground">
-                      Contacts collectés via vos cartes NFC
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleExportLeads}
-                      disabled={leads.length === 0}
-                      className="gap-2"
-                    >
-                      <Download size={14} />
-                      Export CSV
-                    </Button>
-                    <Link to="/leads">
-                      <Button variant="outline" size="sm" className="gap-2">
-                        Voir tout
-                        <ChevronRight size={14} />
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-
-                {leads.length === 0 ? (
-                  <Card className="p-12 text-center border-dashed border-2 border-border/50">
-                    <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-secondary flex items-center justify-center">
-                      <Users size={28} className="text-muted-foreground" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      Aucun lead pour le moment
-                    </h3>
-                    <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-                      Les contacts qui interagissent avec votre carte apparaîtront ici
-                    </p>
-                  </Card>
-                ) : (
-                  <>
-                    {/* Stats row */}
-                    <div className="grid grid-cols-3 gap-4 mb-6">
-                      <Card className="bg-card border-border/50">
-                        <CardContent className="p-4 text-center">
-                          <p className="text-3xl font-bold text-foreground">{leads.length}</p>
-                          <p className="text-xs text-muted-foreground">Total leads</p>
-                        </CardContent>
-                      </Card>
-                      <Card className="bg-card border-border/50">
-                        <CardContent className="p-4 text-center">
-                          <p className="text-3xl font-bold text-foreground">
-                            {leads.filter(l => l.status === "new").length}
-                          </p>
-                          <p className="text-xs text-muted-foreground">Nouveaux</p>
-                        </CardContent>
-                      </Card>
-                      <Card className="bg-card border-border/50">
-                        <CardContent className="p-4 text-center">
-                          <p className="text-3xl font-bold text-foreground">
-                            {leads.filter(l => l.consent_given).length}
-                          </p>
-                          <p className="text-xs text-muted-foreground">Consentis</p>
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    {/* Leads list */}
-                    <Card className="divide-y divide-border/50">
-                      {recentLeads.map((lead) => (
-                        <div key={lead.id} className="p-4 flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                              <span className="text-sm font-medium text-primary">
-                                {lead.name?.charAt(0)?.toUpperCase() || "?"}
-                              </span>
-                            </div>
-                            <div>
-                              <p className="font-medium text-foreground">{lead.name || "Anonyme"}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {lead.email || lead.phone || "—"}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            {lead.consent_given && (
-                              <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
-                                RGPD ✓
-                              </Badge>
-                            )}
-                            <span className="text-xs text-muted-foreground">
-                              {format(new Date(lead.created_at), "dd MMM", { locale: fr })}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </Card>
-
-                    {leads.length > 5 && (
-                      <div className="text-center mt-4">
-                        <Link to="/leads">
-                          <Button variant="outline" className="gap-2">
-                            Voir les {leads.length} leads
-                            <ChevronRight size={14} />
-                          </Button>
-                        </Link>
+              {/* Top links */}
+              <motion.div variants={fadeUp} className="mb-12">
+                <h3 className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground mb-6">
+                  Liens les plus cliqués
+                </h3>
+                <div className="space-y-4">
+                  {topLinks.map((link) => (
+                    <div key={link.label} className="flex items-center justify-between py-3 border-b border-foreground/5">
+                      <div className="flex items-center gap-4">
+                        <link.icon size={16} className="text-muted-foreground" />
+                        <span className="text-sm">{link.label}</span>
                       </div>
-                    )}
-                  </>
-                )}
-              </motion.div>
-            </TabsContent>
-
-            {/* ═══════════════════════════════════════════════════════════════════
-                TAB 3: STATISTIQUES
-                ═══════════════════════════════════════════════════════════════════ */}
-            <TabsContent value="stats" className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <div className="mb-6">
-                  <h2 className="text-xl font-semibold text-foreground">Statistiques</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Performance de vos cartes NFC
-                  </p>
-                </div>
-
-                {/* Main stats grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                  {statsData.map((stat) => (
-                    <Card key={stat.label} className="bg-card border-border/50">
-                      <CardContent className="p-5">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className={`p-2.5 rounded-xl bg-secondary ${stat.color}`}>
-                            <stat.icon size={20} />
-                          </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-32 h-1 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-foreground rounded-full"
+                            style={{ width: `${(link.clicks / Math.max(totalViews, 1)) * 100}%` }}
+                          />
                         </div>
-                        <p className="text-3xl font-bold text-foreground tracking-tight">
-                          {stat.value}
-                        </p>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {stat.label}
-                        </p>
-                        <p className="text-xs text-muted-foreground/70 mt-0.5">
-                          {stat.description}
-                        </p>
-                      </CardContent>
-                    </Card>
+                        <span className="text-sm text-muted-foreground w-10 text-right">
+                          {link.clicks}
+                        </span>
+                      </div>
+                    </div>
                   ))}
                 </div>
+              </motion.div>
 
-                {/* Top clicked links */}
-                <Card className="bg-card border-border/50">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base font-semibold flex items-center gap-2">
-                      <Link2 size={16} className="text-primary" />
-                      Liens les plus cliqués
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="space-y-3">
-                      {topLinks.map((link) => (
-                        <div key={link.label} className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
-                              <link.icon size={14} className="text-muted-foreground" />
+              {/* Performance par carte */}
+              {cards.length > 0 && (
+                <motion.div variants={fadeUp}>
+                  <h3 className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground mb-6">
+                    Performance par carte
+                  </h3>
+                  <div className="space-y-4">
+                    {cards.map((card) => {
+                      const cardLeads = leads.filter(l => l.card_id === card.id).length;
+                      const cardViews = card.view_count || 0;
+                      return (
+                        <div key={card.id} className="flex items-center justify-between py-4 border-b border-foreground/5">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-muted overflow-hidden">
+                              {card.photo_url ? (
+                                <img src={card.photo_url} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <CreditCard size={16} className="text-muted-foreground" />
+                                </div>
+                              )}
                             </div>
-                            <span className="text-sm text-foreground">{link.label}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-24 h-2 bg-secondary rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-primary rounded-full"
-                                style={{ width: `${(link.clicks / Math.max(totalViews, 1)) * 100}%` }}
-                              />
+                            <div>
+                              <p className="font-medium text-sm">
+                                {card.first_name} {card.last_name}
+                              </p>
+                              <p className="text-xs text-muted-foreground">{card.company || "—"}</p>
                             </div>
-                            <span className="text-sm font-medium text-muted-foreground w-12 text-right">
-                              {link.clicks}
-                            </span>
                           </div>
+                          <div className="flex items-center gap-8 text-sm">
+                            <div className="text-center">
+                              <p className="font-medium">{cardViews}</p>
+                              <p className="text-xs text-muted-foreground">vues</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="font-medium">{cardLeads}</p>
+                              <p className="text-xs text-muted-foreground">leads</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════════
+              SECTION: CAMPAGNES
+              ═══════════════════════════════════════════════════════════════════ */}
+          {activeSection === "campaigns" && (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={stagger}
+            >
+              <motion.div variants={fadeUp} className="mb-10">
+                <h2 className="font-serif text-2xl sm:text-3xl font-light tracking-tight mb-2">
+                  Campagnes & Notifications
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Envoyez des messages à vos contacts
+                </p>
+              </motion.div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Email */}
+                <motion.div 
+                  variants={fadeUp}
+                  className="p-8 border border-foreground/10 rounded-2xl"
+                >
+                  <Mail size={28} className="text-muted-foreground mb-6" />
+                  <h3 className="font-serif text-xl font-light mb-2">Campagnes Email</h3>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Envoyez des emails personnalisés à vos leads consentis.
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-6">
+                    {leads.filter(l => l.email && l.consent_given).length} contacts éligibles
+                  </p>
+                  <button 
+                    disabled={!isPremium}
+                    className="w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isPremium ? "Créer une campagne" : "Premium requis"}
+                  </button>
+                </motion.div>
+
+                {/* WhatsApp */}
+                <motion.div 
+                  variants={fadeUp}
+                  className="p-8 border border-foreground/10 rounded-2xl"
+                >
+                  <MessageSquare size={28} className="text-muted-foreground mb-6" />
+                  <h3 className="font-serif text-xl font-light mb-2">Messages WhatsApp</h3>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Relancez vos leads par WhatsApp automatiquement.
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-6">
+                    {leads.filter(l => l.phone && l.consent_given).length} contacts éligibles
+                  </p>
+                  <button 
+                    disabled={!isPremium}
+                    className="w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isPremium ? "Configurer" : "Premium requis"}
+                  </button>
+                </motion.div>
+
+                {/* Push */}
+                <motion.div 
+                  variants={fadeUp}
+                  className="p-8 border border-foreground/10 rounded-2xl"
+                >
+                  <Bell size={28} className="text-muted-foreground mb-6" />
+                  <h3 className="font-serif text-xl font-light mb-2">Notifications Push</h3>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Notifiez les visiteurs qui ont activé les alertes.
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-6">
+                    {pushSubscribers?.total || 0} abonnés
+                  </p>
+                  <button 
+                    onClick={() => setShowPushModal(true)}
+                    disabled={cards.length === 0}
+                    className="w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Envoyer
+                  </button>
+                </motion.div>
+
+                {/* Automation */}
+                <motion.div 
+                  variants={fadeUp}
+                  className="p-8 border border-foreground/10 rounded-2xl"
+                >
+                  <Sparkles size={28} className="text-muted-foreground mb-6" />
+                  <h3 className="font-serif text-xl font-light mb-2">Scénarios automatiques</h3>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Workflows de relance automatique pour vos leads.
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-6">
+                    Offre Élite
+                  </p>
+                  <Link to="/order/offre">
+                    <button className="w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 flex items-center justify-center gap-2">
+                      <Crown size={14} />
+                      Découvrir
+                    </button>
+                  </Link>
+                </motion.div>
+              </div>
+
+              {/* Push history */}
+              {pushLogs.length > 0 && (
+                <motion.div variants={fadeUp} className="mt-12">
+                  <h3 className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground mb-6">
+                    Historique des notifications
+                  </h3>
+                  <div className="space-y-3">
+                    {pushLogs.slice(0, 5).map((log) => (
+                      <div 
+                        key={log.id}
+                        className="flex items-center justify-between p-5 border border-foreground/10 rounded-xl"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{log.title}</p>
+                          <p className="text-xs text-muted-foreground truncate">{log.body}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {format(new Date(log.created_at), "dd MMM yyyy 'à' HH:mm", { locale: fr })}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 ml-4 text-xs text-muted-foreground">
+                          {log.sent_count > 0 && <span>{log.sent_count} ✓</span>}
+                          {log.failed_count > 0 && <span>{log.failed_count} ✗</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Scheduled */}
+              {scheduledNotifications.filter(n => n.status === 'pending').length > 0 && (
+                <motion.div variants={fadeUp} className="mt-12">
+                  <h3 className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground mb-6">
+                    Notifications programmées
+                  </h3>
+                  <div className="space-y-3">
+                    {scheduledNotifications
+                      .filter(n => n.status === 'pending')
+                      .slice(0, 5)
+                      .map((notif) => (
+                        <div 
+                          key={notif.id}
+                          className="flex items-center justify-between p-5 border border-foreground/10 rounded-xl"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm truncate">{notif.title}</p>
+                            <p className="text-xs text-muted-foreground truncate">{notif.body}</p>
+                            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                              <Calendar size={12} />
+                              {format(new Date(notif.scheduled_at), "dd MMM yyyy 'à' HH:mm", { locale: fr })}
+                            </p>
+                          </div>
+                          <button
+                            className="text-muted-foreground hover:text-destructive transition-colors"
+                            onClick={() => deleteScheduledNotification.mutate(notif.id)}
+                          >
+                            <X size={16} />
+                          </button>
                         </div>
                       ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </motion.div>
+              )}
 
-                {/* Cards performance */}
-                {cards.length > 0 && (
-                  <Card className="bg-card border-border/50 mt-6">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-base font-semibold flex items-center gap-2">
-                        <CreditCard size={16} className="text-primary" />
-                        Performance par carte
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="space-y-4">
-                        {cards.map((card) => {
-                          const cardLeads = leads.filter(l => l.card_id === card.id).length;
-                          const cardViews = card.view_count || 0;
-                          return (
-                            <div key={card.id} className="flex items-center justify-between py-2">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-secondary overflow-hidden">
-                                  {card.photo_url ? (
-                                    <img src={card.photo_url} alt="" className="w-full h-full object-cover" />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                      <CreditCard size={16} className="text-muted-foreground" />
-                                    </div>
-                                  )}
-                                </div>
-                                <div>
-                                  <p className="font-medium text-foreground text-sm">
-                                    {card.first_name} {card.last_name}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">{card.company || "—"}</p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-4 text-sm">
-                                <div className="text-center">
-                                  <p className="font-semibold text-foreground">{cardViews}</p>
-                                  <p className="text-xs text-muted-foreground">vues</p>
-                                </div>
-                                <div className="text-center">
-                                  <p className="font-semibold text-foreground">{cardLeads}</p>
-                                  <p className="text-xs text-muted-foreground">leads</p>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </motion.div>
-            </TabsContent>
-
-            {/* ═══════════════════════════════════════════════════════════════════
-                TAB 4: CAMPAGNES & NOTIFICATIONS
-                ═══════════════════════════════════════════════════════════════════ */}
-            <TabsContent value="campaigns" className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <div className="mb-6">
-                  <h2 className="text-xl font-semibold text-foreground">Campagnes & Notifications</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Envoyez des messages à vos contacts
-                  </p>
-                </div>
-
-                {/* Feature Cards */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Email campaigns */}
-                  <Card className="bg-card border-border/50 p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                        <Mail size={24} className="text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-foreground mb-1">Campagnes Email</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Envoyez des emails personnalisés à vos leads qui ont donné leur consentement.
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {leads.filter(l => l.email && l.consent_given).length} contacts éligibles
-                          </Badge>
-                        </div>
-                        <Button 
-                          className="mt-4 w-full gap-2" 
-                          variant="outline"
-                          disabled={!isPremium}
-                        >
-                          <Send size={14} />
-                          {isPremium ? "Créer une campagne" : "Fonctionnalité Premium"}
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-
-                  {/* WhatsApp campaigns */}
-                  <Card className="bg-card border-border/50 p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
-                        <MessageSquare size={24} className="text-green-600 dark:text-green-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-foreground mb-1">Messages WhatsApp</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Relancez vos leads par WhatsApp avec des messages automatisés.
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {leads.filter(l => l.phone && l.consent_given).length} contacts éligibles
-                          </Badge>
-                        </div>
-                        <Button 
-                          className="mt-4 w-full gap-2" 
-                          variant="outline"
-                          disabled={!isPremium}
-                        >
-                          <Send size={14} />
-                          {isPremium ? "Configurer WhatsApp" : "Fonctionnalité Premium"}
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-
-                  {/* Push notifications */}
-                  <Card className="bg-card border-border/50 p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
-                        <Bell size={24} className="text-purple-600 dark:text-purple-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-foreground mb-1">Notifications Push</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Envoyez des notifications aux visiteurs qui ont activé les alertes sur votre profil.
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
-                            {pushSubscribers?.total || 0} abonnés
-                          </Badge>
-                          <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                            Actif
-                          </Badge>
-                        </div>
-                        <Button 
-                          className="mt-4 w-full gap-2" 
-                          variant="outline"
-                          onClick={() => setShowPushModal(true)}
-                          disabled={cards.length === 0}
-                        >
-                          <Bell size={14} />
-                          Envoyer une notification
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-
-                  {/* Push notification history */}
-                  {pushLogs.length > 0 && (
-                    <Card className="bg-card border-border/50 p-6 col-span-full">
-                      <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <BarChart3 size={18} className="text-purple-500" />
-                        Historique des notifications
+              {/* Premium upsell */}
+              {!isPremium && (
+                <motion.div variants={fadeUp} className="mt-12 p-8 border border-foreground/10 rounded-2xl">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div>
+                      <h3 className="font-serif text-xl font-light mb-2">
+                        Débloquez toutes les fonctionnalités
                       </h3>
-                      <div className="space-y-3">
-                        {pushLogs.slice(0, 5).map((log) => (
-                          <div 
-                            key={log.id}
-                            className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/50"
-                          >
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm text-foreground truncate">{log.title}</p>
-                              <p className="text-xs text-muted-foreground truncate">{log.body}</p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {format(new Date(log.created_at), "dd MMM yyyy 'à' HH:mm", { locale: fr })}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2 ml-4">
-                              {log.sent_count > 0 && (
-                                <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                  {log.sent_count} ✓
-                                </Badge>
-                              )}
-                              {log.failed_count > 0 && (
-                                <Badge variant="secondary" className="text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                                  {log.failed_count} ✗
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </Card>
-                  )}
-
-                  {/* Scheduled notifications */}
-                  {scheduledNotifications.filter(n => n.status === 'pending').length > 0 && (
-                    <Card className="bg-card border-border/50 p-6 col-span-full">
-                      <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <Clock size={18} className="text-blue-500" />
-                        Notifications programmées
-                      </h3>
-                      <div className="space-y-3">
-                        {scheduledNotifications
-                          .filter(n => n.status === 'pending')
-                          .slice(0, 5)
-                          .map((notif) => (
-                            <div 
-                              key={notif.id}
-                              className="flex items-center justify-between p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
-                            >
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm text-foreground truncate">{notif.title}</p>
-                                <p className="text-xs text-muted-foreground truncate">{notif.body}</p>
-                                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 flex items-center gap-1">
-                                  <Calendar size={12} />
-                                  {format(new Date(notif.scheduled_at), "dd MMM yyyy 'à' HH:mm", { locale: fr })}
-                                </p>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                onClick={() => deleteScheduledNotification.mutate(notif.id)}
-                              >
-                                <X size={16} />
-                              </Button>
-                            </div>
-                          ))}
-                      </div>
-                    </Card>
-                  )}
-
-                  {/* Automation */}
-                  <Card className="bg-card border-border/50 p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
-                        <Sparkles size={24} className="text-orange-600 dark:text-orange-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-foreground mb-1">Scénarios automatiques</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Créez des workflows de relance automatique pour vos nouveaux leads.
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-700">
-                            Offre Élite
-                          </Badge>
-                        </div>
-                        <Link to="/order/offre">
-                          <Button 
-                            className="mt-4 w-full gap-2" 
-                            variant="outline"
-                          >
-                            <Crown size={14} />
-                            Découvrir l'offre Élite
-                          </Button>
-                        </Link>
-                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Passez à l'offre Signature pour accéder aux campagnes
+                      </p>
                     </div>
-                  </Card>
-                </div>
-
-                {/* Premium upsell */}
-                {!isPremium && (
-                  <Card className="mt-6 p-6 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-foreground mb-1">
-                          Débloquez toutes les fonctionnalités
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          Passez à l'offre Signature pour accéder aux campagnes et notifications
-                        </p>
-                      </div>
-                      <Link to="/order/offre">
-                        <Button className="bg-primary text-primary-foreground">
-                          Voir les offres
-                        </Button>
-                      </Link>
-                    </div>
-                  </Card>
-                )}
-              </motion.div>
-            </TabsContent>
-          </Tabs>
-
+                    <Link to="/order/offre">
+                      <button className="bg-foreground text-background px-8 py-4 text-sm tracking-[0.15em] uppercase hover:opacity-80 transition-opacity duration-500">
+                        Voir les offres
+                      </button>
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
         </div>
       </main>
 
-      <Footer />
+      {/* ═══════════════════════════════════════════════════════════════════
+          FOOTER — Minimal
+          ═══════════════════════════════════════════════════════════════════ */}
+      <footer className="py-12 px-6 sm:px-12 border-t border-foreground/5">
+        <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+          <div>
+            <span className="font-serif text-lg tracking-wide">i-wasp</span>
+            <p className="text-xs text-muted-foreground mt-1">
+              Haute couture digitale
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            © 2025 i-wasp. Tous droits réservés.
+          </p>
+        </div>
+      </footer>
 
       {/* Delete confirmation dialog */}
       <AlertDialog open={!!deleteCardId} onOpenChange={() => setDeleteCardId(null)}>
-        <AlertDialogContent className="bg-card border-border">
+        <AlertDialogContent className="bg-background border-foreground/10">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-foreground">Supprimer cette carte ?</AlertDialogTitle>
+            <AlertDialogTitle>Supprimer cette carte ?</AlertDialogTitle>
             <AlertDialogDescription>
               Cette action est irréversible. La carte et toutes les données associées seront supprimées.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel className="border-foreground/20">Annuler</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteCard}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -1007,10 +991,10 @@ const Dashboard = () => {
 
       {/* Wallet modal */}
       <Dialog open={showWalletModal} onOpenChange={setShowWalletModal}>
-        <DialogContent className="bg-card border-border max-w-sm">
+        <DialogContent className="bg-background border-foreground/10 max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-foreground text-center">Ajouter au Wallet</DialogTitle>
-            <DialogDescription className="text-center">
+            <DialogTitle className="font-serif text-xl font-light text-center">Ajouter au Wallet</DialogTitle>
+            <DialogDescription className="text-center text-sm text-muted-foreground">
               Choisissez votre portefeuille numérique
             </DialogDescription>
           </DialogHeader>
@@ -1018,7 +1002,7 @@ const Dashboard = () => {
           <div className="space-y-3 pt-4">
             <button
               onClick={() => handleWalletAction("apple")}
-              className="w-full p-4 rounded-xl bg-foreground text-background font-medium flex items-center justify-center gap-3 hover:bg-foreground/90 transition-all active:scale-[0.98]"
+              className="w-full p-4 bg-foreground text-background font-medium flex items-center justify-center gap-3 hover:opacity-80 transition-all active:scale-[0.98]"
             >
               <Apple size={20} />
               Apple Wallet
@@ -1026,7 +1010,7 @@ const Dashboard = () => {
             
             <button
               onClick={() => handleWalletAction("google")}
-              className="w-full p-4 rounded-xl bg-secondary text-foreground font-medium flex items-center justify-center gap-3 hover:bg-secondary/80 transition-all border border-border active:scale-[0.98]"
+              className="w-full p-4 border border-foreground/30 font-medium flex items-center justify-center gap-3 hover:bg-foreground hover:text-background transition-all active:scale-[0.98]"
             >
               <Smartphone size={20} />
               Google Wallet
@@ -1034,34 +1018,34 @@ const Dashboard = () => {
           </div>
           
           <p className="text-xs text-muted-foreground text-center pt-4">
-            Votre carte sera accessible directement depuis votre téléphone
+            Votre carte sera accessible depuis votre téléphone
           </p>
         </DialogContent>
       </Dialog>
 
       {/* Push Notification modal */}
       <Dialog open={showPushModal} onOpenChange={setShowPushModal}>
-        <DialogContent className="bg-card border-border max-w-md">
+        <DialogContent className="bg-background border-foreground/10 max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-foreground flex items-center gap-2">
-              <Bell size={20} className="text-purple-500" />
+            <DialogTitle className="font-serif text-xl font-light flex items-center gap-2">
+              <Bell size={20} className="text-muted-foreground" />
               Envoyer une notification
             </DialogTitle>
-            <DialogDescription>
-              Envoyez une notification push à tous les abonnés de votre carte
+            <DialogDescription className="text-sm text-muted-foreground">
+              Envoyez une notification push à tous les abonnés
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 pt-4">
             {/* Quick templates */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Modèles rapides</label>
+              <label className="text-xs tracking-[0.15em] uppercase text-muted-foreground">Modèles</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { icon: "🎉", title: "Nouveauté", body: "Découvrez notre dernière actualité !" },
-                  { icon: "💼", title: "Rappel", body: "N'oubliez pas de me contacter pour votre projet" },
-                  { icon: "🎁", title: "Offre spéciale", body: "Profitez d'une offre exclusive limitée dans le temps" },
-                  { icon: "👋", title: "Restons en contact", body: "Je suis disponible pour échanger avec vous" },
+                  { icon: "💼", title: "Rappel", body: "N'oubliez pas de me contacter" },
+                  { icon: "🎁", title: "Offre spéciale", body: "Profitez d'une offre exclusive" },
+                  { icon: "👋", title: "Contact", body: "Je suis disponible pour échanger" },
                 ].map((template, idx) => (
                   <button
                     key={idx}
@@ -1070,10 +1054,10 @@ const Dashboard = () => {
                       setPushTitle(template.title);
                       setPushMessage(template.body);
                     }}
-                    className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors text-left"
+                    className="flex items-center gap-2 p-3 border border-foreground/10 hover:border-foreground/30 transition-colors text-left"
                   >
                     <span className="text-lg">{template.icon}</span>
-                    <span className="text-xs font-medium text-foreground truncate">{template.title}</span>
+                    <span className="text-xs font-medium truncate">{template.title}</span>
                   </button>
                 ))}
               </div>
@@ -1082,11 +1066,11 @@ const Dashboard = () => {
             {/* Card selector */}
             {cards.length > 1 && (
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Carte cible</label>
+                <label className="text-xs tracking-[0.15em] uppercase text-muted-foreground">Carte cible</label>
                 <select
                   value={pushCardId || cards[0]?.id || ""}
                   onChange={(e) => setPushCardId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 py-3 border border-foreground/10 bg-background focus:outline-none focus:border-foreground/30"
                 >
                   {cards.map((card) => (
                     <option key={card.id} value={card.id}>
@@ -1098,24 +1082,24 @@ const Dashboard = () => {
             )}
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Titre</label>
+              <label className="text-xs tracking-[0.15em] uppercase text-muted-foreground">Titre</label>
               <input
                 type="text"
                 value={pushTitle}
                 onChange={(e) => setPushTitle(e.target.value)}
                 placeholder="Ex: Nouveauté !"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-3 border border-foreground/10 bg-background placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30"
               />
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Message</label>
+              <label className="text-xs tracking-[0.15em] uppercase text-muted-foreground">Message</label>
               <textarea
                 value={pushMessage}
                 onChange={(e) => setPushMessage(e.target.value)}
                 placeholder="Ex: Découvrez notre nouvelle offre..."
                 rows={3}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                className="w-full px-4 py-3 border border-foreground/10 bg-background placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 resize-none"
               />
             </div>
 
@@ -1126,9 +1110,9 @@ const Dashboard = () => {
                   type="checkbox"
                   checked={isScheduled}
                   onChange={(e) => setIsScheduled(e.target.checked)}
-                  className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+                  className="w-4 h-4"
                 />
-                <span className="text-sm font-medium text-foreground flex items-center gap-1">
+                <span className="text-sm flex items-center gap-1">
                   <Clock size={14} />
                   Programmer l'envoi
                 </span>
@@ -1141,13 +1125,13 @@ const Dashboard = () => {
                     value={scheduledDate}
                     onChange={(e) => setScheduledDate(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
-                    className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                    className="flex-1 px-4 py-2 border border-foreground/10 bg-background focus:outline-none focus:border-foreground/30 text-sm"
                   />
                   <input
                     type="time"
                     value={scheduledTime}
                     onChange={(e) => setScheduledTime(e.target.value)}
-                    className="w-28 px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                    className="w-28 px-4 py-2 border border-foreground/10 bg-background focus:outline-none focus:border-foreground/30 text-sm"
                   />
                 </div>
               )}
@@ -1155,20 +1139,18 @@ const Dashboard = () => {
 
             {/* Preview */}
             {(pushTitle || pushMessage) && (
-              <div className="p-4 rounded-xl bg-secondary/50 border border-border">
+              <div className="p-4 border border-foreground/10">
                 <p className="text-xs text-muted-foreground mb-2">Aperçu</p>
-                <div className="bg-background rounded-lg p-3 border border-border shadow-sm">
-                  <p className="font-semibold text-sm text-foreground">{pushTitle || "Titre..."}</p>
+                <div className="bg-muted/50 p-3">
+                  <p className="font-medium text-sm">{pushTitle || "Titre..."}</p>
                   <p className="text-xs text-muted-foreground mt-1">{pushMessage || "Message..."}</p>
                 </div>
               </div>
             )}
           </div>
           
-          <div className="flex gap-2 pt-4">
-            <Button
-              variant="outline"
-              className="flex-1"
+          <div className="flex gap-3 pt-4">
+            <button
               onClick={() => {
                 setShowPushModal(false);
                 setPushTitle("");
@@ -1177,18 +1159,17 @@ const Dashboard = () => {
                 setScheduledDate("");
                 setScheduledTime("");
               }}
+              className="flex-1 py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500"
             >
               Annuler
-            </Button>
-            <Button
-              className="flex-1 gap-2"
+            </button>
+            <button
               disabled={!pushTitle || !pushMessage || pushSending || cards.length === 0 || (isScheduled && (!scheduledDate || !scheduledTime))}
               onClick={async () => {
                 if (cards.length === 0) return;
                 const cardId = pushCardId || cards[0].id;
                 
                 if (isScheduled && scheduledDate && scheduledTime) {
-                  // Schedule the notification
                   const scheduledAt = new Date(`${scheduledDate}T${scheduledTime}`).toISOString();
                   await createScheduledNotification.mutateAsync({
                     card_id: cardId,
@@ -1198,10 +1179,8 @@ const Dashboard = () => {
                   });
                   toast.success("Notification programmée !");
                 } else {
-                  // Send immediately
                   const result = await sendNotification(cardId, pushTitle, pushMessage);
                   
-                  // Log the notification
                   await createPushLog.mutateAsync({
                     card_id: cardId,
                     title: pushTitle,
@@ -1213,7 +1192,7 @@ const Dashboard = () => {
                   if (result.sent > 0) {
                     toast.success(`${result.sent} notification(s) envoyée(s) !`);
                   } else if (result.failed === 0 && result.sent === 0) {
-                    toast.info("Aucun abonné aux notifications pour le moment");
+                    toast.info("Aucun abonné pour le moment");
                   } else {
                     toast.error("Erreur lors de l'envoi");
                   }
@@ -1227,6 +1206,7 @@ const Dashboard = () => {
                 setScheduledDate("");
                 setScheduledTime("");
               }}
+              className="flex-1 py-3 bg-foreground text-background text-sm tracking-[0.15em] uppercase hover:opacity-80 transition-opacity duration-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {pushSending || createScheduledNotification.isPending ? (
                 <>
@@ -1244,7 +1224,7 @@ const Dashboard = () => {
                   Envoyer
                 </>
               )}
-            </Button>
+            </button>
           </div>
         </DialogContent>
       </Dialog>
