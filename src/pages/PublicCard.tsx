@@ -25,6 +25,7 @@ import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import DualBrandShowcase from "./DualBrandShowcase";
 import MaisonBOpticCard from "./MaisonBOpticCard";
 import KechExcluCard from "./KechExcluCard";
+import LuxePrestigeCard from "./LuxePrestigeCard";
 
 // Import local profile photo for Herbalism Marrakech
 import ibrahimPhoto from "@/assets/clients/ibrahim-herbalism.jpeg";
@@ -68,6 +69,11 @@ const PublicCard = () => {
   if (cleanedSlug === "kech-exclu" || cleanedSlug.startsWith("kech-exclu") || cleanedSlug.includes("kechexclu")) {
     console.log("[PublicCard] Matched kech-exclu, rendering KechExcluCard");
     return <KechExcluCard />;
+  }
+
+  // Special-case Luxe Prestige concierge card
+  if (cleanedSlug === "luxe-prestige" || cleanedSlug.startsWith("luxe-prestige") || cleanedSlug.includes("luxeprestige")) {
+    return <LuxePrestigeCard />;
   }
 
   // Record scan on first load
