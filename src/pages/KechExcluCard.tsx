@@ -10,6 +10,8 @@ import apartmentImg1 from "@/assets/kech-apartment-1.jpg";
 import apartmentImg2 from "@/assets/kech-apartment-2.jpg";
 import vehicleImg from "@/assets/kech-vehicle-1.jpg";
 import activityImg from "@/assets/kech-activity-1.jpg";
+import nfcCardImg from "@/assets/kech-nfc-card.jpg";
+import websiteImg from "@/assets/kech-website.jpg";
 
 // Palette Sunset Luxe
 const COLORS = {
@@ -48,6 +50,8 @@ const galleryImages = [
   { src: apartmentImg2, label: "Riad avec Piscine", category: "Hébergement" },
   { src: vehicleImg, label: "4x4 Premium", category: "Véhicules" },
   { src: activityImg, label: "Buggy Désert", category: "Activités" },
+  { src: nfcCardImg, label: "Carte NFC Premium", category: "Digital" },
+  { src: websiteImg, label: "Site Vitrine", category: "Digital" },
 ];
 
 export default function KechExcluCard() {
