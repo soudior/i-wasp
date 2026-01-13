@@ -5,10 +5,11 @@
  * Design IWASP premium avec thème noir et or
  */
 
-import { motion } from "framer-motion";
-import { Phone, MessageCircle, Mail, MapPin, Plane, Car, Home, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Phone, MessageCircle, Mail, MapPin, Plane, Car, Home, Sparkles, ChevronLeft, ChevronRight, X, Camera } from "lucide-react";
+import { useState, useCallback } from "react";
 import luxePrestigeLogo from "@/assets/luxe-prestige-logo.png";
+
 // Palette ultra-luxe noir et or
 const LUXE_COLORS = {
   background: "#0A0A0A",
@@ -38,8 +39,173 @@ const CONTACT = {
   ],
 };
 
+// Logements gérés par Luxe Prestige
+const PROPERTIES = [
+  {
+    name: "Dar Al Bahja",
+    type: "Villa de Luxe",
+    location: "Marrakech",
+    photos: [
+      "/images/dar-al-bahja/hero.jpg",
+      "/images/dar-al-bahja/villa-1.jpg",
+      "/images/dar-al-bahja/villa-2.jpg",
+      "/images/dar-al-bahja/villa-3.jpg",
+      "/images/dar-al-bahja/villa-4.jpg",
+      "/images/dar-al-bahja/villa-5.jpg",
+      "/images/dar-al-bahja/villa-6.jpg",
+      "/images/dar-al-bahja/villa-7.jpg",
+    ],
+  },
+];
+
+// Property Gallery Component
+const PropertyGallery: React.FC<{ 
+  photos: string[]; 
+  propertyName: string;
+  onPhotoClick: (index: number) => void;
+}> = ({ photos, propertyName, onPhotoClick }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % photos.length);
+  }, [photos.length]);
+
+  const goToPrev = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + photos.length) % photos.length);
+  }, [photos.length]);
+
+  if (photos.length === 0) return null;
+
+  return (
+    <div className="relative rounded-2xl overflow-hidden">
+      <motion.div
+        key={currentIndex}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="relative aspect-[16/10]"
+      >
+        <img
+          src={photos[currentIndex]}
+          alt={`${propertyName} - Photo ${currentIndex + 1}`}
+          className="w-full h-full object-cover cursor-pointer"
+          onClick={() => onPhotoClick(currentIndex)}
+        />
+        
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+        
+        <div className="absolute bottom-3 left-3 flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm">
+          <Camera size={12} className="text-white/80" />
+          <span className="text-xs text-white font-medium">
+            {currentIndex + 1} / {photos.length}
+          </span>
+        </div>
+      </motion.div>
+
+      {photos.length > 1 && (
+        <>
+          <button
+            onClick={goToPrev}
+            className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 text-white hover:bg-black/70 transition-colors"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            onClick={goToNext}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 text-white hover:bg-black/70 transition-colors"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </>
+      )}
+
+      {photos.length > 1 && (
+        <div className="absolute bottom-3 right-3 flex gap-1">
+          {photos.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentIndex(idx)}
+              className={`w-1.5 h-1.5 rounded-full transition-all ${
+                idx === currentIndex 
+                  ? 'bg-[#D4AF37] w-3' 
+                  : 'bg-white/50 hover:bg-white/70'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Fullscreen Gallery Modal
+const FullscreenGallery: React.FC<{
+  photos: string[];
+  initialIndex: number;
+  onClose: () => void;
+  propertyName: string;
+}> = ({ photos, initialIndex, onClose, propertyName }) => {
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+      onClick={onClose}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 z-10 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white"
+      >
+        <X size={24} />
+      </button>
+      
+      <img
+        src={photos[currentIndex]}
+        alt={`${propertyName} - Photo ${currentIndex + 1}`}
+        className="max-w-full max-h-full object-contain"
+        onClick={(e) => e.stopPropagation()}
+      />
+
+      {photos.length > 1 && (
+        <>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentIndex((prev) => (prev - 1 + photos.length) % photos.length);
+            }}
+            className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white"
+          >
+            <ChevronLeft size={28} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentIndex((prev) => (prev + 1) % photos.length);
+            }}
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white"
+          >
+            <ChevronRight size={28} />
+          </button>
+        </>
+      )}
+
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/80 text-sm">
+        {currentIndex + 1} / {photos.length}
+      </div>
+    </motion.div>
+  );
+};
+
 export default function LuxePrestigeCard() {
   const [isPressed, setIsPressed] = useState<string | null>(null);
+  const [fullscreenGallery, setFullscreenGallery] = useState<{
+    photos: string[];
+    index: number;
+    name: string;
+  } | null>(null);
 
   const handleCall = () => {
     window.location.href = `tel:${CONTACT.phone}`;
@@ -73,6 +239,11 @@ END:VCARD`;
     link.download = "luxe-prestige.vcf";
     link.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handlePropertyWhatsApp = (propertyName: string) => {
+    const message = encodeURIComponent(`Bonjour, je souhaite des informations sur ${propertyName}.`);
+    window.open(`https://wa.me/${CONTACT.whatsapp}?text=${message}`, "_blank");
   };
 
   return (
@@ -206,6 +377,86 @@ END:VCARD`;
           ))}
         </div>
 
+        {/* Properties Section - Dar Al Bahja */}
+        <div 
+          className="p-6"
+          style={{ backgroundColor: LUXE_COLORS.card }}
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Home size={18} style={{ color: LUXE_COLORS.gold }} />
+            <h2 
+              className="text-lg font-semibold tracking-wide"
+              style={{ color: LUXE_COLORS.gold }}
+            >
+              Nos Logements
+            </h2>
+          </div>
+
+          {PROPERTIES.map((property, index) => (
+            <motion.div
+              key={property.name}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 + index * 0.1 }}
+              className="rounded-2xl overflow-hidden"
+              style={{ 
+                backgroundColor: LUXE_COLORS.accent,
+                border: `1px solid ${LUXE_COLORS.gold}20`,
+              }}
+            >
+              {/* Photo Gallery */}
+              <PropertyGallery 
+                photos={property.photos}
+                propertyName={property.name}
+                onPhotoClick={(photoIndex) => setFullscreenGallery({
+                  photos: property.photos,
+                  index: photoIndex,
+                  name: property.name,
+                })}
+              />
+              
+              {/* Property Info */}
+              <div className="p-4">
+                <h3 
+                  className="text-xl font-bold mb-1"
+                  style={{ color: LUXE_COLORS.text }}
+                >
+                  {property.name}
+                </h3>
+                <p 
+                  className="text-sm mb-1"
+                  style={{ color: LUXE_COLORS.gold }}
+                >
+                  {property.type}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <MapPin size={12} style={{ color: LUXE_COLORS.textMuted }} />
+                  <span 
+                    className="text-xs"
+                    style={{ color: LUXE_COLORS.textMuted }}
+                  >
+                    {property.location}
+                  </span>
+                </div>
+
+                {/* CTA Button */}
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handlePropertyWhatsApp(property.name)}
+                  className="w-full mt-4 py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${LUXE_COLORS.gold}, ${LUXE_COLORS.goldDark})`,
+                    color: LUXE_COLORS.background,
+                  }}
+                >
+                  <MessageCircle size={18} />
+                  Réserver
+                </motion.button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
         {/* Action Buttons */}
         <div 
           className="p-6 space-y-3 rounded-b-3xl"
@@ -310,6 +561,18 @@ END:VCARD`;
           </span>
         </a>
       </motion.div>
+
+      {/* Fullscreen Gallery Modal */}
+      <AnimatePresence>
+        {fullscreenGallery && (
+          <FullscreenGallery
+            photos={fullscreenGallery.photos}
+            initialIndex={fullscreenGallery.index}
+            propertyName={fullscreenGallery.name}
+            onClose={() => setFullscreenGallery(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

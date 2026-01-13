@@ -113,7 +113,6 @@ const AppStoreChecklist = lazy(() => import("./pages/AppStoreChecklist"));
 const CharlesLazimiCard = lazy(() => import("./pages/CharlesLazimiCard"));
 const KechExcluCard = lazy(() => import("./pages/KechExcluCard"));
 const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
-const DarAlBahjaCard = lazy(() => import("./pages/DarAlBahjaCard"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -205,7 +204,6 @@ const App = () => {
                               <Route path="/card/charles-lazimi" element={<CharlesLazimiCard />} />
                               <Route path="/card/kech-exclu" element={<KechExcluCard />} />
                               <Route path="/card/luxe-prestige" element={<LuxePrestigeCard />} />
-                              <Route path="/card/dar-al-bahja" element={<DarAlBahjaCard />} />
                               <Route path="/card/:slug" element={<PublicCard />} />
                               {/* Auth */}
                               <Route path="/login" element={<Login />} />
