@@ -50,6 +50,53 @@ export default function HomeLuxeMax() {
       ═══════════════════════════════════════════════════════════════════ */}
       <section className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden pt-20">
         
+        {/* Animated gradient orbs */}
+        <motion.div
+          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none"
+          style={{ backgroundColor: `${LUXE.or}08` }}
+          animate={{
+            x: [0, 50, 0],
+            y: [0, -30, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none"
+          style={{ backgroundColor: `${LUXE.or}06` }}
+          animate={{
+            x: [0, -40, 0],
+            y: [0, 40, 0],
+            scale: [1, 1.15, 1],
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
+        
+        {/* Floating golden particles */}
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 rounded-full pointer-events-none"
+            style={{
+              backgroundColor: LUXE.or,
+              left: `${15 + (i * 7)}%`,
+              top: `${20 + (i % 4) * 20}%`,
+              opacity: 0.3 + (i % 3) * 0.1,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.2, 0.5, 0.2],
+              scale: [1, 1.5, 1],
+            }}
+            transition={{
+              duration: 4 + (i % 3),
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.3,
+            }}
+          />
+        ))}
+        
         {/* Grain texture ultra subtil */}
         <div 
           className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -58,50 +105,123 @@ export default function HomeLuxeMax() {
           }}
         />
         
-        {/* Central headline */}
+        {/* Elegant line decorations */}
+        <motion.div
+          className="absolute top-20 left-10 md:left-20 w-px h-32"
+          style={{ backgroundColor: `${LUXE.or}30` }}
+          initial={{ scaleY: 0, originY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ duration: 1.5, delay: 1 }}
+        />
+        <motion.div
+          className="absolute top-20 right-10 md:right-20 w-px h-32"
+          style={{ backgroundColor: `${LUXE.or}30` }}
+          initial={{ scaleY: 0, originY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ duration: 1.5, delay: 1.2 }}
+        />
+        
+        {/* Central headline with staggered animation */}
         <motion.div 
           className="text-center relative z-10 max-w-4xl"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           style={{ y: heroTextY, opacity: heroOpacity }}
         >
-          <h1 
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-[1.15] tracking-tight"
+          {/* Decorative top line */}
+          <motion.div
+            className="w-16 h-px mx-auto mb-8"
+            style={{ backgroundColor: LUXE.or }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          />
+          
+          <motion.h1 
+            className="font-display text-4xl md:text-5xl lg:text-7xl font-light leading-[1.1] tracking-tight"
             style={{ color: LUXE.ivoire }}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            L'identité digitale
+            <motion.span
+              className="inline-block"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, delay: 0.2 }}
+            >
+              L'identité digitale
+            </motion.span>
             <br />
-            <span className="italic" style={{ color: LUXE.or }}>des leaders.</span>
-          </h1>
+            <motion.span 
+              className="italic inline-block"
+              style={{ color: LUXE.or }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, delay: 0.5 }}
+            >
+              des leaders.
+            </motion.span>
+          </motion.h1>
           
           <motion.p
-            className="mt-8 text-sm md:text-base font-light tracking-wide max-w-md mx-auto"
+            className="mt-8 text-sm md:text-base lg:text-lg font-light tracking-wide max-w-lg mx-auto"
             style={{ color: LUXE.gris }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 1.5 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1, duration: 1.2 }}
           >
             Une carte NFC premium pour ceux qui marquent leur époque.
           </motion.p>
+          
+          {/* Decorative bottom line */}
+          <motion.div
+            className="w-8 h-px mx-auto mt-10"
+            style={{ backgroundColor: `${LUXE.or}50` }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 1, delay: 1.3 }}
+          />
         </motion.div>
         
-        {/* CTA discret */}
+        {/* CTA with premium hover effect */}
         <motion.div 
           className="absolute bottom-16 left-0 right-0 flex justify-center z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1.5 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.8, duration: 1 }}
           style={{ opacity: heroOpacity }}
         >
           <Link 
             to="/order/offre"
-            className="group flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] font-light transition-all duration-700"
+            className="group relative flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] font-light transition-all duration-700 px-6 py-3"
             style={{ color: LUXE.grisClair }}
           >
-            <span className="group-hover:text-white transition-colors duration-700">Découvrir</span>
-            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-500" />
+            {/* Hover background effect */}
+            <motion.span
+              className="absolute inset-0 rounded-full"
+              style={{ backgroundColor: `${LUXE.or}10`, border: `1px solid ${LUXE.or}20` }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileHover={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            />
+            <span className="relative group-hover:text-white transition-colors duration-500">Découvrir</span>
+            <ArrowRight className="relative w-3 h-3 group-hover:translate-x-1.5 transition-transform duration-500" />
           </Link>
+        </motion.div>
+        
+        {/* Scroll indicator with animation */}
+        <motion.div
+          className="absolute bottom-32 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.5 }}
+          style={{ opacity: heroOpacity }}
+        >
+          <motion.div
+            className="w-px h-12"
+            style={{ backgroundColor: `${LUXE.or}40` }}
+            animate={{ scaleY: [1, 0.5, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          />
         </motion.div>
       </section>
 
