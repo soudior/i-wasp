@@ -393,7 +393,7 @@ export default function KechExcluCard() {
               className="text-xs"
               style={{ color: `${COLORS.sand}40` }}
             >
-              Powered by <span style={{ color: COLORS.gold }}>IWASP</span>
+              <span style={{ color: COLORS.gold }}>i-wasp.com</span> corporation
             </p>
           </div>
         </div>
