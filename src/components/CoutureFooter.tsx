@@ -47,26 +47,26 @@ interface CoutureFooterProps {
 export function CoutureFooter({ variant = "dark" }: CoutureFooterProps) {
   return (
     <footer 
-      className="py-24 md:py-32"
+      className="py-12 md:py-16"
       style={{ 
         backgroundColor: COUTURE.jet,
       }}
     >
       <div className="container mx-auto px-8 md:px-12">
         {/* Main content */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-8 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 mb-12">
           {/* Brand section */}
           <div className="md:col-span-5">
-            <Link to="/" className="inline-block mb-8">
+            <Link to="/" className="inline-block mb-4">
               <span 
-                className="font-display text-2xl tracking-tight"
+                className="font-display text-xl tracking-tight"
                 style={{ color: COUTURE.silk }}
               >
                 i-wasp
               </span>
             </Link>
             <p 
-              className="text-sm leading-relaxed max-w-xs mb-10 font-light"
+              className="text-sm leading-relaxed max-w-xs mb-6 font-light"
               style={{ 
                 color: COUTURE.textMuted,
                 letterSpacing: "0.02em",
@@ -104,12 +104,12 @@ export function CoutureFooter({ variant = "dark" }: CoutureFooterProps) {
             {/* Product */}
             <div>
               <h4 
-                className="text-[10px] uppercase tracking-[0.25em] mb-6 font-medium"
+                className="text-[10px] uppercase tracking-[0.25em] mb-4 font-medium"
                 style={{ color: COUTURE.textMuted }}
               >
                 Produit
               </h4>
-              <ul className="space-y-4">
+              <ul className="space-y-3">
                 {footerLinks.product.map((link) => (
                   <li key={link.href}>
                     <Link
@@ -132,12 +132,12 @@ export function CoutureFooter({ variant = "dark" }: CoutureFooterProps) {
             {/* Support */}
             <div>
               <h4 
-                className="text-[10px] uppercase tracking-[0.25em] mb-6 font-medium"
+                className="text-[10px] uppercase tracking-[0.25em] mb-4 font-medium"
                 style={{ color: COUTURE.textMuted }}
               >
                 Support
               </h4>
-              <ul className="space-y-4">
+              <ul className="space-y-3">
                 {footerLinks.support.map((link) => (
                   <li key={link.href}>
                     <Link
@@ -160,12 +160,12 @@ export function CoutureFooter({ variant = "dark" }: CoutureFooterProps) {
             {/* Legal */}
             <div>
               <h4 
-                className="text-[10px] uppercase tracking-[0.25em] mb-6 font-medium"
+                className="text-[10px] uppercase tracking-[0.25em] mb-4 font-medium"
                 style={{ color: COUTURE.textMuted }}
               >
                 Légal
               </h4>
-              <ul className="space-y-4">
+              <ul className="space-y-3">
                 {footerLinks.legal.map((link) => (
                   <li key={link.href}>
                     <Link
@@ -189,7 +189,7 @@ export function CoutureFooter({ variant = "dark" }: CoutureFooterProps) {
 
         {/* Bottom bar */}
         <div 
-          className="pt-10 flex flex-col md:flex-row items-center justify-between gap-6"
+          className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4"
           style={{ borderTop: `1px solid ${COUTURE.jetSoft}` }}
         >
           <p 
