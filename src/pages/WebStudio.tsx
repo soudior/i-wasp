@@ -3,9 +3,7 @@
  * Design Premium Noir & Or - Style i-wasp
  */
 
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Layout } from "@/components/layout/Layout";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,7 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { WebsitePreview, GeneratingAnimation, ProposalPdfExport } from "@/components/studio";
 import { CoutureNavbar } from "@/components/CoutureNavbar";
 import { CoutureFooter } from "@/components/CoutureFooter";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { 
   Sparkles, 
   Zap, 
@@ -37,8 +35,6 @@ import {
   GraduationCap,
   Wrench,
   Eye,
-  Rocket,
-  History,
   FileText,
   Loader2,
   ArrowRight,
@@ -98,7 +94,6 @@ interface Template {
   style: string;
   colors: string;
   description: string;
-  gradient: string;
 }
 
 const TEMPLATES: Template[] = [
@@ -110,7 +105,6 @@ const TEMPLATES: Template[] = [
     style: "Élégant et chaleureux",
     colors: "Bordeaux, crème et or",
     description: "Menu, réservation en ligne, galerie photos",
-    gradient: "from-amber-500/20 to-red-500/20",
   },
   {
     id: "ecommerce",
@@ -120,7 +114,6 @@ const TEMPLATES: Template[] = [
     style: "Moderne et épuré",
     colors: "Noir, blanc et accent coloré",
     description: "Catalogue produits, panier, paiement sécurisé",
-    gradient: "from-purple-500/20 to-pink-500/20",
   },
   {
     id: "portfolio",
@@ -130,7 +123,6 @@ const TEMPLATES: Template[] = [
     style: "Minimaliste et artistique",
     colors: "Noir et blanc avec accent",
     description: "Galerie, projets, à propos, contact",
-    gradient: "from-gray-500/20 to-slate-500/20",
   },
   {
     id: "corporate",
@@ -140,37 +132,33 @@ const TEMPLATES: Template[] = [
     style: "Professionnel et institutionnel",
     colors: "Bleu marine, gris et blanc",
     description: "Services, équipe, références, contact",
-    gradient: "from-blue-500/20 to-cyan-500/20",
   },
   {
     id: "beauty",
-    name: "Beauté & Bien-être",
+    name: "Beauté",
     icon: <Scissors className="w-5 h-5" />,
     businessType: "Salon de beauté / Spa",
     style: "Luxueux et apaisant",
     colors: "Rose gold, blanc et beige",
     description: "Prestations, tarifs, réservation, galerie",
-    gradient: "from-pink-500/20 to-rose-500/20",
   },
   {
     id: "fitness",
-    name: "Sport & Fitness",
+    name: "Sport",
     icon: <Dumbbell className="w-5 h-5" />,
     businessType: "Coach sportif / Salle de sport",
     style: "Dynamique et énergique",
     colors: "Orange, noir et blanc",
     description: "Programmes, tarifs, témoignages, inscription",
-    gradient: "from-orange-500/20 to-yellow-500/20",
   },
   {
     id: "wedding",
-    name: "Mariage & Événements",
+    name: "Mariage",
     icon: <Heart className="w-5 h-5" />,
     businessType: "Wedding planner / Organisateur d'événements",
     style: "Romantique et raffiné",
     colors: "Blanc, doré et pastel",
     description: "Services, galerie, témoignages, devis",
-    gradient: "from-rose-500/20 to-amber-500/20",
   },
   {
     id: "education",
@@ -180,7 +168,6 @@ const TEMPLATES: Template[] = [
     style: "Moderne et inspirant",
     colors: "Vert, blanc et gris",
     description: "Formations, formateurs, inscription, blog",
-    gradient: "from-green-500/20 to-emerald-500/20",
   },
   {
     id: "artisan",
@@ -190,7 +177,6 @@ const TEMPLATES: Template[] = [
     style: "Authentique et fiable",
     colors: "Marron, beige et vert",
     description: "Services, réalisations, devis, contact",
-    gradient: "from-amber-600/20 to-green-600/20",
   },
   {
     id: "consulting",
@@ -200,7 +186,6 @@ const TEMPLATES: Template[] = [
     style: "Épuré et professionnel",
     colors: "Violet, blanc et gris",
     description: "Expertise, services, cas clients, contact",
-    gradient: "from-violet-500/20 to-indigo-500/20",
   }
 ];
 
@@ -231,7 +216,6 @@ export default function WebStudio() {
   const [activeTab, setActiveTab] = useState<"details" | "preview">("details");
   const { toast } = useToast();
 
-  // Generate session ID for non-logged users
   const [sessionId] = useState(() => {
     const stored = localStorage.getItem("iwasp_studio_session");
     if (stored) return stored;
@@ -279,13 +263,11 @@ export default function WebStudio() {
       if (data.proposal) {
         setProposal(data.proposal);
         
-        // Calculate price for saving
         const base = PRICING[data.proposal.complexity as keyof typeof PRICING];
         const extraPages = Math.max(0, data.proposal.estimatedPages - 5);
         const priceEur = base.base + (extraPages * PAGE_EXTRA.eur);
         const priceMad = base.baseMAD + (extraPages * PAGE_EXTRA.mad);
 
-        // Save to database
         try {
           const { data: savedData, error: saveError } = await supabase
             .from("website_proposals")
@@ -358,11 +340,8 @@ export default function WebStudio() {
     <div className="min-h-screen" style={{ backgroundColor: STUDIO.noir }}>
       <CoutureNavbar />
       
-      {/* ═══════════════════════════════════════════════════════════════════
-          HERO PREMIUM — Noir & Or avec Mockup Laptop
-      ═══════════════════════════════════════════════════════════════════ */}
+      {/* Hero Section */}
       <section className="min-h-screen relative overflow-hidden pt-20">
-        {/* Gradient de fond */}
         <div 
           className="absolute inset-0"
           style={{
@@ -371,7 +350,6 @@ export default function WebStudio() {
           }}
         />
         
-        {/* Grain texture */}
         <div 
           className="absolute inset-0 pointer-events-none opacity-[0.03]"
           style={{
@@ -382,13 +360,11 @@ export default function WebStudio() {
         <div className="container mx-auto px-6 lg:px-12 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-80px)] py-16">
             
-            {/* Left: Content */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             >
-              {/* Badge */}
               <motion.div
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
                 style={{ 
@@ -408,7 +384,6 @@ export default function WebStudio() {
                 </span>
               </motion.div>
               
-              {/* Headline */}
               <h1 
                 className="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-[1.1] tracking-tight mb-6"
                 style={{ color: STUDIO.ivoire }}
@@ -419,7 +394,6 @@ export default function WebStudio() {
                 </span>
               </h1>
               
-              {/* Subtitle */}
               <p 
                 className="text-base md:text-lg font-light leading-relaxed max-w-xl mb-8"
                 style={{ color: STUDIO.gris }}
@@ -428,7 +402,6 @@ export default function WebStudio() {
                 prêts à l'emploi : identité, pages, textes et intégrations essentielles.
               </p>
               
-              {/* Features list */}
               <ul className="space-y-3 mb-10">
                 {[
                   "Sites vitrines et e-commerce sur mesure",
@@ -453,7 +426,6 @@ export default function WebStudio() {
                 ))}
               </ul>
               
-              {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <motion.button
                   onClick={() => document.getElementById('generator')?.scrollIntoView({ behavior: 'smooth' })}
@@ -483,7 +455,6 @@ export default function WebStudio() {
                 </motion.button>
               </div>
               
-              {/* Trust badges */}
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
                   <Clock size={14} style={{ color: STUDIO.or }} />
@@ -496,21 +467,16 @@ export default function WebStudio() {
               </div>
             </motion.div>
             
-            {/* Right: Laptop Mockup with floating badges */}
             <motion.div
               className="relative hidden lg:block"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
-              {/* Laptop Mockup */}
               <div 
                 className="relative mx-auto"
-                style={{
-                  maxWidth: "550px",
-                }}
+                style={{ maxWidth: "550px" }}
               >
-                {/* Laptop frame */}
                 <div 
                   className="rounded-t-xl p-2"
                   style={{ 
@@ -518,7 +484,6 @@ export default function WebStudio() {
                     border: `1px solid ${STUDIO.ivoire}10`,
                   }}
                 >
-                  {/* Screen */}
                   <div 
                     className="rounded-lg overflow-hidden aspect-[16/10]"
                     style={{ 
@@ -526,9 +491,7 @@ export default function WebStudio() {
                       boxShadow: `inset 0 0 30px ${STUDIO.noir}`,
                     }}
                   >
-                    {/* Fake website preview */}
                     <div className="p-4 h-full flex flex-col">
-                      {/* Browser bar */}
                       <div 
                         className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg"
                         style={{ backgroundColor: `${STUDIO.ivoire}05` }}
@@ -546,7 +509,6 @@ export default function WebStudio() {
                         </div>
                       </div>
                       
-                      {/* Fake content */}
                       <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
                         <div 
                           className="w-12 h-12 rounded-xl mb-4 flex items-center justify-center"
@@ -571,7 +533,6 @@ export default function WebStudio() {
                   </div>
                 </div>
                 
-                {/* Laptop base */}
                 <div 
                   className="h-4 rounded-b-xl mx-6"
                   style={{ 
@@ -587,7 +548,6 @@ export default function WebStudio() {
                 />
               </div>
               
-              {/* Floating Badges */}
               <motion.div
                 className="absolute -top-4 right-0 px-4 py-2 rounded-full"
                 style={{ 
@@ -635,7 +595,6 @@ export default function WebStudio() {
             </motion.div>
           </div>
           
-          {/* Scroll indicator */}
           <motion.div
             className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
             initial={{ opacity: 0 }}
@@ -769,110 +728,109 @@ export default function WebStudio() {
 
               <div className="space-y-5">
                 <div>
-                    <Label htmlFor="businessType">Type d'entreprise / Activité *</Label>
+                  <Label htmlFor="businessType">Type d'entreprise / Activité *</Label>
+                  <Input
+                    id="businessType"
+                    placeholder="Ex: Restaurant gastronomique, Photographe..."
+                    value={formData.businessType}
+                    onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="businessName">Nom de l'entreprise</Label>
+                  <Input
+                    id="businessName"
+                    placeholder="Votre nom ou nom de marque"
+                    value={formData.businessName}
+                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Description du projet</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Décrivez votre activité, vos objectifs, votre cible..."
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="mt-1 min-h-[100px]"
+                  />
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="style">Style souhaité</Label>
                     <Input
-                      id="businessType"
-                      placeholder="Ex: Restaurant gastronomique, Photographe..."
-                      value={formData.businessType}
-                      onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
+                      id="style"
+                      placeholder="Moderne, Élégant, Minimaliste..."
+                      value={formData.style}
+                      onChange={(e) => setFormData({ ...formData, style: e.target.value })}
                       className="mt-1"
                     />
                   </div>
-
                   <div>
-                    <Label htmlFor="businessName">Nom de l'entreprise</Label>
+                    <Label htmlFor="colors">Couleurs préférées</Label>
                     <Input
-                      id="businessName"
-                      placeholder="Votre nom ou nom de marque"
-                      value={formData.businessName}
-                      onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                      id="colors"
+                      placeholder="Noir et or, Bleu marine..."
+                      value={formData.colors}
+                      onChange={(e) => setFormData({ ...formData, colors: e.target.value })}
                       className="mt-1"
                     />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="description">Description du projet</Label>
-                    <Textarea
-                      id="description"
-                      placeholder="Décrivez votre activité, vos objectifs, votre cible..."
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      className="mt-1 min-h-[100px]"
-                    />
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="style">Style souhaité</Label>
-                      <Input
-                        id="style"
-                        placeholder="Moderne, Élégant, Minimaliste..."
-                        value={formData.style}
-                        onChange={(e) => setFormData({ ...formData, style: e.target.value })}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="colors">Couleurs préférées</Label>
-                      <Input
-                        id="colors"
-                        placeholder="Noir et or, Bleu marine..."
-                        value={formData.colors}
-                        onChange={(e) => setFormData({ ...formData, colors: e.target.value })}
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-border">
-                    <p className="text-sm text-muted-foreground mb-3 flex items-center gap-2">
-                      <LinkIcon className="w-4 h-4" />
-                      Optionnel : Analysez un site ou vos réseaux
-                    </p>
-                    <div className="space-y-3">
-                      <div>
-                        <Label htmlFor="websiteUrl">URL de site existant</Label>
-                        <Input
-                          id="websiteUrl"
-                          placeholder="https://votre-site-actuel.com"
-                          value={formData.websiteUrl}
-                          onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="socialLinks">Réseaux sociaux</Label>
-                        <Input
-                          id="socialLinks"
-                          placeholder="@instagram, facebook.com/page..."
-                          value={formData.socialLinks}
-                          onChange={(e) => setFormData({ ...formData, socialLinks: e.target.value })}
-                          className="mt-1"
-                        />
-                      </div>
-                    </div>
                   </div>
                 </div>
 
-                <Button 
-                  className="w-full mt-6" 
-                  size="lg"
-                  onClick={handleGenerate}
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Génération en cours...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Générer ma proposition
-                    </>
-                  )}
-                </Button>
+                <div className="pt-4 border-t border-border">
+                  <p className="text-sm text-muted-foreground mb-3 flex items-center gap-2">
+                    <LinkIcon className="w-4 h-4" />
+                    Optionnel : Analysez un site ou vos réseaux
+                  </p>
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="websiteUrl">URL de site existant</Label>
+                      <Input
+                        id="websiteUrl"
+                        placeholder="https://votre-site-actuel.com"
+                        value={formData.websiteUrl}
+                        onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="socialLinks">Réseaux sociaux</Label>
+                      <Input
+                        id="socialLinks"
+                        placeholder="@instagram, facebook.com/page..."
+                        value={formData.socialLinks}
+                        onChange={(e) => setFormData({ ...formData, socialLinks: e.target.value })}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              <Button 
+                className="w-full mt-6" 
+                size="lg"
+                onClick={handleGenerate}
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Génération en cours...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Générer ma proposition
+                  </>
+                )}
+              </Button>
             </div>
 
             {/* Result */}
@@ -906,7 +864,6 @@ export default function WebStudio() {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-6"
                 >
-                  {/* Tabs for Details/Preview */}
                   <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "details" | "preview")}>
                     <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger value="details" className="gap-2">
@@ -920,7 +877,6 @@ export default function WebStudio() {
                     </TabsList>
 
                     <TabsContent value="details" className="mt-4">
-                      {/* Site Details Card */}
                       <Card>
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between mb-6">
@@ -942,7 +898,6 @@ export default function WebStudio() {
                             </div>
                           </div>
 
-                          {/* Color Palette */}
                           <div className="mb-6">
                             <h4 className="text-sm font-medium text-foreground mb-3">Palette de couleurs</h4>
                             <div className="flex gap-2">
@@ -960,7 +915,6 @@ export default function WebStudio() {
                             </div>
                           </div>
 
-                          {/* Pages */}
                           <div className="mb-6">
                             <h4 className="text-sm font-medium text-foreground mb-3">
                               Structure du site ({proposal.estimatedPages} pages)
@@ -984,7 +938,6 @@ export default function WebStudio() {
                             </div>
                           </div>
 
-                          {/* Features */}
                           <div>
                             <h4 className="text-sm font-medium text-foreground mb-3">Fonctionnalités incluses</h4>
                             <div className="flex flex-wrap gap-2">
@@ -1005,12 +958,10 @@ export default function WebStudio() {
                     </TabsContent>
                   </Tabs>
 
-                  {/* Pricing Card */}
                   <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                     <CardContent className="p-6">
                       <h4 className="text-sm font-medium text-foreground mb-4">Estimation tarifaire</h4>
                       
-                      {/* Express Toggle */}
                       <button
                         onClick={() => setIsExpress(!isExpress)}
                         className="w-full mb-4"
@@ -1036,7 +987,6 @@ export default function WebStudio() {
                         </div>
                       </button>
 
-                      {/* Price Display */}
                       <div className="p-4 rounded-xl bg-background border border-border mb-4">
                         <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Total estimé</span>
@@ -1056,7 +1006,6 @@ export default function WebStudio() {
                         personnalisations demandées.
                       </p>
 
-                      {/* CTA Buttons */}
                       <div className="space-y-3">
                         <Button className="w-full" size="lg" onClick={handleContactWhatsApp}>
                           <MessageCircle className="w-4 h-4 mr-2" />
