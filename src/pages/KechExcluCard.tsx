@@ -15,20 +15,20 @@ const COLORS = {
 const contactData = {
   firstName: "Kech",
   lastName: "Exclu",
-  company: "Kech Exclu - Expériences Marrakech",
-  title: "Excursions & Aventures Premium",
-  phone: "+212 6 00 00 00 00",
+  company: "Kech Exclu - Conciergerie Marrakech",
+  title: "Conciergerie · Location · Activités",
+  phone: "+34 666 925 049",
   email: "contact@kechexclu.com",
-  whatsapp: "+212600000000",
+  whatsapp: "34666925049",
   instagram: "kechexclu",
   location: "Marrakech, Maroc",
   website: "https://kechexclu.com",
 };
 
-const experiences = [
-  { icon: Car, label: "Buggy Désert", desc: "Aventure dans les dunes" },
-  { icon: Trees, label: "Palmeraie", desc: "Quad & Chameau" },
-  { icon: Sun, label: "Sunset Tours", desc: "Coucher de soleil Agafay" },
+const services = [
+  { icon: Car, label: "Location Véhicules", desc: "Voitures & Motos" },
+  { icon: Trees, label: "Appartements", desc: "Location saisonnière" },
+  { icon: Sun, label: "Activités", desc: "Excursions & Aventures" },
 ];
 
 export default function KechExcluCard() {
@@ -191,7 +191,7 @@ export default function KechExcluCard() {
           {/* Expériences */}
           <div className="px-6 pb-6">
             <div className="grid grid-cols-3 gap-3">
-              {experiences.map((exp, i) => (
+              {services.map((exp, i) => (
                 <motion.div
                   key={exp.label}
                   initial={{ opacity: 0, y: 20 }}
