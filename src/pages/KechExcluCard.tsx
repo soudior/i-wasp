@@ -5,6 +5,7 @@ import { downloadVCard } from "@/lib/vcard";
 import { toast } from "sonner";
 
 // Images générées
+import kechExcluLogo from "@/assets/kech-exclu-logo.png";
 import apartmentImg1 from "@/assets/kech-apartment-1.jpg";
 import apartmentImg2 from "@/assets/kech-apartment-2.jpg";
 import vehicleImg from "@/assets/kech-vehicle-1.jpg";
@@ -144,18 +145,17 @@ export default function KechExcluCard() {
               className="relative z-10"
             >
               <div 
-                className="w-28 h-28 rounded-full flex items-center justify-center"
+                className="w-32 h-32 rounded-2xl overflow-hidden flex items-center justify-center"
                 style={{ 
-                  background: `linear-gradient(135deg, ${COLORS.gold} 0%, ${COLORS.terracotta} 100%)`,
                   boxShadow: `0 8px 32px ${COLORS.gold}40`,
+                  border: `2px solid ${COLORS.gold}50`,
                 }}
               >
-                <span 
-                  className="text-3xl font-bold tracking-tight"
-                  style={{ color: COLORS.noir }}
-                >
-                  KE
-                </span>
+                <img 
+                  src={kechExcluLogo} 
+                  alt="Kech Exclu Logo" 
+                  className="w-full h-full object-cover"
+                />
               </div>
             </motion.div>
 
