@@ -48,7 +48,7 @@ export default function HomeLuxeMax() {
       {/* ═══════════════════════════════════════════════════════════════════
           HERO — Full-screen, noir absolu, typographie Cartier
       ═══════════════════════════════════════════════════════════════════ */}
-      <section className="h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden">
+      <section className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden pt-20">
         
         {/* Grain texture ultra subtil */}
         <div 
@@ -57,23 +57,6 @@ export default function HomeLuxeMax() {
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           }}
         />
-        
-        {/* Brand mark — ultra minimal */}
-        <motion.div 
-          className="absolute top-10 left-0 right-0 flex justify-center z-20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 2 }}
-          style={{ opacity: heroOpacity }}
-        >
-          <Link 
-            to="/"
-            className="text-[11px] tracking-[0.5em] uppercase font-light"
-            style={{ color: LUXE.grisClair }}
-          >
-            i-wasp
-          </Link>
-        </motion.div>
         
         {/* Central headline */}
         <motion.div 
