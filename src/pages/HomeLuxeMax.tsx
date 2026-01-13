@@ -226,48 +226,161 @@ export default function HomeLuxeMax() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          CARTE — Section ivoire, contraste élégant
+          CARTE — Section ivoire, contraste élégant avec animation spectaculaire
       ═══════════════════════════════════════════════════════════════════ */}
-      <section style={{ backgroundColor: LUXE.ivoire }}>
-        <div className="py-24 md:py-32">
+      <section className="relative overflow-hidden" style={{ backgroundColor: LUXE.ivoire }}>
+        {/* Animated background gradient */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 2 }}
+        >
           <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-[150px]"
+            style={{ backgroundColor: `${LUXE.or}15` }}
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.div>
+        
+        {/* Floating golden particles */}
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={`card-particle-${i}`}
+            className="absolute w-1.5 h-1.5 rounded-full pointer-events-none"
+            style={{
+              backgroundColor: LUXE.or,
+              left: `${20 + (i * 10)}%`,
+              top: `${30 + (i % 3) * 20}%`,
+            }}
+            initial={{ opacity: 0, scale: 0 }}
+            whileInView={{ 
+              opacity: [0, 0.6, 0],
+              scale: [0, 1, 0],
+              y: [0, -50, -100],
+            }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 3,
+              delay: 0.5 + i * 0.15,
+              repeat: Infinity,
+              repeatDelay: 4,
+            }}
+          />
+        ))}
+        
+        <div className="py-24 md:py-32 relative z-10">
+          {/* Animated reveal for title */}
+          <motion.div
+            className="text-center mb-16 overflow-hidden"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           >
-            <span 
-              className="text-[10px] uppercase tracking-[0.4em] font-light"
-              style={{ color: LUXE.or }}
-            >
-              La carte
-            </span>
-            <h2 
-              className="font-display text-3xl md:text-4xl font-light mt-4 tracking-tight"
+            {/* Decorative lines animation */}
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <motion.div
+                className="h-px w-12"
+                style={{ backgroundColor: LUXE.or }}
+                initial={{ scaleX: 0, originX: 1 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              />
+              <motion.span 
+                className="text-[10px] uppercase tracking-[0.4em] font-light"
+                style={{ color: LUXE.or }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                La carte
+              </motion.span>
+              <motion.div
+                className="h-px w-12"
+                style={{ backgroundColor: LUXE.or }}
+                initial={{ scaleX: 0, originX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              />
+            </div>
+            
+            {/* Title with character reveal effect */}
+            <motion.h2 
+              className="font-display text-3xl md:text-4xl lg:text-5xl font-light tracking-tight overflow-hidden"
               style={{ color: LUXE.noir }}
             >
-              Un objet d'exception
-            </h2>
+              <motion.span
+                className="inline-block"
+                initial={{ y: 60, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              >
+                Un objet
+              </motion.span>
+              {" "}
+              <motion.span
+                className="inline-block italic"
+                style={{ color: LUXE.or }}
+                initial={{ y: 60, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              >
+                d'exception
+              </motion.span>
+            </motion.h2>
           </motion.div>
           
           <CardFlipSection variant="light" />
           
+          {/* Enhanced description with staggered reveal */}
           <motion.div 
             className="text-center mt-16 px-6"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.3, duration: 1 }}
+            transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
-            <p 
-              className="text-sm font-light max-w-md mx-auto"
-              style={{ color: LUXE.gris }}
-            >
-              PVC mat premium. Technologie NFC intégrée. 
-              <br className="hidden md:block" />
-              Design sur-mesure selon vos exigences.
-            </p>
+            <div className="flex flex-wrap justify-center gap-6 md:gap-10">
+              {[
+                { label: "PVC mat premium" },
+                { label: "NFC intégrée" },
+                { label: "Design sur-mesure" },
+              ].map((item, i) => (
+                <motion.div
+                  key={item.label}
+                  className="flex items-center gap-2"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.7 + i * 0.15, duration: 0.8 }}
+                >
+                  <motion.div
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: LUXE.or }}
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.8 + i * 0.15, type: "spring", stiffness: 300 }}
+                  />
+                  <span 
+                    className="text-sm font-light"
+                    style={{ color: LUXE.gris }}
+                  >
+                    {item.label}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </div>
       </section>
@@ -594,35 +707,84 @@ interface CardFlipProps {
 
 function CardFlipSection({ variant = 'dark' }: CardFlipProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [hasEntered, setHasEntered] = useState(false);
   
   const shadowColor = variant === 'light' 
     ? 'rgba(0, 0, 0, 0.15)' 
     : 'rgba(0, 0, 0, 0.6)';
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center relative">
+      {/* Glow effect behind card */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        className="absolute w-[350px] md:w-[420px] lg:w-[500px] h-[220px] md:h-[260px] lg:h-[300px] rounded-3xl blur-[80px] pointer-events-none"
+        style={{ backgroundColor: `${LUXE.or}30` }}
+        initial={{ opacity: 0, scale: 0.5 }}
         whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+        animate={hasEntered ? {
+          opacity: [0.3, 0.5, 0.3],
+          scale: [1, 1.05, 1],
+        } : {}}
+      />
+      
+      <motion.div
+        initial={{ opacity: 0, y: 80, rotateX: 25 }}
+        whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ 
+          duration: 1.5, 
+          ease: [0.16, 1, 0.3, 1],
+          delay: 0.2,
+        }}
+        onAnimationComplete={() => setHasEntered(true)}
         className="relative cursor-pointer"
         style={{ perspective: "1200px" }}
         onMouseEnter={() => setIsFlipped(true)}
         onMouseLeave={() => setIsFlipped(false)}
         onClick={() => setIsFlipped(!isFlipped)}
       >
+        {/* Shimmer effect on card */}
+        <motion.div
+          className="absolute inset-0 rounded-2xl pointer-events-none z-10 overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={hasEntered ? { opacity: 1 } : {}}
+        >
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(105deg, transparent 40%, ${LUXE.or}20 50%, transparent 60%)`,
+            }}
+            animate={hasEntered ? {
+              x: ["-100%", "200%"],
+            } : {}}
+            transition={{
+              duration: 2.5,
+              repeat: Infinity,
+              repeatDelay: 5,
+              ease: "easeInOut",
+            }}
+          />
+        </motion.div>
+        
         <motion.div
           className="relative w-[300px] md:w-[380px] lg:w-[440px]"
           style={{ transformStyle: "preserve-3d" }}
-          animate={{ rotateY: isFlipped ? 180 : 0 }}
+          animate={{ 
+            rotateY: isFlipped ? 180 : 0,
+          }}
+          whileHover={{ 
+            scale: 1.02,
+            transition: { duration: 0.4 }
+          }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Front */}
           <motion.img 
             src={cardFront} 
             alt="Carte i-wasp - Recto" 
-            className="w-full h-auto"
+            className="w-full h-auto rounded-2xl"
             style={{
               filter: `drop-shadow(0 30px 60px ${shadowColor})`,
               backfaceVisibility: "hidden",
@@ -632,7 +794,7 @@ function CardFlipSection({ variant = 'dark' }: CardFlipProps) {
           <motion.img 
             src={cardBack} 
             alt="Carte i-wasp - Verso" 
-            className="w-full h-auto absolute top-0 left-0"
+            className="w-full h-auto absolute top-0 left-0 rounded-2xl"
             style={{
               filter: `drop-shadow(0 30px 60px ${shadowColor})`,
               backfaceVisibility: "hidden",
@@ -641,16 +803,32 @@ function CardFlipSection({ variant = 'dark' }: CardFlipProps) {
           />
         </motion.div>
         
-        {/* Hint */}
-        <motion.p
-          className="text-center mt-6 text-[10px] uppercase tracking-[0.3em]"
-          style={{ color: variant === 'light' ? LUXE.grisClair : LUXE.gris }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 1 }}
+        {/* Hint with animated indicator */}
+        <motion.div
+          className="text-center mt-8 flex flex-col items-center gap-2"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5, duration: 0.8 }}
         >
-          {isFlipped ? 'Verso' : 'Survoler pour voir le verso'}
-        </motion.p>
+          <motion.div
+            className="flex items-center gap-2"
+            animate={!isFlipped ? { x: [0, 5, 0] } : {}}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            <span
+              className="text-[10px] uppercase tracking-[0.3em]"
+              style={{ color: variant === 'light' ? LUXE.grisClair : LUXE.gris }}
+            >
+              {isFlipped ? 'Cliquez pour retourner' : 'Survoler pour découvrir'}
+            </span>
+            <motion.div
+              className="w-4 h-px"
+              style={{ backgroundColor: LUXE.or }}
+              animate={!isFlipped ? { scaleX: [1, 1.5, 1] } : {}}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </motion.div>
+        </motion.div>
       </motion.div>
     </div>
   );
