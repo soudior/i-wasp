@@ -20,7 +20,7 @@ import { ArrowRight } from "lucide-react";
 const LUXE = {
   noir: "#050505",
   noirSoft: "#0A0A0A",
-  ivoire: "#F8F7F5",
+  ivoire: "#F5F5F5",
   ivoireSoft: "#EFEDE8",
   or: "#B8956C",
   orLight: "#D4B896",
