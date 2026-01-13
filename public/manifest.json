@@ -1,9 +1,9 @@
 {
-  "name": "i-wasp - NFC Premium",
+  "name": "i-wasp — Haute Couture Digitale",
   "short_name": "i-wasp",
-  "description": "Le futur du networking digital. Cartes de visite NFC premium et ongles connectés au Maroc.",
-  "theme_color": "#000000",
-  "background_color": "#000000",
+  "description": "Maison d'identité professionnelle digitale. Cartes de visite NFC premium et ongles connectés. Sobre, précise, intemporelle.",
+  "theme_color": "#0A0A0A",
+  "background_color": "#0A0A0A",
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
@@ -29,13 +29,41 @@
       "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/home-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Accueil i-wasp"
+    },
+    {
+      "src": "/screenshots/dashboard-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dashboard personnel"
     }
   ],
   "shortcuts": [
@@ -50,14 +78,14 @@
       "name": "Commander",
       "short_name": "Commander",
       "description": "Commander une carte NFC",
-      "url": "/order/type",
+      "url": "/order/offre",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "i-wasp Nails",
-      "short_name": "Nails",
-      "description": "Découvrir les ongles connectés",
-      "url": "/nails",
+      "name": "Produits",
+      "short_name": "Produits",
+      "description": "Découvrir nos produits NFC",
+      "url": "/produits",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ],
@@ -73,5 +101,15 @@
   "handle_links": "preferred",
   "launch_handler": {
     "client_mode": "navigate-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+iwasp",
+      "url": "/card/%s"
+    }
+  ],
+  "related_applications": [],
+  "edge_side_panel": {
+    "preferred_width": 400
   }
 }

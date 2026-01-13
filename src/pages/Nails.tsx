@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { 
+import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
+import {
   ArrowRight, 
   Sparkles, 
   Droplets, 
@@ -34,6 +35,8 @@ const WHATSAPP_NAILS = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20sou
 const WHATSAPP_DEMO = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20voir%20une%20démo%20des%20i-wasp%20Nails.";
 
 const Nails = () => {
+  // SEO
+  SEOHead(SEO_CONFIGS.nails);
 
   const features = [
     { icon: Diamond, title: "Technologie Invisible", desc: "Puce ultra-fine qui disparaît sous votre vernis" },

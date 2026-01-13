@@ -9,18 +9,20 @@
  * Parallax: Subtle depth effects between sections
  */
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { CoutureFooter } from "@/components/CoutureFooter";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { PartnersSection } from "@/components/PartnersSection";
-import { useState } from "react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
+import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import cardFront from "@/assets/card-front.png";
 import cardBack from "@/assets/card-back.png";
 
 export default function HomeLuxeMax() {
+  // SEO
+  SEOHead(SEO_CONFIGS.home);
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Parallax for hero section

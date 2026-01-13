@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X } from "lucide-react";
+import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { CoutureNavbar } from "@/components/CoutureNavbar";
 import { CoutureFooter } from "@/components/CoutureFooter";
 import {
@@ -139,6 +140,9 @@ function HighlightText({ text, query }: { text: string; query: string }) {
 }
 
 export default function FAQ() {
+  // SEO
+  SEOHead(SEO_CONFIGS.faq);
+  
   const [searchQuery, setSearchQuery] = useState("");
 
   // Filter FAQs based on search query
