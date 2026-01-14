@@ -15,7 +15,9 @@ import {
   Loader2,
   Shield,
   Zap,
-  Lock
+  Lock,
+  Globe,
+  ExternalLink
 } from "lucide-react";
 import { WEB_STUDIO_PACKAGES, WebStudioPackageKey, getPackageById } from "@/lib/webStudioPackages";
 import { supabase } from "@/integrations/supabase/client";
@@ -40,6 +42,11 @@ interface OrderData {
     contactName: string;
     contactEmail: string;
     contactPhone: string;
+    hosting?: {
+      type: 'iwasp' | 'custom';
+      customDomainName: string | null;
+      subdomain: string | null;
+    };
     options: {
       customDomain: boolean;
       logoDesign: boolean;
@@ -225,11 +232,56 @@ export default function WebStudioPaiement() {
                 </span>
               </div>
 
+              {/* Hosting / Domain Preview */}
+              {orderData.formData.hosting && (
+                <div className="py-3 border-b border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span style={{ color: STUDIO.gris }}>Hébergement</span>
+                    <span style={{ color: STUDIO.ivoire }}>
+                      {orderData.formData.hosting.type === 'iwasp' ? 'IWASP (inclus)' : 'Domaine personnalisé'}
+                    </span>
+                  </div>
+                  {/* Domain preview */}
+                  <div className="mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-amber-600/5 border border-amber-500/20">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Globe size={14} className="text-amber-500" />
+                      <span className="text-xs font-medium text-amber-500">Votre site sera accessible sur :</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <code className="text-sm font-mono px-2 py-1 rounded bg-black/30" style={{ color: STUDIO.ivoire }}>
+                        {orderData.formData.hosting.type === 'iwasp' 
+                          ? `${orderData.formData.hosting.subdomain || orderData.formData.businessName.toLowerCase().replace(/[^a-z0-9]/g, '-')}.i-wasp.com`
+                          : orderData.formData.hosting.customDomainName || 'votre-domaine.com'
+                        }
+                      </code>
+                      <ExternalLink size={12} className="text-amber-500/60" />
+                    </div>
+                    {orderData.formData.hosting.type === 'custom' && (
+                      <p className="text-xs mt-2" style={{ color: STUDIO.gris }}>
+                        Les instructions DNS vous seront envoyées après le paiement
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Options */}
-              {orderData.formData.options.customDomain && (
+              {orderData.formData.hosting?.type === 'custom' && (
                 <div className="flex justify-between py-2 border-b border-white/10">
-                  <span style={{ color: STUDIO.gris }}>Domaine .ma</span>
+                  <span style={{ color: STUDIO.gris }}>Domaine personnalisé</span>
                   <span style={{ color: STUDIO.ivoire }}>+100 MAD/an</span>
+                </div>
+              )}
+              {orderData.formData.options.logoDesign && (
+                <div className="flex justify-between py-2 border-b border-white/10">
+                  <span style={{ color: STUDIO.gris }}>Design de logo</span>
+                  <span style={{ color: STUDIO.ivoire }}>+200 MAD</span>
+                </div>
+              )}
+              {orderData.formData.options.seoOptimization && (
+                <div className="flex justify-between py-2 border-b border-white/10">
+                  <span style={{ color: STUDIO.gris }}>SEO avancé</span>
+                  <span style={{ color: STUDIO.ivoire }}>+150 MAD</span>
                 </div>
               )}
             </div>
