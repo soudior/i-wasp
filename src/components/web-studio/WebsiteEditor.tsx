@@ -6,9 +6,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  X, Type, Palette, Image, Save, Eye, Undo, Redo, 
+  X, Type, Palette, Image as ImageIcon, Save, Eye, Undo, Redo, 
   ChevronLeft, ChevronRight, Monitor, Smartphone, 
-  Check, Loader2, ExternalLink, Sparkles
+  Loader2, ExternalLink, Sparkles, Upload, Trash2, RefreshCw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,14 @@ interface WebsiteCustomizations {
     text?: string;
   };
   images: Record<string, string>;
+}
+
+interface DetectedImage {
+  index: number;
+  src: string;
+  alt: string;
+  label: string;
+  isPlaceholder: boolean;
 }
 
 interface WebsiteEditorProps {
@@ -68,10 +76,13 @@ export function WebsiteEditor({
   const [activeTab, setActiveTab] = useState("texts");
   const [history, setHistory] = useState<WebsiteCustomizations[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   // Extract editable texts from HTML
   const [editableTexts, setEditableTexts] = useState<Array<{ id: string; label: string; value: string }>>([]);
+  const [detectedImages, setDetectedImages] = useState<DetectedImage[]>([]);
 
   useEffect(() => {
     extractEditableContent();
@@ -81,9 +92,9 @@ export function WebsiteEditor({
     const parser = new DOMParser();
     const doc = parser.parseFromString(initialHtml, "text/html");
     
+    // Extract texts
     const texts: Array<{ id: string; label: string; value: string }> = [];
     
-    // Extract headings
     doc.querySelectorAll("h1, h2, h3").forEach((el, index) => {
       const tag = el.tagName.toLowerCase();
       texts.push({
@@ -93,7 +104,6 @@ export function WebsiteEditor({
       });
     });
 
-    // Extract paragraphs with substantial content
     doc.querySelectorAll("p").forEach((el, index) => {
       const text = el.textContent?.trim() || "";
       if (text.length > 20 && text.length < 500) {
@@ -105,7 +115,6 @@ export function WebsiteEditor({
       }
     });
 
-    // Extract button text
     doc.querySelectorAll("button, .btn, a.button, [class*='btn']").forEach((el, index) => {
       const text = el.textContent?.trim() || "";
       if (text.length > 0 && text.length < 50) {
@@ -118,6 +127,54 @@ export function WebsiteEditor({
     });
 
     setEditableTexts(texts);
+
+    // Extract images
+    const images: DetectedImage[] = [];
+    doc.querySelectorAll("img").forEach((img, index) => {
+      const src = img.getAttribute("src") || "";
+      const alt = img.getAttribute("alt") || "";
+      
+      // Determine if it's a placeholder
+      const isPlaceholder = 
+        src.includes("picsum.photos") || 
+        src.includes("placehold") ||
+        src.includes("placeholder") ||
+        src.includes("unsplash") ||
+        src.includes("lorem") ||
+        !src.startsWith("http");
+
+      // Create a label based on context
+      let label = `Image ${index + 1}`;
+      const parentSection = img.closest("section, header, footer, .hero, .about, .services, .contact");
+      if (parentSection) {
+        const sectionClass = parentSection.className || "";
+        if (sectionClass.includes("hero") || sectionClass.includes("header")) {
+          label = `Image Hero ${index + 1}`;
+        } else if (sectionClass.includes("about")) {
+          label = `Image À propos ${index + 1}`;
+        } else if (sectionClass.includes("service")) {
+          label = `Image Service ${index + 1}`;
+        } else if (sectionClass.includes("team")) {
+          label = `Photo équipe ${index + 1}`;
+        } else if (sectionClass.includes("gallery") || sectionClass.includes("portfolio")) {
+          label = `Galerie ${index + 1}`;
+        }
+      }
+
+      if (alt) {
+        label = alt.substring(0, 30) + (alt.length > 30 ? "..." : "");
+      }
+
+      images.push({
+        index,
+        src,
+        alt,
+        label,
+        isPlaceholder
+      });
+    });
+
+    setDetectedImages(images);
   };
 
   const updateCustomization = useCallback((
@@ -134,7 +191,6 @@ export function WebsiteEditor({
         }
       };
       
-      // Save to history
       setHistory(h => [...h.slice(0, historyIndex + 1), updated]);
       setHistoryIndex(i => i + 1);
       
@@ -142,10 +198,66 @@ export function WebsiteEditor({
     });
   }, [historyIndex]);
 
+  const removeImageCustomization = useCallback((key: string) => {
+    setCustomizations(prev => {
+      const newImages = { ...prev.images };
+      delete newImages[key];
+      
+      const updated = {
+        ...prev,
+        images: newImages
+      };
+      
+      setHistory(h => [...h.slice(0, historyIndex + 1), updated]);
+      setHistoryIndex(i => i + 1);
+      
+      return updated;
+    });
+  }, [historyIndex]);
+
+  const handleImageUpload = async (index: number, file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Veuillez sélectionner une image");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'image ne doit pas dépasser 5 Mo");
+      return;
+    }
+
+    setUploadingImageIndex(index);
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${websiteId}/${Date.now()}-${index}.${fileExt}`;
+
+      const { data, error } = await supabase.storage
+        .from("website-images")
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: true
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("website-images")
+        .getPublicUrl(data.path);
+
+      updateCustomization("images", index.toString(), publicUrl);
+      toast.success("Image uploadée avec succès");
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Erreur lors de l'upload de l'image");
+    } finally {
+      setUploadingImageIndex(null);
+    }
+  };
+
   const applyCustomizationsToHtml = useCallback((baseHtml: string, customs: WebsiteCustomizations): string => {
-    let result = baseHtml;
     const parser = new DOMParser();
-    const doc = parser.parseFromString(result, "text/html");
+    const doc = parser.parseFromString(baseHtml, "text/html");
 
     // Apply text changes
     Object.entries(customs.texts).forEach(([id, newValue]) => {
@@ -160,6 +272,7 @@ export function WebsiteEditor({
     // Apply color changes via CSS variables
     if (Object.keys(customs.colors).length > 0) {
       const styleEl = doc.createElement("style");
+      styleEl.id = "iwasp-custom-styles";
       styleEl.textContent = `
         :root {
           ${customs.colors.primary ? `--primary-color: ${customs.colors.primary};` : ""}
@@ -192,18 +305,24 @@ export function WebsiteEditor({
         }
         ` : ""}
       `;
+      
+      // Remove existing custom styles
+      const existingStyle = doc.getElementById("iwasp-custom-styles");
+      if (existingStyle) existingStyle.remove();
+      
       doc.head.appendChild(styleEl);
     }
 
     // Apply image changes
-    Object.entries(customs.images).forEach(([selector, newSrc]) => {
-      const img = doc.querySelector(`img[src*="${selector}"]`) || doc.querySelector(`img:nth-of-type(${parseInt(selector) + 1})`);
-      if (img) {
-        img.setAttribute("src", newSrc);
+    const images = doc.querySelectorAll("img");
+    Object.entries(customs.images).forEach(([indexStr, newSrc]) => {
+      const index = parseInt(indexStr, 10);
+      if (images[index]) {
+        images[index].setAttribute("src", newSrc);
       }
     });
 
-    return doc.documentElement.outerHTML;
+    return "<!DOCTYPE html>" + doc.documentElement.outerHTML;
   }, []);
 
   // Update preview when customizations change
@@ -289,6 +408,14 @@ export function WebsiteEditor({
     { key: "text", label: "Couleur du texte", description: "Texte principal" },
   ];
 
+  const getDisplayedImageSrc = (img: DetectedImage) => {
+    return customizations.images[img.index.toString()] || img.src;
+  };
+
+  const isImageCustomized = (index: number) => {
+    return !!customizations.images[index.toString()];
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -361,7 +488,7 @@ export function WebsiteEditor({
                     Couleurs
                   </TabsTrigger>
                   <TabsTrigger value="images" className="data-[state=active]:bg-[#007AFF] data-[state=active]:text-white text-white/60 text-xs">
-                    <Image className="w-3 h-3 mr-1" />
+                    <ImageIcon className="w-3 h-3 mr-1" />
                     Images
                   </TabsTrigger>
                 </TabsList>
@@ -418,9 +545,93 @@ export function WebsiteEditor({
 
                   {/* Images */}
                   <TabsContent value="images" className="mt-0 space-y-4 pb-4">
-                    <p className="text-white/40 text-sm text-center py-8">
-                      Gestion des images à venir
-                    </p>
+                    {detectedImages.length > 0 ? (
+                      <>
+                        <p className="text-white/60 text-xs mb-3">
+                          {detectedImages.length} image{detectedImages.length > 1 ? "s" : ""} détectée{detectedImages.length > 1 ? "s" : ""}
+                        </p>
+                        {detectedImages.map((img) => (
+                          <div 
+                            key={img.index} 
+                            className="space-y-2 p-3 rounded-lg bg-white/5 border border-white/10"
+                          >
+                            <div className="flex items-center justify-between">
+                              <Label className="text-white/80 text-xs flex items-center gap-2">
+                                {img.label}
+                                {img.isPlaceholder && (
+                                  <span className="px-1.5 py-0.5 text-[10px] bg-amber-500/20 text-amber-400 rounded">
+                                    Placeholder
+                                  </span>
+                                )}
+                                {isImageCustomized(img.index) && (
+                                  <span className="px-1.5 py-0.5 text-[10px] bg-green-500/20 text-green-400 rounded">
+                                    Modifié
+                                  </span>
+                                )}
+                              </Label>
+                            </div>
+                            
+                            {/* Image preview */}
+                            <div className="relative aspect-video rounded-lg overflow-hidden bg-black/20">
+                              <img
+                                src={getDisplayedImageSrc(img)}
+                                alt={img.alt}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = "https://placehold.co/400x300/1D1D1F/8E8E93?text=Image";
+                                }}
+                              />
+                              
+                              {uploadingImageIndex === img.index && (
+                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                  <Loader2 className="w-6 h-6 text-white animate-spin" />
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Upload controls */}
+                            <div className="flex gap-2">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                ref={(el) => { fileInputRefs.current[img.index] = el; }}
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleImageUpload(img.index, file);
+                                }}
+                                className="hidden"
+                              />
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => fileInputRefs.current[img.index]?.click()}
+                                disabled={uploadingImageIndex === img.index}
+                                className="flex-1 bg-white/5 border-white/10 text-white/60 hover:text-white text-xs"
+                              >
+                                <Upload className="w-3 h-3 mr-1" />
+                                Changer
+                              </Button>
+                              
+                              {isImageCustomized(img.index) && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => removeImageCustomization(img.index.toString())}
+                                  className="text-white/40 hover:text-red-400 hover:bg-red-500/10"
+                                  title="Rétablir l'image originale"
+                                >
+                                  <RefreshCw className="w-3 h-3" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <p className="text-white/40 text-sm text-center py-8">
+                        Aucune image détectée
+                      </p>
+                    )}
                   </TabsContent>
                 </ScrollArea>
               </Tabs>
