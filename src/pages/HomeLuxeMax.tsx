@@ -48,51 +48,50 @@ export default function HomeLuxeMax() {
       {/* ═══════════════════════════════════════════════════════════════════
           HERO — Full-screen, noir absolu, typographie Cartier
       ═══════════════════════════════════════════════════════════════════ */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden pt-20">
+      <section className="min-h-[100dvh] flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden pt-16 sm:pt-20 pb-24 sm:pb-16">
         
-        {/* Animated gradient orbs */}
+        {/* Animated gradient orbs - simplified on mobile for performance */}
         <motion.div
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none"
+          className="absolute top-1/4 left-1/4 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] rounded-full blur-[80px] sm:blur-[150px] pointer-events-none"
           style={{ backgroundColor: `${LUXE.or}08` }}
           animate={{
-            x: [0, 50, 0],
-            y: [0, -30, 0],
-            scale: [1, 1.1, 1],
+            x: [0, 25, 0],
+            y: [0, -15, 0],
+            scale: [1, 1.05, 1],
           }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none"
+          className="absolute bottom-1/4 right-1/4 w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] rounded-full blur-[60px] sm:blur-[120px] pointer-events-none"
           style={{ backgroundColor: `${LUXE.or}06` }}
           animate={{
-            x: [0, -40, 0],
-            y: [0, 40, 0],
-            scale: [1, 1.15, 1],
+            x: [0, -20, 0],
+            y: [0, 20, 0],
+            scale: [1, 1.08, 1],
           }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
         
-        {/* Floating golden particles */}
-        {[...Array(12)].map((_, i) => (
+        {/* Floating golden particles - reduced on mobile */}
+        {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 rounded-full pointer-events-none"
+            className="absolute w-1 h-1 rounded-full pointer-events-none hidden sm:block"
             style={{
               backgroundColor: LUXE.or,
-              left: `${15 + (i * 7)}%`,
-              top: `${20 + (i % 4) * 20}%`,
+              left: `${15 + (i * 14)}%`,
+              top: `${20 + (i % 3) * 25}%`,
               opacity: 0.3 + (i % 3) * 0.1,
             }}
             animate={{
-              y: [0, -30, 0],
-              opacity: [0.2, 0.5, 0.2],
-              scale: [1, 1.5, 1],
+              y: [0, -20, 0],
+              opacity: [0.2, 0.4, 0.2],
             }}
             transition={{
-              duration: 4 + (i % 3),
+              duration: 5 + (i % 2),
               repeat: Infinity,
               ease: "easeInOut",
-              delay: i * 0.3,
+              delay: i * 0.5,
             }}
           />
         ))}
@@ -105,16 +104,16 @@ export default function HomeLuxeMax() {
           }}
         />
         
-        {/* Elegant line decorations */}
+        {/* Elegant line decorations - hidden on mobile */}
         <motion.div
-          className="absolute top-20 left-10 md:left-20 w-px h-32"
+          className="absolute top-20 left-10 md:left-20 w-px h-24 md:h-32 hidden sm:block"
           style={{ backgroundColor: `${LUXE.or}30` }}
           initial={{ scaleY: 0, originY: 0 }}
           animate={{ scaleY: 1 }}
           transition={{ duration: 1.5, delay: 1 }}
         />
         <motion.div
-          className="absolute top-20 right-10 md:right-20 w-px h-32"
+          className="absolute top-20 right-10 md:right-20 w-px h-24 md:h-32 hidden sm:block"
           style={{ backgroundColor: `${LUXE.or}30` }}
           initial={{ scaleY: 0, originY: 0 }}
           animate={{ scaleY: 1 }}
@@ -136,17 +135,17 @@ export default function HomeLuxeMax() {
           />
           
           <motion.h1 
-            className="font-display text-4xl md:text-5xl lg:text-7xl font-light leading-[1.1] tracking-tight"
+            className="font-display text-[2.5rem] sm:text-5xl lg:text-7xl font-light leading-[1.15] sm:leading-[1.1] tracking-tight"
             style={{ color: LUXE.ivoire }}
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
             <motion.span
               className="inline-block"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.2 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
             >
               L'identité digitale
             </motion.span>
@@ -154,20 +153,20 @@ export default function HomeLuxeMax() {
             <motion.span 
               className="italic inline-block"
               style={{ color: LUXE.or }}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
             >
               des leaders.
             </motion.span>
           </motion.h1>
           
           <motion.p
-            className="mt-8 text-sm md:text-base lg:text-lg font-light tracking-wide max-w-lg mx-auto"
+            className="mt-6 sm:mt-8 text-sm sm:text-base lg:text-lg font-light tracking-wide max-w-[280px] sm:max-w-lg mx-auto px-2"
             style={{ color: LUXE.gris }}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 1.2 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
           >
             Une carte NFC premium pour ceux qui marquent leur époque.
           </motion.p>
@@ -182,42 +181,38 @@ export default function HomeLuxeMax() {
           />
         </motion.div>
         
-        {/* CTA with premium hover effect */}
+        {/* CTA with premium hover effect - repositioned for mobile */}
         <motion.div 
-          className="absolute bottom-16 left-0 right-0 flex justify-center z-10"
+          className="mt-10 sm:mt-0 sm:absolute sm:bottom-20 left-0 right-0 flex justify-center z-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.8, duration: 1 }}
+          transition={{ delay: 1, duration: 0.8 }}
           style={{ opacity: heroOpacity }}
         >
           <Link 
             to="/order/offre"
-            className="group relative flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] font-light transition-all duration-700 px-6 py-3"
-            style={{ color: LUXE.grisClair }}
+            className="group relative flex items-center justify-center gap-3 text-[11px] uppercase tracking-[0.3em] font-light transition-all duration-500 px-8 py-4 sm:px-6 sm:py-3 min-h-[48px] min-w-[160px] rounded-full"
+            style={{ 
+              color: LUXE.ivoire,
+              backgroundColor: `${LUXE.or}20`,
+              border: `1px solid ${LUXE.or}40`,
+            }}
           >
-            {/* Hover background effect */}
-            <motion.span
-              className="absolute inset-0 rounded-full"
-              style={{ backgroundColor: `${LUXE.or}10`, border: `1px solid ${LUXE.or}20` }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileHover={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-            />
-            <span className="relative group-hover:text-white transition-colors duration-500">Découvrir</span>
-            <ArrowRight className="relative w-3 h-3 group-hover:translate-x-1.5 transition-transform duration-500" />
+            <span className="relative">Découvrir</span>
+            <ArrowRight className="relative w-3 h-3 group-hover:translate-x-1.5 transition-transform duration-300" />
           </Link>
         </motion.div>
         
-        {/* Scroll indicator with animation */}
+        {/* Scroll indicator with animation - hidden on mobile */}
         <motion.div
-          className="absolute bottom-32 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          className="absolute bottom-28 sm:bottom-32 left-1/2 -translate-x-1/2 flex-col items-center gap-2 hidden sm:flex"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2.5 }}
+          transition={{ delay: 1.5 }}
           style={{ opacity: heroOpacity }}
         >
           <motion.div
-            className="w-px h-12"
+            className="w-px h-10 sm:h-12"
             style={{ backgroundColor: `${LUXE.or}40` }}
             animate={{ scaleY: [1, 0.5, 1] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -274,7 +269,7 @@ export default function HomeLuxeMax() {
           />
         ))}
         
-        <div className="py-24 md:py-32 relative z-10">
+        <div className="py-16 sm:py-24 md:py-32 relative z-10 px-4 sm:px-6">
           {/* Animated reveal for title */}
           <motion.div
             className="text-center mb-16 overflow-hidden"
@@ -312,9 +307,8 @@ export default function HomeLuxeMax() {
               />
             </div>
             
-            {/* Title with character reveal effect */}
             <motion.h2 
-              className="font-display text-3xl md:text-4xl lg:text-5xl font-light tracking-tight overflow-hidden"
+              className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light tracking-tight overflow-hidden"
               style={{ color: LUXE.noir }}
             >
               <motion.span
@@ -341,16 +335,15 @@ export default function HomeLuxeMax() {
           </motion.div>
           
           <CardFlipSection variant="light" />
-          
           {/* Enhanced description with staggered reveal */}
           <motion.div 
-            className="text-center mt-16 px-6"
-            initial={{ opacity: 0, y: 30 }}
+            className="text-center mt-10 sm:mt-16 px-4 sm:px-6"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ delay: 0.3, duration: 0.8 }}
           >
-            <div className="flex flex-wrap justify-center gap-6 md:gap-10">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-10">
               {[
                 { label: "PVC mat premium" },
                 { label: "NFC intégrée" },
@@ -389,7 +382,7 @@ export default function HomeLuxeMax() {
           MANIFESTE — Section noire, citation impactante
       ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="py-24 md:py-32 flex items-center justify-center px-6"
+        className="py-16 sm:py-24 md:py-32 flex items-center justify-center px-4 sm:px-6"
         style={{ backgroundColor: LUXE.noir }}
       >
         <motion.blockquote 
@@ -400,7 +393,7 @@ export default function HomeLuxeMax() {
           transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
         >
           <p 
-            className="font-display text-2xl md:text-3xl lg:text-4xl font-light italic leading-[1.4]"
+            className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light italic leading-[1.5] sm:leading-[1.4]"
             style={{ color: LUXE.ivoire }}
           >
             "La première impression
@@ -418,17 +411,17 @@ export default function HomeLuxeMax() {
           AVANTAGES — Section ivoire, trois piliers
       ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="py-24 md:py-32 px-6"
+        className="py-16 sm:py-24 md:py-32 px-4 sm:px-6"
         style={{ backgroundColor: LUXE.ivoire }}
       >
         <motion.div 
           className="max-w-4xl mx-auto"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 sm:mb-16">
             <span 
               className="text-[10px] uppercase tracking-[0.4em] font-light"
               style={{ color: LUXE.or }}
@@ -436,14 +429,14 @@ export default function HomeLuxeMax() {
               Pourquoi nous
             </span>
             <h2 
-              className="font-display text-3xl md:text-4xl font-light mt-4 tracking-tight"
+              className="font-display text-2xl sm:text-3xl md:text-4xl font-light mt-4 tracking-tight"
               style={{ color: LUXE.noir }}
             >
               L'excellence en trois mots
             </h2>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-12 md:gap-16">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 md:gap-16">
             {[
               { title: "Créer", desc: "Un profil digital unique, à votre image exacte." },
               { title: "Partager", desc: "Un simple tap pour transmettre votre identité." },
@@ -479,17 +472,17 @@ export default function HomeLuxeMax() {
           STATS — Section noire, chiffres d'autorité
       ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="py-20 md:py-24 px-6"
+        className="py-12 sm:py-20 md:py-24 px-4 sm:px-6"
         style={{ backgroundColor: LUXE.noir }}
       >
         <motion.div 
           className="max-w-4xl mx-auto"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="grid grid-cols-3 gap-8 text-center">
+          <div className="grid grid-cols-3 gap-4 sm:gap-8 text-center">
             {[
               { value: "2500+", label: "Professionnels" },
               { value: "98%", label: "Satisfaction" },
@@ -500,16 +493,16 @@ export default function HomeLuxeMax() {
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.8 }}
-              >
-                <span 
-                  className="font-display text-2xl md:text-3xl lg:text-4xl font-light"
-                  style={{ color: LUXE.or }}
+                  transition={{ delay: i * 0.1, duration: 0.6 }}
                 >
-                  {stat.value}
-                </span>
-                <p 
-                  className="text-[10px] md:text-xs uppercase tracking-[0.2em] mt-2"
+                  <span 
+                    className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light"
+                    style={{ color: LUXE.or }}
+                  >
+                    {stat.value}
+                  </span>
+                  <p 
+                    className="text-[9px] sm:text-[10px] md:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] mt-1 sm:mt-2"
                   style={{ color: LUXE.grisClair }}
                 >
                   {stat.label}
@@ -529,18 +522,18 @@ export default function HomeLuxeMax() {
           CTA FINAL — Noir, autorité absolue
       ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="py-24 md:py-32 flex flex-col items-center justify-center px-6"
+        className="py-16 sm:py-24 md:py-32 flex flex-col items-center justify-center px-4 sm:px-6 pb-24 sm:pb-32"
         style={{ backgroundColor: LUXE.noir }}
       >
         <motion.div 
           className="text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.8 }}
         >
           <h2 
-            className="font-display text-2xl md:text-3xl lg:text-4xl font-light mb-8"
+            className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light mb-6 sm:mb-8"
             style={{ color: LUXE.ivoire }}
           >
             Prêt à vous démarquer ?
@@ -548,7 +541,7 @@ export default function HomeLuxeMax() {
           
           <Link 
             to="/order/offre"
-            className="inline-flex items-center gap-3 px-10 py-4 text-[11px] uppercase tracking-[0.3em] font-light transition-all duration-700 border"
+            className="inline-flex items-center justify-center gap-3 px-8 sm:px-10 py-4 text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.3em] font-light transition-all duration-500 border min-h-[52px] min-w-[180px] rounded-sm active:scale-[0.98]"
             style={{ 
               color: LUXE.noir,
               backgroundColor: LUXE.or,
@@ -580,7 +573,7 @@ export default function HomeLuxeMax() {
           WEB STUDIO — Nouvelle section promotionnelle
       ═══════════════════════════════════════════════════════════════════ */}
       <section 
-        className="py-24 md:py-32 px-6 relative overflow-hidden"
+        className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 relative overflow-hidden"
         style={{ backgroundColor: LUXE.noirSoft }}
       >
         {/* Gradient accent */}
