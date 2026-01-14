@@ -75,13 +75,11 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const Enterprise = lazy(() => import("./pages/Enterprise"));
 const BrandAssets = lazy(() => import("./pages/BrandAssets"));
 const CardStudio = lazy(() => import("./pages/CardStudio"));
-const NFCDemo3D = lazy(() => import("./pages/NFCDemo3D"));
 const ProduitsNFC = lazy(() => import("./pages/ProduitsNFC"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const Conciergerie = lazy(() => import("./pages/Conciergerie"));
 const Club = lazy(() => import("./pages/Club"));
 const Contact = lazy(() => import("./pages/Contact"));
-const Showroom3D = lazy(() => import("./pages/Showroom3D"));
 const MentionsLegales = lazy(() => import("./pages/MentionsLegales"));
 const CGV = lazy(() => import("./pages/CGV"));
 const DualBrandShowcase = lazy(() => import("./pages/DualBrandShowcase"));
@@ -124,6 +122,8 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5, // 5 minutes - reduce refetches
+      gcTime: 1000 * 60 * 30, // 30 minutes cache
     },
   },
 });
@@ -253,14 +253,10 @@ const App = () => {
                               <Route path="/rental-demo" element={<RentalDemo />} />
                               <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
                               <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
-                              <Route path="/demo/nfc-3d" element={<NFCDemo3D />} />
                               <Route path="/demo/studio" element={<DemoStudio />} />
                               <Route path="/sovereign" element={<SovereignDashboard />} />
                               <Route path="/legacy-map" element={<LegacyMap />} />
                               <Route path="/alliance" element={<LegacyMap />} />
-                              <Route path="/nfc-animation" element={<NFCDemo3D />} />
-                              <Route path="/showroom" element={<Showroom3D />} />
-                              <Route path="/showroom-3d" element={<Showroom3D />} />
                               
                               {/* Public order tracking */}
                               <Route path="/track" element={<TrackOrder />} />

@@ -11,8 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ClubNavbar } from "@/components/ClubNavbar";
 import { GlobalFooter } from "@/components/GlobalFooter";
-import { Card3DGallery } from "@/components/Card3DGallery";
-import { 
+import {
   CreditCard, 
   Tag, 
   Watch, 
@@ -489,14 +488,7 @@ export default function ProduitsNFC() {
             </p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card3DGallery />
-          </motion.div>
+          {/* 3D Gallery removed for performance */}
         </div>
       </section>
       
