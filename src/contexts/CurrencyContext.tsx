@@ -5,7 +5,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-export type Currency = "EUR" | "MAD" | "USD" | "GBP";
+export type Currency = "EUR" | "MAD";
 
 interface CurrencyContextType {
   currency: Currency;
@@ -27,15 +27,11 @@ const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined
 const CONVERSION_RATES: Record<Currency, number> = {
   MAD: 1,
   EUR: 10.8,  // 1 EUR = 10.8 MAD
-  USD: 10.0,  // 1 USD = 10 MAD
-  GBP: 12.5,  // 1 GBP = 12.5 MAD
 };
 
 const CURRENCY_CONFIG: Record<Currency, { symbol: string; locale: string; region: string; label: string }> = {
   MAD: { symbol: "DH", locale: "fr-MA", region: "MA", label: "Maroc" },
   EUR: { symbol: "€", locale: "fr-FR", region: "EU", label: "Europe" },
-  USD: { symbol: "$", locale: "en-US", region: "US", label: "United States" },
-  GBP: { symbol: "£", locale: "en-GB", region: "UK", label: "United Kingdom" },
 };
 
 interface CurrencyProviderProps {
@@ -65,16 +61,8 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
         const data = await response.json();
         const countryCode = data.country_code;
         
-        // Map country to currency
-        const countryCurrencyMap: Record<string, Currency> = {
-          MA: "MAD",
-          FR: "EUR", DE: "EUR", ES: "EUR", IT: "EUR", NL: "EUR", BE: "EUR", PT: "EUR",
-          AT: "EUR", IE: "EUR", FI: "EUR", GR: "EUR", LU: "EUR", SK: "EUR", SI: "EUR",
-          GB: "GBP",
-          US: "USD", CA: "USD",
-        };
-
-        const detectedCurrency = countryCurrencyMap[countryCode] || "EUR";
+        // Map country to currency (EUR for all non-Morocco countries)
+        const detectedCurrency: Currency = countryCode === "MA" ? "MAD" : "EUR";
         setCurrencyState(detectedCurrency);
         setIsAutoDetected(true);
         localStorage.setItem("iwasp-currency", detectedCurrency);
@@ -98,10 +86,7 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
   };
 
   const toggleCurrency = () => {
-    const currencies: Currency[] = ["MAD", "EUR", "USD", "GBP"];
-    const currentIndex = currencies.indexOf(currency);
-    const nextCurrency = currencies[(currentIndex + 1) % currencies.length];
-    setCurrency(nextCurrency);
+    setCurrency(currency === "MAD" ? "EUR" : "MAD");
   };
 
   // Convert EUR to MAD
