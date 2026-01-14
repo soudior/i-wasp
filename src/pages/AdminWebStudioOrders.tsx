@@ -434,9 +434,11 @@ function AdminWebStudioOrdersContent() {
     },
   });
 
-  // Update order status with history
+  // Update order status with history and send email notification
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status, currentHistory }: { id: string; status: string; currentHistory: StatusHistoryEntry[] }) => {
+    mutationFn: async ({ id, status, currentHistory, order }: { id: string; status: string; currentHistory: StatusHistoryEntry[]; order: WebsiteProposal }) => {
+      const previousStatus = order.status;
+      
       const newHistoryEntry = {
         status,
         timestamp: new Date().toISOString(),
@@ -455,6 +457,34 @@ function AdminWebStudioOrdersContent() {
         .eq("id", id);
       
       if (error) throw error;
+
+      // Send email notification for status change
+      const clientEmail = order.form_data?.contactEmail;
+      const siteName = order.proposal?.siteName || order.form_data?.businessName || "Votre site";
+      
+      if (clientEmail && previousStatus !== status) {
+        try {
+          const { error: emailError } = await supabase.functions.invoke("send-webstudio-status-update", {
+            body: {
+              email: clientEmail,
+              siteName,
+              orderId: id,
+              previousStatus,
+              newStatus: status,
+              adminNotes: order.admin_notes || undefined
+            }
+          });
+          
+          if (emailError) {
+            console.error("Failed to send status update email:", emailError);
+          } else {
+            console.log("Status update email sent to:", clientEmail);
+          }
+        } catch (emailErr) {
+          console.error("Error sending status update email:", emailErr);
+        }
+      }
+
       return updatedHistory as StatusHistoryEntry[];
     },
     onSuccess: (updatedHistory) => {
@@ -462,7 +492,7 @@ function AdminWebStudioOrdersContent() {
       if (selectedOrder) {
         setSelectedOrder({ ...selectedOrder, status_history: updatedHistory });
       }
-      toast.success("Statut mis à jour");
+      toast.success("Statut mis à jour et client notifié");
     },
     onError: () => {
       toast.error("Erreur lors de la mise à jour");
@@ -932,7 +962,8 @@ L'équipe IWASP Web Studio`);
                       updateStatus.mutate({ 
                         id: selectedOrder.id, 
                         status: value,
-                        currentHistory: selectedOrder.status_history || []
+                        currentHistory: selectedOrder.status_history || [],
+                        order: selectedOrder
                       });
                       setSelectedOrder({ ...selectedOrder, status: value });
                     }}
