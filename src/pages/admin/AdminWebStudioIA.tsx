@@ -29,8 +29,11 @@ import {
   Globe,
   Truck,
   Play,
-  Sparkles
+  Sparkles,
+  Wand2,
+  AlertCircle
 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 type OrderStatus = "generated" | "pending" | "paid" | "in_production" | "live" | "delivered" | "cancelled";
 
@@ -45,10 +48,15 @@ interface WebStudioOrder {
     phone?: string;
     pack?: string;
     express?: boolean;
+    industry?: string;
+    description?: string;
+    colorScheme?: string;
+    [key: string]: unknown;
   };
   proposal: {
     designStyle?: string;
     pages?: string[];
+    [key: string]: unknown;
   };
   price_mad: number | null;
   price_eur: number | null;
@@ -91,6 +99,7 @@ export default function AdminWebStudioIA() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editNotes, setEditNotes] = useState("");
   const [editStatus, setEditStatus] = useState("");
+  const [generatingOrderId, setGeneratingOrderId] = useState<string | null>(null);
 
   // Fetch all orders
   const { data: orders, isLoading, refetch } = useQuery({
@@ -147,6 +156,43 @@ export default function AdminWebStudioIA() {
     },
   });
 
+  // Generate/Regenerate website mutation
+  const generateWebsite = useMutation({
+    mutationFn: async (order: WebStudioOrder) => {
+      setGeneratingOrderId(order.id);
+      
+      // Prepare form data for generation
+      const formData = order.form_data || {};
+      const proposal = order.proposal || {};
+      
+      const response = await supabase.functions.invoke('generate-website', {
+        body: {
+          proposalId: order.id,
+          businessName: formData.businessName || 'Mon Entreprise',
+          industry: formData.industry || 'general',
+          description: formData.description || '',
+          pages: proposal.pages || ['Accueil', 'À propos', 'Contact'],
+          designStyle: proposal.designStyle || 'modern',
+          colorScheme: formData.colorScheme || 'blue',
+          regenerate: !!order.generated_website
+        }
+      });
+
+      if (response.error) throw response.error;
+      return response.data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-webstudio-ia-orders"] });
+      toast.success(data?.message || "Site généré avec succès !");
+      setGeneratingOrderId(null);
+    },
+    onError: (error) => {
+      console.error('Generate error:', error);
+      toast.error("Erreur lors de la génération du site");
+      setGeneratingOrderId(null);
+    },
+  });
+
   // Filter orders
   const filteredOrders = useMemo(() => {
     if (!orders) return [];
@@ -199,6 +245,10 @@ export default function AdminWebStudioIA() {
 
   const handleQuickStatus = (order: WebStudioOrder, newStatus: string) => {
     updateOrder.mutate({ id: order.id, status: newStatus });
+  };
+
+  const handleGenerateWebsite = (order: WebStudioOrder) => {
+    generateWebsite.mutate(order);
   };
 
   if (isAdminLoading) {
@@ -424,6 +474,21 @@ export default function AdminWebStudioIA() {
                                     <CheckCircle className="h-4 w-4" />
                                   </Button>
                                 )}
+                                {/* Generate/Regenerate button */}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleGenerateWebsite(order)}
+                                  disabled={generatingOrderId === order.id}
+                                  title={order.generated_website ? "Régénérer le site" : "Générer le site"}
+                                  className="text-primary"
+                                >
+                                  {generatingOrderId === order.id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <Wand2 className="h-4 w-4" />
+                                  )}
+                                </Button>
                               </div>
                             </TableCell>
                           </TableRow>
@@ -490,25 +555,73 @@ export default function AdminWebStudioIA() {
                   </div>
                 )}
 
-                {selectedOrder.generated_website && (
-                  <div className="pt-4 border-t">
-                    <label className="text-sm font-medium text-muted-foreground">Site généré</label>
-                    <div className="mt-2 flex items-center gap-4">
-                      <Badge>{selectedOrder.generated_website.status}</Badge>
-                      {selectedOrder.generated_website.preview_url && (
-                        <a
-                          href={selectedOrder.generated_website.preview_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline flex items-center gap-1"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                          Ouvrir le site
-                        </a>
-                      )}
+                {/* Website Generation Section */}
+                <div className="pt-4 border-t">
+                  <label className="text-sm font-medium text-muted-foreground">Site web</label>
+                  {selectedOrder.generated_website ? (
+                    <div className="mt-2 space-y-3">
+                      <div className="flex items-center gap-4">
+                        <Badge>{selectedOrder.generated_website.status}</Badge>
+                        {selectedOrder.generated_website.preview_url && (
+                          <a
+                            href={selectedOrder.generated_website.preview_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline flex items-center gap-1"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                            Ouvrir le site
+                          </a>
+                        )}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleGenerateWebsite(selectedOrder)}
+                        disabled={generatingOrderId === selectedOrder.id}
+                        className="w-full"
+                      >
+                        {generatingOrderId === selectedOrder.id ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Régénération en cours...
+                          </>
+                        ) : (
+                          <>
+                            <Wand2 className="h-4 w-4 mr-2" />
+                            Régénérer le site
+                          </>
+                        )}
+                      </Button>
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="mt-2 space-y-3">
+                      <Alert variant="default" className="bg-yellow-50 border-yellow-200">
+                        <AlertCircle className="h-4 w-4 text-yellow-600" />
+                        <AlertDescription className="text-yellow-800">
+                          Aucun site n'a encore été généré pour cette commande.
+                        </AlertDescription>
+                      </Alert>
+                      <Button
+                        onClick={() => handleGenerateWebsite(selectedOrder)}
+                        disabled={generatingOrderId === selectedOrder.id}
+                        className="w-full"
+                      >
+                        {generatingOrderId === selectedOrder.id ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Génération en cours...
+                          </>
+                        ) : (
+                          <>
+                            <Wand2 className="h-4 w-4 mr-2" />
+                            Générer le site maintenant
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </DialogContent>
