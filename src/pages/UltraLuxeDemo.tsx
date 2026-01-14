@@ -6,20 +6,20 @@
 import { UltraLuxeTemplate } from "@/components/templates/UltraLuxeTemplate";
 
 const demoData = {
-  firstName: "Mohamed",
-  lastName: "El Amrani",
-  title: "CEO & Founder",
-  company: "i-wasp Morocco",
-  tagline: "L'excellence du networking digital au Maroc",
+  firstName: "i-wasp",
+  lastName: "",
+  title: "Cartes de visite NFC",
+  company: "i-wasp",
+  tagline: "Tap. Connect. Empower.",
   photoUrl: undefined, // Will show initials
   videoUrl: undefined, // Video removed for performance
-  phone: "+212661234567",
-  email: "contact@i-wasp.ma",
-  whatsapp: "+212661234567",
-  linkedin: "https://linkedin.com/in/mohamed-el-amrani",
+  phone: "+33626424394",
+  email: "contact@i-wasp.com",
+  whatsapp: "+33626424394",
+  linkedin: "https://linkedin.com/company/iwasp",
   instagram: "https://instagram.com/iwasp.ma",
-  website: "https://i-wasp.ma",
-  location: "Casablanca, Maroc",
+  website: "https://i-wasp.com",
+  location: "France",
   calendly: "https://calendly.com/i-wasp",
 };
 

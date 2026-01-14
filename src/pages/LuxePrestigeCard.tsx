@@ -24,18 +24,18 @@ const LUXE_COLORS = {
 
 // Données de contact
 const CONTACT = {
-  name: "Luxe Prestige",
-  tagline: "L'excellence au service de vos désirs",
-  title: "Conciergerie de Luxe",
-  location: "Marrakech, Maroc",
-  phone: "+212 661-381626",
-  whatsapp: "212661381626",
-  email: "contact@luxeprestige.ma",
+  name: "i-wasp",
+  tagline: "Tap. Connect. Empower.",
+  title: "Cartes de visite NFC Premium",
+  location: "France",
+  phone: "+33 6 26 42 43 94",
+  whatsapp: "33626424394",
+  email: "contact@i-wasp.com",
   services: [
-    { icon: Car, label: "Véhicules de Luxe", desc: "Rolls-Royce, Bentley, Lamborghini" },
-    { icon: Plane, label: "Aviation Privée", desc: "Jets & Hélicoptères" },
-    { icon: Sparkles, label: "Expériences", desc: "Montgolfières, Désert, Spa" },
-    { icon: Home, label: "Riads de Prestige", desc: "Villas & Palais exclusifs" },
+    { icon: Car, label: "Cartes NFC", desc: "Design premium personnalisé" },
+    { icon: Plane, label: "Templates", desc: "Modèles professionnels" },
+    { icon: Sparkles, label: "Analytics", desc: "Suivi des performances" },
+    { icon: Home, label: "Support", desc: "Assistance dédiée" },
   ],
 };
 
