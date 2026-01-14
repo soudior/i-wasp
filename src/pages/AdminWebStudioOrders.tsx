@@ -321,6 +321,7 @@ function AdminWebStudioOrdersContent() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPreviewDialog, setShowPreviewDialog] = useState(false);
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
+  const [generatedSiteData, setGeneratedSiteData] = useState<{ slug: string | null; preview_url: string | null } | null>(null);
   
   // Real-time notifications state
   const [newOrdersCount, setNewOrdersCount] = useState(0);
@@ -569,13 +570,26 @@ function AdminWebStudioOrdersContent() {
   });
 
   // Handle opening order details
-  const handleOpenOrder = (order: WebsiteProposal) => {
+  const handleOpenOrder = async (order: WebsiteProposal) => {
     setSelectedOrder(order);
     setAdminNotes(order.admin_notes || "");
     setAssignedTo(order.assigned_to || "");
     setPriority(order.priority || "normal");
     setDeadline(order.deadline ? order.deadline.split('T')[0] : "");
     setNewNote("");
+    
+    // Fetch generated website data for hosting URL
+    if (order.status === "site_generated" || order.status === "completed") {
+      const { data } = await supabase
+        .from("generated_websites")
+        .select("slug, preview_url")
+        .eq("proposal_id", order.id)
+        .single();
+      
+      setGeneratedSiteData(data || null);
+    } else {
+      setGeneratedSiteData(null);
+    }
   };
 
   // Filter orders
@@ -1350,11 +1364,53 @@ L'équipe IWASP Web Studio`);
                       <span className="text-sm" style={{ color: COLORS.ivoire }}>Génération en cours...</span>
                     </div>
                   ) : selectedOrder.status === "site_generated" ? (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex items-center gap-2 text-sm mb-3" style={{ color: COLORS.success }}>
                         <CheckCircle2 size={16} />
                         Site généré avec succès
                       </div>
+                      
+                      {/* Public Hosting URL */}
+                      {generatedSiteData?.preview_url && (
+                        <div className="p-3 rounded-lg" style={{ backgroundColor: `${COLORS.success}15`, border: `1px solid ${COLORS.success}30` }}>
+                          <p className="text-xs uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: COLORS.success }}>
+                            <Globe size={12} />
+                            URL d'hébergement public
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <code 
+                              className="flex-1 text-xs p-2 rounded truncate"
+                              style={{ backgroundColor: COLORS.noirSoft, color: COLORS.ivoire }}
+                            >
+                              {generatedSiteData.preview_url}
+                            </code>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8 flex-shrink-0"
+                              onClick={() => {
+                                navigator.clipboard.writeText(generatedSiteData.preview_url || "");
+                                toast.success("URL copiée !");
+                              }}
+                              title="Copier l'URL"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                            </Button>
+                          </div>
+                          <Button
+                            size="sm"
+                            className="w-full gap-2 mt-2"
+                            style={{ backgroundColor: COLORS.success, color: "white" }}
+                            onClick={() => window.open(generatedSiteData.preview_url || "", "_blank")}
+                          >
+                            <ExternalLink size={14} />
+                            Voir le site en ligne
+                          </Button>
+                        </div>
+                      )}
+                      
                       <div className="flex gap-2">
                         <Button 
                           size="sm"

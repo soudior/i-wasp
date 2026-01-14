@@ -366,6 +366,7 @@ export type Database = {
           js_content: string | null
           preview_url: string | null
           proposal_id: string
+          slug: string | null
           status: string
           updated_at: string
         }
@@ -380,6 +381,7 @@ export type Database = {
           js_content?: string | null
           preview_url?: string | null
           proposal_id: string
+          slug?: string | null
           status?: string
           updated_at?: string
         }
@@ -394,6 +396,7 @@ export type Database = {
           js_content?: string | null
           preview_url?: string | null
           proposal_id?: string
+          slug?: string | null
           status?: string
           updated_at?: string
         }
@@ -1298,6 +1301,10 @@ export type Database = {
       }
     }
     Functions: {
+      generate_website_slug: {
+        Args: { p_business_name: string }
+        Returns: string
+      }
       get_card_action_url: {
         Args: { p_action: string; p_slug: string }
         Returns: string

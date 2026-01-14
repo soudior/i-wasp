@@ -329,14 +329,26 @@ serve(async (req) => {
     // Save the generated code
     const nowIso = new Date().toISOString();
     
+    // Generate a unique slug for hosting
+    const businessName = proposal.form_data?.businessName || proposal.proposal?.siteName || `site-${Date.now()}`;
+    const { data: slugData } = await admin.rpc("generate_website_slug", { 
+      p_business_name: businessName 
+    });
+    const websiteSlug = slugData || `site-${websiteId.substring(0, 8)}`;
+    
+    // Build the public preview URL
+    const previewUrl = `${SUPABASE_URL}/functions/v1/serve-website?slug=${websiteSlug}`;
+    
     await admin
       .from("generated_websites")
       .update({
         status: "completed",
+        slug: websiteSlug,
         html_content: generatedCode.html || "",
         css_content: generatedCode.css || "",
         js_content: generatedCode.js || "",
         full_page_html: generatedCode.fullPage || generatedCode.html || "",
+        preview_url: previewUrl,
         generation_log: "Génération terminée avec succès",
         generated_at: nowIso,
         updated_at: nowIso,
@@ -352,7 +364,7 @@ serve(async (req) => {
       })
       .eq("id", proposalId);
 
-    console.log(`Website generated successfully for proposal ${proposalId}`);
+    console.log(`Website generated successfully for proposal ${proposalId}, hosted at: ${previewUrl}`);
 
     return new Response(
       JSON.stringify({ 
