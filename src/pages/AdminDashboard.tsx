@@ -26,7 +26,8 @@ import {
   CheckCircle2,
   Truck,
   AlertCircle,
-  Bell
+  Bell,
+  Globe
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -58,6 +59,14 @@ const quickActions: QuickAction[] = [
     color: "#22C55E"
   },
   {
+    title: "Web Studio",
+    description: "Commandes de sites web IA",
+    icon: Globe,
+    path: "/admin/webstudio",
+    color: "#D4A853",
+    badge: "Nouveau"
+  },
+  {
     title: "Gestion cartes",
     description: "Créer et gérer toutes les cartes",
     icon: CreditCard,
@@ -65,7 +74,7 @@ const quickActions: QuickAction[] = [
     color: "#3B82F6"
   },
   {
-    title: "Commandes",
+    title: "Commandes NFC",
     description: "Suivi et gestion des commandes",
     icon: Package,
     path: "/admin/orders",
