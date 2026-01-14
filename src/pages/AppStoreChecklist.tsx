@@ -354,7 +354,7 @@ const initialCategories: ChecklistCategory[] = [
       {
         id: "build-bundle",
         label: "Bundle ID configuré",
-        description: "app.lovable.17c6de152d8546a1a7d8e5c478c6f024",
+        description: "app.iwasp.nfc",
         required: true,
         checked: false,
         category: "build"
