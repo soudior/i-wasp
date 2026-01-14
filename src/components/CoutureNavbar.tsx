@@ -5,13 +5,10 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, LayoutDashboard, LogOut, ShoppingCart, Wand2 } from "lucide-react";
+import { Menu, X, LayoutDashboard, LogOut, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCart } from "@/contexts/CartContext";
 import { useTranslation } from "react-i18next";
-import { LanguageSelector } from "@/components/LanguageSelector";
-import { CurrencySwitch } from "@/components/CurrencySwitch";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SubscriptionBadge } from "@/components/SubscriptionBadge";
 import { SubscriptionUpgrade } from "@/components/SubscriptionUpgrade";
@@ -38,15 +35,12 @@ export function CoutureNavbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut, loading } = useAuth();
-  const { totalItems } = useCart();
 
+  // Navigation simplifiée - essentiel uniquement
   const navLinks = [
-    { href: "/", label: "Accueil" },
-    { href: "/maison", label: "La Maison" },
     { href: "/web-studio", label: "Web Studio", icon: Wand2, badge: "IA" },
-    { href: "/features", label: "Fonctionnalités" },
     { href: "/pricing", label: "Tarifs" },
-    { href: "/order/offre", label: "Découvrir", highlight: true },
+    { href: "/order/offre", label: "Commencer", highlight: true },
   ];
 
   useEffect(() => {
@@ -117,20 +111,6 @@ export function CoutureNavbar() {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               />
             </motion.div>
-            <div className="hidden md:flex flex-col">
-              <span 
-                className="text-[9px] uppercase tracking-[0.35em] font-light leading-none"
-                style={{ color: COUTURE.or }}
-              >
-                Digital
-              </span>
-              <span 
-                className="text-[9px] uppercase tracking-[0.35em] font-light leading-none mt-0.5"
-                style={{ color: COUTURE.gris }}
-              >
-                Identity
-              </span>
-            </div>
           </Link>
 
           {/* Desktop Navigation - Refined */}
@@ -201,61 +181,10 @@ export function CoutureNavbar() {
             </div>
           </div>
 
-          {/* Right Actions - Refined */}
-          <div className="hidden lg:flex items-center gap-2">
-            {/* Theme & Settings Group */}
-            <div 
-              className="flex items-center gap-1 px-2 py-1.5 rounded-full"
-              style={{ 
-                backgroundColor: `${COUTURE.ivoire}03`,
-                border: `1px solid ${COUTURE.border}`,
-              }}
-            >
-              <ThemeToggle />
-              <div className="w-px h-4 mx-1" style={{ backgroundColor: COUTURE.border }} />
-              <CurrencySwitch variant="pill" />
-              <div className="w-px h-4 mx-1" style={{ backgroundColor: COUTURE.border }} />
-              <LanguageSelector />
-            </div>
-
-            {/* Cart with premium styling */}
-            <Link 
-              to="/cart" 
-              className="relative p-2.5 rounded-full transition-all duration-300 group"
-              style={{ 
-                backgroundColor: `${COUTURE.ivoire}03`,
-                border: `1px solid ${COUTURE.border}`,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = COUTURE.borderHover;
-                e.currentTarget.style.backgroundColor = `${COUTURE.or}10`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = COUTURE.border;
-                e.currentTarget.style.backgroundColor = `${COUTURE.ivoire}03`;
-              }}
-            >
-              <ShoppingCart 
-                size={17} 
-                strokeWidth={1.5} 
-                style={{ color: COUTURE.gris }}
-                className="group-hover:text-white transition-colors duration-300"
-              />
-              {totalItems > 0 && (
-                <motion.span 
-                  className="absolute -top-1 -right-1 min-w-[18px] h-[18px] text-[10px] font-medium flex items-center justify-center rounded-full"
-                  style={{ 
-                    backgroundColor: COUTURE.or, 
-                    color: COUTURE.noir,
-                  }}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                >
-                  {totalItems > 9 ? "9+" : totalItems}
-                </motion.span>
-              )}
-            </Link>
+          {/* Right Actions - Simplifié */}
+          <div className="hidden lg:flex items-center gap-3">
+            {/* Theme Toggle uniquement */}
+            <ThemeToggle />
 
             {/* Auth Buttons */}
             {!loading && (
@@ -324,27 +253,6 @@ export function CoutureNavbar() {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center gap-3">
-            <Link 
-              to="/cart" 
-              className="relative p-2 rounded-full"
-              style={{ 
-                backgroundColor: `${COUTURE.ivoire}05`,
-                border: `1px solid ${COUTURE.border}`,
-              }}
-            >
-              <ShoppingCart size={17} strokeWidth={1.5} style={{ color: COUTURE.gris }} />
-              {totalItems > 0 && (
-                <span 
-                  className="absolute -top-1 -right-1 min-w-[16px] h-[16px] text-[9px] font-medium flex items-center justify-center rounded-full"
-                  style={{ 
-                    backgroundColor: COUTURE.or, 
-                    color: COUTURE.noir,
-                  }}
-                >
-                  {totalItems}
-                </span>
-              )}
-            </Link>
             <motion.button
               className="p-2 rounded-full transition-colors"
               style={{ 
@@ -438,8 +346,6 @@ export function CoutureNavbar() {
                 >
                   <div className="flex items-center gap-4">
                     <ThemeToggle />
-                    <CurrencySwitch variant="compact" />
-                    <LanguageSelector />
                   </div>
                   
                   {user ? (
