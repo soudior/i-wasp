@@ -20,6 +20,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { StudioFunnelStep } from "@/components/web-studio/StudioFunnelStep";
+import { WebsitePreview } from "@/components/web-studio/WebsitePreview";
 import { useWebStudio, WebStudioGuard } from "@/contexts/WebStudioContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -431,35 +432,62 @@ function StepRecapitulatifContent() {
         <AnimatePresence>
           {proposal && (
             <motion.div
-              className="rounded-xl p-6"
-              style={{
-                backgroundColor: STUDIO.noirCard,
-                border: `1px solid ${STUDIO.or}30`,
-              }}
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
+              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: `${STUDIO.or}20` }}
-                >
-                  <FileText size={20} style={{ color: STUDIO.or }} />
+              {/* Live Preview */}
+              <motion.div
+                className="rounded-xl p-4"
+                style={{
+                  backgroundColor: STUDIO.noirCard,
+                  border: `1px solid ${STUDIO.or}30`,
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles size={16} style={{ color: STUDIO.or }} />
+                  <span className="text-sm font-medium" style={{ color: STUDIO.ivoire }}>
+                    Aperçu de votre site
+                  </span>
                 </div>
-                <div>
-                  <h4 className="font-medium" style={{ color: STUDIO.ivoire }}>
-                    {proposal.siteName}
-                  </h4>
-                  <p className="text-xs" style={{ color: STUDIO.gris }}>
-                    {proposal.estimatedPages} pages • {proposal.complexity}
-                  </p>
-                </div>
-              </div>
+                <WebsitePreview proposal={proposal} logoUrl={formData.logoUrl} />
+              </motion.div>
 
-              <p className="text-sm mb-4" style={{ color: STUDIO.gris }}>
-                "{proposal.tagline}"
-              </p>
+              {/* Proposal details */}
+              <motion.div
+                className="rounded-xl p-6"
+                style={{
+                  backgroundColor: STUDIO.noirCard,
+                  border: `1px solid ${STUDIO.or}30`,
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: `${STUDIO.or}20` }}
+                  >
+                    <FileText size={20} style={{ color: STUDIO.or }} />
+                  </div>
+                  <div>
+                    <h4 className="font-medium" style={{ color: STUDIO.ivoire }}>
+                      {proposal.siteName}
+                    </h4>
+                    <p className="text-xs" style={{ color: STUDIO.gris }}>
+                      {proposal.estimatedPages} pages • {proposal.complexity}
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-sm mb-4" style={{ color: STUDIO.gris }}>
+                  "{proposal.tagline}"
+                </p>
 
               {/* Price display */}
               <div
@@ -531,6 +559,7 @@ function StepRecapitulatifContent() {
                   discuter sur WhatsApp
                 </button>
               </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
