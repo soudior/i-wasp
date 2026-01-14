@@ -43,8 +43,10 @@ import {
   Code,
   ExternalLink,
   Sparkles,
-  Download
+  Download,
+  Palette
 } from "lucide-react";
+import { WebsiteEditor } from "@/components/web-studio/WebsiteEditor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -321,7 +323,16 @@ function AdminWebStudioOrdersContent() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPreviewDialog, setShowPreviewDialog] = useState(false);
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
-  const [generatedSiteData, setGeneratedSiteData] = useState<{ slug: string | null; preview_url: string | null } | null>(null);
+  const [generatedSiteData, setGeneratedSiteData] = useState<{ 
+    slug: string | null; 
+    preview_url: string | null;
+    id?: string;
+    full_page_html?: string;
+    colors?: { primary?: string; secondary?: string; accent?: string; background?: string; text?: string };
+  } | null>(null);
+  
+  // Editor state
+  const [showEditor, setShowEditor] = useState(false);
   
   // Real-time notifications state
   const [newOrdersCount, setNewOrdersCount] = useState(0);
@@ -578,15 +589,17 @@ function AdminWebStudioOrdersContent() {
     setDeadline(order.deadline ? order.deadline.split('T')[0] : "");
     setNewNote("");
     
-    // Fetch generated website data for hosting URL
+    // Fetch generated website data for hosting URL and editing
     if (order.status === "site_generated" || order.status === "completed") {
       const { data } = await supabase
         .from("generated_websites")
-        .select("slug, preview_url")
+        .select("id, slug, preview_url, full_page_html")
         .eq("proposal_id", order.id)
         .single();
       
-      setGeneratedSiteData(data || null);
+      // Also get colors from proposal
+      const colors = order.proposal?.colorPalette || {};
+      setGeneratedSiteData(data ? { ...data, colors } : null);
     } else {
       setGeneratedSiteData(null);
     }
@@ -1408,6 +1421,19 @@ L'équipe IWASP Web Studio`);
                             <ExternalLink size={14} />
                             Voir le site en ligne
                           </Button>
+                          
+                          {/* Customize button */}
+                          {generatedSiteData.full_page_html && generatedSiteData.id && (
+                            <Button
+                              size="sm"
+                              className="w-full gap-2 mt-2"
+                              style={{ backgroundColor: "#8B5CF6", color: "white" }}
+                              onClick={() => setShowEditor(true)}
+                            >
+                              <Palette size={14} />
+                              Personnaliser le site
+                            </Button>
+                          )}
                         </div>
                       )}
                       
@@ -1759,6 +1785,24 @@ L'équipe IWASP Web Studio`);
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Website Editor Modal */}
+      <AnimatePresence>
+        {showEditor && generatedSiteData?.id && generatedSiteData?.full_page_html && generatedSiteData?.slug && generatedSiteData?.preview_url && (
+          <WebsiteEditor
+            websiteId={generatedSiteData.id}
+            initialHtml={generatedSiteData.full_page_html}
+            originalColors={generatedSiteData.colors}
+            slug={generatedSiteData.slug}
+            previewUrl={generatedSiteData.preview_url}
+            onClose={() => setShowEditor(false)}
+            onSave={() => {
+              setShowEditor(false);
+              queryClient.invalidateQueries({ queryKey: ["admin-webstudio-orders"] });
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

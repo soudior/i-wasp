@@ -358,14 +358,17 @@ export type Database = {
         Row: {
           created_at: string
           css_content: string | null
+          customizations: Json | null
           full_page_html: string | null
           generated_at: string | null
           generation_log: string | null
           html_content: string | null
           id: string
+          is_published: boolean | null
           js_content: string | null
           preview_url: string | null
           proposal_id: string
+          published_at: string | null
           slug: string | null
           status: string
           updated_at: string
@@ -373,14 +376,17 @@ export type Database = {
         Insert: {
           created_at?: string
           css_content?: string | null
+          customizations?: Json | null
           full_page_html?: string | null
           generated_at?: string | null
           generation_log?: string | null
           html_content?: string | null
           id?: string
+          is_published?: boolean | null
           js_content?: string | null
           preview_url?: string | null
           proposal_id: string
+          published_at?: string | null
           slug?: string | null
           status?: string
           updated_at?: string
@@ -388,14 +394,17 @@ export type Database = {
         Update: {
           created_at?: string
           css_content?: string | null
+          customizations?: Json | null
           full_page_html?: string | null
           generated_at?: string | null
           generation_log?: string | null
           html_content?: string | null
           id?: string
+          is_published?: boolean | null
           js_content?: string | null
           preview_url?: string | null
           proposal_id?: string
+          published_at?: string | null
           slug?: string | null
           status?: string
           updated_at?: string
