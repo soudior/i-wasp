@@ -114,7 +114,16 @@ const KechExcluCard = lazy(() => import("./pages/KechExcluCard"));
 const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
 const Services = lazy(() => import("./pages/Services"));
 const CartesNFC = lazy(() => import("./pages/CartesNFC"));
-const WebStudio = lazy(() => import("./pages/WebStudio"));
+const WebStudioLegacy = lazy(() => import("./pages/WebStudio"));
+
+// NEW Web Studio funnel pages
+const WebStudioLayout = lazy(() => import("./pages/web-studio/WebStudioLayout"));
+const WebStudioEntry = lazy(() => import("./pages/web-studio/WebStudioEntry"));
+const StepEntreprise = lazy(() => import("./pages/web-studio/StepEntreprise"));
+const StepProduits = lazy(() => import("./pages/web-studio/StepProduits"));
+const StepDesign = lazy(() => import("./pages/web-studio/StepDesign"));
+const StepContact = lazy(() => import("./pages/web-studio/StepContact"));
+const StepRecapitulatif = lazy(() => import("./pages/web-studio/StepRecapitulatif"));
 const TrackWebStudioOrder = lazy(() => import("./pages/TrackWebStudioOrder"));
 
 const queryClient = new QueryClient({
@@ -247,9 +256,18 @@ const App = () => {
                               <Route path="/business" element={<Enterprise />} />
                               <Route path="/services" element={<Services />} />
                               <Route path="/cartes-nfc" element={<CartesNFC />} />
-                              <Route path="/web-studio" element={<WebStudio />} />
-                              <Route path="/web-studio/suivi" element={<TrackWebStudioOrder />} />
-                              <Route path="/track-web-studio" element={<TrackWebStudioOrder />} />
+                              
+                              {/* Web Studio Funnel - 5 étapes ordonnées */}
+                              <Route path="/web-studio" element={<WebStudioLayout />}>
+                                <Route index element={<WebStudioEntry />} />
+                                <Route path="entreprise" element={<StepEntreprise />} />
+                                <Route path="produits" element={<StepProduits />} />
+                                <Route path="design" element={<StepDesign />} />
+                                <Route path="contact" element={<StepContact />} />
+                                <Route path="recapitulatif" element={<StepRecapitulatif />} />
+                                <Route path="suivi" element={<TrackWebStudioOrder />} />
+                              </Route>
+                              <Route path="/web-studio-legacy" element={<WebStudioLegacy />} />
                               <Route path="/rental-demo" element={<RentalDemo />} />
                               <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
                               <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
