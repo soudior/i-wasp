@@ -1117,41 +1117,56 @@ export type Database = {
       }
       website_proposals: {
         Row: {
+          admin_notes: string | null
+          assigned_to: string | null
           created_at: string
+          deadline: string | null
           form_data: Json
           id: string
           is_express: boolean | null
           price_eur: number | null
           price_mad: number | null
+          priority: string | null
           proposal: Json
           session_id: string | null
           status: string | null
+          status_history: Json | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          admin_notes?: string | null
+          assigned_to?: string | null
           created_at?: string
+          deadline?: string | null
           form_data: Json
           id?: string
           is_express?: boolean | null
           price_eur?: number | null
           price_mad?: number | null
+          priority?: string | null
           proposal: Json
           session_id?: string | null
           status?: string | null
+          status_history?: Json | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          admin_notes?: string | null
+          assigned_to?: string | null
           created_at?: string
+          deadline?: string | null
           form_data?: Json
           id?: string
           is_express?: boolean | null
           price_eur?: number | null
           price_mad?: number | null
+          priority?: string | null
           proposal?: Json
           session_id?: string | null
           status?: string | null
+          status_history?: Json | null
           updated_at?: string
           user_id?: string | null
         }
