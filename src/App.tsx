@@ -134,6 +134,7 @@ const WebStudioOffres = lazy(() => import("./pages/web-studio/WebStudioOffres"))
 const WebStudioConfiguration = lazy(() => import("./pages/web-studio/WebStudioConfiguration"));
 const WebStudioPaiement = lazy(() => import("./pages/web-studio/WebStudioPaiement"));
 const WebStudioIASuccess = lazy(() => import("./pages/web-studio/WebStudioIASuccess"));
+const AdminWebStudioIA = lazy(() => import("./pages/admin/AdminWebStudioIA"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -287,6 +288,8 @@ const App = () => {
                               <Route path="/web-studio/paiement" element={<WebStudioPaiement />} />
                               <Route path="/web-studio/ia-success" element={<WebStudioIASuccess />} />
                               
+                              {/* Admin Web Studio IA */}
+                              <Route path="/admin/web-studio-ia" element={<AdminWebStudioIA />} />
                               <Route path="/web-studio-legacy" element={<WebStudioLegacy />} />
                               <Route path="/rental-demo" element={<RentalDemo />} />
                               <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
