@@ -37,6 +37,7 @@ const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminOrders = lazy(() => import("./pages/AdminOrders"));
+const AdminWebStudioOrders = lazy(() => import("./pages/AdminWebStudioOrders"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const OnboardingSuccess = lazy(() => import("./pages/OnboardingSuccess"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -336,6 +337,8 @@ const App = () => {
                               <Route path="/admin/card-editor" element={<AdminGuard><AdminCardEditor /></AdminGuard>} />
                               <Route path="/admin/card-editor/:cardSlug" element={<AdminGuard><AdminCardEditor /></AdminGuard>} />
                               <Route path="/admin/generator" element={<AdminGuard><AdminCardGenerator /></AdminGuard>} />
+                              <Route path="/admin/webstudio" element={<AdminGuard><AdminWebStudioOrders /></AdminGuard>} />
+                              <Route path="/admin/web-studio" element={<AdminGuard><AdminWebStudioOrders /></AdminGuard>} />
                               
                               {/* 404 */}
                               <Route path="*" element={<NotFound />} />
