@@ -128,7 +128,7 @@ export default function PublicWebsite() {
             {error}
           </p>
           <a
-            href="https://i-wasp.lovable.app"
+            href="https://i-wasp.com"
             style={{
               display: 'inline-block',
               background: '#007AFF',

@@ -129,7 +129,7 @@ Deno.serve(async (req) => {
         .single();
 
       const url = cardData?.slug
-        ? `${supabaseUrl.replace(".supabase.co", ".lovable.app")}/c/${cardData.slug}`
+        ? `https://i-wasp.com/c/${cardData.slug}`
         : undefined;
 
       const payload = {
