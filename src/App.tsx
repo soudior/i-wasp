@@ -73,6 +73,7 @@ const Vision = lazy(() => import("./pages/Vision"));
 const Features = lazy(() => import("./pages/Features"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const SaaSPricing = lazy(() => import("./pages/SaaSPricing"));
+const SaaSDashboard = lazy(() => import("./pages/SaaSDashboard"));
 const Enterprise = lazy(() => import("./pages/Enterprise"));
 const BrandAssets = lazy(() => import("./pages/BrandAssets"));
 const CardStudio = lazy(() => import("./pages/CardStudio"));
@@ -266,6 +267,7 @@ const App = () => {
                               <Route path="/fonctionnalites" element={<Features />} />
                               <Route path="/pricing" element={<Pricing />} />
                               <Route path="/saas-pricing" element={<SaaSPricing />} />
+                              <Route path="/saas-dashboard" element={<DashboardGuard><SaaSDashboard /></DashboardGuard>} />
                               <Route path="/tarifs" element={<Pricing />} />
                               <Route path="/enterprise" element={<Enterprise />} />
                               <Route path="/entreprises" element={<Enterprise />} />
