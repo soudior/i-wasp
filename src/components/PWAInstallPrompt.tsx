@@ -87,15 +87,15 @@ export function PWAInstallPrompt() {
         className="fixed bottom-20 md:bottom-6 left-4 right-4 z-[60] sm:left-auto sm:right-6 sm:max-w-sm"
       >
         {showIOSGuide ? (
-          // iOS Installation Guide - Stealth Luxury
-          <div className="bg-[#050807] border border-[#A5A9B4]/20 rounded-2xl p-5 shadow-2xl shadow-black/50 backdrop-blur-xl">
+          // iOS Installation Guide - Luxe Gold Theme
+          <div className="bg-[#0A0A0A] border border-[#B8956C]/30 rounded-2xl p-5 shadow-2xl shadow-black/60 backdrop-blur-xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[#D1D5DB] font-semibold tracking-wide text-sm uppercase">Comment installer</h3>
+              <h3 className="text-[#F5F5F5] font-semibold tracking-wide text-sm uppercase">Comment installer</h3>
               <Button
                 size="icon"
                 variant="ghost"
                 onClick={handleDismiss}
-                className="h-6 w-6 text-[#A5A9B4]/50 hover:text-[#D1D5DB]"
+                className="h-6 w-6 text-[#6B6B6B] hover:text-[#F5F5F5]"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -104,38 +104,38 @@ export function PWAInstallPrompt() {
             <div className="space-y-4">
               {/* Step 1 */}
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#A5A9B4]/10 border border-[#A5A9B4]/20 flex items-center justify-center shrink-0">
-                  <span className="text-[#A5A9B4] text-sm font-bold">1</span>
+                <div className="w-8 h-8 rounded-full bg-[#B8956C]/15 border border-[#B8956C]/30 flex items-center justify-center shrink-0">
+                  <span className="text-[#B8956C] text-sm font-bold">1</span>
                 </div>
                 <div>
-                  <p className="text-[#D1D5DB] text-sm">Appuyez sur le bouton</p>
+                  <p className="text-[#F5F5F5] text-sm">Appuyez sur le bouton</p>
                   <div className="flex items-center gap-1 mt-1">
-                    <Share className="h-5 w-5 text-[#A5A9B4]" />
-                    <span className="text-[#A5A9B4]/60 text-xs">Partager</span>
+                    <Share className="h-5 w-5 text-[#B8956C]" />
+                    <span className="text-[#6B6B6B] text-xs">Partager</span>
                   </div>
                 </div>
               </div>
 
               {/* Step 2 */}
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#A5A9B4]/10 border border-[#A5A9B4]/20 flex items-center justify-center shrink-0">
-                  <span className="text-[#A5A9B4] text-sm font-bold">2</span>
+                <div className="w-8 h-8 rounded-full bg-[#B8956C]/15 border border-[#B8956C]/30 flex items-center justify-center shrink-0">
+                  <span className="text-[#B8956C] text-sm font-bold">2</span>
                 </div>
                 <div>
-                  <p className="text-[#D1D5DB] text-sm">Puis sélectionnez</p>
+                  <p className="text-[#F5F5F5] text-sm">Puis sélectionnez</p>
                   <div className="flex items-center gap-1 mt-1">
-                    <Plus className="h-5 w-5 text-[#D1D5DB]" />
-                    <span className="text-[#A5A9B4]/60 text-xs">Sur l'écran d'accueil</span>
+                    <Plus className="h-5 w-5 text-[#F5F5F5]" />
+                    <span className="text-[#6B6B6B] text-xs">Sur l'écran d'accueil</span>
                   </div>
                 </div>
               </div>
 
               {/* Step 3 */}
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#A5A9B4]/20 border border-[#A5A9B4]/30 flex items-center justify-center shrink-0">
-                  <span className="text-[#D1D5DB] text-sm font-bold">✓</span>
+                <div className="w-8 h-8 rounded-full bg-[#B8956C]/25 border border-[#B8956C]/40 flex items-center justify-center shrink-0">
+                  <span className="text-[#B8956C] text-sm font-bold">✓</span>
                 </div>
-                <p className="text-[#A5A9B4]/70 text-sm">
+                <p className="text-[#6B6B6B] text-sm">
                   L'app i-wasp sera sur votre écran d'accueil !
                 </p>
               </div>
@@ -143,30 +143,30 @@ export function PWAInstallPrompt() {
 
             <Button
               onClick={handleDismiss}
-              className="w-full mt-4 bg-[#A5A9B4] hover:bg-[#D1D5DB] text-[#050807] font-bold uppercase text-[10px] tracking-[0.15em] rounded-full py-3"
+              className="w-full mt-4 bg-[#B8956C] hover:bg-[#D4B896] text-[#0A0A0A] font-bold uppercase text-[10px] tracking-[0.15em] rounded-full py-3"
             >
               J'ai compris
             </Button>
           </div>
         ) : (
-          // Initial Prompt - Stealth Luxury
-          <div className="bg-[#050807] border border-[#A5A9B4]/20 rounded-2xl p-4 shadow-2xl shadow-black/50 backdrop-blur-xl">
+          // Initial Prompt - Luxe Gold Theme
+          <div className="bg-[#0A0A0A] border border-[#B8956C]/30 rounded-2xl p-4 shadow-2xl shadow-black/60 backdrop-blur-xl">
             <div className="flex items-start gap-3">
-              <div className="w-12 h-12 rounded-xl bg-[#A5A9B4]/10 border border-[#A5A9B4]/20 flex items-center justify-center shrink-0">
-                <Smartphone className="h-6 w-6 text-[#A5A9B4]" />
+              <div className="w-12 h-12 rounded-xl bg-[#B8956C]/15 border border-[#B8956C]/30 flex items-center justify-center shrink-0">
+                <Smartphone className="h-6 w-6 text-[#B8956C]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[#D1D5DB] mb-1 tracking-wide">
+                <p className="text-sm font-semibold text-[#F5F5F5] mb-1 tracking-wide">
                   Installez l'app i-wasp
                 </p>
-                <p className="text-xs text-[#A5A9B4]/70 mb-3">
+                <p className="text-xs text-[#6B6B6B] mb-3">
                   Accès rapide à votre profil NFC depuis l'écran d'accueil. Fonctionne hors-ligne !
                 </p>
                 <div className="flex items-center gap-2">
                   <Button
                     size="sm"
                     onClick={handleInstall}
-                    className="bg-[#A5A9B4] hover:bg-[#D1D5DB] text-[#050807] text-[10px] font-bold uppercase tracking-[0.1em] gap-1.5 rounded-full px-5 shadow-lg shadow-[#A5A9B4]/10"
+                    className="bg-[#B8956C] hover:bg-[#D4B896] text-[#0A0A0A] text-[10px] font-bold uppercase tracking-[0.1em] gap-1.5 rounded-full px-5 shadow-lg shadow-[#B8956C]/20"
                   >
                     <Download className="h-3.5 w-3.5" />
                     Installer
@@ -175,7 +175,7 @@ export function PWAInstallPrompt() {
                     size="sm"
                     variant="ghost"
                     onClick={handleDismiss}
-                    className="text-[#A5A9B4]/50 hover:text-[#D1D5DB] text-xs"
+                    className="text-[#6B6B6B] hover:text-[#F5F5F5] text-xs"
                   >
                     Plus tard
                   </Button>
@@ -185,7 +185,7 @@ export function PWAInstallPrompt() {
                 size="icon"
                 variant="ghost"
                 onClick={handleDismiss}
-                className="h-6 w-6 text-[#A5A9B4]/30 hover:text-[#D1D5DB] shrink-0"
+                className="h-6 w-6 text-[#6B6B6B]/50 hover:text-[#F5F5F5] shrink-0"
               >
                 <X className="h-4 w-4" />
               </Button>
