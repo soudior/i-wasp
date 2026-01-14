@@ -35,7 +35,17 @@ export default function PublicWebsite() {
         }
 
         if (data.full_page_html) {
-          setHtml(data.full_page_html);
+          // Fix escaped characters if the HTML was stored with JSON escaping
+          let htmlContent = data.full_page_html;
+          if (htmlContent.includes('\\n') || htmlContent.includes('\\"')) {
+            htmlContent = htmlContent
+              .replace(/\\n/g, '\n')
+              .replace(/\\r/g, '\r')
+              .replace(/\\t/g, '\t')
+              .replace(/\\"/g, '"')
+              .replace(/\\\\/g, '\\');
+          }
+          setHtml(htmlContent);
         } else {
           setError("Contenu du site non disponible");
         }
