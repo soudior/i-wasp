@@ -72,7 +72,11 @@ RÈGLES STRICTES:
 8. Inclus Font Awesome via CDN pour les icônes
 9. Ajoute Google Fonts pour la typographie
 
-FORMAT DE RÉPONSE (JSON STRICT):
+TRÈS IMPORTANT - FORMAT DE RÉPONSE:
+Tu DOIS répondre UNIQUEMENT avec un objet JSON valide, RIEN D'AUTRE.
+Pas de texte avant, pas de texte après. Juste le JSON.
+Pas de \`\`\`json, pas de markdown, juste le JSON brut.
+
 {
   "html": "<!DOCTYPE html>...",
   "css": "/* CSS complet */",
@@ -290,39 +294,61 @@ serve(async (req) => {
       throw new Error("Pas de réponse de l'IA");
     }
 
-    // Parse the JSON response
+    // Parse the JSON response with robust extraction
     let generatedCode;
     try {
-      // Clean markdown code blocks if present
-      const cleanedContent = content
-        .replace(/```json\n?/g, "")
-        .replace(/```\n?/g, "")
-        .trim();
-      generatedCode = JSON.parse(cleanedContent);
-    } catch (parseError) {
-      console.error("JSON parse error:", parseError);
-      console.log("Raw content:", content.substring(0, 500));
+      // First, try direct JSON parse
+      generatedCode = JSON.parse(content.trim());
+    } catch (firstError) {
+      console.log("Direct parse failed, trying extraction methods...");
+      console.log("Raw content preview:", content.substring(0, 300));
       
-      // Try to extract HTML directly if JSON parsing fails
-      const htmlMatch = content.match(/<!DOCTYPE html>[\s\S]*<\/html>/i);
-      if (htmlMatch) {
-        generatedCode = {
-          html: htmlMatch[0],
-          css: "",
-          js: "",
-          fullPage: htmlMatch[0]
-        };
-      } else {
-        await admin
-          .from("generated_websites")
-          .update({ 
-            status: "failed", 
-            generation_log: "Erreur de parsing de la réponse IA",
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", websiteId);
+      try {
+        // Clean markdown code blocks if present
+        let cleanedContent = content
+          .replace(/```json\s*/gi, "")
+          .replace(/```\s*/g, "")
+          .trim();
+        
+        // Try to find JSON object in the response
+        const jsonMatch = cleanedContent.match(/\{[\s\S]*"html"[\s\S]*"fullPage"[\s\S]*\}/);
+        if (jsonMatch) {
+          cleanedContent = jsonMatch[0];
+        } else {
+          // Try finding any JSON object with "html" key
+          const simpleMatch = cleanedContent.match(/\{[\s\S]*"html"\s*:\s*"[\s\S]*\}/);
+          if (simpleMatch) {
+            cleanedContent = simpleMatch[0];
+          }
+        }
+        
+        generatedCode = JSON.parse(cleanedContent);
+      } catch (secondError) {
+        console.error("JSON extraction failed:", secondError);
+        
+        // Last resort: extract HTML directly from the response
+        const htmlMatch = content.match(/<!DOCTYPE html>[\s\S]*<\/html>/i);
+        if (htmlMatch) {
+          console.log("Found raw HTML, using it directly");
+          generatedCode = {
+            html: htmlMatch[0],
+            css: "",
+            js: "",
+            fullPage: htmlMatch[0]
+          };
+        } else {
+          console.error("No valid HTML found in response");
+          await admin
+            .from("generated_websites")
+            .update({ 
+              status: "failed", 
+              generation_log: "Erreur de parsing de la réponse IA - format invalide",
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", websiteId);
 
-        throw new Error("Erreur lors de l'analyse du code généré");
+          throw new Error("Erreur lors de l'analyse du code généré");
+        }
       }
     }
 
