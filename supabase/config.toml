@@ -71,3 +71,6 @@ verify_jwt = false
 
 [functions.webstudio-order]
 verify_jwt = false
+
+[functions.send-webstudio-confirmation]
+verify_jwt = false
