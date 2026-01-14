@@ -8,15 +8,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, Type, Palette, Image as ImageIcon, Save, Eye, Undo, Redo, 
   ChevronLeft, ChevronRight, Monitor, Smartphone, 
-  Loader2, ExternalLink, Sparkles, Upload, Trash2, RefreshCw
+  Loader2, ExternalLink, Sparkles, Upload, Trash2, RefreshCw, Wand2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface WebsiteCustomizations {
   texts: Record<string, string>;
@@ -77,6 +85,9 @@ export function WebsiteEditor({
   const [history, setHistory] = useState<WebsiteCustomizations[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
+  const [generatingImageIndex, setGeneratingImageIndex] = useState<number | null>(null);
+  const [aiPromptDialog, setAiPromptDialog] = useState<{ open: boolean; imageIndex: number | null }>({ open: false, imageIndex: null });
+  const [aiPrompt, setAiPrompt] = useState("");
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
@@ -252,6 +263,63 @@ export function WebsiteEditor({
       toast.error("Erreur lors de l'upload de l'image");
     } finally {
       setUploadingImageIndex(null);
+    }
+  };
+
+  const handleAiImageGenerate = async (index: number) => {
+    if (!aiPrompt.trim()) {
+      toast.error("Veuillez décrire l'image souhaitée");
+      return;
+    }
+
+    setAiPromptDialog({ open: false, imageIndex: null });
+    setGeneratingImageIndex(index);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-image", {
+        body: { 
+          prompt: aiPrompt,
+          aspectRatio: "16:9"
+        }
+      });
+
+      if (error) throw error;
+      
+      if (!data?.image) {
+        throw new Error("Aucune image générée");
+      }
+
+      // The image is returned as base64, we need to upload it to storage
+      const base64Data = data.image;
+      
+      // Convert base64 to blob
+      const response = await fetch(base64Data);
+      const blob = await response.blob();
+      
+      // Upload to storage
+      const fileName = `${websiteId}/${Date.now()}-ai-${index}.png`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("website-images")
+        .upload(fileName, blob, {
+          cacheControl: "3600",
+          upsert: true,
+          contentType: "image/png"
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("website-images")
+        .getPublicUrl(uploadData.path);
+
+      updateCustomization("images", index.toString(), publicUrl);
+      setAiPrompt("");
+      toast.success("Image générée et appliquée avec succès !");
+    } catch (error) {
+      console.error("AI image generation error:", error);
+      toast.error("Erreur lors de la génération de l'image");
+    } finally {
+      setGeneratingImageIndex(null);
     }
   };
 
@@ -582,14 +650,17 @@ export function WebsiteEditor({
                                 }}
                               />
                               
-                              {uploadingImageIndex === img.index && (
-                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                              {(uploadingImageIndex === img.index || generatingImageIndex === img.index) && (
+                                <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2">
                                   <Loader2 className="w-6 h-6 text-white animate-spin" />
+                                  {generatingImageIndex === img.index && (
+                                    <span className="text-white/80 text-xs">Génération IA...</span>
+                                  )}
                                 </div>
                               )}
                             </div>
                             
-                            {/* Upload controls */}
+                            {/* Upload & AI controls */}
                             <div className="flex gap-2">
                               <input
                                 type="file"
@@ -605,11 +676,25 @@ export function WebsiteEditor({
                                 size="sm"
                                 variant="outline"
                                 onClick={() => fileInputRefs.current[img.index]?.click()}
-                                disabled={uploadingImageIndex === img.index}
+                                disabled={uploadingImageIndex === img.index || generatingImageIndex === img.index}
                                 className="flex-1 bg-white/5 border-white/10 text-white/60 hover:text-white text-xs"
                               >
                                 <Upload className="w-3 h-3 mr-1" />
-                                Changer
+                                Upload
+                              </Button>
+                              
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setAiPrompt(img.alt || img.label);
+                                  setAiPromptDialog({ open: true, imageIndex: img.index });
+                                }}
+                                disabled={uploadingImageIndex === img.index || generatingImageIndex === img.index}
+                                className="flex-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-purple-500/30 text-purple-300 hover:text-white hover:border-purple-500/50 text-xs"
+                              >
+                                <Wand2 className="w-3 h-3 mr-1" />
+                                IA
                               </Button>
                               
                               {isImageCustomized(img.index) && (
@@ -737,6 +822,60 @@ export function WebsiteEditor({
           </div>
         </div>
       </div>
+
+      {/* AI Image Generation Dialog */}
+      <Dialog open={aiPromptDialog.open} onOpenChange={(open) => setAiPromptDialog({ open, imageIndex: open ? aiPromptDialog.imageIndex : null })}>
+        <DialogContent className="bg-[#1D1D1F] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wand2 className="w-5 h-5 text-purple-400" />
+              Générer une image par IA
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-white/80">Décrivez l'image souhaitée</Label>
+              <Textarea
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                placeholder="Ex: Photo professionnelle d'un bureau moderne avec des plantes vertes et une lumière naturelle..."
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/40 min-h-[100px]"
+              />
+              <p className="text-white/40 text-xs">
+                Soyez précis dans votre description pour de meilleurs résultats.
+              </p>
+            </div>
+            
+            <div className="bg-white/5 rounded-lg p-3 space-y-2">
+              <p className="text-white/60 text-xs font-medium">💡 Conseils :</p>
+              <ul className="text-white/40 text-xs space-y-1">
+                <li>• Mentionnez le style : moderne, minimaliste, chaleureux...</li>
+                <li>• Précisez les couleurs dominantes si besoin</li>
+                <li>• Indiquez le type : photo, illustration, abstrait...</li>
+              </ul>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setAiPromptDialog({ open: false, imageIndex: null })}
+              className="bg-white/5 border-white/10 text-white/60 hover:text-white"
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={() => aiPromptDialog.imageIndex !== null && handleAiImageGenerate(aiPromptDialog.imageIndex)}
+              disabled={!aiPrompt.trim()}
+              className="bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Générer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
