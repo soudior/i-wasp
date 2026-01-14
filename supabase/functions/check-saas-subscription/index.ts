@@ -37,7 +37,7 @@ interface SubscriptionResponse {
   features: {
     nfcCardsPerMonth: number;
     sitePages: number;
-    lovableCredits: number;
+    iwaspCredits: number | 'unlimited'; // Crédits i-wasp IA
     logoOnCard: boolean;
     ecommerce: boolean;
     analytics: string;
@@ -51,7 +51,7 @@ const getFeaturesByPlan = (plan: string) => {
       return {
         nfcCardsPerMonth: 10,
         sitePages: 1,
-        lovableCredits: 3,
+        iwaspCredits: 5, // 5 crédits i-wasp/mois
         logoOnCard: false,
         ecommerce: false,
         analytics: 'basic',
@@ -62,7 +62,7 @@ const getFeaturesByPlan = (plan: string) => {
       return {
         nfcCardsPerMonth: 25,
         sitePages: 10,
-        lovableCredits: 10,
+        iwaspCredits: 20, // 20 crédits i-wasp/mois
         logoOnCard: true,
         ecommerce: false,
         analytics: 'detailed',
@@ -72,7 +72,7 @@ const getFeaturesByPlan = (plan: string) => {
       return {
         nfcCardsPerMonth: 75,
         sitePages: 20,
-        lovableCredits: 30,
+        iwaspCredits: 'unlimited' as const, // ILLIMITÉ
         logoOnCard: true,
         ecommerce: true,
         analytics: 'advanced',
@@ -82,7 +82,7 @@ const getFeaturesByPlan = (plan: string) => {
       return {
         nfcCardsPerMonth: 0,
         sitePages: 0,
-        lovableCredits: 0,
+        iwaspCredits: 0,
         logoOnCard: false,
         ecommerce: false,
         analytics: 'none',
