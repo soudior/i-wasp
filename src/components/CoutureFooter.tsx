@@ -228,18 +228,32 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
           className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4"
           style={{ borderTop: `1px solid ${COUTURE.jetSoft}` }}
         >
-          <p 
-            className="text-[11px] tracking-[0.1em]"
-            style={{ color: COUTURE.textMuted }}
-          >
-            © {new Date().getFullYear()} i-wasp — Maison d'identité digitale
-          </p>
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+            <p 
+              className="text-[11px] tracking-[0.1em]"
+              style={{ color: COUTURE.textMuted }}
+            >
+              © 2026 i-wasp.com — Plateforme de Concierge Identité Digitale
+            </p>
+            <span 
+              className="hidden md:inline text-[10px]"
+              style={{ color: COUTURE.textMuted }}
+            >
+              •
+            </span>
+            <p 
+              className="text-[10px] tracking-[0.08em]"
+              style={{ color: COUTURE.textMuted }}
+            >
+              Hébergé sur i-wasp Cloud Infrastructure
+            </p>
+          </div>
           
           <p 
-            className="text-[11px] italic"
-            style={{ color: COUTURE.textMuted }}
+            className="text-[10px] uppercase tracking-[0.15em]"
+            style={{ color: COUTURE.gold }}
           >
-            Crafted with precision
+            Technologie propriétaire i-wasp Studio
           </p>
         </div>
       </div>
