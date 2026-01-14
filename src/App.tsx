@@ -125,6 +125,9 @@ const StepDesign = lazy(() => import("./pages/web-studio/StepDesign"));
 const StepContact = lazy(() => import("./pages/web-studio/StepContact"));
 const StepRecapitulatif = lazy(() => import("./pages/web-studio/StepRecapitulatif"));
 const TrackWebStudioOrder = lazy(() => import("./pages/TrackWebStudioOrder"));
+const WebStudioPaymentSuccess = lazy(() => import("./pages/web-studio/WebStudioPaymentSuccess"));
+const WebStudioPaymentCancelled = lazy(() => import("./pages/web-studio/WebStudioPaymentCancelled"));
+const WebStudioCheckout = lazy(() => import("./pages/web-studio/WebStudioCheckout"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -267,6 +270,10 @@ const App = () => {
                                 <Route path="recapitulatif" element={<StepRecapitulatif />} />
                                 <Route path="suivi" element={<TrackWebStudioOrder />} />
                               </Route>
+                              {/* Web Studio Payment Pages */}
+                              <Route path="/web-studio/checkout" element={<WebStudioCheckout />} />
+                              <Route path="/web-studio/payment-success" element={<WebStudioPaymentSuccess />} />
+                              <Route path="/web-studio/payment-cancelled" element={<WebStudioPaymentCancelled />} />
                               <Route path="/web-studio-legacy" element={<WebStudioLegacy />} />
                               <Route path="/rental-demo" element={<RentalDemo />} />
                               <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
