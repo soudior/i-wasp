@@ -93,15 +93,18 @@ serve(async (req) => {
     // Inject IWASP branding footer
     htmlContent = injectBranding(htmlContent, slug);
 
-    return new Response(htmlContent, {
+    // Create response with explicit HTML content type
+    const response = new Response(htmlContent, {
       status: 200,
-      headers: {
-        "Content-Type": "text/html; charset=utf-8",
-        "Cache-Control": "public, max-age=3600", // Cache for 1 hour
-        "X-Frame-Options": "SAMEORIGIN",
-        "X-Content-Type-Options": "nosniff",
-      },
+      headers: new Headers({
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=3600",
+        "x-frame-options": "SAMEORIGIN",
+        "x-content-type-options": "nosniff",
+      }),
     });
+
+    return response;
 
   } catch (error) {
     console.error("serve-website error:", error);
