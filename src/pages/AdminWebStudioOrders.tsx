@@ -87,6 +87,9 @@ interface WebsiteProposal {
     colors?: string;
     websiteUrl?: string;
     socialLinks?: string;
+    contactEmail?: string;
+    contactPhone?: string;
+    products?: string;
   };
   proposal: {
     siteName?: string;
@@ -444,9 +447,15 @@ function AdminWebStudioOrdersContent() {
                               <h3 className="font-medium mb-1" style={{ color: COLORS.ivoire }}>
                                 {order.proposal?.siteName || order.form_data?.businessName || "Projet sans nom"}
                               </h3>
-                              <p className="text-sm mb-2" style={{ color: COLORS.gris }}>
+                              <p className="text-sm mb-1" style={{ color: COLORS.gris }}>
                                 {order.form_data?.businessType}
                               </p>
+                              {order.form_data?.contactEmail && (
+                                <p className="text-xs mb-2 flex items-center gap-1" style={{ color: COLORS.or }}>
+                                  <Mail size={10} />
+                                  {order.form_data.contactEmail}
+                                </p>
+                              )}
                               <div className="flex items-center gap-3 flex-wrap">
                                 <Badge 
                                   variant="outline"
@@ -587,6 +596,46 @@ function AdminWebStudioOrdersContent() {
                     </p>
                   </div>
                 </div>
+
+                {/* Contact Info */}
+                {(selectedOrder.form_data?.contactEmail || selectedOrder.form_data?.contactPhone) && (
+                  <div className="p-4 rounded-xl" style={{ backgroundColor: `${COLORS.or}15`, border: `1px solid ${COLORS.or}30` }}>
+                    <p className="text-xs uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: COLORS.or }}>
+                      <Mail size={12} />
+                      Contact Client
+                    </p>
+                    <div className="space-y-1">
+                      {selectedOrder.form_data?.contactEmail && (
+                        <a 
+                          href={`mailto:${selectedOrder.form_data.contactEmail}`}
+                          className="block text-sm hover:underline"
+                          style={{ color: COLORS.ivoire }}
+                        >
+                          📧 {selectedOrder.form_data.contactEmail}
+                        </a>
+                      )}
+                      {selectedOrder.form_data?.contactPhone && (
+                        <a 
+                          href={`tel:${selectedOrder.form_data.contactPhone}`}
+                          className="block text-sm hover:underline"
+                          style={{ color: COLORS.ivoire }}
+                        >
+                          📱 {selectedOrder.form_data.contactPhone}
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Products/Services */}
+                {selectedOrder.form_data?.products && (
+                  <div className="p-4 rounded-xl" style={{ backgroundColor: COLORS.noirSoft }}>
+                    <p className="text-xs uppercase tracking-wider mb-2" style={{ color: COLORS.gris }}>Produits / Services</p>
+                    <p className="text-sm whitespace-pre-wrap" style={{ color: COLORS.ivoire }}>
+                      {selectedOrder.form_data.products}
+                    </p>
+                  </div>
+                )}
 
                 {/* Tagline */}
                 {selectedOrder.proposal?.tagline && (
