@@ -1180,6 +1180,85 @@ export type Database = {
           },
         ]
       }
+      website_blog_posts: {
+        Row: {
+          content: string
+          cover_image_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          proposal_id: string
+          published: boolean
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          proposal_id: string
+          published?: boolean
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          proposal_id?: string
+          published?: boolean
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_blog_posts_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "website_proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      website_blog_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          proposal_id: string
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          proposal_id: string
+          token: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          proposal_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_blog_tokens_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: true
+            referencedRelation: "website_proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       website_proposals: {
         Row: {
           admin_notes: string | null

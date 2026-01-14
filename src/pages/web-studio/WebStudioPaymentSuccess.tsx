@@ -230,7 +230,7 @@ export default function WebStudioPaymentSuccess() {
             <div className="pt-4 border-t border-border/50 space-y-3">
               {proposalId && (
                 <Button asChild variant="outline" className="w-full">
-                  <Link to={`/track-webstudio-order?id=${proposalId}`}>
+                  <Link to={`/web-studio/suivi?id=${proposalId}`}>
                     Suivre ma commande
                   </Link>
                 </Button>
