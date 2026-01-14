@@ -284,7 +284,7 @@ export default function Pricing() {
                   </p>
                 </div>
                 
-                <div className="grid md:grid-cols-3 gap-6 items-start">
+                <div className="grid md:grid-cols-3 gap-8 items-stretch">
                   {WEB_PLANS.map((plan, index) => (
                     <motion.div
                       key={plan.name}
@@ -292,102 +292,165 @@ export default function Pricing() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1, duration: 0.6 }}
-                      className={`relative p-8 rounded-3xl ${plan.popular ? "md:-mt-4 md:mb-4" : ""}`}
+                      className={`relative flex flex-col rounded-[28px] overflow-hidden ${plan.popular ? "md:scale-105 z-10" : ""}`}
                       style={{ 
-                        backgroundColor: plan.popular ? `${COLORS.or}08` : COLORS.noirCard,
-                        border: `1px solid ${plan.popular ? COLORS.or : COLORS.border}40`,
+                        backgroundColor: plan.popular ? COLORS.noirCard : COLORS.noirCard,
+                        border: `1px solid ${plan.popular ? COLORS.or : COLORS.border}`,
+                        boxShadow: plan.popular 
+                          ? `0 20px 60px -20px ${COLORS.or}30, 0 0 0 1px ${COLORS.or}20` 
+                          : 'none',
                       }}
                     >
+                      {/* Popular Badge */}
                       {plan.popular && (
-                        <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                        <div 
+                          className="text-center py-2.5"
+                          style={{ 
+                            background: `linear-gradient(135deg, ${COLORS.or} 0%, ${COLORS.orLight} 100%)`,
+                          }}
+                        >
                           <span 
-                            className="px-4 py-1.5 rounded-full text-xs font-medium uppercase tracking-wider flex items-center gap-2"
-                            style={{ 
-                              background: `linear-gradient(135deg, ${COLORS.or} 0%, ${COLORS.orLight} 100%)`,
-                              color: COLORS.noir,
-                              boxShadow: `0 4px 20px ${COLORS.or}40`,
-                            }}
+                            className="text-[11px] font-semibold uppercase tracking-[0.2em] flex items-center justify-center gap-2"
+                            style={{ color: COLORS.noir }}
                           >
-                            <Star size={12} />
-                            Populaire
+                            <Star size={12} fill={COLORS.noir} />
+                            Recommandé
                           </span>
                         </div>
                       )}
                       
-                      <div 
-                        className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6"
-                        style={{ 
-                          backgroundColor: plan.popular ? `${COLORS.or}20` : `${COLORS.gris}15`,
-                          border: `1px solid ${plan.popular ? COLORS.or : COLORS.gris}30`,
-                        }}
-                      >
-                        <plan.icon size={24} style={{ color: plan.popular ? COLORS.or : COLORS.gris }} />
-                      </div>
-                      
-                      <h3 className="text-2xl font-medium mb-1 tracking-tight">{plan.name}</h3>
-                      <p className="text-sm mb-2" style={{ color: COLORS.or }}>{plan.pages}</p>
-                      <p className="text-sm mb-6 font-light" style={{ color: COLORS.gris }}>{plan.description}</p>
-                      
-                      <div className="mb-6">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-4xl font-light">
-                            {currency === "MAD" ? plan.priceMAD.toLocaleString() : plan.priceEUR}
-                          </span>
-                          <span className="text-lg" style={{ color: COLORS.gris }}>
-                            {currency === "MAD" ? "DH" : "€"}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      {/* Direct Payment Button */}
-                      <Button 
-                        className="w-full py-6 font-medium text-sm uppercase tracking-widest mb-3"
-                        style={{ 
-                          background: plan.popular 
-                            ? `linear-gradient(135deg, ${COLORS.or} 0%, ${COLORS.orLight} 100%)`
-                            : "transparent",
-                          color: plan.popular ? COLORS.noir : COLORS.ivoire,
-                          border: plan.popular ? "none" : `1px solid ${COLORS.border}`,
-                        }}
-                        onClick={() => handleDirectPayment(plan.packageType)}
-                        disabled={loadingPayment === plan.packageType}
-                      >
-                        {loadingPayment === plan.packageType ? (
-                          <Loader2 size={16} className="mr-2 animate-spin" />
-                        ) : (
-                          <CreditCard size={16} className="mr-2" />
-                        )}
-                        {loadingPayment === plan.packageType ? 'Chargement...' : 'Payer maintenant'}
-                      </Button>
-
-                      {/* WhatsApp Quote Button */}
-                      <a 
-                        href={`https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20suis%20intéressé%20par%20la%20formule%20${plan.name}%20pour%20la%20création%20de%20mon%20site%20web.`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Button 
-                          variant="ghost"
-                          className="w-full py-4 font-medium text-xs uppercase tracking-widest"
+                      {/* Card Content */}
+                      <div className="flex flex-col flex-1 p-8">
+                        {/* Icon */}
+                        <div 
+                          className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5"
                           style={{ 
-                            color: COLORS.gris,
-                            border: `1px solid ${COLORS.border}40`,
+                            backgroundColor: plan.popular ? `${COLORS.or}15` : `${COLORS.gris}10`,
+                            border: `1px solid ${plan.popular ? COLORS.or : COLORS.gris}20`,
                           }}
                         >
-                          <MessageCircle size={14} className="mr-2" />
-                          Ou demander un devis
-                        </Button>
-                      </a>
+                          <plan.icon size={22} style={{ color: plan.popular ? COLORS.or : COLORS.gris }} />
+                        </div>
+                        
+                        {/* Plan Info */}
+                        <h3 
+                          className="text-xl font-semibold mb-1 tracking-tight"
+                          style={{ color: COLORS.ivoire }}
+                        >
+                          {plan.name}
+                        </h3>
+                        <p 
+                          className="text-xs font-medium uppercase tracking-wider mb-2"
+                          style={{ color: COLORS.or }}
+                        >
+                          {plan.pages}
+                        </p>
+                        <p 
+                          className="text-sm font-light mb-6 leading-relaxed"
+                          style={{ color: COLORS.gris }}
+                        >
+                          {plan.description}
+                        </p>
+                        
+                        {/* Price */}
+                        <div className="mb-8">
+                          <div className="flex items-baseline gap-1.5">
+                            <span 
+                              className="text-4xl font-light tracking-tight"
+                              style={{ color: plan.popular ? COLORS.or : COLORS.ivoire }}
+                            >
+                              {currency === "MAD" ? plan.priceMAD.toLocaleString('fr-FR') : plan.priceEUR.toLocaleString('fr-FR')}
+                            </span>
+                            <span 
+                              className="text-base font-light"
+                              style={{ color: COLORS.gris }}
+                            >
+                              {currency === "MAD" ? "DH" : "€"}
+                            </span>
+                          </div>
+                          <p 
+                            className="text-xs mt-1"
+                            style={{ color: `${COLORS.gris}80` }}
+                          >
+                            Paiement unique
+                          </p>
+                        </div>
+                        
+                        {/* CTA Buttons */}
+                        <div className="space-y-3 mb-8">
+                          {/* Primary: Direct Payment */}
+                          <Button 
+                            className="w-full h-12 font-medium text-xs uppercase tracking-[0.15em] rounded-xl transition-all duration-300"
+                            style={{ 
+                              background: plan.popular 
+                                ? `linear-gradient(135deg, ${COLORS.or} 0%, ${COLORS.orLight} 100%)`
+                                : COLORS.ivoire,
+                              color: COLORS.noir,
+                              boxShadow: plan.popular 
+                                ? `0 8px 24px -8px ${COLORS.or}60` 
+                                : 'none',
+                            }}
+                            onClick={() => handleDirectPayment(plan.packageType)}
+                            disabled={loadingPayment === plan.packageType}
+                          >
+                            {loadingPayment === plan.packageType ? (
+                              <Loader2 size={14} className="mr-2 animate-spin" />
+                            ) : (
+                              <CreditCard size={14} className="mr-2" />
+                            )}
+                            {loadingPayment === plan.packageType ? 'Chargement...' : 'Payer maintenant'}
+                          </Button>
 
-                      <div className="mt-8 pt-6" style={{ borderTop: `1px solid ${COLORS.border}` }}>
-                        <ul className="space-y-3">
-                          {plan.features.map((feature, i) => (
-                            <li key={i} className="flex items-start gap-3 text-sm font-light" style={{ color: COLORS.gris }}>
-                              <Check size={16} className="flex-shrink-0 mt-0.5" style={{ color: COLORS.or }} />
-                              <span>{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
+                          {/* Secondary: WhatsApp Quote */}
+                          <a 
+                            href={`https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20suis%20intéressé%20par%20la%20formule%20${plan.name}%20pour%20la%20création%20de%20mon%20site%20web.`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block"
+                          >
+                            <Button 
+                              variant="ghost"
+                              className="w-full h-10 font-normal text-[10px] uppercase tracking-[0.12em] rounded-xl transition-all duration-300 hover:bg-white/5"
+                              style={{ 
+                                color: COLORS.gris,
+                                border: `1px solid ${COLORS.border}`,
+                              }}
+                            >
+                              <MessageCircle size={12} className="mr-2" />
+                              Ou demander un devis
+                            </Button>
+                          </a>
+                        </div>
+
+                        {/* Features Divider */}
+                        <div 
+                          className="border-t pt-6 mt-auto"
+                          style={{ borderColor: COLORS.border }}
+                        >
+                          <p 
+                            className="text-[10px] uppercase tracking-[0.15em] font-medium mb-4"
+                            style={{ color: COLORS.gris }}
+                          >
+                            Inclus dans ce forfait
+                          </p>
+                          <ul className="space-y-3">
+                            {plan.features.map((feature, i) => (
+                              <li 
+                                key={i} 
+                                className="flex items-start gap-3 text-sm font-light"
+                                style={{ color: `${COLORS.gris}CC` }}
+                              >
+                                <div 
+                                  className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                                  style={{ backgroundColor: `${COLORS.or}15` }}
+                                >
+                                  <Check size={12} style={{ color: COLORS.or }} />
+                                </div>
+                                <span>{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
                     </motion.div>
                   ))}
