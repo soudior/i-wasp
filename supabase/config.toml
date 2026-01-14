@@ -1,5 +1,8 @@
 project_id = "fyxiyevbbvidckzaequx"
 
+[functions.serve-website]
+verify_jwt = false
+
 [functions.lead-webhook]
 verify_jwt = true
 
