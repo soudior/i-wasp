@@ -90,6 +90,9 @@ serve(async (req) => {
       );
     }
 
+    // Fix escaped characters if the HTML was stored with JSON escaping
+    htmlContent = unescapeHtml(htmlContent);
+
     // Inject IWASP branding footer
     htmlContent = injectBranding(htmlContent, slug);
 
@@ -189,6 +192,25 @@ function injectBranding(html: string, slug: string): string {
   
   // If no body tag, append at end
   return html + brandingHtml;
+}
+
+/**
+ * Unescape HTML that was stored with JSON-style escaping
+ * Converts \n to newlines, \" to quotes, etc.
+ */
+function unescapeHtml(html: string): string {
+  // Check if the HTML looks escaped (contains literal \n or \")
+  if (!html.includes('\\n') && !html.includes('\\"')) {
+    return html; // Already clean
+  }
+  
+  // Unescape common JSON escape sequences
+  return html
+    .replace(/\\n/g, '\n')
+    .replace(/\\r/g, '\r')
+    .replace(/\\t/g, '\t')
+    .replace(/\\"/g, '"')
+    .replace(/\\\\/g, '\\');
 }
 
 function generateErrorPage(title: string, message: string): string {

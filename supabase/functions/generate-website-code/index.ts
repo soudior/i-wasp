@@ -436,8 +436,9 @@ serve(async (req) => {
     });
     const websiteSlug = slugData || `site-${websiteId.substring(0, 8)}`;
     
-    // Build the public preview URL
-    const previewUrl = `${SUPABASE_URL}/functions/v1/serve-website?slug=${websiteSlug}`;
+    // Build the public preview URL - use the React app route, not the edge function directly
+    // The edge function has Content-Security-Policy restrictions that prevent proper HTML rendering
+    const previewUrl = `https://i-wasp.lovable.app/s/${websiteSlug}`;
     
     await admin
       .from("generated_websites")
