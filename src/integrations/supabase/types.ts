@@ -354,6 +354,59 @@ export type Database = {
         }
         Relationships: []
       }
+      generated_websites: {
+        Row: {
+          created_at: string
+          css_content: string | null
+          full_page_html: string | null
+          generated_at: string | null
+          generation_log: string | null
+          html_content: string | null
+          id: string
+          js_content: string | null
+          preview_url: string | null
+          proposal_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          css_content?: string | null
+          full_page_html?: string | null
+          generated_at?: string | null
+          generation_log?: string | null
+          html_content?: string | null
+          id?: string
+          js_content?: string | null
+          preview_url?: string | null
+          proposal_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          css_content?: string | null
+          full_page_html?: string | null
+          generated_at?: string | null
+          generation_log?: string | null
+          html_content?: string | null
+          id?: string
+          js_content?: string | null
+          preview_url?: string | null
+          proposal_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_websites_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "website_proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           card_id: string
