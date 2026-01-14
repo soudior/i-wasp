@@ -3,15 +3,17 @@
  * /order/offre
  * 
  * Style: Haute Couture Digitale — Noir, minimaliste, silencieux
+ * + Optimisations conversion: CTA visible, preuve sociale, tracking
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useOrderFunnel, OfferType, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { Check, ArrowLeft } from "lucide-react";
+import { Check, ArrowLeft, ArrowRight, Shield, Truck, Star } from "lucide-react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
+import { useConversionTracking } from "@/hooks/useConversionTracking";
 
 interface OfferDetail {
   id: OfferType;
@@ -66,14 +68,28 @@ function OrderOffreContent() {
   const { state, setSelectedOffer, nextStep } = useOrderFunnel();
   const { formatAmount } = useCurrency();
   const [isNavigating, setIsNavigating] = useState(false);
+  
+  // Tracking conversions
+  const { trackOfferSelect, trackCheckoutStart, trackCTA } = useConversionTracking({
+    pageName: 'OrderOffre',
+  });
 
   const handleSelectOffer = (offerId: OfferType) => {
+    const offer = offers.find(o => o.id === offerId);
     setSelectedOffer(offerId);
+    if (offer) {
+      trackOfferSelect(offer.title, offer.priceMAD);
+    }
   };
 
   const handleContinue = async () => {
     if (!state.selectedOffer || isNavigating || state.isTransitioning) return;
     setIsNavigating(true);
+    const offer = offers.find(o => o.id === state.selectedOffer);
+    if (offer) {
+      trackCheckoutStart(offer.title, offer.priceMAD);
+      trackCTA('continue_to_identity', 'order_offre');
+    }
     await nextStep();
   };
 
@@ -264,26 +280,59 @@ function OrderOffreContent() {
         </div>
       </main>
 
-      {/* Fixed CTA */}
+      {/* Fixed CTA - AMÉLIORE */}
       <div 
-        className="fixed bottom-0 left-0 right-0 z-20 px-6 py-6"
+        className="fixed bottom-0 left-0 right-0 z-20 px-6 py-4"
         style={{ 
           backgroundColor: COUTURE.jet,
           borderTop: `1px solid ${COUTURE.jetSoft}`,
         }}
       >
-        <div className="max-w-3xl mx-auto flex justify-center">
-          <button
-            onClick={handleContinue}
-            disabled={!state.selectedOffer || isNavigating || state.isTransitioning}
-            className="text-[11px] uppercase tracking-[0.25em] font-light transition-all duration-700 pb-1 disabled:opacity-30 disabled:cursor-not-allowed"
-            style={{ 
-              color: state.selectedOffer ? COUTURE.gold : COUTURE.textMuted,
-              borderBottom: `1px solid ${state.selectedOffer ? `${COUTURE.gold}60` : 'transparent'}`,
-            }}
-          >
-            Continuer
-          </button>
+        <div className="max-w-3xl mx-auto">
+          {/* Trust badges mini */}
+          <div className="flex items-center justify-center gap-6 mb-4">
+            <div className="flex items-center gap-2">
+              <Shield className="w-3 h-3" style={{ color: COUTURE.gold }} />
+              <span className="text-[9px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
+                Paiement sécurisé
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Truck className="w-3 h-3" style={{ color: COUTURE.gold }} />
+              <span className="text-[9px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
+                Livraison 48h
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              {[1,2,3,4,5].map(i => (
+                <Star key={i} className="w-2.5 h-2.5" fill={COUTURE.gold} style={{ color: COUTURE.gold }} />
+              ))}
+              <span className="text-[9px] ml-1" style={{ color: COUTURE.textMuted }}>4.9</span>
+            </div>
+          </div>
+          
+          {/* CTA Button - Plus visible */}
+          <div className="flex justify-center">
+            <motion.button
+              onClick={handleContinue}
+              disabled={!state.selectedOffer || isNavigating || state.isTransitioning}
+              whileHover={{ scale: state.selectedOffer ? 1.02 : 1 }}
+              whileTap={{ scale: state.selectedOffer ? 0.98 : 1 }}
+              className="flex items-center gap-3 px-8 py-3 transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{ 
+                backgroundColor: state.selectedOffer ? COUTURE.gold : 'transparent',
+                color: state.selectedOffer ? COUTURE.jet : COUTURE.textMuted,
+                border: `1px solid ${state.selectedOffer ? COUTURE.gold : COUTURE.jetSoft}`,
+              }}
+            >
+              <span className="text-[11px] uppercase tracking-[0.2em] font-medium">
+                {isNavigating ? 'Chargement...' : 'Continuer'}
+              </span>
+              {!isNavigating && state.selectedOffer && (
+                <ArrowRight className="w-4 h-4" />
+              )}
+            </motion.button>
+          </div>
         </div>
       </div>
     </div>
