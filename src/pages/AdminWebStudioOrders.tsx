@@ -1393,6 +1393,21 @@ L'équipe IWASP Web Studio`);
                         Site généré avec succès
                       </div>
                       
+                      {/* Info message when no generated site data */}
+                      {!generatedSiteData && (
+                        <div className="p-3 rounded-lg flex items-center gap-3" style={{ backgroundColor: `${COLORS.warning}15`, border: `1px solid ${COLORS.warning}30` }}>
+                          <AlertCircle size={16} style={{ color: COLORS.warning }} />
+                          <div>
+                            <p className="text-sm" style={{ color: COLORS.ivoire }}>
+                              Données du site non disponibles
+                            </p>
+                            <p className="text-xs" style={{ color: COLORS.gris }}>
+                              Le site n'a peut-être pas été sauvegardé correctement. Essayez de le régénérer.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
                       {/* Public Hosting URL */}
                       {generatedSiteData?.preview_url && (
                         <div className="p-3 rounded-lg" style={{ backgroundColor: `${COLORS.success}15`, border: `1px solid ${COLORS.success}30` }}>
