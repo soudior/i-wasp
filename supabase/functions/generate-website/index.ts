@@ -20,6 +20,7 @@ interface FormData {
   colors?: string;
   websiteUrl?: string;
   socialLinks?: string;
+  products?: string; // liste libre: produits/services principaux
 }
 
 serve(async (req) => {
@@ -57,15 +58,15 @@ Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks) co
       "slug": "slug-url",
       "sections": [
         {
-          "type": "hero|features|about|services|gallery|testimonials|contact|cta|pricing|team|faq",
+          "type": "hero|features|about|services|gallery|testimonials|contact|cta|pricing|team|faq|products",
           "title": "Titre de la section",
           "content": "Description courte",
-          "items": ["élément 1", "élément 2"] // optionnel
+          "items": ["élément 1", "élément 2"]
         }
       ]
     }
   ],
-  "features": ["Fonctionnalité 1", "Fonctionnalité 2", ...],
+  "features": ["Fonctionnalité 1", "Fonctionnalité 2"],
   "estimatedPages": nombre,
   "complexity": "simple|standard|premium"
 }
@@ -75,7 +76,8 @@ Règles:
 - Inclus au minimum: Accueil, À propos, Services/Produits, Contact
 - Choisis des couleurs harmonieuses et professionnelles
 - La complexité dépend du nombre de pages et fonctionnalités
-- Adapte le design au secteur d'activité`;
+- Adapte le design au secteur d'activité
+- Si une liste de produits/services est fournie, ajoute une page ou section "Produits" ou "Services" et remplis "items" avec des éléments concrets (noms courts) basés sur la liste.`;
 
     const userPrompt = `Génère une proposition de site web pour:
 
@@ -84,6 +86,7 @@ ${formData.businessName ? `Nom: ${formData.businessName}` : ""}
 ${formData.description ? `Description: ${formData.description}` : ""}
 ${formData.style ? `Style souhaité: ${formData.style}` : ""}
 ${formData.colors ? `Couleurs préférées: ${formData.colors}` : ""}
+${formData.products ? `Produits/Services (liste): ${formData.products}` : ""}
 ${formData.websiteUrl ? `Site existant à analyser: ${formData.websiteUrl}` : ""}
 ${formData.socialLinks ? `Réseaux sociaux: ${formData.socialLinks}` : ""}`;
 
