@@ -135,12 +135,12 @@ export const socialNetworks: SocialNetwork[] = [
   { id: "threads", label: "Threads", category: "classic", placeholder: "username", urlTemplate: "https://threads.net/@{value}", icon: "AtSign" },
   
   // Professional / Contact
-  { id: "whatsapp", label: "WhatsApp", category: "professional", placeholder: "+212612345678", urlTemplate: "https://wa.me/{value}", appScheme: "whatsapp://send?phone={value}", icon: "MessageCircle" },
+  { id: "whatsapp", label: "WhatsApp", category: "professional", placeholder: "+33626424394", urlTemplate: "https://wa.me/{value}", appScheme: "whatsapp://send?phone={value}", icon: "MessageCircle" },
   { id: "telegram", label: "Telegram", category: "professional", placeholder: "username", urlTemplate: "https://t.me/{value}", appScheme: "tg://resolve?domain={value}", icon: "Send" },
   { id: "calendly", label: "Calendly", category: "professional", placeholder: "votre-lien", urlTemplate: "https://calendly.com/{value}", icon: "Calendar" },
   { id: "doctolib", label: "Doctolib", category: "professional", placeholder: "votre-cabinet", urlTemplate: "https://doctolib.fr/{value}", icon: "Stethoscope" },
   { id: "email", label: "Email", category: "professional", placeholder: "email@example.com", urlTemplate: "mailto:{value}", icon: "Mail" },
-  { id: "phone", label: "Téléphone", category: "professional", placeholder: "+212612345678", urlTemplate: "tel:{value}", icon: "Phone" },
+  { id: "phone", label: "Téléphone", category: "professional", placeholder: "+33626424394", urlTemplate: "tel:{value}", icon: "Phone" },
   
   // Creators / Entertainment
   { id: "spotify", label: "Spotify", category: "creators", placeholder: "artist/playlist-id", urlTemplate: "https://open.spotify.com/{value}", appScheme: "spotify://{value}", icon: "Music2" },

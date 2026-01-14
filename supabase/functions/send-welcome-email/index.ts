@@ -168,7 +168,7 @@ const generateWelcomeHtml = (firstName: string, dashboardUrl: string): string =>
           <div class="social-links">
             <a href="https://instagram.com/iwasp.ma">Instagram</a>
             <a href="https://linkedin.com/company/iwasp">LinkedIn</a>
-            <a href="https://wa.me/212600000000">WhatsApp</a>
+            <a href="https://wa.me/33626424394">WhatsApp</a>
           </div>
           <p>Une question ? Répondez directement à cet email.</p>
           <p><a href="https://i-wasp.com">www.i-wasp.com</a></p>
