@@ -213,7 +213,7 @@ const handler = async (req: Request): Promise<Response> => {
     const html = generateWelcomeHtml(displayName, dashboardUrl || 'https://i-wasp.com/dashboard');
 
     const emailResponse = await resend.emails.send({
-      from: "IWASP <onboarding@resend.dev>",
+      from: "IWASP <contact@i-wasp.com>",
       to: [email],
       subject: "🐝 Bienvenue chez IWASP ! Votre identité digitale vous attend",
       html,

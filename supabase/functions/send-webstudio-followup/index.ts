@@ -207,7 +207,7 @@ serve(async (req) => {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "IWASP Web Studio <onboarding@resend.dev>",
+        from: "IWASP Web Studio <contact@i-wasp.com>",
         to: [data.email],
         subject: data.subject,
         html,

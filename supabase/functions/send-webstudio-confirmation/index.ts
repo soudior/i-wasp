@@ -198,7 +198,7 @@ const handler = async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "IWASP Web Studio <onboarding@resend.dev>",
+        from: "IWASP Web Studio <contact@i-wasp.com>",
         to: [data.email],
         subject: `💳 Finalisez votre commande - ${data.siteName}`,
         html,

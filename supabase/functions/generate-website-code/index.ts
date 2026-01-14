@@ -821,7 +821,7 @@ serve(async (req) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "IWASP Web Studio <onboarding@resend.dev>",
+            from: "IWASP Web Studio <contact@i-wasp.com>",
             to: [recipientEmail],
             subject: `🎉 Votre site ${businessName} est prêt !`,
             html: `

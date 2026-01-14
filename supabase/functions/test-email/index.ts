@@ -36,7 +36,7 @@ serve(async (req) => {
     console.log(`Sending test email to: ${email}`);
 
     const { data, error } = await resend.emails.send({
-      from: "IWASP <onboarding@resend.dev>",
+      from: "IWASP <contact@i-wasp.com>",
       to: [email],
       subject: "✅ Test Email - IWASP",
       html: `
