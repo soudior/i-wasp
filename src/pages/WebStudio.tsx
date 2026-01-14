@@ -232,6 +232,9 @@ export default function WebStudio() {
     colors: "",
     websiteUrl: "",
     socialLinks: "",
+    products: "",
+    contactEmail: "",
+    contactPhone: "",
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [proposal, setProposal] = useState<WebsiteProposal | null>(null);
@@ -373,42 +376,63 @@ export default function WebStudio() {
       return;
     }
 
+    if (!formData.contactEmail.trim()) {
+      toast({
+        title: "Email requis",
+        description: "Merci de renseigner votre email pour la commande",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsOrdering(true);
 
     try {
       const price = calculatePrice();
       
-      // Sauvegarder la proposition en base
-      const { data: savedProposal, error: proposalError } = await supabase
-        .from("website_proposals")
-        .insert([{
-          form_data: JSON.parse(JSON.stringify(formData)) as Json,
-          proposal: JSON.parse(JSON.stringify(proposal)) as Json,
-          session_id: sessionId,
-          is_express: isExpress,
-          price_eur: price.eur,
-          price_mad: price.mad,
-          status: "ordered",
-        }])
-        .select()
-        .single();
+      const { data, error } = await supabase.functions.invoke("webstudio-order", {
+        body: {
+          sessionId,
+          formData,
+          proposal,
+          isExpress,
+          priceEur: price.eur,
+          priceMad: price.mad,
+        },
+      });
 
-      if (proposalError) throw proposalError;
+      if (error) {
+        // Handle rate limit or payment errors
+        const status = (error as any)?.status;
+        if (status === 429) {
+          toast({
+            title: "Trop de requêtes",
+            description: "Veuillez patienter quelques secondes avant de réessayer.",
+            variant: "destructive",
+          });
+          return;
+        }
+        if (status === 402) {
+          toast({
+            title: "Crédits épuisés",
+            description: "Veuillez contacter le support.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw error;
+      }
 
-      // Créer une demande de contact
-      const { error: contactError } = await supabase
-        .from("contact_requests")
-        .insert({
-          name: formData.businessName || proposal.siteName || "Client Web Studio",
-          email: "webstudio@i-wasp.com",
-          message: `Nouvelle commande Web Studio\n\nProjet: ${proposal.siteName}\nType: ${formData.businessType}\nPages: ${proposal.estimatedPages}\nExpress: ${isExpress ? "Oui" : "Non"}\nPrix estimé: ${price.eur}€ / ${price.mad}DH\n\nDescription: ${proposal.tagline}`,
-          request_type: "website_order",
-          company: formData.businessName || proposal.siteName,
+      if (data?.error) {
+        toast({
+          title: "Erreur",
+          description: data.error,
+          variant: "destructive",
         });
+        return;
+      }
 
-      if (contactError) throw contactError;
-
-      setSavedProposalId(savedProposal.id);
+      setSavedProposalId(data?.proposalId || null);
       setOrderSuccess(true);
 
       toast({
@@ -420,7 +444,7 @@ export default function WebStudio() {
       console.error("Error ordering website:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue. Veuillez réessayer ou nous contacter sur WhatsApp.",
+        description: "Une erreur est survenue. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
@@ -1369,6 +1393,90 @@ export default function WebStudio() {
                           placeholder="@instagram, facebook.com/page..."
                           value={formData.socialLinks}
                           onChange={(e) => setFormData({ ...formData, socialLinks: e.target.value })}
+                          className="h-12 pl-5 text-sm rounded-xl"
+                          style={{
+                            backgroundColor: `${STUDIO.noirSoft}50`,
+                            border: `1px solid ${STUDIO.ivoire}08`,
+                            color: STUDIO.ivoire,
+                          }}
+                        />
+                      </div>
+                      {/* Produits / Services */}
+                      <div>
+                        <Label htmlFor="products" className="mb-2 block">
+                          <span className="text-sm" style={{ color: STUDIO.grisClair }}>Produits / Services (optionnel)</span>
+                        </Label>
+                        <Textarea
+                          id="products"
+                          placeholder="Ex: Pizza Margherita, Tiramisu, Menu Enfant..."
+                          value={formData.products}
+                          onChange={(e) => setFormData({ ...formData, products: e.target.value })}
+                          className="min-h-[80px] p-4 text-sm rounded-xl resize-none"
+                          style={{
+                            backgroundColor: `${STUDIO.noirSoft}50`,
+                            border: `1px solid ${STUDIO.ivoire}08`,
+                            color: STUDIO.ivoire,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Contact info for order */}
+                  <motion.div 
+                    className="pt-6 mt-6"
+                    style={{ borderTop: `1px solid ${STUDIO.ivoire}08` }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.35 }}
+                  >
+                    <div className="flex items-center gap-3 mb-5">
+                      <div 
+                        className="w-8 h-8 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: `${STUDIO.or}15` }}
+                      >
+                        <MessageCircle size={14} style={{ color: STUDIO.or }} />
+                      </div>
+                      <span className="text-xs uppercase tracking-widest" style={{ color: STUDIO.or }}>
+                        Pour vous recontacter
+                      </span>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="contactEmail" className="flex items-center gap-2 mb-2">
+                          <span className="text-sm" style={{ color: STUDIO.ivoire }}>Votre email</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ 
+                            backgroundColor: `${STUDIO.or}20`,
+                            color: STUDIO.or,
+                          }}>
+                            Requis
+                          </span>
+                        </Label>
+                        <Input
+                          id="contactEmail"
+                          type="email"
+                          placeholder="vous@email.com"
+                          value={formData.contactEmail}
+                          onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                          className="h-12 pl-5 text-sm rounded-xl"
+                          style={{
+                            backgroundColor: `${STUDIO.noirSoft}80`,
+                            border: `1px solid ${STUDIO.ivoire}10`,
+                            color: STUDIO.ivoire,
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="contactPhone" className="mb-2 block">
+                          <span className="text-sm" style={{ color: STUDIO.grisClair }}>Téléphone (optionnel)</span>
+                        </Label>
+                        <Input
+                          id="contactPhone"
+                          type="tel"
+                          placeholder="+212 6..."
+                          value={formData.contactPhone}
+                          onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
                           className="h-12 pl-5 text-sm rounded-xl"
                           style={{
                             backgroundColor: `${STUDIO.noirSoft}50`,
