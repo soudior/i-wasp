@@ -92,3 +92,6 @@ verify_jwt = false
 
 [functions.generate-image]
 verify_jwt = false
+
+[functions.regenerate-text]
+verify_jwt = false
