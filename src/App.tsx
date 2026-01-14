@@ -117,6 +117,7 @@ const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
 const Services = lazy(() => import("./pages/Services"));
 const CartesNFC = lazy(() => import("./pages/CartesNFC"));
 const WebStudio = lazy(() => import("./pages/WebStudio"));
+const TrackWebStudioOrder = lazy(() => import("./pages/TrackWebStudioOrder"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -247,6 +248,8 @@ const App = () => {
                               <Route path="/services" element={<Services />} />
                               <Route path="/cartes-nfc" element={<CartesNFC />} />
                               <Route path="/web-studio" element={<WebStudio />} />
+                              <Route path="/web-studio/suivi" element={<TrackWebStudioOrder />} />
+                              <Route path="/track-web-studio" element={<TrackWebStudioOrder />} />
                               <Route path="/rental-demo" element={<RentalDemo />} />
                               <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
                               <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
