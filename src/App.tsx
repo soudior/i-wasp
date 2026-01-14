@@ -20,7 +20,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { NetworkProvider } from "@/components/NetworkProvider";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
+
 import { RouteLoader } from "@/components/RouteLoader";
 
 // Route-level code-splitting (performance mobile)
@@ -397,7 +397,7 @@ const App = () => {
                             </Routes>
                           </Suspense>
                           <MobileBottomNav />
-                          <FloatingWhatsApp />
+                          
                           <PWAInstallPrompt />
                         </OrderFunnelProvider>
                       </ErrorBoundary>
