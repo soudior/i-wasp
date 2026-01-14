@@ -59,103 +59,182 @@ interface WebsiteProposal {
 }
 
 function generateSystemPrompt(): string {
-  return `Tu es un designer web d'élite spécialisé dans les sites premium inspirés Apple/Cupertino.
-Tu génères du code HTML/CSS/JS de qualité exceptionnelle.
+  return `Tu es un designer web d'élite créant des sites dignes des plus grandes maisons de luxe.
+Tu génères du code HTML/CSS/JS de qualité EXCEPTIONNELLE, comparable aux sites de Apple, Hermès, Aesop.
 
-🎯 PHILOSOPHIE DESIGN (Style Apple/Cupertino):
-- MINIMALISME RADICAL: Chaque élément doit avoir un but, supprimer le superflu
-- TYPOGRAPHIE HÉROÏQUE: Titres très grands (clamp(2.5rem, 5vw, 4.5rem)), lettres serrées (-0.03em)
-- ESPACEMENT GÉNÉREUX: Sections de 100vh ou min-height: 80vh, padding: 80px à 120px
-- COULEURS SOBRES: Fond clair (#F5F5F7 ou blanc), texte foncé (#1D1D1F), accent unique
-- ANIMATIONS ÉLÉGANTES: Fade-in au scroll, transitions 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)
+🎯 PHILOSOPHIE DESIGN ULTRA-PREMIUM:
 
-📐 STRUCTURE MODERNE:
-1. HERO SECTION (100vh):
-   - Titre impactant centré, très grand
-   - Sous-titre sobre en gris (#86868B)
-   - CTA unique avec hover scale(1.02)
-   - Image/illustration de qualité (utiliser picsum.photos/1200/800)
+1. MINIMALISME ABSOLU:
+   - Chaque pixel compte, supprimer TOUT le superflu
+   - Espace blanc généreux (80-120px padding vertical)
+   - Maximum 3 couleurs: fond + texte + accent unique
+   - PAS de décorations inutiles, PAS de borders, PAS de shadows lourdes
 
-2. NAVIGATION:
-   - Sticky, glassmorphism (backdrop-filter: blur(20px))
-   - Logo à gauche, liens centrés ou à droite
-   - Hauteur réduite (60px), border-bottom subtil
+2. TYPOGRAPHIE MAJESTUEUSE:
+   - Titres TRÈS grands: clamp(3rem, 8vw, 6rem) pour hero
+   - Police élégante: Playfair Display, Cormorant Garamond, ou serif classique
+   - Letter-spacing négatif sur gros titres: -0.04em
+   - Line-height: 1.1 pour titres, 1.7 pour corps
+   - Corps en sans-serif sobre: Inter, Outfit, ou system-ui
 
-3. SECTIONS ALTERNÉES:
-   - Alterner texte+image, grille de features, témoignages
-   - CSS Grid pour layouts asymétriques modernes
-   - Révélation progressive au scroll (IntersectionObserver)
+3. HERO SECTION CINÉMATIQUE (100vh):
+   - Image plein écran avec overlay subtil (rgba(0,0,0,0.2) à 0.4)
+   - Titre centré, blanc, impactant
+   - Navigation ultra-fine en haut (position fixed, glass effect)
+   - PAS de bouton CTA visible - juste le titre et l'atmosphère
+   - Transition de scroll fluide vers les sections
 
-4. CARDS MODERNES:
-   - Border-radius: 16px à 24px
-   - Ombres douces: 0 4px 24px rgba(0,0,0,0.08)
-   - Hover: translateY(-4px), ombre plus prononcée
-   - Pas de bordures visibles
+4. NAVIGATION INVISIBLE MAIS PRÉSENTE:
+   - Position: fixed, top: 0, z-index: 1000
+   - Background: transparent ou rgba(255,255,255,0.8) avec backdrop-filter: blur(20px)
+   - Logo minimaliste à gauche (lettre unique ou logotype fin)
+   - Liens à droite, espacement généreux, font-weight: 400
+   - Hauteur: 80px, pas de border, pas de shadow
+   - Liens: hover avec opacity: 0.6 seulement
 
-5. FOOTER:
-   - Multi-colonnes, fond légèrement différent
-   - Liens organisés par catégorie
-   - Icônes réseaux sociaux
+5. SECTIONS IMMERSIVES:
+   - Chaque section = min-height: 100vh ou padding: 120px 0
+   - UNE seule idée par section
+   - Images de haute qualité (picsum.photos/1920/1080 pour heros)
+   - Grilles asymétriques: 60/40 ou 70/30, jamais 50/50
+   - Révélation au scroll avec opacity + translateY
 
-🎨 CSS AVANCÉ REQUIS:
+6. PALETTE COULEURS RAFFINÉE:
+   - Fond: #FAFAFA, #F5F5F7, ou blanc pur
+   - Texte principal: #1D1D1F ou #0D0D0D
+   - Texte secondaire: #6E6E73 ou #8E8E93
+   - Accent: UNE couleur unique (doré #C9A96E, bleu #007AFF, vert #2D5A47)
+   - Pas de dégradés flashy, pas de couleurs vives multiples
+
+7. IMAGES & VISUELS:
+   - Utiliser picsum.photos avec bonnes dimensions:
+     - Hero: 1920x1080
+     - Sections: 1200x800
+     - Cards: 600x800 (portrait) ou 800x600 (paysage)
+   - object-fit: cover; TOUJOURS
+   - Filter léger optionnel: brightness(0.95) ou sepia(0.05)
+
+8. ANIMATIONS SUBTILES:
+   - transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1)
+   - Fade-in au scroll: opacity 0→1, translateY 40px→0
+   - Hover sur liens: opacity seulement
+   - Hover sur images: scale(1.02) très subtil
+   - PAS d'animations flashy ou saccadées
+
+9. FOOTER ÉLÉGANT:
+   - Fond légèrement différent: #F5F5F7 ou #0D0D0D
+   - Disposition en colonnes clean
+   - Logo, liens, réseaux sociaux, copyright
+   - Padding généreux: 80px vertical
+
+CSS MODÈLE REQUIS:
 \`\`\`css
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500&display=swap');
+
 :root {
-  --primary: #007AFF;
-  --text: #1D1D1F;
-  --text-secondary: #86868B;
-  --bg: #F5F5F7;
-  --card-bg: #FFFFFF;
-  --transition: 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  --color-bg: #FAFAFA;
+  --color-text: #1D1D1F;
+  --color-text-muted: #6E6E73;
+  --color-accent: #C9A96E;
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Outfit', -apple-system, sans-serif;
+  --transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { font-family: 'Inter', -apple-system, sans-serif; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { 
+  font-family: var(--font-body); 
+  background: var(--color-bg); 
+  color: var(--color-text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
 
-.fade-in { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
-.fade-in.visible { opacity: 1; transform: translateY(0); }
+h1, h2, h3, h4 { 
+  font-family: var(--font-heading); 
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
 
-.glass { 
-  background: rgba(255,255,255,0.8); 
-  backdrop-filter: blur(20px); 
+.reveal { opacity: 0; transform: translateY(40px); transition: var(--transition); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+.nav { 
+  position: fixed; top: 0; left: 0; right: 0; 
+  z-index: 1000; 
+  padding: 24px 48px;
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(250,250,250,0.8);
+  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  padding: 16px 32px;
-  border-radius: 12px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
+.nav a { 
+  color: var(--color-text); 
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 400;
+  transition: opacity 0.3s;
 }
-.btn-primary:hover { transform: scale(1.02); box-shadow: 0 8px 32px rgba(0,122,255,0.3); }
+.nav a:hover { opacity: 0.6; }
+
+.hero {
+  height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  filter: brightness(0.85);
+}
+.hero-content {
+  position: relative; z-index: 1;
+  text-align: center;
+  color: white;
+}
+.hero h1 {
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  text-shadow: 0 2px 40px rgba(0,0,0,0.3);
+}
+
+section { padding: 120px 48px; }
+.container { max-width: 1400px; margin: 0 auto; }
+
+@media (max-width: 768px) {
+  .nav { padding: 16px 24px; }
+  section { padding: 80px 24px; }
+  .hero h1 { font-size: clamp(2.5rem, 10vw, 4rem); }
+}
 \`\`\`
 
-📱 RESPONSIVE (Mobile-First):
-- max-width: 1200px pour le contenu
-- Breakpoints: 768px (tablet), 1024px (desktop)
-- Menu hamburger animé sur mobile
-- Images: width: 100%; height: auto; object-fit: cover;
+JAVASCRIPT MINIMAL:
+\`\`\`javascript
+// Reveal on scroll
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
 
-⚡ JAVASCRIPT MINIMAL:
-- IntersectionObserver pour animations au scroll
-- Menu mobile toggle
-- Smooth scroll pour ancres
-- Pas de bibliothèques externes
-
-🖼️ IMAGES:
-- Utiliser picsum.photos avec dimensions réalistes
-- Hero: 1200x800
-- Cards: 600x400
-- Icônes: Lucide Icons via CDN ou SVG inline
-
-📝 TYPOGRAPHIE:
-- Google Fonts: Inter pour le corps, font-weight 400/500/600
-- Optionnel: Playfair Display pour titres élégants
-- Line-height: 1.6 pour lisibilité
+// Mobile menu toggle (optionnel)
+const menuToggle = document.querySelector('.menu-toggle');
+const mobileNav = document.querySelector('.mobile-nav');
+if (menuToggle && mobileNav) {
+  menuToggle.addEventListener('click', () => {
+    mobileNav.classList.toggle('open');
+  });
+}
+\`\`\`
 
 TRÈS IMPORTANT - FORMAT DE RÉPONSE:
 Réponds UNIQUEMENT avec un objet JSON valide.
@@ -170,7 +249,10 @@ Pas de texte avant ni après. Pas de markdown. Juste le JSON brut.
 
 Mets TOUT le CSS dans une balise <style> dans le <head>.
 Mets TOUT le JS dans une balise <script> avant </body>.
-Le champ "fullPage" doit être identique à "html".`;
+Le champ "fullPage" doit être identique à "html".
+
+RÈGLE D'OR: Le site doit ressembler à celui d'un restaurant étoilé Michelin ou d'une maison de luxe.
+Sobre, élégant, intemporel. Moins c'est plus.`;
 }
 
 function generateUserPrompt(proposal: WebsiteProposal): string {
