@@ -25,8 +25,10 @@ class ErrorBoundary extends Component<Props, State> {
     return { hasError: true };
   }
 
-  componentDidCatch() {
-    // Silent catch - no console logs in production
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // Log error for debugging
+    console.error("[ErrorBoundary] Caught error:", error.message);
+    console.error("[ErrorBoundary] Component stack:", errorInfo.componentStack);
   }
 
   handleReset = () => {
