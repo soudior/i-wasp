@@ -138,7 +138,7 @@ export default function ComingSoon() {
                 backgroundColor: 'transparent',
               }}
               onClick={() => {
-                window.open('https://wa.me/212600000000?text=Je souhaite être notifié des nouvelles fonctionnalités i-wasp', '_blank');
+                window.open('https://wa.me/212661381626?text=Je souhaite être notifié des nouvelles fonctionnalités i-wasp', '_blank');
               }}
             >
               <Bell className="w-4 h-4 mr-2" />
