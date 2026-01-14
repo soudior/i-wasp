@@ -130,17 +130,23 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
   cancelled: { label: "Annulé", color: COLORS.error, icon: XCircle },
 };
 
-// Email templates
+// Email templates with visual metadata
 const emailTemplates = [
   {
     id: "custom",
-    label: "✏️ Message personnalisé",
+    label: "Message personnalisé",
+    icon: "✏️",
+    color: COLORS.gris,
+    description: "Rédigez votre propre message",
     subject: "",
     message: "",
   },
   {
     id: "info_request",
-    label: "📋 Demande d'informations",
+    label: "Demande d'infos",
+    icon: "📋",
+    color: "#3B82F6",
+    description: "Demander des informations au client",
     subject: "Informations complémentaires nécessaires - {{siteName}}",
     message: `Bonjour,
 
@@ -157,7 +163,10 @@ L'équipe IWASP Web Studio`,
   },
   {
     id: "mockup_ready",
-    label: "🎨 Maquette prête",
+    label: "Maquette prête",
+    icon: "🎨",
+    color: "#8B5CF6",
+    description: "Présenter la maquette pour validation",
     subject: "Votre maquette est prête ! - {{siteName}}",
     message: `Bonjour,
 
@@ -177,7 +186,10 @@ L'équipe IWASP Web Studio`,
   },
   {
     id: "in_development",
-    label: "🛠️ Développement en cours",
+    label: "En développement",
+    icon: "🛠️",
+    color: "#F59E0B",
+    description: "Informer du lancement du développement",
     subject: "Votre site est en cours de développement - {{siteName}}",
     message: `Bonjour,
 
@@ -195,7 +207,10 @@ L'équipe IWASP Web Studio`,
   },
   {
     id: "preview_ready",
-    label: "👀 Prévisualisation disponible",
+    label: "Preview disponible",
+    icon: "👀",
+    color: "#06B6D4",
+    description: "Envoyer le lien de prévisualisation",
     subject: "Prévisualisez votre site ! - {{siteName}}",
     message: `Bonjour,
 
@@ -217,7 +232,10 @@ L'équipe IWASP Web Studio`,
   },
   {
     id: "delivery_soon",
-    label: "🚀 Livraison imminente",
+    label: "Livraison imminente",
+    icon: "🚀",
+    color: COLORS.or,
+    description: "Annoncer la livraison sous 24-48h",
     subject: "Livraison de votre site dans 24-48h - {{siteName}}",
     message: `Bonjour,
 
@@ -240,7 +258,10 @@ L'équipe IWASP Web Studio`,
   },
   {
     id: "delivered",
-    label: "✅ Site livré",
+    label: "Site livré",
+    icon: "✅",
+    color: COLORS.success,
+    description: "Confirmer la mise en ligne du site",
     subject: "🎉 Votre site est en ligne ! - {{siteName}}",
     message: `Bonjour,
 
@@ -1111,30 +1132,74 @@ L'équipe IWASP Web Studio`);
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 mt-4">
-            {/* Template Selector */}
+          <div className="space-y-5 mt-4">
+            {/* Template Selector - Visual Cards */}
             <div>
-              <label className="text-sm font-medium mb-2 block" style={{ color: COLORS.gris }}>
-                Template
+              <label className="text-sm font-medium mb-3 block" style={{ color: COLORS.gris }}>
+                Choisir un template
               </label>
-              <Select 
-                value={selectedTemplate} 
-                onValueChange={(value) => {
-                  const siteName = selectedOrder?.proposal?.siteName || selectedOrder?.form_data?.businessName || "votre projet";
-                  applyTemplate(value, siteName);
-                }}
-              >
-                <SelectTrigger style={{ backgroundColor: COLORS.noirSoft, borderColor: COLORS.border, color: COLORS.ivoire }}>
-                  <SelectValue placeholder="Choisir un template..." />
-                </SelectTrigger>
-                <SelectContent style={{ backgroundColor: COLORS.noirCard, borderColor: COLORS.border }}>
-                  {emailTemplates.map((template) => (
-                    <SelectItem key={template.id} value={template.id}>
-                      {template.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1">
+                {emailTemplates.map((template) => {
+                  const isSelected = selectedTemplate === template.id;
+                  return (
+                    <motion.button
+                      key={template.id}
+                      type="button"
+                      onClick={() => {
+                        const siteName = selectedOrder?.proposal?.siteName || selectedOrder?.form_data?.businessName || "votre projet";
+                        applyTemplate(template.id, siteName);
+                      }}
+                      className="p-3 rounded-xl text-left transition-all duration-200 relative overflow-hidden group"
+                      style={{ 
+                        backgroundColor: isSelected ? `${template.color}20` : COLORS.noirSoft,
+                        border: `2px solid ${isSelected ? template.color : 'transparent'}`,
+                      }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {/* Glow effect when selected */}
+                      {isSelected && (
+                        <div 
+                          className="absolute inset-0 opacity-20"
+                          style={{ 
+                            background: `radial-gradient(circle at center, ${template.color} 0%, transparent 70%)` 
+                          }}
+                        />
+                      )}
+                      
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-lg">{template.icon}</span>
+                          <span 
+                            className="text-sm font-medium truncate"
+                            style={{ color: isSelected ? template.color : COLORS.ivoire }}
+                          >
+                            {template.label}
+                          </span>
+                        </div>
+                        <p 
+                          className="text-xs line-clamp-1"
+                          style={{ color: COLORS.gris }}
+                        >
+                          {template.description}
+                        </p>
+                      </div>
+
+                      {/* Selection indicator */}
+                      {isSelected && (
+                        <motion.div 
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: template.color }}
+                        >
+                          <CheckCircle2 size={12} color={COLORS.noir} />
+                        </motion.div>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
             </div>
 
             <div>
