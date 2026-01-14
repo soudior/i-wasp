@@ -82,7 +82,7 @@ export default function Login() {
       if (error) {
         console.error("Google OAuth error:", error);
         if (error.message.includes("403")) {
-          setErrorMessage("Erreur 403 : Vérifiez la configuration Google OAuth dans le backend Lovable Cloud");
+          setErrorMessage("Erreur 403 : Vérifiez la configuration Google OAuth");
         } else {
           setErrorMessage(`Erreur de connexion Google: ${error.message}`);
         }
