@@ -66,8 +66,8 @@ function generateStatusUpdateHtml(data: StatusUpdateRequest): string {
     description: "Le statut de votre commande a été mis à jour."
   };
 
-  // Use only the published domain to avoid "dangerous link" warnings in Gmail
-  const trackingUrl = `https://i-wasp.com/web-studio/suivi?id=${data.orderId}`;
+  // Use the published Lovable domain
+  const trackingUrl = `https://i-wasp.lovable.app/web-studio/suivi?id=${data.orderId}`;
 
   return `
 <!DOCTYPE html>

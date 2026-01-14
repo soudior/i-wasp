@@ -24,8 +24,8 @@ interface WebStudioConfirmationRequest {
 function generateConfirmationHtml(data: WebStudioConfirmationRequest): string {
   const expressLabel = data.isExpress ? "Express (48h)" : "Standard (7-10 jours)";
   
-  // Use only the published domain to avoid "dangerous link" warnings in Gmail
-  const baseUrl = "https://i-wasp.com";
+  // Use the published Lovable domain
+  const baseUrl = "https://i-wasp.lovable.app";
   const paymentUrl = `${baseUrl}/web-studio/checkout?proposal_id=${data.orderId}`;
   const trackingUrl = `${baseUrl}/web-studio/suivi?id=${data.orderId}`;
   
