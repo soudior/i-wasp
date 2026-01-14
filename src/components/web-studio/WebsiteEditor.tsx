@@ -86,13 +86,16 @@ export function WebsiteEditor({
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
   const [generatingImageIndex, setGeneratingImageIndex] = useState<number | null>(null);
+  const [regeneratingTextId, setRegeneratingTextId] = useState<string | null>(null);
   const [aiPromptDialog, setAiPromptDialog] = useState<{ open: boolean; imageIndex: number | null }>({ open: false, imageIndex: null });
+  const [textAiDialog, setTextAiDialog] = useState<{ open: boolean; textId: string | null; originalText: string; type: string }>({ open: false, textId: null, originalText: "", type: "" });
   const [aiPrompt, setAiPrompt] = useState("");
+  const [textInstruction, setTextInstruction] = useState("");
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   // Extract editable texts from HTML
-  const [editableTexts, setEditableTexts] = useState<Array<{ id: string; label: string; value: string }>>([]);
+  const [editableTexts, setEditableTexts] = useState<Array<{ id: string; label: string; value: string; type: string }>>([]);
   const [detectedImages, setDetectedImages] = useState<DetectedImage[]>([]);
 
   useEffect(() => {
@@ -104,14 +107,15 @@ export function WebsiteEditor({
     const doc = parser.parseFromString(initialHtml, "text/html");
     
     // Extract texts
-    const texts: Array<{ id: string; label: string; value: string }> = [];
+    const texts: Array<{ id: string; label: string; value: string; type: string }> = [];
     
     doc.querySelectorAll("h1, h2, h3").forEach((el, index) => {
       const tag = el.tagName.toLowerCase();
       texts.push({
         id: `${tag}-${index}`,
         label: `${tag === "h1" ? "Titre principal" : tag === "h2" ? "Sous-titre" : "Section"} ${index + 1}`,
-        value: el.textContent?.trim() || ""
+        value: el.textContent?.trim() || "",
+        type: "heading"
       });
     });
 
@@ -121,7 +125,8 @@ export function WebsiteEditor({
         texts.push({
           id: `p-${index}`,
           label: `Paragraphe ${index + 1}`,
-          value: text
+          value: text,
+          type: "paragraph"
         });
       }
     });
@@ -132,7 +137,8 @@ export function WebsiteEditor({
         texts.push({
           id: `btn-${index}`,
           label: `Bouton ${index + 1}`,
-          value: text
+          value: text,
+          type: "button"
         });
       }
     });
@@ -320,6 +326,60 @@ export function WebsiteEditor({
       toast.error("Erreur lors de la génération de l'image");
     } finally {
       setGeneratingImageIndex(null);
+    }
+  };
+
+  const handleTextRegenerate = async (textId: string, originalText: string, type: string, instruction?: string) => {
+    setTextAiDialog({ open: false, textId: null, originalText: "", type: "" });
+    setRegeneratingTextId(textId);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("regenerate-text", {
+        body: { 
+          originalText,
+          type,
+          instruction: instruction || textInstruction
+        }
+      });
+
+      if (error) throw error;
+      
+      if (!data?.text) {
+        throw new Error("Aucun texte généré");
+      }
+
+      updateCustomization("texts", textId, data.text);
+      setTextInstruction("");
+      toast.success("Texte régénéré avec succès !");
+    } catch (error) {
+      console.error("Text regeneration error:", error);
+      toast.error("Erreur lors de la régénération du texte");
+    } finally {
+      setRegeneratingTextId(null);
+    }
+  };
+
+  const handleQuickRegenerate = async (textId: string, originalText: string, type: string) => {
+    setRegeneratingTextId(textId);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("regenerate-text", {
+        body: { originalText, type }
+      });
+
+      if (error) throw error;
+      
+      if (!data?.text) {
+        throw new Error("Aucun texte généré");
+      }
+
+      updateCustomization("texts", textId, data.text);
+      toast.success("Texte régénéré !");
+    } catch (error) {
+      console.error("Text regeneration error:", error);
+      toast.error("Erreur lors de la régénération");
+    } finally {
+      setRegeneratingTextId(null);
     }
   };
 
@@ -565,13 +625,87 @@ export function WebsiteEditor({
                   {/* Textes */}
                   <TabsContent value="texts" className="mt-0 space-y-4 pb-4">
                     {editableTexts.map((item) => (
-                      <div key={item.id} className="space-y-2">
-                        <Label className="text-white/80 text-xs">{item.label}</Label>
-                        <Input
-                          value={customizations.texts[item.id] ?? item.value}
-                          onChange={(e) => updateCustomization("texts", item.id, e.target.value)}
-                          className="bg-white/5 border-white/10 text-white placeholder:text-white/40 text-sm"
-                        />
+                      <div key={item.id} className="space-y-2 p-3 rounded-lg bg-white/5 border border-white/10">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-white/80 text-xs flex items-center gap-2">
+                            {item.label}
+                            {customizations.texts[item.id] && (
+                              <span className="px-1.5 py-0.5 text-[10px] bg-green-500/20 text-green-400 rounded">
+                                Modifié
+                              </span>
+                            )}
+                          </Label>
+                          <span className="text-[10px] text-white/30 capitalize">{item.type}</span>
+                        </div>
+                        
+                        {item.type === "paragraph" ? (
+                          <Textarea
+                            value={customizations.texts[item.id] ?? item.value}
+                            onChange={(e) => updateCustomization("texts", item.id, e.target.value)}
+                            className="bg-white/5 border-white/10 text-white placeholder:text-white/40 text-sm min-h-[80px]"
+                          />
+                        ) : (
+                          <Input
+                            value={customizations.texts[item.id] ?? item.value}
+                            onChange={(e) => updateCustomization("texts", item.id, e.target.value)}
+                            className="bg-white/5 border-white/10 text-white placeholder:text-white/40 text-sm"
+                          />
+                        )}
+                        
+                        {/* AI regeneration buttons */}
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleQuickRegenerate(
+                              item.id, 
+                              customizations.texts[item.id] ?? item.value,
+                              item.type
+                            )}
+                            disabled={regeneratingTextId === item.id}
+                            className="flex-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-purple-500/30 text-purple-300 hover:text-white hover:border-purple-500/50 text-xs"
+                          >
+                            {regeneratingTextId === item.id ? (
+                              <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                            ) : (
+                              <Wand2 className="w-3 h-3 mr-1" />
+                            )}
+                            Réécrire
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              setTextInstruction("");
+                              setTextAiDialog({
+                                open: true,
+                                textId: item.id,
+                                originalText: customizations.texts[item.id] ?? item.value,
+                                type: item.type
+                              });
+                            }}
+                            disabled={regeneratingTextId === item.id}
+                            className="text-white/40 hover:text-white hover:bg-white/10"
+                            title="Personnaliser la réécriture"
+                          >
+                            <Sparkles className="w-3 h-3" />
+                          </Button>
+                          {customizations.texts[item.id] && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                const newTexts = { ...customizations.texts };
+                                delete newTexts[item.id];
+                                setCustomizations(prev => ({ ...prev, texts: newTexts }));
+                              }}
+                              className="text-white/40 hover:text-red-400 hover:bg-red-500/10"
+                              title="Rétablir le texte original"
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     ))}
                     {editableTexts.length === 0 && (
@@ -872,6 +1006,72 @@ export function WebsiteEditor({
             >
               <Sparkles className="w-4 h-4 mr-2" />
               Générer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI Text Regeneration Dialog */}
+      <Dialog open={textAiDialog.open} onOpenChange={(open) => setTextAiDialog({ open, textId: open ? textAiDialog.textId : null, originalText: open ? textAiDialog.originalText : "", type: open ? textAiDialog.type : "" })}>
+        <DialogContent className="bg-[#1D1D1F] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-400" />
+              Réécrire avec instructions
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-white/80 text-xs">Texte actuel</Label>
+              <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-white/60 text-sm">
+                {textAiDialog.originalText}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-white/80">Instructions (optionnel)</Label>
+              <Textarea
+                value={textInstruction}
+                onChange={(e) => setTextInstruction(e.target.value)}
+                placeholder="Ex: Rendre plus professionnel, ajouter un appel à l'action, simplifier le langage..."
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/40 min-h-[80px]"
+              />
+              <p className="text-white/40 text-xs">
+                Sans instruction, le texte sera réécrit de manière plus engageante.
+              </p>
+            </div>
+            
+            <div className="bg-white/5 rounded-lg p-3 space-y-2">
+              <p className="text-white/60 text-xs font-medium">💡 Exemples d'instructions :</p>
+              <ul className="text-white/40 text-xs space-y-1">
+                <li>• "Rendre plus concis et percutant"</li>
+                <li>• "Ajouter un ton plus chaleureux"</li>
+                <li>• "Inclure un appel à l'action"</li>
+                <li>• "Utiliser un vocabulaire plus simple"</li>
+              </ul>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setTextAiDialog({ open: false, textId: null, originalText: "", type: "" })}
+              className="bg-white/5 border-white/10 text-white/60 hover:text-white"
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={() => textAiDialog.textId && handleTextRegenerate(
+                textAiDialog.textId,
+                textAiDialog.originalText,
+                textAiDialog.type,
+                textInstruction
+              )}
+              className="bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90"
+            >
+              <Wand2 className="w-4 h-4 mr-2" />
+              Réécrire
             </Button>
           </DialogFooter>
         </DialogContent>
