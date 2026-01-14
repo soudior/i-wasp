@@ -4,7 +4,6 @@
  */
 
 import { UltraLuxeTemplate } from "@/components/templates/UltraLuxeTemplate";
-import ultraLuxeVideo from "@/assets/videos/ultra-luxe-showcase.mp4";
 
 const demoData = {
   firstName: "Mohamed",
@@ -13,7 +12,7 @@ const demoData = {
   company: "i-wasp Morocco",
   tagline: "L'excellence du networking digital au Maroc",
   photoUrl: undefined, // Will show initials
-  videoUrl: ultraLuxeVideo,
+  videoUrl: undefined, // Video removed for performance
   phone: "+212661234567",
   email: "contact@i-wasp.ma",
   whatsapp: "+212661234567",
