@@ -26,12 +26,11 @@ import phoneBlack from "@/assets/phones/phone-black.png";
 import phoneWhite from "@/assets/phones/phone-white.png";
 import phoneNavy from "@/assets/phones/phone-navy.png";
 import phoneGold from "@/assets/phones/phone-gold.png";
+import phoneHotel from "@/assets/phones/phone-hotel.png";
+import phoneTourism from "@/assets/phones/phone-tourism.png";
+import phoneLuxury from "@/assets/phones/phone-luxury.png";
+import phoneUltraLuxe from "@/assets/phones/phone-ultra-luxe.png";
 
-// Alias for deleted phone images - using existing ones
-const phoneHotel = phoneGold;
-const phoneTourism = phoneWhite;
-const phoneLuxury = phoneNavy;
-const phoneUltraLuxe = phoneBlack;
 const sectors = [
   { id: "all", name: "Tous", icon: null },
   { id: "vip", name: "VIP Ultra-Luxe", icon: Crown, color: "text-amber-400" },
