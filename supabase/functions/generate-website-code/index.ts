@@ -464,12 +464,31 @@ serve(async (req) => {
       })
       .eq("id", proposalId);
 
+    // Generate blog access token
+    const blogToken = crypto.randomUUID();
+    const { error: tokenError } = await admin
+      .from("website_blog_tokens")
+      .upsert({
+        proposal_id: proposalId,
+        token: blogToken,
+        expires_at: null, // No expiration
+      }, { onConflict: "proposal_id" });
+
+    if (tokenError) {
+      console.error("Error creating blog token:", tokenError);
+    }
+
+    const blogEditorUrl = `https://i-wasp.lovable.app/web-studio/blog-editor?token=${blogToken}`;
+
     console.log(`Website generated successfully for proposal ${proposalId}, hosted at: ${previewUrl}`);
+    console.log(`Blog editor available at: ${blogEditorUrl}`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         websiteId,
+        previewUrl,
+        blogEditorUrl,
         message: "Site web généré avec succès"
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }

@@ -110,3 +110,6 @@ verify_jwt = false
 
 [functions.verify-webstudio-ia-payment]
 verify_jwt = false
+
+[functions.blog-editor-api]
+verify_jwt = false
