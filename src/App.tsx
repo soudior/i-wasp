@@ -129,6 +129,12 @@ const WebStudioPaymentSuccess = lazy(() => import("./pages/web-studio/WebStudioP
 const WebStudioPaymentCancelled = lazy(() => import("./pages/web-studio/WebStudioPaymentCancelled"));
 const WebStudioCheckout = lazy(() => import("./pages/web-studio/WebStudioCheckout"));
 
+// NEW Web Studio IA pages
+const WebStudioOffres = lazy(() => import("./pages/web-studio/WebStudioOffres"));
+const WebStudioConfiguration = lazy(() => import("./pages/web-studio/WebStudioConfiguration"));
+const WebStudioPaiement = lazy(() => import("./pages/web-studio/WebStudioPaiement"));
+const WebStudioIASuccess = lazy(() => import("./pages/web-studio/WebStudioIASuccess"));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -270,10 +276,17 @@ const App = () => {
                                 <Route path="recapitulatif" element={<StepRecapitulatif />} />
                                 <Route path="suivi" element={<TrackWebStudioOrder />} />
                               </Route>
-                              {/* Web Studio Payment Pages */}
+                              {/* Web Studio Payment Pages (legacy) */}
                               <Route path="/web-studio/checkout" element={<WebStudioCheckout />} />
                               <Route path="/web-studio/payment-success" element={<WebStudioPaymentSuccess />} />
                               <Route path="/web-studio/payment-cancelled" element={<WebStudioPaymentCancelled />} />
+                              
+                              {/* Web Studio IA - Nouvelle offre avec 3 packs */}
+                              <Route path="/web-studio/offres" element={<WebStudioOffres />} />
+                              <Route path="/web-studio/configuration" element={<WebStudioConfiguration />} />
+                              <Route path="/web-studio/paiement" element={<WebStudioPaiement />} />
+                              <Route path="/web-studio/ia-success" element={<WebStudioIASuccess />} />
+                              
                               <Route path="/web-studio-legacy" element={<WebStudioLegacy />} />
                               <Route path="/rental-demo" element={<RentalDemo />} />
                               <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
