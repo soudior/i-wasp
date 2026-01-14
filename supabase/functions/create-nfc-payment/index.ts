@@ -74,7 +74,7 @@ serve(async (req) => {
       }
     }
 
-    const origin = req.headers.get("origin") || "https://fyxiyevbbvidckzaequx.lovable.app";
+    const origin = req.headers.get("origin") || "https://i-wasp.com";
     
     // Create a one-time payment session
     const session = await stripe.checkout.sessions.create({
@@ -87,7 +87,7 @@ serve(async (req) => {
             product_data: {
               name: `Carte NFC i-Wasp ${offerId.charAt(0).toUpperCase() + offerId.slice(1)}`,
               description: 'Carte NFC professionnelle avec profil digital',
-              images: ['https://fyxiyevbbvidckzaequx.lovable.app/images/akc-profile.png'],
+              images: ['https://i-wasp.com/images/akc-profile.png'],
             },
             unit_amount: priceEUR,
           },

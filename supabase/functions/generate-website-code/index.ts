@@ -478,7 +478,7 @@ serve(async (req) => {
       console.error("Error creating blog token:", tokenError);
     }
 
-    const blogEditorUrl = `https://i-wasp.lovable.app/web-studio/blog-editor?token=${blogToken}`;
+    const blogEditorUrl = `https://i-wasp.com/web-studio/blog-editor?token=${blogToken}`;
 
     console.log(`Website generated successfully for proposal ${proposalId}, hosted at: ${previewUrl}`);
     console.log(`Blog editor available at: ${blogEditorUrl}`);

@@ -172,7 +172,7 @@ function injectBranding(html: string, slug: string): string {
   cursor: pointer;
 " onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 24px rgba(0,0,0,0.2)';"
    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.15)';"
-   onclick="window.open('https://i-wasp.lovable.app', '_blank')">
+   onclick="window.open('https://i-wasp.com', '_blank')">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" stroke="#007AFF" stroke-width="2"/>
     <path d="M12 6v6l4 2" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
@@ -271,7 +271,7 @@ function generateErrorPage(title: string, message: string): string {
     </div>
     <h1>${title}</h1>
     <p>${message}</p>
-    <a href="https://i-wasp.lovable.app" class="btn">Retour à IWASP</a>
+    <a href="https://i-wasp.com" class="btn">Retour à IWASP</a>
     <div class="footer">
       Powered by <strong>IWASP</strong>
     </div>
