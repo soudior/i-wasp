@@ -181,6 +181,44 @@ function AdminCreatorContent() {
       .single();
 
     if (error) throw error;
+
+    // Automatically upgrade user to premium subscription
+    const oneYearFromNow = new Date();
+    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+    // Check if subscription exists
+    const { data: existingSub } = await supabase
+      .from('subscriptions')
+      .select('id')
+      .eq('user_id', targetUserId)
+      .maybeSingle();
+
+    if (existingSub) {
+      // Update existing subscription to premium
+      await supabase
+        .from('subscriptions')
+        .update({
+          plan: 'premium',
+          status: 'active',
+          expires_at: oneYearFromNow.toISOString(),
+          notes: 'Carte créée par Admin',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', targetUserId);
+    } else {
+      // Create new premium subscription
+      await supabase
+        .from('subscriptions')
+        .insert({
+          user_id: targetUserId,
+          plan: 'premium',
+          status: 'active',
+          price_cents: 0,
+          expires_at: oneYearFromNow.toISOString(),
+          notes: 'Carte créée par Admin',
+        });
+    }
+
     return card;
   };
 
