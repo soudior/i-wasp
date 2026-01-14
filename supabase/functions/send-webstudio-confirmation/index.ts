@@ -23,11 +23,11 @@ interface WebStudioConfirmationRequest {
 
 function generateConfirmationHtml(data: WebStudioConfirmationRequest): string {
   const expressLabel = data.isExpress ? "Express (48h)" : "Standard (7-10 jours)";
-  const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "https://fyxiyevbbvidckzaequx.supabase.co";
   
-  // Payment link - calls create-webstudio-payment function
-  const paymentUrl = `https://i-wasp.lovable.app/web-studio/checkout?proposal_id=${data.orderId}`;
-  const trackingUrl = `https://i-wasp.lovable.app/track-webstudio-order?id=${data.orderId}`;
+  // Use only the published domain to avoid "dangerous link" warnings in Gmail
+  const baseUrl = "https://i-wasp.lovable.app";
+  const paymentUrl = `${baseUrl}/web-studio/checkout?proposal_id=${data.orderId}`;
+  const trackingUrl = `${baseUrl}/web-studio/suivi?id=${data.orderId}`;
   
   return `
 <!DOCTYPE html>

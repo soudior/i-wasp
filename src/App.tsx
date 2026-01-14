@@ -267,6 +267,13 @@ const App = () => {
                               <Route path="/services" element={<Services />} />
                               <Route path="/cartes-nfc" element={<CartesNFC />} />
                               
+                              {/* Web Studio Suivi - Standalone (pas besoin du funnel) - DOIT ÊTRE AVANT le layout */}
+                              <Route path="/web-studio/suivi" element={<TrackWebStudioOrder />} />
+                              {/* Web Studio Payment Pages (standalone) */}
+                              <Route path="/web-studio/checkout" element={<WebStudioCheckout />} />
+                              <Route path="/web-studio/payment-success" element={<WebStudioPaymentSuccess />} />
+                              <Route path="/web-studio/payment-cancelled" element={<WebStudioPaymentCancelled />} />
+                              
                               {/* Web Studio Funnel - 5 étapes ordonnées */}
                               <Route path="/web-studio" element={<WebStudioLayout />}>
                                 <Route index element={<WebStudioEntry />} />
@@ -275,12 +282,7 @@ const App = () => {
                                 <Route path="design" element={<StepDesign />} />
                                 <Route path="contact" element={<StepContact />} />
                                 <Route path="recapitulatif" element={<StepRecapitulatif />} />
-                                <Route path="suivi" element={<TrackWebStudioOrder />} />
                               </Route>
-                              {/* Web Studio Payment Pages (legacy) */}
-                              <Route path="/web-studio/checkout" element={<WebStudioCheckout />} />
-                              <Route path="/web-studio/payment-success" element={<WebStudioPaymentSuccess />} />
-                              <Route path="/web-studio/payment-cancelled" element={<WebStudioPaymentCancelled />} />
                               
                               {/* Web Studio IA - Nouvelle offre avec 3 packs */}
                               <Route path="/web-studio/offres" element={<WebStudioOffres />} />

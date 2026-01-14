@@ -147,26 +147,31 @@ export default function TrackWebStudioOrder() {
     searchParams.get("id") ? { type: "id", value: searchParams.get("id")! } : null
   );
 
-  const { data: order, isLoading, error } = useQuery({
+  const { data: orderData, isLoading, error } = useQuery({
     queryKey: ["web-studio-order", submittedSearch],
     queryFn: async () => {
       if (!submittedSearch) return null;
 
-      let query = supabase.from("website_proposals").select("*");
-
-      if (submittedSearch.type === "email") {
-        query = query.ilike("form_data->>email", submittedSearch.value);
-      } else {
-        query = query.eq("id", submittedSearch.value);
-      }
-
-      const { data, error } = await query.order("created_at", { ascending: false }).limit(1).maybeSingle();
+      // Use edge function for secure tracking (bypasses RLS)
+      const { data, error } = await supabase.functions.invoke("track-webstudio-order", {
+        body: submittedSearch.type === "email" 
+          ? { email: submittedSearch.value }
+          : { id: submittedSearch.value },
+      });
 
       if (error) throw error;
-      return data as WebStudioOrder | null;
+      if (!data?.found) return null;
+      
+      return {
+        order: data.order as WebStudioOrder,
+        generatedWebsite: data.generatedWebsite,
+      };
     },
     enabled: !!submittedSearch,
   });
+
+  const order = orderData?.order || null;
+  const generatedSiteFromApi = orderData?.generatedWebsite;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -186,21 +191,8 @@ export default function TrackWebStudioOrder() {
     return "upcoming";
   };
 
-  // Fetch generated website if applicable
-  const { data: generatedSite } = useQuery({
-    queryKey: ["generated-website", order?.id],
-    queryFn: async () => {
-      if (!order?.id) return null;
-      const { data } = await supabase
-        .from("generated_websites")
-        .select("preview_url, status")
-        .eq("proposal_id", order.id)
-        .single();
-      return data;
-    },
-    enabled: !!order?.id && (order?.status === 'site_generated' || order?.status === 'generating'),
-    refetchInterval: order?.status === 'generating' ? 5000 : false,
-  });
+  // Use generated website from API response or fallback query
+  const generatedSite = generatedSiteFromApi || null;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
