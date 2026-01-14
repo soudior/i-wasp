@@ -865,7 +865,7 @@ END:VCARD`;
         </a>
       </motion.div>
 
-      {/* Floating WhatsApp Button - Green */}
+      {/* Floating WhatsApp Button - Green with Pulse */}
       <motion.a
         href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent("Bonjour, je souhaite des informations sur vos services de conciergerie.")}`}
         target="_blank"
@@ -881,7 +881,23 @@ END:VCARD`;
           boxShadow: "0 4px 20px rgba(37, 211, 102, 0.4)",
         }}
       >
-        <MessageCircle size={26} className="text-white" fill="white" />
+        {/* Pulse ring effect */}
+        <span 
+          className="absolute inset-0 rounded-full animate-ping"
+          style={{ 
+            backgroundColor: "#25D366",
+            opacity: 0.4,
+            animationDuration: "2s",
+          }}
+        />
+        <span 
+          className="absolute inset-0 rounded-full animate-pulse"
+          style={{ 
+            backgroundColor: "#25D366",
+            opacity: 0.2,
+          }}
+        />
+        <MessageCircle size={26} className="text-white relative z-10" fill="white" />
       </motion.a>
 
       {/* Fullscreen Gallery Modal */}
