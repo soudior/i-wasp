@@ -27,10 +27,14 @@ import {
   Languages,
   Clock,
   Wrench,
-  MessageCircle
+  MessageCircle,
+  CreditCard,
+  Loader2
 } from "lucide-react";
 import { SUBSCRIPTION_PLANS, FEATURE_COMPARISON } from "@/lib/subscriptionPlans";
 import { QuoteCalculator } from "@/components/pricing/QuoteCalculator";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 // Palette Premium Noir & Or
 const COLORS = {
@@ -48,6 +52,7 @@ const COLORS = {
 const WEB_PLANS = [
   {
     name: "Starter",
+    packageType: "STARTER" as const,
     pages: "1-3 pages",
     priceMAD: 2000,
     priceEUR: 200,
@@ -58,6 +63,7 @@ const WEB_PLANS = [
   },
   {
     name: "Standard",
+    packageType: "STANDARD" as const,
     pages: "4-6 pages",
     priceMAD: 5000,
     priceEUR: 500,
@@ -68,6 +74,7 @@ const WEB_PLANS = [
   },
   {
     name: "Premium",
+    packageType: "PREMIUM" as const,
     pages: "7-10 pages",
     priceMAD: 10000,
     priceEUR: 1000,
@@ -116,6 +123,33 @@ type Tab = "nfc" | "web";
 export default function Pricing() {
   const [activeTab, setActiveTab] = useState<Tab>("web");
   const [currency, setCurrency] = useState<"MAD" | "EUR">("MAD");
+  const [loadingPayment, setLoadingPayment] = useState<string | null>(null);
+
+  const handleDirectPayment = async (packageType: string) => {
+    setLoadingPayment(packageType);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-direct-webstudio-payment', {
+        body: { 
+          packageType,
+          currency: currency,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        toast.success('Redirection vers le paiement sécurisé...');
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (err) {
+      console.error('Payment error:', err);
+      toast.error('Erreur lors de la création du paiement');
+    } finally {
+      setLoadingPayment(null);
+    }
+  };
 
   const renderValue = (value: boolean | string) => {
     if (typeof value === "string") {
@@ -305,23 +339,43 @@ export default function Pricing() {
                         </div>
                       </div>
                       
+                      {/* Direct Payment Button */}
+                      <Button 
+                        className="w-full py-6 font-medium text-sm uppercase tracking-widest mb-3"
+                        style={{ 
+                          background: plan.popular 
+                            ? `linear-gradient(135deg, ${COLORS.or} 0%, ${COLORS.orLight} 100%)`
+                            : "transparent",
+                          color: plan.popular ? COLORS.noir : COLORS.ivoire,
+                          border: plan.popular ? "none" : `1px solid ${COLORS.border}`,
+                        }}
+                        onClick={() => handleDirectPayment(plan.packageType)}
+                        disabled={loadingPayment === plan.packageType}
+                      >
+                        {loadingPayment === plan.packageType ? (
+                          <Loader2 size={16} className="mr-2 animate-spin" />
+                        ) : (
+                          <CreditCard size={16} className="mr-2" />
+                        )}
+                        {loadingPayment === plan.packageType ? 'Chargement...' : 'Payer maintenant'}
+                      </Button>
+
+                      {/* WhatsApp Quote Button */}
                       <a 
                         href={`https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20suis%20intéressé%20par%20la%20formule%20${plan.name}%20pour%20la%20création%20de%20mon%20site%20web.`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <Button 
-                          className="w-full py-6 font-medium text-sm uppercase tracking-widest"
+                          variant="ghost"
+                          className="w-full py-4 font-medium text-xs uppercase tracking-widest"
                           style={{ 
-                            background: plan.popular 
-                              ? `linear-gradient(135deg, ${COLORS.or} 0%, ${COLORS.orLight} 100%)`
-                              : "transparent",
-                            color: plan.popular ? COLORS.noir : COLORS.ivoire,
-                            border: plan.popular ? "none" : `1px solid ${COLORS.border}`,
+                            color: COLORS.gris,
+                            border: `1px solid ${COLORS.border}40`,
                           }}
                         >
-                          <MessageCircle size={16} className="mr-2" />
-                          Demander un devis
+                          <MessageCircle size={14} className="mr-2" />
+                          Ou demander un devis
                         </Button>
                       </a>
 

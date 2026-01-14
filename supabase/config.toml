@@ -125,3 +125,6 @@ verify_jwt = false
 
 [functions.check-saas-subscription]
 verify_jwt = false
+
+[functions.create-direct-webstudio-payment]
+verify_jwt = false
