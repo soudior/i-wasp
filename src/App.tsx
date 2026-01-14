@@ -134,6 +134,7 @@ const WebStudioOffres = lazy(() => import("./pages/web-studio/WebStudioOffres"))
 const WebStudioConfiguration = lazy(() => import("./pages/web-studio/WebStudioConfiguration"));
 const WebStudioPaiement = lazy(() => import("./pages/web-studio/WebStudioPaiement"));
 const WebStudioIASuccess = lazy(() => import("./pages/web-studio/WebStudioIASuccess"));
+const BlogEditor = lazy(() => import("./pages/web-studio/BlogEditor"));
 const AdminWebStudioIA = lazy(() => import("./pages/admin/AdminWebStudioIA"));
 
 const queryClient = new QueryClient({
@@ -273,6 +274,7 @@ const App = () => {
                               <Route path="/web-studio/checkout" element={<WebStudioCheckout />} />
                               <Route path="/web-studio/payment-success" element={<WebStudioPaymentSuccess />} />
                               <Route path="/web-studio/payment-cancelled" element={<WebStudioPaymentCancelled />} />
+                              <Route path="/web-studio/blog-editor" element={<BlogEditor />} />
                               
                               {/* Web Studio Funnel - 5 étapes ordonnées */}
                               <Route path="/web-studio" element={<WebStudioLayout />}>
