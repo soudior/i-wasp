@@ -34,7 +34,9 @@ import {
   Flag,
   History,
   Plus,
-  Save
+  Save,
+  Send,
+  Loader2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,7 +54,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -137,6 +141,13 @@ function AdminWebStudioOrdersContent() {
   const [assignedTo, setAssignedTo] = useState("");
   const [priority, setPriority] = useState("normal");
   const [deadline, setDeadline] = useState("");
+  
+  // Email followup state
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [includeOrderDetails, setIncludeOrderDetails] = useState(true);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
 
   // Fetch all website proposals with status "ordered" or other non-generated statuses
   const { data: orders, isLoading, refetch } = useQuery({
@@ -291,6 +302,67 @@ function AdminWebStudioOrdersContent() {
       `Je vous contacte concernant votre commande...`
     );
     window.open(`https://wa.me/?text=${message}`, "_blank");
+  };
+
+  const handleOpenEmailDialog = (order: WebsiteProposal) => {
+    const siteName = order.proposal?.siteName || order.form_data?.businessName || "votre projet";
+    setEmailSubject(`Mise à jour de votre projet - ${siteName}`);
+    setEmailMessage(`Bonjour,
+
+Nous vous contactons concernant l'avancement de votre projet "${siteName}".
+
+[Votre message ici]
+
+Cordialement,
+L'équipe IWASP Web Studio`);
+    setIncludeOrderDetails(true);
+    setShowEmailDialog(true);
+  };
+
+  const handleSendFollowupEmail = async () => {
+    if (!selectedOrder || !selectedOrder.form_data?.contactEmail) {
+      toast.error("Email du client non disponible");
+      return;
+    }
+
+    setIsSendingEmail(true);
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error("Session expirée, veuillez vous reconnecter");
+        return;
+      }
+
+      const response = await supabase.functions.invoke("send-webstudio-followup", {
+        body: {
+          orderId: selectedOrder.id,
+          email: selectedOrder.form_data.contactEmail,
+          siteName: selectedOrder.proposal?.siteName || selectedOrder.form_data?.businessName || "Projet",
+          subject: emailSubject,
+          message: emailMessage,
+          includeOrderDetails,
+        },
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || "Erreur lors de l'envoi");
+      }
+
+      toast.success("Email envoyé avec succès");
+      setShowEmailDialog(false);
+      setEmailSubject("");
+      setEmailMessage("");
+      
+      // Refresh the order data to get updated history
+      queryClient.invalidateQueries({ queryKey: ["admin-webstudio-orders"] });
+    } catch (error) {
+      console.error("Error sending followup email:", error);
+      toast.error(error instanceof Error ? error.message : "Erreur lors de l'envoi de l'email");
+    } finally {
+      setIsSendingEmail(false);
+    }
   };
 
   return (
@@ -822,18 +894,34 @@ function AdminWebStudioOrdersContent() {
                 )}
 
                 {/* Actions */}
-                <div className="flex gap-3 pt-4" style={{ borderTop: `1px solid ${COLORS.border}` }}>
-                  <Button 
-                    className="flex-1 gap-2"
-                    style={{ 
-                      backgroundColor: COLORS.or, 
-                      color: COLORS.noir 
-                    }}
-                    onClick={() => handleContactWhatsApp(selectedOrder)}
-                  >
-                    <MessageCircle size={16} />
-                    Contacter sur WhatsApp
-                  </Button>
+                <div className="flex flex-col gap-3 pt-4" style={{ borderTop: `1px solid ${COLORS.border}` }}>
+                  <div className="flex gap-3">
+                    <Button 
+                      className="flex-1 gap-2"
+                      style={{ 
+                        backgroundColor: COLORS.or, 
+                        color: COLORS.noir 
+                      }}
+                      onClick={() => handleContactWhatsApp(selectedOrder)}
+                    >
+                      <MessageCircle size={16} />
+                      WhatsApp
+                    </Button>
+                    {selectedOrder.form_data?.contactEmail && (
+                      <Button 
+                        className="flex-1 gap-2"
+                        variant="outline"
+                        style={{ 
+                          borderColor: COLORS.or, 
+                          color: COLORS.or 
+                        }}
+                        onClick={() => handleOpenEmailDialog(selectedOrder)}
+                      >
+                        <Mail size={16} />
+                        Envoyer un email
+                      </Button>
+                    )}
+                  </div>
                   <Button 
                     variant="outline"
                     className="gap-2"
@@ -853,6 +941,95 @@ function AdminWebStudioOrdersContent() {
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Email Followup Dialog */}
+      <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+        <DialogContent 
+          className="max-w-lg"
+          style={{ backgroundColor: COLORS.noirCard, borderColor: COLORS.border }}
+        >
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3" style={{ color: COLORS.ivoire }}>
+              <Mail size={20} style={{ color: COLORS.or }} />
+              Envoyer un email de suivi
+            </DialogTitle>
+            <DialogDescription style={{ color: COLORS.gris }}>
+              {selectedOrder?.form_data?.contactEmail}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 mt-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block" style={{ color: COLORS.gris }}>
+                Sujet
+              </label>
+              <Input
+                placeholder="Sujet de l'email..."
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+                style={{ backgroundColor: COLORS.noirSoft, borderColor: COLORS.border, color: COLORS.ivoire }}
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block" style={{ color: COLORS.gris }}>
+                Message
+              </label>
+              <Textarea
+                placeholder="Votre message..."
+                value={emailMessage}
+                onChange={(e) => setEmailMessage(e.target.value)}
+                rows={8}
+                style={{ backgroundColor: COLORS.noirSoft, borderColor: COLORS.border, color: COLORS.ivoire }}
+              />
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="includeOrderDetails"
+                checked={includeOrderDetails}
+                onCheckedChange={(checked) => setIncludeOrderDetails(checked === true)}
+              />
+              <label 
+                htmlFor="includeOrderDetails" 
+                className="text-sm cursor-pointer"
+                style={{ color: COLORS.ivoire }}
+              >
+                Inclure le récapitulatif de commande
+              </label>
+            </div>
+            
+            <div className="flex gap-3 pt-4">
+              <Button
+                className="flex-1 gap-2"
+                style={{ backgroundColor: COLORS.or, color: COLORS.noir }}
+                onClick={handleSendFollowupEmail}
+                disabled={isSendingEmail || !emailSubject || !emailMessage}
+              >
+                {isSendingEmail ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Envoi...
+                  </>
+                ) : (
+                  <>
+                    <Send size={16} />
+                    Envoyer l'email
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                style={{ borderColor: COLORS.border, color: COLORS.ivoire }}
+                onClick={() => setShowEmailDialog(false)}
+                disabled={isSendingEmail}
+              >
+                Annuler
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
