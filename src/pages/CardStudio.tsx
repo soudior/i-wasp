@@ -22,11 +22,11 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   ArrowLeft, Save, Eye, Layers, Palette, Sparkles, Smartphone,
-  Monitor, Box
+  Monitor
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { VisualBlockEditor, TemplatePicker, StyleCustomizer, Card3DPreview, defaultCardStyle } from "@/components/editor";
-import type { CardStyle, Card3DData } from "@/components/editor";
+import { VisualBlockEditor, TemplatePicker, StyleCustomizer, defaultCardStyle } from "@/components/editor";
+import type { CardStyle } from "@/components/editor";
 import { DynamicCardRenderer } from "@/components/DynamicCardRenderer";
 import {
   CardBlock,
@@ -39,7 +39,7 @@ import {
 // TYPES
 // ============================================================
 
-type ViewMode = "mobile" | "desktop" | "3d";
+type ViewMode = "mobile" | "desktop";
 type EditorTab = "blocks" | "template" | "style";
 
 // ============================================================
@@ -327,57 +327,32 @@ export default function CardStudio() {
                         >
                           <Monitor size={14} />
                         </Button>
-                        <Button
-                          variant={viewMode === "3d" ? "secondary" : "ghost"}
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => setViewMode("3d")}
-                          title="Aperçu 3D"
-                        >
-                          <Box size={14} />
-                        </Button>
                       </div>
                     </div>
 
                     {/* Preview Container */}
-                    {viewMode === "3d" ? (
-                      <Card3DPreview
-                        data={{
-                          firstName: previewData.firstName,
-                          lastName: previewData.lastName,
-                          title: previewData.title,
-                          company: previewData.company,
-                          photoUrl: previewData.photoUrl,
-                          logoUrl: previewData.logoUrl,
-                          backgroundColor: cardStyle.backgroundColor,
-                          accentColor: cardStyle.accentColor,
-                          textColor: cardStyle.textColor,
+                    <div
+                      className={cn(
+                        "mx-auto transition-all duration-300 overflow-hidden",
+                        viewMode === "mobile"
+                          ? "max-w-[375px]"
+                          : "max-w-full"
+                      )}
+                    >
+                      <div 
+                        className="rounded-2xl p-4 min-h-[500px] transition-all duration-300"
+                        style={{
+                          backgroundColor: cardStyle.backgroundColor + "20",
+                          borderRadius: `${cardStyle.borderRadius}px`,
                         }}
-                      />
-                    ) : (
-                      <div
-                        className={cn(
-                          "mx-auto transition-all duration-300 overflow-hidden",
-                          viewMode === "mobile"
-                            ? "max-w-[375px]"
-                            : "max-w-full"
-                        )}
                       >
-                        <div 
-                          className="rounded-2xl p-4 min-h-[500px] transition-all duration-300"
-                          style={{
-                            backgroundColor: cardStyle.backgroundColor + "20",
-                            borderRadius: `${cardStyle.borderRadius}px`,
-                          }}
-                        >
-                          <DynamicCardRenderer
-                            blocks={blocks}
-                            theme={cardStyle.theme === "auto" ? "dark" : cardStyle.theme}
-                            showWalletButtons={false}
-                          />
-                        </div>
+                        <DynamicCardRenderer
+                          blocks={blocks}
+                          theme={cardStyle.theme === "auto" ? "dark" : cardStyle.theme}
+                          showWalletButtons={false}
+                        />
                       </div>
-                    )}
+                    </div>
                   </Card>
                 </motion.div>
               )}
