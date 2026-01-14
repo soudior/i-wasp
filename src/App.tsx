@@ -342,6 +342,7 @@ const App = () => {
                               <Route path="/admin/generator" element={<AdminGuard><AdminCardGenerator /></AdminGuard>} />
                               <Route path="/admin/webstudio" element={<AdminGuard><AdminWebStudioOrders /></AdminGuard>} />
                               <Route path="/admin/web-studio" element={<AdminGuard><AdminWebStudioOrders /></AdminGuard>} />
+                              <Route path="/admin/web-studio-orders" element={<AdminGuard><AdminWebStudioOrders /></AdminGuard>} />
                               
                               {/* 404 */}
                               <Route path="*" element={<NotFound />} />
