@@ -213,26 +213,230 @@ section { padding: 120px 48px; }
 }
 \`\`\`
 
-JAVASCRIPT MINIMAL:
+JAVASCRIPT COMPLET (OBLIGATOIRE):
 \`\`\`javascript
-// Reveal on scroll
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
+document.addEventListener('DOMContentLoaded', function() {
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Mobile menu toggle
+  const menuToggle = document.querySelector('.menu-toggle');
+  const mobileNav = document.querySelector('.mobile-nav');
+  if (menuToggle && mobileNav) {
+    menuToggle.addEventListener('click', () => {
+      mobileNav.classList.toggle('open');
+      menuToggle.classList.toggle('active');
+    });
+  }
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Close mobile menu if open
+        if (mobileNav) mobileNav.classList.remove('open');
+        if (menuToggle) menuToggle.classList.remove('active');
+      }
+    });
+  });
+
+  // Modal functionality for legal pages
+  const modals = document.querySelectorAll('.modal');
+  const modalTriggers = document.querySelectorAll('[data-modal]');
+  const modalCloses = document.querySelectorAll('.modal-close');
+
+  modalTriggers.forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      const modalId = trigger.getAttribute('data-modal');
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  modalCloses.forEach(close => {
+    close.addEventListener('click', () => {
+      modals.forEach(modal => modal.classList.remove('active'));
+      document.body.style.overflow = '';
+    });
+  });
+
+  modals.forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+
+  // Contact form handling
+  const contactForm = document.querySelector('#contact-form');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData);
+      
+      // Show success message
+      const successMsg = document.createElement('div');
+      successMsg.className = 'form-success';
+      successMsg.innerHTML = '<p>✓ Message envoyé avec succès!</p>';
+      this.parentNode.insertBefore(successMsg, this.nextSibling);
+      this.reset();
+      
+      setTimeout(() => successMsg.remove(), 5000);
+    });
+  }
+
+  // FAQ Accordion
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const question = item.querySelector('.faq-question');
+    if (question) {
+      question.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        faqItems.forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
     }
   });
-}, { threshold: 0.1 });
-reveals.forEach(el => observer.observe(el));
+});
+\`\`\`
 
-// Mobile menu toggle (optionnel)
-const menuToggle = document.querySelector('.menu-toggle');
-const mobileNav = document.querySelector('.mobile-nav');
-if (menuToggle && mobileNav) {
-  menuToggle.addEventListener('click', () => {
-    mobileNav.classList.toggle('open');
-  });
+10. PAGES LÉGALES OBLIGATOIRES (dans des modals ou sections):
+    - Politique de confidentialité (avec contenu réel adapté à l'activité)
+    - Conditions générales / Mentions légales
+    - FAQ (minimum 5 questions pertinentes au secteur)
+    
+    Ces pages doivent contenir du VRAI CONTENU pertinent, pas du lorem ipsum.
+    Utiliser des modals avec la classe .modal et data-modal="nom-modal".
+
+11. TOUS LES BOUTONS DOIVENT FONCTIONNER:
+    - Boutons de navigation → smooth scroll vers sections (#section-id)
+    - Boutons CTA → ouvrir formulaire contact ou modal
+    - Liens footer (Politique, CGV, FAQ) → ouvrir modals correspondantes
+    - Formulaire contact → feedback visuel au submit
+    - Menu mobile → toggle avec animation
+
+CSS ADDITIONNEL POUR MODALS ET FORMS:
+\`\`\`css
+/* Modals */
+.modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 2000;
+  padding: 24px;
+}
+.modal.active { opacity: 1; visibility: visible; }
+.modal-content {
+  background: white;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 16px;
+  padding: 48px;
+  position: relative;
+}
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: none; border: none;
+  font-size: 24px; cursor: pointer;
+  color: var(--color-text-muted);
+}
+
+/* Forms */
+.form-group { margin-bottom: 24px; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+.form-group input, .form-group textarea {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #E5E5E5;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.3s;
+}
+.form-group input:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+.form-success {
+  background: #D4EDDA;
+  color: #155724;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+/* FAQ */
+.faq-item { border-bottom: 1px solid #E5E5E5; }
+.faq-question {
+  padding: 24px 0;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+.faq-question::after { content: '+'; font-size: 1.5rem; }
+.faq-item.open .faq-question::after { content: '−'; }
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.faq-item.open .faq-answer { max-height: 500px; padding-bottom: 24px; }
+
+/* Mobile Menu */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+}
+.menu-toggle span {
+  width: 24px; height: 2px;
+  background: var(--color-text);
+  transition: all 0.3s;
+}
+.menu-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.menu-toggle.active span:nth-child(2) { opacity: 0; }
+.menu-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+@media (max-width: 768px) {
+  .menu-toggle { display: flex; }
+  .nav-links { 
+    position: fixed;
+    top: 80px; left: 0; right: 0;
+    background: var(--color-bg);
+    padding: 24px;
+    flex-direction: column;
+    gap: 24px;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: all 0.3s;
+  }
+  .mobile-nav.open .nav-links,
+  .nav-links.open { transform: translateY(0); opacity: 1; }
 }
 \`\`\`
 
@@ -248,11 +452,15 @@ Pas de texte avant ni après. Pas de markdown. Juste le JSON brut.
 }
 
 Mets TOUT le CSS dans une balise <style> dans le <head>.
-Mets TOUT le JS dans une balise <script> avant </body>.
+Mets TOUT le JS dans une balise <script defer> avant </body>.
 Le champ "fullPage" doit être identique à "html".
 
-RÈGLE D'OR: Le site doit ressembler à celui d'un restaurant étoilé Michelin ou d'une maison de luxe.
-Sobre, élégant, intemporel. Moins c'est plus.`;
+RÈGLES D'OR:
+1. Le site doit ressembler à celui d'un restaurant étoilé Michelin ou d'une maison de luxe.
+2. TOUS les liens et boutons DOIVENT fonctionner (pas de liens morts).
+3. Le contenu textuel doit être RÉEL et pertinent (pas de lorem ipsum).
+4. Les pages légales doivent contenir du vrai contenu adapté au secteur d'activité.
+5. Sobre, élégant, intemporel. Moins c'est plus.`;
 }
 
 function generateUserPrompt(proposal: WebsiteProposal): string {
@@ -266,7 +474,7 @@ function generateUserPrompt(proposal: WebsiteProposal): string {
     return `  ${page.name} (/${page.slug}):\n${sectionsDesc}`;
   }).join("\n\n") || "Pages à définir";
 
-  return `Génère un site web complet pour:
+  return `Génère un site web COMPLET et FONCTIONNEL pour:
 
 📌 INFORMATIONS PRINCIPALES:
 - Nom du site: ${p.siteName || fd.businessName || "Mon Site"}
@@ -282,8 +490,8 @@ function generateUserPrompt(proposal: WebsiteProposal): string {
   - Accent: ${p.colorPalette?.accent || "#D4AF37"}
   - Background: ${p.colorPalette?.background || "#FFFFFF"}
   - Texte: ${p.colorPalette?.text || "#1D1D1F"}
-- Police titres: ${p.typography?.headingFont || "Playfair Display"}
-- Police corps: ${p.typography?.bodyFont || "Montserrat"}
+- Police titres: ${p.typography?.headingFont || "Cormorant Garamond"}
+- Police corps: ${p.typography?.bodyFont || "Outfit"}
 
 📄 PAGES ET SECTIONS:
 ${pages}
@@ -298,7 +506,39 @@ ${fd.socialLinks ? `- Réseaux: ${fd.socialLinks}` : ""}
 
 ${fd.products ? `\n🛍️ PRODUITS/SERVICES:\n${fd.products}` : ""}
 
-Génère le code HTML/CSS/JS complet en JSON.`;
+⚖️ PAGES LÉGALES OBLIGATOIRES (à inclure comme modals):
+1. POLITIQUE DE CONFIDENTIALITÉ - Contenu réel adapté à "${fd.businessType || 'entreprise'}":
+   - Responsable du traitement: ${p.siteName || fd.businessName}
+   - Types de données collectées (formulaire contact, cookies)
+   - Finalités du traitement
+   - Durée de conservation
+   - Droits des utilisateurs (RGPD)
+   - Contact: ${fd.contactEmail || "contact@example.com"}
+
+2. MENTIONS LÉGALES / CGV:
+   - Raison sociale: ${p.siteName || fd.businessName}
+   - Activité: ${fd.businessType || "Services"}
+   - Contact: ${fd.contactEmail}, ${fd.contactPhone}
+   - Hébergeur: IWASP Web Studio
+   - Propriété intellectuelle
+   - Limitation de responsabilité
+
+3. FAQ (minimum 5 questions pertinentes pour "${fd.businessType || 'cette activité'}"):
+   - Questions sur les services/produits
+   - Tarifs et paiements
+   - Délais et livraisons (si applicable)
+   - Contact et support
+   - Politique de retour/annulation (si applicable)
+
+🔗 LIENS OBLIGATOIRES (tous doivent fonctionner):
+- Navigation principale → sections avec smooth scroll (#id)
+- Boutons CTA → formulaire contact ou action appropriée
+- Footer: liens vers modals (Politique, CGV, FAQ)
+- Réseaux sociaux (si fournis)
+- Email: mailto:${fd.contactEmail}
+- Téléphone: tel:${fd.contactPhone}
+
+Génère le code HTML/CSS/JS complet en JSON avec TOUT le contenu réel.`;
 }
 
 serve(async (req) => {
