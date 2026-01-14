@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { MapPin, Navigation, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,61 +18,36 @@ interface LocationPickerProps {
   showMiniMap?: boolean;
 }
 
-// Lazy-load mini map for preview
+// Static map preview using OpenStreetMap tiles (no heavy library needed)
 function LocationMiniMap({ lat, lng }: { lat: number; lng: number }) {
-  const [MapContainer, setMapContainer] = useState<any>(null);
-  const [TileLayer, setTileLayer] = useState<any>(null);
-  const [Marker, setMarker] = useState<any>(null);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    Promise.all([
-      import('react-leaflet'),
-      import('leaflet'),
-      import('leaflet/dist/leaflet.css')
-    ]).then(([reactLeaflet, leaflet]) => {
-      setMapContainer(() => reactLeaflet.MapContainer);
-      setTileLayer(() => reactLeaflet.TileLayer);
-      setMarker(() => reactLeaflet.Marker);
-      
-      delete (leaflet.default.Icon.Default.prototype as any)._getIconUrl;
-      leaflet.default.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-      });
-      setLoaded(true);
-    }).catch(() => setLoaded(false));
-  }, []);
-
-  if (!loaded || !MapContainer || !TileLayer || !Marker) {
-    return (
-      <div className="h-24 bg-muted/20 rounded-lg flex items-center justify-center">
-        <MapPin className="text-muted-foreground w-5 h-5" />
-      </div>
-    );
-  }
-
+  const zoom = 15;
+  const staticMapUrl = `https://static-maps.yandex.ru/1.x/?ll=${lng},${lat}&z=${zoom}&l=map&size=400,200&pt=${lng},${lat},pm2rdm`;
+  const osmUrl = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=${zoom}/${lat}/${lng}`;
+  
   return (
-    <div className="h-24 rounded-lg overflow-hidden">
-      <MapContainer 
-        center={[lat, lng]} 
-        zoom={14} 
-        className="h-full w-full"
-        style={{ height: '100%', width: '100%' }}
-        zoomControl={false}
-        dragging={false}
-        scrollWheelZoom={false}
-        doubleClickZoom={false}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker position={[lat, lng]} />
-      </MapContainer>
-    </div>
+    <a 
+      href={osmUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block h-24 rounded-lg overflow-hidden relative group"
+    >
+      <img 
+        src={`https://tile.openstreetmap.org/${zoom}/${Math.floor((lng + 180) / 360 * Math.pow(2, zoom))}/${Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom))}.png`}
+        alt="Location"
+        className="w-full h-full object-cover"
+        loading="lazy"
+      />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg">
+          <MapPin className="w-4 h-4 text-primary-foreground" />
+        </div>
+      </div>
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+    </a>
   );
 }
 
-export function LocationPicker({ 
+export function LocationPicker({
   address, 
   latitude,
   longitude,
