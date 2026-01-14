@@ -80,3 +80,9 @@ verify_jwt = false
 
 [functions.send-webstudio-status-update]
 verify_jwt = false
+
+[functions.generate-website-code]
+verify_jwt = true
+
+[functions.process-scheduled-notifications]
+verify_jwt = false

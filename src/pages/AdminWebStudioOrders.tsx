@@ -39,7 +39,11 @@ import {
   Send,
   Loader2,
   Bell,
-  Volume2
+  Volume2,
+  Code,
+  ExternalLink,
+  Sparkles,
+  Download
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -125,9 +129,12 @@ interface WebsiteProposal {
 }
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  generated: { label: "Généré", color: COLORS.gris, icon: FileText },
+  generated: { label: "Devis généré", color: COLORS.gris, icon: FileText },
   ordered: { label: "Commandé", color: COLORS.warning, icon: Package },
-  in_progress: { label: "En cours", color: COLORS.or, icon: Clock },
+  generating: { label: "Génération IA...", color: "#8B5CF6", icon: Sparkles },
+  site_generated: { label: "Site généré", color: "#22D3EE", icon: Code },
+  generation_failed: { label: "Échec génération", color: COLORS.error, icon: AlertCircle },
+  in_progress: { label: "En développement", color: COLORS.or, icon: Clock },
   review: { label: "En révision", color: "#3B82F6", icon: Eye },
   completed: { label: "Terminé", color: COLORS.success, icon: CheckCircle2 },
   cancelled: { label: "Annulé", color: COLORS.error, icon: XCircle },
@@ -309,6 +316,11 @@ function AdminWebStudioOrdersContent() {
   const [emailMessage, setEmailMessage] = useState("");
   const [includeOrderDetails, setIncludeOrderDetails] = useState(true);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  
+  // AI Generation state
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState<string | null>(null);
   
   // Real-time notifications state
   const [newOrdersCount, setNewOrdersCount] = useState(0);
@@ -658,6 +670,95 @@ L'équipe IWASP Web Studio`);
       toast.error(error instanceof Error ? error.message : "Erreur lors de l'envoi de l'email");
     } finally {
       setIsSendingEmail(false);
+    }
+  };
+
+  // Generate website with AI
+  const handleGenerateWebsite = async (order: WebsiteProposal) => {
+    if (isGenerating) return;
+    
+    setIsGenerating(true);
+    toast.loading("Génération du site en cours... Cela peut prendre 30-60 secondes.", { id: "generating" });
+    
+    try {
+      const response = await supabase.functions.invoke("generate-website-code", {
+        body: { proposalId: order.id }
+      });
+      
+      if (response.error) {
+        throw new Error(response.error.message || "Erreur lors de la génération");
+      }
+      
+      toast.success("Site généré avec succès !", { id: "generating" });
+      queryClient.invalidateQueries({ queryKey: ["admin-webstudio-orders"] });
+      
+      // Refresh selected order status
+      if (selectedOrder?.id === order.id) {
+        setSelectedOrder({ ...selectedOrder, status: "site_generated" });
+      }
+    } catch (error) {
+      console.error("Error generating website:", error);
+      toast.error(error instanceof Error ? error.message : "Erreur lors de la génération", { id: "generating" });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // View generated website
+  const handleViewGeneratedSite = async (order: WebsiteProposal) => {
+    try {
+      const { data, error } = await supabase
+        .from("generated_websites")
+        .select("full_page_html, status")
+        .eq("proposal_id", order.id)
+        .single();
+      
+      if (error || !data) {
+        toast.error("Site non trouvé");
+        return;
+      }
+      
+      if (data.status !== "completed" || !data.full_page_html) {
+        toast.error("Le site n'est pas encore prêt");
+        return;
+      }
+      
+      setPreviewHtml(data.full_page_html);
+      setShowPreviewDialog(true);
+    } catch (error) {
+      console.error("Error fetching generated website:", error);
+      toast.error("Erreur lors du chargement du site");
+    }
+  };
+
+  // Download generated website
+  const handleDownloadSite = async (order: WebsiteProposal) => {
+    try {
+      const { data, error } = await supabase
+        .from("generated_websites")
+        .select("full_page_html, html_content, css_content, js_content")
+        .eq("proposal_id", order.id)
+        .single();
+      
+      if (error || !data) {
+        toast.error("Site non trouvé");
+        return;
+      }
+      
+      const blob = new Blob([data.full_page_html || ""], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${order.proposal?.siteName || "site"}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast.success("Fichier téléchargé");
+    } catch (error) {
+      console.error("Error downloading website:", error);
+      toast.error("Erreur lors du téléchargement");
     }
   };
 
@@ -1236,6 +1337,95 @@ L'équipe IWASP Web Studio`);
                   </div>
                 )}
 
+                {/* AI Generation Actions */}
+                <div className="p-4 rounded-xl" style={{ backgroundColor: `${COLORS.or}08`, border: `1px solid ${COLORS.or}30` }}>
+                  <p className="text-xs uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: COLORS.or }}>
+                    <Sparkles size={14} />
+                    Génération automatique IA
+                  </p>
+                  
+                  {selectedOrder.status === "generating" ? (
+                    <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: `#8B5CF620` }}>
+                      <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#8B5CF6" }} />
+                      <span className="text-sm" style={{ color: COLORS.ivoire }}>Génération en cours...</span>
+                    </div>
+                  ) : selectedOrder.status === "site_generated" ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm mb-3" style={{ color: COLORS.success }}>
+                        <CheckCircle2 size={16} />
+                        Site généré avec succès
+                      </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm"
+                          className="flex-1 gap-2"
+                          style={{ backgroundColor: "#22D3EE", color: COLORS.noir }}
+                          onClick={() => handleViewGeneratedSite(selectedOrder)}
+                        >
+                          <Eye size={14} />
+                          Prévisualiser
+                        </Button>
+                        <Button 
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 gap-2"
+                          style={{ borderColor: COLORS.or, color: COLORS.or }}
+                          onClick={() => handleDownloadSite(selectedOrder)}
+                        >
+                          <Download size={14} />
+                          Télécharger
+                        </Button>
+                      </div>
+                      <Button 
+                        size="sm"
+                        variant="ghost"
+                        className="w-full gap-2 mt-2"
+                        style={{ color: COLORS.gris }}
+                        onClick={() => handleGenerateWebsite(selectedOrder)}
+                        disabled={isGenerating}
+                      >
+                        <RefreshCw size={14} />
+                        Regénérer
+                      </Button>
+                    </div>
+                  ) : selectedOrder.status === "generation_failed" ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm mb-3" style={{ color: COLORS.error }}>
+                        <XCircle size={16} />
+                        La génération a échoué
+                      </div>
+                      <Button 
+                        className="w-full gap-2"
+                        style={{ backgroundColor: COLORS.or, color: COLORS.noir }}
+                        onClick={() => handleGenerateWebsite(selectedOrder)}
+                        disabled={isGenerating}
+                      >
+                        {isGenerating ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
+                        Réessayer la génération
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button 
+                      className="w-full gap-2"
+                      style={{ backgroundColor: COLORS.or, color: COLORS.noir }}
+                      onClick={() => handleGenerateWebsite(selectedOrder)}
+                      disabled={isGenerating || selectedOrder.status === "generating"}
+                    >
+                      {isGenerating ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          Génération...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={16} />
+                          Générer le site avec l'IA
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+
                 {/* Actions */}
                 <div className="flex flex-col gap-3 pt-4" style={{ borderTop: `1px solid ${COLORS.border}` }}>
                   <div className="flex gap-3">
@@ -1446,6 +1636,69 @@ L'équipe IWASP Web Studio`);
               >
                 Annuler
               </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Website Preview Dialog */}
+      <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
+        <DialogContent 
+          className="max-w-5xl h-[90vh] p-0 overflow-hidden"
+          style={{ backgroundColor: COLORS.noirCard, borderColor: COLORS.border }}
+        >
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <div 
+              className="flex items-center justify-between px-4 py-3 border-b"
+              style={{ borderColor: COLORS.border, backgroundColor: COLORS.noir }}
+            >
+              <div className="flex items-center gap-3">
+                <Code size={20} style={{ color: COLORS.or }} />
+                <span style={{ color: COLORS.ivoire }} className="font-medium">
+                  Prévisualisation du site généré
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-2"
+                  style={{ borderColor: COLORS.or, color: COLORS.or }}
+                  onClick={() => {
+                    if (previewHtml) {
+                      const newWindow = window.open("", "_blank");
+                      if (newWindow) {
+                        newWindow.document.write(previewHtml);
+                        newWindow.document.close();
+                      }
+                    }
+                  }}
+                >
+                  <ExternalLink size={14} />
+                  Ouvrir en plein écran
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setShowPreviewDialog(false)}
+                  style={{ color: COLORS.gris }}
+                >
+                  Fermer
+                </Button>
+              </div>
+            </div>
+            
+            {/* Preview iframe */}
+            <div className="flex-1 bg-white">
+              {previewHtml && (
+                <iframe
+                  srcDoc={previewHtml}
+                  className="w-full h-full border-0"
+                  title="Site Preview"
+                  sandbox="allow-scripts allow-same-origin"
+                />
+              )}
             </div>
           </div>
         </DialogContent>
