@@ -806,12 +806,131 @@ serve(async (req) => {
     console.log(`Website generated successfully for proposal ${proposalId}, hosted at: ${previewUrl}`);
     console.log(`Blog editor available at: ${blogEditorUrl}`);
 
+    // === AUTO SEND EMAIL TO CLIENT ===
+    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    const recipientEmail = proposal.form_data?.contactEmail;
+    
+    if (RESEND_API_KEY && recipientEmail) {
+      console.log(`Sending automatic notification email to: ${recipientEmail}`);
+      
+      try {
+        const emailResponse = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${RESEND_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "IWASP Web Studio <onboarding@resend.dev>",
+            to: [recipientEmail],
+            subject: `🎉 Votre site ${businessName} est prêt !`,
+            html: `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              </head>
+              <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f7;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f7; padding: 40px 20px;">
+                  <tr>
+                    <td align="center">
+                      <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08);">
+                        <!-- Header -->
+                        <tr>
+                          <td style="background: linear-gradient(135deg, #1D1D1F 0%, #2D2D2F 100%); padding: 40px 40px 30px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">
+                              🎉 Félicitations !
+                            </h1>
+                            <p style="margin: 16px 0 0; color: rgba(255,255,255,0.8); font-size: 16px;">
+                              Votre site web est maintenant en ligne
+                            </p>
+                          </td>
+                        </tr>
+                        
+                        <!-- Content -->
+                        <tr>
+                          <td style="padding: 40px;">
+                            <h2 style="margin: 0 0 16px; color: #1D1D1F; font-size: 22px; font-weight: 600;">
+                              ${businessName}
+                            </h2>
+                            <p style="margin: 0 0 24px; color: #6B7280; font-size: 16px; line-height: 1.6;">
+                              Nous sommes ravis de vous annoncer que votre site web a été créé avec succès par notre équipe IWASP Web Studio.
+                            </p>
+                            
+                            <!-- CTA Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                              <tr>
+                                <td align="center" style="padding: 20px 0;">
+                                  <a href="${previewUrl}" style="display: inline-block; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
+                                    Voir mon site →
+                                  </a>
+                                </td>
+                              </tr>
+                            </table>
+                            
+                            <p style="margin: 24px 0 0; color: #9CA3AF; font-size: 14px; text-align: center;">
+                              Lien direct : <a href="${previewUrl}" style="color: #F59E0B;">${previewUrl}</a>
+                            </p>
+                            
+                            <!-- Blog Editor Section -->
+                            <div style="margin-top: 32px; padding: 24px; background: #F9FAFB; border-radius: 12px;">
+                              <h3 style="margin: 0 0 12px; color: #1D1D1F; font-size: 16px; font-weight: 600;">
+                                📝 Gérez votre blog
+                              </h3>
+                              <p style="margin: 0 0 16px; color: #6B7280; font-size: 14px;">
+                                Vous pouvez ajouter des articles de blog à votre site via l'éditeur dédié.
+                              </p>
+                              <a href="${blogEditorUrl}" style="color: #F59E0B; font-size: 14px; text-decoration: none;">
+                                Accéder à l'éditeur de blog →
+                              </a>
+                            </div>
+                          </td>
+                        </tr>
+                        
+                        <!-- Footer -->
+                        <tr>
+                          <td style="background-color: #F9FAFB; padding: 24px 40px; text-align: center; border-top: 1px solid #E5E7EB;">
+                            <p style="margin: 0; color: #6B7280; font-size: 14px;">
+                              Une question ? Contactez-nous sur WhatsApp
+                            </p>
+                            <p style="margin: 8px 0 0; color: #9CA3AF; font-size: 12px;">
+                              © 2026 IWASP · Tap. Connect. Empower.
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </body>
+              </html>
+            `,
+          }),
+        });
+
+        const emailData = await emailResponse.json();
+        
+        if (emailResponse.ok) {
+          console.log(`Email sent successfully to ${recipientEmail}`, emailData);
+        } else {
+          console.error("Failed to send email:", emailData);
+        }
+      } catch (emailError) {
+        console.error("Error sending notification email:", emailError);
+        // Don't fail the whole generation if email fails
+      }
+    } else {
+      console.log("Skipping email: no RESEND_API_KEY or no recipient email");
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 
         websiteId,
         previewUrl,
         blogEditorUrl,
+        emailSent: !!recipientEmail,
         message: "Site web généré avec succès"
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
