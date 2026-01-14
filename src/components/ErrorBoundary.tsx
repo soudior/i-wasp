@@ -10,7 +10,8 @@
 
 import React, { Component, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Home } from "lucide-react";
+import { RefreshCw, Home, Trash2 } from "lucide-react";
+import { clearCacheAndReload } from "@/utils/clearCache";
 
 interface Props {
   children: ReactNode;
@@ -73,9 +74,11 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   handleReload = () => {
-    // Resetting the boundary isn't enough when the build is stale.
-    // A full reload fetches the latest assets.
     window.location.reload();
+  };
+
+  handleClearCache = async () => {
+    await clearCacheAndReload();
   };
 
   handleGoHome = () => {
@@ -119,19 +122,29 @@ class ErrorBoundary extends Component<Props, State> {
             </div>
 
             {!isAutoReloading && (
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant="outline" onClick={this.handleReload} className="gap-2">
-                  <RefreshCw size={16} />
-                  Réessayer
-                </Button>
-                <Button
-                  onClick={this.handleGoHome}
-                  className="gap-2"
-                  style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
+              <div className="flex flex-col gap-3 justify-center">
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button variant="outline" onClick={this.handleReload} className="gap-2">
+                    <RefreshCw size={16} />
+                    Réessayer
+                  </Button>
+                  <Button
+                    onClick={this.handleGoHome}
+                    className="gap-2"
+                    style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
+                  >
+                    <Home size={16} />
+                    Accueil
+                  </Button>
+                </div>
+                <button
+                  onClick={this.handleClearCache}
+                  className="text-sm flex items-center gap-2 justify-center transition-opacity hover:opacity-70 mx-auto mt-2"
+                  style={{ color: "#8E8E93" }}
                 >
-                  <Home size={16} />
-                  Accueil
-                </Button>
+                  <Trash2 size={14} />
+                  Vider le cache
+                </button>
               </div>
             )}
           </div>
