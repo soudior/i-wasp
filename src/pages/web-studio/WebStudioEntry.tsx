@@ -203,10 +203,10 @@ export default function WebStudioEntry() {
           >
             <Zap size={20} className="mx-auto mb-3" style={{ color: STUDIO.or }} />
             <p className="text-sm mb-2" style={{ color: STUDIO.ivoire }}>
-              À partir de <span style={{ color: STUDIO.or }}>200€</span> / 2000 DH
+              Site vitrine 1-3 pages
             </p>
-            <p className="text-xs" style={{ color: STUDIO.gris }}>
-              Site vitrine 1-3 pages • Devis personnalisé en 2 minutes
+            <p className="text-xs font-medium" style={{ color: STUDIO.or }}>
+              ⚡ Livraison instantanée • Généré en 2 minutes
             </p>
           </motion.div>
 
