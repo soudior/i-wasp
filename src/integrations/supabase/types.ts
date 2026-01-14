@@ -1360,6 +1360,80 @@ export type Database = {
           },
         ]
       }
+      webstudio_orders: {
+        Row: {
+          admin_notes: string | null
+          amount_cents: number
+          created_at: string
+          currency: string
+          customer_email: string
+          customer_name: string | null
+          id: string
+          items: Json | null
+          options: Json | null
+          order_number: string
+          package_type: string
+          paid_at: string | null
+          proposal_id: string | null
+          status: string
+          stripe_customer_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          customer_email: string
+          customer_name?: string | null
+          id?: string
+          items?: Json | null
+          options?: Json | null
+          order_number: string
+          package_type: string
+          paid_at?: string | null
+          proposal_id?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          customer_email?: string
+          customer_name?: string | null
+          id?: string
+          items?: Json | null
+          options?: Json | null
+          order_number?: string
+          package_type?: string
+          paid_at?: string | null
+          proposal_id?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webstudio_orders_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "website_proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       public_cards: {
