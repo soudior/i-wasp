@@ -1237,6 +1237,50 @@ export type Database = {
         }
         Relationships: []
       }
+      website_versions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          customizations: Json | null
+          full_page_html: string
+          id: string
+          is_auto_save: boolean | null
+          label: string | null
+          version_number: number
+          website_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          customizations?: Json | null
+          full_page_html: string
+          id?: string
+          is_auto_save?: boolean | null
+          label?: string | null
+          version_number?: number
+          website_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          customizations?: Json | null
+          full_page_html?: string
+          id?: string
+          is_auto_save?: boolean | null
+          label?: string | null
+          version_number?: number
+          website_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_versions_website_id_fkey"
+            columns: ["website_id"]
+            isOneToOne: false
+            referencedRelation: "generated_websites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       public_cards: {

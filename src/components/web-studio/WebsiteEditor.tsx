@@ -9,7 +9,7 @@ import {
   X, Type, Palette, Image as ImageIcon, Save, Eye, Undo, Redo, 
   ChevronLeft, ChevronRight, Monitor, Smartphone, 
   Loader2, ExternalLink, Sparkles, Upload, Trash2, RefreshCw, Wand2,
-  Layers
+  Layers, History, Clock, RotateCcw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -92,6 +92,16 @@ export function WebsiteEditor({
   const [textAiDialog, setTextAiDialog] = useState<{ open: boolean; textId: string | null; originalText: string; type: string }>({ open: false, textId: null, originalText: "", type: "" });
   const [aiPrompt, setAiPrompt] = useState("");
   const [textInstruction, setTextInstruction] = useState("");
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
+  const [versions, setVersions] = useState<Array<{
+    id: string;
+    version_number: number;
+    created_at: string;
+    label: string | null;
+    is_auto_save: boolean;
+  }>>([]);
+  const [loadingVersions, setLoadingVersions] = useState(false);
+  const [restoringVersion, setRestoringVersion] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
@@ -474,9 +484,109 @@ export function WebsiteEditor({
     }
   };
 
+  // Fetch version history
+  const fetchVersions = async () => {
+    setLoadingVersions(true);
+    try {
+      const { data, error } = await supabase
+        .from("website_versions")
+        .select("id, version_number, created_at, label, is_auto_save")
+        .eq("website_id", websiteId)
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+      setVersions(data || []);
+    } catch (error) {
+      console.error("Error fetching versions:", error);
+      toast.error("Erreur lors du chargement des versions");
+    } finally {
+      setLoadingVersions(false);
+    }
+  };
+
+  // Save version before making changes
+  const saveVersion = async (label?: string) => {
+    try {
+      const finalHtml = applyCustomizationsToHtml(initialHtml, customizations);
+      
+      // Get current version count
+      const { count } = await supabase
+        .from("website_versions")
+        .select("*", { count: "exact", head: true })
+        .eq("website_id", websiteId);
+
+      await supabase
+        .from("website_versions")
+        .insert({
+          website_id: websiteId,
+          version_number: (count || 0) + 1,
+          full_page_html: finalHtml,
+          customizations: JSON.parse(JSON.stringify(customizations)),
+          label: label || null,
+          is_auto_save: !label
+        });
+    } catch (error) {
+      console.error("Error saving version:", error);
+    }
+  };
+
+  // Restore a version
+  const restoreVersion = async (versionId: string) => {
+    setRestoringVersion(versionId);
+    try {
+      const { data, error } = await supabase
+        .from("website_versions")
+        .select("full_page_html, customizations")
+        .eq("id", versionId)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        // Save current state before restoring
+        await saveVersion("Avant restauration");
+
+        // Restore the version
+        const { error: updateError } = await supabase
+          .from("generated_websites")
+          .update({
+            full_page_html: data.full_page_html,
+            customizations: data.customizations,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", websiteId);
+
+        if (updateError) throw updateError;
+
+        // Update local state
+        const rawCustomizations = data.customizations as Record<string, unknown> | null;
+        const restoredCustomizations: WebsiteCustomizations = {
+          texts: (rawCustomizations?.texts as Record<string, string>) || {},
+          colors: (rawCustomizations?.colors as WebsiteCustomizations["colors"]) || {},
+          images: (rawCustomizations?.images as Record<string, string>) || {}
+        };
+        setCustomizations(restoredCustomizations);
+        setHtml(data.full_page_html);
+        
+        setShowVersionHistory(false);
+        toast.success("Version restaurée avec succès !");
+        onSave();
+      }
+    } catch (error) {
+      console.error("Error restoring version:", error);
+      toast.error("Erreur lors de la restauration");
+    } finally {
+      setRestoringVersion(null);
+    }
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // Save current version before updating
+      await saveVersion();
+
       const finalHtml = applyCustomizationsToHtml(initialHtml, customizations);
       
       const { error } = await supabase
@@ -706,7 +816,7 @@ export function WebsiteEditor({
                   </Button>
                 </div>
                 
-                {/* Undo/Redo */}
+                {/* Undo/Redo + History */}
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
@@ -727,6 +837,18 @@ export function WebsiteEditor({
                   >
                     <Redo className="w-3 h-3 mr-1" />
                     Rétablir
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setShowVersionHistory(true);
+                      fetchVersions();
+                    }}
+                    className="bg-white/5 border-white/10 text-white/60 hover:text-white"
+                    title="Historique des versions"
+                  >
+                    <History className="w-3 h-3" />
                   </Button>
                 </div>
               </div>
@@ -1242,6 +1364,97 @@ export function WebsiteEditor({
             >
               <Wand2 className="w-4 h-4 mr-2" />
               Réécrire
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Version History Dialog */}
+      <Dialog open={showVersionHistory} onOpenChange={setShowVersionHistory}>
+        <DialogContent className="bg-[#1D1D1F] border-white/10 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <History className="w-5 h-5 text-[#007AFF]" />
+              Historique des versions
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4">
+            {loadingVersions ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 text-white/40 animate-spin" />
+              </div>
+            ) : versions.length > 0 ? (
+              <ScrollArea className="max-h-[400px]">
+                <div className="space-y-2">
+                  {versions.map((version) => (
+                    <div
+                      key={version.id}
+                      className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10 hover:border-white/20 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white font-medium text-sm">
+                            Version {version.version_number}
+                          </span>
+                          {version.label && (
+                            <span className="px-1.5 py-0.5 text-[10px] bg-[#007AFF]/20 text-[#007AFF] rounded">
+                              {version.label}
+                            </span>
+                          )}
+                          {version.is_auto_save && (
+                            <span className="px-1.5 py-0.5 text-[10px] bg-white/10 text-white/40 rounded">
+                              Auto
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 text-white/40 text-xs mt-1">
+                          <Clock className="w-3 h-3" />
+                          {new Date(version.created_at).toLocaleString("fr-FR", {
+                            day: "2-digit",
+                            month: "short",
+                            hour: "2-digit",
+                            minute: "2-digit"
+                          })}
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => restoreVersion(version.id)}
+                        disabled={restoringVersion === version.id}
+                        className="text-white/60 hover:text-white hover:bg-white/10"
+                      >
+                        {restoringVersion === version.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <RotateCcw className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            ) : (
+              <div className="text-center py-8">
+                <History className="w-10 h-10 text-white/20 mx-auto mb-3" />
+                <p className="text-white/40 text-sm">
+                  Aucune version sauvegardée
+                </p>
+                <p className="text-white/30 text-xs mt-1">
+                  Les versions sont créées automatiquement lors des sauvegardes
+                </p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowVersionHistory(false)}
+              className="w-full bg-white/5 border-white/10 text-white/60 hover:text-white"
+            >
+              Fermer
             </Button>
           </DialogFooter>
         </DialogContent>
