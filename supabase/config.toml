@@ -119,3 +119,9 @@ verify_jwt = false
 
 [functions.test-email]
 verify_jwt = false
+
+[functions.create-saas-checkout]
+verify_jwt = false
+
+[functions.check-saas-subscription]
+verify_jwt = false
