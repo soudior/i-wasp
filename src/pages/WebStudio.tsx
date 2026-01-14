@@ -14,6 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { WebsitePreview, GeneratingAnimation, ProposalPdfExport, StudioThemeToggle } from "@/components/studio";
 import { CoutureNavbar } from "@/components/CoutureNavbar";
 import { CoutureFooter } from "@/components/CoutureFooter";
@@ -357,6 +358,74 @@ export default function WebStudio() {
       `Je souhaite en savoir plus sur cette proposition !`
     );
     window.open(`https://wa.me/33626424394?text=${message}`, "_blank");
+  };
+
+  const [isOrdering, setIsOrdering] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+
+  const handleOrderWebsite = async () => {
+    if (!proposal) {
+      toast({
+        title: "Aucune proposition",
+        description: "Veuillez d'abord générer une proposition",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsOrdering(true);
+
+    try {
+      const price = calculatePrice();
+      
+      // Sauvegarder la proposition en base
+      const { data: savedProposal, error: proposalError } = await supabase
+        .from("website_proposals")
+        .insert([{
+          form_data: JSON.parse(JSON.stringify(formData)) as Json,
+          proposal: JSON.parse(JSON.stringify(proposal)) as Json,
+          session_id: sessionId,
+          is_express: isExpress,
+          price_eur: price.eur,
+          price_mad: price.mad,
+          status: "ordered",
+        }])
+        .select()
+        .single();
+
+      if (proposalError) throw proposalError;
+
+      // Créer une demande de contact
+      const { error: contactError } = await supabase
+        .from("contact_requests")
+        .insert({
+          name: formData.businessName || proposal.siteName || "Client Web Studio",
+          email: "webstudio@i-wasp.com",
+          message: `Nouvelle commande Web Studio\n\nProjet: ${proposal.siteName}\nType: ${formData.businessType}\nPages: ${proposal.estimatedPages}\nExpress: ${isExpress ? "Oui" : "Non"}\nPrix estimé: ${price.eur}€ / ${price.mad}DH\n\nDescription: ${proposal.tagline}`,
+          request_type: "website_order",
+          company: formData.businessName || proposal.siteName,
+        });
+
+      if (contactError) throw contactError;
+
+      setSavedProposalId(savedProposal.id);
+      setOrderSuccess(true);
+
+      toast({
+        title: "🎉 Commande envoyée !",
+        description: "Notre équipe vous contactera sous 24h pour finaliser votre projet.",
+      });
+
+    } catch (error) {
+      console.error("Error ordering website:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue. Veuillez réessayer ou nous contacter sur WhatsApp.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsOrdering(false);
+    }
   };
 
   return (
@@ -1985,55 +2054,101 @@ export default function WebStudio() {
 
                       {/* CTA buttons */}
                       <div className="space-y-3">
-                        <motion.button
-                          className="w-full h-14 rounded-2xl relative overflow-hidden group"
-                          onClick={handleContactWhatsApp}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <div
-                            className="absolute inset-0"
-                            style={{
-                              background: `linear-gradient(135deg, ${STUDIO.or} 0%, ${STUDIO.orLight} 100%)`,
-                            }}
-                          />
+                        {orderSuccess ? (
                           <motion.div
-                            className="absolute inset-0 opacity-0 group-hover:opacity-100"
-                            style={{
-                              background: `linear-gradient(90deg, transparent, ${STUDIO.ivoire}30, transparent)`,
-                            }}
-                            animate={{ x: ["-100%", "200%"] }}
-                            transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5 }}
-                          />
-                          <span 
-                            className="relative z-10 flex items-center justify-center gap-2 font-medium"
-                            style={{ color: STUDIO.noir }}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="p-6 rounded-2xl text-center"
+                            style={{ backgroundColor: `${STUDIO.or}15`, border: `1px solid ${STUDIO.or}40` }}
                           >
-                            <MessageCircle size={18} />
-                            Commander mon site clé en main
-                          </span>
-                        </motion.button>
-                        
-                        <motion.button
-                          className="w-full h-14 rounded-2xl transition-all duration-300"
-                          style={{ 
-                            backgroundColor: "transparent",
-                            border: `1px solid ${STUDIO.ivoire}20`,
-                            color: STUDIO.ivoire,
-                          }}
-                          onClick={handleContactWhatsApp}
-                          whileHover={{ 
-                            scale: 1.02,
-                            borderColor: STUDIO.or,
-                            color: STUDIO.or,
-                          }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <span className="flex items-center justify-center gap-2">
-                            <Eye size={18} />
-                            Discuter sur WhatsApp
-                          </span>
-                        </motion.button>
+                            <CheckCircle2 size={48} className="mx-auto mb-4" style={{ color: STUDIO.or }} />
+                            <h4 className="text-lg font-medium mb-2" style={{ color: STUDIO.ivoire }}>
+                              Commande envoyée !
+                            </h4>
+                            <p className="text-sm mb-4" style={{ color: STUDIO.gris }}>
+                              Notre équipe vous contactera sous 24h pour finaliser votre projet.
+                            </p>
+                            <motion.button
+                              className="w-full h-12 rounded-xl transition-all duration-300"
+                              style={{ 
+                                backgroundColor: "transparent",
+                                border: `1px solid ${STUDIO.ivoire}20`,
+                                color: STUDIO.ivoire,
+                              }}
+                              onClick={handleContactWhatsApp}
+                              whileHover={{ scale: 1.02, borderColor: STUDIO.or }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <span className="flex items-center justify-center gap-2">
+                                <MessageCircle size={16} />
+                                Discuter sur WhatsApp
+                              </span>
+                            </motion.button>
+                          </motion.div>
+                        ) : (
+                          <>
+                            <motion.button
+                              className="w-full h-14 rounded-2xl relative overflow-hidden group"
+                              onClick={handleOrderWebsite}
+                              disabled={isOrdering}
+                              whileHover={{ scale: isOrdering ? 1 : 1.02 }}
+                              whileTap={{ scale: isOrdering ? 1 : 0.98 }}
+                              style={{ opacity: isOrdering ? 0.7 : 1 }}
+                            >
+                              <div
+                                className="absolute inset-0"
+                                style={{
+                                  background: `linear-gradient(135deg, ${STUDIO.or} 0%, ${STUDIO.orLight} 100%)`,
+                                }}
+                              />
+                              <motion.div
+                                className="absolute inset-0 opacity-0 group-hover:opacity-100"
+                                style={{
+                                  background: `linear-gradient(90deg, transparent, ${STUDIO.ivoire}30, transparent)`,
+                                }}
+                                animate={{ x: ["-100%", "200%"] }}
+                                transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5 }}
+                              />
+                              <span 
+                                className="relative z-10 flex items-center justify-center gap-2 font-medium"
+                                style={{ color: STUDIO.noir }}
+                              >
+                                {isOrdering ? (
+                                  <>
+                                    <Loader2 size={18} className="animate-spin" />
+                                    Envoi en cours...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Package size={18} />
+                                    Commander mon site clé en main
+                                  </>
+                                )}
+                              </span>
+                            </motion.button>
+                            
+                            <motion.button
+                              className="w-full h-14 rounded-2xl transition-all duration-300"
+                              style={{ 
+                                backgroundColor: "transparent",
+                                border: `1px solid ${STUDIO.ivoire}20`,
+                                color: STUDIO.ivoire,
+                              }}
+                              onClick={handleContactWhatsApp}
+                              whileHover={{ 
+                                scale: 1.02,
+                                borderColor: STUDIO.or,
+                                color: STUDIO.or,
+                              }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <span className="flex items-center justify-center gap-2">
+                                <MessageCircle size={18} />
+                                Discuter sur WhatsApp
+                              </span>
+                            </motion.button>
+                          </>
+                        )}
                       </div>
                     </div>
                   </motion.div>
