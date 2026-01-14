@@ -379,8 +379,9 @@ const App = () => {
                               <Route path="/admin/card-editor" element={<AdminGuard><AdminCardEditor /></AdminGuard>} />
                               <Route path="/admin/card-editor/:cardSlug" element={<AdminGuard><AdminCardEditor /></AdminGuard>} />
                               <Route path="/admin/generator" element={<AdminGuard><AdminCardGenerator /></AdminGuard>} />
-                              <Route path="/admin/webstudio" element={<AdminGuard><AdminWebStudioOrders /></AdminGuard>} />
-                              <Route path="/admin/web-studio" element={<AdminGuard><AdminWebStudioOrders /></AdminGuard>} />
+                              <Route path="/admin/webstudio" element={<AdminGuard><AdminWebStudioIA /></AdminGuard>} />
+                              <Route path="/admin/web-studio" element={<AdminGuard><AdminWebStudioIA /></AdminGuard>} />
+                              <Route path="/admin/web-studio-ia" element={<AdminGuard><AdminWebStudioIA /></AdminGuard>} />
                               <Route path="/admin/web-studio-orders" element={<AdminGuard><AdminWebStudioOrders /></AdminGuard>} />
                               
                               {/* 404 */}
