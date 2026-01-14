@@ -16,7 +16,9 @@ import {
   FileText,
   User,
   Sparkles,
-  Loader2
+  Loader2,
+  Globe,
+  Server
 } from "lucide-react";
 import { 
   WEB_STUDIO_PACKAGES, 
@@ -60,6 +62,9 @@ interface FormData {
   fullName: string;
   email: string;
   phone: string;
+  // Hosting
+  hostingType: 'iwasp' | 'custom';
+  customDomainName: string;
   // Options
   customDomain: boolean;
   logoDesign: boolean;
@@ -92,6 +97,8 @@ export default function WebStudioConfiguration() {
     fullName: '',
     email: '',
     phone: '',
+    hostingType: 'iwasp',
+    customDomainName: '',
     customDomain: false,
     logoDesign: false,
     seoOptimization: false,
@@ -160,7 +167,9 @@ export default function WebStudioConfiguration() {
     try {
       // Calculate total price
       let totalMad = selectedPackage.priceMad;
-      if (formData.customDomain) totalMad += 100;
+      if (formData.hostingType === 'custom') totalMad += 100;
+      if (formData.logoDesign) totalMad += 200;
+      if (formData.seoOptimization) totalMad += 150;
 
       // Create the order in Supabase
       const orderData = {
@@ -174,6 +183,13 @@ export default function WebStudioConfiguration() {
           contactName: formData.fullName,
           contactEmail: formData.email,
           contactPhone: formData.phone,
+          hosting: {
+            type: formData.hostingType,
+            customDomainName: formData.hostingType === 'custom' ? formData.customDomainName : null,
+            subdomain: formData.hostingType === 'iwasp' 
+              ? formData.businessName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+              : null,
+          },
           options: {
             customDomain: formData.customDomain,
             logoDesign: formData.logoDesign,
@@ -362,7 +378,92 @@ export default function WebStudioConfiguration() {
           </div>
         </div>
 
-        {/* Options */}
+        {/* Hosting Options */}
+        <div className="pt-4 border-t border-white/10">
+          <h4 className="text-sm font-medium mb-4" style={{ color: STUDIO.ivoire }}>
+            Hébergement
+          </h4>
+          <div className="space-y-3">
+            {/* IWASP hosting option */}
+            <label 
+              className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-all ${
+                formData.hostingType === 'iwasp' 
+                  ? 'bg-amber-500/20 border-amber-500' 
+                  : 'bg-white/5 border-white/10'
+              } border`}
+              onClick={() => updateField('hostingType', 'iwasp')}
+            >
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
+                formData.hostingType === 'iwasp' ? 'border-amber-500' : 'border-white/30'
+              }`}>
+                {formData.hostingType === 'iwasp' && (
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                )}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <Server size={16} className="text-amber-500" />
+                  <span style={{ color: STUDIO.ivoire }} className="font-medium">Hébergement IWASP</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">Inclus</span>
+                </div>
+                <p className="text-xs mt-1" style={{ color: STUDIO.gris }}>
+                  Votre site sera accessible sur <span className="text-amber-400">{formData.businessName ? formData.businessName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') : 'votre-entreprise'}.i-wasp.com</span>
+                </p>
+              </div>
+            </label>
+
+            {/* Custom domain option */}
+            <label 
+              className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-all ${
+                formData.hostingType === 'custom' 
+                  ? 'bg-amber-500/20 border-amber-500' 
+                  : 'bg-white/5 border-white/10'
+              } border`}
+              onClick={() => updateField('hostingType', 'custom')}
+            >
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
+                formData.hostingType === 'custom' ? 'border-amber-500' : 'border-white/30'
+              }`}>
+                {formData.hostingType === 'custom' && (
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                )}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <Globe size={16} className="text-blue-400" />
+                  <span style={{ color: STUDIO.ivoire }} className="font-medium">Domaine personnalisé</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">+100 MAD/an</span>
+                </div>
+                <p className="text-xs mt-1" style={{ color: STUDIO.gris }}>
+                  Utilisez votre propre nom de domaine (ex: votre-entreprise.ma)
+                </p>
+              </div>
+            </label>
+
+            {/* Custom domain input */}
+            {formData.hostingType === 'custom' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="ml-8"
+              >
+                <Label className="text-white/70 text-xs">Votre nom de domaine</Label>
+                <Input
+                  placeholder="exemple.ma ou www.exemple.com"
+                  value={formData.customDomainName}
+                  onChange={(e) => updateField('customDomainName', e.target.value)}
+                  className="bg-white/5 border-white/10 text-white mt-1"
+                />
+                <p className="text-xs mt-2" style={{ color: STUDIO.gris }}>
+                  Vous recevrez les instructions de configuration DNS après le paiement
+                </p>
+              </motion.div>
+            )}
+          </div>
+        </div>
+
+        {/* Additional Options */}
         <div className="pt-4 border-t border-white/10">
           <h4 className="text-sm font-medium mb-4" style={{ color: STUDIO.ivoire }}>
             Options supplémentaires
@@ -370,12 +471,22 @@ export default function WebStudioConfiguration() {
           <div className="space-y-3">
             <label className="flex items-center gap-3 p-3 rounded-xl bg-white/5 cursor-pointer">
               <Checkbox
-                checked={formData.customDomain}
-                onCheckedChange={(c) => updateField('customDomain', c)}
+                checked={formData.logoDesign}
+                onCheckedChange={(c) => updateField('logoDesign', c)}
               />
               <div className="flex-1">
-                <span style={{ color: STUDIO.ivoire }}>Domaine personnalisé .ma</span>
-                <span className="text-amber-500 ml-2 text-sm">+100 MAD/an</span>
+                <span style={{ color: STUDIO.ivoire }}>Design de logo</span>
+                <span className="text-amber-500 ml-2 text-sm">+200 MAD</span>
+              </div>
+            </label>
+            <label className="flex items-center gap-3 p-3 rounded-xl bg-white/5 cursor-pointer">
+              <Checkbox
+                checked={formData.seoOptimization}
+                onCheckedChange={(c) => updateField('seoOptimization', c)}
+              />
+              <div className="flex-1">
+                <span style={{ color: STUDIO.ivoire }}>Optimisation SEO avancée</span>
+                <span className="text-amber-500 ml-2 text-sm">+150 MAD</span>
               </div>
             </label>
           </div>
