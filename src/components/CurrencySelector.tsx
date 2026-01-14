@@ -22,8 +22,6 @@ interface CurrencyOption {
 const currencies: CurrencyOption[] = [
   { code: "MAD", name: "Dirham marocain", symbol: "DH", flag: "🇲🇦" },
   { code: "EUR", name: "Euro", symbol: "€", flag: "🇪🇺" },
-  { code: "USD", name: "US Dollar", symbol: "$", flag: "🇺🇸" },
-  { code: "GBP", name: "British Pound", symbol: "£", flag: "🇬🇧" },
 ];
 
 interface CurrencySelectorProps {
