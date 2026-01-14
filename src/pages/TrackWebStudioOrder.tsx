@@ -18,7 +18,10 @@ import {
   Globe,
   Calendar,
   User,
-  Building2
+  Building2,
+  CreditCard,
+  Sparkles,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,11 +62,41 @@ interface WebStudioOrder {
 }
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode; description: string }> = {
+  pending_payment: { 
+    label: "En attente de paiement", 
+    color: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+    icon: <CreditCard className="w-5 h-5" />,
+    description: "Finalisez votre paiement pour lancer la création de votre site"
+  },
+  paid: { 
+    label: "Payé", 
+    color: "bg-green-500/20 text-green-400 border-green-500/30",
+    icon: <CheckCircle2 className="w-5 h-5" />,
+    description: "Paiement reçu, génération en cours..."
+  },
+  generating: { 
+    label: "Génération IA", 
+    color: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+    icon: <Sparkles className="w-5 h-5" />,
+    description: "Notre IA crée votre site web personnalisé"
+  },
+  site_generated: { 
+    label: "Site généré", 
+    color: "bg-green-500/20 text-green-400 border-green-500/30",
+    icon: <Globe className="w-5 h-5" />,
+    description: "Votre site est prêt ! Consultez-le ci-dessous"
+  },
   new: { 
     label: "Nouvelle demande", 
     color: "bg-blue-500/20 text-blue-400 border-blue-500/30",
     icon: <Clock className="w-5 h-5" />,
     description: "Votre demande a été reçue et est en attente de traitement"
+  },
+  ordered: { 
+    label: "Commandé", 
+    color: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    icon: <Clock className="w-5 h-5" />,
+    description: "Votre commande a été enregistrée"
   },
   contacted: { 
     label: "Contacté", 
@@ -98,10 +131,10 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
 };
 
 const timelineSteps = [
-  { key: "new", label: "Demande reçue", icon: Clock },
-  { key: "contacted", label: "Contact établi", icon: MessageSquare },
-  { key: "in_progress", label: "Développement", icon: Code },
-  { key: "review", label: "Révision", icon: Palette },
+  { key: "pending_payment", label: "Paiement", icon: CreditCard },
+  { key: "paid", label: "Paiement confirmé", icon: CheckCircle2 },
+  { key: "generating", label: "Génération IA", icon: Sparkles },
+  { key: "site_generated", label: "Site prêt", icon: Globe },
   { key: "completed", label: "Livré", icon: Rocket },
 ];
 
@@ -144,7 +177,7 @@ export default function TrackWebStudioOrder() {
 
   const getStepStatus = (stepKey: string) => {
     if (!order) return "upcoming";
-    const statusOrder = ["new", "contacted", "in_progress", "review", "completed"];
+    const statusOrder = ["pending_payment", "paid", "generating", "site_generated", "completed"];
     const currentIndex = statusOrder.indexOf(order.status);
     const stepIndex = statusOrder.indexOf(stepKey);
     
@@ -152,6 +185,22 @@ export default function TrackWebStudioOrder() {
     if (stepIndex === currentIndex) return "active";
     return "upcoming";
   };
+
+  // Fetch generated website if applicable
+  const { data: generatedSite } = useQuery({
+    queryKey: ["generated-website", order?.id],
+    queryFn: async () => {
+      if (!order?.id) return null;
+      const { data } = await supabase
+        .from("generated_websites")
+        .select("preview_url, status")
+        .eq("proposal_id", order.id)
+        .single();
+      return data;
+    },
+    enabled: !!order?.id && (order?.status === 'site_generated' || order?.status === 'generating'),
+    refetchInterval: order?.status === 'generating' ? 5000 : false,
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
@@ -274,7 +323,7 @@ export default function TrackWebStudioOrder() {
                     {statusConfig[order.status]?.icon || statusConfig.new.icon}
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
+                    <div className="flex items-center gap-3 mb-1 flex-wrap">
                       <h3 className="text-xl font-semibold">{order.proposal?.projectName || order.form_data?.businessName}</h3>
                       <Badge className={statusConfig[order.status]?.color || statusConfig.new.color}>
                         {statusConfig[order.status]?.label || "En attente"}
@@ -290,6 +339,47 @@ export default function TrackWebStudioOrder() {
                     </p>
                   </div>
                 </div>
+
+                {/* Payment CTA for pending_payment status */}
+                {order.status === 'pending_payment' && (
+                  <div className="mt-6 pt-6 border-t border-border/50">
+                    <Button asChild size="lg" className="w-full gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
+                      <Link to={`/web-studio/checkout?proposal_id=${order.id}`}>
+                        <CreditCard className="w-5 h-5" />
+                        Payer {order.proposal?.priceEUR || (order as any).price_eur}€ et lancer la création
+                      </Link>
+                    </Button>
+                    <p className="text-center text-xs text-muted-foreground mt-2">
+                      Paiement sécurisé par Stripe
+                    </p>
+                  </div>
+                )}
+
+                {/* Generating animation */}
+                {order.status === 'generating' && (
+                  <div className="mt-6 pt-6 border-t border-border/50 text-center">
+                    <div className="flex items-center justify-center gap-2 text-primary">
+                      <Sparkles className="w-5 h-5 animate-pulse" />
+                      <span className="font-medium">Génération en cours...</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Notre IA crée votre site. Cela peut prendre 1-2 minutes.
+                    </p>
+                  </div>
+                )}
+
+                {/* Site Generated - Show link */}
+                {order.status === 'site_generated' && generatedSite?.preview_url && (
+                  <div className="mt-6 pt-6 border-t border-border/50">
+                    <Button asChild size="lg" className="w-full gap-2">
+                      <a href={generatedSite.preview_url} target="_blank" rel="noopener noreferrer">
+                        <Globe className="w-5 h-5" />
+                        Voir mon site
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
