@@ -185,6 +185,41 @@ serve(async (req) => {
       );
     }
 
+    // Send confirmation email to client
+    try {
+      const siteName = asString(p.siteName) || businessName;
+      
+      const emailPayload = {
+        email: contactEmail,
+        siteName,
+        businessType: businessType || undefined,
+        isExpress,
+        priceEur,
+        priceMad,
+        orderId: createdProposal.id,
+      };
+
+      const emailResponse = await fetch(`${SUPABASE_URL}/functions/v1/send-webstudio-confirmation`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        },
+        body: JSON.stringify(emailPayload),
+      });
+
+      if (!emailResponse.ok) {
+        const emailError = await emailResponse.text();
+        console.error("webstudio-order: confirmation email failed", emailError);
+        // Continue anyway - order is created, email is secondary
+      } else {
+        console.log("webstudio-order: confirmation email sent to", contactEmail);
+      }
+    } catch (emailErr) {
+      console.error("webstudio-order: email send error", emailErr);
+      // Continue anyway
+    }
+
     return new Response(JSON.stringify({ proposalId: createdProposal.id }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
