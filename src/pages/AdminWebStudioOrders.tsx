@@ -2,11 +2,12 @@
  * Admin Web Studio Orders - Dashboard pour gérer les commandes de sites web
  */
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminGuard } from "@/components/AdminGuard";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -36,7 +37,9 @@ import {
   Plus,
   Save,
   Send,
-  Loader2
+  Loader2,
+  Bell,
+  Volume2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -306,6 +309,97 @@ function AdminWebStudioOrdersContent() {
   const [emailMessage, setEmailMessage] = useState("");
   const [includeOrderDetails, setIncludeOrderDetails] = useState(true);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  
+  // Real-time notifications state
+  const [newOrdersCount, setNewOrdersCount] = useState(0);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Play notification sound
+  const playNotificationSound = () => {
+    if (soundEnabled && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(console.error);
+    }
+  };
+
+  // Real-time subscription for new orders
+  useEffect(() => {
+    // Create audio element for notification sound
+    audioRef.current = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleERfRVL8j9JCMt24j8JJP3xsX4Wgtb+uhGdJSmaApLnErJNuVVJnhp22yLSbiHRfU2J7lquvrZmEdF9eaH+QnqWlnI57aWFjcIOSpJ+dkoZ4amRlcIGOnJmYjoJ2aWZpc3+Lk5WUjYJ3bGhqdHyGjo+QioF2bWpsc3qCiImKhoJ4cG1udHh+goSFg4F6dHFxdHZ5e3x9fHt6eHZ1dXZ2d3h4eHh4eHd3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3");
+    
+    channelRef.current = supabase
+      .channel('admin-webstudio-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'website_proposals'
+        },
+        (payload) => {
+          console.log('New Web Studio order received:', payload);
+          
+          // Increment new orders counter
+          setNewOrdersCount(prev => prev + 1);
+          
+          // Play notification sound
+          playNotificationSound();
+          
+          // Show toast notification
+          const newOrder = payload.new as any;
+          const businessName = newOrder.form_data?.businessName || 'Nouvelle commande';
+          const isExpress = newOrder.is_express;
+          
+          toast.success(
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-primary/20">
+                <Bell className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold">Nouvelle commande Web Studio !</p>
+                <p className="text-sm text-muted-foreground">
+                  {businessName} {isExpress && "⚡ Express"}
+                </p>
+              </div>
+            </div>,
+            {
+              duration: 8000,
+              action: {
+                label: "Voir",
+                onClick: () => {
+                  refetch();
+                  setNewOrdersCount(0);
+                }
+              }
+            }
+          );
+          
+          // Auto-refresh the list
+          queryClient.invalidateQueries({ queryKey: ["admin-webstudio-orders"] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'website_proposals'
+        },
+        (payload) => {
+          console.log('Web Studio order updated:', payload);
+          queryClient.invalidateQueries({ queryKey: ["admin-webstudio-orders"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
+    };
+  }, [queryClient, soundEnabled]);
 
   // Apply template
   const applyTemplate = (templateId: string, siteName: string) => {
@@ -566,16 +660,62 @@ L'équipe IWASP Web Studio`);
                 </p>
               </div>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => refetch()}
-              className="gap-2"
-              style={{ borderColor: COLORS.border, color: COLORS.ivoire }}
-            >
-              <RefreshCw size={14} />
-              Actualiser
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* New orders notification badge */}
+              {newOrdersCount > 0 && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="relative"
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      refetch();
+                      setNewOrdersCount(0);
+                    }}
+                    className="gap-2 relative"
+                    style={{ 
+                      borderColor: COLORS.or, 
+                      color: COLORS.or,
+                      backgroundColor: `${COLORS.or}20`
+                    }}
+                  >
+                    <Bell size={14} className="animate-pulse" />
+                    <span>{newOrdersCount} nouvelle{newOrdersCount > 1 ? 's' : ''}</span>
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
+                  </Button>
+                </motion.div>
+              )}
+              
+              {/* Sound toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className="h-8 w-8"
+                title={soundEnabled ? "Désactiver le son" : "Activer le son"}
+                style={{ color: soundEnabled ? COLORS.or : COLORS.gris }}
+              >
+                <Volume2 size={16} className={soundEnabled ? "" : "opacity-50"} />
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  refetch();
+                  setNewOrdersCount(0);
+                }}
+                className="gap-2"
+                style={{ borderColor: COLORS.border, color: COLORS.ivoire }}
+              >
+                <RefreshCw size={14} />
+                Actualiser
+              </Button>
+            </div>
           </div>
         </div>
       </header>
