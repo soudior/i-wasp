@@ -80,7 +80,7 @@ function OrderRecapContent() {
             linkedin: linkedin || null,
             website: website || null,
             tagline: bio || null,
-            template: 'iwasp-signature',
+            template: 'signature',
             is_active: true,
             nfc_enabled: true,
             wallet_enabled: true,
@@ -89,6 +89,40 @@ function OrderRecapContent() {
         if (cardError) {
           console.error("Card creation error:", cardError);
         } else {
+          // Upgrade user to premium subscription for 1 year
+          const oneYearFromNow = new Date();
+          oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+          const { data: existingSub } = await supabase
+            .from('subscriptions')
+            .select('id')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+          if (existingSub) {
+            await supabase
+              .from('subscriptions')
+              .update({
+                plan: 'premium',
+                status: 'active',
+                expires_at: oneYearFromNow.toISOString(),
+                notes: `Commande NFC - ${selectedOffer?.name || 'Signature'}`,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('user_id', userId);
+          } else {
+            await supabase
+              .from('subscriptions')
+              .insert({
+                user_id: userId,
+                plan: 'premium',
+                status: 'active',
+                price_cents: selectedOffer?.price || 0,
+                expires_at: oneYearFromNow.toISOString(),
+                notes: `Commande NFC - ${selectedOffer?.name || 'Signature'}`,
+              });
+          }
+
           toast.success("Carte digitale activée");
         }
       }
@@ -109,7 +143,7 @@ function OrderRecapContent() {
         unit_price_cents: selectedOffer?.price || 59900,
         total_price_cents: selectedOffer?.price || 59900,
         order_type: "personalized",
-        template: "iwasp-signature",
+        template: "signature",
         card_color: "#0B0B0B",
         logo_url: state.cardPersonalization?.imageUrl || null,
         currency: "MAD",
