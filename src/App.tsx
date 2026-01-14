@@ -271,32 +271,30 @@ const App = () => {
                               <Route path="/services" element={<Services />} />
                               <Route path="/cartes-nfc" element={<CartesNFC />} />
                               
-                              {/* Web Studio Suivi - Standalone (pas besoin du funnel) - DOIT ÊTRE AVANT le layout */}
+                              {/* Public website display - Short URL */}
+                              <Route path="/s/:slug" element={<PublicWebsite />} />
+                              
+                              {/* Web Studio Standalone Pages - Must be before the layout with children */}
                               <Route path="/web-studio/suivi" element={<TrackWebStudioOrder />} />
-                              {/* Web Studio Payment Pages (standalone) */}
                               <Route path="/web-studio/checkout" element={<WebStudioCheckout />} />
                               <Route path="/web-studio/payment-success" element={<WebStudioPaymentSuccess />} />
                               <Route path="/web-studio/payment-cancelled" element={<WebStudioPaymentCancelled />} />
                               <Route path="/web-studio/blog-editor" element={<BlogEditor />} />
                               <Route path="/web-studio/preview" element={<WebsitePreview />} />
+                              <Route path="/web-studio/offres" element={<WebStudioOffres />} />
+                              <Route path="/web-studio/configuration" element={<WebStudioConfiguration />} />
+                              <Route path="/web-studio/paiement" element={<WebStudioPaiement />} />
+                              <Route path="/web-studio/ia-success" element={<WebStudioIASuccess />} />
                               
-                              {/* Public website display - Short URL */}
-                              <Route path="/s/:slug" element={<PublicWebsite />} />
-                              {/* Web Studio Funnel - 5 étapes ordonnées */}
-                              <Route path="/web-studio" element={<WebStudioLayout />}>
-                                <Route index element={<WebStudioEntry />} />
+                              {/* Web Studio - Funnel with layout (must be after standalone routes) */}
+                              <Route path="/web-studio/*" element={<WebStudioLayout />}>
+                                <Route path="" element={<WebStudioEntry />} />
                                 <Route path="entreprise" element={<StepEntreprise />} />
                                 <Route path="produits" element={<StepProduits />} />
                                 <Route path="design" element={<StepDesign />} />
                                 <Route path="contact" element={<StepContact />} />
                                 <Route path="recapitulatif" element={<StepRecapitulatif />} />
                               </Route>
-                              
-                              {/* Web Studio IA - Nouvelle offre avec 3 packs */}
-                              <Route path="/web-studio/offres" element={<WebStudioOffres />} />
-                              <Route path="/web-studio/configuration" element={<WebStudioConfiguration />} />
-                              <Route path="/web-studio/paiement" element={<WebStudioPaiement />} />
-                              <Route path="/web-studio/ia-success" element={<WebStudioIASuccess />} />
                               
                               {/* Admin Web Studio IA */}
                               <Route path="/admin/web-studio-ia" element={<AdminWebStudioIA />} />
