@@ -101,7 +101,7 @@ export default function WebStudioPaiement() {
           price_eur: selectedPackage.priceEur,
           price_mad: orderData.priceMad,
           is_express: selectedPackage.isInstant,
-          status: 'generated', // Valid values: generated, contacted, ordered, completed
+          status: 'pending_payment',
         })
         .select('id')
         .single();
