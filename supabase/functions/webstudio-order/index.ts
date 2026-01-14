@@ -140,7 +140,7 @@ serve(async (req) => {
           is_express: isExpress,
           price_eur: priceEur,
           price_mad: priceMad,
-          status: "ordered",
+          status: "pending_payment", // Changed from "ordered" to "pending_payment"
           status_history: statusHistory,
           updated_at: nowIso,
         },
