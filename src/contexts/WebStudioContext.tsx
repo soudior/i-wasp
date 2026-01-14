@@ -20,6 +20,7 @@ export interface WebStudioFormData {
   services: string;
   priceRange: string;
   targetAudience: string;
+  productPhotos: string[]; // URLs des photos uploadées
   
   // Étape 3: Style et Design
   style: string;
@@ -101,6 +102,7 @@ const initialFormData: WebStudioFormData = {
   services: "",
   priceRange: "",
   targetAudience: "",
+  productPhotos: [],
   style: "",
   colors: "",
   logoUrl: "",
