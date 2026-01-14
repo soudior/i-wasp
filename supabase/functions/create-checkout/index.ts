@@ -60,7 +60,7 @@ serve(async (req) => {
       logStep("Existing customer found", { customerId });
     }
 
-    const origin = req.headers.get("origin") || "https://i-wasp.com";
+    const origin = req.headers.get("origin") || "https://i-wasp.lovable.app";
     
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
