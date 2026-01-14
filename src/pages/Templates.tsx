@@ -332,6 +332,8 @@ const Templates = () => {
                       <motion.img
                         src={template.cardImage}
                         alt={template.name}
+                        loading="lazy"
+                        decoding="async"
                         className="absolute left-4 top-1/2 -translate-y-1/2 w-[55%] h-auto object-contain z-10 drop-shadow-2xl"
                         whileHover={{ scale: 1.08, rotate: -5, y: -10 }}
                         transition={{ duration: 0.4, type: "spring" }}
@@ -340,6 +342,8 @@ const Templates = () => {
                       <motion.img
                         src={template.phoneImage}
                         alt={`${template.name} preview`}
+                        loading="lazy"
+                        decoding="async"
                         className="absolute right-0 top-1/2 -translate-y-1/2 w-[50%] h-auto object-contain z-20 drop-shadow-xl"
                         whileHover={{ scale: 1.05, y: -5 }}
                         transition={{ duration: 0.4 }}

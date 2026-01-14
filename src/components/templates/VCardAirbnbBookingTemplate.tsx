@@ -156,6 +156,8 @@ const PhotoGallery: React.FC<{
           src={photos[currentIndex]}
           alt={`${propertyName} - Photo ${currentIndex + 1}`}
           className="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
           onClick={() => onPhotoClick?.(currentIndex)}
         />
         
@@ -233,6 +235,8 @@ const FullscreenGallery: React.FC<{
         src={photos[currentIndex]}
         alt={`${propertyName} - Photo ${currentIndex + 1}`}
         className="max-w-full max-h-full object-contain"
+        loading="lazy"
+        decoding="async"
         onClick={(e) => e.stopPropagation()}
       />
 
@@ -506,7 +510,7 @@ const NearbyPlaceCard: React.FC<{ place: NearbyPlace }> = ({ place }) => {
     >
       {place.image && (
         <div className="aspect-video">
-          <img src={place.image} alt={place.name} className="w-full h-full object-cover" />
+          <img src={place.image} alt={place.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
         </div>
       )}
       <div className="p-4">

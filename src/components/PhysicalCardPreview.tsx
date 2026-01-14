@@ -66,6 +66,8 @@ export function PhysicalCardPreview({
             <img 
               src={cardFront} 
               alt="Carte i-Wasp Recto"
+              loading="lazy"
+              decoding="async"
               className="w-full rounded-xl shadow-2xl"
               style={{ aspectRatio: "1.586" }}
             />
@@ -86,6 +88,8 @@ export function PhysicalCardPreview({
             <img 
               src={cardBack} 
               alt="Carte i-Wasp Verso"
+              loading="lazy"
+              decoding="async"
               className="w-full rounded-xl shadow-2xl"
               style={{ aspectRatio: "1.586" }}
             />

@@ -261,6 +261,8 @@ export function MultiStoryViewer({
             <img
               src={currentStory.image_url}
               alt=""
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover blur-3xl scale-150 opacity-30"
             />
           )}
@@ -332,6 +334,8 @@ export function MultiStoryViewer({
                   <img
                     src={ownerPhoto}
                     alt={ownerName}
+                    loading="lazy"
+                    decoding="async"
                     className="relative w-11 h-11 rounded-full object-cover border-2 border-black"
                   />
                 ) : (
@@ -603,7 +607,7 @@ export function MultiStoryViewer({
                 )}
               >
                 {s.content_type === "image" && s.image_url ? (
-                  <img src={s.image_url} alt="" className="w-full h-full object-cover" />
+                  <img src={s.image_url} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                   <div
                     className="w-full h-full"
