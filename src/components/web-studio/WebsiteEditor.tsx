@@ -8,7 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, Type, Palette, Image as ImageIcon, Save, Eye, Undo, Redo, 
   ChevronLeft, ChevronRight, Monitor, Smartphone, 
-  Loader2, ExternalLink, Sparkles, Upload, Trash2, RefreshCw, Wand2
+  Loader2, ExternalLink, Sparkles, Upload, Trash2, RefreshCw, Wand2,
+  Layers
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,7 +82,7 @@ export function WebsiteEditor({
   const [isPublishing, setIsPublishing] = useState(false);
   const [viewMode, setViewMode] = useState<"desktop" | "mobile">("desktop");
   const [panelCollapsed, setPanelCollapsed] = useState(false);
-  const [activeTab, setActiveTab] = useState("texts");
+  const [activeTab, setActiveTab] = useState("styles");
   const [history, setHistory] = useState<WebsiteCustomizations[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
@@ -536,6 +537,132 @@ export function WebsiteEditor({
     { key: "text", label: "Couleur du texte", description: "Texte principal" },
   ];
 
+  const styleTemplates = [
+    {
+      id: "moderne",
+      name: "Moderne",
+      description: "Design épuré et contemporain",
+      colors: {
+        primary: "#007AFF",
+        secondary: "#5856D6",
+        accent: "#00C7BE",
+        background: "#FFFFFF",
+        text: "#1D1D1F"
+      },
+      preview: ["#007AFF", "#5856D6", "#00C7BE", "#FFFFFF", "#1D1D1F"]
+    },
+    {
+      id: "classique",
+      name: "Classique",
+      description: "Élégance intemporelle",
+      colors: {
+        primary: "#8B4513",
+        secondary: "#D2691E",
+        accent: "#DAA520",
+        background: "#FDF5E6",
+        text: "#2F2F2F"
+      },
+      preview: ["#8B4513", "#D2691E", "#DAA520", "#FDF5E6", "#2F2F2F"]
+    },
+    {
+      id: "minimaliste",
+      name: "Minimaliste",
+      description: "Simplicité et clarté",
+      colors: {
+        primary: "#000000",
+        secondary: "#6B7280",
+        accent: "#374151",
+        background: "#FAFAFA",
+        text: "#111827"
+      },
+      preview: ["#000000", "#6B7280", "#374151", "#FAFAFA", "#111827"]
+    },
+    {
+      id: "colore",
+      name: "Coloré",
+      description: "Vif et dynamique",
+      colors: {
+        primary: "#FF6B6B",
+        secondary: "#4ECDC4",
+        accent: "#FFE66D",
+        background: "#FFFFFF",
+        text: "#2D3436"
+      },
+      preview: ["#FF6B6B", "#4ECDC4", "#FFE66D", "#FFFFFF", "#2D3436"]
+    },
+    {
+      id: "sombre",
+      name: "Sombre",
+      description: "Mode nuit premium",
+      colors: {
+        primary: "#6366F1",
+        secondary: "#8B5CF6",
+        accent: "#EC4899",
+        background: "#0F172A",
+        text: "#F1F5F9"
+      },
+      preview: ["#6366F1", "#8B5CF6", "#EC4899", "#0F172A", "#F1F5F9"]
+    },
+    {
+      id: "nature",
+      name: "Nature",
+      description: "Tons naturels apaisants",
+      colors: {
+        primary: "#059669",
+        secondary: "#10B981",
+        accent: "#34D399",
+        background: "#F0FDF4",
+        text: "#064E3B"
+      },
+      preview: ["#059669", "#10B981", "#34D399", "#F0FDF4", "#064E3B"]
+    },
+    {
+      id: "luxe",
+      name: "Luxe",
+      description: "Sophistication haut de gamme",
+      colors: {
+        primary: "#B8860B",
+        secondary: "#1A1A2E",
+        accent: "#D4AF37",
+        background: "#0D0D0D",
+        text: "#E8E8E8"
+      },
+      preview: ["#B8860B", "#1A1A2E", "#D4AF37", "#0D0D0D", "#E8E8E8"]
+    },
+    {
+      id: "ocean",
+      name: "Océan",
+      description: "Fraîcheur marine",
+      colors: {
+        primary: "#0077B6",
+        secondary: "#00B4D8",
+        accent: "#90E0EF",
+        background: "#CAF0F8",
+        text: "#03045E"
+      },
+      preview: ["#0077B6", "#00B4D8", "#90E0EF", "#CAF0F8", "#03045E"]
+    }
+  ];
+
+  const applyStyleTemplate = (templateId: string) => {
+    const template = styleTemplates.find(t => t.id === templateId);
+    if (!template) return;
+
+    setCustomizations(prev => {
+      const updated = {
+        ...prev,
+        colors: { ...template.colors }
+      };
+      
+      setHistory(h => [...h.slice(0, historyIndex + 1), updated]);
+      setHistoryIndex(i => i + 1);
+      
+      return updated;
+    });
+
+    toast.success(`Style "${template.name}" appliqué`);
+  };
+
   const getDisplayedImageSrc = (img: DetectedImage) => {
     return customizations.images[img.index.toString()] || img.src;
   };
@@ -606,7 +733,11 @@ export function WebsiteEditor({
 
               {/* Tabs */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-                <TabsList className="w-full grid grid-cols-3 p-1 m-2 bg-white/5 rounded-lg">
+                <TabsList className="w-full grid grid-cols-4 p-1 m-2 bg-white/5 rounded-lg">
+                  <TabsTrigger value="styles" className="data-[state=active]:bg-[#007AFF] data-[state=active]:text-white text-white/60 text-xs">
+                    <Layers className="w-3 h-3 mr-1" />
+                    Styles
+                  </TabsTrigger>
                   <TabsTrigger value="texts" className="data-[state=active]:bg-[#007AFF] data-[state=active]:text-white text-white/60 text-xs">
                     <Type className="w-3 h-3 mr-1" />
                     Textes
@@ -622,6 +753,45 @@ export function WebsiteEditor({
                 </TabsList>
 
                 <ScrollArea className="flex-1 px-4">
+                  {/* Styles prédéfinis */}
+                  <TabsContent value="styles" className="mt-0 space-y-3 pb-4">
+                    <p className="text-white/60 text-xs mb-3">
+                      Appliquez un style prédéfini en un clic
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {styleTemplates.map((template) => (
+                        <button
+                          key={template.id}
+                          onClick={() => applyStyleTemplate(template.id)}
+                          className="group p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#007AFF]/50 hover:bg-white/10 transition-all text-left"
+                        >
+                          {/* Color preview */}
+                          <div className="flex gap-1 mb-2">
+                            {template.preview.map((color, i) => (
+                              <div
+                                key={i}
+                                className="w-5 h-5 rounded-full border border-white/20 shadow-sm"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                          <h4 className="text-white text-xs font-medium group-hover:text-[#007AFF] transition-colors">
+                            {template.name}
+                          </h4>
+                          <p className="text-white/40 text-[10px] leading-tight mt-0.5">
+                            {template.description}
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <div className="pt-3 border-t border-white/10 mt-4">
+                      <p className="text-white/40 text-[10px] text-center">
+                        💡 Utilisez l'onglet "Couleurs" pour personnaliser davantage
+                      </p>
+                    </div>
+                  </TabsContent>
+
                   {/* Textes */}
                   <TabsContent value="texts" className="mt-0 space-y-4 pb-4">
                     {editableTexts.map((item) => (
