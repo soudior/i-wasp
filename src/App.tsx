@@ -116,7 +116,6 @@ const KechExcluCard = lazy(() => import("./pages/KechExcluCard"));
 const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
 const Services = lazy(() => import("./pages/Services"));
 const CartesNFC = lazy(() => import("./pages/CartesNFC"));
-const DownloadAds = lazy(() => import("./pages/DownloadAds"));
 const WebStudioLegacy = lazy(() => import("./pages/WebStudio"));
 
 // NEW Web Studio funnel pages
@@ -275,7 +274,6 @@ const App = () => {
                               <Route path="/business" element={<Enterprise />} />
                               <Route path="/services" element={<Services />} />
                               <Route path="/cartes-nfc" element={<CartesNFC />} />
-                              <Route path="/download-ads" element={<DownloadAds />} />
                               
                               {/* Public website display - Short URL */}
                               <Route path="/s/:slug" element={<PublicWebsite />} />
