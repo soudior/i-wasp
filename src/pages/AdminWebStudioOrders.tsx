@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminGuard } from "@/components/AdminGuard";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -27,7 +28,13 @@ import {
   TrendingUp,
   Calendar,
   DollarSign,
-  FileText
+  FileText,
+  StickyNote,
+  User,
+  Flag,
+  History,
+  Plus,
+  Save
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -64,6 +71,12 @@ const COLORS = {
   error: "#EF4444",
 };
 
+interface StatusHistoryEntry {
+  status: string;
+  timestamp: string;
+  note?: string;
+}
+
 interface WebsiteProposal {
   id: string;
   form_data: {
@@ -94,6 +107,11 @@ interface WebsiteProposal {
   created_at: string;
   updated_at: string;
   user_id: string | null;
+  admin_notes: string | null;
+  status_history: StatusHistoryEntry[] | null;
+  assigned_to: string | null;
+  priority: string | null;
+  deadline: string | null;
 }
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ElementType }> = {
@@ -111,6 +129,11 @@ function AdminWebStudioOrdersContent() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<WebsiteProposal | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [newNote, setNewNote] = useState("");
+  const [adminNotes, setAdminNotes] = useState("");
+  const [assignedTo, setAssignedTo] = useState("");
+  const [priority, setPriority] = useState("normal");
+  const [deadline, setDeadline] = useState("");
 
   // Fetch all website proposals with status "ordered" or other non-generated statuses
   const { data: orders, isLoading, refetch } = useQuery({
@@ -122,28 +145,118 @@ function AdminWebStudioOrdersContent() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as WebsiteProposal[];
+      
+      // Transform data to match interface
+      return (data || []).map(item => ({
+        ...item,
+        form_data: item.form_data as WebsiteProposal['form_data'],
+        proposal: item.proposal as WebsiteProposal['proposal'],
+        status_history: (Array.isArray(item.status_history) ? item.status_history : []) as unknown as StatusHistoryEntry[],
+      })) as WebsiteProposal[];
     },
   });
 
-  // Update order status
+  // Update order status with history
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, status, currentHistory }: { id: string; status: string; currentHistory: StatusHistoryEntry[] }) => {
+      const newHistoryEntry = {
+        status,
+        timestamp: new Date().toISOString(),
+        note: `Statut changé en: ${statusConfig[status]?.label || status}`
+      };
+      
+      const updatedHistory = [...currentHistory, newHistoryEntry];
+      
       const { error } = await supabase
         .from("website_proposals")
-        .update({ status, updated_at: new Date().toISOString() })
+        .update({ 
+          status, 
+          status_history: updatedHistory as unknown as Json[],
+          updated_at: new Date().toISOString() 
+        })
         .eq("id", id);
       
       if (error) throw error;
+      return updatedHistory as StatusHistoryEntry[];
     },
-    onSuccess: () => {
+    onSuccess: (updatedHistory) => {
       queryClient.invalidateQueries({ queryKey: ["admin-webstudio-orders"] });
+      if (selectedOrder) {
+        setSelectedOrder({ ...selectedOrder, status_history: updatedHistory });
+      }
       toast.success("Statut mis à jour");
     },
     onError: () => {
       toast.error("Erreur lors de la mise à jour");
     },
   });
+
+  // Save notes and details
+  const saveOrderDetails = useMutation({
+    mutationFn: async ({ 
+      id, 
+      admin_notes, 
+      assigned_to, 
+      priority, 
+      deadline,
+      currentHistory,
+      noteToAdd
+    }: { 
+      id: string; 
+      admin_notes: string; 
+      assigned_to: string;
+      priority: string;
+      deadline: string;
+      currentHistory: StatusHistoryEntry[];
+      noteToAdd?: string;
+    }) => {
+      let updatedHistory = [...currentHistory];
+      
+      if (noteToAdd && noteToAdd.trim()) {
+        updatedHistory.push({
+          status: 'note',
+          timestamp: new Date().toISOString(),
+          note: noteToAdd
+        });
+      }
+      
+      const { error } = await supabase
+        .from("website_proposals")
+        .update({ 
+          admin_notes, 
+          assigned_to: assigned_to || null,
+          priority,
+          deadline: deadline || null,
+          status_history: updatedHistory as unknown as Json[],
+          updated_at: new Date().toISOString() 
+        })
+        .eq("id", id);
+      
+      if (error) throw error;
+      return updatedHistory;
+    },
+    onSuccess: (updatedHistory) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-webstudio-orders"] });
+      setNewNote("");
+      if (selectedOrder) {
+        setSelectedOrder({ ...selectedOrder, status_history: updatedHistory });
+      }
+      toast.success("Détails sauvegardés");
+    },
+    onError: () => {
+      toast.error("Erreur lors de la sauvegarde");
+    },
+  });
+
+  // Handle opening order details
+  const handleOpenOrder = (order: WebsiteProposal) => {
+    setSelectedOrder(order);
+    setAdminNotes(order.admin_notes || "");
+    setAssignedTo(order.assigned_to || "");
+    setPriority(order.priority || "normal");
+    setDeadline(order.deadline ? order.deadline.split('T')[0] : "");
+    setNewNote("");
+  };
 
   // Filter orders
   const filteredOrders = orders?.filter((order) => {
@@ -316,7 +429,7 @@ function AdminWebStudioOrdersContent() {
                         backgroundColor: COLORS.noirCard, 
                         borderColor: order.status === "ordered" ? `${COLORS.or}40` : COLORS.border,
                       }}
-                      onClick={() => setSelectedOrder(order)}
+                      onClick={() => handleOpenOrder(order)}
                     >
                       <CardContent className="p-6">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -423,7 +536,11 @@ function AdminWebStudioOrdersContent() {
                   <Select 
                     value={selectedOrder.status || "generated"}
                     onValueChange={(value) => {
-                      updateStatus.mutate({ id: selectedOrder.id, status: value });
+                      updateStatus.mutate({ 
+                        id: selectedOrder.id, 
+                        status: value,
+                        currentHistory: selectedOrder.status_history || []
+                      });
                       setSelectedOrder({ ...selectedOrder, status: value });
                     }}
                   >
@@ -497,23 +614,149 @@ function AdminWebStudioOrdersContent() {
                   </div>
                 )}
 
-                {/* Colors */}
-                {selectedOrder.proposal?.colorPalette && (
+                {/* Priority & Assignment */}
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs uppercase tracking-wider mb-2" style={{ color: COLORS.gris }}>Palette de couleurs</p>
-                    <div className="flex gap-2">
-                      {Object.entries(selectedOrder.proposal.colorPalette).map(([name, color]) => (
-                        <div key={name} className="flex items-center gap-2">
-                          <div 
-                            className="w-6 h-6 rounded-full border"
-                            style={{ backgroundColor: color as string, borderColor: COLORS.border }}
-                          />
-                          <span className="text-xs capitalize" style={{ color: COLORS.gris }}>{name}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <label className="text-xs uppercase tracking-wider mb-2 block" style={{ color: COLORS.gris }}>
+                      <Flag size={12} className="inline mr-1" />
+                      Priorité
+                    </label>
+                    <Select value={priority} onValueChange={setPriority}>
+                      <SelectTrigger style={{ backgroundColor: COLORS.noirSoft, borderColor: COLORS.border, color: COLORS.ivoire }}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent style={{ backgroundColor: COLORS.noirCard, borderColor: COLORS.border }}>
+                        <SelectItem value="low">🟢 Basse</SelectItem>
+                        <SelectItem value="normal">🟡 Normale</SelectItem>
+                        <SelectItem value="high">🟠 Haute</SelectItem>
+                        <SelectItem value="urgent">🔴 Urgente</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                )}
+                  <div>
+                    <label className="text-xs uppercase tracking-wider mb-2 block" style={{ color: COLORS.gris }}>
+                      <Calendar size={12} className="inline mr-1" />
+                      Deadline
+                    </label>
+                    <Input
+                      type="date"
+                      value={deadline}
+                      onChange={(e) => setDeadline(e.target.value)}
+                      style={{ backgroundColor: COLORS.noirSoft, borderColor: COLORS.border, color: COLORS.ivoire }}
+                    />
+                  </div>
+                </div>
+
+                {/* Assigned To */}
+                <div>
+                  <label className="text-xs uppercase tracking-wider mb-2 block" style={{ color: COLORS.gris }}>
+                    <User size={12} className="inline mr-1" />
+                    Assigné à
+                  </label>
+                  <Input
+                    placeholder="Nom du responsable..."
+                    value={assignedTo}
+                    onChange={(e) => setAssignedTo(e.target.value)}
+                    style={{ backgroundColor: COLORS.noirSoft, borderColor: COLORS.border, color: COLORS.ivoire }}
+                  />
+                </div>
+
+                {/* Admin Notes */}
+                <div>
+                  <label className="text-xs uppercase tracking-wider mb-2 block" style={{ color: COLORS.gris }}>
+                    <StickyNote size={12} className="inline mr-1" />
+                    Notes admin
+                  </label>
+                  <Textarea
+                    placeholder="Notes internes sur cette commande..."
+                    value={adminNotes}
+                    onChange={(e) => setAdminNotes(e.target.value)}
+                    rows={3}
+                    style={{ backgroundColor: COLORS.noirSoft, borderColor: COLORS.border, color: COLORS.ivoire }}
+                  />
+                </div>
+
+                {/* Add Quick Note */}
+                <div>
+                  <label className="text-xs uppercase tracking-wider mb-2 block" style={{ color: COLORS.gris }}>
+                    <Plus size={12} className="inline mr-1" />
+                    Ajouter une note rapide
+                  </label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Note rapide (ex: Client contacté, En attente retour...)"
+                      value={newNote}
+                      onChange={(e) => setNewNote(e.target.value)}
+                      style={{ backgroundColor: COLORS.noirSoft, borderColor: COLORS.border, color: COLORS.ivoire }}
+                    />
+                  </div>
+                </div>
+
+                {/* Save Button */}
+                <Button
+                  onClick={() => saveOrderDetails.mutate({
+                    id: selectedOrder.id,
+                    admin_notes: adminNotes,
+                    assigned_to: assignedTo,
+                    priority,
+                    deadline,
+                    currentHistory: selectedOrder.status_history || [],
+                    noteToAdd: newNote
+                  })}
+                  disabled={saveOrderDetails.isPending}
+                  className="w-full gap-2"
+                  style={{ backgroundColor: COLORS.or, color: COLORS.noir }}
+                >
+                  <Save size={16} />
+                  {saveOrderDetails.isPending ? "Sauvegarde..." : "Sauvegarder les détails"}
+                </Button>
+
+                {/* Status History */}
+                <div>
+                  <label className="text-xs uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: COLORS.gris }}>
+                    <History size={12} />
+                    Historique des actions
+                  </label>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {selectedOrder.status_history && selectedOrder.status_history.length > 0 ? (
+                      [...selectedOrder.status_history].reverse().map((entry, i) => {
+                        const entryStatus = entry.status === 'note' ? null : statusConfig[entry.status];
+                        return (
+                          <div 
+                            key={i}
+                            className="p-3 rounded-lg flex items-start gap-3"
+                            style={{ backgroundColor: COLORS.noirSoft }}
+                          >
+                            <div 
+                              className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                              style={{ backgroundColor: entry.status === 'note' ? `${COLORS.gris}30` : `${entryStatus?.color || COLORS.gris}20` }}
+                            >
+                              {entry.status === 'note' ? (
+                                <StickyNote size={14} style={{ color: COLORS.gris }} />
+                              ) : entryStatus ? (
+                                <entryStatus.icon size={14} style={{ color: entryStatus.color }} />
+                              ) : (
+                                <Clock size={14} style={{ color: COLORS.gris }} />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm" style={{ color: COLORS.ivoire }}>
+                                {entry.note}
+                              </p>
+                              <p className="text-xs mt-1" style={{ color: COLORS.gris }}>
+                                {format(new Date(entry.timestamp), "dd MMM yyyy à HH:mm", { locale: fr })}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p className="text-sm text-center py-4" style={{ color: COLORS.gris }}>
+                        Aucun historique
+                      </p>
+                    )}
+                  </div>
+                </div>
 
                 {/* Express Badge */}
                 {selectedOrder.is_express && (
