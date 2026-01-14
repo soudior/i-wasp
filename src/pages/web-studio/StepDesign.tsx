@@ -12,6 +12,7 @@ import { StudioFunnelStep } from "@/components/web-studio/StudioFunnelStep";
 import { useWebStudio, WebStudioGuard } from "@/contexts/WebStudioContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { compressImage } from "@/utils/imageCompression";
 
 const STUDIO = {
   noir: "#050505",
@@ -81,17 +82,26 @@ function StepDesignContent() {
     setUploadProgress(10);
 
     try {
+      // Compress image before upload (skip SVGs)
+      setUploadProgress(20);
+      const compressedFile = await compressImage(file, {
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 0.85,
+        maxSizeMB: 0.5,
+      });
+
+      setUploadProgress(40);
+
       // Generate unique filename
-      const fileExt = file.name.split(".").pop();
+      const fileExt = compressedFile.name.split(".").pop() || "jpg";
       const fileName = `${sessionId}-logo-${Date.now()}.${fileExt}`;
       const filePath = `logos/${fileName}`;
-
-      setUploadProgress(30);
 
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
         .from("website-images")
-        .upload(filePath, file, {
+        .upload(filePath, compressedFile, {
           cacheControl: "3600",
           upsert: true,
         });
