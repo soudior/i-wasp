@@ -17,8 +17,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import iwaspLogo from "@/assets/iwasp-logo.png";
-import nfcDemoVideo from "@/assets/nfc-demo-video.mp4";
-
 const steps = [
   {
     number: "01",
@@ -93,27 +91,25 @@ export default function UserGuide() {
         </div>
       </header>
 
-      {/* Hero Video - Instagram Reels Style */}
+      {/* Hero Visual */}
       <section className="px-6 py-8">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-sm mx-auto"
         >
-          {/* Video Container - Reels Format (9:16) */}
-          <div className="relative aspect-[9/16] rounded-3xl overflow-hidden bg-gradient-to-b from-primary/20 to-primary/5 shadow-2xl shadow-primary/20">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            >
-              <source src={nfcDemoVideo} type="video/mp4" />
-            </video>
+          {/* Visual Container */}
+          <div className="relative aspect-[9/16] rounded-3xl overflow-hidden bg-gradient-to-b from-primary/20 to-primary/5 shadow-2xl shadow-primary/20 flex items-center justify-center">
+            <div className="text-center p-8">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-primary/30 flex items-center justify-center animate-pulse">
+                <Wifi size={40} className="text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Tap. Connect. Empower.</h3>
+              <p className="text-white/60 text-sm">Partagez votre profil en un instant</p>
+            </div>
           </div>
           
-          {/* Caption under video */}
+          {/* Caption */}
           <p className="text-center text-white/50 text-sm mt-4 mb-6">
             Un simple tap pour partager votre profil
           </p>
