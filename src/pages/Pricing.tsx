@@ -2,6 +2,7 @@
  * Pricing Page — Tarifs i-wasp
  * Grille tarifaire complète : Cartes NFC + Création Web
  * Style: Haute Couture Digitale - Noir & Or
+ * Système de panier intégré avec calcul automatique
  */
 
 import { useState } from "react";
@@ -29,10 +30,14 @@ import {
   Wrench,
   MessageCircle,
   CreditCard,
-  Loader2
+  Loader2,
+  ShoppingCart,
+  Plus as PlusIcon
 } from "lucide-react";
 import { SUBSCRIPTION_PLANS, FEATURE_COMPARISON } from "@/lib/subscriptionPlans";
 import { QuoteCalculator } from "@/components/pricing/QuoteCalculator";
+import { FloatingCartSummary } from "@/components/pricing/FloatingCartSummary";
+import { PricingCartProvider, usePricingCart, WEB_PACKAGES, WEB_OPTIONS as CART_OPTIONS, MAINTENANCE_PLANS as CART_MAINTENANCE } from "@/contexts/PricingCartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -120,10 +125,49 @@ const faqs = [
 
 type Tab = "nfc" | "web";
 
-export default function Pricing() {
+// Inner component that uses the cart context
+function PricingContent() {
   const [activeTab, setActiveTab] = useState<Tab>("web");
-  const [currency, setCurrency] = useState<"MAD" | "EUR">("MAD");
+  const { currency, setCurrency, addItem, items } = usePricingCart();
   const [loadingPayment, setLoadingPayment] = useState<string | null>(null);
+
+  const handleAddPackage = (packageKey: keyof typeof WEB_PACKAGES) => {
+    const pkg = WEB_PACKAGES[packageKey];
+    addItem({
+      id: pkg.id,
+      name: pkg.name,
+      type: 'package',
+      priceMAD: pkg.priceMAD,
+      priceEUR: pkg.priceEUR,
+    });
+    toast.success(`${pkg.name} ajouté au panier`);
+  };
+
+  const handleAddOption = (option: typeof CART_OPTIONS[0]) => {
+    addItem({
+      id: option.id,
+      name: option.name,
+      type: 'option',
+      priceMAD: option.priceMAD,
+      priceEUR: option.priceEUR,
+      unit: option.unit,
+    });
+    toast.success(`${option.name} ajouté au panier`);
+  };
+
+  const handleAddMaintenance = (maintenance: typeof CART_MAINTENANCE[0]) => {
+    addItem({
+      id: maintenance.id,
+      name: maintenance.name,
+      type: 'maintenance',
+      priceMAD: maintenance.priceMAD,
+      priceEUR: maintenance.priceEUR,
+      period: maintenance.period,
+    });
+    toast.success(`${maintenance.name} ajouté au panier`);
+  };
+
+  const isInCart = (id: string) => items.some(item => item.id === id);
 
   const handleDirectPayment = async (packageType: string) => {
     setLoadingPayment(packageType);
@@ -165,6 +209,9 @@ export default function Pricing() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: COLORS.noir, color: COLORS.ivoire }}>
       <CoutureNavbar />
+      
+      {/* Floating Cart */}
+      <FloatingCartSummary />
       
       {/* Hero */}
       <section className="relative py-32 px-4 overflow-hidden">
@@ -378,48 +425,54 @@ export default function Pricing() {
                         
                         {/* CTA Buttons */}
                         <div className="space-y-3 mb-8">
-                          {/* Primary: Direct Payment */}
+                          {/* Primary: Add to Cart */}
                           <Button 
                             className="w-full h-12 font-medium text-xs uppercase tracking-[0.15em] rounded-xl transition-all duration-300"
                             style={{ 
-                              background: plan.popular 
-                                ? `linear-gradient(135deg, ${COLORS.or} 0%, ${COLORS.orLight} 100%)`
-                                : COLORS.ivoire,
+                              background: isInCart(`web-${plan.packageType.toLowerCase()}`)
+                                ? '#22c55e'
+                                : plan.popular 
+                                  ? `linear-gradient(135deg, ${COLORS.or} 0%, ${COLORS.orLight} 100%)`
+                                  : COLORS.ivoire,
                               color: COLORS.noir,
                               boxShadow: plan.popular 
                                 ? `0 8px 24px -8px ${COLORS.or}60` 
                                 : 'none',
                             }}
+                            onClick={() => handleAddPackage(plan.packageType as keyof typeof WEB_PACKAGES)}
+                            disabled={isInCart(`web-${plan.packageType.toLowerCase()}`)}
+                          >
+                            {isInCart(`web-${plan.packageType.toLowerCase()}`) ? (
+                              <>
+                                <Check size={14} className="mr-2" />
+                                Ajouté au panier
+                              </>
+                            ) : (
+                              <>
+                                <ShoppingCart size={14} className="mr-2" />
+                                Ajouter au panier
+                              </>
+                            )}
+                          </Button>
+
+                          {/* Secondary: Direct Payment */}
+                          <Button 
+                            variant="ghost"
+                            className="w-full h-10 font-normal text-[10px] uppercase tracking-[0.12em] rounded-xl transition-all duration-300 hover:bg-white/5"
+                            style={{ 
+                              color: COLORS.gris,
+                              border: `1px solid ${COLORS.border}`,
+                            }}
                             onClick={() => handleDirectPayment(plan.packageType)}
                             disabled={loadingPayment === plan.packageType}
                           >
                             {loadingPayment === plan.packageType ? (
-                              <Loader2 size={14} className="mr-2 animate-spin" />
+                              <Loader2 size={12} className="mr-2 animate-spin" />
                             ) : (
-                              <CreditCard size={14} className="mr-2" />
+                              <CreditCard size={12} className="mr-2" />
                             )}
-                            {loadingPayment === plan.packageType ? 'Chargement...' : 'Payer maintenant'}
+                            {loadingPayment === plan.packageType ? 'Chargement...' : 'Payer ce forfait seul'}
                           </Button>
-
-                          {/* Secondary: WhatsApp Quote */}
-                          <a 
-                            href={`https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20suis%20intéressé%20par%20la%20formule%20${plan.name}%20pour%20la%20création%20de%20mon%20site%20web.`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block"
-                          >
-                            <Button 
-                              variant="ghost"
-                              className="w-full h-10 font-normal text-[10px] uppercase tracking-[0.12em] rounded-xl transition-all duration-300 hover:bg-white/5"
-                              style={{ 
-                                color: COLORS.gris,
-                                border: `1px solid ${COLORS.border}`,
-                              }}
-                            >
-                              <MessageCircle size={12} className="mr-2" />
-                              Ou demander un devis
-                            </Button>
-                          </a>
                         </div>
 
                         {/* Features Divider */}
@@ -471,40 +524,51 @@ export default function Pricing() {
                 </div>
                 
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {WEB_OPTIONS.map((option, index) => (
-                    <motion.div
-                      key={option.name}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.05 }}
-                      className="p-5 rounded-2xl flex items-center gap-4 group cursor-pointer transition-all duration-300"
-                      style={{ 
-                        backgroundColor: COLORS.noirCard,
-                        border: `1px solid ${COLORS.border}`,
-                      }}
-                      whileHover={{ 
-                        borderColor: `${COLORS.or}40`,
-                        scale: 1.02,
-                      }}
-                    >
-                      <div 
-                        className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors"
-                        style={{ backgroundColor: `${COLORS.or}10` }}
+                  {CART_OPTIONS.map((option, index) => {
+                    const optionInCart = isInCart(option.id);
+                    return (
+                      <motion.div
+                        key={option.id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.05 }}
+                        onClick={() => !optionInCart && handleAddOption(option)}
+                        className={`p-5 rounded-2xl flex items-center gap-4 group cursor-pointer transition-all duration-300 ${optionInCart ? 'ring-2 ring-green-500' : ''}`}
+                        style={{ 
+                          backgroundColor: COLORS.noirCard,
+                          border: `1px solid ${optionInCart ? '#22c55e' : COLORS.border}`,
+                        }}
+                        whileHover={{ 
+                          borderColor: optionInCart ? '#22c55e' : `${COLORS.or}40`,
+                          scale: 1.02,
+                        }}
                       >
-                        <option.icon size={20} style={{ color: COLORS.or }} />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm mb-1">{option.name}</h4>
-                        <p className="text-lg font-light" style={{ color: COLORS.or }}>
-                          +{currency === "MAD" ? option.priceMAD : option.priceEUR}{" "}
-                          <span className="text-sm" style={{ color: COLORS.gris }}>
-                            {currency === "MAD" ? "DH" : "€"}{option.unit}
-                          </span>
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))}
+                        <div 
+                          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors"
+                          style={{ backgroundColor: optionInCart ? '#22c55e20' : `${COLORS.or}10` }}
+                        >
+                          {optionInCart ? (
+                            <Check size={20} style={{ color: '#22c55e' }} />
+                          ) : (
+                            <PlusIcon size={20} style={{ color: COLORS.or }} />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-sm mb-1" style={{ color: optionInCart ? '#22c55e' : COLORS.ivoire }}>
+                            {option.name}
+                            {optionInCart && <span className="ml-2 text-xs">(ajouté)</span>}
+                          </h4>
+                          <p className="text-lg font-light" style={{ color: COLORS.or }}>
+                            +{currency === "MAD" ? option.priceMAD : option.priceEUR}{" "}
+                            <span className="text-sm" style={{ color: COLORS.gris }}>
+                              {currency === "MAD" ? "DH" : "€"}{option.unit || ''}
+                            </span>
+                          </p>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </div>
             </section>
@@ -531,63 +595,79 @@ export default function Pricing() {
                 </div>
                 
                 <div className="grid sm:grid-cols-2 gap-6">
-                  {MAINTENANCE_PLANS.map((plan, index) => (
-                    <motion.div
-                      key={plan.name}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 }}
-                      className="p-8 rounded-3xl relative overflow-hidden"
-                      style={{ 
-                        backgroundColor: COLORS.noirCard,
-                        border: `1px solid ${plan.savings ? COLORS.or : COLORS.border}40`,
-                      }}
-                    >
-                      {plan.savings && (
-                        <div 
-                          className="absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-medium uppercase"
-                          style={{ backgroundColor: `${COLORS.or}20`, color: COLORS.or }}
-                        >
-                          {plan.savings}
-                        </div>
-                      )}
-                      
-                      <h3 className="text-xl font-medium mb-4">{plan.name}</h3>
-                      
-                      <div className="flex items-baseline gap-2 mb-6">
-                        <span className="text-4xl font-light">
-                          {currency === "MAD" ? plan.priceMAD.toLocaleString() : plan.priceEUR}
-                        </span>
-                        <span style={{ color: COLORS.gris }}>
-                          {currency === "MAD" ? "DH" : "€"}{plan.period}
-                        </span>
-                      </div>
-                      
-                      <ul className="space-y-2 mb-6">
-                        {["Mises à jour de sécurité", "Sauvegardes régulières", "Support technique WhatsApp"].map((item, i) => (
-                          <li key={i} className="flex items-center gap-2 text-sm font-light" style={{ color: COLORS.gris }}>
-                            <Check size={14} style={{ color: COLORS.or }} />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                      
-                      <a 
-                        href="https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20suis%20intéressé%20par%20la%20maintenance%20de%20mon%20site%20web."
-                        target="_blank"
-                        rel="noopener noreferrer"
+                  {CART_MAINTENANCE.map((plan, index) => {
+                    const maintenanceInCart = isInCart(plan.id);
+                    return (
+                      <motion.div
+                        key={plan.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                        className={`p-8 rounded-3xl relative overflow-hidden ${maintenanceInCart ? 'ring-2 ring-green-500' : ''}`}
+                        style={{ 
+                          backgroundColor: COLORS.noirCard,
+                          border: `1px solid ${maintenanceInCart ? '#22c55e' : plan.badge ? COLORS.or : COLORS.border}40`,
+                        }}
                       >
+                        {plan.badge && (
+                          <div 
+                            className="absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-medium uppercase"
+                            style={{ backgroundColor: `${COLORS.or}20`, color: COLORS.or }}
+                          >
+                            {plan.badge}
+                          </div>
+                        )}
+                        
+                        <h3 className="text-xl font-medium mb-4" style={{ color: maintenanceInCart ? '#22c55e' : COLORS.ivoire }}>
+                          {plan.name}
+                          {maintenanceInCart && <span className="ml-2 text-sm">(ajouté)</span>}
+                        </h3>
+                        
+                        <div className="flex items-baseline gap-2 mb-6">
+                          <span className="text-4xl font-light">
+                            {currency === "MAD" ? plan.priceMAD.toLocaleString() : plan.priceEUR}
+                          </span>
+                          <span style={{ color: COLORS.gris }}>
+                            {currency === "MAD" ? "DH" : "€"}{plan.period}
+                          </span>
+                        </div>
+                        
+                        <ul className="space-y-2 mb-6">
+                          {["Mises à jour de sécurité", "Sauvegardes régulières", "Support technique WhatsApp"].map((item, i) => (
+                            <li key={i} className="flex items-center gap-2 text-sm font-light" style={{ color: COLORS.gris }}>
+                              <Check size={14} style={{ color: COLORS.or }} />
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                        
                         <Button 
-                          variant="outline"
                           className="w-full py-5 font-medium text-sm uppercase tracking-widest"
-                          style={{ borderColor: COLORS.border, color: COLORS.ivoire }}
+                          style={{ 
+                            backgroundColor: maintenanceInCart ? '#22c55e' : 'transparent',
+                            borderColor: maintenanceInCart ? '#22c55e' : COLORS.border, 
+                            color: maintenanceInCart ? COLORS.noir : COLORS.ivoire,
+                            border: maintenanceInCart ? 'none' : `1px solid ${COLORS.border}`,
+                          }}
+                          onClick={() => !maintenanceInCart && handleAddMaintenance(plan)}
+                          disabled={maintenanceInCart}
                         >
-                          Souscrire
+                          {maintenanceInCart ? (
+                            <>
+                              <Check size={16} className="mr-2" />
+                              Ajouté
+                            </>
+                          ) : (
+                            <>
+                              <PlusIcon size={16} className="mr-2" />
+                              Ajouter au panier
+                            </>
+                          )}
                         </Button>
-                      </a>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </div>
             </section>
@@ -942,5 +1022,14 @@ export default function Pricing() {
       
       <CoutureFooter />
     </div>
+  );
+}
+
+// Main export with Provider wrapper
+export default function Pricing() {
+  return (
+    <PricingCartProvider>
+      <PricingContent />
+    </PricingCartProvider>
   );
 }
