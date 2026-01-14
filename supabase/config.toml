@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.send-webstudio-followup]
 verify_jwt = false
+
+[functions.send-webstudio-status-update]
+verify_jwt = false
