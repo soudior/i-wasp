@@ -130,6 +130,142 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
   cancelled: { label: "Annulé", color: COLORS.error, icon: XCircle },
 };
 
+// Email templates
+const emailTemplates = [
+  {
+    id: "custom",
+    label: "✏️ Message personnalisé",
+    subject: "",
+    message: "",
+  },
+  {
+    id: "info_request",
+    label: "📋 Demande d'informations",
+    subject: "Informations complémentaires nécessaires - {{siteName}}",
+    message: `Bonjour,
+
+Pour avancer sur votre projet "{{siteName}}", nous aurions besoin de quelques informations complémentaires :
+
+• [Élément 1 à préciser]
+• [Élément 2 à préciser]
+• [Élément 3 à préciser]
+
+Merci de nous répondre dès que possible afin de ne pas retarder la livraison.
+
+Cordialement,
+L'équipe IWASP Web Studio`,
+  },
+  {
+    id: "mockup_ready",
+    label: "🎨 Maquette prête",
+    subject: "Votre maquette est prête ! - {{siteName}}",
+    message: `Bonjour,
+
+Excellente nouvelle ! La maquette de votre site "{{siteName}}" est maintenant prête pour validation.
+
+📎 Vous la trouverez en pièce jointe ou via le lien ci-dessous :
+[Lien vers la maquette]
+
+Merci de nous faire part de vos retours :
+✅ Validation pour passer au développement
+🔄 Modifications souhaitées (merci de lister les points)
+
+Nous restons à votre disposition pour toute question.
+
+Cordialement,
+L'équipe IWASP Web Studio`,
+  },
+  {
+    id: "in_development",
+    label: "🛠️ Développement en cours",
+    subject: "Votre site est en cours de développement - {{siteName}}",
+    message: `Bonjour,
+
+Nous voulions vous tenir informé : le développement de votre site "{{siteName}}" est maintenant en cours ! 🚀
+
+Notre équipe travaille activement sur :
+• L'intégration du design validé
+• La mise en place des fonctionnalités
+• L'optimisation pour mobile
+
+Prochaine étape : Vous recevrez un lien de prévisualisation d'ici quelques jours.
+
+Cordialement,
+L'équipe IWASP Web Studio`,
+  },
+  {
+    id: "preview_ready",
+    label: "👀 Prévisualisation disponible",
+    subject: "Prévisualisez votre site ! - {{siteName}}",
+    message: `Bonjour,
+
+Votre site "{{siteName}}" est prêt à être prévisualisé ! 🎉
+
+🔗 Lien de prévisualisation :
+[Insérer le lien ici]
+
+Merci de tester les différentes pages et de nous faire part de vos retours :
+• Navigation et ergonomie
+• Contenu et textes
+• Images et visuels
+• Fonctionnalités
+
+Une fois validé, nous procéderons à la mise en ligne finale.
+
+Cordialement,
+L'équipe IWASP Web Studio`,
+  },
+  {
+    id: "delivery_soon",
+    label: "🚀 Livraison imminente",
+    subject: "Livraison de votre site dans 24-48h - {{siteName}}",
+    message: `Bonjour,
+
+Nous avons le plaisir de vous annoncer que votre site "{{siteName}}" sera livré dans les prochaines 24 à 48 heures ! 🎊
+
+Nous préparons actuellement :
+• Les dernières optimisations de performance
+• La configuration du domaine et hébergement
+• Les tests finaux de compatibilité
+
+Vous recevrez très bientôt un email avec :
+• L'URL définitive de votre site
+• Les accès à votre espace d'administration
+• Un guide de prise en main
+
+Merci de votre confiance !
+
+Cordialement,
+L'équipe IWASP Web Studio`,
+  },
+  {
+    id: "delivered",
+    label: "✅ Site livré",
+    subject: "🎉 Votre site est en ligne ! - {{siteName}}",
+    message: `Bonjour,
+
+Félicitations ! Votre site "{{siteName}}" est maintenant en ligne ! 🎉
+
+🌐 URL de votre site : [URL du site]
+
+📋 Vos accès administrateur :
+• URL admin : [URL admin]
+• Identifiant : [email]
+• Mot de passe : [À définir lors de la première connexion]
+
+📚 Ressources utiles :
+• Guide de prise en main (en pièce jointe)
+• Support : reply à cet email
+
+Nous restons disponibles pour toute question ou modification future.
+
+Merci de votre confiance !
+
+Cordialement,
+L'équipe IWASP Web Studio`,
+  },
+];
+
 function AdminWebStudioOrdersContent() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
@@ -144,10 +280,23 @@ function AdminWebStudioOrdersContent() {
   
   // Email followup state
   const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState("custom");
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [includeOrderDetails, setIncludeOrderDetails] = useState(true);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+
+  // Apply template
+  const applyTemplate = (templateId: string, siteName: string) => {
+    const template = emailTemplates.find(t => t.id === templateId);
+    if (template) {
+      setSelectedTemplate(templateId);
+      if (templateId !== "custom") {
+        setEmailSubject(template.subject.replace(/\{\{siteName\}\}/g, siteName));
+        setEmailMessage(template.message.replace(/\{\{siteName\}\}/g, siteName));
+      }
+    }
+  };
 
   // Fetch all website proposals with status "ordered" or other non-generated statuses
   const { data: orders, isLoading, refetch } = useQuery({
@@ -306,6 +455,8 @@ function AdminWebStudioOrdersContent() {
 
   const handleOpenEmailDialog = (order: WebsiteProposal) => {
     const siteName = order.proposal?.siteName || order.form_data?.businessName || "votre projet";
+    // Reset to custom template
+    setSelectedTemplate("custom");
     setEmailSubject(`Mise à jour de votre projet - ${siteName}`);
     setEmailMessage(`Bonjour,
 
@@ -961,6 +1112,31 @@ L'équipe IWASP Web Studio`);
           </DialogHeader>
           
           <div className="space-y-4 mt-4">
+            {/* Template Selector */}
+            <div>
+              <label className="text-sm font-medium mb-2 block" style={{ color: COLORS.gris }}>
+                Template
+              </label>
+              <Select 
+                value={selectedTemplate} 
+                onValueChange={(value) => {
+                  const siteName = selectedOrder?.proposal?.siteName || selectedOrder?.form_data?.businessName || "votre projet";
+                  applyTemplate(value, siteName);
+                }}
+              >
+                <SelectTrigger style={{ backgroundColor: COLORS.noirSoft, borderColor: COLORS.border, color: COLORS.ivoire }}>
+                  <SelectValue placeholder="Choisir un template..." />
+                </SelectTrigger>
+                <SelectContent style={{ backgroundColor: COLORS.noirCard, borderColor: COLORS.border }}>
+                  {emailTemplates.map((template) => (
+                    <SelectItem key={template.id} value={template.id}>
+                      {template.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div>
               <label className="text-sm font-medium mb-2 block" style={{ color: COLORS.gris }}>
                 Sujet
@@ -968,7 +1144,10 @@ L'équipe IWASP Web Studio`);
               <Input
                 placeholder="Sujet de l'email..."
                 value={emailSubject}
-                onChange={(e) => setEmailSubject(e.target.value)}
+                onChange={(e) => {
+                  setEmailSubject(e.target.value);
+                  setSelectedTemplate("custom");
+                }}
                 style={{ backgroundColor: COLORS.noirSoft, borderColor: COLORS.border, color: COLORS.ivoire }}
               />
             </div>
@@ -980,8 +1159,11 @@ L'équipe IWASP Web Studio`);
               <Textarea
                 placeholder="Votre message..."
                 value={emailMessage}
-                onChange={(e) => setEmailMessage(e.target.value)}
-                rows={8}
+                onChange={(e) => {
+                  setEmailMessage(e.target.value);
+                  setSelectedTemplate("custom");
+                }}
+                rows={10}
                 style={{ backgroundColor: COLORS.noirSoft, borderColor: COLORS.border, color: COLORS.ivoire }}
               />
             </div>
