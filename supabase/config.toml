@@ -131,3 +131,6 @@ verify_jwt = false
 
 [functions.verify-direct-payment]
 verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
