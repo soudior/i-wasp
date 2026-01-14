@@ -93,14 +93,14 @@ export const SAAS_PLANS = {
       sslIncluded: false,
       analytics: 'none',
       support: 'email',
-      lovableCredits: 0,
+      iwaspCredits: 0, // Crédits i-wasp pour génération IA
     },
     
     limits: {
       maxNfcCards: 0,
       maxSocialLinks: 3,
       maxSitePages: 0,
-      lovableCreditsMonthly: 0,
+      iwaspCreditsMonthly: 0,
     },
   },
   
@@ -117,6 +117,7 @@ export const SAAS_PLANS = {
     
     included: [
       '10 cartes NFC/mois (PVC)',
+      '5 crédits i-wasp IA/mois',
       'Design template simple',
       'vCard complète',
       'Apple & Google Wallet',
@@ -148,14 +149,14 @@ export const SAAS_PLANS = {
       sslIncluded: true,
       analytics: 'basic',
       support: 'email',
-      lovableCredits: 3,
+      iwaspCredits: 5, // 5 crédits i-wasp/mois
     },
     
     limits: {
       maxNfcCards: 10,
       maxSocialLinks: 8,
       maxSitePages: 1,
-      lovableCreditsMonthly: 3,
+      iwaspCreditsMonthly: 5,
     },
     
     addons: {
@@ -179,6 +180,7 @@ export const SAAS_PLANS = {
     
     included: [
       '25 cartes NFC/mois (PVC + Métal brossé)',
+      '20 crédits i-wasp IA/mois',
       'Design premium personnalisé',
       'Logo IMPRIMÉ sur cartes ✓',
       'vCard avancée + Formulaire contact',
@@ -188,7 +190,6 @@ export const SAAS_PLANS = {
       'SEO premium',
       'Analytics détaillée',
       'Chat 24/7 + Email support',
-      '10 crédits Lovable/mois',
     ],
     
     excluded: [
@@ -211,16 +212,16 @@ export const SAAS_PLANS = {
       unlimitedDomains: true,
       sslIncluded: true,
       seoPremium: true,
+      iwaspCredits: 20, // 20 crédits i-wasp/mois
       analytics: 'detailed',
       support: 'chat_24_7',
-      lovableCredits: 10,
     },
     
     limits: {
       maxNfcCards: 25,
       maxSocialLinks: 15,
       maxSitePages: 10,
-      lovableCreditsMonthly: 10,
+      iwaspCreditsMonthly: 20,
     },
   },
   
@@ -237,6 +238,7 @@ export const SAAS_PLANS = {
     
     included: [
       '75 cartes NFC/mois (Métal premium)',
+      'Crédits i-wasp IA ILLIMITÉS ∞',
       'Logo IMPRIMÉ + GRAVÉ sur cartes ✓',
       'Designs illimités + variations',
       'vCard illimitées + CRM sync',
@@ -247,7 +249,6 @@ export const SAAS_PLANS = {
       'Marketing automation',
       'Analytics avancée + API access',
       'Manager dédié 24/7',
-      '30 crédits Lovable/mois',
     ],
     
     excluded: [],
@@ -269,17 +270,17 @@ export const SAAS_PLANS = {
       sslIncluded: true,
       seoPremium: true,
       marketingAutomation: true,
+      iwaspCredits: Infinity, // Crédits ILLIMITÉS
       analytics: 'advanced',
       apiAccess: true,
       support: 'dedicated_manager',
-      lovableCredits: 30,
     },
     
     limits: {
       maxNfcCards: 75,
       maxSocialLinks: Infinity,
       maxSitePages: 20,
-      lovableCreditsMonthly: 30,
+      iwaspCreditsMonthly: Infinity, // ILLIMITÉ
     },
   },
 } as const;
@@ -380,11 +381,19 @@ export const SAAS_FEATURE_COMPARISON = [
     ],
   },
   {
+    category: 'i-wasp Studio IA',
+    features: [
+      { name: 'Crédits i-wasp IA/mois', free: '0', identity: '5', professional: '20', enterprise: '∞ Illimité' },
+      { name: 'Génération sites web', free: false, identity: true, professional: true, enterprise: true },
+      { name: 'Design cartes NFC IA', free: false, identity: true, professional: true, enterprise: true },
+      { name: 'Profils smart IA', free: false, identity: true, professional: true, enterprise: true },
+    ],
+  },
+  {
     category: 'Analytics & Support',
     features: [
       { name: 'Analytics', free: '-', identity: 'Basique', professional: 'Détaillée', enterprise: 'Avancée + API' },
       { name: 'Support', free: 'Email', identity: 'Email', professional: 'Chat 24/7', enterprise: 'Manager dédié' },
-      { name: 'Crédits Lovable/mois', free: '0', identity: '3', professional: '10', enterprise: '30' },
     ],
   },
 ];

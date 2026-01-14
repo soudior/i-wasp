@@ -6,7 +6,7 @@ import { SaaSPlanId, getSaaSPlan } from '@/lib/saasPlans';
 interface SaaSSubscriptionFeatures {
   nfcCardsPerMonth: number;
   sitePages: number;
-  lovableCredits: number;
+  iwaspCredits: number | 'unlimited';
   logoOnCard: boolean;
   ecommerce: boolean;
   analytics: string;
@@ -33,7 +33,8 @@ interface UseSaaSSubscriptionReturn {
   isIdentity: boolean;
   isProfessional: boolean;
   isEnterprise: boolean;
-  isPremium: boolean; // Professional or Enterprise
+  isPremium: boolean;
+  hasUnlimitedCredits: boolean;
   planDetails: ReturnType<typeof getSaaSPlan> | null;
   refresh: () => Promise<void>;
 }
@@ -50,7 +51,7 @@ const DEFAULT_SUBSCRIPTION: SaaSSubscription = {
   features: {
     nfcCardsPerMonth: 0,
     sitePages: 0,
-    lovableCredits: 0,
+    iwaspCredits: 0,
     logoOnCard: false,
     ecommerce: false,
     analytics: 'none',
@@ -141,6 +142,7 @@ export function useSaaSSubscription(): UseSaaSSubscriptionReturn {
   const isProfessional = plan === 'professional';
   const isEnterprise = plan === 'enterprise';
   const isPremium = isProfessional || isEnterprise;
+  const hasUnlimitedCredits = isEnterprise;
   const planDetails = getSaaSPlan(plan);
 
   return {
@@ -152,6 +154,7 @@ export function useSaaSSubscription(): UseSaaSSubscriptionReturn {
     isProfessional,
     isEnterprise,
     isPremium,
+    hasUnlimitedCredits,
     planDetails,
     refresh: checkSubscription,
   };
