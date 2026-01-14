@@ -591,15 +591,25 @@ function AdminWebStudioOrdersContent() {
     
     // Fetch generated website data for hosting URL and editing
     if (order.status === "site_generated" || order.status === "completed") {
-      const { data } = await supabase
-        .from("generated_websites")
-        .select("id, slug, preview_url, full_page_html")
-        .eq("proposal_id", order.id)
-        .single();
-      
-      // Also get colors from proposal
-      const colors = order.proposal?.colorPalette || {};
-      setGeneratedSiteData(data ? { ...data, colors } : null);
+      try {
+        const { data, error } = await supabase
+          .from("generated_websites")
+          .select("id, slug, preview_url, full_page_html")
+          .eq("proposal_id", order.id)
+          .maybeSingle();
+        
+        if (error) {
+          console.error("Error fetching generated website:", error);
+          setGeneratedSiteData(null);
+        } else {
+          // Also get colors from proposal
+          const colors = order.proposal?.colorPalette || {};
+          setGeneratedSiteData(data ? { ...data, colors } : null);
+        }
+      } catch (err) {
+        console.error("Exception fetching generated website:", err);
+        setGeneratedSiteData(null);
+      }
     } else {
       setGeneratedSiteData(null);
     }
