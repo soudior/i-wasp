@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Shield, Zap, RefreshCw, ArrowRight, CheckCircle2, Globe, Sparkles, Check } from "lucide-react";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { useWebStudioTracking } from "@/hooks/useAnalyticsEvents";
+import { PortfolioSection } from "@/components/PortfolioSection";
 
 const luxuryEase = [0.22, 1, 0.36, 1] as const;
 
@@ -304,6 +305,9 @@ export default function IWASPLanding() {
           </motion.div>
         </motion.div>
       </section>
+
+      {/* Portfolio Section */}
+      <PortfolioSection />
 
       {/* Web Studio IA Section */}
       <section className="py-32 sm:py-40 px-6">
