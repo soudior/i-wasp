@@ -2,6 +2,7 @@ import { motion, type Transition } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Shield, Zap, RefreshCw, ArrowRight, CheckCircle2, Globe, Sparkles, Check } from "lucide-react";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
+import { useWebStudioTracking } from "@/hooks/useAnalyticsEvents";
 
 const luxuryEase = [0.22, 1, 0.36, 1] as const;
 
@@ -23,6 +24,12 @@ const staggerContainer = {
 };
 
 export default function IWASPLanding() {
+  const { trackCTAClick } = useWebStudioTracking();
+
+  const handleWebStudioClick = () => {
+    trackCTAClick('landing_webstudio_section');
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Navigation */}
@@ -348,6 +355,7 @@ export default function IWASPLanding() {
                 </ul>
                 <Link 
                   to="/web-studio/offres"
+                  onClick={handleWebStudioClick}
                   className="group inline-flex items-center gap-3 px-8 py-3 border border-[hsl(210,30%,50%)] text-[hsl(210,30%,60%)] font-body text-sm tracking-widest uppercase hover:bg-[hsl(210,30%,50%)] hover:text-foreground transition-all duration-500"
                 >
                   Découvrir le Web Studio
