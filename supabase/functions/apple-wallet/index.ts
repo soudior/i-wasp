@@ -188,15 +188,16 @@ serve(async (req) => {
 
     console.log('PassKit payload:', JSON.stringify(passKitPayload, null, 2));
 
-    // Create the auth token - PassKit uses API Key:Secret in Base64 for some endpoints
-    // or Bearer token for others. Let's try Bearer first with the key.
-    const authToken = btoa(`${passKitApiKey}:${passKitApiSecret}`);
+    // Create Basic Auth token: Base64(apiKey:apiSecret)
+    const basicAuthToken = btoa(`${passKitApiKey}:${passKitApiSecret}`);
+    console.log('Using Basic Auth for PassKit API');
 
     // Call PassKit.io API - /members/member endpoint for generic passes
+    // Using Basic Auth as per PassKit REST API documentation
     const passKitResponse = await fetch('https://api.pub1.passkit.io/members/member', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${passKitApiKey}`,
+        'Authorization': `Basic ${basicAuthToken}`,
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
