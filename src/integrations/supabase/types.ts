@@ -38,6 +38,45 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_metadata: Json | null
+          event_name: string
+          event_type: string
+          event_value: number | null
+          id: string
+          page_url: string | null
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_metadata?: Json | null
+          event_name: string
+          event_type: string
+          event_value?: number | null
+          id?: string
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_metadata?: Json | null
+          event_name?: string
+          event_type?: string
+          event_value?: number | null
+          id?: string
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       brand_assets: {
         Row: {
           asset_type: string
@@ -1515,6 +1554,8 @@ export type Database = {
         Args: { p_action: string; p_slug: string }
         Returns: string
       }
+      get_daily_analytics: { Args: { p_days?: number }; Returns: Json }
+      get_express_checkout_funnel: { Args: { p_days?: number }; Returns: Json }
       get_public_card: { Args: { p_slug: string }; Returns: Json }
       get_story_stats: { Args: { p_story_id: string }; Returns: Json }
       get_vcard_data: { Args: { p_slug: string }; Returns: Json }

@@ -15,12 +15,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, CreditCard, Banknote, Check, MapPin, User, Shield, Loader2 } from "lucide-react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { toast } from "sonner";
+import { useExpressCheckoutTracking } from "@/hooks/useAnalyticsEvents";
 
 export default function ExpressPayer() {
   const navigate = useNavigate();
   const { state, setPaymentMethod, markComplete, canAccessStep, resetCheckout } = useExpressCheckout();
   const { user } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
+  const { trackPurchase } = useExpressCheckoutTracking('payer');
 
   // Redirect if info not complete
   useEffect(() => {
@@ -163,6 +165,9 @@ export default function ExpressPayer() {
       }
 
       // Si COD, marquer comme complet et rediriger
+      // Track purchase
+      trackPurchase(orderNumber, selectedOffer.price / 100, selectedOffer.name, state.paymentMethod || 'cod');
+      
       markComplete();
       resetCheckout();
       toast.success("Commande confirmée ! Vous recevrez votre carte sous 48-72h.");

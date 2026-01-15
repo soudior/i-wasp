@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, ArrowRight, User, Mail, Phone, MapPin, Lock } from "lucide-react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { toast } from "sonner";
+import { useExpressCheckoutTracking } from "@/hooks/useAnalyticsEvents";
 
 const validateEmail = (email: string): boolean => {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,6 +30,7 @@ export default function ExpressInfos() {
   const navigate = useNavigate();
   const { state, setCustomerInfo, canAccessStep } = useExpressCheckout();
   const [isNavigating, setIsNavigating] = useState(false);
+  const { trackInfoSubmit } = useExpressCheckoutTracking('infos');
 
   // Redirect if no offer selected
   useEffect(() => {
@@ -96,6 +98,10 @@ export default function ExpressInfos() {
     }
 
     setIsNavigating(true);
+    
+    // Track info submission
+    trackInfoSubmit(formData.city.trim());
+    
     setCustomerInfo({
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
