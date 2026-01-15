@@ -70,7 +70,7 @@ serve(async (req) => {
     console.log('Using wallet styles:', styles);
 
     // Construct the public URL for the card
-    const publicUrl = `https://i-wasp.com/c/${cardData.slug}`;
+    const publicUrl = `https://i-wasp.lovable.app/c/${cardData.slug}`;
 
     // Build secondary fields based on visibility settings
     const secondaryFields: Array<{ key: string; value: string; label: string }> = [];
@@ -162,14 +162,18 @@ serve(async (req) => {
     }
 
     // PassKit.io API call to create a pass
+    // Using the correct PassKit.io API endpoint
     const passKitPayload = {
-      templateId: "iwasp-business-card",
-      passData: {
+      templateId: passKitApiKey, // The API key is often the template ID in PassKit
+      pass: {
         serialNumber: cardData.id,
         // Apply custom colors if provided
         backgroundColor: styles.backgroundColor || "#1a1a1a",
         labelColor: styles.labelColor || "#ffffff",
         foregroundColor: styles.foregroundColor || "#ffffff",
+        organizationName: "IWASP",
+        description: "Carte de visite numérique",
+        logoText: (styles.showCompany !== false && cardData.company) ? cardData.company : "IWASP",
         headerFields: [
           {
             key: "company",
@@ -194,35 +198,61 @@ serve(async (req) => {
           altText: cardData.slug
         }
       },
-      pushToken: null,
       expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
     };
 
     console.log('PassKit payload:', JSON.stringify(passKitPayload, null, 2));
 
-    // Call PassKit.io API
-    const authHeader = btoa(`${passKitApiKey}:${passKitApiSecret}`);
-    
-    const passKitResponse = await fetch('https://api.passkit.io/v1/passes', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${authHeader}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(passKitPayload)
-    });
+    // Try the correct PassKit.io API endpoints
+    // PassKit uses different endpoints based on the service type
+    const apiEndpoints = [
+      'https://api.pub1.passkit.io/members/member',
+      'https://api.pub2.passkit.io/members/member',
+      'https://api-eu.passkit.io/v1/passes'
+    ];
 
-    if (!passKitResponse.ok) {
-      const errorText = await passKitResponse.text();
-      console.error('PassKit API error:', passKitResponse.status, errorText);
+    let passKitResponse = null;
+    let lastError = null;
+
+    // Try using Bearer token auth (more common with PassKit)
+    for (const endpoint of apiEndpoints) {
+      try {
+        console.log('Trying endpoint:', endpoint);
+        
+        passKitResponse = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${passKitApiSecret}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(passKitPayload)
+        });
+
+        if (passKitResponse.ok) {
+          console.log('Success with endpoint:', endpoint);
+          break;
+        } else {
+          const errorText = await passKitResponse.text();
+          console.log('Failed endpoint:', endpoint, 'Status:', passKitResponse.status, 'Error:', errorText);
+          lastError = { status: passKitResponse.status, error: errorText };
+        }
+      } catch (fetchError) {
+        console.log('Fetch error for endpoint:', endpoint, fetchError);
+        lastError = { status: 500, error: String(fetchError) };
+      }
+    }
+
+    // If all endpoints failed, return fallback
+    if (!passKitResponse || !passKitResponse.ok) {
+      console.error('All PassKit API endpoints failed:', lastError);
       
       return new Response(
         JSON.stringify({
           error: 'Erreur PassKit',
-          message: 'Impossible de générer le pass Apple Wallet.',
+          message: 'Impossible de générer le pass Apple Wallet. Veuillez réessayer plus tard.',
           fallback: true,
-          status: passKitResponse.status
+          details: lastError
         }),
         {
           status: 200,
@@ -234,9 +264,14 @@ serve(async (req) => {
     const passKitData = await passKitResponse.json();
     console.log('PassKit response:', JSON.stringify(passKitData));
 
-    if (passKitData.url || passKitData.passUrl || passKitData.downloadUrl) {
-      const passUrl = passKitData.url || passKitData.passUrl || passKitData.downloadUrl;
-      
+    // Extract pass URL from various possible response formats
+    const passUrl = passKitData.url || 
+                    passKitData.passUrl || 
+                    passKitData.downloadUrl || 
+                    passKitData.pass?.url ||
+                    passKitData.data?.url;
+
+    if (passUrl) {
       return new Response(
         JSON.stringify({
           success: true,
@@ -249,12 +284,15 @@ serve(async (req) => {
       );
     }
 
-    if (passKitData.pass) {
+    // If we got a pass object but no URL, try to construct one
+    if (passKitData.id || passKitData.passId) {
+      const passId = passKitData.id || passKitData.passId;
+      const constructedUrl = `https://pub1.pskt.io/${passId}`;
+      
       return new Response(
         JSON.stringify({
           success: true,
-          passData: passKitData.pass,
-          contentType: 'application/vnd.apple.pkpass',
+          passUrl: constructedUrl,
           message: 'Pass Apple Wallet généré avec succès'
         }),
         {
@@ -263,11 +301,12 @@ serve(async (req) => {
       );
     }
 
+    // Return the raw data if we can't extract a URL
     return new Response(
       JSON.stringify({
         success: true,
         data: passKitData,
-        message: 'Pass Apple Wallet généré avec succès'
+        message: 'Pass généré - vérifiez la réponse pour le lien'
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
