@@ -235,7 +235,7 @@ export default function WebStudioConfiguration() {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {AVAILABLE_PAGES.slice(0, packId === 'elite' ? undefined : -2).map((page) => (
+            {AVAILABLE_PAGES.slice(0, packId === 'premium' ? undefined : -2).map((page) => (
               <motion.button
                 key={page.id}
                 onClick={() => togglePage(page.id)}

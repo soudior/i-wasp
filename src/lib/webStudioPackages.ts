@@ -1,28 +1,27 @@
 /**
  * Web Studio Packages Configuration (MAD pricing)
- * 3 tiers: Starter (instant), Pro (3-5 days), Elite (7 days)
+ * 3 tiers: Starter, Standard, Premium
  */
 
 export const WEB_STUDIO_PACKAGES = {
   STARTER: {
     id: 'starter',
-    name: 'Pack Starter',
-    badge: '🔥 INSTANTANÉ',
-    description: 'Une page landing professionnelle, créée par IA en quelques minutes. Parfait pour présenter votre business.',
-    priceMad: 790,
-    priceEur: 79,
-    stripe_price_id: 'price_1SpKRXIvyaABH94u3XFnG4qg',
+    name: 'Starter',
+    badge: '🚀 ESSENTIEL',
+    description: 'Pour démarrer votre présence en ligne avec un site simple et efficace.',
+    priceMad: 2000,
+    priceEur: 200,
+    stripe_price_id: 'price_1SpKRXIvyaABH94u3XFnG4qg', // À mettre à jour avec le nouveau prix Stripe
     stripe_product_id: 'prod_TmuG5HE5p4MFRj',
-    pages: '1 page landing',
-    delivery: '5-10 minutes',
+    pages: '1-3 PAGES',
+    delivery: '3-5 jours',
     deliveryIcon: '⚡',
-    isInstant: true,
+    isInstant: false,
     features: [
-      '1 page landing',
-      'Design IA automatique',
-      'Contenu IA généré',
-      'Mobile responsive',
-      'Sous-domaine gratuit',
+      'Design responsive',
+      'Hébergement inclus',
+      'Formulaire de contact',
+      'Optimisation SEO de base',
     ],
     color: {
       bg: 'bg-emerald-500/10',
@@ -31,26 +30,25 @@ export const WEB_STUDIO_PACKAGES = {
       button: 'bg-emerald-600 hover:bg-emerald-700',
     }
   },
-  PRO: {
-    id: 'pro',
-    name: 'Pack Pro',
-    badge: '⭐ POPULAIRE',
-    description: '3 à 5 pages pour un site complet : Accueil, Services, À propos, Contact…',
-    priceMad: 1490,
-    priceEur: 149,
-    stripe_price_id: 'price_1SpKRqIvyaABH94uKQIXaEIW',
+  STANDARD: {
+    id: 'standard',
+    name: 'Standard',
+    badge: '⭐ RECOMMANDÉ',
+    description: 'Pour une présence professionnelle complète avec toutes les fonctionnalités essentielles.',
+    priceMad: 5000,
+    priceEur: 500,
+    stripe_price_id: 'price_1SpKRqIvyaABH94uKQIXaEIW', // À mettre à jour avec le nouveau prix Stripe
     stripe_product_id: 'prod_TmuGoD257oDhrS',
-    pages: '3-5 pages',
-    delivery: '3-5 jours',
+    pages: '4-6 PAGES',
+    delivery: '5-7 jours',
     deliveryIcon: '📅',
     isInstant: false,
     features: [
-      '3–5 pages au choix',
-      'Design IA premium',
-      'Contenu IA optimisé',
-      'Formulaire de contact',
-      'Mobile responsive',
-      'Hébergement inclus',
+      'Tout Starter +',
+      'Galerie photos',
+      'Intégration réseaux sociaux',
+      'Blog intégré',
+      'Analytics avancés',
     ],
     color: {
       bg: 'bg-blue-500/10',
@@ -59,28 +57,25 @@ export const WEB_STUDIO_PACKAGES = {
       button: 'bg-blue-600 hover:bg-blue-700',
     }
   },
-  ELITE: {
-    id: 'elite',
-    name: 'Pack Elite',
+  PREMIUM: {
+    id: 'premium',
+    name: 'Premium',
     badge: '👑 PREMIUM',
-    description: '5 à 10 pages complètes + fonctionnalités avancées pour un site professionnel haut de gamme.',
-    priceMad: 2290,
-    priceEur: 229,
-    stripe_price_id: 'price_1SpKS3IvyaABH94ujjmo6jDb',
+    description: 'Solution complète sur-mesure pour les projets ambitieux.',
+    priceMad: 10000,
+    priceEur: 1000,
+    stripe_price_id: 'price_1SpKS3IvyaABH94ujjmo6jDb', // À mettre à jour avec le nouveau prix Stripe
     stripe_product_id: 'prod_TmuGjPyWT6Gle4',
-    pages: '5-10 pages',
-    delivery: '7 jours',
+    pages: '7-10 PAGES',
+    delivery: '7-14 jours',
     deliveryIcon: '📅',
     isInstant: false,
     features: [
-      '5–10 pages complètes',
-      'Design IA ultra-premium',
-      'Contenu complet et optimisé',
-      'Formulaire avancé',
-      'WhatsApp intégré',
-      'Blog / actualités',
-      'Mobile responsive',
-      'Hébergement inclus',
+      'Tout Standard +',
+      'Design premium',
+      'Animations avancées',
+      'CMS personnalisé',
+      'E-commerce (optionnel)',
       'Support prioritaire',
     ],
     color: {
@@ -130,9 +125,9 @@ export function getPackageById(id: string): WebStudioPackage | null {
 
 export function getMaxPages(packageId: string): number {
   switch (packageId) {
-    case 'starter': return 1;
-    case 'pro': return 5;
-    case 'elite': return 10;
-    default: return 1;
+    case 'starter': return 3;
+    case 'standard': return 6;
+    case 'premium': return 10;
+    default: return 3;
   }
 }
