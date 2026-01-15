@@ -1,6 +1,7 @@
 import { motion, type Transition } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Shield, Zap, RefreshCw, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 
 const luxuryEase = [0.22, 1, 0.36, 1] as const;
 
@@ -344,6 +345,9 @@ export default function IWASPLanding() {
           </p>
         </div>
       </footer>
+
+      {/* Exit Intent Popup */}
+      <ExitIntentPopup discountCode="IWASP10" discountPercent={10} />
     </div>
   );
 }
