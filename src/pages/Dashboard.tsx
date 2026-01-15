@@ -37,11 +37,15 @@ import {
   MoreVertical, Wallet,
   Wifi, WifiOff, Pencil, Trash2, ExternalLink, Copy,
   Apple, Smartphone, ShoppingBag, 
-  ChevronRight, Loader2, Settings, Zap,
+  ChevronRight, Settings, Zap, Loader2,
   Bell, Send, Mail, MessageSquare, Download,
   MousePointerClick, Link2, ArrowRight,
   Sparkles, Crown, Clock, Calendar, X, LogOut
 } from "lucide-react";
+import {
+  DashboardStatsSkeleton,
+  DashboardCardListSkeleton,
+} from "@/components/dashboard/DashboardSkeletons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -363,9 +367,7 @@ const Dashboard = () => {
 
               {/* Cards Grid */}
               {cardsLoading ? (
-                <div className="flex justify-center py-24">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
+                <DashboardCardListSkeleton count={2} />
               ) : cards.length === 0 ? (
                 <motion.div 
                   variants={fadeUp}
