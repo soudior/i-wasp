@@ -903,8 +903,54 @@ function PricingContent() {
                   </motion.div>
                 </div>
                 
-                <p className="text-center text-xs mt-8 font-light" style={{ color: COLORS.gris }}>
-                  Livraison Europe & Maroc • 1 EUR ≈ 10 DH
+                {/* Shipping Info */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="mt-12 grid md:grid-cols-2 gap-4"
+                >
+                  {/* Europe Shipping */}
+                  <div 
+                    className="p-5 rounded-2xl flex items-center gap-4"
+                    style={{ backgroundColor: COLORS.noirCard, border: `1px solid ${COLORS.border}` }}
+                  >
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+                      style={{ backgroundColor: `${COLORS.gris}10` }}
+                    >
+                      🇪🇺
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm" style={{ color: COLORS.ivoire }}>Europe</p>
+                      <p className="text-xs" style={{ color: COLORS.gris }}>
+                        Livraison : <span style={{ color: COLORS.or }}>Gratuite</span> • 5-7 jours ouvrés
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Morocco Shipping */}
+                  <div 
+                    className="p-5 rounded-2xl flex items-center gap-4"
+                    style={{ backgroundColor: COLORS.noirCard, border: `1px solid ${COLORS.border}` }}
+                  >
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+                      style={{ backgroundColor: `${COLORS.gris}10` }}
+                    >
+                      🇲🇦
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm" style={{ color: COLORS.ivoire }}>Maroc</p>
+                      <p className="text-xs" style={{ color: COLORS.gris }}>
+                        Livraison : <span style={{ color: COLORS.or }}>Gratuite</span> • 3-5 jours ouvrés
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+                
+                <p className="text-center text-xs mt-6 font-light" style={{ color: COLORS.gris }}>
+                  Expédition depuis la France • Suivi inclus • 1 EUR ≈ 10 DH
                 </p>
               </div>
             </section>
