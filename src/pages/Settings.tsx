@@ -24,7 +24,8 @@ import {
 import { toast } from "sonner";
 import { 
   Upload, User, Lock, Image, Check, Loader2, 
-  Camera, Trash2, Eye, Crown, ArrowLeft, AlertTriangle
+  Camera, Trash2, Eye, Crown, ArrowLeft, AlertTriangle,
+  RotateCcw, Compass
 } from "lucide-react";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 import iwaspCertifiedBadge from "@/assets/iwasp-certified-badge.png";
@@ -668,6 +669,53 @@ const Settings = () => {
                     ) : (
                       "Modifier le mot de passe"
                     )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Preferences Section */}
+            <Card style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: `${COLORS.accent}20` }}
+                  >
+                    <Compass className="h-5 w-5" style={{ color: COLORS.accent }} />
+                  </div>
+                  <div>
+                    <CardTitle style={{ color: COLORS.text }}>Préférences</CardTitle>
+                    <CardDescription style={{ color: COLORS.textMuted }}>
+                      Personnalisez votre expérience
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div 
+                  className="p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                  style={{ backgroundColor: `${COLORS.accent}05`, borderColor: COLORS.border }}
+                >
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: COLORS.text }}>Tour d'onboarding</p>
+                    <p className="text-xs mt-1" style={{ color: COLORS.textMuted }}>
+                      Relancez le guide interactif pour découvrir toutes les fonctionnalités
+                    </p>
+                  </div>
+                  <Button 
+                    variant="outline"
+                    className="shrink-0"
+                    style={{ borderColor: COLORS.border, color: COLORS.text }}
+                    onClick={() => {
+                      impactLight();
+                      localStorage.removeItem('iwasp_onboarding_completed');
+                      notificationSuccess();
+                      toast.success("Tour d'onboarding réinitialisé ! Il se lancera à votre prochaine visite sur l'accueil.");
+                    }}
+                  >
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Relancer le tour
                   </Button>
                 </div>
               </CardContent>
