@@ -44,13 +44,18 @@ serve(async (req) => {
   try {
     const passKitApiKey = Deno.env.get('PASSKIT_API_KEY');
     const passKitApiSecret = Deno.env.get('PASSKIT_API_SECRET');
+    const passKitJwtToken = Deno.env.get('PASSKIT_JWT_TOKEN');
 
-    if (!passKitApiKey || !passKitApiSecret) {
+    // Check if we have either JWT token OR API key/secret
+    const hasJwtToken = passKitJwtToken && passKitJwtToken.startsWith('ey');
+    const hasBasicCredentials = passKitApiKey && passKitApiSecret;
+
+    if (!hasJwtToken && !hasBasicCredentials) {
       console.error('PassKit credentials not configured');
       return new Response(
         JSON.stringify({ 
           error: 'Service non configuré',
-          message: 'Les clés PassKit ne sont pas configurées.',
+          message: 'Les clés PassKit ne sont pas configurées. Veuillez configurer PASSKIT_JWT_TOKEN ou PASSKIT_API_KEY + PASSKIT_API_SECRET.',
           fallback: true
         }),
         { 
@@ -59,6 +64,10 @@ serve(async (req) => {
         }
       );
     }
+
+    // Determine auth method
+    const useJwtAuth = hasJwtToken;
+    console.log('Using auth method:', useJwtAuth ? 'JWT Bearer Token' : 'Basic Auth');
 
     const { cardData, walletStyles } = await req.json() as { 
       cardData: CardData; 
@@ -188,16 +197,23 @@ serve(async (req) => {
 
     console.log('PassKit payload:', JSON.stringify(passKitPayload, null, 2));
 
-    // Create Basic Auth token: Base64(apiKey:apiSecret)
-    const basicAuthToken = btoa(`${passKitApiKey}:${passKitApiSecret}`);
-    console.log('Using Basic Auth for PassKit API');
+    // Build authorization header based on available credentials
+    let authHeader: string;
+    if (useJwtAuth) {
+      authHeader = `Bearer ${passKitJwtToken}`;
+      console.log('Using JWT Bearer Token for PassKit API');
+    } else {
+      // Create Basic Auth token: Base64(apiKey:apiSecret)
+      const basicAuthToken = btoa(`${passKitApiKey}:${passKitApiSecret}`);
+      authHeader = `Basic ${basicAuthToken}`;
+      console.log('Using Basic Auth for PassKit API');
+    }
 
     // Call PassKit.io API - /members/member endpoint for generic passes
-    // Using Basic Auth as per PassKit REST API documentation
     const passKitResponse = await fetch('https://api.pub1.passkit.io/members/member', {
       method: 'POST',
       headers: {
-        'Authorization': `Basic ${basicAuthToken}`,
+        'Authorization': authHeader,
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
