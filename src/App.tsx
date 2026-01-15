@@ -20,6 +20,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { NetworkProvider } from "@/components/NetworkProvider";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 
 import { RouteLoader } from "@/components/RouteLoader";
 
@@ -410,7 +411,7 @@ const App = () => {
                             </Routes>
                           </Suspense>
                           <MobileBottomNav />
-                          
+                          <OnboardingTour />
                           <PWAInstallPrompt />
                         </OrderFunnelProvider>
                       </ErrorBoundary>

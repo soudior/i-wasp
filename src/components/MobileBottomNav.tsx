@@ -131,6 +131,7 @@ export function MobileBottomNav() {
                     <button
                       key={item.path}
                       onClick={() => handleNavClick(item.path)}
+                      data-tour="create-card"
                       className="flex flex-col items-center gap-1 py-1.5 px-4 touch-manipulation active:scale-95 transition-transform duration-100"
                     >
                       <motion.div 
@@ -157,10 +158,14 @@ export function MobileBottomNav() {
                   );
                 }
 
+                // Add tour attribute for specific items
+                const tourId = item.path === "/dashboard" ? "dashboard" : item.path === "/settings" ? "profile" : undefined;
+
                 return (
                   <button
                     key={item.path}
                     onClick={() => handleNavClick(item.path)}
+                    data-tour={tourId}
                     className="flex flex-col items-center gap-1 py-2 px-4 rounded-2xl touch-manipulation active:scale-95 transition-all duration-100 min-w-[60px] min-h-[52px]"
                   >
                     <div className="relative">
