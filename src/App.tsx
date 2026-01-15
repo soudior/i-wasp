@@ -127,6 +127,7 @@ const AppStoreChecklist = lazy(() => import("./pages/AppStoreChecklist"));
 const CharlesLazimiCard = lazy(() => import("./pages/CharlesLazimiCard"));
 const KechExcluCard = lazy(() => import("./pages/KechExcluCard"));
 const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
+const LaMaisonCupcakeCard = lazy(() => import("./pages/LaMaisonCupcakeCard"));
 const Services = lazy(() => import("./pages/Services"));
 const CartesNFC = lazy(() => import("./pages/CartesNFC"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
@@ -253,6 +254,7 @@ const App = () => {
                               <Route path="/card/charles-lazimi" element={<CharlesLazimiCard />} />
                               <Route path="/card/kech-exclu" element={<KechExcluCard />} />
                               <Route path="/card/luxe-prestige" element={<LuxePrestigeCard />} />
+                              <Route path="/card/la-maison-cupcake" element={<LaMaisonCupcakeCard />} />
                               <Route path="/card/:slug" element={<PublicCard />} />
                               {/* Auth */}
                               <Route path="/login" element={<Login />} />
