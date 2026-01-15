@@ -39,25 +39,25 @@ const PricingCartContext = createContext<PricingCartContextType | undefined>(und
 
 // Prix des forfaits Web Studio
 export const WEB_PACKAGES = {
-  STARTER: { 
-    id: 'web-starter',
-    name: 'Starter (1-3 pages)', 
+  BASIC: { 
+    id: 'web-basic',
+    name: 'Basic (5 pages)', 
     priceMAD: 2000, 
     priceEUR: 200,
     stripePriceEUR: 'price_1SpKDVIvyaABH94u9C3Zq7i1',
     stripePriceMAD: 'price_1SpKRXIvyaABH94u3XFnG4qg',
   },
-  STANDARD: { 
-    id: 'web-standard',
-    name: 'Standard (4-6 pages)', 
+  PRO: { 
+    id: 'web-pro',
+    name: 'Pro (10 pages)', 
     priceMAD: 5000, 
     priceEUR: 500,
     stripePriceEUR: 'price_1SpKDmIvyaABH94uhKxXCnW5',
     stripePriceMAD: 'price_1SpKRqIvyaABH94uKQIXaEIW',
   },
-  PREMIUM: { 
-    id: 'web-premium',
-    name: 'Premium (7-10 pages)', 
+  ENTERPRISE: { 
+    id: 'web-enterprise',
+    name: 'Enterprise (Illimité)', 
     priceMAD: 10000, 
     priceEUR: 1000,
     stripePriceEUR: 'price_1SpKEGIvyaABH94uY8yuOQ4l',

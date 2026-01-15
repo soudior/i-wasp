@@ -63,7 +63,7 @@ export default function WebStudioPaiement() {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   
-  const packId = searchParams.get('pack') || 'starter';
+  const packId = searchParams.get('pack') || 'basic';
   const selectedPackage = getPackageById(packId);
   
   const [orderData, setOrderData] = useState<OrderData | null>(null);

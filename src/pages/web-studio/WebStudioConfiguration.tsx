@@ -76,14 +76,14 @@ export default function WebStudioConfiguration() {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   
-  const packId = searchParams.get('pack') || 'starter';
+  const packId = searchParams.get('pack') || 'basic';
   const packageKey = (Object.keys(WEB_STUDIO_PACKAGES).find(
     k => WEB_STUDIO_PACKAGES[k as WebStudioPackageKey].id === packId
-  ) || 'STARTER') as WebStudioPackageKey;
+  ) || 'BASIC') as WebStudioPackageKey;
   
   const selectedPackage = WEB_STUDIO_PACKAGES[packageKey];
   const maxPages = getMaxPages(packId);
-  const isStarter = packId === 'starter';
+  const isBasic = packId === 'basic';
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -104,7 +104,7 @@ export default function WebStudioConfiguration() {
     seoOptimization: false,
   });
 
-  const steps = isStarter 
+  const steps = isBasic 
     ? ['Secteur', 'Informations', 'Contact']
     : ['Pages', 'Secteur', 'Informations', 'Contact'];
 
@@ -132,7 +132,7 @@ export default function WebStudioConfiguration() {
   };
 
   const canProceed = () => {
-    if (isStarter) {
+    if (isBasic) {
       if (currentStep === 0) return !!formData.sector;
       if (currentStep === 1) return !!formData.businessName && !!formData.businessDescription;
       if (currentStep === 2) return !!formData.fullName && !!formData.email && !!formData.phone;
@@ -220,10 +220,10 @@ export default function WebStudioConfiguration() {
   };
 
   const renderStepContent = () => {
-    const stepIndex = isStarter ? currentStep + 1 : currentStep; // Offset for starter (no pages step)
+    const stepIndex = isBasic ? currentStep + 1 : currentStep; // Offset for basic (no pages step)
 
-    // Pages step (Pro/Elite only)
-    if (!isStarter && currentStep === 0) {
+    // Pages step (Pro/Enterprise only)
+    if (!isBasic && currentStep === 0) {
       return (
         <div className="space-y-6">
           <div>
@@ -270,7 +270,7 @@ export default function WebStudioConfiguration() {
     }
 
     // Sector step
-    if ((isStarter && currentStep === 0) || (!isStarter && currentStep === 1)) {
+    if ((isBasic && currentStep === 0) || (!isBasic && currentStep === 1)) {
       return (
         <div className="space-y-6">
           <div>
@@ -306,7 +306,7 @@ export default function WebStudioConfiguration() {
     }
 
     // Business info step
-    if ((isStarter && currentStep === 1) || (!isStarter && currentStep === 2)) {
+    if ((isBasic && currentStep === 1) || (!isBasic && currentStep === 2)) {
       return (
         <div className="space-y-6">
           <div>
@@ -561,14 +561,14 @@ export default function WebStudioConfiguration() {
               border: "1px solid rgba(255,255,255,0.1)",
             }}
           >
-            {isStarter && currentStep === 0 && (
+            {isBasic && currentStep === 0 && (
               <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 mb-6">
                 <div className="flex items-center gap-2 mb-2">
                   <Sparkles size={16} className="text-emerald-500" />
-                  <span className="text-sm font-medium text-emerald-500">Pack Starter - Landing Page</span>
+                  <span className="text-sm font-medium text-emerald-500">Pack Basic - Site Vitrine</span>
                 </div>
                 <p className="text-xs text-white/60">
-                  Votre landing page sera créée automatiquement avec : titre, description, CTA, contact.
+                  Votre site vitrine sera créé avec : accueil, services, contact et formulaire.
                 </p>
               </div>
             )}
