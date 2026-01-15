@@ -53,6 +53,7 @@ const TOUR_STEPS: TourStep[] = [
 ];
 
 const TOUR_KEY = "iwasp-onboarding-tour-completed";
+const TOUR_RESTART_EVENT = "iwasp-restart-onboarding-tour";
 
 export function OnboardingTour() {
   const [isActive, setIsActive] = useState(false);
@@ -75,6 +76,18 @@ export function OnboardingTour() {
       return () => clearTimeout(timer);
     }
   }, [location.pathname]);
+
+  // Listen for restart event
+  useEffect(() => {
+    const handleRestart = () => {
+      localStorage.removeItem(TOUR_KEY);
+      setCurrentStep(0);
+      setIsActive(true);
+    };
+
+    window.addEventListener(TOUR_RESTART_EVENT, handleRestart);
+    return () => window.removeEventListener(TOUR_RESTART_EVENT, handleRestart);
+  }, []);
 
   // Find and highlight target element
   useEffect(() => {
@@ -349,10 +362,16 @@ export function OnboardingTour() {
 
 // Hook to restart tour
 export function useOnboardingTour() {
+  const navigate = useNavigate();
+  
   const restartTour = useCallback(() => {
-    localStorage.removeItem(TOUR_KEY);
-    window.location.reload();
-  }, []);
+    // Navigate to home first, then trigger the tour
+    navigate("/");
+    // Small delay to ensure navigation completes
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent(TOUR_RESTART_EVENT));
+    }, 100);
+  }, [navigate]);
 
   return { restartTour };
 }

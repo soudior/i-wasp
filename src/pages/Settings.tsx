@@ -28,6 +28,7 @@ import {
   RotateCcw, Compass
 } from "lucide-react";
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
+import { useOnboardingTour } from "@/components/onboarding/OnboardingTour";
 import iwaspCertifiedBadge from "@/assets/iwasp-certified-badge.png";
 
 // Stealth Luxury Colors
@@ -47,6 +48,7 @@ const Settings = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { impactLight, impactMedium, notificationSuccess, notificationError } = useHapticFeedback();
+  const { restartTour } = useOnboardingTour();
   
   // Profile state
   const [firstName, setFirstName] = useState("");
@@ -709,9 +711,7 @@ const Settings = () => {
                     style={{ borderColor: COLORS.border, color: COLORS.text }}
                     onClick={() => {
                       impactLight();
-                      localStorage.removeItem('iwasp_onboarding_completed');
-                      notificationSuccess();
-                      toast.success("Tour d'onboarding réinitialisé ! Il se lancera à votre prochaine visite sur l'accueil.");
+                      restartTour();
                     }}
                   >
                     <RotateCcw className="h-4 w-4 mr-2" />
