@@ -50,17 +50,25 @@ async function createGoogleWalletJWT(
 ): Promise<string> {
   const serviceAccount = JSON.parse(serviceAccountJson);
   
+  // Validate required fields
+  if (!serviceAccount.private_key) {
+    throw new Error('Service account missing private_key');
+  }
+  if (!serviceAccount.client_email) {
+    throw new Error('Service account missing client_email');
+  }
+  
   const header = {
     alg: 'RS256',
     typ: 'JWT',
-    kid: serviceAccount.private_key_id
+    kid: serviceAccount.private_key_id || undefined
   };
 
   const now = Math.floor(Date.now() / 1000);
   const claims = {
     iss: serviceAccount.client_email,
     aud: 'google',
-    origins: ['https://i-wasp.com', 'https://lovable.dev'],
+    origins: ['https://i-wasp.lovable.app', 'https://lovable.dev'],
     typ: 'savetowallet',
     iat: now,
     payload: payload
@@ -124,6 +132,25 @@ serve(async (req) => {
       );
     }
 
+    // Parse and validate service account JSON
+    let serviceAccount;
+    try {
+      serviceAccount = JSON.parse(serviceAccountJson);
+    } catch (parseError) {
+      console.error('Failed to parse service account JSON:', parseError);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Configuration invalide',
+          message: 'Le JSON du compte de service est invalide.',
+          fallback: true
+        }),
+        { 
+          status: 200, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
     const { cardData, walletStyles } = await req.json() as { 
       cardData: CardData;
       walletStyles?: WalletStyles;
@@ -133,19 +160,24 @@ serve(async (req) => {
     console.log('Generating Google Wallet pass for:', cardData.firstName, cardData.lastName);
     console.log('Using wallet styles:', styles);
 
-    // Parse service account to get issuer ID
-    const serviceAccount = JSON.parse(serviceAccountJson);
-    const issuerId = serviceAccount.issuer_id || '3388000000022319245';
+    // Get issuer ID from service account or use default
+    const issuerId = serviceAccount.issuer_id || serviceAccount.issuerId || '3388000000022319245';
 
     // Construct the public URL for the card
-    const publicUrl = `https://i-wasp.com/c/${cardData.slug}`;
+    const publicUrl = `https://i-wasp.lovable.app/c/${cardData.slug}`;
 
+    // Create safe ID by removing special characters
+    const safeCardId = cardData.id.replace(/[^a-zA-Z0-9_]/g, '_');
+    
     // Create unique IDs for class and object
     const classId = `${issuerId}.iwasp_business_card`;
-    const objectId = `${issuerId}.${cardData.id.replace(/-/g, '_')}_${Date.now()}`;
+    const objectId = `${issuerId}.${safeCardId}_${Date.now()}`;
 
-    // Apply custom background color
-    const backgroundColor = styles.backgroundColor || "#121212";
+    // Apply custom background color (ensure it's a valid hex)
+    let backgroundColor = styles.backgroundColor || "#121212";
+    if (!backgroundColor.startsWith('#')) {
+      backgroundColor = '#' + backgroundColor;
+    }
 
     // Build text modules based on visibility settings
     const textModulesData: Array<{ id: string; header: string; body: string }> = [];
@@ -200,24 +232,27 @@ serve(async (req) => {
     ];
 
     if (styles.showWebsite !== false && cardData.website) {
+      const websiteUrl = cardData.website.startsWith('http') ? cardData.website : `https://${cardData.website}`;
       uris.push({
-        uri: cardData.website.startsWith('http') ? cardData.website : `https://${cardData.website}`,
+        uri: websiteUrl,
         description: "Site web",
         id: "website"
       });
     }
 
     if (cardData.linkedin) {
+      const linkedinUrl = cardData.linkedin.startsWith('http') ? cardData.linkedin : `https://linkedin.com/in/${cardData.linkedin}`;
       uris.push({
-        uri: cardData.linkedin.startsWith('http') ? cardData.linkedin : `https://linkedin.com/in/${cardData.linkedin}`,
+        uri: linkedinUrl,
         description: "LinkedIn",
         id: "linkedin"
       });
     }
 
     if (cardData.instagram) {
+      const instagramHandle = cardData.instagram.replace('@', '');
       uris.push({
-        uri: `https://instagram.com/${cardData.instagram.replace('@', '')}`,
+        uri: `https://instagram.com/${instagramHandle}`,
         description: "Instagram",
         id: "instagram"
       });
@@ -291,7 +326,7 @@ serve(async (req) => {
       subheader: {
         defaultValue: {
           language: "fr-FR",
-          value: cardData.tagline || (cardData.company || "IWASP")
+          value: cardData.tagline || cardData.company || "IWASP"
         }
       },
       header: {
@@ -333,6 +368,8 @@ serve(async (req) => {
       genericObjects: [genericObject]
     };
 
+    console.log('JWT payload:', JSON.stringify(jwtPayload, null, 2));
+
     // Generate the signed JWT
     const jwt = await createGoogleWalletJWT(serviceAccountJson, jwtPayload);
     
@@ -340,6 +377,7 @@ serve(async (req) => {
     const saveUrl = `https://pay.google.com/gp/v/save/${jwt}`;
 
     console.log('Google Wallet pass URL generated successfully');
+    console.log('Save URL length:', saveUrl.length);
 
     return new Response(
       JSON.stringify({
