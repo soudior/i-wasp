@@ -15,31 +15,32 @@ import {
   ArrowRight, 
   Sparkles,
   Phone,
-  Mail,
   MessageSquare,
   Star,
   Zap,
   Crown,
   BadgePercent,
-  ChevronDown,
-  ChevronUp,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 // Pricing data
-import { NFC_PRICING, getNfcTiersList, formatPriceMad, formatPriceEur } from "@/lib/nfcPricing";
+import { NFC_PRICING, getNfcTiersList } from "@/lib/nfcPricing";
 import { WEB_STUDIO_PACKAGES, WEB_MAINTENANCE } from "@/lib/webStudioPackages";
-import { PROMO_PACKS, getPromoPacksList, MONTHLY_MAINTENANCE } from "@/lib/promoPacks";
+import { PROMO_PACKS, getPromoPacksList } from "@/lib/promoPacks";
 
 type Currency = 'MAD' | 'EUR';
 
 export default function TarifsComplets() {
   const [currency, setCurrency] = useState<Currency>('MAD');
-  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+  const [loadingNfc, setLoadingNfc] = useState<string | null>(null);
+  const [loadingPack, setLoadingPack] = useState<string | null>(null);
 
   const nfcTiers = getNfcTiersList();
   const promoPacks = getPromoPacksList();
@@ -49,6 +50,46 @@ export default function TarifsComplets() {
       return `€${Math.round(mad * 0.10)}`;
     }
     return `${mad.toLocaleString('fr-FR')} DH`;
+  };
+
+  // Handle NFC payment
+  const handleNfcPayment = async (tierId: string) => {
+    setLoadingNfc(tierId);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-nfc-payment', {
+        body: { tierId },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (err) {
+      console.error('NFC payment error:', err);
+      toast.error("Erreur lors de la création du paiement");
+    } finally {
+      setLoadingNfc(null);
+    }
+  };
+
+  // Handle Promo Pack payment
+  const handlePromoPackPayment = async (packId: string) => {
+    setLoadingPack(packId);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-promo-pack-payment', {
+        body: { packId },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (err) {
+      console.error('Promo pack payment error:', err);
+      toast.error("Erreur lors de la création du paiement");
+    } finally {
+      setLoadingPack(null);
+    }
   };
 
   return (
@@ -199,7 +240,12 @@ export default function TarifsComplets() {
                     <Button 
                       className="w-full mt-6"
                       variant={tier.id === 'pack_50' ? 'default' : 'outline'}
+                      onClick={() => handleNfcPayment(tier.id)}
+                      disabled={loadingNfc === tier.id}
                     >
+                      {loadingNfc === tier.id ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : null}
                       Commander
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -464,7 +510,14 @@ export default function TarifsComplets() {
 
                     <div className="mt-6">
                       {pack.priceMad ? (
-                        <Button className={cn("w-full", pack.color.button)}>
+                        <Button 
+                          className={cn("w-full", pack.color.button)}
+                          onClick={() => handlePromoPackPayment(pack.id)}
+                          disabled={loadingPack === pack.id}
+                        >
+                          {loadingPack === pack.id ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          ) : null}
                           Choisir ce pack
                           <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
