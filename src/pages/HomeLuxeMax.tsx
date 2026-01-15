@@ -190,7 +190,7 @@ export default function HomeLuxeMax() {
           style={{ opacity: heroOpacity }}
         >
           <Link 
-            to="/order/offre"
+            to="/express/offre"
             className="group relative flex items-center justify-center gap-3 text-[11px] uppercase tracking-[0.3em] font-light transition-all duration-500 px-8 py-4 sm:px-6 sm:py-3 min-h-[48px] min-w-[160px] rounded-full"
             style={{ 
               color: LUXE.ivoire,
@@ -198,7 +198,7 @@ export default function HomeLuxeMax() {
               border: `1px solid ${LUXE.or}40`,
             }}
           >
-            <span className="relative">Découvrir</span>
+            <span className="relative">Commander</span>
             <ArrowRight className="relative w-3 h-3 group-hover:translate-x-1.5 transition-transform duration-300" />
           </Link>
         </motion.div>
@@ -540,7 +540,7 @@ export default function HomeLuxeMax() {
           </h2>
           
           <Link 
-            to="/order/offre"
+            to="/express/offre"
             className="inline-flex items-center justify-center gap-3 px-8 sm:px-10 py-4 text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.3em] font-light transition-all duration-500 border min-h-[52px] min-w-[180px] rounded-sm active:scale-[0.98]"
             style={{ 
               color: LUXE.noir,
@@ -556,7 +556,7 @@ export default function HomeLuxeMax() {
               e.currentTarget.style.color = LUXE.noir;
             }}
           >
-            <span>Créer ma carte</span>
+            <span>Commander maintenant</span>
             <ArrowRight className="w-3 h-3" />
           </Link>
           
