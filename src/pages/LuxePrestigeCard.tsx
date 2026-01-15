@@ -28,7 +28,7 @@ const CONTACT = {
   tagline: "Tap. Connect. Empower.",
   title: "Cartes de visite NFC Premium",
   location: "France",
-  phone: "+33 6 26 42 43 94",
+  phone: "+212 661 381 626",
   whatsapp: "212661381626",
   email: "contact@i-wasp.com",
   services: [
