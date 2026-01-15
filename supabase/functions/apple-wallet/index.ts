@@ -217,8 +217,10 @@ serve(async (req) => {
     }
 
     // PassKit.io API - Using /members/member endpoint for generic passes
+    // IDs from PassKit dashboard
     const passKitPayload = {
-      programId: "i-wasp-vcard",
+      programId: "0xyR7LVf3NM0RCLANTxPAJ",
+      tierId: "2YQ7u6p09UQXtfWOpY5qU5",
       externalId: cardData.id || cardData.slug,
       person: {
         forename: cardData.firstName,
