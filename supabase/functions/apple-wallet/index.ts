@@ -161,98 +161,53 @@ serve(async (req) => {
       });
     }
 
-    // PassKit.io API call to create a pass
-    // Using the correct PassKit.io API endpoint
+    // PassKit.io API - Correct format based on user example
+    // Using the standard PassKit.io pass generation endpoint
     const passKitPayload = {
-      templateId: passKitApiKey, // The API key is often the template ID in PassKit
-      pass: {
-        serialNumber: cardData.id,
-        // Apply custom colors if provided
-        backgroundColor: styles.backgroundColor || "#1a1a1a",
-        labelColor: styles.labelColor || "#ffffff",
-        foregroundColor: styles.foregroundColor || "#ffffff",
-        organizationName: "IWASP",
-        description: "Carte de visite numérique",
-        logoText: (styles.showCompany !== false && cardData.company) ? cardData.company : "IWASP",
-        headerFields: [
-          {
-            key: "company",
-            value: (styles.showCompany !== false && cardData.company) ? cardData.company : "IWASP",
-            label: "Entreprise"
-          }
-        ],
-        primaryFields: [
-          {
-            key: "name",
-            value: `${cardData.firstName} ${cardData.lastName}`,
-            label: "Nom"
-          }
-        ],
-        secondaryFields,
-        auxiliaryFields,
-        backFields,
-        barcode: {
-          format: "PKBarcodeFormatQR",
-          message: publicUrl,
-          messageEncoding: "iso-8859-1",
-          altText: cardData.slug
-        }
-      },
-      expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+      templateName: "i-wasp-vcard", // Template name in PassKit.io dashboard
+      userData: {
+        personName: `${cardData.firstName} ${cardData.lastName}`,
+        jobTitle: cardData.title || "",
+        email: cardData.email || "",
+        phone: cardData.phone || "",
+        company: (styles.showCompany !== false && cardData.company) ? cardData.company : "IWASP",
+        website: cardData.website || "",
+        location: cardData.location || "",
+        linkedin: cardData.linkedin || "",
+        instagram: cardData.instagram || "",
+        twitter: cardData.twitter || "",
+        tagline: cardData.tagline || "",
+        digitalCardUrl: publicUrl,
+        serialNumber: cardData.id
+      }
     };
 
     console.log('PassKit payload:', JSON.stringify(passKitPayload, null, 2));
 
-    // Try the correct PassKit.io API endpoints
-    // PassKit uses different endpoints based on the service type
-    const apiEndpoints = [
-      'https://api.pub1.passkit.io/members/member',
-      'https://api.pub2.passkit.io/members/member',
-      'https://api-eu.passkit.io/v1/passes'
-    ];
+    // Call PassKit.io API with Bearer token auth
+    const passKitResponse = await fetch('https://api.pub1.passkit.io/v1/pass', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${passKitApiKey}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(passKitPayload)
+    });
 
-    let passKitResponse = null;
-    let lastError = null;
+    const responseText = await passKitResponse.text();
+    console.log('PassKit response status:', passKitResponse.status);
+    console.log('PassKit response:', responseText);
 
-    // Try using Bearer token auth (more common with PassKit)
-    for (const endpoint of apiEndpoints) {
-      try {
-        console.log('Trying endpoint:', endpoint);
-        
-        passKitResponse = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${passKitApiSecret}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(passKitPayload)
-        });
-
-        if (passKitResponse.ok) {
-          console.log('Success with endpoint:', endpoint);
-          break;
-        } else {
-          const errorText = await passKitResponse.text();
-          console.log('Failed endpoint:', endpoint, 'Status:', passKitResponse.status, 'Error:', errorText);
-          lastError = { status: passKitResponse.status, error: errorText };
-        }
-      } catch (fetchError) {
-        console.log('Fetch error for endpoint:', endpoint, fetchError);
-        lastError = { status: 500, error: String(fetchError) };
-      }
-    }
-
-    // If all endpoints failed, return fallback
-    if (!passKitResponse || !passKitResponse.ok) {
-      console.error('All PassKit API endpoints failed:', lastError);
+    if (!passKitResponse.ok) {
+      console.error('PassKit API error:', passKitResponse.status, responseText);
       
       return new Response(
         JSON.stringify({
           error: 'Erreur PassKit',
-          message: 'Impossible de générer le pass Apple Wallet. Veuillez réessayer plus tard.',
+          message: 'Impossible de générer le pass Apple Wallet.',
           fallback: true,
-          details: lastError
+          details: { status: passKitResponse.status, error: responseText }
         }),
         {
           status: 200,
@@ -261,10 +216,25 @@ serve(async (req) => {
       );
     }
 
-    const passKitData = await passKitResponse.json();
-    console.log('PassKit response:', JSON.stringify(passKitData));
+    let passKitData;
+    try {
+      passKitData = JSON.parse(responseText);
+    } catch {
+      console.error('Failed to parse PassKit response as JSON');
+      return new Response(
+        JSON.stringify({
+          error: 'Erreur de parsing',
+          message: 'Réponse invalide de PassKit.',
+          fallback: true
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
 
-    // Extract pass URL from various possible response formats
+    // Extract pass URL from response
     const passUrl = passKitData.url || 
                     passKitData.passUrl || 
                     passKitData.downloadUrl || 
@@ -284,7 +254,7 @@ serve(async (req) => {
       );
     }
 
-    // If we got a pass object but no URL, try to construct one
+    // If we got a pass ID but no URL, construct it
     if (passKitData.id || passKitData.passId) {
       const passId = passKitData.id || passKitData.passId;
       const constructedUrl = `https://pub1.pskt.io/${passId}`;
