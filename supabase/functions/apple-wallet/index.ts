@@ -161,15 +161,20 @@ serve(async (req) => {
       });
     }
 
-    // PassKit.io API - Correct format based on user example
-    // Using the standard PassKit.io pass generation endpoint
+    // PassKit.io API - Using /members/member endpoint for generic passes
+    // The programId should match the template ID from PassKit.io dashboard
     const passKitPayload = {
-      templateName: "i-wasp-vcard", // Template name in PassKit.io dashboard
-      userData: {
-        personName: `${cardData.firstName} ${cardData.lastName}`,
+      programId: "i-wasp-vcard", // Program/Template ID in PassKit.io dashboard
+      externalId: cardData.id || cardData.slug, // Unique identifier for the pass
+      person: {
+        forename: cardData.firstName,
+        surname: cardData.lastName,
+        emailAddress: cardData.email || "",
+        mobileNumber: cardData.phone || ""
+      },
+      // Custom fields for the pass template
+      metaData: {
         jobTitle: cardData.title || "",
-        email: cardData.email || "",
-        phone: cardData.phone || "",
         company: (styles.showCompany !== false && cardData.company) ? cardData.company : "IWASP",
         website: cardData.website || "",
         location: cardData.location || "",
@@ -177,15 +182,18 @@ serve(async (req) => {
         instagram: cardData.instagram || "",
         twitter: cardData.twitter || "",
         tagline: cardData.tagline || "",
-        digitalCardUrl: publicUrl,
-        serialNumber: cardData.id
+        digitalCardUrl: publicUrl
       }
     };
 
     console.log('PassKit payload:', JSON.stringify(passKitPayload, null, 2));
 
-    // Call PassKit.io API with Bearer token auth
-    const passKitResponse = await fetch('https://api.pub1.passkit.io/v1/pass', {
+    // Create the auth token - PassKit uses API Key:Secret in Base64 for some endpoints
+    // or Bearer token for others. Let's try Bearer first with the key.
+    const authToken = btoa(`${passKitApiKey}:${passKitApiSecret}`);
+
+    // Call PassKit.io API - /members/member endpoint for generic passes
+    const passKitResponse = await fetch('https://api.pub1.passkit.io/members/member', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${passKitApiKey}`,
