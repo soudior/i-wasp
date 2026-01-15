@@ -48,7 +48,7 @@ serve(async (req) => {
     // Determine success/cancel URLs
     const origin = req.headers.get("origin") || "https://i-wasp.lovable.app";
     const successUrl = `${origin}/web-studio/ia-success?session_id={CHECKOUT_SESSION_ID}&proposal_id=${proposalId}`;
-    const cancelUrl = `${origin}/web-studio/paiement?pack=${isInstant ? 'starter' : 'pro'}`;
+    const cancelUrl = `${origin}/web-studio/paiement?pack=${isInstant ? 'starter' : 'standard'}`;
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({

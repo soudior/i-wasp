@@ -88,7 +88,7 @@ export default function WebStudioOffres() {
             {(Object.keys(WEB_STUDIO_PACKAGES) as WebStudioPackageKey[]).map((key, index) => {
               const pkg = WEB_STUDIO_PACKAGES[key];
               const isHovered = hoveredPackage === key;
-              const isPro = key === 'PRO';
+              const isRecommended = key === 'STANDARD';
 
               return (
                 <motion.div
