@@ -1,91 +1,114 @@
 /**
- * Web Studio Packages Configuration (MAD pricing)
- * 3 tiers: Starter, Standard, Premium
+ * i-wasp Web Studio - Packages Configuration (MAD pricing)
+ * 3 tiers: Basic, Pro, Enterprise
+ * Basé au Maroc, livraison mondiale
  */
 
 export const WEB_STUDIO_PACKAGES = {
-  STARTER: {
-    id: 'starter',
-    name: 'Starter',
-    badge: '🚀 ESSENTIEL',
-    description: 'Pour démarrer votre présence en ligne avec un site simple et efficace.',
+  BASIC: {
+    id: 'basic',
+    name: 'Basic',
+    badge: '🚀 Portfolio/Vitrine',
+    tagline: 'Pour démarrer',
+    description: 'Site vitrine professionnel pour présenter votre activité.',
     priceMad: 2000,
     priceEur: 200,
-    stripe_price_id: 'price_1SpKRXIvyaABH94u3XFnG4qg', // À mettre à jour avec le nouveau prix Stripe
+    stripe_price_id: 'price_1SpKRXIvyaABH94u3XFnG4qg', // À mettre à jour
     stripe_product_id: 'prod_TmuG5HE5p4MFRj',
-    pages: '1-3 PAGES',
-    delivery: '3-5 jours',
+    pages: 'Jusqu\'à 5 pages',
+    maxPages: 5,
+    delivery: '5-7 jours',
     deliveryIcon: '⚡',
     isInstant: false,
     features: [
       'Design responsive',
+      'Formulaire contact',
       'Hébergement inclus',
-      'Formulaire de contact',
       'Optimisation SEO de base',
+      'Support technique',
     ],
     color: {
       bg: 'bg-emerald-500/10',
       border: 'border-emerald-500/30',
-      accent: 'text-emerald-500',
+      accent: 'text-emerald-600',
       button: 'bg-emerald-600 hover:bg-emerald-700',
     }
   },
-  STANDARD: {
-    id: 'standard',
-    name: 'Standard',
-    badge: '⭐ RECOMMANDÉ',
-    description: 'Pour une présence professionnelle complète avec toutes les fonctionnalités essentielles.',
+  PRO: {
+    id: 'pro',
+    name: 'Pro',
+    badge: '⭐ E-commerce/Booking',
+    tagline: 'Le plus populaire',
+    description: 'Site complet avec fonctionnalités avancées pour développer votre business.',
     priceMad: 5000,
     priceEur: 500,
-    stripe_price_id: 'price_1SpKRqIvyaABH94uKQIXaEIW', // À mettre à jour avec le nouveau prix Stripe
+    stripe_price_id: 'price_1SpKRqIvyaABH94uKQIXaEIW', // À mettre à jour
     stripe_product_id: 'prod_TmuGoD257oDhrS',
-    pages: '4-6 PAGES',
-    delivery: '5-7 jours',
+    pages: 'Jusqu\'à 10 pages',
+    maxPages: 10,
+    delivery: '7-10 jours',
     deliveryIcon: '📅',
     isInstant: false,
     features: [
-      'Tout Starter +',
-      'Galerie photos',
-      'Intégration réseaux sociaux',
+      'Tout Basic +',
+      'Galerie avancée',
+      'Système réservation/paiement',
+      'SEO optimisé',
       'Blog intégré',
-      'Analytics avancés',
+      'Intégration réseaux sociaux',
     ],
     color: {
       bg: 'bg-blue-500/10',
       border: 'border-blue-500/30',
-      accent: 'text-blue-500',
-      button: 'bg-blue-600 hover:bg-blue-700',
+      accent: 'text-blue-600',
+      button: 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600',
     }
   },
-  PREMIUM: {
-    id: 'premium',
-    name: 'Premium',
-    badge: '👑 PREMIUM',
-    description: 'Solution complète sur-mesure pour les projets ambitieux.',
+  ENTERPRISE: {
+    id: 'enterprise',
+    name: 'Enterprise',
+    badge: '👑 CRM complet',
+    tagline: 'Solution sur-mesure',
+    description: 'Solution complète avec CRM intégré et support premium pour les entreprises.',
     priceMad: 10000,
     priceEur: 1000,
-    stripe_price_id: 'price_1SpKS3IvyaABH94ujjmo6jDb', // À mettre à jour avec le nouveau prix Stripe
+    stripe_price_id: 'price_1SpKS3IvyaABH94ujjmo6jDb', // À mettre à jour
     stripe_product_id: 'prod_TmuGjPyWT6Gle4',
-    pages: '7-10 PAGES',
-    delivery: '7-14 jours',
+    pages: 'Illimité',
+    maxPages: 999,
+    delivery: '10-14 jours',
     deliveryIcon: '📅',
     isInstant: false,
     features: [
-      'Tout Standard +',
-      'Design premium',
-      'Animations avancées',
-      'CMS personnalisé',
-      'E-commerce (optionnel)',
-      'Support prioritaire',
+      'Tout Pro +',
+      'CRM intégré',
+      'Analytics avancé',
+      'Formations équipe',
+      'Support 1 an inclus',
+      'Personnalisation complète',
     ],
     color: {
       bg: 'bg-amber-500/10',
       border: 'border-amber-500/30',
-      accent: 'text-amber-500',
+      accent: 'text-amber-600',
       button: 'bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600',
     }
   },
 } as const;
+
+// Maintenance mensuelle optionnelle
+export const WEB_MAINTENANCE = {
+  priceMad: 500,
+  priceEur: 50,
+  name: 'Maintenance mensuelle',
+  features: [
+    'Mises à jour de sécurité',
+    'Corrections de bugs',
+    'Modifications mineures (2h/mois)',
+    'Support technique prioritaire',
+    'Sauvegardes mensuelles',
+  ],
+};
 
 export type WebStudioPackageKey = keyof typeof WEB_STUDIO_PACKAGES;
 export type WebStudioPackage = typeof WEB_STUDIO_PACKAGES[WebStudioPackageKey];
@@ -125,9 +148,9 @@ export function getPackageById(id: string): WebStudioPackage | null {
 
 export function getMaxPages(packageId: string): number {
   switch (packageId) {
-    case 'starter': return 3;
-    case 'standard': return 6;
-    case 'premium': return 10;
-    default: return 3;
+    case 'basic': return 5;
+    case 'pro': return 10;
+    case 'enterprise': return 999;
+    default: return 5;
   }
 }

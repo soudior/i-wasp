@@ -82,9 +82,9 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
 };
 
 const PACK_LABELS: Record<string, string> = {
-  starter: "Starter",
-  standard: "Standard",
-  premium: "Premium",
+  basic: "Basic",
+  pro: "Pro",
+  enterprise: "Enterprise",
 };
 
 export default function AdminWebStudioIA() {
