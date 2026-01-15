@@ -157,6 +157,7 @@ const WebsitePreview = lazy(() => import("./pages/web-studio/WebsitePreview"));
 const PublicWebsite = lazy(() => import("./pages/web-studio/PublicWebsite"));
 const AdminWebStudioIA = lazy(() => import("./pages/admin/AdminWebStudioIA"));
 const AdminGeneratedWebsites = lazy(() => import("./pages/admin/AdminGeneratedWebsites"));
+const ConversionDashboard = lazy(() => import("./pages/admin/ConversionDashboard"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -425,6 +426,8 @@ const App = () => {
                               <Route path="/admin/web-studio-orders" element={<AdminGuard><AdminWebStudioOrders /></AdminGuard>} />
                               <Route path="/admin/sites" element={<AdminGuard><AdminGeneratedWebsites /></AdminGuard>} />
                               <Route path="/admin/generated-websites" element={<AdminGuard><AdminGeneratedWebsites /></AdminGuard>} />
+                              <Route path="/admin/analytics" element={<AdminGuard><ConversionDashboard /></AdminGuard>} />
+                              <Route path="/admin/conversions" element={<AdminGuard><ConversionDashboard /></AdminGuard>} />
                               
                               {/* 404 */}
                               <Route path="*" element={<NotFound />} />

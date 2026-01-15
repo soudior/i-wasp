@@ -5,20 +5,27 @@
  * Optimisé conversion: CTA visible, social proof, urgence
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useExpressCheckout, ExpressOfferType, EXPRESS_OFFERS } from "@/contexts/ExpressCheckoutContext";
 import { Check, ArrowRight, Shield, Truck, Star, Clock, Users } from "lucide-react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
+import { useExpressCheckoutTracking } from "@/hooks/useAnalyticsEvents";
 
 export default function ExpressOffre() {
   const navigate = useNavigate();
   const { state, setSelectedOffer } = useExpressCheckout();
   const [isNavigating, setIsNavigating] = useState(false);
+  const { trackOfferSelect } = useExpressCheckoutTracking('offre');
 
   const handleSelectOffer = (offerId: ExpressOfferType) => {
     setSelectedOffer(offerId);
+    // Track offer selection
+    const offer = EXPRESS_OFFERS.find(o => o.id === offerId);
+    if (offer) {
+      trackOfferSelect(offer.name, offer.price / 100);
+    }
   };
 
   const handleContinue = async () => {

@@ -27,7 +27,8 @@ import {
   Truck,
   AlertCircle,
   Bell,
-  Globe
+  Globe,
+  BarChart3
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -65,6 +66,14 @@ const quickActions: QuickAction[] = [
     path: "/admin/webstudio",
     color: "#D4A853",
     badge: "Nouveau"
+  },
+  {
+    title: "Analytics",
+    description: "Conversions & Funnel Express",
+    icon: BarChart3,
+    path: "/admin/analytics",
+    color: "#10B981",
+    badge: "Live"
   },
   {
     title: "Gestion cartes",
