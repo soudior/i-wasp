@@ -15,15 +15,15 @@ const corsHeaders = {
 
 // Web Studio Stripe Price IDs
 const WEBSTUDIO_PRICES = {
-  STARTER: 'price_1SpKDVIvyaABH94u9C3Zq7i1',   // 200€
-  STANDARD: 'price_1SpKDmIvyaABH94uhKxXCnW5',  // 500€
-  PREMIUM: 'price_1SpKEGIvyaABH94uY8yuOQ4l',   // 1000€
+  BASIC: 'price_1SpKDVIvyaABH94u9C3Zq7i1',      // 200€ (2000 DH)
+  PRO: 'price_1SpKDmIvyaABH94uhKxXCnW5',        // 500€ (5000 DH)
+  ENTERPRISE: 'price_1SpKEGIvyaABH94uY8yuOQ4l', // 1000€ (10000 DH)
 };
 
 function getPackageFromPrice(priceEur: number): keyof typeof WEBSTUDIO_PRICES {
-  if (priceEur <= 200) return 'STARTER';
-  if (priceEur <= 500) return 'STANDARD';
-  return 'PREMIUM';
+  if (priceEur <= 200) return 'BASIC';
+  if (priceEur <= 500) return 'PRO';
+  return 'ENTERPRISE';
 }
 
 const logStep = (step: string, details?: unknown) => {

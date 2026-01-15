@@ -13,7 +13,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-type PackageType = 'STARTER' | 'STANDARD' | 'PREMIUM';
+type PackageType = 'BASIC' | 'PRO' | 'ENTERPRISE';
 type Currency = 'EUR' | 'MAD';
 
 interface CartItem {
@@ -54,7 +54,7 @@ serve(async (req) => {
     logStep("Request received", { packageType, currency, email, optionsCount: options.length, totalAmount });
 
     // Validate package type
-    if (!packageType || !['STARTER', 'STANDARD', 'PREMIUM'].includes(packageType)) {
+    if (!packageType || !['BASIC', 'PRO', 'ENTERPRISE'].includes(packageType)) {
       return new Response(
         JSON.stringify({ error: "Type de forfait invalide" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -102,15 +102,15 @@ serve(async (req) => {
     
     // Package names for display
     const packageNames: Record<PackageType, string> = {
-      STARTER: 'Pack Starter (1-3 pages)',
-      STANDARD: 'Pack Standard (4-6 pages)',
-      PREMIUM: 'Pack Premium (7-10 pages)',
+      BASIC: 'Pack Basic (5 pages)',
+      PRO: 'Pack Pro (10 pages)',
+      ENTERPRISE: 'Pack Enterprise (Illimité)',
     };
 
     // Package base prices (in cents/centimes)
     const packagePrices: Record<Currency, Record<PackageType, number>> = {
-      MAD: { STARTER: 79000, STANDARD: 149000, PREMIUM: 229000 },
-      EUR: { STARTER: 20000, STANDARD: 50000, PREMIUM: 100000 },
+      MAD: { BASIC: 200000, PRO: 500000, ENTERPRISE: 1000000 },
+      EUR: { BASIC: 20000, PRO: 50000, ENTERPRISE: 100000 },
     };
 
     // Build line items
@@ -122,7 +122,7 @@ serve(async (req) => {
         currency: currencyCode,
         product_data: {
           name: packageNames[packageType],
-          description: `Site web professionnel - ${packageType === 'STARTER' ? '1-3' : packageType === 'STANDARD' ? '4-6' : '7-10'} pages`,
+          description: `Site web professionnel - ${packageType === 'BASIC' ? '5' : packageType === 'PRO' ? '10' : 'Illimité'} pages`,
         },
         unit_amount: packagePrices[currency][packageType],
       },
