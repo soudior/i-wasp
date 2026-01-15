@@ -1,6 +1,7 @@
 /**
  * MobileBottomNav — Navigation mobile fixe en bas
- * Palette Stealth Luxury: Noir Émeraude #050807, Argent Titane #A5A9B4, Platine #D1D5DB
+ * Design: Apple-like, Cupertino style conforme au custom knowledge IWASP
+ * Icônes: Accueil, Créer carte, Dashboard, Profil
  */
 
 import { useState, useEffect } from "react";
@@ -8,43 +9,41 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Home, 
-  ShoppingBag, 
-  User, 
+  Plus,
   LayoutDashboard,
-  CreditCard,
-  BarChart3,
-  Pencil
+  User,
+  LogIn
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Stealth Luxury Colors
-const STEALTH = {
-  noir: "#050807",
-  titanium: "#A5A9B4",
-  platinum: "#D1D5DB",
+// IWASP Apple-like Colors (from custom knowledge)
+const COLORS = {
+  background: "#F5F5F7",
+  card: "#FFFFFF",
+  primary: "#1D1D1F",
+  secondary: "#8E8E93",
+  accent: "#007AFF",
+  navBg: "rgba(255, 255, 255, 0.85)",
 };
 
 interface NavItem {
   icon: React.ElementType;
   label: string;
   path: string;
-  requiresAuth?: boolean;
-  highlight?: boolean;
+  isCreate?: boolean;
 }
 
 const publicNavItems: NavItem[] = [
   { icon: Home, label: "Accueil", path: "/" },
-  { icon: CreditCard, label: "Produits", path: "/produits" },
-  { icon: ShoppingBag, label: "Commander", path: "/order/type", highlight: true },
-  { icon: User, label: "Connexion", path: "/login" },
+  { icon: Plus, label: "Créer", path: "/order/offre", isCreate: true },
+  { icon: LogIn, label: "Connexion", path: "/login" },
 ];
 
 const authNavItems: NavItem[] = [
   { icon: Home, label: "Accueil", path: "/" },
+  { icon: Plus, label: "Créer", path: "/order/offre", isCreate: true },
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: ShoppingBag, label: "Commander", path: "/order/type", highlight: true },
-  { icon: Pencil, label: "Éditer", path: "/card-studio" },
-  { icon: BarChart3, label: "Stats", path: "/dashboard" },
+  { icon: User, label: "Profil", path: "/settings" },
 ];
 
 export function MobileBottomNav() {
@@ -66,8 +65,8 @@ export function MobileBottomNav() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Don't show on certain pages
-  const hiddenPaths = ["/login", "/signup", "/order/", "/card/", "/certificat", "/onboarding"];
+  // Don't show on certain pages (login, signup, order funnel, public cards)
+  const hiddenPaths = ["/login", "/signup", "/order/", "/card/", "/c/", "/certificat", "/onboarding", "/checkout"];
   const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
 
   // Only show on mobile
@@ -86,70 +85,111 @@ export function MobileBottomNav() {
 
   const handleNavClick = (path: string) => {
     navigate(path);
+    // Haptic feedback
     if (navigator.vibrate) {
       navigator.vibrate(10);
     }
+  };
+
+  const isActive = (path: string) => {
+    if (path === "/") return location.pathname === "/";
+    return location.pathname.startsWith(path);
   };
 
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.nav
-          initial={{ y: 100 }}
-          animate={{ y: 0 }}
-          exit={{ y: 100 }}
-          transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
           className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
         >
-          {/* Glass effect backdrop */}
+          {/* Glass effect backdrop - Apple style */}
           <div 
-            className="absolute inset-0"
+            className="absolute inset-0 rounded-t-3xl"
             style={{ 
-              backgroundColor: `${STEALTH.noir}E8`,
+              backgroundColor: COLORS.navBg,
               backdropFilter: "blur(20px) saturate(180%)",
               WebkitBackdropFilter: "blur(20px) saturate(180%)",
-              borderTop: `0.5px solid ${STEALTH.titanium}20`
+              borderTop: "0.5px solid rgba(0, 0, 0, 0.08)",
+              boxShadow: "0 -4px 30px rgba(0, 0, 0, 0.05)"
             }}
           />
           
           {/* Safe area padding for iOS */}
-          <div className="relative px-1 pt-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="relative px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
             <div className="flex items-center justify-around max-w-md mx-auto">
               {navItems.map((item) => {
-                const isActive = location.pathname === item.path || 
-                  (item.path !== "/" && location.pathname.startsWith(item.path));
+                const active = isActive(item.path);
                 const Icon = item.icon;
+
+                // Special styling for "Create" button
+                if (item.isCreate) {
+                  return (
+                    <button
+                      key={item.path}
+                      onClick={() => handleNavClick(item.path)}
+                      className="flex flex-col items-center gap-1 py-1.5 px-4 touch-manipulation active:scale-95 transition-transform duration-100"
+                    >
+                      <motion.div 
+                        className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                        style={{
+                          backgroundColor: COLORS.accent,
+                          boxShadow: `0 4px 14px ${COLORS.accent}40`
+                        }}
+                        whileTap={{ scale: 0.92 }}
+                      >
+                        <Icon 
+                          className="h-6 w-6" 
+                          strokeWidth={2.5}
+                          style={{ color: "#FFFFFF" }}
+                        />
+                      </motion.div>
+                      <span 
+                        className="text-[10px] font-medium"
+                        style={{ color: COLORS.accent }}
+                      >
+                        {item.label}
+                      </span>
+                    </button>
+                  );
+                }
 
                 return (
                   <button
                     key={item.path}
                     onClick={() => handleNavClick(item.path)}
-                    className="flex flex-col items-center gap-0.5 py-2 px-3 sm:px-4 rounded-2xl transition-all duration-150 min-w-[56px] sm:min-w-[64px] min-h-[50px] touch-manipulation active:scale-95"
-                    style={{
-                      color: item.highlight ? STEALTH.platinum : (isActive ? STEALTH.platinum : `${STEALTH.titanium}80`)
-                    }}
+                    className="flex flex-col items-center gap-1 py-2 px-4 rounded-2xl touch-manipulation active:scale-95 transition-all duration-100 min-w-[60px] min-h-[52px]"
                   >
-                    <div 
-                      className={`relative transition-transform duration-150 p-2 rounded-xl ${isActive ? "scale-105" : ""}`}
-                      style={{
-                        backgroundColor: item.highlight 
-                          ? `${STEALTH.titanium}25` 
-                          : (isActive ? `${STEALTH.titanium}15` : "transparent")
-                      }}
-                    >
-                      <Icon className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={isActive ? 2 : 1.5} />
-                      {isActive && !item.highlight && (
+                    <div className="relative">
+                      <Icon 
+                        className="h-6 w-6 transition-colors duration-200" 
+                        strokeWidth={active ? 2.2 : 1.8}
+                        style={{ 
+                          color: active ? COLORS.accent : COLORS.secondary 
+                        }}
+                      />
+                      {/* Active indicator dot */}
+                      {active && (
                         <motion.div
-                          layoutId="activeIndicator"
-                          className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
-                          style={{ backgroundColor: STEALTH.platinum }}
-                          transition={{ duration: 0.15, type: "spring", stiffness: 400, damping: 30 }}
+                          layoutId="bottomNavIndicator"
+                          className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+                          style={{ backgroundColor: COLORS.accent }}
+                          transition={{ 
+                            type: "spring", 
+                            stiffness: 500, 
+                            damping: 35 
+                          }}
                         />
                       )}
                     </div>
                     <span 
-                      className="text-[9px] sm:text-[10px] font-medium tracking-wide"
-                      style={{ color: item.highlight || isActive ? STEALTH.platinum : `${STEALTH.titanium}90` }}
+                      className="text-[10px] font-medium transition-colors duration-200"
+                      style={{ 
+                        color: active ? COLORS.accent : COLORS.secondary 
+                      }}
                     >
                       {item.label}
                     </span>
