@@ -1,6 +1,6 @@
 import { motion, type Transition } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Shield, Zap, RefreshCw, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Shield, Zap, RefreshCw, ArrowRight, CheckCircle2, Globe, Sparkles, Check } from "lucide-react";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 
 const luxuryEase = [0.22, 1, 0.36, 1] as const;
@@ -294,6 +294,69 @@ export default function IWASPLanding() {
               <div className="w-1.5 h-1.5 bg-[hsl(210,30%,50%)]" />
               Support dédié
             </span>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Web Studio IA Section */}
+      <section className="py-32 sm:py-40 px-6">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+          className="max-w-5xl mx-auto"
+        >
+          <motion.div 
+            variants={fadeUp}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 border border-[hsl(210,30%,50%)]/30 bg-[hsl(210,30%,50%)]/10 mb-6">
+              <Sparkles className="w-4 h-4 text-[hsl(210,30%,60%)]" />
+              <span className="font-body text-xs tracking-[0.2em] uppercase text-[hsl(210,30%,60%)]">Nouveau</span>
+            </div>
+            <h2 className="font-display text-3xl sm:text-4xl tracking-wide mb-4">
+              Création de site web IA
+            </h2>
+            <p className="font-body text-muted-foreground max-w-xl mx-auto leading-relaxed">
+              Besoin d'un site vitrine professionnel ? Notre studio IA crée votre site web en quelques minutes.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            variants={fadeUp}
+            className="border border-foreground/10 p-8 bg-gradient-to-br from-[hsl(210,30%,50%)]/5 to-transparent"
+          >
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <Globe className="w-6 h-6 text-[hsl(210,30%,60%)]" />
+                  <h3 className="font-body text-lg">Web Studio I-WASP</h3>
+                </div>
+                <ul className="space-y-3 mb-6">
+                  {[
+                    "Site vitrine professionnel",
+                    "Généré par intelligence artificielle",
+                    "Personnalisable à volonté",
+                    "Hébergement inclus"
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-muted-foreground text-sm">
+                      <Check className="w-4 h-4 text-[hsl(210,30%,60%)] shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <Link 
+                  to="/web-studio/offres"
+                  className="group inline-flex items-center gap-3 px-8 py-3 border border-[hsl(210,30%,50%)] text-[hsl(210,30%,60%)] font-body text-sm tracking-widest uppercase hover:bg-[hsl(210,30%,50%)] hover:text-foreground transition-all duration-500"
+                >
+                  Découvrir le Web Studio
+                </Link>
+              </div>
+              <div className="w-full md:w-48 h-32 bg-gradient-to-br from-[hsl(210,30%,50%)]/20 to-[hsl(210,30%,50%)]/5 flex items-center justify-center border border-foreground/10">
+                <Globe className="w-16 h-16 text-[hsl(210,30%,50%)]/40" />
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       </section>
