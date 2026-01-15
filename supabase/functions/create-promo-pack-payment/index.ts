@@ -1,6 +1,6 @@
 /**
- * Edge Function: create-nfc-payment
- * Creates a Stripe checkout session for NFC card orders
+ * Edge Function: create-promo-pack-payment
+ * Creates a Stripe checkout session for Promo Pack orders (NFC + Website bundle)
  * No authentication required - guest checkout supported
  */
 
@@ -13,37 +13,23 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// NFC Stripe Price IDs (MAD currency)
-const NFC_PRICES: Record<string, { priceId: string; name: string; quantity: number; priceMad: number }> = {
-  single: {
-    priceId: 'price_1Spet5IvyaABH94uidZ843Q4',
-    name: 'Carte NFC Unitaire',
-    quantity: 1,
-    priceMad: 249,
+// Promo Pack Stripe Price IDs (MAD currency)
+const PROMO_PACKS: Record<string, { priceId: string; name: string; priceMad: number }> = {
+  business: {
+    priceId: 'price_1SpetzIvyaABH94uxGb0EVKS',
+    name: 'Pack Business (Site + NFC)',
+    priceMad: 5900,
   },
-  pack_10: {
-    priceId: 'price_1SpetKIvyaABH94uhbYUQPze',
-    name: 'Pack Mini NFC (10 cartes)',
-    quantity: 10,
-    priceMad: 1900,
-  },
-  pack_50: {
-    priceId: 'price_1SpetXIvyaABH94uaXdvz8zf',
-    name: 'Pack Standard NFC (50 cartes)',
-    quantity: 50,
-    priceMad: 4900,
-  },
-  pack_100: {
-    priceId: 'price_1SpetjIvyaABH94u9Hc5nip0',
-    name: 'Pack Volume Pro NFC (100 cartes)',
-    quantity: 100,
-    priceMad: 7900,
+  premium: {
+    priceId: 'price_1SpeuCIvyaABH94uqUbngAFt',
+    name: 'Pack Premium (Site + NFC + Maintenance)',
+    priceMad: 12900,
   },
 };
 
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
-  console.log(`[CREATE-NFC-PAYMENT] ${step}${detailsStr}`);
+  console.log(`[CREATE-PROMO-PACK-PAYMENT] ${step}${detailsStr}`);
 };
 
 serve(async (req) => {
@@ -61,19 +47,23 @@ serve(async (req) => {
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY not configured");
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) throw new Error("Backend configuration missing");
 
-    const { tierId, email, extras = [] } = await req.json() as {
-      tierId: string;
+    const { packId, email, businessInfo } = await req.json() as {
+      packId: string;
       email?: string;
-      extras?: Array<{ id: string; name: string; priceCents: number }>;
+      businessInfo?: {
+        businessName?: string;
+        phone?: string;
+        notes?: string;
+      };
     };
 
-    logStep("Request received", { tierId, email, extrasCount: extras.length });
+    logStep("Request received", { packId, email, hasBusinessInfo: !!businessInfo });
 
-    // Validate tier
-    const tier = NFC_PRICES[tierId];
-    if (!tier) {
+    // Validate pack
+    const pack = PROMO_PACKS[packId];
+    if (!pack) {
       return new Response(
-        JSON.stringify({ error: "Pack NFC invalide" }),
+        JSON.stringify({ error: "Pack promo invalide" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -114,49 +104,32 @@ serve(async (req) => {
     // Get origin for redirect URLs
     const origin = req.headers.get("origin") || "https://i-wasp.lovable.app";
 
-    // Build line items
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
-      {
-        price: tier.priceId,
-        quantity: 1,
-      },
-    ];
-
-    // Add extras if any
-    for (const extra of extras) {
-      if (extra.priceCents > 0) {
-        lineItems.push({
-          price_data: {
-            currency: 'mad',
-            product_data: { name: extra.name },
-            unit_amount: extra.priceCents,
-          },
-          quantity: 1,
-        });
-      }
-    }
-
-    logStep("Line items prepared", { count: lineItems.length });
-
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : userEmail,
-      line_items: lineItems,
+      line_items: [
+        {
+          price: pack.priceId,
+          quantity: 1,
+        },
+      ],
       mode: "payment",
-      success_url: `${origin}/nfc-success?session_id={CHECKOUT_SESSION_ID}&tier=${tierId}`,
+      success_url: `${origin}/pack-success?session_id={CHECKOUT_SESSION_ID}&pack=${packId}`,
       cancel_url: `${origin}/tarifs-complets?cancelled=true`,
       metadata: {
-        type: 'nfc_order',
-        tier_id: tierId,
-        quantity: String(tier.quantity),
-        extras: JSON.stringify(extras.map(e => e.id)),
+        type: 'promo_pack_order',
+        pack_id: packId,
+        pack_name: pack.name,
+        business_name: businessInfo?.businessName || '',
+        phone: businessInfo?.phone || '',
+        notes: businessInfo?.notes || '',
       },
       payment_intent_data: {
         metadata: {
-          type: 'nfc_order',
-          tier_id: tierId,
-          quantity: String(tier.quantity),
+          type: 'promo_pack_order',
+          pack_id: packId,
+          pack_name: pack.name,
         },
       },
       ...(userEmail ? {} : { customer_creation: 'always' }),
