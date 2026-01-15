@@ -65,13 +65,18 @@ export function OnboardingTour() {
   // Check if tour should be shown
   useEffect(() => {
     const hasCompletedTour = localStorage.getItem(TOUR_KEY);
-    const isHomePage = location.pathname === "/";
     
-    // Only show on home page for new users, after a delay
-    if (!hasCompletedTour && isHomePage) {
+    // Excluded pages where the tour should NOT show
+    const excludedPaths = ["/", "/produit", "/express/offre", "/express/infos", "/express/payer"];
+    const isExcludedPage = excludedPaths.includes(location.pathname);
+    
+    // Only show on dashboard/app pages for new users, not on landing pages
+    const isAppPage = location.pathname.startsWith("/dashboard") || location.pathname === "/home-legacy";
+    
+    if (!hasCompletedTour && isAppPage && !isExcludedPage) {
       const timer = setTimeout(() => {
         setIsActive(true);
-      }, 2000); // Show after 2 seconds on home page
+      }, 2000); // Show after 2 seconds
       
       return () => clearTimeout(timer);
     }
