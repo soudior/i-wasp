@@ -29,7 +29,7 @@ const CONTACT = {
   title: "Cartes de visite NFC Premium",
   location: "France",
   phone: "+33 6 26 42 43 94",
-  whatsapp: "33626424394",
+  whatsapp: "212661381626",
   email: "contact@i-wasp.com",
   services: [
     { icon: Car, label: "Cartes NFC", desc: "Design premium personnalisé" },
