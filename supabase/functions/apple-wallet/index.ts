@@ -35,6 +35,56 @@ interface WalletStyles {
   showLocation?: boolean;
 }
 
+// Base64URL encode helper
+function base64UrlEncode(data: Uint8Array): string {
+  const base64 = btoa(String.fromCharCode(...data));
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+// Generate JWT token from API Key and Secret for PassKit REST API
+async function generatePassKitJWT(apiKey: string, apiSecret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  
+  // JWT Header
+  const header = {
+    alg: "HS256",
+    typ: "JWT"
+  };
+  
+  // JWT Payload with PassKit claims
+  const now = Math.floor(Date.now() / 1000);
+  const payload = {
+    iat: now,
+    exp: now + 3600, // 1 hour expiry
+    uid: apiKey,
+    key: apiKey
+  };
+  
+  // Encode header and payload
+  const encodedHeader = base64UrlEncode(encoder.encode(JSON.stringify(header)));
+  const encodedPayload = base64UrlEncode(encoder.encode(JSON.stringify(payload)));
+  
+  // Create signature
+  const signatureInput = `${encodedHeader}.${encodedPayload}`;
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(apiSecret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(signatureInput)
+  );
+  
+  const encodedSignature = base64UrlEncode(new Uint8Array(signature));
+  
+  return `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -46,16 +96,16 @@ serve(async (req) => {
     const passKitApiSecret = Deno.env.get('PASSKIT_API_SECRET');
     const passKitJwtToken = Deno.env.get('PASSKIT_JWT_TOKEN');
 
-    // Check if we have either JWT token OR API key/secret
-    const hasJwtToken = passKitJwtToken && passKitJwtToken.startsWith('ey');
-    const hasBasicCredentials = passKitApiKey && passKitApiSecret;
+    // Check if we have credentials
+    const hasProvidedJwt = passKitJwtToken && passKitJwtToken.startsWith('ey');
+    const hasKeySecret = passKitApiKey && passKitApiSecret;
 
-    if (!hasJwtToken && !hasBasicCredentials) {
+    if (!hasProvidedJwt && !hasKeySecret) {
       console.error('PassKit credentials not configured');
       return new Response(
         JSON.stringify({ 
           error: 'Service non configuré',
-          message: 'Les clés PassKit ne sont pas configurées. Veuillez configurer PASSKIT_JWT_TOKEN ou PASSKIT_API_KEY + PASSKIT_API_SECRET.',
+          message: 'Les clés PassKit ne sont pas configurées.',
           fallback: true
         }),
         { 
@@ -64,10 +114,6 @@ serve(async (req) => {
         }
       );
     }
-
-    // Determine auth method
-    const useJwtAuth = hasJwtToken;
-    console.log('Using auth method:', useJwtAuth ? 'JWT Bearer Token' : 'Basic Auth');
 
     const { cardData, walletStyles } = await req.json() as { 
       cardData: CardData; 
@@ -171,17 +217,15 @@ serve(async (req) => {
     }
 
     // PassKit.io API - Using /members/member endpoint for generic passes
-    // The programId should match the template ID from PassKit.io dashboard
     const passKitPayload = {
-      programId: "i-wasp-vcard", // Program/Template ID in PassKit.io dashboard
-      externalId: cardData.id || cardData.slug, // Unique identifier for the pass
+      programId: "i-wasp-vcard",
+      externalId: cardData.id || cardData.slug,
       person: {
         forename: cardData.firstName,
         surname: cardData.lastName,
         emailAddress: cardData.email || "",
         mobileNumber: cardData.phone || ""
       },
-      // Custom fields for the pass template
       metaData: {
         jobTitle: cardData.title || "",
         company: (styles.showCompany !== false && cardData.company) ? cardData.company : "IWASP",
@@ -197,23 +241,21 @@ serve(async (req) => {
 
     console.log('PassKit payload:', JSON.stringify(passKitPayload, null, 2));
 
-    // Build authorization header based on available credentials
-    let authHeader: string;
-    if (useJwtAuth) {
-      authHeader = `Bearer ${passKitJwtToken}`;
-      console.log('Using JWT Bearer Token for PassKit API');
+    // Generate or use JWT token
+    let jwtToken: string;
+    if (hasProvidedJwt) {
+      jwtToken = passKitJwtToken!;
+      console.log('Using provided JWT token');
     } else {
-      // Create Basic Auth token: Base64(apiKey:apiSecret)
-      const basicAuthToken = btoa(`${passKitApiKey}:${passKitApiSecret}`);
-      authHeader = `Basic ${basicAuthToken}`;
-      console.log('Using Basic Auth for PassKit API');
+      jwtToken = await generatePassKitJWT(passKitApiKey!, passKitApiSecret!);
+      console.log('Generated JWT from Key/Secret');
     }
 
-    // Call PassKit.io API - /members/member endpoint for generic passes
+    // Call PassKit.io API with Bearer token
     const passKitResponse = await fetch('https://api.pub1.passkit.io/members/member', {
       method: 'POST',
       headers: {
-        'Authorization': authHeader,
+        'Authorization': `Bearer ${jwtToken}`,
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
