@@ -32,7 +32,11 @@ import {
   CreditCard,
   Loader2,
   ShoppingCart,
-  Plus as PlusIcon
+  Plus as PlusIcon,
+  Bell,
+  UserCheck,
+  TrendingUp,
+  Target
 } from "lucide-react";
 import { SUBSCRIPTION_PLANS, FEATURE_COMPARISON } from "@/lib/subscriptionPlans";
 import { QuoteCalculator } from "@/components/pricing/QuoteCalculator";
@@ -821,12 +825,30 @@ function PricingContent() {
                       </p>
                       <ul className="space-y-3">
                         {SUBSCRIPTION_PLANS.SIGNATURE.included.map((item, i) => (
-                          <li key={i} className="flex items-center gap-3 text-sm font-light">
+                          <li 
+                            key={i} 
+                            className={`flex items-center gap-3 text-sm font-light ${item.includes('🔥') || item.includes('🔔') ? 'font-medium' : ''}`}
+                          >
                             <Check size={16} className="flex-shrink-0" style={{ color: COLORS.or }} />
                             <span>{item}</span>
                           </li>
                         ))}
                       </ul>
+                      
+                      {/* Business Features Highlight */}
+                      <div className="mt-6 pt-4" style={{ borderTop: `1px solid ${COLORS.border}` }}>
+                        <p className="text-[10px] font-medium uppercase tracking-widest mb-3 flex items-center gap-2" style={{ color: COLORS.or }}>
+                          <Target size={12} />
+                          Avantages Business
+                        </p>
+                        <ul className="space-y-2">
+                          {SUBSCRIPTION_PLANS.SIGNATURE.businessFeatures.map((item, i) => (
+                            <li key={i} className="flex items-center gap-2 text-xs font-light" style={{ color: COLORS.ivoire }}>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </motion.div>
 
@@ -887,6 +909,170 @@ function PricingContent() {
               </div>
             </section>
 
+            {/* Business Advantages - Push & Leads */}
+            <section className="py-16 px-4" style={{ backgroundColor: COLORS.noirSoft }}>
+              <div className="max-w-5xl mx-auto">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-12"
+                >
+                  <h2 className="font-display text-2xl md:text-3xl font-light tracking-tight mb-4">
+                    Transformez chaque scan en{" "}
+                    <span style={{ color: COLORS.or }}>opportunité</span>
+                  </h2>
+                  <p className="text-sm" style={{ color: COLORS.gris }}>
+                    Les avantages exclusifs qui font la différence avec Signature
+                  </p>
+                </motion.div>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Lead Capture Card */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="p-8 rounded-3xl relative overflow-hidden"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${COLORS.noirCard} 0%, ${COLORS.or}08 100%)`,
+                      border: `1px solid ${COLORS.or}30`,
+                    }}
+                  >
+                    <div 
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${COLORS.or} 0%, ${COLORS.orLight} 100%)`,
+                      }}
+                    >
+                      <UserCheck size={26} style={{ color: COLORS.noir }} />
+                    </div>
+                    
+                    <h3 className="text-xl font-medium mb-3 tracking-tight">
+                      🔥 Capture automatique de leads
+                    </h3>
+                    <p className="text-sm font-light leading-relaxed mb-6" style={{ color: COLORS.gris }}>
+                      Chaque visiteur qui scanne votre carte peut laisser ses coordonnées. 
+                      Récoltez automatiquement noms, emails et téléphones dans votre dashboard.
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 text-sm">
+                        <Check size={16} style={{ color: COLORS.or }} />
+                        <span style={{ color: COLORS.ivoire }}>Formulaire de contact intégré</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm">
+                        <Check size={16} style={{ color: COLORS.or }} />
+                        <span style={{ color: COLORS.ivoire }}>Export Excel / CRM</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm">
+                        <Check size={16} style={{ color: COLORS.or }} />
+                        <span style={{ color: COLORS.ivoire }}>Lead scoring automatique</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm">
+                        <Check size={16} style={{ color: COLORS.or }} />
+                        <span style={{ color: COLORS.ivoire }}>100% conforme RGPD</span>
+                      </div>
+                    </div>
+                    
+                    <div 
+                      className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full blur-[80px] pointer-events-none"
+                      style={{ backgroundColor: `${COLORS.or}20` }}
+                    />
+                  </motion.div>
+                  
+                  {/* Push Notifications Card */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="p-8 rounded-3xl relative overflow-hidden"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${COLORS.noirCard} 0%, ${COLORS.or}08 100%)`,
+                      border: `1px solid ${COLORS.or}30`,
+                    }}
+                  >
+                    <div 
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${COLORS.or} 0%, ${COLORS.orLight} 100%)`,
+                      }}
+                    >
+                      <Bell size={26} style={{ color: COLORS.noir }} />
+                    </div>
+                    
+                    <h3 className="text-xl font-medium mb-3 tracking-tight">
+                      🔔 Push Notifications
+                    </h3>
+                    <p className="text-sm font-light leading-relaxed mb-6" style={{ color: COLORS.gris }}>
+                      Recontactez vos leads directement sur leur smartphone. 
+                      Envoyez des promotions, rappels ou actualités en un clic.
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 text-sm">
+                        <Check size={16} style={{ color: COLORS.or }} />
+                        <span style={{ color: COLORS.ivoire }}>Notifications instantanées</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm">
+                        <Check size={16} style={{ color: COLORS.or }} />
+                        <span style={{ color: COLORS.ivoire }}>Templates prêts à l'emploi</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm">
+                        <Check size={16} style={{ color: COLORS.or }} />
+                        <span style={{ color: COLORS.ivoire }}>Statistiques d'engagement</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm">
+                        <Check size={16} style={{ color: COLORS.or }} />
+                        <span style={{ color: COLORS.ivoire }}>Aucune app à télécharger</span>
+                      </div>
+                    </div>
+                    
+                    <div 
+                      className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full blur-[80px] pointer-events-none"
+                      style={{ backgroundColor: `${COLORS.or}20` }}
+                    />
+                  </motion.div>
+                </div>
+                
+                {/* Stats Preview */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="mt-8 p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6"
+                  style={{ backgroundColor: `${COLORS.or}10`, border: `1px solid ${COLORS.or}20` }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center"
+                      style={{ backgroundColor: `${COLORS.or}20` }}
+                    >
+                      <TrendingUp size={22} style={{ color: COLORS.or }} />
+                    </div>
+                    <div>
+                      <p className="font-medium" style={{ color: COLORS.ivoire }}>+47% de conversions</p>
+                      <p className="text-sm" style={{ color: COLORS.gris }}>En moyenne avec les push notifications</p>
+                    </div>
+                  </div>
+                  
+                  <Link to="/order/type">
+                    <Button 
+                      className="px-6 py-3 font-medium text-xs uppercase tracking-widest rounded-xl"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${COLORS.or} 0%, ${COLORS.orLight} 100%)`,
+                        color: COLORS.noir,
+                      }}
+                    >
+                      <Crown size={14} className="mr-2" />
+                      Passer à Signature
+                      <ArrowRight size={14} className="ml-2" />
+                    </Button>
+                  </Link>
+                </motion.div>
+              </div>
+            </section>
+
             {/* Comparison Table */}
             <section className="py-20 px-4" style={{ backgroundColor: COLORS.noir }}>
               <div className="max-w-4xl mx-auto">
@@ -921,9 +1107,18 @@ function PricingContent() {
                     <div 
                       key={index}
                       className="grid grid-cols-3"
-                      style={{ backgroundColor: index % 2 === 0 ? `${COLORS.gris}05` : COLORS.noir }}
+                      style={{ 
+                        backgroundColor: 'highlight' in feature && feature.highlight 
+                          ? `${COLORS.or}08` 
+                          : (index % 2 === 0 ? `${COLORS.gris}05` : COLORS.noir)
+                      }}
                     >
-                      <div className="p-4 text-sm font-light">{feature.name}</div>
+                      <div 
+                        className={`p-4 text-sm ${'highlight' in feature && feature.highlight ? 'font-medium' : 'font-light'}`}
+                        style={{ color: 'highlight' in feature && feature.highlight ? COLORS.or : COLORS.ivoire }}
+                      >
+                        {feature.name}
+                      </div>
                       <div 
                         className="p-4 flex justify-center items-center"
                         style={{ borderLeft: `1px solid ${COLORS.border}`, borderRight: `1px solid ${COLORS.border}` }}
