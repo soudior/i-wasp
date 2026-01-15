@@ -72,6 +72,7 @@ const Maison = lazy(() => import("./pages/Maison"));
 const Vision = lazy(() => import("./pages/Vision"));
 const Features = lazy(() => import("./pages/Features"));
 const Pricing = lazy(() => import("./pages/Pricing"));
+const TarifsComplets = lazy(() => import("./pages/TarifsComplets"));
 const SaaSPricing = lazy(() => import("./pages/SaaSPricing"));
 const SaaSDashboard = lazy(() => import("./pages/SaaSDashboard"));
 const Enterprise = lazy(() => import("./pages/Enterprise"));
@@ -270,6 +271,7 @@ const App = () => {
                               <Route path="/saas-pricing" element={<SaaSPricing />} />
                               <Route path="/saas-dashboard" element={<DashboardGuard><SaaSDashboard /></DashboardGuard>} />
                               <Route path="/tarifs" element={<Pricing />} />
+                              <Route path="/tarifs-complets" element={<TarifsComplets />} />
                               <Route path="/enterprise" element={<Enterprise />} />
                               <Route path="/entreprises" element={<Enterprise />} />
                               <Route path="/business" element={<Enterprise />} />
