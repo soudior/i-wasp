@@ -8,7 +8,7 @@ import { createContext, useContext, useState, useMemo, ReactNode } from 'react';
 
 // Types
 export type Currency = 'MAD' | 'EUR';
-export type PackageType = 'STARTER' | 'STANDARD' | 'PREMIUM';
+export type PackageType = 'BASIC' | 'PRO' | 'ENTERPRISE';
 
 export interface CartItem {
   id: string;
