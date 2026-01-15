@@ -111,6 +111,10 @@ const ExpressInfos = lazy(() => import("./pages/express/ExpressInfos"));
 const ExpressPayer = lazy(() => import("./pages/express/ExpressPayer"));
 const ExpressSucces = lazy(() => import("./pages/express/ExpressSucces"));
 const SovereignDashboard = lazy(() => import("./pages/SovereignDashboard"));
+
+// I-WASP Premium Landing
+const IWASPLanding = lazy(() => import("./pages/IWASPLanding"));
+const IWASPProduit = lazy(() => import("./pages/IWASPProduit"));
 const AriellaCard = lazy(() => import("./pages/AriellaCard"));
 const LegacyMap = lazy(() => import("./pages/LegacyMap"));
 const Subscription = lazy(() => import("./pages/Subscription"));
@@ -223,8 +227,10 @@ const App = () => {
                         <OrderFunnelProvider>
                           <Suspense fallback={<RouteLoader />}>
                             <Routes>
-                            {/* HOME */}
-                            <Route path="/" element={<HomeLuxeMax />} />
+{/* HOME - I-WASP Premium Landing */}
+                            <Route path="/" element={<IWASPLanding />} />
+                            <Route path="/produit" element={<IWASPProduit />} />
+                            <Route path="/home-legacy" element={<HomeLuxeMax />} />
                             <Route path="/legacy" element={<HomeSaaS />} />
                             <Route path="/classic" element={<Index />} />
                             
