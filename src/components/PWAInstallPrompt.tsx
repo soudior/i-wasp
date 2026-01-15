@@ -36,10 +36,10 @@ export function PWAInstallPrompt() {
       return;
     }
 
-    // Wait for page to load, then show prompt
+    // Wait for user engagement, then show prompt
     const timer = setTimeout(() => {
       setShow(true);
-    }, 3000); // Show after 3 seconds
+    }, 30000); // Show after 30 seconds of usage
 
     // Listen for install prompt (Android/Desktop)
     const handleBeforeInstallPrompt = (e: Event) => {
