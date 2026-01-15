@@ -90,7 +90,7 @@ export const NFC_PACKAGES = {
 
 export function PricingCartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [currency, setCurrency] = useState<Currency>('MAD');
+  const [currency, setCurrency] = useState<Currency>('EUR');
 
   const addItem = (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
     setItems(prev => {

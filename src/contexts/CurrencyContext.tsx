@@ -30,8 +30,8 @@ const CONVERSION_RATES: Record<Currency, number> = {
 };
 
 const CURRENCY_CONFIG: Record<Currency, { symbol: string; locale: string; region: string; label: string }> = {
-  MAD: { symbol: "DH", locale: "fr-MA", region: "MA", label: "Maroc" },
   EUR: { symbol: "€", locale: "fr-FR", region: "EU", label: "Europe" },
+  MAD: { symbol: "DH", locale: "fr-MA", region: "MA", label: "Maroc" },
 };
 
 interface CurrencyProviderProps {

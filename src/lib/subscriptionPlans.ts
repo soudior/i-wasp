@@ -6,7 +6,8 @@
  * - SIGNATURE : L'expérience complète (POPULAIRE)
  * - ÉLITE : Service sur-mesure entreprises
  * 
- * Tous les prix en Dirhams Marocains (DH)
+ * Tous les prix disponibles en EUR et DH
+ * Livraison Europe & Maroc
  * La carte physique est INCLUSE dans chaque service.
  */
 

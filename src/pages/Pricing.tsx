@@ -296,7 +296,7 @@ function PricingContent() {
               className="inline-flex p-1 rounded-lg"
               style={{ backgroundColor: COLORS.noirCard }}
             >
-              {["MAD", "EUR"].map((curr) => (
+              {["EUR", "MAD"].map((curr) => (
                 <button
                   key={curr}
                   onClick={() => setCurrency(curr as "MAD" | "EUR")}
@@ -306,7 +306,7 @@ function PricingContent() {
                     color: currency === curr ? COLORS.noir : COLORS.gris,
                   }}
                 >
-                  {curr === "MAD" ? "🇲🇦 DH" : "🇫🇷 EUR"}
+                  {curr === "EUR" ? "🇪🇺 EUR" : "🇲🇦 DH"}
                 </button>
               ))}
             </div>
@@ -904,7 +904,7 @@ function PricingContent() {
                 </div>
                 
                 <p className="text-center text-xs mt-8 font-light" style={{ color: COLORS.gris }}>
-                  Taux de conversion : 1 EUR ≈ 10 MAD
+                  Livraison Europe & Maroc • 1 EUR ≈ 10 DH
                 </p>
               </div>
             </section>
