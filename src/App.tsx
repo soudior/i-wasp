@@ -119,6 +119,8 @@ const Services = lazy(() => import("./pages/Services"));
 const CartesNFC = lazy(() => import("./pages/CartesNFC"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const WebStudioLegacy = lazy(() => import("./pages/WebStudio"));
+const NFCPaymentSuccess = lazy(() => import("./pages/NFCPaymentSuccess"));
+const PromoPackSuccess = lazy(() => import("./pages/PromoPackSuccess"));
 
 // NEW Web Studio funnel pages
 const WebStudioLayout = lazy(() => import("./pages/web-studio/WebStudioLayout"));
@@ -247,6 +249,8 @@ const App = () => {
                               {/* Guest card creation - redirect to order funnel */}
                               <Route path="/create" element={<Navigate to="/order/offre" replace />} />
                               <Route path="/success" element={<CardSuccess />} />
+                              <Route path="/nfc-success" element={<NFCPaymentSuccess />} />
+                              <Route path="/pack-success" element={<PromoPackSuccess />} />
                               <Route path="/guide" element={<UserGuide />} />
                               <Route path="/templates" element={<Templates />} />
                               <Route path="/install" element={<Install />} />
