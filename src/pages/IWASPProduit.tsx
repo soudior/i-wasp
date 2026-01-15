@@ -1,6 +1,6 @@
 import { motion, type Transition } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Check, Shield, Zap, RefreshCw, Smartphone, Users, Lock } from "lucide-react";
+import { ArrowLeft, Check, Shield, Zap, RefreshCw, Smartphone, Users, Lock, Globe, Sparkles } from "lucide-react";
 
 const luxuryEase = [0.22, 1, 0.36, 1] as const;
 
@@ -34,23 +34,23 @@ export default function IWASPProduit() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
       {/* Navigation */}
       <motion.nav 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.3 }}
-        className="fixed top-0 left-0 right-0 z-50 px-6 py-5 bg-background/80 backdrop-blur-sm"
+        className="fixed top-0 left-0 right-0 z-50 px-6 py-5 bg-[#0a0a0a]/90 backdrop-blur-sm border-b border-white/5"
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link 
             to="/"
-            className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-500"
+            className="flex items-center gap-3 text-white/60 hover:text-white transition-colors duration-500"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="font-body text-xs tracking-widest uppercase">Retour</span>
           </Link>
-          <span className="font-display text-xl tracking-widest text-foreground/90">
+          <span className="font-display text-xl tracking-widest text-white">
             I-WASP
           </span>
         </div>
@@ -66,21 +66,21 @@ export default function IWASPProduit() {
         >
           <motion.p 
             variants={fadeUp}
-            className="font-body text-xs tracking-[0.3em] uppercase text-[hsl(210,30%,50%)] mb-6"
+            className="font-body text-xs tracking-[0.3em] uppercase text-[#6b8cae] mb-6"
           >
             Produit
           </motion.p>
           
           <motion.h1 
             variants={fadeUp}
-            className="font-display text-4xl sm:text-5xl md:text-6xl tracking-wide leading-[1.1] mb-8"
+            className="font-display text-4xl sm:text-5xl md:text-6xl tracking-wide leading-[1.1] mb-8 text-white"
           >
             Carte de visite digitale<br />I-WASP
           </motion.h1>
 
           <motion.p 
             variants={fadeUp}
-            className="font-body text-muted-foreground text-xl max-w-2xl leading-relaxed"
+            className="font-body text-white/70 text-xl max-w-2xl leading-relaxed"
           >
             L'identité professionnelle nouvelle génération. 
             Conçue pour les décideurs qui veulent se démarquer.
@@ -89,7 +89,7 @@ export default function IWASPProduit() {
       </section>
 
       {/* For whom */}
-      <section className="py-20 px-6 border-t border-foreground/8">
+      <section className="py-20 px-6 border-t border-white/10">
         <motion.div 
           initial="hidden"
           whileInView="visible"
@@ -99,7 +99,7 @@ export default function IWASPProduit() {
         >
           <motion.h2 
             variants={fadeUp}
-            className="font-display text-2xl sm:text-3xl tracking-wide mb-12"
+            className="font-display text-2xl sm:text-3xl tracking-wide mb-12 text-white"
           >
             Pour qui ?
           </motion.h2>
@@ -113,11 +113,11 @@ export default function IWASPProduit() {
               <motion.div 
                 key={item.title}
                 variants={fadeUp}
-                className="p-6 border border-foreground/8 bg-[hsl(0,0%,6%)]"
+                className="p-6 border border-white/10 bg-white/5"
               >
-                <item.icon className="w-5 h-5 text-[hsl(210,30%,60%)] mb-4" strokeWidth={1.5} />
-                <h3 className="font-body text-foreground mb-2">{item.title}</h3>
-                <p className="font-body text-sm text-muted-foreground">{item.desc}</p>
+                <item.icon className="w-5 h-5 text-[#6b8cae] mb-4" strokeWidth={1.5} />
+                <h3 className="font-body text-white mb-2">{item.title}</h3>
+                <p className="font-body text-sm text-white/60">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -125,7 +125,7 @@ export default function IWASPProduit() {
       </section>
 
       {/* What's included */}
-      <section className="py-20 px-6 bg-[hsl(0,0%,6%)]">
+      <section className="py-20 px-6 bg-white/[0.02]">
         <motion.div 
           initial="hidden"
           whileInView="visible"
@@ -135,7 +135,7 @@ export default function IWASPProduit() {
         >
           <motion.h2 
             variants={fadeUp}
-            className="font-display text-2xl sm:text-3xl tracking-wide mb-12"
+            className="font-display text-2xl sm:text-3xl tracking-wide mb-12 text-white"
           >
             Ce qui est inclus
           </motion.h2>
@@ -145,10 +145,10 @@ export default function IWASPProduit() {
               <motion.div 
                 key={feature}
                 variants={fadeUp}
-                className="flex items-center gap-4 py-3 border-b border-foreground/8"
+                className="flex items-center gap-4 py-3 border-b border-white/10"
               >
-                <Check className="w-4 h-4 text-[hsl(210,30%,60%)] shrink-0" strokeWidth={1.5} />
-                <span className="font-body text-foreground/90">{feature}</span>
+                <Check className="w-4 h-4 text-[#6b8cae] shrink-0" strokeWidth={1.5} />
+                <span className="font-body text-white/90">{feature}</span>
               </motion.div>
             ))}
           </div>
@@ -166,7 +166,7 @@ export default function IWASPProduit() {
         >
           <motion.h2 
             variants={fadeUp}
-            className="font-display text-2xl sm:text-3xl tracking-wide mb-12"
+            className="font-display text-2xl sm:text-3xl tracking-wide mb-12 text-white"
           >
             Comment ça marche
           </motion.h2>
@@ -182,12 +182,12 @@ export default function IWASPProduit() {
                 variants={fadeUp}
                 className="flex gap-6 items-start"
               >
-                <div className="w-10 h-10 border border-[hsl(210,30%,50%)] flex items-center justify-center shrink-0">
-                  <span className="font-body text-sm text-[hsl(210,30%,60%)]">{step.num}</span>
+                <div className="w-10 h-10 border border-[#6b8cae] flex items-center justify-center shrink-0">
+                  <span className="font-body text-sm text-[#6b8cae]">{step.num}</span>
                 </div>
                 <div className="pt-1">
-                  <h3 className="font-body text-foreground mb-2">{step.title}</h3>
-                  <p className="font-body text-muted-foreground leading-relaxed">{step.desc}</p>
+                  <h3 className="font-body text-white mb-2">{step.title}</h3>
+                  <p className="font-body text-white/60 leading-relaxed">{step.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -196,7 +196,7 @@ export default function IWASPProduit() {
       </section>
 
       {/* Pricing */}
-      <section className="py-20 px-6 bg-[hsl(0,0%,6%)]">
+      <section className="py-20 px-6 bg-white/[0.02]">
         <motion.div 
           initial="hidden"
           whileInView="visible"
@@ -206,44 +206,107 @@ export default function IWASPProduit() {
         >
           <motion.div 
             variants={fadeUp}
-            className="border border-foreground/10 p-8 sm:p-12"
+            className="border border-white/10 p-8 sm:p-12 bg-[#0a0a0a]"
           >
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-8 mb-8">
               <div>
-                <p className="font-body text-xs tracking-[0.3em] uppercase text-[hsl(210,30%,50%)] mb-3">
+                <p className="font-body text-xs tracking-[0.3em] uppercase text-[#6b8cae] mb-3">
                   Carte I-WASP
                 </p>
-                <h3 className="font-display text-3xl sm:text-4xl tracking-wide">
+                <h3 className="font-display text-3xl sm:text-4xl tracking-wide text-white">
                   490 MAD
                 </h3>
-                <p className="font-body text-muted-foreground mt-2">
+                <p className="font-body text-white/60 mt-2">
                   Paiement unique. Pas d'abonnement.
                 </p>
               </div>
               
               <Link 
                 to="/express/offre"
-                className="group relative px-10 py-4 bg-foreground text-background font-body text-sm tracking-widest uppercase overflow-hidden transition-all duration-700 text-center"
+                className="group relative px-10 py-4 bg-white text-[#0a0a0a] font-body text-sm tracking-widest uppercase overflow-hidden transition-all duration-700 text-center"
               >
                 <span className="relative z-10">Commander maintenant</span>
-                <div className="absolute inset-0 bg-[hsl(210,30%,50%)] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out" />
+                <div className="absolute inset-0 bg-[#6b8cae] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out" />
               </Link>
             </div>
 
-            <div className="pt-8 border-t border-foreground/8">
-              <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
+            <div className="pt-8 border-t border-white/10">
+              <div className="flex flex-wrap gap-6 text-sm text-white/60">
                 <span className="flex items-center gap-2">
-                  <Lock className="w-4 h-4 text-[hsl(210,30%,60%)]" strokeWidth={1.5} />
+                  <Lock className="w-4 h-4 text-[#6b8cae]" strokeWidth={1.5} />
                   Paiement sécurisé
                 </span>
                 <span className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-[hsl(210,30%,60%)]" strokeWidth={1.5} />
+                  <Zap className="w-4 h-4 text-[#6b8cae]" strokeWidth={1.5} />
                   Livraison sous 5 jours
                 </span>
                 <span className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-[hsl(210,30%,60%)]" strokeWidth={1.5} />
+                  <Shield className="w-4 h-4 text-[#6b8cae]" strokeWidth={1.5} />
                   Garantie à vie
                 </span>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Web Studio IA - NEW Section */}
+      <section className="py-20 px-6 border-t border-white/10">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={staggerContainer}
+          className="max-w-4xl mx-auto"
+        >
+          <motion.div 
+            variants={fadeUp}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 border border-[#6b8cae]/30 bg-[#6b8cae]/10 mb-6">
+              <Sparkles className="w-4 h-4 text-[#6b8cae]" />
+              <span className="font-body text-xs tracking-[0.2em] uppercase text-[#6b8cae]">Nouveau</span>
+            </div>
+            <h2 className="font-display text-2xl sm:text-3xl tracking-wide mb-4 text-white">
+              Création de site web IA
+            </h2>
+            <p className="font-body text-white/60 max-w-xl mx-auto leading-relaxed">
+              Besoin d'un site vitrine professionnel ? Notre studio IA crée votre site web en quelques minutes.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            variants={fadeUp}
+            className="border border-white/10 p-8 bg-gradient-to-br from-[#6b8cae]/5 to-transparent"
+          >
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <Globe className="w-6 h-6 text-[#6b8cae]" />
+                  <h3 className="font-body text-lg text-white">Web Studio I-WASP</h3>
+                </div>
+                <ul className="space-y-3 mb-6">
+                  {[
+                    "Site vitrine professionnel",
+                    "Généré par intelligence artificielle",
+                    "Personnalisable à volonté",
+                    "Hébergement inclus"
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-white/70 text-sm">
+                      <Check className="w-4 h-4 text-[#6b8cae] shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <Link 
+                  to="/web-studio/offres"
+                  className="group inline-flex items-center gap-3 px-8 py-3 border border-[#6b8cae] text-[#6b8cae] font-body text-sm tracking-widest uppercase hover:bg-[#6b8cae] hover:text-white transition-all duration-500"
+                >
+                  Découvrir le Web Studio
+                </Link>
+              </div>
+              <div className="w-full md:w-48 h-32 bg-gradient-to-br from-[#6b8cae]/20 to-[#6b8cae]/5 flex items-center justify-center border border-white/10">
+                <Globe className="w-16 h-16 text-[#6b8cae]/40" />
               </div>
             </div>
           </motion.div>
@@ -261,14 +324,14 @@ export default function IWASPProduit() {
         >
           <motion.p 
             variants={fadeUp}
-            className="font-body text-muted-foreground mb-8"
+            className="font-body text-white/60 mb-8"
           >
             Infrastructure sécurisée. Données protégées. Support dédié.
           </motion.p>
 
           <motion.div 
             variants={fadeUp}
-            className="flex flex-wrap justify-center gap-8 text-xs text-muted-foreground tracking-wide uppercase"
+            className="flex flex-wrap justify-center gap-8 text-xs text-white/50 tracking-wide uppercase"
           >
             <span>Hébergement sécurisé</span>
             <span>·</span>
@@ -280,7 +343,7 @@ export default function IWASPProduit() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-6 bg-[hsl(0,0%,6%)] border-t border-foreground/8">
+      <section className="py-20 px-6 bg-white/[0.02] border-t border-white/10">
         <motion.div 
           initial="hidden"
           whileInView="visible"
@@ -290,14 +353,14 @@ export default function IWASPProduit() {
         >
           <motion.h2 
             variants={fadeUp}
-            className="font-display text-2xl sm:text-3xl tracking-wide mb-8"
+            className="font-display text-2xl sm:text-3xl tracking-wide mb-8 text-white"
           >
             Une question ?
           </motion.h2>
 
           <motion.p 
             variants={fadeUp}
-            className="font-body text-muted-foreground mb-8"
+            className="font-body text-white/60 mb-8"
           >
             Notre équipe est disponible pour vous accompagner.
           </motion.p>
@@ -308,15 +371,15 @@ export default function IWASPProduit() {
           >
             <Link 
               to="/express/offre"
-              className="group relative px-10 py-4 bg-foreground text-background font-body text-sm tracking-widest uppercase overflow-hidden transition-all duration-700"
+              className="group relative px-10 py-4 bg-white text-[#0a0a0a] font-body text-sm tracking-widest uppercase overflow-hidden transition-all duration-700"
             >
               <span className="relative z-10">Commander la carte</span>
-              <div className="absolute inset-0 bg-[hsl(210,30%,50%)] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out" />
+              <div className="absolute inset-0 bg-[#6b8cae] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out" />
             </Link>
             
             <a 
               href="mailto:contact@i-wasp.com"
-              className="px-10 py-4 border border-foreground/20 font-body text-sm tracking-widest uppercase text-foreground/80 hover:border-foreground/40 transition-all duration-700"
+              className="px-10 py-4 border border-white/20 font-body text-sm tracking-widest uppercase text-white/80 hover:border-white/40 transition-all duration-700"
             >
               Nous contacter
             </a>
@@ -325,12 +388,12 @@ export default function IWASPProduit() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 border-t border-foreground/8">
+      <footer className="py-12 px-6 border-t border-white/10">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="font-display text-lg tracking-widest text-foreground/60">
+          <span className="font-display text-lg tracking-widest text-white/50">
             I-WASP
           </span>
-          <p className="font-body text-xs text-muted-foreground tracking-wide">
+          <p className="font-body text-xs text-white/40 tracking-wide">
             © 2025 I-WASP. Tous droits réservés.
           </p>
         </div>
