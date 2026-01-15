@@ -10,6 +10,7 @@ import { BrandProvider } from "@/contexts/BrandContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { OrderFunnelProvider } from "@/contexts/OrderFunnelContext";
+import { ExpressCheckoutProvider } from "@/contexts/ExpressCheckoutContext";
 import { CheckoutProvider } from "@/contexts/CheckoutContext";
 import { DashboardGuard } from "@/components/DashboardGuard";
 import { AdminGuard } from "@/components/AdminGuard";
@@ -103,6 +104,12 @@ const OrderLivraison = lazy(() => import("./pages/order/OrderLivraison"));
 const OrderRecap = lazy(() => import("./pages/order/OrderRecap"));
 const OrderConfirmationNew = lazy(() => import("./pages/order/OrderConfirmationNew"));
 const CheckoutTunnel = lazy(() => import("./pages/CheckoutTunnel"));
+
+// EXPRESS CHECKOUT - 3 steps optimized for conversion
+const ExpressOffre = lazy(() => import("./pages/express/ExpressOffre"));
+const ExpressInfos = lazy(() => import("./pages/express/ExpressInfos"));
+const ExpressPayer = lazy(() => import("./pages/express/ExpressPayer"));
+const ExpressSucces = lazy(() => import("./pages/express/ExpressSucces"));
 const SovereignDashboard = lazy(() => import("./pages/SovereignDashboard"));
 const AriellaCard = lazy(() => import("./pages/AriellaCard"));
 const LegacyMap = lazy(() => import("./pages/LegacyMap"));
@@ -247,8 +254,8 @@ const App = () => {
                               <Route path="/forgot-password" element={<ForgotPassword />} />
                               <Route path="/reset-password" element={<ResetPassword />} />
                               
-                              {/* Guest card creation - redirect to order funnel */}
-                              <Route path="/create" element={<Navigate to="/order/offre" replace />} />
+                              {/* Guest card creation - redirect to express checkout */}
+                              <Route path="/create" element={<Navigate to="/express/offre" replace />} />
                               <Route path="/success" element={<CardSuccess />} />
                               <Route path="/nfc-success" element={<NFCPaymentSuccess />} />
                               <Route path="/pack-success" element={<PromoPackSuccess />} />
@@ -367,6 +374,13 @@ const App = () => {
                               <Route path="/order/options" element={<Navigate to="/order/offre" replace />} />
                               <Route path="/order/summary" element={<Navigate to="/order/recap" replace />} />
                               <Route path="/order/payment" element={<Navigate to="/order/livraison" replace />} />
+                              
+                              {/* EXPRESS CHECKOUT - 3 steps optimized */}
+                              <Route path="/express" element={<Navigate to="/express/offre" replace />} />
+                              <Route path="/express/offre" element={<ExpressCheckoutProvider><ExpressOffre /></ExpressCheckoutProvider>} />
+                              <Route path="/express/infos" element={<ExpressCheckoutProvider><ExpressInfos /></ExpressCheckoutProvider>} />
+                              <Route path="/express/payer" element={<ExpressCheckoutProvider><ExpressPayer /></ExpressCheckoutProvider>} />
+                              <Route path="/express/succes" element={<ExpressSucces />} />
                               
                               {/* Cart & Checkout */}
                               <Route path="/cart" element={<Cart />} />
