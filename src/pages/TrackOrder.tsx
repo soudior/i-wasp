@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatPrice } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,11 +16,14 @@ import {
   Loader2,
   Search,
   MapPin,
-  ExternalLink
+  ExternalLink,
+  Bell,
+  Wifi
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { getOrderStatusLabel, getOrderStatusColor } from "@/hooks/useOrders";
+import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 
 type Order = Database["public"]["Tables"]["orders"]["Row"];
@@ -74,11 +77,27 @@ function TimelineStep({
   );
 }
 
+// Real-time status indicator
+function RealtimeIndicator({ isConnected }: { isConnected: boolean }) {
+  return (
+    <div className={`flex items-center gap-2 text-xs px-3 py-1.5 rounded-full ${
+      isConnected 
+        ? "bg-green-100 text-green-700" 
+        : "bg-gray-100 text-gray-500"
+    }`}>
+      <Wifi className={`h-3 w-3 ${isConnected ? "animate-pulse" : ""}`} />
+      <span>{isConnected ? "Suivi en direct" : "Connexion..."}</span>
+    </div>
+  );
+}
+
 export default function TrackOrder() {
   const [searchParams] = useSearchParams();
   const initialOrderNumber = searchParams.get("order") || "";
   const [orderNumber, setOrderNumber] = useState(initialOrderNumber);
   const [searchQuery, setSearchQuery] = useState(initialOrderNumber);
+  const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: order, isLoading, error, refetch } = useQuery({
     queryKey: ["public-order", searchQuery],
@@ -96,6 +115,72 @@ export default function TrackOrder() {
     },
     enabled: !!searchQuery,
   });
+
+  // Real-time subscription for order updates
+  useEffect(() => {
+    if (!order?.id) {
+      setIsRealtimeConnected(false);
+      return;
+    }
+
+    console.log("[Realtime] Setting up subscription for order:", order.id);
+
+    const channel = supabase
+      .channel(`order-tracking-${order.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders',
+          filter: `id=eq.${order.id}`
+        },
+        (payload) => {
+          console.log("[Realtime] Order updated:", payload);
+          
+          const newOrder = payload.new as Order;
+          const oldOrder = payload.old as Partial<Order>;
+          
+          // Invalidate and refetch the query
+          queryClient.setQueryData(["public-order", searchQuery], newOrder);
+          
+          // Show toast notification for status changes
+          if (oldOrder.status !== newOrder.status) {
+            const statusMessages: Record<string, string> = {
+              paid: "✅ Votre paiement a été confirmé !",
+              in_production: "🏭 Votre commande est en production !",
+              shipped: "📦 Votre commande a été expédiée !",
+              delivered: "🎉 Votre commande a été livrée !"
+            };
+            
+            const message = statusMessages[newOrder.status];
+            if (message) {
+              toast.success(message, {
+                duration: 5000,
+                icon: <Bell className="h-5 w-5" />
+              });
+            }
+          }
+          
+          // Show toast for tracking number update
+          if (!oldOrder.tracking_number && newOrder.tracking_number) {
+            toast.info(`📬 Numéro de suivi ajouté: ${newOrder.tracking_number}`, {
+              duration: 6000
+            });
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log("[Realtime] Subscription status:", status);
+        setIsRealtimeConnected(status === 'SUBSCRIBED');
+      });
+
+    return () => {
+      console.log("[Realtime] Cleaning up subscription");
+      supabase.removeChannel(channel);
+      setIsRealtimeConnected(false);
+    };
+  }, [order?.id, searchQuery, queryClient]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,6 +262,11 @@ export default function TrackOrder() {
 
         {order && (
           <div className="space-y-6">
+            {/* Real-time indicator */}
+            <div className="flex justify-center">
+              <RealtimeIndicator isConnected={isRealtimeConnected} />
+            </div>
+            
             {/* Order header */}
             <Card className="bg-white rounded-3xl shadow-sm border-0">
               <CardContent className="p-6">
