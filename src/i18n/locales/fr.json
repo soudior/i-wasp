@@ -42,7 +42,55 @@
     "ctaSubtitle": "Join professionals worldwide who have already adopted the business card of the future.",
     "ctaButton": "Order my card",
     "ctaContact": "Contact us",
-    "worldwideShipping": "Worldwide shipping"
+    "worldwideShipping": "Livraison mondiale"
+  },
+  "howItWorks": {
+    "title": "Comment ça marche",
+    "subtitle": "Trois étapes simples pour révolutionner votre networking",
+    "step1Title": "Commandez votre carte",
+    "step1Desc": "Choisissez votre design et personnalisez votre carte NFC premium avec vos informations.",
+    "step2Title": "Touchez un téléphone",
+    "step2Desc": "Approchez votre carte de n'importe quel smartphone. Aucune app nécessaire.",
+    "step3Title": "Partagez tout",
+    "step3Desc": "Vos coordonnées, réseaux sociaux et portfolio partagés en un instant."
+  },
+  "nfcDemo": {
+    "title": "Un tap. Connexion instantanée.",
+    "description": "Votre carte IWASP utilise la technologie NFC pour partager instantanément votre profil professionnel. Approchez simplement votre carte de n'importe quel smartphone.",
+    "benefit1": "Compatible avec tous les smartphones modernes",
+    "benefit2": "Aucune application à télécharger",
+    "benefit3": "Mises à jour instantanées, jamais de réimpression"
+  },
+  "socialProof": {
+    "title": "Adopté dans le monde entier",
+    "subtitle": "Rejoignez des milliers de professionnels qui ont fait le choix",
+    "stat1": "Professionnels",
+    "stat2": "Pays",
+    "stat3": "Note moyenne",
+    "stat4": "Entreprises",
+    "testimonial1Quote": "Le meilleur investissement pour ma marque personnelle. Je reçois des compliments à chaque réunion.",
+    "testimonial1Author": "Sarah Johnson",
+    "testimonial1Role": "Directrice Marketing",
+    "testimonial2Quote": "Enfin une carte de visite à la hauteur de l'image de ma startup. Brillant.",
+    "testimonial2Author": "James Wilson",
+    "testimonial2Role": "Fondateur de Startup",
+    "testimonial3Quote": "Qualité impressionnante. Mes clients sont toujours épatés par la technologie.",
+    "testimonial3Author": "Marie Dupont",
+    "testimonial3Role": "Agent Immobilier"
+  },
+  "comparison": {
+    "title": "Pourquoi choisir IWASP ?",
+    "subtitle": "Découvrez comment nous nous comparons aux cartes traditionnelles",
+    "featureHeader": "Fonctionnalité",
+    "traditional": "Traditionnel",
+    "feature1": "Mises à jour illimitées",
+    "feature2": "Analytics en temps réel",
+    "feature3": "Partage NFC en un tap",
+    "feature4": "Intégration wallet digital",
+    "feature5": "Apparence professionnelle",
+    "feature6": "Écologique (pas de réimpression)",
+    "feature7": "QR code de secours",
+    "conclusion": "IWASP : Le choix intelligent pour les professionnels modernes"
   },
   "order": {
     "title": "Commande",

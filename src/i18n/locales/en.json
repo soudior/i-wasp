@@ -44,6 +44,54 @@
     "ctaContact": "Contact us",
     "worldwideShipping": "Worldwide shipping"
   },
+  "howItWorks": {
+    "title": "How it works",
+    "subtitle": "Three simple steps to revolutionize your networking",
+    "step1Title": "Order your card",
+    "step1Desc": "Choose your design and personalize your premium NFC card with your details.",
+    "step2Title": "Tap any phone",
+    "step2Desc": "Hold your card near any smartphone. No app needed - it works instantly.",
+    "step3Title": "Share everything",
+    "step3Desc": "Your contact details, social links, and portfolio shared in one tap."
+  },
+  "nfcDemo": {
+    "title": "One tap. Instant connection.",
+    "description": "Your IWASP card uses NFC technology to instantly share your professional profile. Just tap your card on any smartphone.",
+    "benefit1": "Works with all modern smartphones",
+    "benefit2": "No app download required",
+    "benefit3": "Updates instantly, never reprint"
+  },
+  "socialProof": {
+    "title": "Trusted worldwide",
+    "subtitle": "Join thousands of professionals who made the switch",
+    "stat1": "Professionals",
+    "stat2": "Countries",
+    "stat3": "Average rating",
+    "stat4": "Companies",
+    "testimonial1Quote": "The best investment for my personal brand. I get compliments at every meeting.",
+    "testimonial1Author": "Sarah Johnson",
+    "testimonial1Role": "Marketing Director",
+    "testimonial2Quote": "Finally, a business card that matches my tech company's image. Brilliant.",
+    "testimonial2Author": "James Wilson",
+    "testimonial2Role": "Startup Founder",
+    "testimonial3Quote": "Impressive quality. My clients are always amazed by the technology.",
+    "testimonial3Author": "Marie Dupont",
+    "testimonial3Role": "Real Estate Agent"
+  },
+  "comparison": {
+    "title": "Why choose IWASP?",
+    "subtitle": "See how we compare to traditional business cards",
+    "featureHeader": "Feature",
+    "traditional": "Traditional",
+    "feature1": "Unlimited updates",
+    "feature2": "Real-time analytics",
+    "feature3": "NFC one-tap sharing",
+    "feature4": "Digital wallet integration",
+    "feature5": "Professional appearance",
+    "feature6": "Eco-friendly (no reprints)",
+    "feature7": "QR code backup",
+    "conclusion": "IWASP: The smart choice for modern professionals"
+  },
   "order": {
     "title": "Order",
     "back": "Back",
