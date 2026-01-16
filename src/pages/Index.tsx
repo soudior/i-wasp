@@ -11,6 +11,10 @@ import { ArrowRight, Smartphone, CreditCard, Zap, Shield, BarChart3, HeartHandsh
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { APPLE } from "@/lib/applePalette";
+import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
+import { NFCDemoSection } from "@/components/landing/NFCDemoSection";
+import { SocialProofSection } from "@/components/landing/SocialProofSection";
+import { ComparisonSection } from "@/components/landing/ComparisonSection";
 
 // Animation variants - Smooth Apple-style
 const fadeUp = {
@@ -371,6 +375,27 @@ const Index = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          HOW IT WORKS — 3 steps visual
+          ═══════════════════════════════════════════════════════════════════ */}
+      <HowItWorksSection />
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          NFC DEMO — Visual demonstration
+          ═══════════════════════════════════════════════════════════════════ */}
+      <NFCDemoSection />
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          SOCIAL PROOF — International credibility
+          ═══════════════════════════════════════════════════════════════════ */}
+      <SocialProofSection />
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          COMPARISON — vs Traditional cards
+          ═══════════════════════════════════════════════════════════════════ */}
+      <ComparisonSection />
+
 
       {/* ═══════════════════════════════════════════════════════════════════
           CTA SECTION — Clean and focused
