@@ -3,11 +3,13 @@
  * 
  * Style: Apple Human Interface Guidelines (Cupertino)
  * Minimal, airy, high-end, calm, professional
+ * International focus - English content with i18n support
  */
 
 import { Link } from "react-router-dom";
-import { ArrowRight, Smartphone, CreditCard, Zap, Shield, BarChart3, HeartHandshake } from "lucide-react";
+import { ArrowRight, Smartphone, CreditCard, Zap, Shield, BarChart3, HeartHandshake, Globe } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { APPLE } from "@/lib/applePalette";
 
 // Animation variants - Smooth Apple-style
@@ -44,6 +46,8 @@ const scaleIn = {
 };
 
 const Index = () => {
+  const { t } = useTranslation();
+  
   return (
     <div 
       className="min-h-screen font-sans antialiased"
@@ -79,7 +83,7 @@ const Index = () => {
               onMouseEnter={(e) => e.currentTarget.style.color = APPLE.accent}
               onMouseLeave={(e) => e.currentTarget.style.color = APPLE.textSecondary}
             >
-              Connexion
+              {t('nav.login')}
             </Link>
             <Link 
               to="/order/offre"
@@ -91,7 +95,7 @@ const Index = () => {
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = APPLE.accentHover}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = APPLE.accent}
             >
-              Commander
+              {t('nav.order')}
             </Link>
           </div>
         </div>
@@ -117,7 +121,7 @@ const Index = () => {
               }}
             >
               <Zap className="w-4 h-4" />
-              <span className="text-sm font-medium">Technologie NFC</span>
+              <span className="text-sm font-medium">{t('home.badge')}</span>
             </motion.div>
             
             {/* Titre principal */}
@@ -129,20 +133,34 @@ const Index = () => {
                 letterSpacing: '-0.02em'
               }}
             >
-              Votre carte de visite.
+              {t('home.title1')}
               <br />
-              <span style={{ color: APPLE.accent }}>Réinventée.</span>
+              <span style={{ color: APPLE.accent }}>{t('home.title2')}</span>
             </motion.h1>
             
             {/* Sous-titre */}
             <motion.p 
               variants={fadeUp}
-              className="text-xl sm:text-2xl max-w-2xl mx-auto leading-relaxed mb-10"
+              className="text-xl sm:text-2xl max-w-2xl mx-auto leading-relaxed mb-6"
               style={{ color: APPLE.textSecondary }}
             >
-              Une carte NFC premium pour partager vos informations 
-              professionnelles en un simple tap.
+              {t('home.subtitle')}
             </motion.p>
+            
+            {/* Worldwide shipping badge */}
+            <motion.div 
+              variants={fadeUp}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-10"
+              style={{ 
+                backgroundColor: APPLE.backgroundPure,
+                boxShadow: APPLE.shadowSm
+              }}
+            >
+              <Globe className="w-4 h-4" style={{ color: APPLE.accent }} />
+              <span className="text-sm font-medium" style={{ color: APPLE.text }}>
+                {t('home.worldwideShipping')}
+              </span>
+            </motion.div>
             
             {/* CTAs */}
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -156,7 +174,7 @@ const Index = () => {
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = APPLE.accentHover}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = APPLE.accent}
               >
-                Commander maintenant
+                {t('home.cta')}
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link 
@@ -170,7 +188,7 @@ const Index = () => {
                 onMouseEnter={(e) => e.currentTarget.style.boxShadow = APPLE.shadowMd}
                 onMouseLeave={(e) => e.currentTarget.style.boxShadow = APPLE.shadowSm}
               >
-                En savoir plus
+                {t('home.learnMore')}
               </Link>
             </motion.div>
           </motion.div>
@@ -218,17 +236,16 @@ const Index = () => {
                   className="text-2xl sm:text-3xl font-semibold mb-4 tracking-tight"
                   style={{ color: APPLE.text }}
                 >
-                  Design premium
+                  {t('home.designTitle')}
                 </h2>
                 <p 
                   className="text-lg leading-relaxed mb-6"
                   style={{ color: APPLE.textSecondary }}
                 >
-                  Finition mate élégante. Puce NFC intégrée. 
-                  Compatible avec tous les smartphones.
+                  {t('home.designDesc')}
                 </p>
                 <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                  {['NFC', 'Sans contact', 'Durable'].map((tag) => (
+                  {[t('home.tag1'), t('home.tag2'), t('home.tag3')].map((tag) => (
                     <span 
                       key={tag}
                       className="px-3 py-1.5 rounded-full text-sm font-medium"
@@ -264,14 +281,14 @@ const Index = () => {
               className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4"
               style={{ color: APPLE.text }}
             >
-              Tout ce qu'il vous faut
+              {t('home.featuresTitle')}
             </motion.h2>
             <motion.p 
               variants={fadeUp}
               className="text-xl max-w-2xl mx-auto"
               style={{ color: APPLE.textSecondary }}
             >
-              Une solution complète pour votre identité professionnelle digitale
+              {t('home.featuresSubtitle')}
             </motion.p>
           </motion.div>
 
@@ -285,33 +302,33 @@ const Index = () => {
             {[
               { 
                 icon: CreditCard, 
-                title: "Carte NFC premium", 
-                description: "Finition mate haute qualité avec puce NFC intégrée" 
+                title: t('home.feature1Title'), 
+                description: t('home.feature1Desc')
               },
               { 
                 icon: Smartphone, 
-                title: "Profil digital", 
-                description: "Page personnalisée avec tous vos liens et contacts" 
+                title: t('home.feature2Title'), 
+                description: t('home.feature2Desc')
               },
               { 
                 icon: Zap, 
-                title: "Partage instantané", 
-                description: "Un tap suffit pour partager vos informations" 
+                title: t('home.feature3Title'), 
+                description: t('home.feature3Desc')
               },
               { 
                 icon: Shield, 
-                title: "Données sécurisées", 
-                description: "Vos informations protégées et sous votre contrôle" 
+                title: t('home.feature4Title'), 
+                description: t('home.feature4Desc')
               },
               { 
                 icon: BarChart3, 
-                title: "Statistiques", 
-                description: "Suivez qui consulte votre profil en temps réel" 
+                title: t('home.feature5Title'), 
+                description: t('home.feature5Desc')
               },
               { 
                 icon: HeartHandshake, 
-                title: "Support dédié", 
-                description: "Une équipe à votre écoute pour vous accompagner" 
+                title: t('home.feature6Title'), 
+                description: t('home.feature6Desc')
               }
             ].map((feature, index) => (
               <motion.div 
@@ -377,14 +394,13 @@ const Index = () => {
               className="text-3xl sm:text-4xl font-semibold tracking-tight mb-4"
               style={{ color: APPLE.text }}
             >
-              Prêt à vous démarquer ?
+              {t('home.ctaTitle')}
             </h2>
             <p 
               className="text-lg mb-8 max-w-xl mx-auto"
               style={{ color: APPLE.textSecondary }}
             >
-              Rejoignez les professionnels qui ont déjà adopté 
-              la carte de visite du futur.
+              {t('home.ctaSubtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
@@ -397,13 +413,11 @@ const Index = () => {
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = APPLE.accentHover}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = APPLE.accent}
               >
-                Commander ma carte
+                {t('home.ctaButton')}
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <a 
-                href="https://wa.me/212661911165?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20carte%20IWASP"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link 
+                to="/contact"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-medium transition-all duration-200"
                 style={{ 
                   backgroundColor: 'transparent',
@@ -417,8 +431,8 @@ const Index = () => {
                   e.currentTarget.style.backgroundColor = 'transparent';
                 }}
               >
-                Nous contacter
-              </a>
+                {t('home.ctaContact')}
+              </Link>
             </div>
           </div>
         </motion.div>
@@ -450,10 +464,10 @@ const Index = () => {
             
             <div className="flex flex-wrap justify-center gap-8">
               {[
-                { label: 'Contact', to: '/contact' },
-                { label: 'À propos', to: '/about' },
+                { label: t('footer.contact'), to: '/contact' },
+                { label: t('footer.about'), to: '/about' },
                 { label: 'FAQ', to: '/faq' },
-                { label: 'CGV', to: '/cgv' }
+                { label: t('footer.terms'), to: '/cgv' }
               ].map((link) => (
                 <Link 
                   key={link.to}
@@ -477,7 +491,7 @@ const Index = () => {
               className="text-xs"
               style={{ color: APPLE.textMuted }}
             >
-              © 2025 IWASP. Tous droits réservés.
+              © 2025 IWASP. {t('footer.rights')}.
             </p>
           </div>
         </div>
