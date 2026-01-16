@@ -739,7 +739,7 @@ END:VCARD`;
 
       {/* Footer */}
       <div className="pb-8">
-        <IWASPBrandingFooter variant="minimal" />
+        <IWASPBrandingFooter variant="dark" />
       </div>
     </div>
   );

@@ -85,6 +85,13 @@ export const PROTECTED_CLIENT_CARDS: ProtectedClientCard[] = [
     filePath: "pages/DualBrandShowcase.tsx",
     createdAt: "2024-01-01",
     notes: "Dual-brand showcase - Centre commercial"
+  },
+  {
+    slug: "khokha-signature",
+    clientName: "Khokha Signature",
+    filePath: "pages/KhokhaSignatureCard.tsx",
+    createdAt: "2026-01-16",
+    notes: "Boutique Fashion Luxury - Marrakech - Noir & Or"
   }
 ];
 
