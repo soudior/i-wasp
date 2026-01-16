@@ -26,6 +26,7 @@ import DualBrandShowcase from "./DualBrandShowcase";
 import MaisonBOpticCard from "./MaisonBOpticCard";
 import KechExcluCard from "./KechExcluCard";
 import LuxePrestigeCard from "./LuxePrestigeCard";
+import KhokhaSignatureCard from "./KhokhaSignatureCard";
 
 // Import local profile photo for Herbalism Marrakech
 import ibrahimPhoto from "@/assets/clients/ibrahim-herbalism.jpeg";
@@ -83,6 +84,11 @@ const PublicCard = () => {
   // Special-case Luxe Prestige concierge card
   if (cleanedSlug === "luxe-prestige" || cleanedSlug.startsWith("luxe-prestige") || cleanedSlug.includes("luxeprestige")) {
     return <LuxePrestigeCard />;
+  }
+
+  // Special-case Khokha Signature fashion card
+  if (cleanedSlug === "khokha-signature" || cleanedSlug.startsWith("khokha-signature") || cleanedSlug.includes("khokhasignature")) {
+    return <KhokhaSignatureCard />;
   }
 
   // Record scan on first load
