@@ -2,11 +2,7 @@
  * Express Step 2: Informations client + livraison
  * /express/infos
  * 
- * Formulaire OPTIMISÉ pour conversion maximale:
- * - Auto-format téléphone
- * - Preuve sociale
- * - CTA WhatsApp d'aide
- * - UI simplifiée
+ * Style: Apple/Cupertino - Clean, professional, high-conversion
  */
 
 import { useState, useMemo, useEffect } from "react";
@@ -15,8 +11,8 @@ import { motion } from "framer-motion";
 import { useExpressCheckout, ExpressCustomerInfo, EXPRESS_OFFERS } from "@/contexts/ExpressCheckoutContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, ArrowRight, User, Mail, Phone, MapPin, Lock, MessageCircle, CheckCircle, Shield, Truck } from "lucide-react";
-import { COUTURE } from "@/lib/hauteCouturePalette";
+import { ArrowLeft, ArrowRight, User, Mail, Phone, MapPin, MessageCircle, CheckCircle, Shield, Truck } from "lucide-react";
+import { APPLE } from "@/lib/applePalette";
 import { toast } from "sonner";
 import { useExpressCheckoutTracking } from "@/hooks/useAnalyticsEvents";
 
@@ -30,24 +26,19 @@ const validatePhone = (phone: string): boolean => {
   return cleaned.length >= 9 && /^[\+]?[0-9]+$/.test(cleaned);
 };
 
-// Auto-format phone number for Morocco
 const formatPhoneNumber = (value: string): string => {
-  // Remove all non-digit characters except +
   let digits = value.replace(/[^\d+]/g, "");
   
-  // If starts with 0, convert to +212
   if (digits.startsWith("0")) {
     digits = "+212" + digits.slice(1);
   }
   
-  // If no prefix, assume Morocco
   if (digits.length > 0 && !digits.startsWith("+")) {
     if (digits.length <= 9) {
       digits = "+212" + digits;
     }
   }
   
-  // Format: +212 6 XX XX XX XX
   if (digits.startsWith("+212") && digits.length > 4) {
     const rest = digits.slice(4);
     let formatted = "+212";
@@ -62,7 +53,6 @@ const formatPhoneNumber = (value: string): string => {
   return digits;
 };
 
-// Moroccan cities for autocomplete
 const POPULAR_CITIES = [
   "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", 
   "Agadir", "Oujda", "Kenitra", "Tétouan", "Salé"
@@ -77,7 +67,6 @@ export default function ExpressInfos() {
 
   const selectedOffer = EXPRESS_OFFERS.find(o => o.id === state.selectedOffer);
 
-  // Redirect if no offer selected
   useEffect(() => {
     if (!canAccessStep(2)) {
       navigate("/express/offre", { replace: true });
@@ -154,8 +143,6 @@ export default function ExpressInfos() {
     }
 
     setIsNavigating(true);
-    
-    // Track info submission
     trackInfoSubmit(formData.city.trim());
     
     setCustomerInfo({
@@ -174,45 +161,30 @@ export default function ExpressInfos() {
     window.open(`https://wa.me/33626424394?text=${message}`, "_blank");
   };
 
-  const inputStyles = {
-    backgroundColor: 'transparent',
-    borderColor: COUTURE.jetSoft,
-    color: COUTURE.silk,
-  };
-
   const filteredCities = POPULAR_CITIES.filter(city => 
     city.toLowerCase().includes(formData.city.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
-      {/* Honeycomb texture */}
-      <div 
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.4' stroke-opacity='0.04'/%3E%3C/svg%3E")`,
-          backgroundSize: '56px 100px',
-        }}
-      />
-
+    <div className="min-h-screen" style={{ backgroundColor: APPLE.background }}>
       {/* Header */}
-      <header className="relative z-10 px-6 py-4">
+      <header className="px-6 py-4">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <button 
             onClick={() => navigate("/express/offre")}
-            className="flex items-center gap-2 transition-all duration-300"
-            style={{ color: COUTURE.textMuted }}
+            className="flex items-center gap-2 transition-all"
+            style={{ color: APPLE.textSecondary }}
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-[11px] uppercase tracking-[0.1em]">Retour</span>
+            <span className="text-sm font-medium">Retour</span>
           </button>
           
           <Link 
             to="/"
-            className="font-display text-xl tracking-[0.1em]"
-            style={{ color: COUTURE.silk }}
+            className="text-xl font-semibold tracking-tight"
+            style={{ color: APPLE.text }}
           >
-            i-wasp
+            IWASP
           </Link>
           
           <div className="w-16" />
@@ -220,32 +192,32 @@ export default function ExpressInfos() {
       </header>
 
       {/* Progress bar */}
-      <div className="relative z-10 px-6 mb-6">
+      <div className="px-6 mb-6">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center gap-2">
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: COUTURE.gold }} />
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: COUTURE.gold }} />
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: COUTURE.jetSoft }} />
+            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: APPLE.accent }} />
+            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: APPLE.accent }} />
+            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: APPLE.border }} />
           </div>
-          <p className="text-center mt-2 text-[11px] uppercase tracking-[0.15em]" style={{ color: COUTURE.textMuted }}>
-            Étape 2/3 — Plus que 2 minutes
+          <p className="text-center mt-2 text-xs font-medium" style={{ color: APPLE.textMuted }}>
+            Étape 2 sur 3 — Plus que 2 minutes
           </p>
         </div>
       </div>
 
       {/* Main content */}
-      <main className="relative z-10 px-6 pb-44">
+      <main className="px-6 pb-44">
         <div className="max-w-lg mx-auto">
           {/* Social Proof Banner */}
           <motion.div 
-            className="mb-6 p-3 rounded-lg flex items-center justify-center gap-2"
-            style={{ backgroundColor: "rgba(212, 175, 55, 0.1)", border: `1px solid ${COUTURE.gold}30` }}
+            className="mb-6 p-3 rounded-full flex items-center justify-center gap-2"
+            style={{ backgroundColor: APPLE.accentSubtle }}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <CheckCircle className="w-4 h-4" style={{ color: COUTURE.gold }} />
-            <span className="text-xs" style={{ color: COUTURE.gold }}>
-              <strong>+500 cartes</strong> livrées au Maroc · Livraison 48-72h
+            <CheckCircle className="w-4 h-4" style={{ color: APPLE.accent }} />
+            <span className="text-sm" style={{ color: APPLE.accent }}>
+              <strong>+500 cartes</strong> livrées au Maroc
             </span>
           </motion.div>
 
@@ -256,17 +228,17 @@ export default function ExpressInfos() {
             animate={{ opacity: 1 }}
           >
             <h1 
-              className="font-display text-2xl font-light italic mb-1"
-              style={{ color: COUTURE.silk }}
+              className="text-2xl font-semibold tracking-tight mb-2"
+              style={{ color: APPLE.text }}
             >
-              Où vous <span style={{ color: COUTURE.gold }}>livrer ?</span>
+              Où vous livrer ?
             </h1>
-            <p className="text-sm" style={{ color: COUTURE.textMuted }}>
+            <p className="text-base" style={{ color: APPLE.textSecondary }}>
               {selectedOffer?.name} · {selectedOffer?.priceDisplay}
             </p>
           </motion.div>
 
-          {/* Unified Form */}
+          {/* Form */}
           <motion.div 
             className="space-y-4"
             initial={{ opacity: 0, y: 20 }}
@@ -275,8 +247,8 @@ export default function ExpressInfos() {
           >
             {/* Name Row */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-[10px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium" style={{ color: APPLE.textSecondary }}>
                   Prénom
                 </Label>
                 <Input
@@ -284,15 +256,20 @@ export default function ExpressInfos() {
                   onChange={(e) => handleChange("firstName", e.target.value)}
                   onBlur={() => handleBlur("firstName")}
                   placeholder="Prénom"
-                  className="h-12 rounded-lg bg-[#1a1a1a] border-[#333] focus:border-[#D4AF37] text-base"
-                  style={{ color: COUTURE.silk }}
+                  className="h-12 text-base"
+                  style={{ 
+                    backgroundColor: APPLE.card,
+                    borderColor: touched.firstName && errors.firstName ? APPLE.error : APPLE.border,
+                    borderRadius: APPLE.radiusMd,
+                    color: APPLE.text,
+                  }}
                 />
                 {touched.firstName && errors.firstName && (
-                  <p className="text-[10px]" style={{ color: "#e74c3c" }}>{errors.firstName}</p>
+                  <p className="text-xs" style={{ color: APPLE.error }}>{errors.firstName}</p>
                 )}
               </div>
-              <div className="space-y-1">
-                <Label className="text-[10px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium" style={{ color: APPLE.textSecondary }}>
                   Nom
                 </Label>
                 <Input
@@ -300,19 +277,24 @@ export default function ExpressInfos() {
                   onChange={(e) => handleChange("lastName", e.target.value)}
                   onBlur={() => handleBlur("lastName")}
                   placeholder="Nom"
-                  className="h-12 rounded-lg bg-[#1a1a1a] border-[#333] focus:border-[#D4AF37] text-base"
-                  style={{ color: COUTURE.silk }}
+                  className="h-12 text-base"
+                  style={{ 
+                    backgroundColor: APPLE.card,
+                    borderColor: touched.lastName && errors.lastName ? APPLE.error : APPLE.border,
+                    borderRadius: APPLE.radiusMd,
+                    color: APPLE.text,
+                  }}
                 />
                 {touched.lastName && errors.lastName && (
-                  <p className="text-[10px]" style={{ color: "#e74c3c" }}>{errors.lastName}</p>
+                  <p className="text-xs" style={{ color: APPLE.error }}>{errors.lastName}</p>
                 )}
               </div>
             </div>
 
-            {/* Phone with auto-format */}
-            <div className="space-y-1">
-              <Label className="text-[10px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
-                <Phone className="w-3 h-3" style={{ color: COUTURE.gold }} />
+            {/* Phone */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
+                <Phone className="w-4 h-4" style={{ color: APPLE.accent }} />
                 Téléphone WhatsApp
               </Label>
               <Input
@@ -321,18 +303,23 @@ export default function ExpressInfos() {
                 onChange={(e) => handleChange("phone", e.target.value)}
                 onBlur={() => handleBlur("phone")}
                 placeholder="+212 6 00 00 00 00"
-                className="h-12 rounded-lg bg-[#1a1a1a] border-[#333] focus:border-[#D4AF37] text-base"
-                style={{ color: COUTURE.silk }}
+                className="h-12 text-base"
+                style={{ 
+                  backgroundColor: APPLE.card,
+                  borderColor: touched.phone && errors.phone ? APPLE.error : APPLE.border,
+                  borderRadius: APPLE.radiusMd,
+                  color: APPLE.text,
+                }}
               />
               {touched.phone && errors.phone && (
-                <p className="text-[10px]" style={{ color: "#e74c3c" }}>{errors.phone}</p>
+                <p className="text-xs" style={{ color: APPLE.error }}>{errors.phone}</p>
               )}
             </div>
 
             {/* Email */}
-            <div className="space-y-1">
-              <Label className="text-[10px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
-                <Mail className="w-3 h-3" style={{ color: COUTURE.gold }} />
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
+                <Mail className="w-4 h-4" style={{ color: APPLE.accent }} />
                 Email (pour le suivi)
               </Label>
               <Input
@@ -341,18 +328,23 @@ export default function ExpressInfos() {
                 onChange={(e) => handleChange("email", e.target.value)}
                 onBlur={() => handleBlur("email")}
                 placeholder="votre@email.com"
-                className="h-12 rounded-lg bg-[#1a1a1a] border-[#333] focus:border-[#D4AF37] text-base"
-                style={{ color: COUTURE.silk }}
+                className="h-12 text-base"
+                style={{ 
+                  backgroundColor: APPLE.card,
+                  borderColor: touched.email && errors.email ? APPLE.error : APPLE.border,
+                  borderRadius: APPLE.radiusMd,
+                  color: APPLE.text,
+                }}
               />
               {touched.email && errors.email && (
-                <p className="text-[10px]" style={{ color: "#e74c3c" }}>{errors.email}</p>
+                <p className="text-xs" style={{ color: APPLE.error }}>{errors.email}</p>
               )}
             </div>
 
-            {/* City with suggestions */}
-            <div className="space-y-1 relative">
-              <Label className="text-[10px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
-                <MapPin className="w-3 h-3" style={{ color: COUTURE.gold }} />
+            {/* City */}
+            <div className="space-y-1.5 relative">
+              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
+                <MapPin className="w-4 h-4" style={{ color: APPLE.accent }} />
                 Ville
               </Label>
               <Input
@@ -364,21 +356,31 @@ export default function ExpressInfos() {
                 onFocus={() => setShowCityDropdown(true)}
                 onBlur={() => handleBlur("city")}
                 placeholder="Casablanca"
-                className="h-12 rounded-lg bg-[#1a1a1a] border-[#333] focus:border-[#D4AF37] text-base"
-                style={{ color: COUTURE.silk }}
+                className="h-12 text-base"
+                style={{ 
+                  backgroundColor: APPLE.card,
+                  borderColor: touched.city && errors.city ? APPLE.error : APPLE.border,
+                  borderRadius: APPLE.radiusMd,
+                  color: APPLE.text,
+                }}
               />
               {showCityDropdown && filteredCities.length > 0 && formData.city.length > 0 && (
                 <div 
-                  className="absolute top-full left-0 right-0 mt-1 rounded-lg overflow-hidden z-30"
-                  style={{ backgroundColor: "#1a1a1a", border: `1px solid ${COUTURE.jetSoft}` }}
+                  className="absolute top-full left-0 right-0 mt-1 overflow-hidden z-30"
+                  style={{ 
+                    backgroundColor: APPLE.card, 
+                    borderRadius: APPLE.radiusMd,
+                    border: `1px solid ${APPLE.border}`,
+                    boxShadow: APPLE.shadowMd,
+                  }}
                 >
                   {filteredCities.slice(0, 5).map((city) => (
                     <button
                       key={city}
                       type="button"
                       onClick={() => handleCitySelect(city)}
-                      className="w-full text-left px-4 py-3 text-sm hover:bg-[#252525] transition-colors"
-                      style={{ color: COUTURE.silk }}
+                      className="w-full text-left px-4 py-3 text-base hover:bg-gray-50 transition-colors"
+                      style={{ color: APPLE.text }}
                     >
                       {city}
                     </button>
@@ -386,14 +388,14 @@ export default function ExpressInfos() {
                 </div>
               )}
               {touched.city && errors.city && (
-                <p className="text-[10px]" style={{ color: "#e74c3c" }}>{errors.city}</p>
+                <p className="text-xs" style={{ color: APPLE.error }}>{errors.city}</p>
               )}
             </div>
 
             {/* Address */}
-            <div className="space-y-1">
-              <Label className="text-[10px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
-                <Truck className="w-3 h-3" style={{ color: COUTURE.gold }} />
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
+                <Truck className="w-4 h-4" style={{ color: APPLE.accent }} />
                 Adresse de livraison
               </Label>
               <Input
@@ -401,11 +403,16 @@ export default function ExpressInfos() {
                 onChange={(e) => handleChange("address", e.target.value)}
                 onBlur={() => handleBlur("address")}
                 placeholder="123 Rue Mohammed V, Quartier..."
-                className="h-12 rounded-lg bg-[#1a1a1a] border-[#333] focus:border-[#D4AF37] text-base"
-                style={{ color: COUTURE.silk }}
+                className="h-12 text-base"
+                style={{ 
+                  backgroundColor: APPLE.card,
+                  borderColor: touched.address && errors.address ? APPLE.error : APPLE.border,
+                  borderRadius: APPLE.radiusMd,
+                  color: APPLE.text,
+                }}
               />
               {touched.address && errors.address && (
-                <p className="text-[10px]" style={{ color: "#e74c3c" }}>{errors.address}</p>
+                <p className="text-xs" style={{ color: APPLE.error }}>{errors.address}</p>
               )}
             </div>
 
@@ -413,28 +420,29 @@ export default function ExpressInfos() {
             <motion.button
               type="button"
               onClick={handleWhatsAppHelp}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl transition-all"
               style={{ 
                 backgroundColor: "rgba(37, 211, 102, 0.1)", 
                 border: "1px solid rgba(37, 211, 102, 0.3)",
-                color: "#25D366"
+                color: "#25D366",
+                borderRadius: APPLE.radiusMd,
               }}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
             >
               <MessageCircle className="w-4 h-4" />
-              <span className="text-sm">Besoin d'aide ? WhatsApp</span>
+              <span className="text-sm font-medium">Besoin d'aide ? WhatsApp</span>
             </motion.button>
 
             {/* Trust badges */}
-            <div className="flex items-center justify-center gap-4 pt-2">
-              <div className="flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5" style={{ color: COUTURE.gold }} />
-                <span className="text-[10px]" style={{ color: COUTURE.textMuted }}>Paiement sécurisé</span>
+            <div className="flex items-center justify-center gap-6 pt-2">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4" style={{ color: APPLE.accent }} />
+                <span className="text-xs font-medium" style={{ color: APPLE.textSecondary }}>Paiement sécurisé</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Truck className="w-3.5 h-3.5" style={{ color: COUTURE.gold }} />
-                <span className="text-[10px]" style={{ color: COUTURE.textMuted }}>Livraison gratuite</span>
+              <div className="flex items-center gap-2">
+                <Truck className="w-4 h-4" style={{ color: APPLE.accent }} />
+                <span className="text-xs font-medium" style={{ color: APPLE.textSecondary }}>Livraison gratuite</span>
               </div>
             </div>
           </motion.div>
@@ -443,10 +451,10 @@ export default function ExpressInfos() {
 
       {/* Fixed CTA */}
       <div 
-        className="fixed bottom-0 left-0 right-0 z-20 px-6 py-4"
+        className="fixed bottom-0 left-0 right-0 z-20 px-6 py-5"
         style={{ 
-          backgroundColor: COUTURE.jet,
-          borderTop: `1px solid ${COUTURE.jetSoft}`,
+          backgroundColor: APPLE.background,
+          borderTop: `1px solid ${APPLE.border}`,
         }}
       >
         <div className="max-w-lg mx-auto">
@@ -455,24 +463,18 @@ export default function ExpressInfos() {
             disabled={isNavigating}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full flex items-center justify-center gap-3 py-4 rounded-xl transition-all duration-300 disabled:opacity-40"
+            className="w-full flex items-center justify-center gap-3 py-4 rounded-xl transition-all duration-200"
             style={{ 
-              backgroundColor: COUTURE.gold,
-              color: COUTURE.jet,
+              backgroundColor: APPLE.accent,
+              color: "#FFFFFF",
+              fontWeight: 600,
             }}
           >
-            <span className="text-sm uppercase tracking-[0.15em] font-medium">
+            <span className="text-base">
               {isNavigating ? "Chargement..." : "Continuer vers le paiement"}
             </span>
             {!isNavigating && <ArrowRight className="w-5 h-5" />}
           </motion.button>
-          
-          <div className="flex items-center justify-center gap-2 mt-2">
-            <Lock className="w-3 h-3" style={{ color: COUTURE.gold }} />
-            <p className="text-[10px]" style={{ color: COUTURE.textMuted }}>
-              Données cryptées · Jamais partagées
-            </p>
-          </div>
         </div>
       </div>
     </div>

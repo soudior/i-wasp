@@ -2,8 +2,7 @@
  * Express Step 3: Récapitulatif + Paiement
  * /express/payer
  * 
- * Page finale: récap compact + choix paiement + CTA
- * PAS DE LOGIN REQUIS - checkout invité
+ * Style: Apple/Cupertino - Clean checkout
  */
 
 import { useState, useEffect } from "react";
@@ -13,7 +12,7 @@ import { useExpressCheckout, EXPRESS_OFFERS, ExpressPaymentMethod } from "@/cont
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, CreditCard, Banknote, Check, MapPin, User, Shield, Loader2 } from "lucide-react";
-import { COUTURE } from "@/lib/hauteCouturePalette";
+import { APPLE } from "@/lib/applePalette";
 import { toast } from "sonner";
 import { useExpressCheckoutTracking } from "@/hooks/useAnalyticsEvents";
 
@@ -24,7 +23,6 @@ export default function ExpressPayer() {
   const [isProcessing, setIsProcessing] = useState(false);
   const { trackPurchase } = useExpressCheckoutTracking('payer');
 
-  // Redirect if info not complete
   useEffect(() => {
     if (!canAccessStep(3)) {
       navigate("/express/offre", { replace: true });
@@ -55,11 +53,8 @@ export default function ExpressPayer() {
 
     try {
       const { firstName, lastName, email, phone, address, city } = state.customerInfo;
-
-      // Générer un ID de commande unique
       const orderNumber = `EXP-${Date.now().toString(36).toUpperCase()}`;
       
-      // Si l'utilisateur est connecté, créer la carte digitale
       if (user?.id) {
         const slug = generateSlug(firstName, lastName);
         
@@ -76,7 +71,6 @@ export default function ExpressPayer() {
           wallet_enabled: true,
         });
 
-        // Upgrade subscription
         const oneYearFromNow = new Date();
         oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
 
@@ -106,11 +100,10 @@ export default function ExpressPayer() {
         }
       }
 
-      // Créer la commande
       const orderItems = [{
         id: crypto.randomUUID(),
         templateId: "iwasp-express",
-        templateName: `Carte NFC i-Wasp ${selectedOffer.name}`,
+        templateName: `Carte NFC IWASP ${selectedOffer.name}`,
         cardName: `${firstName} ${lastName}`,
         quantity: 1,
         unitPriceCents: selectedOffer.price,
@@ -140,7 +133,6 @@ export default function ExpressPayer() {
 
       if (orderError) throw orderError;
 
-      // Si paiement Stripe, rediriger vers checkout
       if (state.paymentMethod === "stripe" && order?.id) {
         toast.info("Redirection vers le paiement...");
         
@@ -164,11 +156,8 @@ export default function ExpressPayer() {
         }
       }
 
-      // Si COD, marquer comme complet et rediriger
-      // Track purchase
       trackPurchase(orderNumber, selectedOffer.price / 100, selectedOffer.name, state.paymentMethod || 'cod');
       
-      // Send admin alert email (non-blocking)
       supabase.functions.invoke('send-admin-alert', {
         body: {
           type: 'express',
@@ -186,7 +175,7 @@ export default function ExpressPayer() {
       
       markComplete();
       resetCheckout();
-      toast.success("Commande confirmée ! Vous recevrez votre carte sous 48-72h.");
+      toast.success("Commande confirmée !");
       navigate("/express/succes");
 
     } catch (error) {
@@ -201,54 +190,45 @@ export default function ExpressPayer() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
+    <div className="min-h-screen" style={{ backgroundColor: APPLE.background }}>
       {/* Processing overlay */}
       <AnimatePresence>
         {isProcessing && (
           <motion.div 
             className="fixed inset-0 z-50 flex items-center justify-center"
-            style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}
+            style={{ backgroundColor: 'rgba(255,255,255,0.95)' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <div className="text-center">
-              <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: COUTURE.gold }} />
-              <p className="text-lg" style={{ color: COUTURE.silk }}>Création de votre commande...</p>
-              <p className="text-sm mt-2" style={{ color: COUTURE.textMuted }}>Ne fermez pas cette page</p>
+              <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: APPLE.accent }} />
+              <p className="text-lg font-medium" style={{ color: APPLE.text }}>Création de votre commande...</p>
+              <p className="text-sm mt-2" style={{ color: APPLE.textSecondary }}>Ne fermez pas cette page</p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Honeycomb texture */}
-      <div 
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.4' stroke-opacity='0.04'/%3E%3C/svg%3E")`,
-          backgroundSize: '56px 100px',
-        }}
-      />
-
       {/* Header */}
-      <header className="relative z-10 px-6 py-6">
+      <header className="px-6 py-6">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <button 
             onClick={() => navigate("/express/infos")}
             disabled={isProcessing}
-            className="flex items-center gap-2 transition-all duration-300 disabled:opacity-50"
-            style={{ color: COUTURE.textMuted }}
+            className="flex items-center gap-2 transition-all disabled:opacity-50"
+            style={{ color: APPLE.textSecondary }}
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-[11px] uppercase tracking-[0.1em]">Retour</span>
+            <span className="text-sm font-medium">Retour</span>
           </button>
           
           <Link 
             to="/"
-            className="font-display text-xl tracking-[0.1em]"
-            style={{ color: COUTURE.silk }}
+            className="text-xl font-semibold tracking-tight"
+            style={{ color: APPLE.text }}
           >
-            i-wasp
+            IWASP
           </Link>
           
           <div className="w-16" />
@@ -256,79 +236,87 @@ export default function ExpressPayer() {
       </header>
 
       {/* Progress bar */}
-      <div className="relative z-10 px-6 mb-8">
+      <div className="px-6 mb-8">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center gap-2">
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: COUTURE.gold }} />
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: COUTURE.gold }} />
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: COUTURE.gold }} />
+            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: APPLE.accent }} />
+            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: APPLE.accent }} />
+            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: APPLE.accent }} />
           </div>
-          <p className="text-center mt-3 text-[11px] uppercase tracking-[0.15em]" style={{ color: COUTURE.textMuted }}>
-            Étape 3/3 — Paiement
+          <p className="text-center mt-3 text-xs font-medium" style={{ color: APPLE.textMuted }}>
+            Étape 3 sur 3 — Paiement
           </p>
         </div>
       </div>
 
       {/* Main content */}
-      <main className="relative z-10 px-6 pb-44">
+      <main className="px-6 pb-44">
         <div className="max-w-lg mx-auto">
           {/* Title */}
           <motion.div 
-            className="text-center mb-6"
+            className="text-center mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
             <h1 
-              className="font-display text-2xl font-light italic mb-2"
-              style={{ color: COUTURE.silk }}
+              className="text-2xl font-semibold tracking-tight"
+              style={{ color: APPLE.text }}
             >
-              Finalisez votre <span style={{ color: COUTURE.gold }}>commande.</span>
+              Finalisez votre commande
             </h1>
           </motion.div>
 
           {/* Récap compact */}
           <motion.div 
-            className="space-y-4 mb-6"
+            className="space-y-3 mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             {/* Produit */}
             <div 
-              className="p-4 flex items-center justify-between"
-              style={{ backgroundColor: COUTURE.jetSoft, border: `1px solid ${COUTURE.jetMuted}` }}
+              className="p-5 flex items-center justify-between"
+              style={{ 
+                backgroundColor: APPLE.card, 
+                borderRadius: APPLE.radiusLg,
+                boxShadow: APPLE.shadowCard,
+              }}
             >
               <div>
-                <p className="font-display" style={{ color: COUTURE.gold }}>
-                  i-wasp {selectedOffer.name}
+                <p className="font-semibold" style={{ color: APPLE.text }}>
+                  IWASP {selectedOffer.name}
                 </p>
-                <p className="text-xs mt-1" style={{ color: COUTURE.textMuted }}>
+                <p className="text-sm mt-0.5" style={{ color: APPLE.textSecondary }}>
                   Carte NFC + Profil digital
                 </p>
               </div>
-              <span className="text-xl font-light" style={{ color: COUTURE.gold }}>
+              <span className="text-xl font-semibold" style={{ color: APPLE.accent }}>
                 {formatPrice(selectedOffer.price)}
               </span>
             </div>
 
             {/* Infos client mini */}
             <div 
-              className="p-4 grid grid-cols-2 gap-4"
-              style={{ backgroundColor: COUTURE.jetSoft, border: `1px solid ${COUTURE.jetMuted}` }}
+              className="p-5 grid grid-cols-2 gap-4"
+              style={{ 
+                backgroundColor: APPLE.card, 
+                borderRadius: APPLE.radiusLg,
+                boxShadow: APPLE.shadowCard,
+              }}
             >
-              <div className="flex items-start gap-2">
-                <User size={14} style={{ color: COUTURE.gold }} className="mt-0.5" />
+              <div className="flex items-start gap-3">
+                <User size={16} style={{ color: APPLE.accent }} className="mt-0.5" />
                 <div>
-                  <p className="text-xs" style={{ color: COUTURE.textMuted }}>Client</p>
-                  <p className="text-sm" style={{ color: COUTURE.silk }}>
+                  <p className="text-xs font-medium" style={{ color: APPLE.textSecondary }}>Client</p>
+                  <p className="text-sm font-medium" style={{ color: APPLE.text }}>
                     {state.customerInfo.firstName} {state.customerInfo.lastName}
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-2">
-                <MapPin size={14} style={{ color: COUTURE.gold }} className="mt-0.5" />
+              <div className="flex items-start gap-3">
+                <MapPin size={16} style={{ color: APPLE.accent }} className="mt-0.5" />
                 <div>
-                  <p className="text-xs" style={{ color: COUTURE.textMuted }}>Livraison</p>
-                  <p className="text-sm" style={{ color: COUTURE.silk }}>
+                  <p className="text-xs font-medium" style={{ color: APPLE.textSecondary }}>Livraison</p>
+                  <p className="text-sm font-medium" style={{ color: APPLE.text }}>
                     {state.customerInfo.city}
                   </p>
                 </div>
@@ -343,45 +331,47 @@ export default function ExpressPayer() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <p className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+            <p className="text-sm font-medium" style={{ color: APPLE.textSecondary }}>
               Mode de paiement
             </p>
 
-            {/* COD - Défaut pour le Maroc */}
+            {/* COD */}
             <button
               onClick={() => handlePaymentSelect("cod")}
               disabled={isProcessing}
-              className="w-full p-4 flex items-center gap-4 transition-all duration-300"
+              className="w-full p-4 flex items-center gap-4 transition-all duration-200"
               style={{
-                backgroundColor: state.paymentMethod === "cod" ? `${COUTURE.gold}15` : 'transparent',
-                border: `2px solid ${state.paymentMethod === "cod" ? COUTURE.gold : COUTURE.jetSoft}`,
+                backgroundColor: APPLE.card,
+                borderRadius: APPLE.radiusLg,
+                border: `2px solid ${state.paymentMethod === "cod" ? APPLE.accent : APPLE.border}`,
+                boxShadow: state.paymentMethod === "cod" ? `0 0 0 4px ${APPLE.accentSubtle}` : APPLE.shadowCard,
               }}
             >
               <div 
-                className="w-10 h-10 flex items-center justify-center"
+                className="w-12 h-12 rounded-xl flex items-center justify-center"
                 style={{ 
-                  backgroundColor: state.paymentMethod === "cod" ? COUTURE.gold : COUTURE.jetSoft,
+                  backgroundColor: state.paymentMethod === "cod" ? APPLE.accent : APPLE.backgroundSubtle,
                 }}
               >
                 <Banknote 
-                  className="w-5 h-5" 
-                  style={{ color: state.paymentMethod === "cod" ? COUTURE.jet : COUTURE.textMuted }} 
+                  className="w-6 h-6" 
+                  style={{ color: state.paymentMethod === "cod" ? "#FFFFFF" : APPLE.textSecondary }} 
                 />
               </div>
               <div className="flex-1 text-left">
-                <p className="font-medium" style={{ color: COUTURE.silk }}>
+                <p className="font-semibold" style={{ color: APPLE.text }}>
                   Paiement à la livraison
                 </p>
-                <p className="text-xs" style={{ color: COUTURE.textMuted }}>
+                <p className="text-sm" style={{ color: APPLE.textSecondary }}>
                   Espèces à la réception · Recommandé
                 </p>
               </div>
               {state.paymentMethod === "cod" && (
                 <div 
                   className="w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: COUTURE.gold }}
+                  style={{ backgroundColor: APPLE.accent }}
                 >
-                  <Check className="w-3 h-3" style={{ color: COUTURE.jet }} />
+                  <Check className="w-4 h-4 text-white" />
                 </div>
               )}
             </button>
@@ -390,37 +380,39 @@ export default function ExpressPayer() {
             <button
               onClick={() => handlePaymentSelect("stripe")}
               disabled={isProcessing}
-              className="w-full p-4 flex items-center gap-4 transition-all duration-300"
+              className="w-full p-4 flex items-center gap-4 transition-all duration-200"
               style={{
-                backgroundColor: state.paymentMethod === "stripe" ? `${COUTURE.gold}15` : 'transparent',
-                border: `2px solid ${state.paymentMethod === "stripe" ? COUTURE.gold : COUTURE.jetSoft}`,
+                backgroundColor: APPLE.card,
+                borderRadius: APPLE.radiusLg,
+                border: `2px solid ${state.paymentMethod === "stripe" ? APPLE.accent : APPLE.border}`,
+                boxShadow: state.paymentMethod === "stripe" ? `0 0 0 4px ${APPLE.accentSubtle}` : APPLE.shadowCard,
               }}
             >
               <div 
-                className="w-10 h-10 flex items-center justify-center"
+                className="w-12 h-12 rounded-xl flex items-center justify-center"
                 style={{ 
-                  backgroundColor: state.paymentMethod === "stripe" ? COUTURE.gold : COUTURE.jetSoft,
+                  backgroundColor: state.paymentMethod === "stripe" ? APPLE.accent : APPLE.backgroundSubtle,
                 }}
               >
                 <CreditCard 
-                  className="w-5 h-5" 
-                  style={{ color: state.paymentMethod === "stripe" ? COUTURE.jet : COUTURE.textMuted }} 
+                  className="w-6 h-6" 
+                  style={{ color: state.paymentMethod === "stripe" ? "#FFFFFF" : APPLE.textSecondary }} 
                 />
               </div>
               <div className="flex-1 text-left">
-                <p className="font-medium" style={{ color: COUTURE.silk }}>
+                <p className="font-semibold" style={{ color: APPLE.text }}>
                   Carte bancaire
                 </p>
-                <p className="text-xs" style={{ color: COUTURE.textMuted }}>
+                <p className="text-sm" style={{ color: APPLE.textSecondary }}>
                   Visa, Mastercard · Sécurisé par Stripe
                 </p>
               </div>
               {state.paymentMethod === "stripe" && (
                 <div 
                   className="w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: COUTURE.gold }}
+                  style={{ backgroundColor: APPLE.accent }}
                 >
-                  <Check className="w-3 h-3" style={{ color: COUTURE.jet }} />
+                  <Check className="w-4 h-4 text-white" />
                 </div>
               )}
             </button>
@@ -428,12 +420,12 @@ export default function ExpressPayer() {
         </div>
       </main>
 
-      {/* Fixed CTA - Grand */}
+      {/* Fixed CTA */}
       <div 
         className="fixed bottom-0 left-0 right-0 z-20 px-6 py-5"
         style={{ 
-          backgroundColor: COUTURE.jet,
-          borderTop: `1px solid ${COUTURE.jetSoft}`,
+          backgroundColor: APPLE.background,
+          borderTop: `1px solid ${APPLE.border}`,
         }}
       >
         <div className="max-w-lg mx-auto">
@@ -442,19 +434,20 @@ export default function ExpressPayer() {
             disabled={isProcessing}
             whileHover={{ scale: isProcessing ? 1 : 1.02 }}
             whileTap={{ scale: isProcessing ? 1 : 0.98 }}
-            className="w-full flex items-center justify-center gap-3 py-4 transition-all duration-300 disabled:opacity-70"
+            className="w-full flex items-center justify-center gap-3 py-4 rounded-xl transition-all duration-200 disabled:opacity-70"
             style={{ 
-              backgroundColor: COUTURE.gold,
-              color: COUTURE.jet,
+              backgroundColor: APPLE.accent,
+              color: "#FFFFFF",
+              fontWeight: 600,
             }}
           >
             {isProcessing ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span className="text-sm uppercase tracking-[0.15em] font-medium">Traitement...</span>
+                <span className="text-base">Traitement...</span>
               </>
             ) : (
-              <span className="text-sm uppercase tracking-[0.15em] font-medium">
+              <span className="text-base">
                 {state.paymentMethod === "stripe" 
                   ? `Payer ${formatPrice(selectedOffer.price)}` 
                   : `Confirmer · ${formatPrice(selectedOffer.price)}`
@@ -464,10 +457,10 @@ export default function ExpressPayer() {
           </motion.button>
           
           <div className="flex items-center justify-center gap-2 mt-3">
-            <Shield className="w-3 h-3" style={{ color: COUTURE.gold }} />
-            <p className="text-[10px]" style={{ color: COUTURE.textMuted }}>
-              {state.paymentMethod === "stripe" ? "Paiement sécurisé par Stripe" : "Livraison 48-72h · Satisfait ou remboursé"}
-            </p>
+            <Shield className="w-4 h-4" style={{ color: APPLE.textMuted }} />
+            <span className="text-xs" style={{ color: APPLE.textMuted }}>
+              Paiement 100% sécurisé
+            </span>
           </div>
         </div>
       </div>
