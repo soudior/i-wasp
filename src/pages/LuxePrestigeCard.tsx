@@ -22,20 +22,20 @@ const LUXE_COLORS = {
   accent: "#1C1C1C",
 };
 
-// Données de contact
+// Données de contact - Client Luxe Prestige
 const CONTACT = {
-  name: "i-wasp",
-  tagline: "Tap. Connect. Empower.",
-  title: "Cartes de visite NFC Premium",
-  location: "France",
+  name: "Luxe Prestige",
+  tagline: "L'excellence au service de vos rêves",
+  title: "Conciergerie de Luxe",
+  location: "Marrakech, Maroc",
   phone: "+212 661 381 626",
   whatsapp: "212661381626",
-  email: "contact@i-wasp.com",
+  email: "contact@luxeprestige.ma",
   services: [
-    { icon: Car, label: "Cartes NFC", desc: "Design premium personnalisé" },
-    { icon: Plane, label: "Templates", desc: "Modèles professionnels" },
-    { icon: Sparkles, label: "Analytics", desc: "Suivi des performances" },
-    { icon: Home, label: "Support", desc: "Assistance dédiée" },
+    { icon: Car, label: "Voitures de luxe", desc: "Bentley, Mercedes, Limousines" },
+    { icon: Plane, label: "Jets Privés", desc: "Vols exclusifs sur mesure" },
+    { icon: Sparkles, label: "Expériences", desc: "Montgolfières, Safari désert" },
+    { icon: Home, label: "Villas & Riads", desc: "Hébergements d'exception" },
   ],
 };
 
