@@ -2,15 +2,16 @@
  * Express Step 1: Choix de l'offre
  * /express/offre
  * 
- * Optimisé conversion: CTA visible, social proof, urgence
+ * Style: Apple/Cupertino - Minimal, airy, professional
+ * Optimisé conversion: CTA visible, social proof, simplicité
  */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useExpressCheckout, ExpressOfferType, EXPRESS_OFFERS } from "@/contexts/ExpressCheckoutContext";
 import { Check, ArrowRight, Shield, Truck, Star, Clock, Users } from "lucide-react";
-import { COUTURE } from "@/lib/hauteCouturePalette";
+import { APPLE } from "@/lib/applePalette";
 import { useExpressCheckoutTracking } from "@/hooks/useAnalyticsEvents";
 
 export default function ExpressOffre() {
@@ -21,7 +22,6 @@ export default function ExpressOffre() {
 
   const handleSelectOffer = (offerId: ExpressOfferType) => {
     setSelectedOffer(offerId);
-    // Track offer selection
     const offer = EXPRESS_OFFERS.find(o => o.id === offerId);
     if (offer) {
       trackOfferSelect(offer.name, offer.price / 100);
@@ -37,62 +37,67 @@ export default function ExpressOffre() {
   const selectedOffer = EXPRESS_OFFERS.find(o => o.id === state.selectedOffer);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
-      {/* Honeycomb texture */}
-      <div 
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='${encodeURIComponent("#1a1a1a")}' stroke-width='0.4' stroke-opacity='0.04'/%3E%3C/svg%3E")`,
-          backgroundSize: '56px 100px',
-        }}
-      />
-
+    <div className="min-h-screen" style={{ backgroundColor: APPLE.background }}>
       {/* Header simple */}
-      <header className="relative z-10 px-6 py-6">
+      <header className="px-6 py-6">
         <div className="max-w-lg mx-auto flex items-center justify-center">
           <Link 
             to="/"
-            className="font-display text-xl tracking-[0.1em]"
-            style={{ color: COUTURE.silk }}
+            className="text-xl font-semibold tracking-tight"
+            style={{ color: APPLE.text }}
           >
-            i-wasp
+            IWASP
           </Link>
         </div>
       </header>
 
-      {/* Progress bar simple */}
-      <div className="relative z-10 px-6 mb-8">
+      {/* Progress bar */}
+      <div className="px-6 mb-8">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center gap-2">
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: COUTURE.gold }} />
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: COUTURE.jetSoft }} />
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: COUTURE.jetSoft }} />
+            <div 
+              className="flex-1 h-1 rounded-full" 
+              style={{ backgroundColor: APPLE.accent }} 
+            />
+            <div 
+              className="flex-1 h-1 rounded-full" 
+              style={{ backgroundColor: APPLE.border }} 
+            />
+            <div 
+              className="flex-1 h-1 rounded-full" 
+              style={{ backgroundColor: APPLE.border }} 
+            />
           </div>
-          <p className="text-center mt-3 text-[11px] uppercase tracking-[0.15em]" style={{ color: COUTURE.textMuted }}>
-            Étape 1/3 — Votre offre
+          <p 
+            className="text-center mt-3 text-xs font-medium"
+            style={{ color: APPLE.textMuted }}
+          >
+            Étape 1 sur 3
           </p>
         </div>
       </div>
 
-      {/* Social proof urgence */}
-      <div className="relative z-10 px-6 mb-6">
+      {/* Social proof */}
+      <div className="px-6 mb-8">
         <div className="max-w-lg mx-auto">
           <motion.div 
-            className="flex items-center justify-center gap-4 py-3 px-4 rounded-lg"
-            style={{ backgroundColor: `${COUTURE.gold}10`, border: `1px solid ${COUTURE.gold}20` }}
+            className="flex items-center justify-center gap-4 py-3 px-5 rounded-full"
+            style={{ 
+              backgroundColor: APPLE.accentSubtle,
+            }}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4" style={{ color: COUTURE.gold }} />
-              <span className="text-xs" style={{ color: COUTURE.gold }}>
-                <strong>23 personnes</strong> commandent en ce moment
+              <Users className="w-4 h-4" style={{ color: APPLE.accent }} />
+              <span className="text-sm" style={{ color: APPLE.accent }}>
+                <strong>23 personnes</strong> commandent
               </span>
             </div>
-            <div className="w-px h-4" style={{ backgroundColor: COUTURE.gold }} />
+            <span style={{ color: APPLE.accent }}>•</span>
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" style={{ color: COUTURE.gold }} />
-              <span className="text-xs" style={{ color: COUTURE.gold }}>
+              <Clock className="w-4 h-4" style={{ color: APPLE.accent }} />
+              <span className="text-sm" style={{ color: APPLE.accent }}>
                 Livraison <strong>48h</strong>
               </span>
             </div>
@@ -101,27 +106,27 @@ export default function ExpressOffre() {
       </div>
 
       {/* Main content */}
-      <main className="relative z-10 px-6 pb-40">
+      <main className="px-6 pb-44">
         <div className="max-w-lg mx-auto">
           {/* Title */}
           <motion.div 
             className="text-center mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.5 }}
           >
             <h1 
-              className="font-display text-2xl font-light italic mb-2"
-              style={{ color: COUTURE.silk }}
+              className="text-2xl font-semibold tracking-tight mb-2"
+              style={{ color: APPLE.text }}
             >
-              Choisissez votre <span style={{ color: COUTURE.gold }}>carte.</span>
+              Choisissez votre carte
             </h1>
-            <p className="text-sm" style={{ color: COUTURE.textMuted }}>
+            <p className="text-base" style={{ color: APPLE.textSecondary }}>
               Carte NFC + Profil digital inclus
             </p>
           </motion.div>
 
-          {/* Offers - Signature highlighted */}
+          {/* Offers */}
           <div className="space-y-3">
             {EXPRESS_OFFERS.map((offer, i) => {
               const isSelected = state.selectedOffer === offer.id;
@@ -131,25 +136,29 @@ export default function ExpressOffre() {
                 <motion.button
                   key={offer.id}
                   onClick={() => handleSelectOffer(offer.id)}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  className="w-full text-left p-5 transition-all duration-300 relative overflow-hidden"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1, duration: 0.4 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="w-full text-left p-5 transition-all duration-200 relative overflow-hidden"
                   style={{
-                    backgroundColor: isSelected ? `${COUTURE.gold}15` : isSignature ? `${COUTURE.gold}08` : 'transparent',
-                    border: `2px solid ${isSelected ? COUTURE.gold : isSignature ? `${COUTURE.gold}40` : COUTURE.jetSoft}`,
+                    backgroundColor: APPLE.card,
+                    borderRadius: APPLE.radiusLg,
+                    border: `2px solid ${isSelected ? APPLE.accent : APPLE.border}`,
+                    boxShadow: isSelected ? `0 0 0 4px ${APPLE.accentSubtle}` : APPLE.shadowCard,
                   }}
                 >
                   {/* Popular badge */}
                   {isSignature && (
                     <span 
-                      className="absolute top-0 right-0 px-3 py-1 text-[9px] uppercase tracking-[0.15em] font-medium"
+                      className="absolute top-3 right-3 px-3 py-1 text-xs font-semibold rounded-full"
                       style={{ 
-                        backgroundColor: COUTURE.gold,
-                        color: COUTURE.jet,
+                        backgroundColor: APPLE.accent,
+                        color: "#FFFFFF",
                       }}
                     >
-                      ⭐ Populaire
+                      Populaire
                     </span>
                   )}
 
@@ -159,21 +168,21 @@ export default function ExpressOffre() {
                       <div 
                         className="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all"
                         style={{ 
-                          borderColor: isSelected ? COUTURE.gold : COUTURE.jetSoft,
-                          backgroundColor: isSelected ? COUTURE.gold : 'transparent',
+                          borderColor: isSelected ? APPLE.accent : APPLE.border,
+                          backgroundColor: isSelected ? APPLE.accent : 'transparent',
                         }}
                       >
-                        {isSelected && <Check className="w-3 h-3" style={{ color: COUTURE.jet }} />}
+                        {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
                       </div>
                       
                       <div>
                         <h3 
-                          className="font-display text-lg font-light"
-                          style={{ color: isSelected ? COUTURE.gold : COUTURE.silk }}
+                          className="text-lg font-semibold"
+                          style={{ color: APPLE.text }}
                         >
                           {offer.name}
                         </h3>
-                        <p className="text-xs mt-0.5" style={{ color: COUTURE.textMuted }}>
+                        <p className="text-sm mt-0.5" style={{ color: APPLE.textSecondary }}>
                           {offer.id === "essentiel" && "Carte NFC + 5 liens"}
                           {offer.id === "signature" && "Tout débloqué · CRM · Analytics"}
                           {offer.id === "alliance" && "Pack équipe · Admin centralisé"}
@@ -182,8 +191,8 @@ export default function ExpressOffre() {
                     </div>
                     
                     <span 
-                      className="text-xl font-light tabular-nums"
-                      style={{ color: isSelected ? COUTURE.gold : COUTURE.silk }}
+                      className="text-xl font-semibold"
+                      style={{ color: APPLE.text }}
                     >
                       {offer.priceDisplay}
                     </span>
@@ -195,30 +204,41 @@ export default function ExpressOffre() {
 
           {/* Trust badges */}
           <motion.div 
-            className="mt-8 grid grid-cols-3 gap-4"
+            className="mt-10 grid grid-cols-3 gap-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
             <div className="text-center">
-              <Shield className="w-5 h-5 mx-auto mb-2" style={{ color: COUTURE.gold }} />
-              <p className="text-[10px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
+              <div 
+                className="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: APPLE.accentSubtle }}
+              >
+                <Shield className="w-5 h-5" style={{ color: APPLE.accent }} />
+              </div>
+              <p className="text-xs font-medium" style={{ color: APPLE.textSecondary }}>
                 Paiement sécurisé
               </p>
             </div>
             <div className="text-center">
-              <Truck className="w-5 h-5 mx-auto mb-2" style={{ color: COUTURE.gold }} />
-              <p className="text-[10px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
+              <div 
+                className="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: APPLE.accentSubtle }}
+              >
+                <Truck className="w-5 h-5" style={{ color: APPLE.accent }} />
+              </div>
+              <p className="text-xs font-medium" style={{ color: APPLE.textSecondary }}>
                 Livraison 48h
               </p>
             </div>
             <div className="text-center">
-              <div className="flex justify-center mb-2">
-                {[1,2,3,4,5].map(i => (
-                  <Star key={i} className="w-3 h-3" fill={COUTURE.gold} style={{ color: COUTURE.gold }} />
-                ))}
+              <div 
+                className="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: APPLE.accentSubtle }}
+              >
+                <Star className="w-5 h-5" style={{ color: APPLE.accent }} />
               </div>
-              <p className="text-[10px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
+              <p className="text-xs font-medium" style={{ color: APPLE.textSecondary }}>
                 4.9 · 500+ avis
               </p>
             </div>
@@ -226,12 +246,12 @@ export default function ExpressOffre() {
         </div>
       </main>
 
-      {/* Fixed CTA - Grand et visible */}
+      {/* Fixed CTA */}
       <div 
         className="fixed bottom-0 left-0 right-0 z-20 px-6 py-5"
         style={{ 
-          backgroundColor: COUTURE.jet,
-          borderTop: `1px solid ${COUTURE.jetSoft}`,
+          backgroundColor: APPLE.background,
+          borderTop: `1px solid ${APPLE.border}`,
         }}
       >
         <div className="max-w-lg mx-auto">
@@ -240,13 +260,14 @@ export default function ExpressOffre() {
             disabled={!state.selectedOffer || isNavigating}
             whileHover={{ scale: state.selectedOffer ? 1.02 : 1 }}
             whileTap={{ scale: state.selectedOffer ? 0.98 : 1 }}
-            className="w-full flex items-center justify-center gap-3 py-4 transition-all duration-300 disabled:opacity-40"
+            className="w-full flex items-center justify-center gap-3 py-4 rounded-xl transition-all duration-200 disabled:opacity-50"
             style={{ 
-              backgroundColor: state.selectedOffer ? COUTURE.gold : COUTURE.jetSoft,
-              color: state.selectedOffer ? COUTURE.jet : COUTURE.textMuted,
+              backgroundColor: state.selectedOffer ? APPLE.accent : APPLE.textMuted,
+              color: "#FFFFFF",
+              fontWeight: 600,
             }}
           >
-            <span className="text-sm uppercase tracking-[0.15em] font-medium">
+            <span className="text-base">
               {isNavigating ? "Chargement..." : selectedOffer ? `Continuer — ${selectedOffer.priceDisplay}` : "Choisir une offre"}
             </span>
             {!isNavigating && state.selectedOffer && (
@@ -255,8 +276,11 @@ export default function ExpressOffre() {
           </motion.button>
           
           {/* Reassurance */}
-          <p className="text-center mt-3 text-[10px]" style={{ color: COUTURE.textMuted }}>
-            🔒 Aucun engagement · Satisfait ou remboursé
+          <p 
+            className="text-center mt-3 text-xs"
+            style={{ color: APPLE.textMuted }}
+          >
+            Aucun engagement · Satisfait ou remboursé
           </p>
         </div>
       </div>
