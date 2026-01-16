@@ -1,23 +1,22 @@
 /**
- * Index / Home Page — i-wasp Haute Couture Digitale
+ * Index / Home Page — IWASP
  * 
- * Maison d'identité professionnelle digitale
- * Ultra chic, minimal, luxe inégalable
- * Noir couture, grands espaces vides, calme absolu
+ * Style: Apple Human Interface Guidelines (Cupertino)
+ * Minimal, airy, high-end, calm, professional
  */
 
 import { Link } from "react-router-dom";
-import { ArrowRight, User } from "lucide-react";
+import { ArrowRight, Smartphone, CreditCard, Zap, Shield, BarChart3, HeartHandshake } from "lucide-react";
 import { motion } from "framer-motion";
-import { useRef } from "react";
+import { APPLE } from "@/lib/applePalette";
 
-// Animation variants - Slow, luxurious
+// Animation variants - Smooth Apple-style
 const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 30 },
   visible: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 1.2 }
+    transition: { duration: 0.8, ease: "easeOut" as const }
   }
 };
 
@@ -25,46 +24,72 @@ const fadeIn = {
   hidden: { opacity: 0 },
   visible: { 
     opacity: 1,
-    transition: { duration: 1.5 }
+    transition: { duration: 0.6, ease: "easeOut" as const }
   }
 };
 
 const stagger = {
   visible: {
-    transition: { staggerChildren: 0.2 }
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    scale: 1,
+    transition: { duration: 0.6, ease: "easeOut" as const }
   }
 };
 
 const Index = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  
   return (
-    <div ref={containerRef} className="bg-background min-h-screen text-foreground selection:bg-foreground selection:text-background">
-      
+    <div 
+      className="min-h-screen font-sans antialiased"
+      style={{ backgroundColor: APPLE.background }}
+    >
       {/* ═══════════════════════════════════════════════════════════════════
-          NAVIGATION — Ultra minimal
+          NAVIGATION — Apple-style minimal
           ═══════════════════════════════════════════════════════════════════ */}
       <motion.nav 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.5 }}
-        className="fixed top-0 left-0 right-0 z-50 px-6 sm:px-12 py-6 sm:py-8"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl"
+        style={{ 
+          backgroundColor: 'rgba(245, 245, 247, 0.8)',
+          borderBottom: `1px solid ${APPLE.border}`
+        }}
       >
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
-          <Link to="/" className="text-foreground font-serif text-xl sm:text-2xl tracking-wide">
-            i-wasp
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link 
+            to="/" 
+            className="text-xl font-semibold tracking-tight"
+            style={{ color: APPLE.text }}
+          >
+            IWASP
           </Link>
-          <div className="flex items-center gap-6 sm:gap-10">
+          
+          <div className="flex items-center gap-6">
             <Link 
               to="/login"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm tracking-[0.2em] uppercase border border-foreground/30 px-4 py-2 text-foreground hover:bg-foreground hover:text-background transition-all duration-500"
+              className="text-sm font-medium transition-colors duration-200"
+              style={{ color: APPLE.textSecondary }}
+              onMouseEnter={(e) => e.currentTarget.style.color = APPLE.accent}
+              onMouseLeave={(e) => e.currentTarget.style.color = APPLE.textSecondary}
             >
-              <User className="w-4 h-4" />
-              Espace Client
+              Connexion
             </Link>
             <Link 
               to="/order/offre"
-              className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-700"
+              className="text-sm font-medium px-5 py-2.5 rounded-full transition-all duration-200"
+              style={{ 
+                backgroundColor: APPLE.accent,
+                color: '#FFFFFF'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = APPLE.accentHover}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = APPLE.accent}
             >
               Commander
             </Link>
@@ -73,120 +98,256 @@ const Index = () => {
       </motion.nav>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          HERO — Une idée, un écran
-          Confiance silencieuse, calme absolu
+          HERO — Clean Apple style
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="min-h-screen flex flex-col justify-center px-6 sm:px-12 pt-24">
-        <div className="max-w-[1400px] mx-auto w-full">
+      <section className="pt-32 pb-20 px-6">
+        <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial="hidden"
             animate="visible"
             variants={stagger}
-            className="max-w-4xl"
           >
-            {/* Surtitre éditorial */}
-            <motion.p 
+            {/* Badge */}
+            <motion.div 
               variants={fadeUp}
-              className="text-xs sm:text-sm tracking-[0.3em] uppercase text-muted-foreground mb-8 sm:mb-12"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
+              style={{ 
+                backgroundColor: APPLE.accentSubtle,
+                color: APPLE.accent
+              }}
             >
-              Haute couture digitale
-            </motion.p>
+              <Zap className="w-4 h-4" />
+              <span className="text-sm font-medium">Technologie NFC</span>
+            </motion.div>
             
-            {/* Titre principal — Serif éditorial */}
+            {/* Titre principal */}
             <motion.h1 
               variants={fadeUp}
-              className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-light leading-[1.1] tracking-tight mb-8 sm:mb-12"
+              className="text-5xl sm:text-6xl md:text-7xl font-semibold leading-[1.05] tracking-tight mb-6"
+              style={{ 
+                color: APPLE.text,
+                letterSpacing: '-0.02em'
+              }}
             >
-              Votre identité,
+              Votre carte de visite.
               <br />
-              <span className="italic">sublimée.</span>
+              <span style={{ color: APPLE.accent }}>Réinventée.</span>
             </motion.h1>
             
-            {/* Sous-titre — Discret, précis */}
+            {/* Sous-titre */}
             <motion.p 
               variants={fadeUp}
-              className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed mb-12 sm:mb-16"
+              className="text-xl sm:text-2xl max-w-2xl mx-auto leading-relaxed mb-10"
+              style={{ color: APPLE.textSecondary }}
             >
-              Une carte NFC d'exception pour les professionnels 
-              qui ne font aucun compromis.
+              Une carte NFC premium pour partager vos informations 
+              professionnelles en un simple tap.
             </motion.p>
             
-            {/* CTA — Sobre, élégant */}
-            <motion.div variants={fadeUp}>
+            {/* CTAs */}
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 to="/order/offre"
-                className="group inline-flex items-center gap-4 sm:gap-6"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-medium transition-all duration-200"
+                style={{ 
+                  backgroundColor: APPLE.accent,
+                  color: '#FFFFFF'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = APPLE.accentHover}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = APPLE.accent}
               >
-                <span className="text-sm sm:text-base tracking-[0.15em] uppercase border-b border-foreground/30 pb-1 group-hover:border-foreground transition-colors duration-700">
-                  Découvrir
-                </span>
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-2 transition-transform duration-700" />
+                Commander maintenant
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link 
+                to="/contact"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-medium transition-all duration-200"
+                style={{ 
+                  backgroundColor: APPLE.backgroundPure,
+                  color: APPLE.text,
+                  boxShadow: APPLE.shadowSm
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.boxShadow = APPLE.shadowMd}
+                onMouseLeave={(e) => e.currentTarget.style.boxShadow = APPLE.shadowSm}
+              >
+                En savoir plus
               </Link>
             </motion.div>
           </motion.div>
         </div>
-        
-        {/* Scroll indicator */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2, duration: 1 }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2"
-        >
-          <div className="w-px h-16 bg-gradient-to-b from-transparent via-muted-foreground/30 to-transparent" />
-        </motion.div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          STATEMENT — Une phrase, un écran
-          Le vide est une matière noble
+          PRODUCT SHOWCASE — Visual card
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="min-h-screen flex items-center justify-center px-6 sm:px-12">
+      <section className="py-16 px-6">
         <motion.div 
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-20%" }}
-          variants={fadeIn}
-          className="max-w-3xl text-center"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={scaleIn}
+          className="max-w-4xl mx-auto"
         >
-          <p className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light leading-[1.4] tracking-tight">
-            "Nous créons des pièces numériques 
-            <span className="italic"> intemporelles</span>, 
-            pensées comme des objets de haute couture."
-          </p>
+          <div 
+            className="relative rounded-3xl p-12 sm:p-16 overflow-hidden"
+            style={{ 
+              backgroundColor: APPLE.backgroundPure,
+              boxShadow: APPLE.shadowLg
+            }}
+          >
+            {/* Card mockup */}
+            <div className="flex flex-col md:flex-row items-center gap-12">
+              <div 
+                className="w-64 h-40 rounded-2xl flex items-center justify-center relative"
+                style={{ 
+                  background: 'linear-gradient(135deg, #1D1D1F 0%, #3D3D3F 100%)',
+                  boxShadow: APPLE.shadowElevated
+                }}
+              >
+                <span className="text-white/90 text-lg font-medium tracking-wide">IWASP</span>
+                {/* NFC indicator */}
+                <div className="absolute top-4 right-4">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
+                    <Smartphone className="w-4 h-4 text-white/60" />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex-1 text-center md:text-left">
+                <h2 
+                  className="text-2xl sm:text-3xl font-semibold mb-4 tracking-tight"
+                  style={{ color: APPLE.text }}
+                >
+                  Design premium
+                </h2>
+                <p 
+                  className="text-lg leading-relaxed mb-6"
+                  style={{ color: APPLE.textSecondary }}
+                >
+                  Finition mate élégante. Puce NFC intégrée. 
+                  Compatible avec tous les smartphones.
+                </p>
+                <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                  {['NFC', 'Sans contact', 'Durable'].map((tag) => (
+                    <span 
+                      key={tag}
+                      className="px-3 py-1.5 rounded-full text-sm font-medium"
+                      style={{ 
+                        backgroundColor: APPLE.accentSubtle,
+                        color: APPLE.accent
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </motion.div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          PRINCIPES — Trois piliers, rythme lent
+          FEATURES — Apple grid style
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-32 sm:py-48 px-6 sm:px-12">
-        <div className="max-w-[1400px] mx-auto">
+      <section className="py-24 px-6">
+        <div className="max-w-5xl mx-auto">
           <motion.div 
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-10%" }}
+            viewport={{ once: true, margin: "-50px" }}
             variants={stagger}
-            className="grid md:grid-cols-3 gap-16 sm:gap-12 md:gap-8"
+            className="text-center mb-16"
+          >
+            <motion.h2 
+              variants={fadeUp}
+              className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4"
+              style={{ color: APPLE.text }}
+            >
+              Tout ce qu'il vous faut
+            </motion.h2>
+            <motion.p 
+              variants={fadeUp}
+              className="text-xl max-w-2xl mx-auto"
+              style={{ color: APPLE.textSecondary }}
+            >
+              Une solution complète pour votre identité professionnelle digitale
+            </motion.p>
+          </motion.div>
+
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={stagger}
+            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {[
-              { number: "01", title: "Sobre", description: "Aucun effet superflu. Chaque détail a sa raison d'être." },
-              { number: "02", title: "Précise", description: "Une exécution irréprochable, jusqu'au dernier pixel." },
-              { number: "03", title: "Durable", description: "Une seule carte. Pour toujours." }
-            ].map((item) => (
+              { 
+                icon: CreditCard, 
+                title: "Carte NFC premium", 
+                description: "Finition mate haute qualité avec puce NFC intégrée" 
+              },
+              { 
+                icon: Smartphone, 
+                title: "Profil digital", 
+                description: "Page personnalisée avec tous vos liens et contacts" 
+              },
+              { 
+                icon: Zap, 
+                title: "Partage instantané", 
+                description: "Un tap suffit pour partager vos informations" 
+              },
+              { 
+                icon: Shield, 
+                title: "Données sécurisées", 
+                description: "Vos informations protégées et sous votre contrôle" 
+              },
+              { 
+                icon: BarChart3, 
+                title: "Statistiques", 
+                description: "Suivez qui consulte votre profil en temps réel" 
+              },
+              { 
+                icon: HeartHandshake, 
+                title: "Support dédié", 
+                description: "Une équipe à votre écoute pour vous accompagner" 
+              }
+            ].map((feature, index) => (
               <motion.div 
-                key={item.number}
+                key={index}
                 variants={fadeUp}
-                className="border-t border-foreground/10 pt-8"
+                className="p-8 rounded-2xl transition-all duration-300"
+                style={{ 
+                  backgroundColor: APPLE.backgroundPure,
+                  boxShadow: APPLE.shadowCard
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = APPLE.shadowMd;
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = APPLE.shadowCard;
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
               >
-                <span className="text-xs tracking-[0.3em] text-muted-foreground mb-6 block">
-                  {item.number}
-                </span>
-                <h3 className="font-serif text-2xl sm:text-3xl font-light mb-4 tracking-tight">
-                  {item.title}
+                <div 
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
+                  style={{ backgroundColor: APPLE.accentSubtle }}
+                >
+                  <feature.icon className="w-6 h-6" style={{ color: APPLE.accent }} />
+                </div>
+                <h3 
+                  className="text-lg font-semibold mb-2"
+                  style={{ color: APPLE.text }}
+                >
+                  {feature.title}
                 </h3>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                  {item.description}
+                <p 
+                  className="text-base leading-relaxed"
+                  style={{ color: APPLE.textSecondary }}
+                >
+                  {feature.description}
                 </p>
               </motion.div>
             ))}
@@ -195,137 +356,130 @@ const Index = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          OFFRE — Épuré à l'essentiel
+          CTA SECTION — Clean and focused
           ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-32 sm:py-48 px-6 sm:px-12 border-t border-foreground/5">
-        <div className="max-w-[1400px] mx-auto">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-10%" }}
-            variants={stagger}
+      <section className="py-24 px-6">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={fadeUp}
+          className="max-w-4xl mx-auto"
+        >
+          <div 
+            className="rounded-3xl p-12 sm:p-16 text-center"
+            style={{ 
+              backgroundColor: APPLE.backgroundPure,
+              boxShadow: APPLE.shadowLg
+            }}
           >
-            <motion.p 
-              variants={fadeUp}
-              className="text-xs sm:text-sm tracking-[0.3em] uppercase text-muted-foreground mb-6"
+            <h2 
+              className="text-3xl sm:text-4xl font-semibold tracking-tight mb-4"
+              style={{ color: APPLE.text }}
             >
-              L'essentiel
-            </motion.p>
-            
-            <motion.h2 
-              variants={fadeUp}
-              className="font-serif text-3xl sm:text-4xl md:text-5xl font-light tracking-tight mb-16 sm:mb-24"
+              Prêt à vous démarquer ?
+            </h2>
+            <p 
+              className="text-lg mb-8 max-w-xl mx-auto"
+              style={{ color: APPLE.textSecondary }}
             >
-              Ce que vous recevez
-            </motion.h2>
-            
-            <motion.div 
-              variants={fadeUp}
-              className="grid sm:grid-cols-2 gap-8 sm:gap-12 max-w-3xl"
-            >
-              {[
-                "Carte NFC premium, finition mate",
-                "Profil digital personnalisé",
-                "Liens et contacts illimités",
-                "Modifications instantanées",
-                "Statistiques de consultation",
-                "Support dédié"
-              ].map((item, index) => (
-                <div 
-                  key={index}
-                  className="flex items-baseline gap-6 py-4 border-b border-foreground/5"
-                >
-                  <span className="text-xs text-muted-foreground/50">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <span className="text-sm sm:text-base">
-                    {item}
-                  </span>
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          TARIF — Simple, transparent
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-32 sm:py-48 px-6 sm:px-12">
-        <div className="max-w-[1400px] mx-auto">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-10%" }}
-            variants={stagger}
-            className="max-w-2xl"
-          >
-            <motion.p 
-              variants={fadeUp}
-              className="text-xs sm:text-sm tracking-[0.3em] uppercase text-muted-foreground mb-6"
-            >
-              Investissement
-            </motion.p>
-            
-            <motion.div variants={fadeUp} className="mb-12">
-              <span className="font-serif text-6xl sm:text-7xl md:text-8xl font-light tracking-tight">
-                555
-              </span>
-              <span className="text-xl sm:text-2xl text-muted-foreground ml-2">
-                MAD
-              </span>
-            </motion.div>
-            
-            <motion.p 
-              variants={fadeUp}
-              className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-12"
-            >
-              Tout inclus. Pas d'abonnement. 
-              <br className="hidden sm:block" />
-              Livraison offerte au Maroc.
-            </motion.p>
-            
-            <motion.div variants={fadeUp}>
+              Rejoignez les professionnels qui ont déjà adopté 
+              la carte de visite du futur.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 to="/order/offre"
-                className="inline-block bg-foreground text-background px-12 py-5 text-sm tracking-[0.15em] uppercase hover:opacity-80 transition-opacity duration-700"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-medium transition-all duration-200"
+                style={{ 
+                  backgroundColor: APPLE.accent,
+                  color: '#FFFFFF'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = APPLE.accentHover}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = APPLE.accent}
               >
-                Commander
+                Commander ma carte
+                <ArrowRight className="w-4 h-4" />
               </Link>
-            </motion.div>
-          </motion.div>
-        </div>
+              <a 
+                href="https://wa.me/212661911165?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20carte%20IWASP"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-medium transition-all duration-200"
+                style={{ 
+                  backgroundColor: 'transparent',
+                  color: APPLE.accent,
+                  border: `1.5px solid ${APPLE.accent}`
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = APPLE.accentSubtle;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                Nous contacter
+              </a>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          FOOTER — Minimal
+          FOOTER — Minimal Apple style
           ═══════════════════════════════════════════════════════════════════ */}
-      <footer className="py-12 sm:py-16 px-6 sm:px-12 border-t border-foreground/5">
-        <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8">
-          <div>
-            <span className="font-serif text-lg tracking-wide">i-wasp</span>
-            <p className="text-xs text-muted-foreground mt-2 tracking-wide">
-              Haute couture digitale
-            </p>
+      <footer 
+        className="py-12 px-6"
+        style={{ borderTop: `1px solid ${APPLE.border}` }}
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="text-center md:text-left">
+              <span 
+                className="text-lg font-semibold"
+                style={{ color: APPLE.text }}
+              >
+                IWASP
+              </span>
+              <p 
+                className="text-sm mt-1"
+                style={{ color: APPLE.textMuted }}
+              >
+                Tap. Connect. Empower.
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap justify-center gap-8">
+              {[
+                { label: 'Contact', to: '/contact' },
+                { label: 'À propos', to: '/about' },
+                { label: 'FAQ', to: '/faq' },
+                { label: 'CGV', to: '/cgv' }
+              ].map((link) => (
+                <Link 
+                  key={link.to}
+                  to={link.to}
+                  className="text-sm transition-colors duration-200"
+                  style={{ color: APPLE.textSecondary }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = APPLE.accent}
+                  onMouseLeave={(e) => e.currentTarget.style.color = APPLE.textSecondary}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 text-xs sm:text-sm text-muted-foreground">
-            <Link to="/contact" className="hover:text-foreground transition-colors duration-500">
-              Contact
-            </Link>
-            <Link to="/mentions-legales" className="hover:text-foreground transition-colors duration-500">
-              Mentions légales
-            </Link>
-            <Link to="/cgv" className="hover:text-foreground transition-colors duration-500">
-              CGV
-            </Link>
+          <div 
+            className="mt-12 pt-8 text-center"
+            style={{ borderTop: `1px solid ${APPLE.border}` }}
+          >
+            <p 
+              className="text-xs"
+              style={{ color: APPLE.textMuted }}
+            >
+              © 2025 IWASP. Tous droits réservés.
+            </p>
           </div>
-        </div>
-        
-        <div className="max-w-[1400px] mx-auto mt-16 pt-8 border-t border-foreground/5">
-          <p className="text-xs text-muted-foreground/50 tracking-wide">
-            © 2025 i-wasp. Tous droits réservés.
-          </p>
         </div>
       </footer>
     </div>
