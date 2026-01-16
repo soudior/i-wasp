@@ -25,9 +25,11 @@ import {
   ChevronRight,
   X,
   Navigation,
+  Play,
 } from "lucide-react";
 import { toast } from "sonner";
 import { IWASPBrandingFooter } from "@/components/IWASPBrandingFooter";
+import { ProductVideoPlayer } from "@/components/clients/khokha-signature/ProductVideoPlayer";
 
 // Import product images
 import logoImg from "@/assets/clients/khokha-signature/logo.jpg";
@@ -101,8 +103,24 @@ const CATEGORIES = [
   { id: "accessories", label: "Accessoires", icon: Heart },
 ];
 
+// Product type with optional video
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  description: string;
+  colors: string[];
+  sizes: string[];
+  material: string;
+  image: string;
+  video?: string; // Optional video URL
+  featured?: boolean;
+  tags: string[];
+}
+
 // Products catalog
-const PRODUCTS = [
+const PRODUCTS: Product[] = [
   {
     id: 1,
     name: "Robe Rouge Passion",
@@ -113,6 +131,7 @@ const PRODUCTS = [
     sizes: ["S", "M", "L"],
     material: "95% Polyester, 5% Elasthanne",
     image: collectionRouge,
+    // video: videoRobeRouge, // Uncomment and import when video is available
     featured: true,
     tags: ["#LuxuryFashion", "#MarrakechStyle"],
   },
@@ -711,6 +730,19 @@ END:VCARD`;
                     background: `linear-gradient(to top, ${KS_COLORS.background}80 0%, transparent 40%)`,
                   }}
                 />
+                {/* Video indicator badge */}
+                {product.video && (
+                  <div
+                    className="absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1"
+                    style={{
+                      backgroundColor: KS_COLORS.gold,
+                      color: KS_COLORS.background,
+                    }}
+                  >
+                    <Play size={10} fill="currentColor" />
+                    Vidéo
+                  </div>
+                )}
               </div>
               <div className="p-3">
                 <h3 className="font-medium text-sm mb-1 line-clamp-1" style={{ color: KS_COLORS.text }}>
@@ -754,19 +786,29 @@ END:VCARD`;
                 <X size={20} style={{ color: KS_COLORS.text }} />
               </button>
 
-              {/* Product Image */}
+              {/* Product Image or Video */}
               <div className="relative aspect-[4/5]">
-                <img
-                  src={selectedProduct.image}
-                  alt={selectedProduct.name}
-                  className="w-full h-full object-cover"
-                />
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: `linear-gradient(to top, ${KS_COLORS.background} 0%, transparent 30%)`,
-                  }}
-                />
+                {selectedProduct.video ? (
+                  <ProductVideoPlayer
+                    src={selectedProduct.video}
+                    poster={selectedProduct.image}
+                    className="w-full h-full"
+                  />
+                ) : (
+                  <>
+                    <img
+                      src={selectedProduct.image}
+                      alt={selectedProduct.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background: `linear-gradient(to top, ${KS_COLORS.background} 0%, transparent 30%)`,
+                      }}
+                    />
+                  </>
+                )}
               </div>
 
               {/* Product Details */}
