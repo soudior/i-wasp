@@ -1,14 +1,55 @@
 /**
  * PricingSection - Section pricing pour la landing page
  * Toggle mensuel/annuel avec 3 offres : Identity, Professional, Enterprise
+ * Tableau comparatif détaillé des fonctionnalités
  */
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, X, Sparkles, Crown, Building2, Zap } from "lucide-react";
+import { Check, X, Sparkles, Crown, Building2, Zap, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useCurrency } from "@/contexts/CurrencyContext";
+
+// Feature comparison data
+interface FeatureRow {
+  category?: string;
+  feature: string;
+  identity: boolean | string;
+  professional: boolean | string;
+  enterprise: boolean | string;
+}
+
+const featureComparison: FeatureRow[] = [
+  { category: "NFC Cards", feature: "Monthly card allocation", identity: "10 cards", professional: "25 cards", enterprise: "75 cards" },
+  { feature: "Premium PVC cards", identity: true, professional: true, enterprise: true },
+  { feature: "Metal cards", identity: false, professional: false, enterprise: true },
+  { feature: "Custom logo printing", identity: false, professional: true, enterprise: true },
+  { feature: "Laser engraving", identity: false, professional: false, enterprise: true },
+  
+  { category: "Digital Profile", feature: "Digital business card", identity: true, professional: true, enterprise: true },
+  { feature: "vCard download", identity: true, professional: true, enterprise: true },
+  { feature: "Apple & Google Wallet", identity: true, professional: true, enterprise: true },
+  { feature: "Custom design templates", identity: "Basic", professional: "Premium", enterprise: "Unlimited" },
+  { feature: "QR code generation", identity: true, professional: true, enterprise: true },
+  
+  { category: "Website", feature: "Landing page builder", identity: "1 page", professional: "5-10 pages", enterprise: "20+ pages" },
+  { feature: "Blog system", identity: false, professional: true, enterprise: true },
+  { feature: "E-commerce store", identity: false, professional: false, enterprise: true },
+  { feature: "Custom domain", identity: "1 domain", professional: "Unlimited", enterprise: "Unlimited" },
+  { feature: "SSL certificate", identity: true, professional: true, enterprise: true },
+  
+  { category: "AI & Automation", feature: "AI credits/month", identity: "5 credits", professional: "20 credits", enterprise: "Unlimited" },
+  { feature: "AI content generation", identity: true, professional: true, enterprise: true },
+  { feature: "Marketing automation", identity: false, professional: false, enterprise: true },
+  { feature: "API access", identity: false, professional: false, enterprise: true },
+  
+  { category: "Analytics & Support", feature: "Analytics dashboard", identity: "Basic", professional: "Detailed", enterprise: "Advanced" },
+  { feature: "Email support", identity: true, professional: true, enterprise: true },
+  { feature: "24/7 chat support", identity: false, professional: true, enterprise: true },
+  { feature: "Dedicated manager", identity: false, professional: false, enterprise: true },
+  { feature: "Priority support", identity: false, professional: false, enterprise: true },
+];
 
 interface PricingPlan {
   id: string;
@@ -134,6 +175,29 @@ export function PricingSection() {
       GBP: "£",
     };
     return `${symbols[currency] || "$"}${amount}`;
+  };
+
+  // Helper function to render feature values in comparison table
+  const renderFeatureValue = (value: boolean | string) => {
+    if (typeof value === "string") {
+      return <span className="text-sm font-medium text-foreground">{value}</span>;
+    }
+    if (value === true) {
+      return (
+        <div className="flex justify-center">
+          <div className="w-6 h-6 rounded-full bg-green-500/10 flex items-center justify-center">
+            <Check className="h-4 w-4 text-green-600" />
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="flex justify-center">
+        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center">
+          <Minus className="h-4 w-4 text-muted-foreground/50" />
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -286,6 +350,80 @@ export function PricingSection() {
             ))}
           </AnimatePresence>
         </div>
+
+        {/* Feature Comparison Table */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className="mt-20"
+        >
+          <div className="text-center mb-10">
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+              {t("pricing.compareTitle", "Compare all features")}
+            </h3>
+            <p className="text-muted-foreground">
+              {t("pricing.compareSubtitle", "Find the perfect plan for your needs")}
+            </p>
+          </div>
+
+          <div className="overflow-x-auto rounded-xl border border-border bg-card">
+            <table className="w-full min-w-[640px]">
+              {/* Table Header */}
+              <thead>
+                <tr className="border-b border-border bg-muted/30">
+                  <th className="text-left p-4 font-medium text-muted-foreground w-1/3">
+                    {t("pricing.feature", "Feature")}
+                  </th>
+                  <th className="text-center p-4 font-medium text-foreground">
+                    <div className="flex flex-col items-center gap-1">
+                      <Zap className="h-5 w-5 text-blue-500" />
+                      <span>Identity</span>
+                    </div>
+                  </th>
+                  <th className="text-center p-4 font-medium text-foreground bg-primary/5 border-x border-primary/10">
+                    <div className="flex flex-col items-center gap-1">
+                      <Crown className="h-5 w-5 text-primary" />
+                      <span>Professional</span>
+                      <span className="text-xs text-primary font-normal">Most Popular</span>
+                    </div>
+                  </th>
+                  <th className="text-center p-4 font-medium text-foreground">
+                    <div className="flex flex-col items-center gap-1">
+                      <Building2 className="h-5 w-5 text-amber-500" />
+                      <span>Enterprise</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+
+              {/* Table Body */}
+              <tbody>
+                {featureComparison.map((row, index) => (
+                  <>
+                    {row.category && (
+                      <tr key={`cat-${index}`} className="bg-muted/50">
+                        <td colSpan={4} className="p-3 font-semibold text-foreground text-sm">
+                          {row.category}
+                        </td>
+                      </tr>
+                    )}
+                    <tr 
+                      key={`row-${index}`}
+                      className={`border-b border-border/50 ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'}`}
+                    >
+                      <td className="p-4 text-sm text-foreground">{row.feature}</td>
+                      <td className="p-4 text-center">{renderFeatureValue(row.identity)}</td>
+                      <td className="p-4 text-center bg-primary/5 border-x border-primary/10">{renderFeatureValue(row.professional)}</td>
+                      <td className="p-4 text-center">{renderFeatureValue(row.enterprise)}</td>
+                    </tr>
+                  </>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
 
         {/* Bottom Trust */}
         <motion.div
