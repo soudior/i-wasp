@@ -27,6 +27,7 @@ PROTECTED_FILES=(
     "src/pages/AriellaCard.tsx"
     "src/pages/LaMaisonCupcakeCard.tsx"
     "src/pages/DualBrandShowcase.tsx"
+    "src/pages/KhokhaSignatureCard.tsx"
 )
 
 # Templates protégés

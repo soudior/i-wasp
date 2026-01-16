@@ -256,6 +256,7 @@ const App = () => {
                               <Route path="/card/kech-exclu" element={<KechExcluCard />} />
                               <Route path="/card/luxe-prestige" element={<LuxePrestigeCard />} />
                               <Route path="/card/la-maison-cupcake" element={<LaMaisonCupcakeCard />} />
+                              <Route path="/card/khokha-signature" element={<KhokhaSignatureCard />} />
                               <Route path="/card/:slug" element={<PublicCard />} />
                               {/* Auth */}
                               <Route path="/login" element={<Login />} />
