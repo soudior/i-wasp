@@ -17,6 +17,7 @@
 | **Ariella KC** | `src/pages/AriellaCard.tsx` | `ariella-khiat-cohen` | Avocat Cabinet AKC |
 | **La Maison Cupcake** | `src/pages/LaMaisonCupcakeCard.tsx` | `la-maison-cupcake` | Pâtisserie artisanale |
 | **Medina Travertin** | `src/pages/DualBrandShowcase.tsx` | `medina-travertin` | Dual-brand showcase |
+| **Khokha Signature** | `src/pages/KhokhaSignatureCard.tsx` | `khokha-signature` | Fashion Luxury Marrakech |
 
 ---
 
