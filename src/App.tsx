@@ -128,6 +128,7 @@ const CharlesLazimiCard = lazy(() => import("./pages/CharlesLazimiCard"));
 const KechExcluCard = lazy(() => import("./pages/KechExcluCard"));
 const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
 const LaMaisonCupcakeCard = lazy(() => import("./pages/LaMaisonCupcakeCard"));
+const KhokhaSignatureCard = lazy(() => import("./pages/KhokhaSignatureCard"));
 const Services = lazy(() => import("./pages/Services"));
 const CartesNFC = lazy(() => import("./pages/CartesNFC"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
