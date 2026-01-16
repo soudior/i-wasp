@@ -232,5 +232,18 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "rights": "All rights reserved"
+  },
+  "pricing": {
+    "badge": "Simple, transparent pricing",
+    "title": "Choose your plan",
+    "subtitle": "Scale your digital identity with the right plan for your needs",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "save": "Save 17%",
+    "month": "mo",
+    "year": "year",
+    "billedAnnually": "Billed annually",
+    "popular": "Most Popular",
+    "guarantee": "30-day money-back guarantee • No hidden fees • Cancel anytime"
   }
 }

@@ -15,6 +15,7 @@ import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { NFCDemoSection } from "@/components/landing/NFCDemoSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
+import { PricingSection } from "@/components/landing/PricingSection";
 
 // Animation variants - Smooth Apple-style
 const fadeUp = {
@@ -396,6 +397,10 @@ const Index = () => {
           ═══════════════════════════════════════════════════════════════════ */}
       <ComparisonSection />
 
+      {/* ═══════════════════════════════════════════════════════════════════
+          PRICING — Plans with toggle
+          ═══════════════════════════════════════════════════════════════════ */}
+      <PricingSection />
 
       {/* ═══════════════════════════════════════════════════════════════════
           CTA SECTION — Clean and focused

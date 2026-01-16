@@ -232,5 +232,18 @@
     "privacy": "Confidentialité",
     "terms": "CGU",
     "rights": "Tous droits réservés"
+  },
+  "pricing": {
+    "badge": "Tarifs simples et transparents",
+    "title": "Choisissez votre formule",
+    "subtitle": "Développez votre identité digitale avec l'offre adaptée à vos besoins",
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
+    "save": "Économisez 17%",
+    "month": "mois",
+    "year": "an",
+    "billedAnnually": "Facturation annuelle",
+    "popular": "Le plus populaire",
+    "guarantee": "Garantie 30 jours satisfait ou remboursé • Sans frais cachés • Annulation libre"
   }
 }
