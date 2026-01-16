@@ -168,6 +168,22 @@ export default function ExpressPayer() {
       // Track purchase
       trackPurchase(orderNumber, selectedOffer.price / 100, selectedOffer.name, state.paymentMethod || 'cod');
       
+      // Send admin alert email (non-blocking)
+      supabase.functions.invoke('send-admin-alert', {
+        body: {
+          type: 'express',
+          orderId: order?.id || '',
+          orderNumber: orderNumber,
+          customerName: `${firstName} ${lastName}`,
+          customerEmail: email,
+          customerPhone: phone,
+          city: city,
+          offerName: selectedOffer.name,
+          totalPrice: selectedOffer.price,
+          paymentMethod: state.paymentMethod || 'cod',
+        }
+      }).catch(err => console.error('Admin alert failed:', err));
+      
       markComplete();
       resetCheckout();
       toast.success("Commande confirmée ! Vous recevrez votre carte sous 48-72h.");

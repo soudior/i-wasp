@@ -220,6 +220,42 @@ serve(async (req) => {
       // Continue anyway
     }
 
+    // Send admin alert email (non-blocking)
+    try {
+      const siteName = asString(p.siteName) || businessName;
+      
+      const alertPayload = {
+        type: "webstudio",
+        orderId: createdProposal.id,
+        siteName,
+        customerEmail: contactEmail,
+        businessType: businessType || undefined,
+        isExpress,
+        priceEur,
+        priceMad,
+      };
+
+      fetch(`${SUPABASE_URL}/functions/v1/send-admin-alert`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        },
+        body: JSON.stringify(alertPayload),
+      }).then(res => {
+        if (!res.ok) {
+          console.error("webstudio-order: admin alert failed");
+        } else {
+          console.log("webstudio-order: admin alert sent");
+        }
+      }).catch(err => {
+        console.error("webstudio-order: admin alert error", err);
+      });
+    } catch (alertErr) {
+      console.error("webstudio-order: admin alert catch", alertErr);
+      // Continue anyway - order is more important
+    }
+
     return new Response(JSON.stringify({ proposalId: createdProposal.id }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
