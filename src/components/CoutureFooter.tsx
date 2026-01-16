@@ -17,7 +17,7 @@ const footerLinks = {
   support: [
     { label: "Contact", href: "/contact" },
     { label: "Guide", href: "/user-guide" },
-    { label: "FAQ", href: "/help" },
+    { label: "FAQ", href: "/faq" },
   ],
   services: [
     { label: "Web Studio", href: "/web-studio" },

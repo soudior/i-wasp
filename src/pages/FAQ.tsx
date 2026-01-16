@@ -1,138 +1,202 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X } from "lucide-react";
+import { 
+  Search, 
+  ChevronDown, 
+  Phone, 
+  MessageCircle, 
+  CreditCard, 
+  Truck, 
+  Shield, 
+  Smartphone,
+  RefreshCw,
+  Users,
+  Zap,
+  HelpCircle,
+  CheckCircle2,
+  ArrowRight
+} from "lucide-react";
+import { Link } from "react-router-dom";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
-import { CoutureNavbar } from "@/components/CoutureNavbar";
-import { CoutureFooter } from "@/components/CoutureFooter";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
-// Noir Haute Couture palette
-const NOIR_COUTURE = {
-  bg: "#0A0A0A",
-  surface: "#111111",
-  ivory: "#F6F5F2",
-  ash: "#9B9B9B",
-  border: "rgba(246, 245, 242, 0.08)",
-  borderHover: "rgba(246, 245, 242, 0.15)",
-};
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const faqCategories = [
   {
+    id: "getting-started",
     title: "Découvrir i-wasp",
+    icon: Zap,
     faqs: [
       {
-        question: "Qu'est-ce qu'une carte de visite NFC i-wasp ?",
-        answer: "Une carte i-wasp est une carte de visite nouvelle génération équipée d'une puce NFC. Il suffit de l'approcher d'un smartphone pour partager instantanément votre profil digital complet : coordonnées, réseaux sociaux, portfolio. Plus besoin de cartes papier jetables.",
+        question: "Qu'est-ce qu'une carte NFC i-wasp ?",
+        answer: "Une carte i-wasp est une carte de visite nouvelle génération équipée d'une puce NFC. Approchez-la simplement d'un smartphone pour partager instantanément votre profil digital : coordonnées, réseaux sociaux, portfolio. Plus besoin de cartes papier jetables qui finissent à la poubelle.",
       },
       {
-        question: "Comment fonctionne la technologie NFC ?",
-        answer: "Le NFC (Near Field Communication) permet une communication sans fil à courte portée. Quand votre carte s'approche d'un smartphone compatible, elle transmet instantanément vos informations. Aucune application n'est requise, aucune batterie nécessaire.",
+        question: "Pourquoi choisir i-wasp plutôt qu'une carte papier ?",
+        answer: "Avec i-wasp, vous économisez sur l'impression répétée de cartes, vous pouvez modifier vos informations à tout moment sans commander de nouvelles cartes, et vous laissez une impression mémorable. C'est un investissement unique pour une image professionnelle premium.",
       },
       {
-        question: "Pourquoi choisir i-wasp plutôt qu'une carte traditionnelle ?",
-        answer: "Contrairement aux cartes papier, une carte i-wasp est évolutive, écologique et mémorable. Modifiez vos informations à tout moment, suivez qui scanne votre carte, et laissez une impression durable. Un investissement unique pour une image professionnelle premium.",
+        question: "C'est vraiment utile pour mon activité ?",
+        answer: "Absolument ! Que vous soyez entrepreneur, freelance, commercial ou professionnel libéral, une carte NFC vous distingue immédiatement. Nos clients rapportent en moyenne 3x plus de contacts conservés par rapport aux cartes papier traditionnelles.",
       },
     ],
   },
   {
-    title: "Utilisation",
+    id: "how-it-works",
+    title: "Fonctionnement",
+    icon: Smartphone,
     faqs: [
       {
-        question: "Comment activer ma carte i-wasp ?",
-        answer: "Votre carte est pré-configurée dès réception. Aucune activation manuelle n'est requise. Approchez simplement votre carte du smartphone de votre interlocuteur pour partager votre profil digital instantanément.",
+        question: "Comment ça marche concrètement ?",
+        answer: "C'est très simple : vous approchez votre carte du smartphone de votre interlocuteur (à 2-3 cm), et votre profil digital s'affiche instantanément dans son navigateur. Aucune application à télécharger, aucune manipulation compliquée.",
       },
       {
-        question: "Ma carte fonctionne-t-elle avec tous les smartphones ?",
-        answer: "Oui. Tous les iPhone depuis le modèle 7 et la grande majorité des smartphones Android depuis 2015 sont compatibles NFC. Pour les appareils plus anciens, un QR code de secours est disponible au dos de chaque carte.",
+        question: "Ça fonctionne avec tous les téléphones ?",
+        answer: "Oui ! Tous les iPhone depuis le modèle 7 (2016) et 95% des Android récents sont compatibles NFC. Pour les rares téléphones sans NFC, un QR code est gravé au dos de chaque carte en backup.",
       },
+      {
+        question: "Faut-il installer une application ?",
+        answer: "Non, aucune application n'est nécessaire — ni pour vous, ni pour vos contacts. Le profil s'ouvre directement dans le navigateur Safari ou Chrome du smartphone.",
+      },
+      {
+        question: "Et si le scan NFC ne fonctionne pas ?",
+        answer: "C'est très rare, mais voici les astuces : sur iPhone, approchez la carte du haut de l'écran ; sur Android, du centre arrière. Vérifiez que le NFC est activé dans les paramètres. Les coques très épaisses peuvent parfois bloquer le signal. En dernier recours, le QR code au dos fonctionne toujours !",
+      },
+    ],
+  },
+  {
+    id: "customization",
+    title: "Personnalisation",
+    icon: RefreshCw,
+    faqs: [
       {
         question: "Puis-je modifier mes informations après l'achat ?",
-        answer: "Absolument. Votre profil digital est entièrement modifiable depuis votre espace personnel. Changez de photo, mettez à jour vos coordonnées, ajoutez de nouveaux liens sociaux — les modifications sont reflétées instantanément, sans remplacer votre carte physique.",
+        answer: "Oui, à vie ! Depuis votre tableau de bord, modifiez votre photo, titre, coordonnées, liens sociaux... Les changements sont reflétés instantanément sans toucher à votre carte physique. C'est tout l'avantage du digital.",
       },
       {
-        question: "Que faire si le scan NFC ne fonctionne pas ?",
-        answer: "Vérifiez d'abord que le NFC est activé sur le téléphone. Sur iPhone, approchez la carte du haut de l'appareil ; sur Android, du centre arrière. Les coques épaisses peuvent parfois interférer. Notre support est disponible pour vous accompagner.",
-      },
-    ],
-  },
-  {
-    title: "Personnalisation",
-    faqs: [
-      {
-        question: "Quels designs sont disponibles ?",
-        answer: "Nous proposons plusieurs templates exclusifs : Noir Élégance pour un rendu sobre et premium, Ivoire Raffiné pour un contraste lumineux, et Carbone pour les professionnels tech. Chaque design est pensé pour refléter votre identité professionnelle.",
+        question: "Comment personnaliser le design de ma carte ?",
+        answer: "Lors de votre commande, choisissez parmi nos templates premium (Noir Élégance, Ivoire Raffiné, Carbone). Vous pouvez ajouter votre logo, choisir la couleur, et personnaliser chaque élément de votre profil digital.",
       },
       {
-        question: "Puis-je ajouter mon logo d'entreprise ?",
-        answer: "Oui. Lors de la création de votre carte, vous pouvez téléverser votre logo au format PNG ou SVG. Il sera intégré élégamment au design de votre carte physique et à votre profil digital.",
-      },
-      {
-        question: "Comment personnaliser mon profil digital ?",
-        answer: "Depuis votre tableau de bord, accédez à l'éditeur de carte. Vous pouvez modifier votre photo, titre, entreprise, coordonnées, et ajouter des liens vers vos réseaux sociaux, portfolio, site web ou tout autre contenu pertinent.",
+        question: "Puis-je avoir plusieurs cartes avec des profils différents ?",
+        answer: "Absolument ! Vous pouvez créer autant de profils que nécessaire (personnel, professionnel, par projet...). Chaque carte peut être liée à un profil différent. Idéal pour les multi-entrepreneurs.",
       },
     ],
   },
   {
-    title: "Livraison & Commande",
+    id: "ordering",
+    title: "Commande & Prix",
+    icon: CreditCard,
     faqs: [
       {
-        question: "Livrez-vous au Maroc ?",
-        answer: "Oui, nous livrons partout au Maroc. Le paiement à la livraison (Cash on Delivery) est disponible. Les délais de livraison sont de 2-5 jours ouvrés selon votre localisation.",
+        question: "Quel est le prix d'une carte i-wasp ?",
+        answer: "Une carte i-wasp est à 149 DH (au lieu de 249 DH). Ce prix inclut : la carte NFC premium personnalisée, votre profil digital à vie, les mises à jour illimitées, et la livraison gratuite partout au Maroc.",
       },
       {
-        question: "Quels sont les délais de livraison ?",
-        answer: "La production de votre carte personnalisée prend 2-3 jours ouvrés. La livraison standard au Maroc est de 2-5 jours supplémentaires. Livraison express disponible sur demande.",
+        question: "Y a-t-il des frais cachés ou un abonnement ?",
+        answer: "Aucun ! C'est un paiement unique. Pas d'abonnement, pas de frais mensuels, pas de surprises. Votre profil digital reste actif à vie, inclus dans le prix.",
       },
       {
-        question: "Le paiement à la livraison est-il disponible ?",
-        answer: "Oui. Pour le Maroc, nous acceptons le paiement à la livraison (COD). Vous réglez uniquement à la réception de votre carte. Paiement en ligne sécurisé également disponible.",
+        question: "Comment passer commande ?",
+        answer: "C'est rapide : cliquez sur \"Commander\", personnalisez votre carte, entrez vos informations de livraison, et payez. Vous pouvez payer par carte bancaire ou à la livraison (Cash on Delivery) partout au Maroc.",
+      },
+      {
+        question: "Puis-je payer à la livraison ?",
+        answer: "Oui ! Le paiement à la livraison (COD) est disponible partout au Maroc. Vous payez en espèces au livreur à réception de votre carte. Simple et sans risque.",
       },
     ],
   },
   {
-    title: "Technique & Support",
+    id: "delivery",
+    title: "Livraison",
+    icon: Truck,
     faqs: [
       {
-        question: "Ma carte a-t-elle une durée de vie limitée ?",
-        answer: "Non. La puce NFC n'a pas de batterie et ne s'use pas. La carte physique est fabriquée en PVC haute qualité résistant à l'usure quotidienne. Votre investissement est conçu pour durer des années.",
+        question: "Livrez-vous partout au Maroc ?",
+        answer: "Oui ! Nous livrons dans toutes les villes du Maroc : Casablanca, Rabat, Marrakech, Fès, Tanger, Agadir, et toutes les autres. La livraison est 100% gratuite.",
       },
       {
-        question: "Comment fonctionne l'intégration Wallet ?",
-        answer: "Votre carte peut être ajoutée à Apple Wallet ou Google Wallet. Elle sera ainsi accessible depuis l'écran verrouillé de votre téléphone — parfait pour partager vos coordonnées même sans la carte physique sur vous.",
+        question: "Quel est le délai de livraison ?",
+        answer: "Votre carte est produite en 3-5 jours ouvrés, puis livrée en 2-4 jours. Comptez donc 5-9 jours au total selon votre ville. Vous recevez un numéro de suivi par SMS.",
       },
       {
-        question: "Comment contacter le support ?",
-        answer: "Notre équipe est disponible par WhatsApp pour une réponse rapide, ou par email à support@i-wasp.com. Nous nous engageons à répondre sous 24h ouvrées.",
+        question: "Comment suivre ma commande ?",
+        answer: "Dès l'expédition, vous recevez un SMS et email avec votre numéro de suivi. Vous pouvez suivre votre colis en temps réel jusqu'à la livraison.",
+      },
+    ],
+  },
+  {
+    id: "guarantees",
+    title: "Garanties",
+    icon: Shield,
+    faqs: [
+      {
+        question: "Quelle est la durée de vie de la carte ?",
+        answer: "La puce NFC n'a pas de batterie et ne s'use pas — elle fonctionne à vie. La carte physique est fabriquée en PVC haute qualité, résistante à l'eau et aux rayures. Nous garantissons votre carte pendant 2 ans.",
+      },
+      {
+        question: "Que se passe-t-il si ma carte est défectueuse ?",
+        answer: "Si votre carte présente un défaut de fabrication, nous la remplaçons gratuitement. Contactez-nous simplement par WhatsApp avec une photo du problème.",
+      },
+      {
+        question: "Puis-je me faire rembourser si je ne suis pas satisfait ?",
+        answer: "Oui ! Vous avez 14 jours après réception pour nous retourner la carte si elle ne vous convient pas. Nous vous remboursons intégralement, sans questions.",
+      },
+      {
+        question: "Mes données sont-elles sécurisées ?",
+        answer: "Absolument. Vos données sont hébergées sur des serveurs sécurisés en Europe. Vous contrôlez exactement ce qui est visible sur votre profil, et vous pouvez le désactiver à tout moment.",
+      },
+    ],
+  },
+  {
+    id: "business",
+    title: "Entreprises",
+    icon: Users,
+    faqs: [
+      {
+        question: "Proposez-vous des tarifs pour les entreprises ?",
+        answer: "Oui ! À partir de 5 cartes, bénéficiez de tarifs dégressifs : -15% pour 5-10 cartes, -25% pour 11-25 cartes, et tarifs sur mesure au-delà. Contactez-nous pour un devis personnalisé.",
+      },
+      {
+        question: "Pouvez-vous personnaliser les cartes avec notre charte graphique ?",
+        answer: "Absolument ! Pour les commandes entreprise, nous créons des designs sur mesure avec votre logo, vos couleurs, et votre identité visuelle. Nous pouvons même graver votre logo au laser.",
+      },
+      {
+        question: "Comment gérer les cartes de toute mon équipe ?",
+        answer: "Nous proposons un tableau de bord entreprise qui permet de gérer tous les profils de votre équipe depuis une seule interface. Créez, modifiez et suivez les statistiques de toutes les cartes.",
       },
     ],
   },
 ];
 
-// Highlight matching text
+// Trust stats
+const trustStats = [
+  { value: "547+", label: "Cartes livrées" },
+  { value: "98%", label: "Clients satisfaits" },
+  { value: "24h", label: "Support réactif" },
+  { value: "0 DH", label: "Livraison" },
+];
+
+// Highlight search matches
 function HighlightText({ text, query }: { text: string; query: string }) {
   if (!query.trim()) return <>{text}</>;
   
-  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-  const parts = text.split(regex);
-  
+  const parts = text.split(new RegExp(`(${query})`, 'gi'));
   return (
     <>
-      {parts.map((part, i) => 
-        regex.test(part) ? (
-          <mark 
-            key={i} 
-            className="bg-transparent font-medium"
-            style={{ color: NOIR_COUTURE.ivory }}
-          >
+      {parts.map((part, i) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+          <mark key={i} className="bg-primary/20 text-primary rounded px-0.5">
             {part}
           </mark>
         ) : (
-          <span key={i}>{part}</span>
+          part
         )
       )}
     </>
@@ -140,330 +204,325 @@ function HighlightText({ text, query }: { text: string; query: string }) {
 }
 
 export default function FAQ() {
-  // SEO
-  SEOHead(SEO_CONFIGS.faq);
-  
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  // Filter FAQs based on search query
   const filteredCategories = useMemo(() => {
-    if (!searchQuery.trim()) return faqCategories;
+    if (!searchQuery.trim() && !selectedCategory) return faqCategories;
 
-    const query = searchQuery.toLowerCase();
     return faqCategories
+      .filter(category => !selectedCategory || category.id === selectedCategory)
       .map((category) => ({
         ...category,
         faqs: category.faqs.filter(
           (faq) =>
-            faq.question.toLowerCase().includes(query) ||
-            faq.answer.toLowerCase().includes(query)
+            faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
         ),
       }))
       .filter((category) => category.faqs.length > 0);
-  }, [searchQuery]);
+  }, [searchQuery, selectedCategory]);
 
-  const totalResults = filteredCategories.reduce(
-    (acc, cat) => acc + cat.faqs.length,
-    0
-  );
+  const totalFaqs = faqCategories.reduce((acc, cat) => acc + cat.faqs.length, 0);
 
   return (
-    <div 
-      className="min-h-screen"
-      style={{ backgroundColor: NOIR_COUTURE.bg }}
-    >
-      <CoutureNavbar />
+    <>
+      <SEOHead {...SEO_CONFIGS.faq} />
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-12 relative overflow-hidden">
-        {/* Honeycomb pattern */}
-        <div 
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill='%23F6F5F2' fill-opacity='1'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
+      <div className="min-h-screen bg-[#F5F5F7]">
+        {/* Header */}
+        <header className="bg-white/80 backdrop-blur-xl border-b border-black/5 sticky top-0 z-50">
+          <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <Link to="/" className="font-semibold text-[#1D1D1F] text-xl tracking-tight">
+              IWASP
+            </Link>
+            <Link to="/express/pack">
+              <Button className="bg-[#007AFF] hover:bg-[#0056CC] text-white rounded-full px-6 h-10 font-medium">
+                Commander
+              </Button>
+            </Link>
+          </div>
+        </header>
 
-        <div className="max-w-4xl mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center"
-          >
-            <span 
-              className="inline-block text-xs tracking-[0.3em] uppercase mb-6"
-              style={{ color: NOIR_COUTURE.ash }}
+        {/* Hero Section */}
+        <section className="bg-white border-b border-black/5">
+          <div className="max-w-4xl mx-auto px-6 py-16 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              Centre d'aide
-            </span>
-            <h1 
-              className="font-serif text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mb-8"
-              style={{ color: NOIR_COUTURE.ivory }}
-            >
-              Questions fréquentes
-            </h1>
-            <p 
-              className="text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed mb-12"
-              style={{ color: NOIR_COUTURE.ash }}
-            >
-              Tout ce que vous devez savoir sur les cartes de visite NFC i-wasp.
-            </p>
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#007AFF]/10 text-[#007AFF] text-sm font-medium mb-6">
+                <HelpCircle className="w-4 h-4" />
+                Centre d'aide
+              </span>
+              
+              <h1 className="text-4xl md:text-5xl font-bold text-[#1D1D1F] tracking-tight mb-4">
+                Questions fréquentes
+              </h1>
+              
+              <p className="text-lg text-[#8E8E93] mb-8 max-w-2xl mx-auto">
+                Tout ce que vous devez savoir sur les cartes NFC i-wasp. 
+                {totalFaqs} réponses pour vous aider.
+              </p>
 
-            {/* Search Bar */}
-            <div className="max-w-xl mx-auto">
-              <div 
-                className="relative group"
-              >
-                <div 
-                  className="absolute inset-0 rounded-2xl transition-all duration-500 opacity-0 group-focus-within:opacity-100"
-                  style={{
-                    background: `linear-gradient(135deg, rgba(246, 245, 242, 0.05), rgba(246, 245, 242, 0.02))`,
-                  }}
+              {/* Search */}
+              <div className="relative max-w-xl mx-auto">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8E8E93]" />
+                <Input
+                  type="text"
+                  placeholder="Rechercher une question..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 h-14 text-lg bg-[#F5F5F7] border-0 rounded-2xl focus:ring-2 focus:ring-[#007AFF]/20 placeholder:text-[#8E8E93]"
                 />
-                <div 
-                  className="relative flex items-center rounded-2xl transition-all duration-300"
-                  style={{ 
-                    backgroundColor: NOIR_COUTURE.surface,
-                    border: `1px solid ${NOIR_COUTURE.border}`,
-                  }}
-                >
-                  <Search 
-                    className="w-5 h-5 ml-5 flex-shrink-0 transition-colors duration-300"
-                    style={{ color: NOIR_COUTURE.ash }}
-                  />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Rechercher une question..."
-                    className="flex-1 bg-transparent px-4 py-5 text-base font-light outline-none placeholder:transition-opacity placeholder:duration-300 focus:placeholder:opacity-50"
-                    style={{ 
-                      color: NOIR_COUTURE.ivory,
-                    }}
-                  />
-                  <AnimatePresence>
-                    {searchQuery && (
-                      <motion.button
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.2 }}
-                        onClick={() => setSearchQuery("")}
-                        className="mr-4 p-1.5 rounded-full transition-colors duration-300 hover:bg-white/5"
-                        style={{ color: NOIR_COUTURE.ash }}
-                      >
-                        <X className="w-4 h-4" />
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-
-              {/* Search Results Count */}
-              <AnimatePresence>
                 {searchQuery && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-4 text-sm font-light"
-                    style={{ color: NOIR_COUTURE.ash }}
-                  >
-                    {totalResults === 0
-                      ? "Aucun résultat trouvé"
-                      : `${totalResults} résultat${totalResults > 1 ? "s" : ""} trouvé${totalResults > 1 ? "s" : ""}`}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* FAQ Content */}
-      <section className="pb-32 relative">
-        <div className="max-w-3xl mx-auto px-6">
-          <AnimatePresence mode="wait">
-            {filteredCategories.length === 0 ? (
-              <motion.div
-                key="no-results"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4 }}
-                className="text-center py-20"
-              >
-                <div 
-                  className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
-                  style={{ backgroundColor: NOIR_COUTURE.surface }}
-                >
-                  <Search className="w-8 h-8" style={{ color: NOIR_COUTURE.ash }} />
-                </div>
-                <h3 
-                  className="font-serif text-2xl font-light mb-3"
-                  style={{ color: NOIR_COUTURE.ivory }}
-                >
-                  Aucune question trouvée
-                </h3>
-                <p 
-                  className="text-base font-light"
-                  style={{ color: NOIR_COUTURE.ash }}
-                >
-                  Essayez avec d'autres mots-clés ou{" "}
-                  <button 
+                  <button
                     onClick={() => setSearchQuery("")}
-                    className="underline hover:no-underline transition-all"
-                    style={{ color: NOIR_COUTURE.ivory }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8E8E93] hover:text-[#1D1D1F]"
                   >
-                    réinitialisez la recherche
+                    ✕
                   </button>
-                </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="results"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {filteredCategories.map((category, categoryIndex) => (
-                  <motion.div
-                    key={category.title}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ 
-                      duration: 0.6, 
-                      delay: categoryIndex * 0.1,
-                      ease: [0.16, 1, 0.3, 1] 
-                    }}
-                    className="mb-16 last:mb-0"
-                  >
-                    {/* Category Title */}
-                    <h2 
-                      className="font-serif text-2xl md:text-3xl font-light mb-8 tracking-tight"
-                      style={{ color: NOIR_COUTURE.ivory }}
-                    >
-                      {category.title}
-                    </h2>
+                )}
+              </div>
+            </motion.div>
 
-                    {/* FAQ Accordion */}
-                    <div 
-                      className="rounded-2xl overflow-hidden"
-                      style={{ 
-                        backgroundColor: NOIR_COUTURE.surface,
-                        border: `1px solid ${NOIR_COUTURE.border}`,
-                      }}
+            {/* Trust Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="flex flex-wrap justify-center gap-8 mt-10"
+            >
+              {trustStats.map((stat, index) => (
+                <div key={index} className="text-center">
+                  <div className="text-2xl font-bold text-[#1D1D1F]">{stat.value}</div>
+                  <div className="text-sm text-[#8E8E93]">{stat.label}</div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Category Filter */}
+        <section className="bg-[#F5F5F7] sticky top-[73px] z-40 border-b border-black/5">
+          <div className="max-w-6xl mx-auto px-6 py-4">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  !selectedCategory
+                    ? "bg-[#1D1D1F] text-white"
+                    : "bg-white text-[#1D1D1F] hover:bg-black/5"
+                }`}
+              >
+                Tout voir
+              </button>
+              {faqCategories.map((category) => {
+                const Icon = category.icon;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(
+                      selectedCategory === category.id ? null : category.id
+                    )}
+                    className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                      selectedCategory === category.id
+                        ? "bg-[#1D1D1F] text-white"
+                        : "bg-white text-[#1D1D1F] hover:bg-black/5"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {category.title}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Content */}
+        <section className="py-12">
+          <div className="max-w-3xl mx-auto px-6">
+            <AnimatePresence mode="wait">
+              {filteredCategories.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-center py-16"
+                >
+                  <div className="w-16 h-16 bg-[#F5F5F7] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="w-8 h-8 text-[#8E8E93]" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-[#1D1D1F] mb-2">
+                    Aucun résultat
+                  </h3>
+                  <p className="text-[#8E8E93] mb-6">
+                    Essayez une autre recherche ou contactez-nous
+                  </p>
+                  <a
+                    href="https://wa.me/212667285923?text=Bonjour, j'ai une question..."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button className="bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full px-6">
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Poser une question
+                    </Button>
+                  </a>
+                </motion.div>
+              ) : (
+                filteredCategories.map((category, categoryIndex) => {
+                  const Icon = category.icon;
+                  return (
+                    <motion.div
+                      key={category.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: categoryIndex * 0.1, duration: 0.4 }}
+                      className="mb-10"
                     >
-                      <Accordion type="single" collapsible className="w-full">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 bg-[#007AFF]/10 rounded-xl flex items-center justify-center">
+                          <Icon className="w-5 h-5 text-[#007AFF]" />
+                        </div>
+                        <h2 className="text-xl font-semibold text-[#1D1D1F]">
+                          {category.title}
+                        </h2>
+                        <span className="text-sm text-[#8E8E93] bg-black/5 px-2 py-0.5 rounded-full">
+                          {category.faqs.length}
+                        </span>
+                      </div>
+
+                      <Accordion type="single" collapsible className="space-y-3">
                         {category.faqs.map((faq, faqIndex) => (
                           <AccordionItem
                             key={faqIndex}
-                            value={`${categoryIndex}-${faqIndex}`}
-                            className="border-b last:border-b-0"
-                            style={{ borderColor: NOIR_COUTURE.border }}
+                            value={`${category.id}-${faqIndex}`}
+                            className="bg-white border-0 rounded-2xl shadow-sm overflow-hidden data-[state=open]:shadow-md transition-shadow"
                           >
-                            <AccordionTrigger 
-                              className="px-6 py-5 text-left hover:no-underline group transition-colors duration-300"
-                              style={{ color: NOIR_COUTURE.ivory }}
-                            >
-                              <span className="text-base md:text-lg font-light tracking-tight group-hover:opacity-70 transition-opacity duration-300">
-                                <HighlightText text={faq.question} query={searchQuery} />
-                              </span>
+                            <AccordionTrigger className="px-6 py-5 text-left text-[#1D1D1F] font-medium hover:no-underline hover:bg-black/[0.02] [&[data-state=open]]:bg-black/[0.02]">
+                              <HighlightText text={faq.question} query={searchQuery} />
                             </AccordionTrigger>
-                            <AccordionContent className="px-6 pb-6">
-                              <p 
-                                className="text-base font-light leading-relaxed"
-                                style={{ color: NOIR_COUTURE.ash }}
-                              >
-                                <HighlightText text={faq.answer} query={searchQuery} />
-                              </p>
+                            <AccordionContent className="px-6 pb-5 text-[#8E8E93] leading-relaxed">
+                              <HighlightText text={faq.answer} query={searchQuery} />
                             </AccordionContent>
                           </AccordionItem>
                         ))}
                       </Accordion>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </section>
+                    </motion.div>
+                  );
+                })
+              )}
+            </AnimatePresence>
+          </div>
+        </section>
 
-      {/* Contact CTA */}
-      <section className="pb-32 relative">
-        <div className="max-w-3xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center rounded-2xl p-12 md:p-16"
-            style={{ 
-              backgroundColor: NOIR_COUTURE.surface,
-              border: `1px solid ${NOIR_COUTURE.border}`,
-            }}
-          >
-            <h3 
-              className="font-serif text-2xl md:text-3xl font-light mb-4 tracking-tight"
-              style={{ color: NOIR_COUTURE.ivory }}
+        {/* CTA Section */}
+        <section className="py-16 bg-white border-t border-black/5">
+          <div className="max-w-4xl mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center"
             >
-              Vous ne trouvez pas votre réponse ?
-            </h3>
-            <p 
-              className="text-base font-light mb-8"
-              style={{ color: NOIR_COUTURE.ash }}
+              <h2 className="text-2xl md:text-3xl font-bold text-[#1D1D1F] mb-4">
+                Vous n'avez pas trouvé votre réponse ?
+              </h2>
+              <p className="text-[#8E8E93] mb-8 max-w-xl mx-auto">
+                Notre équipe est disponible 7j/7 pour répondre à toutes vos questions
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="https://wa.me/212667285923?text=Bonjour, j'ai une question..."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button 
+                    size="lg"
+                    className="bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full px-8 h-14 text-base font-medium w-full sm:w-auto"
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    WhatsApp
+                  </Button>
+                </a>
+                <a href="tel:+212667285923">
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    className="rounded-full px-8 h-14 text-base font-medium border-2 w-full sm:w-auto"
+                  >
+                    <Phone className="w-5 h-5 mr-2" />
+                    +212 667 285 923
+                  </Button>
+                </a>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Ready to Order CTA */}
+        <section className="py-16 bg-[#1D1D1F]">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
             >
-              Notre équipe est disponible pour vous accompagner personnellement.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a
-                href="mailto:support@i-wasp.com"
-                className="inline-flex items-center justify-center px-8 py-4 text-sm tracking-[0.15em] uppercase font-medium transition-all duration-500 rounded-xl"
-                style={{ 
-                  backgroundColor: 'transparent',
-                  border: `1px solid ${NOIR_COUTURE.border}`,
-                  color: NOIR_COUTURE.ivory,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = NOIR_COUTURE.borderHover;
-                  e.currentTarget.style.backgroundColor = 'rgba(246, 245, 242, 0.03)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = NOIR_COUTURE.border;
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                Nous écrire
-              </a>
-              <a
-                href="https://wa.me/33626424394"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-8 py-4 text-sm tracking-[0.15em] uppercase font-medium transition-all duration-500 rounded-xl"
-                style={{ 
-                  backgroundColor: NOIR_COUTURE.ivory,
-                  color: NOIR_COUTURE.bg,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = '0.9';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = '1';
-                }}
-              >
-                WhatsApp
-              </a>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white/80 text-sm mb-6">
+                <CheckCircle2 className="w-4 h-4 text-green-400" />
+                Livraison gratuite • Paiement à la livraison
+              </div>
+              
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Prêt à vous démarquer ?
+              </h2>
+              <p className="text-white/60 mb-8 max-w-xl mx-auto">
+                Rejoignez 500+ professionnels marocains qui ont déjà adopté la carte de visite du futur
+              </p>
+
+              <Link to="/express/pack">
+                <Button 
+                  size="lg"
+                  className="bg-[#007AFF] hover:bg-[#0056CC] text-white rounded-full px-10 h-14 text-lg font-medium group"
+                >
+                  Commander ma carte
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              
+              <p className="text-white/40 text-sm mt-4">
+                149 DH seulement • Sans abonnement
+              </p>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="bg-white border-t border-black/5 py-8">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="text-sm text-[#8E8E93]">
+                © 2025 IWASP. Tous droits réservés.
+              </div>
+              <div className="flex gap-6 text-sm">
+                <Link to="/cgv" className="text-[#8E8E93] hover:text-[#1D1D1F] transition-colors">
+                  CGV
+                </Link>
+                <Link to="/contact" className="text-[#8E8E93] hover:text-[#1D1D1F] transition-colors">
+                  Contact
+                </Link>
+                <Link to="/" className="text-[#8E8E93] hover:text-[#1D1D1F] transition-colors">
+                  Accueil
+                </Link>
+              </div>
             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <CoutureFooter />
-    </div>
+          </div>
+        </footer>
+      </div>
+    </>
   );
 }
