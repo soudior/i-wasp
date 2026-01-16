@@ -51,7 +51,11 @@ import robeBlanc from "@/assets/clients/khokha-signature/products/robe-blanche-e
 import robeNoireSoiree from "@/assets/clients/khokha-signature/products/robe-noire-soiree.png";
 import topDentelleNoir from "@/assets/clients/khokha-signature/products/top-dentelle-noir.png";
 
-// Palette luxury fashion noir & or
+// Product videos
+import videoProduit1 from "@/assets/clients/khokha-signature/videos/video-produit-1.mp4";
+import videoProduit2 from "@/assets/clients/khokha-signature/videos/video-produit-2.mp4";
+import videoProduit3 from "@/assets/clients/khokha-signature/videos/video-produit-3.mp4";
+
 const KS_COLORS = {
   background: "#0A0A0A",
   card: "#111111",
@@ -131,7 +135,7 @@ const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L"],
     material: "95% Polyester, 5% Elasthanne",
     image: collectionRouge,
-    // video: videoRobeRouge, // Uncomment and import when video is available
+    video: videoProduit1,
     featured: true,
     tags: ["#LuxuryFashion", "#MarrakechStyle"],
   },
@@ -145,6 +149,7 @@ const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     material: "Laine mélangée premium",
     image: collectionRouge,
+    video: videoProduit2,
     featured: true,
     tags: ["#DesignerWear", "#PowerSuit"],
   },
@@ -158,6 +163,7 @@ const PRODUCTS: Product[] = [
     sizes: ["XS", "S", "M", "L"],
     material: "Velours de soie",
     image: collectionRouge,
+    video: videoProduit3,
     tags: ["#EveningWear", "#LuxuryDress"],
   },
   {
