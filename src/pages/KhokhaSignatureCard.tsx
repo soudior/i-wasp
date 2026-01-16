@@ -36,7 +36,6 @@ import logoImg from "@/assets/clients/khokha-signature/logo.jpg";
 import lookCamel from "@/assets/clients/khokha-signature/look-camel.png";
 import lookBurgundyFur from "@/assets/clients/khokha-signature/look-burgundy-fur.png";
 import lookLeatherPants from "@/assets/clients/khokha-signature/look-leather-pants.png";
-import collectionRouge from "@/assets/clients/khokha-signature/collection-rouge.png";
 import lookShimmerTop from "@/assets/clients/khokha-signature/look-shimmer-top.png";
 import lookTweedJacket from "@/assets/clients/khokha-signature/look-tweed-jacket.png";
 import leggingsThermal from "@/assets/clients/khokha-signature/leggings-thermal.png";
@@ -127,47 +126,20 @@ interface Product {
 const PRODUCTS: Product[] = [
   {
     id: 1,
-    name: "Robe Rouge Passion",
+    name: "Robe Sequins Or",
     category: "robes",
-    price: 1890,
-    description: "Robe bustier midi en crêpe stretch, détails dentelle fine",
-    colors: ["Rouge vif"],
-    sizes: ["S", "M", "L"],
-    material: "95% Polyester, 5% Elasthanne",
-    image: collectionRouge,
+    price: 2890,
+    description: "Robe de soirée entièrement brodée de sequins dorés, coupe ajustée glamour",
+    colors: ["Or"],
+    sizes: ["XS", "S", "M", "L"],
+    material: "Base stretch, sequins cousus main",
+    image: robeSequinsOr,
     video: videoProduit1,
     featured: true,
-    tags: ["#LuxuryFashion", "#MarrakechStyle"],
+    tags: ["#GoldenGlam", "#PartyDress"],
   },
   {
     id: 2,
-    name: "Costume Bordeaux Prestige",
-    category: "blazers",
-    price: 2490,
-    description: "Ensemble blazer double-boutonnage et pantalon assorti, coupe moderne",
-    colors: ["Bordeaux"],
-    sizes: ["S", "M", "L", "XL"],
-    material: "Laine mélangée premium",
-    image: collectionRouge,
-    video: videoProduit2,
-    featured: true,
-    tags: ["#DesignerWear", "#PowerSuit"],
-  },
-  {
-    id: 3,
-    name: "Robe de Soirée Velours",
-    category: "robes",
-    price: 2190,
-    description: "Robe longue en velours, coupe asymétrique avec traîne légère",
-    colors: ["Rouge carmin"],
-    sizes: ["XS", "S", "M", "L"],
-    material: "Velours de soie",
-    image: collectionRouge,
-    video: videoProduit3,
-    tags: ["#EveningWear", "#LuxuryDress"],
-  },
-  {
-    id: 4,
     name: "Blazer Oversized Camel",
     category: "blazers",
     price: 1690,
@@ -176,11 +148,12 @@ const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L"],
     material: "80% Laine, 20% Cachemire",
     image: lookCamel,
+    video: videoProduit2,
     featured: true,
     tags: ["#OversizedStyle", "#CasualLuxury"],
   },
   {
-    id: 5,
+    id: 3,
     name: "Manteau Fourrure Bordeaux",
     category: "blazers",
     price: 3890,
@@ -189,8 +162,35 @@ const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L"],
     material: "Fausse fourrure haute qualité",
     image: lookBurgundyFur,
+    video: videoProduit3,
     featured: true,
     tags: ["#WinterLuxury", "#FauxFur"],
+  },
+  {
+    id: 4,
+    name: "Ensemble Cuir Noir Chic",
+    category: "pantalons",
+    price: 2290,
+    description: "Ensemble pantalon cuir et veste assortie, coupe structurée moderne",
+    colors: ["Noir"],
+    sizes: ["S", "M", "L"],
+    material: "Simili cuir premium haute qualité",
+    image: ensembleCuirNoir,
+    featured: true,
+    tags: ["#TotalLook", "#LeatherLuxury"],
+  },
+  {
+    id: 5,
+    name: "Robe Blanche Élégante",
+    category: "robes",
+    price: 1990,
+    description: "Robe midi blanche, coupe fluide avec détails raffinés",
+    colors: ["Blanc"],
+    sizes: ["S", "M", "L"],
+    material: "Crêpe de qualité supérieure",
+    image: robeBlanc,
+    featured: true,
+    tags: ["#WhiteElegance", "#SummerLuxury"],
   },
   {
     id: 6,
@@ -231,15 +231,15 @@ const PRODUCTS: Product[] = [
   },
   {
     id: 9,
-    name: "Legging Thermique Premium",
-    category: "pantalons",
-    price: 490,
-    description: "Legging gainant doublé polaire, confort et chaleur optimaux",
+    name: "Robe Noire Soirée",
+    category: "robes",
+    price: 2490,
+    description: "Robe longue noire pour occasions spéciales, silhouette épurée",
     colors: ["Noir"],
-    sizes: ["S", "M", "L", "XL"],
-    material: "Polyamide technique, doublure polaire",
-    image: leggingsThermal,
-    tags: ["#ComfortStyle", "#WinterEssential"],
+    sizes: ["XS", "S", "M", "L"],
+    material: "Jersey stretch luxe, doublure satin",
+    image: robeNoireSoiree,
+    tags: ["#EveningGown", "#TimelessBlack"],
   },
   {
     id: 10,
@@ -254,22 +254,8 @@ const PRODUCTS: Product[] = [
     featured: true,
     tags: ["#LittleBlackDress", "#Elegance"],
   },
-  // New products from uploaded images
   {
     id: 11,
-    name: "Ensemble Cuir Noir Chic",
-    category: "pantalons",
-    price: 2290,
-    description: "Ensemble pantalon cuir et veste assortie, coupe structurée moderne",
-    colors: ["Noir"],
-    sizes: ["S", "M", "L"],
-    material: "Simili cuir premium haute qualité",
-    image: ensembleCuirNoir,
-    featured: true,
-    tags: ["#TotalLook", "#LeatherLuxury"],
-  },
-  {
-    id: 12,
     name: "Jupe Plissée Élégante",
     category: "robes",
     price: 1290,
@@ -281,20 +267,7 @@ const PRODUCTS: Product[] = [
     tags: ["#PlissePleat", "#FeminineStyle"],
   },
   {
-    id: 13,
-    name: "Robe Sequins Or",
-    category: "robes",
-    price: 2890,
-    description: "Robe de soirée entièrement brodée de sequins dorés, coupe ajustée",
-    colors: ["Or"],
-    sizes: ["XS", "S", "M", "L"],
-    material: "Base stretch, sequins cousus main",
-    image: robeSequinsOr,
-    featured: true,
-    tags: ["#GoldenGlam", "#PartyDress"],
-  },
-  {
-    id: 14,
+    id: 12,
     name: "Ensemble Noir Sophistiqué",
     category: "blazers",
     price: 2190,
@@ -306,32 +279,7 @@ const PRODUCTS: Product[] = [
     tags: ["#PowerDressing", "#AllBlack"],
   },
   {
-    id: 15,
-    name: "Robe Blanche Élégante",
-    category: "robes",
-    price: 1990,
-    description: "Robe midi blanche, coupe fluide avec détails raffinés",
-    colors: ["Blanc"],
-    sizes: ["S", "M", "L"],
-    material: "Crêpe de qualité supérieure",
-    image: robeBlanc,
-    featured: true,
-    tags: ["#WhiteElegance", "#SummerLuxury"],
-  },
-  {
-    id: 16,
-    name: "Robe Noire Soirée",
-    category: "robes",
-    price: 2490,
-    description: "Robe longue noire pour occasions spéciales, silhouette épurée",
-    colors: ["Noir"],
-    sizes: ["XS", "S", "M", "L"],
-    material: "Jersey stretch luxe, doublure satin",
-    image: robeNoireSoiree,
-    tags: ["#EveningGown", "#TimelessBlack"],
-  },
-  {
-    id: 17,
+    id: 13,
     name: "Top Dentelle Noir",
     category: "accessories",
     price: 790,
@@ -341,6 +289,18 @@ const PRODUCTS: Product[] = [
     material: "Dentelle française, doublure optionnelle",
     image: topDentelleNoir,
     tags: ["#LaceTop", "#SexyChic"],
+  },
+  {
+    id: 14,
+    name: "Legging Thermique Premium",
+    category: "pantalons",
+    price: 490,
+    description: "Legging gainant doublé polaire, confort et chaleur optimaux",
+    colors: ["Noir"],
+    sizes: ["S", "M", "L", "XL"],
+    material: "Polyamide technique, doublure polaire",
+    image: leggingsThermal,
+    tags: ["#ComfortStyle", "#WinterEssential"],
   },
 ];
 
@@ -637,31 +597,75 @@ END:VCARD`;
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 * index }}
                 onClick={() => setSelectedProduct(product)}
-                className="w-64 flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer"
+                className="w-72 flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer group"
                 style={{
                   backgroundColor: KS_COLORS.card,
-                  border: `1px solid ${KS_COLORS.gold}20`,
+                  border: `2px solid ${KS_COLORS.gold}30`,
+                  boxShadow: `0 8px 32px ${KS_COLORS.gold}15`,
                 }}
               >
-                <div className="relative h-80">
+                <div className="relative h-96">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div
                     className="absolute inset-0"
                     style={{
-                      background: `linear-gradient(to top, ${KS_COLORS.background}90 0%, transparent 50%)`,
+                      background: `linear-gradient(to top, ${KS_COLORS.background} 0%, ${KS_COLORS.background}60 30%, transparent 60%)`,
                     }}
                   />
+                  
+                  {/* Featured badge */}
+                  <div
+                    className="absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5"
+                    style={{
+                      background: `linear-gradient(135deg, ${KS_COLORS.gold} 0%, ${KS_COLORS.goldDark} 100%)`,
+                      color: KS_COLORS.background,
+                      boxShadow: `0 4px 12px ${KS_COLORS.gold}40`,
+                    }}
+                  >
+                    <Crown size={12} />
+                    Premium
+                  </div>
+                  
+                  {/* Video indicator */}
+                  {product.video && (
+                    <div
+                      className="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1"
+                      style={{
+                        backgroundColor: "rgba(0,0,0,0.7)",
+                        color: "white",
+                        backdropFilter: "blur(4px)",
+                      }}
+                    >
+                      <Play size={10} fill="currentColor" />
+                      Vidéo
+                    </div>
+                  )}
+                  
                   <div className="absolute bottom-4 left-4 right-4">
-                    <h3 className="font-semibold mb-1" style={{ color: KS_COLORS.text }}>
+                    <h3 className="font-bold text-lg mb-1" style={{ color: KS_COLORS.text }}>
                       {product.name}
                     </h3>
-                    <p className="text-lg font-bold" style={{ color: KS_COLORS.gold }}>
-                      {product.price.toLocaleString()} MAD
+                    <p className="text-sm mb-2 opacity-80 line-clamp-1" style={{ color: KS_COLORS.textMuted }}>
+                      {product.description}
                     </p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xl font-bold" style={{ color: KS_COLORS.gold }}>
+                        {product.price.toLocaleString()} MAD
+                      </p>
+                      <div 
+                        className="px-3 py-1.5 rounded-full text-xs font-medium"
+                        style={{
+                          backgroundColor: KS_COLORS.gold + "20",
+                          color: KS_COLORS.gold,
+                        }}
+                      >
+                        Voir →
+                      </div>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -717,46 +721,74 @@ END:VCARD`;
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05 * index }}
+              whileHover={{ y: -4 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setSelectedProduct(product)}
-              className="rounded-xl overflow-hidden cursor-pointer"
+              className="rounded-2xl overflow-hidden cursor-pointer group"
               style={{
                 backgroundColor: KS_COLORS.card,
-                border: `1px solid ${KS_COLORS.gold}15`,
+                border: `1px solid ${KS_COLORS.gold}20`,
+                boxShadow: `0 4px 20px ${KS_COLORS.background}`,
               }}
             >
               <div className="relative aspect-[3/4]">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: `linear-gradient(to top, ${KS_COLORS.background}80 0%, transparent 40%)`,
+                    background: `linear-gradient(to top, ${KS_COLORS.background} 0%, ${KS_COLORS.background}40 25%, transparent 50%)`,
                   }}
                 />
+                
                 {/* Video indicator badge */}
                 {product.video && (
                   <div
-                    className="absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1"
+                    className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1"
                     style={{
                       backgroundColor: KS_COLORS.gold,
                       color: KS_COLORS.background,
+                      boxShadow: `0 2px 8px ${KS_COLORS.gold}50`,
                     }}
                   >
                     <Play size={10} fill="currentColor" />
                     Vidéo
                   </div>
                 )}
-              </div>
-              <div className="p-3">
-                <h3 className="font-medium text-sm mb-1 line-clamp-1" style={{ color: KS_COLORS.text }}>
-                  {product.name}
-                </h3>
-                <p className="font-bold" style={{ color: KS_COLORS.gold }}>
-                  {product.price.toLocaleString()} MAD
-                </p>
+                
+                {/* Featured indicator */}
+                {product.featured && !product.video && (
+                  <div
+                    className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
+                    style={{
+                      backgroundColor: KS_COLORS.gold,
+                      color: KS_COLORS.background,
+                    }}
+                  >
+                    <Crown size={12} />
+                  </div>
+                )}
+                
+                {/* Quick info overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <h3 className="font-semibold text-sm mb-0.5 line-clamp-1" style={{ color: KS_COLORS.text }}>
+                    {product.name}
+                  </h3>
+                  <div className="flex items-center justify-between">
+                    <p className="font-bold text-base" style={{ color: KS_COLORS.gold }}>
+                      {product.price.toLocaleString()} MAD
+                    </p>
+                    <span 
+                      className="text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                      style={{ color: KS_COLORS.goldLight }}
+                    >
+                      Voir →
+                    </span>
+                  </div>
+                </div>
               </div>
             </motion.div>
           ))}
