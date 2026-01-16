@@ -137,3 +137,6 @@ verify_jwt = false
 
 [functions.create-promo-pack-payment]
 verify_jwt = false
+
+[functions.send-admin-alert]
+verify_jwt = false
