@@ -68,8 +68,8 @@ const KS_COLORS = {
   accent: "#1C1C1C",
 };
 
-// TikTok Icon Component
-const TikTokIcon = ({ size = 20, className = "" }: { size?: number; className?: string }) => (
+// Snapchat Icon Component
+const SnapchatIcon = ({ size = 20, className = "" }: { size?: number; className?: string }) => (
   <svg
     viewBox="0 0 24 24"
     width={size}
@@ -77,7 +77,7 @@ const TikTokIcon = ({ size = 20, className = "" }: { size?: number; className?: 
     fill="currentColor"
     className={className}
   >
-    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z" />
+    <path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12 1.033-.301.165-.088.344-.104.464-.104.182 0 .359.029.509.09.45.149.734.479.734.838.015.449-.39.839-1.213 1.168-.089.029-.209.075-.344.119-.45.135-1.139.36-1.333.81-.09.224-.061.524.12.868l.015.015c.06.136 1.526 3.475 4.791 4.014.255.044.435.27.42.509 0 .075-.015.149-.045.225-.24.569-1.273.988-3.146 1.271-.059.091-.12.375-.164.57-.029.179-.074.36-.134.553-.076.271-.27.405-.555.405h-.03c-.135 0-.313-.031-.538-.074-.36-.075-.765-.135-1.273-.135-.3 0-.599.015-.913.074-.6.104-1.123.464-1.723.884-.853.599-1.826 1.288-3.294 1.288-.06 0-.119-.015-.18-.015h-.149c-1.468 0-2.427-.675-3.279-1.288-.599-.42-1.107-.779-1.707-.884-.314-.045-.629-.074-.928-.074-.54 0-.958.089-1.272.149-.211.043-.391.074-.54.074-.374 0-.523-.224-.583-.42-.061-.192-.09-.389-.135-.567-.046-.181-.105-.494-.166-.57-1.918-.222-2.95-.642-3.189-1.226-.031-.063-.052-.15-.055-.225-.015-.243.165-.465.42-.509 3.264-.54 4.73-3.879 4.791-4.02l.016-.029c.18-.345.224-.645.119-.869-.195-.434-.884-.658-1.332-.809-.121-.029-.24-.074-.346-.119-.809-.314-1.214-.705-1.199-1.168 0-.313.24-.675.749-.853.15-.061.33-.09.51-.09.151 0 .3.029.45.074.36.12.735.27 1.05.27.18 0 .315-.029.391-.074-.015-.18-.029-.344-.046-.509-.015-.18-.015-.3-.03-.061-.106-1.634-.229-3.681.296-4.873C7.872 1.008 11.266.793 12.206.793" />
   </svg>
 );
 
@@ -89,7 +89,7 @@ const CONTACT = {
   phone: "+212 7 00 17 68 87",
   whatsapp: "212700176887",
   instagram: "khokha.signature",
-  tiktok: "khokha865",
+  snapchat: "khokha865",
   location: "Jenane Awerad Résidence les Cristaux",
   locationDetail: "À côté GIA Beauty, en face Coffee Shop",
   city: "Marrakech, Maroc",
@@ -111,7 +111,6 @@ interface Product {
   id: number;
   name: string;
   category: string;
-  price: number;
   description: string;
   colors: string[];
   sizes: string[];
@@ -128,7 +127,6 @@ const PRODUCTS: Product[] = [
     id: 1,
     name: "Robe Sequins Or",
     category: "robes",
-    price: 2890,
     description: "Robe de soirée entièrement brodée de sequins dorés, coupe ajustée glamour",
     colors: ["Or"],
     sizes: ["XS", "S", "M", "L"],
@@ -142,7 +140,6 @@ const PRODUCTS: Product[] = [
     id: 2,
     name: "Blazer Oversized Camel",
     category: "blazers",
-    price: 1690,
     description: "Blazer surdimensionné en laine cachemire, coupe décontractée chic",
     colors: ["Camel"],
     sizes: ["S", "M", "L"],
@@ -156,7 +153,6 @@ const PRODUCTS: Product[] = [
     id: 3,
     name: "Manteau Fourrure Bordeaux",
     category: "blazers",
-    price: 3890,
     description: "Manteau court en fausse fourrure premium, toucher ultra-doux",
     colors: ["Bordeaux"],
     sizes: ["S", "M", "L"],
@@ -170,7 +166,6 @@ const PRODUCTS: Product[] = [
     id: 4,
     name: "Ensemble Cuir Noir Chic",
     category: "pantalons",
-    price: 2290,
     description: "Ensemble pantalon cuir et veste assortie, coupe structurée moderne",
     colors: ["Noir"],
     sizes: ["S", "M", "L"],
@@ -183,7 +178,6 @@ const PRODUCTS: Product[] = [
     id: 5,
     name: "Robe Blanche Élégante",
     category: "robes",
-    price: 1990,
     description: "Robe midi blanche, coupe fluide avec détails raffinés",
     colors: ["Blanc"],
     sizes: ["S", "M", "L"],
@@ -196,7 +190,6 @@ const PRODUCTS: Product[] = [
     id: 6,
     name: "Pantalon Cuir Noir",
     category: "pantalons",
-    price: 1490,
     description: "Pantalon balloon en simili cuir premium, taille élastique confort",
     colors: ["Noir"],
     sizes: ["S", "M", "L", "XL"],
@@ -208,7 +201,6 @@ const PRODUCTS: Product[] = [
     id: 7,
     name: "Top Shimmer Cristaux",
     category: "accessories",
-    price: 890,
     description: "Top transparent orné de cristaux, effet scintillant",
     colors: ["Noir"],
     sizes: ["S", "M", "L"],
@@ -220,7 +212,6 @@ const PRODUCTS: Product[] = [
     id: 8,
     name: "Veste Tweed Noir & Or",
     category: "blazers",
-    price: 1790,
     description: "Veste courte style Chanel, tweed noir avec fils dorés, noeud décoratif",
     colors: ["Noir/Or"],
     sizes: ["S", "M", "L"],
@@ -233,7 +224,6 @@ const PRODUCTS: Product[] = [
     id: 9,
     name: "Robe Noire Soirée",
     category: "robes",
-    price: 2490,
     description: "Robe longue noire pour occasions spéciales, silhouette épurée",
     colors: ["Noir"],
     sizes: ["XS", "S", "M", "L"],
@@ -245,7 +235,6 @@ const PRODUCTS: Product[] = [
     id: 10,
     name: "Robe Noire Élégante",
     category: "robes",
-    price: 1990,
     description: "Robe courte noire avec poches structurées, coupe ajustée, col perles",
     colors: ["Noir"],
     sizes: ["S", "M", "L"],
@@ -258,7 +247,6 @@ const PRODUCTS: Product[] = [
     id: 11,
     name: "Jupe Plissée Élégante",
     category: "robes",
-    price: 1290,
     description: "Jupe mi-longue plissée, mouvement fluide et silhouette raffinée",
     colors: ["Camel", "Noir"],
     sizes: ["S", "M", "L"],
@@ -270,7 +258,6 @@ const PRODUCTS: Product[] = [
     id: 12,
     name: "Ensemble Noir Sophistiqué",
     category: "blazers",
-    price: 2190,
     description: "Ensemble veste et pantalon noir, coupe épurée et élégante",
     colors: ["Noir"],
     sizes: ["S", "M", "L", "XL"],
@@ -282,7 +269,6 @@ const PRODUCTS: Product[] = [
     id: 13,
     name: "Top Dentelle Noir",
     category: "accessories",
-    price: 790,
     description: "Top en dentelle fine, transparent et sensuel, finitions soignées",
     colors: ["Noir"],
     sizes: ["S", "M", "L"],
@@ -294,7 +280,6 @@ const PRODUCTS: Product[] = [
     id: 14,
     name: "Legging Thermique Premium",
     category: "pantalons",
-    price: 490,
     description: "Legging gainant doublé polaire, confort et chaleur optimaux",
     colors: ["Noir"],
     sizes: ["S", "M", "L", "XL"],
@@ -325,7 +310,7 @@ TEL;TYPE=CELL:${CONTACT.phone}
 ADR;TYPE=WORK:;;${CONTACT.location};${CONTACT.city};;;Maroc
 GEO:${CONTACT.gps.lat};${CONTACT.gps.lng}
 URL;TYPE=INSTAGRAM:https://instagram.com/${CONTACT.instagram}
-URL;TYPE=TIKTOK:https://tiktok.com/@${CONTACT.tiktok}
+URL;TYPE=SNAPCHAT:https://www.snapchat.com/add/${CONTACT.snapchat}
 NOTE:${CONTACT.tagline} - ${CONTACT.locationDetail}
 END:VCARD`;
 
@@ -352,8 +337,8 @@ END:VCARD`;
     window.open(`https://instagram.com/${CONTACT.instagram}`, "_blank");
   };
 
-  const handleTikTok = () => {
-    window.open(`https://tiktok.com/@${CONTACT.tiktok}`, "_blank");
+  const handleSnapchat = () => {
+    window.open(`https://www.snapchat.com/add/${CONTACT.snapchat}`, "_blank");
   };
 
   const handleMaps = () => {
@@ -362,7 +347,7 @@ END:VCARD`;
 
   const handleProductInquiry = (product: typeof PRODUCTS[0]) => {
     const message = encodeURIComponent(
-      `Bonjour ! Je suis intéressé(e) par "${product.name}" à ${product.price} MAD. Est-il disponible en stock ? 👗`
+      `Bonjour ! Je suis intéressé(e) par "${product.name}". Est-il disponible en stock ? 👗`
     );
     window.open(`https://wa.me/${CONTACT.whatsapp}?text=${message}`, "_blank");
   };
@@ -527,16 +512,15 @@ END:VCARD`;
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={handleTikTok}
+            onClick={handleSnapchat}
             className="flex flex-col items-center gap-2 py-4 rounded-xl"
             style={{
-              backgroundColor: KS_COLORS.card,
-              border: `1px solid ${KS_COLORS.gold}30`,
+              backgroundColor: "#FFFC00",
             }}
           >
-            <TikTokIcon size={20} className="text-white" />
-            <span className="text-xs" style={{ color: KS_COLORS.text }}>
-              TikTok
+            <SnapchatIcon size={20} className="text-black" />
+            <span className="text-xs font-medium" style={{ color: "#000000" }}>
+              Snapchat
             </span>
           </motion.button>
         </div>
@@ -653,8 +637,8 @@ END:VCARD`;
                       {product.description}
                     </p>
                     <div className="flex items-center justify-between">
-                      <p className="text-xl font-bold" style={{ color: KS_COLORS.gold }}>
-                        {product.price.toLocaleString()} MAD
+                      <p className="text-sm font-medium" style={{ color: KS_COLORS.goldLight }}>
+                        Prix en boutique
                       </p>
                       <div 
                         className="px-3 py-1.5 rounded-full text-xs font-medium"
@@ -778,8 +762,8 @@ END:VCARD`;
                     {product.name}
                   </h3>
                   <div className="flex items-center justify-between">
-                    <p className="font-bold text-base" style={{ color: KS_COLORS.gold }}>
-                      {product.price.toLocaleString()} MAD
+                    <p className="text-xs font-medium" style={{ color: KS_COLORS.goldLight }}>
+                      Prix en boutique
                     </p>
                     <span 
                       className="text-xs opacity-0 group-hover:opacity-100 transition-opacity"
@@ -854,8 +838,8 @@ END:VCARD`;
                 <h2 className="text-2xl font-bold mb-2" style={{ color: KS_COLORS.text }}>
                   {selectedProduct.name}
                 </h2>
-                <p className="text-2xl font-bold mb-4" style={{ color: KS_COLORS.gold }}>
-                  {selectedProduct.price.toLocaleString()} MAD
+                <p className="text-lg font-medium mb-4" style={{ color: KS_COLORS.goldLight }}>
+                  Prix disponible en boutique ou sur demande
                 </p>
 
                 <p className="text-sm mb-4" style={{ color: KS_COLORS.textMuted }}>
