@@ -10,24 +10,22 @@ interface GeoData {
   countryCode: string;
   city: string;
   timezone: string;
-  currency: "EUR" | "MAD" | "USD" | "GBP";
+  currency: "EUR" | "USD" | "GBP";
   language: string;
   isLoading: boolean;
   error: string | null;
 }
 
-// Country to currency mapping
-const countryCurrencyMap: Record<string, "EUR" | "MAD" | "USD" | "GBP"> = {
-  // Morocco
-  MA: "MAD",
+// Country to currency mapping - International focus
+const countryCurrencyMap: Record<string, "EUR" | "USD" | "GBP"> = {
+  // UK
+  GB: "GBP",
   // Europe - EUR
   FR: "EUR", DE: "EUR", ES: "EUR", IT: "EUR", NL: "EUR", BE: "EUR", PT: "EUR",
   AT: "EUR", IE: "EUR", FI: "EUR", GR: "EUR", LU: "EUR", SK: "EUR", SI: "EUR",
-  EE: "EUR", LV: "EUR", LT: "EUR", CY: "EUR", MT: "EUR",
-  // UK
-  GB: "GBP",
-  // US and others default to USD
-  US: "USD", CA: "USD",
+  EE: "EUR", LV: "EUR", LT: "EUR", CY: "EUR", MT: "EUR", MA: "EUR",
+  // Americas - USD
+  US: "USD", CA: "USD", MX: "USD", BR: "USD", AR: "USD", CO: "USD", CL: "USD", PE: "USD",
 };
 
 // Country to language mapping
@@ -47,8 +45,8 @@ export function useGeolocalization() {
     countryCode: "",
     city: "",
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    currency: "MAD",
-    language: "fr",
+    currency: "EUR", // Default to EUR for international
+    language: "en",  // Default to English for international
     isLoading: true,
     error: null,
   });

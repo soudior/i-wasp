@@ -1,11 +1,11 @@
 /**
  * CurrencyContext - Global Currency Management with Geolocation Auto-Detection
- * Supports EUR (France/EU), MAD (Morocco/MENA), USD, GBP
+ * Supports EUR (Europe), USD (Americas), GBP (UK) - International focus
  */
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-export type Currency = "EUR" | "MAD";
+export type Currency = "EUR" | "USD" | "GBP";
 
 interface CurrencyContextType {
   currency: Currency;
@@ -13,8 +13,6 @@ interface CurrencyContextType {
   toggleCurrency: () => void;
   formatPrice: (amountCents: number) => string;
   formatAmount: (amount: number) => string;
-  convertToMAD: (eurAmount: number) => number;
-  convertToEUR: (madAmount: number) => number;
   region: string;
   regionLabel: string;
   currencySymbol: string;
@@ -23,15 +21,17 @@ interface CurrencyContextType {
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
-// Conversion rates (approximate)
+// Conversion rates (base: EUR)
 const CONVERSION_RATES: Record<Currency, number> = {
-  MAD: 1,
-  EUR: 10.8,  // 1 EUR = 10.8 MAD
+  EUR: 1,
+  USD: 1.08,  // 1 EUR = 1.08 USD
+  GBP: 0.85,  // 1 EUR = 0.85 GBP
 };
 
 const CURRENCY_CONFIG: Record<Currency, { symbol: string; locale: string; region: string; label: string }> = {
-  EUR: { symbol: "€", locale: "fr-FR", region: "EU", label: "Europe" },
-  MAD: { symbol: "DH", locale: "fr-MA", region: "MA", label: "Maroc" },
+  EUR: { symbol: "€", locale: "en-GB", region: "EU", label: "Europe" },
+  USD: { symbol: "$", locale: "en-US", region: "US", label: "Americas" },
+  GBP: { symbol: "£", locale: "en-GB", region: "UK", label: "United Kingdom" },
 };
 
 interface CurrencyProviderProps {
@@ -41,7 +41,10 @@ interface CurrencyProviderProps {
 export function CurrencyProvider({ children }: CurrencyProviderProps) {
   const [currency, setCurrencyState] = useState<Currency>(() => {
     const saved = localStorage.getItem("iwasp-currency");
-    return (saved as Currency) || "MAD";
+    if (saved && ["EUR", "USD", "GBP"].includes(saved)) {
+      return saved as Currency;
+    }
+    return "EUR"; // Default to EUR for international
   });
   const [isAutoDetected, setIsAutoDetected] = useState(false);
 
@@ -61,8 +64,19 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
         const data = await response.json();
         const countryCode = data.country_code;
         
-        // Map country to currency (EUR for all non-Morocco countries)
-        const detectedCurrency: Currency = countryCode === "MA" ? "MAD" : "EUR";
+        // Map country to currency - International focus
+        let detectedCurrency: Currency = "EUR"; // Default
+        
+        // UK
+        if (countryCode === "GB") {
+          detectedCurrency = "GBP";
+        }
+        // Americas
+        else if (["US", "CA", "MX", "BR", "AR", "CO", "CL", "PE"].includes(countryCode)) {
+          detectedCurrency = "USD";
+        }
+        // Rest of the world defaults to EUR
+        
         setCurrencyState(detectedCurrency);
         setIsAutoDetected(true);
         localStorage.setItem("iwasp-currency", detectedCurrency);
@@ -86,37 +100,22 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
   };
 
   const toggleCurrency = () => {
-    setCurrency(currency === "MAD" ? "EUR" : "MAD");
+    const currencies: Currency[] = ["EUR", "USD", "GBP"];
+    const currentIndex = currencies.indexOf(currency);
+    const nextIndex = (currentIndex + 1) % currencies.length;
+    setCurrency(currencies[nextIndex]);
   };
 
-  // Convert EUR to MAD
-  const convertToMAD = (eurAmount: number): number => {
-    return Math.round(eurAmount * CONVERSION_RATES.EUR);
+  // Convert EUR to target currency
+  const convertFromEUR = (eurAmount: number, targetCurrency: Currency): number => {
+    return Math.round(eurAmount * CONVERSION_RATES[targetCurrency] * 100) / 100;
   };
 
-  // Convert MAD to EUR
-  const convertToEUR = (madAmount: number): number => {
-    return Math.round((madAmount / CONVERSION_RATES.EUR) * 100) / 100;
-  };
-
-  // Convert amount from MAD to target currency
-  const convertFromMAD = (madAmount: number, targetCurrency: Currency): number => {
-    if (targetCurrency === "MAD") return madAmount;
-    return Math.round((madAmount / CONVERSION_RATES[targetCurrency]) * 100) / 100;
-  };
-
-  // Format price from cents
+  // Format price from cents (prices stored in EUR cents)
   const formatPrice = (amountCents: number): string => {
-    const madAmount = amountCents / 100;
-    const amount = convertFromMAD(madAmount, currency);
+    const eurAmount = amountCents / 100;
+    const amount = convertFromEUR(eurAmount, currency);
     const config = CURRENCY_CONFIG[currency];
-    
-    if (currency === "MAD") {
-      return `${new Intl.NumberFormat(config.locale, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(amount)} DH`;
-    }
     
     return new Intl.NumberFormat(config.locale, {
       style: "currency",
@@ -126,17 +125,10 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
     }).format(amount);
   };
 
-  // Format a plain amount (assumed to be in MAD)
-  const formatAmount = (madAmount: number): string => {
-    const amount = convertFromMAD(madAmount, currency);
+  // Format a plain amount (assumed to be in EUR)
+  const formatAmount = (eurAmount: number): string => {
+    const amount = convertFromEUR(eurAmount, currency);
     const config = CURRENCY_CONFIG[currency];
-    
-    if (currency === "MAD") {
-      return `${new Intl.NumberFormat(config.locale, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(amount)} DH`;
-    }
     
     return new Intl.NumberFormat(config.locale, {
       style: "currency",
@@ -156,8 +148,6 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
         toggleCurrency,
         formatPrice,
         formatAmount,
-        convertToMAD,
-        convertToEUR,
         region: config.region,
         regionLabel: config.label,
         currencySymbol: config.symbol,
