@@ -40,6 +40,15 @@ import lookTweedJacket from "@/assets/clients/khokha-signature/look-tweed-jacket
 import leggingsThermal from "@/assets/clients/khokha-signature/leggings-thermal.png";
 import robeNoireElegante from "@/assets/clients/khokha-signature/robe-noire-elegante.png";
 
+// New product images
+import ensembleCuirNoir from "@/assets/clients/khokha-signature/products/ensemble-cuir-noir.png";
+import jupePlissee from "@/assets/clients/khokha-signature/products/jupe-plissee-elegante.png";
+import robeSequinsOr from "@/assets/clients/khokha-signature/products/robe-sequins-or.png";
+import ensembleNoirChic from "@/assets/clients/khokha-signature/products/ensemble-noir-chic.png";
+import robeBlanc from "@/assets/clients/khokha-signature/products/robe-blanche-elegante.png";
+import robeNoireSoiree from "@/assets/clients/khokha-signature/products/robe-noire-soiree.png";
+import topDentelleNoir from "@/assets/clients/khokha-signature/products/top-dentelle-noir.png";
+
 // Palette luxury fashion noir & or
 const KS_COLORS = {
   background: "#0A0A0A",
@@ -219,6 +228,94 @@ const PRODUCTS = [
     image: robeNoireElegante,
     featured: true,
     tags: ["#LittleBlackDress", "#Elegance"],
+  },
+  // New products from uploaded images
+  {
+    id: 11,
+    name: "Ensemble Cuir Noir Chic",
+    category: "pantalons",
+    price: 2290,
+    description: "Ensemble pantalon cuir et veste assortie, coupe structurée moderne",
+    colors: ["Noir"],
+    sizes: ["S", "M", "L"],
+    material: "Simili cuir premium haute qualité",
+    image: ensembleCuirNoir,
+    featured: true,
+    tags: ["#TotalLook", "#LeatherLuxury"],
+  },
+  {
+    id: 12,
+    name: "Jupe Plissée Élégante",
+    category: "robes",
+    price: 1290,
+    description: "Jupe mi-longue plissée, mouvement fluide et silhouette raffinée",
+    colors: ["Camel", "Noir"],
+    sizes: ["S", "M", "L"],
+    material: "Polyester plissé permanent",
+    image: jupePlissee,
+    tags: ["#PlissePleat", "#FeminineStyle"],
+  },
+  {
+    id: 13,
+    name: "Robe Sequins Or",
+    category: "robes",
+    price: 2890,
+    description: "Robe de soirée entièrement brodée de sequins dorés, coupe ajustée",
+    colors: ["Or"],
+    sizes: ["XS", "S", "M", "L"],
+    material: "Base stretch, sequins cousus main",
+    image: robeSequinsOr,
+    featured: true,
+    tags: ["#GoldenGlam", "#PartyDress"],
+  },
+  {
+    id: 14,
+    name: "Ensemble Noir Sophistiqué",
+    category: "blazers",
+    price: 2190,
+    description: "Ensemble veste et pantalon noir, coupe épurée et élégante",
+    colors: ["Noir"],
+    sizes: ["S", "M", "L", "XL"],
+    material: "Gabardine stretch premium",
+    image: ensembleNoirChic,
+    tags: ["#PowerDressing", "#AllBlack"],
+  },
+  {
+    id: 15,
+    name: "Robe Blanche Élégante",
+    category: "robes",
+    price: 1990,
+    description: "Robe midi blanche, coupe fluide avec détails raffinés",
+    colors: ["Blanc"],
+    sizes: ["S", "M", "L"],
+    material: "Crêpe de qualité supérieure",
+    image: robeBlanc,
+    featured: true,
+    tags: ["#WhiteElegance", "#SummerLuxury"],
+  },
+  {
+    id: 16,
+    name: "Robe Noire Soirée",
+    category: "robes",
+    price: 2490,
+    description: "Robe longue noire pour occasions spéciales, silhouette épurée",
+    colors: ["Noir"],
+    sizes: ["XS", "S", "M", "L"],
+    material: "Jersey stretch luxe, doublure satin",
+    image: robeNoireSoiree,
+    tags: ["#EveningGown", "#TimelessBlack"],
+  },
+  {
+    id: 17,
+    name: "Top Dentelle Noir",
+    category: "accessories",
+    price: 790,
+    description: "Top en dentelle fine, transparent et sensuel, finitions soignées",
+    colors: ["Noir"],
+    sizes: ["S", "M", "L"],
+    material: "Dentelle française, doublure optionnelle",
+    image: topDentelleNoir,
+    tags: ["#LaceTop", "#SexyChic"],
   },
 ];
 
