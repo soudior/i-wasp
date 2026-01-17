@@ -498,132 +498,160 @@ const ProfileExperienceSection = () => {
 };
 
 // AI Intelligence Section
-const AIIntelligenceSection = () => (
-  <section className="py-24 bg-gradient-to-br from-[#0A1931] via-[#162a4a] to-[#0A1931]">
-    <div className="container mx-auto px-6">
-      {/* Section header */}
-      <motion.div 
-        className="text-center mb-16"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeInUp}
-      >
-        <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-          L'Intelligence au <span className="text-[#D4AF37]">Coeur</span> du Réseau
-        </h2>
-        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-          Derrière chaque carte i-wasp se cache un moteur d'IA sophistiqué.
-        </p>
-      </motion.div>
+const AIIntelligenceSection = () => {
+  const steps = [
+    {
+      icon: '👤',
+      title: 'Données Brutes',
+      description: 'Saisie de vos informations, bio actuelle, et liens sociaux.',
+      bgColor: 'bg-white',
+      textColor: 'text-[#0A1931]',
+      isCenter: false
+    },
+    {
+      icon: '⚙️',
+      title: 'IA ENGINE',
+      description: '',
+      bgColor: 'bg-gradient-to-br from-[#D4AF37] to-[#C4A030]',
+      textColor: 'text-white',
+      isCenter: true,
+      features: ['Analyse Sémantique', 'Optimisation SEO', 'Prédiction Engagement']
+    },
+    {
+      icon: '✨',
+      title: 'Aura Optimisée',
+      description: 'Contenu premium, score 90+, et conseils personnalisés.',
+      bgColor: 'bg-white',
+      textColor: 'text-[#0A1931]',
+      iconBg: 'bg-[#00D9A3]',
+      isCenter: false
+    }
+  ];
 
-      {/* AI Pipeline */}
-      <motion.div 
-        className="max-w-4xl mx-auto mb-16"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={staggerContainer}
-      >
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            {
-              icon: Database,
-              title: 'Données Brutes',
-              description: 'Saisie de vos informations, bio actuelle, et liens sociaux.',
-              color: '#6b7280'
-            },
-            {
-              icon: Bot,
-              title: 'IA Engine',
-              description: 'Analyse Sémantique • Optimisation SEO • Prédiction Engagement',
-              color: '#D4AF37'
-            },
-            {
-              icon: Sparkles,
-              title: 'Aura Optimisée',
-              description: 'Contenu premium, score 90+, et conseils personnalisés.',
-              color: '#00D9A3'
-            }
-          ].map((step, i) => (
-            <motion.div 
-              key={i} 
-              variants={fadeInUp}
-              className="relative"
-            >
-              <div className="bg-white/5 backdrop-blur rounded-2xl p-6 border border-white/10 text-center h-full">
-                <div 
-                  className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-                  style={{ backgroundColor: `${step.color}20` }}
-                >
-                  <step.icon className="w-8 h-8" style={{ color: step.color }} />
-                </div>
-                <h4 className="text-white font-bold text-lg mb-2">{step.title}</h4>
-                <p className="text-gray-400 text-sm">{step.description}</p>
-              </div>
-              {i < 2 && (
-                <div className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 z-10">
-                  <ChevronRight className="w-6 h-6 text-[#D4AF37]" />
-                </div>
-              )}
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Stats */}
-      <motion.div 
-        className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={staggerContainer}
-      >
+  return (
+    <section className="py-24 bg-[#FBFBFB]">
+      <div className="container mx-auto px-6">
+        {/* Section header */}
         <motion.div 
+          className="text-center mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
           variants={fadeInUp}
-          className="bg-white/5 backdrop-blur rounded-2xl p-6 border border-white/10"
         >
-          <h4 className="text-white font-bold mb-4">Efficacité de la Stack</h4>
-          <div className="space-y-4">
-            {[
-              { label: 'Vitesse NFC', value: 99.9, color: '#00D9A3' },
-              { label: 'Précision IA', value: 94, color: '#D4AF37' },
-              { label: 'Uptime Plateforme', value: 100, color: '#00D9A3' }
-            ].map((stat, i) => (
-              <div key={i}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-400">{stat.label}</span>
-                  <span className="text-white font-bold">{stat.value}%</span>
-                </div>
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <motion.div 
-                    className="h-full rounded-full"
-                    style={{ backgroundColor: stat.color }}
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${stat.value}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: i * 0.2 }}
-                  />
-                </div>
-              </div>
+          <h2 className="text-4xl md:text-5xl font-black text-[#0A1931] mb-4">
+            L'Intelligence au <span className="text-[#D4AF37]">Coeur</span> du Réseau
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            Derrière chaque carte i-wasp se cache un moteur d'IA sophistiqué.
+          </p>
+        </motion.div>
+
+        {/* AI Pipeline - 3 step process */}
+        <motion.div 
+          className="max-w-5xl mx-auto mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          <div className="grid md:grid-cols-3 gap-6 items-stretch">
+            {steps.map((step, i) => (
+              <motion.div 
+                key={i} 
+                variants={fadeInUp}
+                className="relative"
+              >
+                {step.isCenter ? (
+                  // Golden IA ENGINE card
+                  <div className={`${step.bgColor} rounded-3xl p-8 text-center h-full shadow-xl`}>
+                    <div className="w-16 h-16 rounded-2xl bg-[#0A1931] mx-auto mb-6 flex items-center justify-center">
+                      <span className="text-2xl">⚙️</span>
+                    </div>
+                    <h4 className="text-white font-black text-2xl mb-6 tracking-wider">{step.title}</h4>
+                    <div className="space-y-3">
+                      {step.features?.map((feature, fi) => (
+                        <div key={fi} className="flex items-center gap-3 text-left">
+                          <Check className="w-5 h-5 text-[#00D9A3] flex-shrink-0" />
+                          <span className="text-white/90 text-sm">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  // Regular step card
+                  <div className={`${step.bgColor} rounded-3xl p-8 text-center h-full shadow-lg border border-gray-100`}>
+                    <div className={`w-16 h-16 rounded-2xl ${i === 2 ? 'bg-[#00D9A3]' : 'bg-[#0A1931]/10'} mx-auto mb-6 flex items-center justify-center`}>
+                      <span className="text-2xl">{step.icon}</span>
+                    </div>
+                    <h4 className={`${step.textColor} font-bold text-xl mb-3`}>{step.title}</h4>
+                    <p className="text-gray-500 text-sm">{step.description}</p>
+                  </div>
+                )}
+              </motion.div>
             ))}
           </div>
         </motion.div>
 
+        {/* Stats Section */}
         <motion.div 
-          variants={fadeInUp}
-          className="bg-gradient-to-br from-[#D4AF37]/20 to-[#00D9A3]/20 backdrop-blur rounded-2xl p-6 border border-[#D4AF37]/30 flex flex-col items-center justify-center text-center"
+          className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
         >
-          <div className="text-5xl mb-4">🔝</div>
-          <h4 className="text-white font-bold text-xl mb-2">Zéro Compromis</h4>
-          <p className="text-gray-300">
-            Une technologie bâtie pour le futur du networking au Maroc.
-          </p>
+          {/* Efficacité de la Stack */}
+          <motion.div 
+            variants={fadeInUp}
+            className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100"
+          >
+            <h4 className="text-[#0A1931] font-black text-xl mb-6">Efficacité de la Stack</h4>
+            <div className="space-y-6">
+              {[
+                { label: 'VITESSE NFC', value: 99.9, color: '#00D9A3' },
+                { label: 'PRÉCISION IA', value: 94, color: '#D4AF37' },
+                { label: 'UPTIME PLATEFORME', value: 100, color: '#00D9A3' }
+              ].map((stat, i) => (
+                <div key={i}>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-500 font-medium tracking-wider">{stat.label}</span>
+                    <span className="font-bold" style={{ color: stat.color }}>{stat.value}%</span>
+                  </div>
+                  <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <motion.div 
+                      className="h-full rounded-full"
+                      style={{ backgroundColor: stat.color }}
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${stat.value}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1, delay: i * 0.2 }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Zéro Compromis */}
+          <motion.div 
+            variants={fadeInUp}
+            className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 flex flex-col items-center justify-center text-center"
+          >
+            <div className="mb-4">
+              <ArrowRight className="w-12 h-12 text-[#0A1931] rotate-[-90deg]" />
+            </div>
+            <span className="text-[#0A1931] font-black text-2xl mb-2">TOP</span>
+            <h4 className="text-[#0A1931] font-black text-2xl mb-3">Zéro Compromis</h4>
+            <p className="text-gray-500">
+              Une technologie bâtie pour le futur du networking au Maroc.
+            </p>
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </div>
-  </section>
-);
+      </div>
+    </section>
+  );
+};
 
 // Footer
 const Footer = () => (
