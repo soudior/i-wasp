@@ -564,6 +564,23 @@ export function AllClientsWidget() {
                   </div>
                 </div>
 
+                {/* Open card button for cards with slug */}
+                {client.source === 'card' && client.slug && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`/card/${client.slug}`, '_blank');
+                    }}
+                    className="h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ color: GOTHAM.gold }}
+                    title="Voir la carte publique"
+                  >
+                    <ExternalLink size={14} />
+                  </Button>
+                )}
+
                 {/* Meta */}
                 <div className="text-right flex-shrink-0">
                   <p className="text-[10px]" style={{ color: client.sourceColor }}>
