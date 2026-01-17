@@ -62,6 +62,7 @@ import { fr } from "date-fns/locale";
 import { GlobalSearchModal } from "@/components/admin/GlobalSearchModal";
 import { PushNotificationsWidget } from "@/components/admin/PushNotificationsWidget";
 import { AllClientsWidget } from "@/components/admin/AllClientsWidget";
+import { ClientDataExportImport } from "@/components/admin/ClientDataExportImport";
 
 // Gotham color palette
 const GOTHAM = {
@@ -790,9 +791,12 @@ function AdminDashboardContent() {
           </Card>
         </div>
 
-        {/* All Clients Widget */}
-        <section>
-          <AllClientsWidget />
+        {/* All Clients & Export/Import Grid */}
+        <section className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <AllClientsWidget />
+          </div>
+          <ClientDataExportImport />
         </section>
 
         {/* Quick Actions Grid */}
