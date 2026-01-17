@@ -26,6 +26,7 @@ import {
   UserPlus,
   Crown,
   Sparkles,
+  Edit2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow, format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { ClientEditModal } from "./ClientEditModal";
 
 // Gotham colors
 const GOTHAM = {
@@ -75,6 +77,11 @@ export function AllClientsWidget() {
   const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [editModal, setEditModal] = useState<{ open: boolean; id: string; type: 'card' | 'website' }>({
+    open: false,
+    id: '',
+    type: 'card',
+  });
 
   // Hardcoded premium client cards (not in database)
   const HARDCODED_CLIENTS: UnifiedClient[] = [
@@ -234,6 +241,21 @@ export function AllClientsWidget() {
       slug: 'autoschluessel',
       isPremium: true,
       extra: { type: 'hardcoded', description: 'Service Clé Auto' },
+    },
+    // Website clients
+    {
+      id: 'hardcoded-website-lamaisoncupcake',
+      name: 'La Maison Cupcake (Site)',
+      email: 'contact@lamaisoncupcake.com',
+      company: 'La Maison Cupcake',
+      source: 'website',
+      sourceLabel: 'Site Web',
+      sourceIcon: Globe,
+      sourceColor: GOTHAM.purple,
+      createdAt: new Date('2025-01-08'),
+      slug: 'lamaisoncupcake',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Site vitrine pâtisserie', url: 'https://lamaisoncupcake.com' },
     },
   ];
 
@@ -564,6 +586,28 @@ export function AllClientsWidget() {
                   </div>
                 </div>
 
+                {/* Edit button for editable clients */}
+                {(client.source === 'card' || client.source === 'website') && !client.id.startsWith('hardcoded') && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const realId = client.id.replace('card-', '').replace('web-', '');
+                      setEditModal({ 
+                        open: true, 
+                        id: realId, 
+                        type: client.source as 'card' | 'website' 
+                      });
+                    }}
+                    className="h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ color: GOTHAM.info }}
+                    title="Modifier"
+                  >
+                    <Edit2 size={14} />
+                  </Button>
+                )}
+
                 {/* Open card button for cards with slug */}
                 {client.source === 'card' && client.slug && (
                   <Button
@@ -576,6 +620,23 @@ export function AllClientsWidget() {
                     className="h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ color: GOTHAM.gold }}
                     title="Voir la carte publique"
+                  >
+                    <ExternalLink size={14} />
+                  </Button>
+                )}
+
+                {/* Open website for website clients */}
+                {client.source === 'website' && client.extra?.url && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(client.extra?.url, '_blank');
+                    }}
+                    className="h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ color: GOTHAM.purple }}
+                    title="Voir le site"
                   >
                     <ExternalLink size={14} />
                   </Button>
@@ -641,6 +702,14 @@ export function AllClientsWidget() {
           </span>
         </div>
       </CardContent>
+
+      {/* Edit Modal */}
+      <ClientEditModal
+        open={editModal.open}
+        onClose={() => setEditModal({ open: false, id: '', type: 'card' })}
+        clientId={editModal.id}
+        clientType={editModal.type}
+      />
     </Card>
   );
 }

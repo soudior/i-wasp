@@ -6,6 +6,7 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import * as XLSX from "xlsx";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Download,
@@ -524,6 +525,170 @@ export function ClientDataExportImport() {
     setTimeout(() => handleExportOrders(), 1000);
   };
 
+  // ============= EXCEL EXPORT WITH FORMATTING =============
+  const handleExportExcel = () => {
+    if (!exportData) {
+      toast.error('Aucune donnée à exporter');
+      return;
+    }
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+
+    // Cards sheet
+    if (exportData.cards.length > 0) {
+      const cardsData = exportData.cards.map(card => ({
+        'Prénom': card.first_name,
+        'Nom': card.last_name,
+        'Email': card.email || '',
+        'Téléphone': card.phone || '',
+        'Entreprise': card.company || '',
+        'Poste': card.title || '',
+        'LinkedIn': card.linkedin || '',
+        'WhatsApp': card.whatsapp || '',
+        'Instagram': card.instagram || '',
+        'Site Web': card.website || '',
+        'Ville': card.location || '',
+        'Slogan': card.tagline || '',
+        'Vues': card.view_count || 0,
+        'URL Carte': `https://i-wasp.lovable.app/card/${card.slug}`,
+        'Créé le': new Date(card.created_at).toLocaleDateString('fr-FR'),
+      }));
+      
+      const wsCards = XLSX.utils.json_to_sheet(cardsData);
+      
+      // Set column widths
+      wsCards['!cols'] = [
+        { wch: 12 }, { wch: 15 }, { wch: 25 }, { wch: 15 },
+        { wch: 20 }, { wch: 15 }, { wch: 30 }, { wch: 15 },
+        { wch: 15 }, { wch: 25 }, { wch: 12 }, { wch: 25 },
+        { wch: 8 }, { wch: 40 }, { wch: 12 },
+      ];
+      
+      XLSX.utils.book_append_sheet(wb, wsCards, 'Cartes NFC');
+    }
+
+    // Leads sheet
+    if (exportData.leads.length > 0) {
+      const leadsData = exportData.leads.map(lead => ({
+        'Nom': lead.name || '',
+        'Email': lead.email || '',
+        'Téléphone': lead.phone || '',
+        'Entreprise': lead.company || '',
+        'Message': lead.message || '',
+        'Source': lead.source || '',
+        'Statut': lead.status || '',
+        'Score': lead.lead_score || 0,
+        'Ville': lead.location_city || '',
+        'Pays': lead.location_country || '',
+        'Consentement': lead.consent_given ? 'Oui' : 'Non',
+        'Créé le': new Date(lead.created_at).toLocaleDateString('fr-FR'),
+      }));
+      
+      const wsLeads = XLSX.utils.json_to_sheet(leadsData);
+      wsLeads['!cols'] = [
+        { wch: 20 }, { wch: 25 }, { wch: 15 }, { wch: 20 },
+        { wch: 40 }, { wch: 10 }, { wch: 10 }, { wch: 8 },
+        { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 },
+      ];
+      
+      XLSX.utils.book_append_sheet(wb, wsLeads, 'Leads');
+    }
+
+    // Orders sheet
+    if (exportData.orders.length > 0) {
+      const ordersData = exportData.orders.map(order => ({
+        'N° Commande': order.order_number,
+        'Client': order.shipping_name || '',
+        'Email': order.customer_email || '',
+        'Téléphone': order.shipping_phone || '',
+        'Adresse': order.shipping_address || '',
+        'Ville': order.shipping_city || '',
+        'Pays': order.shipping_country || '',
+        'Statut': order.status,
+        'Total': `${(order.total_price_cents / 100).toFixed(2)} ${order.currency}`,
+        'Paiement': order.payment_method,
+        'Créé le': new Date(order.created_at).toLocaleDateString('fr-FR'),
+      }));
+      
+      const wsOrders = XLSX.utils.json_to_sheet(ordersData);
+      wsOrders['!cols'] = [
+        { wch: 12 }, { wch: 20 }, { wch: 25 }, { wch: 15 },
+        { wch: 30 }, { wch: 12 }, { wch: 10 }, { wch: 12 },
+        { wch: 12 }, { wch: 10 }, { wch: 12 },
+      ];
+      
+      XLSX.utils.book_append_sheet(wb, wsOrders, 'Commandes');
+    }
+
+    // Website proposals sheet
+    if (exportData.proposals.length > 0) {
+      const proposalsData = exportData.proposals.map(p => {
+        const formData = p.form_data as any;
+        return {
+          'Entreprise': formData?.businessName || formData?.business_name || '',
+          'Email': formData?.email || '',
+          'Téléphone': formData?.phone || '',
+          'Description': formData?.description?.substring(0, 100) || '',
+          'Statut': p.status || '',
+          'Express': p.is_express ? 'Oui' : 'Non',
+          'Prix EUR': p.price_eur ? `${p.price_eur}€` : '',
+          'Prix MAD': p.price_mad ? `${p.price_mad} DH` : '',
+          'Créé le': new Date(p.created_at).toLocaleDateString('fr-FR'),
+        };
+      });
+      
+      const wsProposals = XLSX.utils.json_to_sheet(proposalsData);
+      wsProposals['!cols'] = [
+        { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 40 },
+        { wch: 12 }, { wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 12 },
+      ];
+      
+      XLSX.utils.book_append_sheet(wb, wsProposals, 'Sites Web');
+    }
+
+    // Generate and download
+    const filename = `iwasp-export-complet-${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, filename);
+    
+    const totalRows = (exportData.cards.length || 0) + (exportData.leads.length || 0) + 
+                      (exportData.orders.length || 0) + (exportData.proposals.length || 0);
+    toast.success(`Export Excel complet: ${totalRows} lignes`);
+  };
+
+  // Download template as Excel
+  const handleDownloadTemplateExcel = () => {
+    const wb = XLSX.utils.book_new();
+    
+    const templateData = [
+      {
+        'Prénom*': 'Jean',
+        'Nom*': 'Dupont',
+        'Email': 'jean.dupont@email.com',
+        'Téléphone': '+33612345678',
+        'Entreprise': 'Ma Société',
+        'Poste': 'Directeur',
+        'LinkedIn': 'https://linkedin.com/in/jeandupont',
+        'WhatsApp': '+33612345678',
+        'Instagram': '@jeandupont',
+        'Site Web': 'https://monsiteweb.com',
+        'Ville': 'Paris',
+        'Slogan': 'Expert en innovation',
+      },
+    ];
+    
+    const ws = XLSX.utils.json_to_sheet(templateData);
+    ws['!cols'] = [
+      { wch: 15 }, { wch: 15 }, { wch: 25 }, { wch: 15 },
+      { wch: 20 }, { wch: 15 }, { wch: 35 }, { wch: 15 },
+      { wch: 15 }, { wch: 25 }, { wch: 12 }, { wch: 25 },
+    ];
+    
+    XLSX.utils.book_append_sheet(wb, ws, 'Template Import');
+    XLSX.writeFile(wb, 'iwasp-template-import.xlsx');
+    toast.success('Template Excel téléchargé');
+  };
+
   // Download template
   const handleDownloadTemplate = () => {
     const header = TEMPLATE_COLUMNS.map(c => c.label).join(',');
@@ -749,11 +914,21 @@ export function ClientDataExportImport() {
                 size="sm"
                 onClick={handleExportAll}
                 disabled={isLoadingExport}
-                className="gap-2 text-xs"
-                style={{ backgroundColor: GOTHAM.gold, color: '#000' }}
+                className="gap-2 text-xs border-0"
+                style={{ backgroundColor: GOTHAM.bg, color: GOTHAM.text }}
               >
                 <FileDown size={14} />
-                Tout exporter
+                CSV (tout)
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleExportExcel}
+                disabled={isLoadingExport}
+                className="gap-2 text-xs col-span-2"
+                style={{ backgroundColor: GOTHAM.gold, color: '#000' }}
+              >
+                <FileSpreadsheet size={14} />
+                📊 Export Excel complet (.xlsx)
               </Button>
             </div>
           </div>
@@ -772,10 +947,20 @@ export function ClientDataExportImport() {
                 size="sm"
                 onClick={handleDownloadTemplate}
                 className="gap-2 text-xs border-0"
-                style={{ backgroundColor: GOTHAM.bg, color: GOTHAM.gold }}
+                style={{ backgroundColor: GOTHAM.bg, color: GOTHAM.textMuted }}
               >
                 <FileText size={14} />
-                Template CSV
+                CSV
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDownloadTemplateExcel}
+                className="gap-2 text-xs border-0"
+                style={{ backgroundColor: GOTHAM.bg, color: GOTHAM.gold }}
+              >
+                <FileSpreadsheet size={14} />
+                Excel
               </Button>
               <Button
                 variant="outline"
