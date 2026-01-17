@@ -274,29 +274,65 @@ export function AdminOmniaLayout({ children, title, subtitle }: AdminOmniaLayout
           ═══════════════════════════════════════════════════════════════════ */}
       <main className="lg:pl-72 pt-16 lg:pt-0 min-h-dvh">
         {/* Page Header */}
-        {(title || subtitle) && (
-          <div className="border-b border-white/5 px-6 py-6">
-            <div className="max-w-7xl mx-auto">
-              {subtitle && (
-                <p className="text-xs text-omnia-champagne/60 font-light tracking-wider uppercase mb-1">
-                  {subtitle}
-                </p>
-              )}
-              {title && (
-                <h1 className="text-2xl lg:text-3xl font-display text-omnia-ivoire tracking-tight">
-                  {title}
-                </h1>
-              )}
-            </div>
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {(title || subtitle) && (
+            <motion.div 
+              key={`header-${location.pathname}`}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="border-b border-white/5 px-6 py-6"
+            >
+              <div className="max-w-7xl mx-auto">
+                {subtitle && (
+                  <motion.p 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05, duration: 0.2 }}
+                    className="text-xs text-omnia-champagne/60 font-light tracking-wider uppercase mb-1"
+                  >
+                    {subtitle}
+                  </motion.p>
+                )}
+                {title && (
+                  <motion.h1 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1, duration: 0.2 }}
+                    className="text-2xl lg:text-3xl font-display text-omnia-ivoire tracking-tight"
+                  >
+                    {title}
+                  </motion.h1>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
-        {/* Content */}
-        <div className="p-4 lg:p-6">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
-        </div>
+        {/* Content with page transition */}
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={location.pathname}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ 
+              duration: 0.25, 
+              ease: [0.25, 0.46, 0.45, 0.94] 
+            }}
+            className="p-4 lg:p-6"
+          >
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.2 }}
+              className="max-w-7xl mx-auto"
+            >
+              {children}
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );
