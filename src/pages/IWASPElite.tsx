@@ -4,8 +4,11 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
-
 import { toast } from 'sonner';
+
+// Images
+import heroBackground from '@/assets/hero-background.jpg';
+import profilePhoto from '@/assets/profile-photo.jpg';
 
 // ============================================
 // DESIGN SYSTEM - i-wasp ELITE
@@ -121,11 +124,16 @@ const VisionSection = () => (
         viewport={{ once: true }}
         variants={staggerContainer}
       >
-        {/* Background Image Placeholder */}
+        {/* Background Image */}
         <motion.div 
           variants={fadeInUp}
-          className="relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 h-64 lg:h-auto"
+          className="relative rounded-[2rem] overflow-hidden h-64 lg:h-auto min-h-[300px]"
         >
+          <img 
+            src={heroBackground} 
+            alt="i-wasp Elite Hero Background" 
+            className="absolute inset-0 w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         </motion.div>
 
@@ -516,10 +524,20 @@ const ProfileRenderSection = () => (
           {/* Screen */}
           <div className="bg-white rounded-[2.5rem] overflow-hidden">
             {/* Cover Image */}
-            <div className="h-28 bg-gradient-to-br from-gray-200 to-gray-300 relative">
+            <div className="h-28 relative overflow-hidden">
+              <img 
+                src={heroBackground} 
+                alt="Cover" 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/30" />
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 border-4 border-white shadow-lg flex items-center justify-center">
-                  <span className="text-2xl">👤</span>
+                <div className="w-20 h-20 rounded-full border-4 border-white shadow-lg overflow-hidden">
+                  <img 
+                    src={profilePhoto} 
+                    alt="Mehdi El Alami" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
