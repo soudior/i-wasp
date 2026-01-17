@@ -6,7 +6,7 @@
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { Send, Sparkles, Globe, ArrowRight, Zap, CheckCircle2, Moon, Sun } from "lucide-react";
+import { Send, Sparkles, Globe, ArrowRight, Zap, CheckCircle2, Moon, Sun, RotateCcw, Play, X } from "lucide-react";
 import { CoutureNavbar } from "@/components/CoutureNavbar";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
@@ -377,6 +377,117 @@ const ThemeToggle = ({ isDark, onToggle }: { isDark: boolean; onToggle: () => vo
   );
 };
 
+// Session storage key
+const SESSION_STORAGE_KEY = "webstudio_session";
+
+interface SavedSession {
+  messages: Message[];
+  collectedData: CollectedData;
+  currentStep: string;
+  savedAt: string;
+}
+
+// Resume session banner component
+const ResumeBanner = ({ 
+  session, 
+  onResume, 
+  onDiscard, 
+  isDark 
+}: { 
+  session: SavedSession; 
+  onResume: () => void; 
+  onDiscard: () => void; 
+  isDark: boolean;
+}) => {
+  const theme = getTheme(isDark);
+  const savedDate = new Date(session.savedAt);
+  const timeAgo = getTimeAgo(savedDate);
+  
+  return (
+    <motion.div
+      className="fixed bottom-24 left-1/2 z-50 w-[90%] max-w-md"
+      style={{ x: "-50%" }}
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 50, scale: 0.9 }}
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+    >
+      <div
+        className="rounded-2xl p-4 backdrop-blur-xl"
+        style={{
+          backgroundColor: theme.card,
+          border: `1px solid ${theme.cardBorder}`,
+          boxShadow: isDark 
+            ? "0 15px 50px rgba(0, 0, 0, 0.5)"
+            : "0 15px 50px rgba(0, 0, 0, 0.15)",
+        }}
+      >
+        <div className="flex items-start gap-3">
+          <div
+            className="p-2.5 rounded-xl flex-shrink-0"
+            style={{ backgroundColor: `${theme.accent}15` }}
+          >
+            <RotateCcw size={18} style={{ color: theme.accent }} />
+          </div>
+          
+          <div className="flex-1 min-w-0">
+            <h4 className="text-sm font-semibold mb-0.5" style={{ color: theme.text }}>
+              Session en cours
+            </h4>
+            <p className="text-xs mb-3" style={{ color: theme.textSecondary }}>
+              Sauvegardée {timeAgo} • {session.messages.length - 1} messages
+            </p>
+            
+            <div className="flex gap-2">
+              <motion.button
+                onClick={onResume}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white"
+                style={{ 
+                  background: `linear-gradient(135deg, ${theme.accent} 0%, ${theme.accentLight} 100%)`,
+                }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Play size={12} />
+                Reprendre
+              </motion.button>
+              
+              <motion.button
+                onClick={onDiscard}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium"
+                style={{ 
+                  backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
+                  color: theme.textSecondary,
+                }}
+                whileHover={{ scale: 1.03, backgroundColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)" }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <X size={12} />
+                Nouveau
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Helper function to get human-readable time ago
+function getTimeAgo(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  
+  if (diffMins < 1) return "à l'instant";
+  if (diffMins < 60) return `il y a ${diffMins} min`;
+  if (diffHours < 24) return `il y a ${diffHours}h`;
+  if (diffDays === 1) return "hier";
+  return `il y a ${diffDays} jours`;
+}
+
 export default function WebStudioAI() {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState("");
@@ -388,6 +499,8 @@ export default function WebStudioAI() {
   const [generatedSiteUrl, setGeneratedSiteUrl] = useState<string | null>(null);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [showHero, setShowHero] = useState(true);
+  const [savedSession, setSavedSession] = useState<SavedSession | null>(null);
+  const [showResumeBanner, setShowResumeBanner] = useState(false);
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -400,6 +513,73 @@ export default function WebStudioAI() {
   const { toast } = useToast();
   
   const theme = getTheme(isDark);
+
+  // Load saved session on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SESSION_STORAGE_KEY);
+      if (saved) {
+        const session: SavedSession = JSON.parse(saved);
+        // Only show resume if session is less than 7 days old
+        const savedDate = new Date(session.savedAt);
+        const daysDiff = (Date.now() - savedDate.getTime()) / 86400000;
+        if (daysDiff < 7 && session.messages.length > 1) {
+          setSavedSession(session);
+          setShowResumeBanner(true);
+        } else {
+          localStorage.removeItem(SESSION_STORAGE_KEY);
+        }
+      }
+    } catch (e) {
+      console.error("Error loading session:", e);
+    }
+  }, []);
+
+  // Auto-save session when state changes
+  useEffect(() => {
+    if (messages.length > 1 && !isGenerating && !generatedSiteUrl) {
+      const sessionToSave: SavedSession = {
+        messages: messages.map(m => ({
+          ...m,
+          timestamp: m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp,
+        })) as unknown as Message[],
+        collectedData,
+        currentStep,
+        savedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionToSave));
+    }
+  }, [messages, collectedData, currentStep, isGenerating, generatedSiteUrl]);
+
+  // Resume session handler
+  const handleResumeSession = () => {
+    if (savedSession) {
+      setMessages(savedSession.messages.map(m => ({
+        ...m,
+        timestamp: new Date(m.timestamp as unknown as string),
+      })));
+      setCollectedData(savedSession.collectedData);
+      setCurrentStep(savedSession.currentStep);
+      setShowResumeBanner(false);
+      toast({
+        title: "Session restaurée",
+        description: "Vous pouvez continuer là où vous vous êtes arrêté.",
+      });
+    }
+  };
+
+  // Discard session handler
+  const handleDiscardSession = () => {
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+    setSavedSession(null);
+    setShowResumeBanner(false);
+  };
+
+  // Clear session on completion
+  const clearSavedSession = () => {
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+    setSavedSession(null);
+  };
 
   // Listen for system theme changes
   useEffect(() => {
@@ -543,6 +723,7 @@ export default function WebStudioAI() {
         if (website?.status === "completed" && website?.preview_url) {
           setGenerationProgress(100);
           setGeneratedSiteUrl(website.preview_url);
+          clearSavedSession(); // Clear session on success
           toast({
             title: "🎉 Votre site est prêt !",
             description: "Découvrez votre nouveau site web",
@@ -810,6 +991,18 @@ export default function WebStudioAI() {
         <CoutureNavbar />
         <ThemeToggle isDark={isDark} onToggle={() => setIsDark(!isDark)} />
         <FloatingParticles isDark={isDark} />
+        
+        {/* Resume session banner */}
+        <AnimatePresence>
+          {showResumeBanner && savedSession && (
+            <ResumeBanner
+              session={savedSession}
+              onResume={handleResumeSession}
+              onDiscard={handleDiscardSession}
+              isDark={isDark}
+            />
+          )}
+        </AnimatePresence>
         
         <main className="flex-1 flex flex-col pt-20 pb-4 max-w-2xl mx-auto w-full px-4 relative z-10">
           {/* Header with glassmorphism */}
