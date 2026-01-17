@@ -136,6 +136,11 @@ const Activation = () => {
         // Store card info for later use
         sessionStorage.setItem('activated_card_id', data.card_id);
         sessionStorage.setItem('activated_card_slug', data.slug);
+        
+        // Auto-redirect to dashboard after 3 seconds
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 3000);
       } else {
         console.log("[Activation] Card not found");
         setError(data?.error || "Code de série non reconnu. Vérifiez et réessayez.");
