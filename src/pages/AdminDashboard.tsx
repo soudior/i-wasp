@@ -59,6 +59,8 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { GlobalSearchModal } from "@/components/admin/GlobalSearchModal";
+import { PushNotificationsWidget } from "@/components/admin/PushNotificationsWidget";
 
 // Gotham color palette
 const GOTHAM = {
@@ -657,6 +659,9 @@ function AdminDashboardContent() {
               </kbd>
             </button>
 
+            {/* Push notifications widget */}
+            <PushNotificationsWidget />
+
             {/* Refresh */}
             <Button
               onClick={() => refetchStats()}
@@ -834,6 +839,9 @@ function AdminDashboardContent() {
           </CardContent>
         </Card>
       </main>
+
+      {/* Global Search Modal */}
+      <GlobalSearchModal open={showSearch} onClose={() => setShowSearch(false)} />
     </div>
   );
 }
