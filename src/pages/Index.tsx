@@ -168,6 +168,8 @@ function PremiumCard3D({ name = "VOTRE NOM" }: { name?: string }) {
 // BOUTON CTA LUXUEUX
 // ═══════════════════════════════════════════════════════════════════════════
 
+const MotionLink = motion.create(Link);
+
 function LuxuryButton({ children, href, variant = "primary" }: { 
   children: React.ReactNode; 
   href: string;
@@ -176,46 +178,45 @@ function LuxuryButton({ children, href, variant = "primary" }: {
   const isPrimary = variant === "primary";
   
   return (
-    <Link to={href}>
+    <MotionLink
+      to={href}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.98 }}
+      className={`
+        relative overflow-hidden group cursor-pointer block
+        ${isPrimary 
+          ? "px-12 py-6 sm:px-16 sm:py-7" 
+          : "px-10 py-5 sm:px-12 sm:py-6"
+        }
+      `}
+      style={{
+        borderRadius: "9999px",
+        background: isPrimary 
+          ? "linear-gradient(135deg, #DCC7B0 0%, #E8D9C7 50%, #DCC7B0 100%)"
+          : "transparent",
+        border: isPrimary ? "none" : "1px solid rgba(220, 199, 176, 0.3)",
+        boxShadow: isPrimary 
+          ? "0 10px 40px rgba(220, 199, 176, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
+          : "none",
+      }}
+    >
+      {/* Effet shimmer sur hover */}
       <motion.div
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.98 }}
-        className={`
-          relative overflow-hidden group cursor-pointer
-          ${isPrimary 
-            ? "px-12 py-6 sm:px-16 sm:py-7" 
-            : "px-10 py-5 sm:px-12 sm:py-6"
-          }
-        `}
+        className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
         style={{
-          borderRadius: "9999px",
-          background: isPrimary 
-            ? "linear-gradient(135deg, #DCC7B0 0%, #E8D9C7 50%, #DCC7B0 100%)"
-            : "transparent",
-          border: isPrimary ? "none" : "1px solid rgba(220, 199, 176, 0.3)",
-          boxShadow: isPrimary 
-            ? "0 10px 40px rgba(220, 199, 176, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
-            : "none",
+          background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)",
         }}
-      >
-        {/* Effet shimmer sur hover */}
-        <motion.div
-          className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
-          style={{
-            background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)",
-          }}
-        />
-        
-        <span className={`
-          relative z-10 flex items-center justify-center gap-3
-          font-body text-xs sm:text-sm font-light tracking-[0.2em] uppercase
-          ${isPrimary ? "text-[#030303]" : "text-[#DCC7B0]"}
-        `}>
-          {children}
-          <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-        </span>
-      </motion.div>
-    </Link>
+      />
+      
+      <span className={`
+        relative z-10 flex items-center justify-center gap-3
+        font-body text-xs sm:text-sm font-light tracking-[0.2em] uppercase
+        ${isPrimary ? "text-[#030303]" : "text-[#DCC7B0]"}
+      `}>
+        {children}
+        <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+      </span>
+    </MotionLink>
   );
 }
 
