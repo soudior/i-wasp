@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
@@ -38,6 +38,7 @@ const glowPulse = {
 };
 
 const Activation = () => {
+  const [searchParams] = useSearchParams();
   const [serialCode, setSerialCode] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -47,6 +48,15 @@ const Activation = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Pre-fill serial code from URL parameter
+  useEffect(() => {
+    const codeFromUrl = searchParams.get("code");
+    if (codeFromUrl) {
+      const formatted = formatSerialCode(codeFromUrl);
+      setSerialCode(formatted);
+    }
+  }, [searchParams]);
 
   // Format serial code as user types (XXXX-XXXX-XXXX)
   const formatSerialCode = (value: string) => {
