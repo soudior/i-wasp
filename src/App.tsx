@@ -117,6 +117,7 @@ const IWASPLanding = lazy(() => import("./pages/IWASPLanding"));
 const IWASPProduit = lazy(() => import("./pages/IWASPProduit"));
 const IWASPConversion = lazy(() => import("./pages/IWASPConversion"));
 const IWASPProduitConversion = lazy(() => import("./pages/IWASPProduitConversion"));
+const IWASPElite = lazy(() => import("./pages/IWASPElite"));
 const AriellaCard = lazy(() => import("./pages/AriellaCard"));
 const LegacyMap = lazy(() => import("./pages/LegacyMap"));
 const Subscription = lazy(() => import("./pages/Subscription"));
@@ -242,6 +243,7 @@ const App = () => {
                             <Route path="/produit-legacy" element={<IWASPProduit />} />
                             <Route path="/home-legacy" element={<HomeLuxeMax />} />
                             <Route path="/home-premium" element={<IWASPLanding />} />
+                            <Route path="/elite" element={<IWASPElite />} />
                             <Route path="/legacy" element={<HomeSaaS />} />
                             <Route path="/classic" element={<Index />} />
                             
