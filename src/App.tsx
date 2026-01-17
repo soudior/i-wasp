@@ -115,6 +115,8 @@ const SovereignDashboard = lazy(() => import("./pages/SovereignDashboard"));
 // I-WASP Premium Landing
 const IWASPLanding = lazy(() => import("./pages/IWASPLanding"));
 const IWASPProduit = lazy(() => import("./pages/IWASPProduit"));
+const IWASPConversion = lazy(() => import("./pages/IWASPConversion"));
+const IWASPProduitConversion = lazy(() => import("./pages/IWASPProduitConversion"));
 const AriellaCard = lazy(() => import("./pages/AriellaCard"));
 const LegacyMap = lazy(() => import("./pages/LegacyMap"));
 const Subscription = lazy(() => import("./pages/Subscription"));
@@ -233,9 +235,13 @@ const App = () => {
                           <Suspense fallback={<RouteLoader />}>
                             <Routes>
 {/* HOME - I-WASP Premium Landing */}
-                            <Route path="/" element={<IWASPLanding />} />
+                            <Route path="/" element={<IWASPConversion />} />
+                            <Route path="/iwasp" element={<IWASPConversion />} />
+                            <Route path="/iwasp/produit" element={<IWASPProduitConversion />} />
                             <Route path="/produit" element={<IWASPProduit />} />
+                            <Route path="/produit-legacy" element={<IWASPProduit />} />
                             <Route path="/home-legacy" element={<HomeLuxeMax />} />
+                            <Route path="/home-premium" element={<IWASPLanding />} />
                             <Route path="/legacy" element={<HomeSaaS />} />
                             <Route path="/classic" element={<Index />} />
                             
