@@ -1,8 +1,11 @@
 import { motion, type Variants } from 'framer-motion';
-import { ArrowRight, Sparkles, Smartphone, Bot, TrendingUp, Eye, LayoutDashboard, CreditCard, BarChart3, Save, MessageCircle, Linkedin, Instagram, Globe, ChevronRight, ChevronDown, Cpu, Database, Zap, Settings, FileText, Users } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { ArrowRight, Sparkles, TrendingUp, LayoutDashboard, CreditCard, BarChart3, Save, MessageCircle, Linkedin, Instagram, Globe, ChevronRight, ChevronDown, Cpu, Database, Zap, Users, Eye, Edit, Trash2, CreditCard as CardIcon, Mail, Lock, Check, Crown, Phone, MapPin } from 'lucide-react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { supabase } from '@/integrations/supabase/client';
+
+import { toast } from 'sonner';
 
 // ============================================
 // DESIGN SYSTEM - i-wasp ELITE
@@ -21,7 +24,7 @@ const fadeInUp: Variants = {
   visible: { 
     opacity: 1, 
     y: 0, 
-    transition: { duration: 0.8 }
+    transition: { duration: 0.6 }
   }
 };
 
@@ -40,10 +43,11 @@ const EliteNavbar = () => {
   const [activeSection, setActiveSection] = useState('vision');
 
   const navItems = [
-    { id: 'vision', label: 'VISION' },
-    { id: 'dashboard', label: 'TABLEAU DE BORD' },
-    { id: 'profile', label: 'EXPÉRIENCE PROFIL' },
-    { id: 'intelligence', label: 'INTELLIGENCE IA' },
+    { id: 'vision', label: 'Vision' },
+    { id: 'auth', label: "S'inscrire" },
+    { id: 'dashboard', label: 'Dashboard Client' },
+    { id: 'profile', label: 'Rendu Profil' },
+    { id: 'admin', label: 'Console Admin 👑' },
   ];
 
   const scrollToSection = (id: string) => {
@@ -67,14 +71,14 @@ const EliteNavbar = () => {
           </Link>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className={`text-sm font-medium tracking-wide transition-all duration-300 pb-1 ${
+                className={`text-sm font-medium tracking-wide transition-all duration-300 py-1 ${
                   activeSection === item.id 
-                    ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' 
+                    ? 'text-[#D4AF37]' 
                     : 'text-gray-300 hover:text-white'
                 }`}
               >
@@ -89,132 +93,251 @@ const EliteNavbar = () => {
 };
 
 // ============================================
-// SECTION: VISION INTRO
+// SECTION: VISION
 // ============================================
-const VisionIntro = () => (
+const VisionSection = () => (
   <section id="vision" className="py-16 bg-[#FBFBFB]">
     <div className="container mx-auto px-6">
       <motion.div 
-        className="max-w-4xl"
+        className="max-w-4xl mb-12"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInUp}
       >
         <h2 className="text-3xl md:text-4xl font-black text-[#0A1931] tracking-tighter mb-6">
-          L'Identité Digitale Absolue
+          L'Écosystème Elite i-wasp
         </h2>
         <p className="text-gray-600 text-lg leading-relaxed">
-          Bienvenue dans l'univers i-wasp. Cette section explore la fusion entre le networking traditionnel et l'intelligence artificielle. Nous avons conçu une architecture où chaque interaction physique via NFC devient une porte d'entrée vers une aura digitale complète et optimisée.
+          Découvrez l'interface de présentation de la marque. Cette section est le point d'entrée pour les futurs clients, expliquant la fusion entre l'IA et le networking physique haute performance.
         </p>
       </motion.div>
-    </div>
-  </section>
-);
 
-// ============================================
-// SECTION: HERO
-// ============================================
-const HeroSection = () => (
-  <section className="relative py-24 overflow-hidden" style={{ background: `linear-gradient(135deg, ${ELITE.midnight} 0%, ${ELITE.midnightLight} 100%)` }}>
-    {/* Large iW Background Text */}
-    <div className="absolute top-1/2 right-0 -translate-y-1/2 text-[400px] font-black text-white/[0.03] tracking-tighter select-none pointer-events-none">
-      iW
-    </div>
-    
-    <div className="container mx-auto px-6 relative z-10">
+      {/* Hero Card */}
       <motion.div 
-        className="max-w-2xl"
+        className="grid lg:grid-cols-2 gap-8 mb-12"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={staggerContainer}
       >
-        {/* Badge */}
+        {/* Background Image Placeholder */}
         <motion.div 
           variants={fadeInUp}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 mb-8"
+          className="relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 h-64 lg:h-auto"
         >
-          <span className="text-[#D4AF37] font-bold text-sm tracking-widest">N°1 AU MAROC • I-WASP ELITE</span>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         </motion.div>
 
-        {/* Main Title */}
-        <motion.h1 
+        {/* Hero Content */}
+        <motion.div 
           variants={fadeInUp}
-          className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tighter mb-6"
+          className="bg-gradient-to-br from-[#0A1931] to-[#162a4a] rounded-[2rem] p-10 flex flex-col justify-center relative overflow-hidden"
         >
-          Maîtrisez votre<br />
-          <span className="text-[#D4AF37]">Aura Digitale.</span>
-        </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p 
-          variants={fadeInUp}
-          className="text-xl text-gray-300 mb-10 leading-relaxed"
-        >
-          Plus qu'une carte NFC. Un écosystème intelligent qui rayonne votre succès et centralise vos réseaux sociaux d'un seul "Tap".
-        </motion.p>
-
-        {/* CTA Button */}
-        <motion.div variants={fadeInUp}>
+          <div className="absolute top-10 right-10 text-[200px] font-black text-white/5 leading-none pointer-events-none">
+            iW
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-white leading-tight tracking-tighter mb-6 relative z-10">
+            Maîtrisez votre<br />
+            <span className="text-[#D4AF37]">Aura Digitale.</span>
+          </h1>
           <Link
             to="/commander"
-            className="group inline-flex items-center gap-3 px-8 py-4 bg-[#D4AF37] text-[#0A1931] font-bold text-lg rounded-xl hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all duration-300"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-[#D4AF37] text-[#0A1931] font-bold rounded-xl hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all duration-300 w-fit"
           >
-            DÉPLOYER MON AURA
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            Déployer mon Aura
+            <ArrowRight className="w-5 h-5" />
           </Link>
         </motion.div>
+      </motion.div>
+
+      {/* Feature Cards */}
+      <motion.div 
+        className="grid md:grid-cols-3 gap-6"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={staggerContainer}
+      >
+        {[
+          { emoji: '🤖', title: 'IA Native', desc: 'Rédaction et optimisation de profil assistée par l\'intelligence artificielle i-wasp.' },
+          { emoji: '✨', title: 'Matériel de Luxe', desc: 'Cartes en métal ou bois précieux avec puces NFC i-wasp cryptées.' },
+          { emoji: '📈', title: 'Analytics Pro', desc: 'Suivi précis des scans et de l\'engagement de votre réseau sur votre profil.' },
+        ].map((feature, i) => (
+          <motion.div
+            key={i}
+            variants={fadeInUp}
+            className="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100"
+          >
+            <span className="text-4xl mb-4 block">{feature.emoji}</span>
+            <h3 className="text-xl font-black text-[#0A1931] tracking-tight mb-2">{feature.title}</h3>
+            <p className="text-gray-600">{feature.desc}</p>
+          </motion.div>
+        ))}
       </motion.div>
     </div>
   </section>
 );
 
 // ============================================
-// SECTION: FEATURES (3 Cards)
+// SECTION: AUTH (Login / Register)
 // ============================================
-const FeaturesSection = () => {
-  const features = [
-    {
-      emoji: '🤖',
-      title: 'IA Assistée',
-      description: 'Génération de contenu dynamique pour votre bio et optimisation automatique de votre visibilité.',
-    },
-    {
-      emoji: '✨',
-      title: 'Luxe Physique',
-      description: 'Cartes en métal, bois précieux ou PVC recyclé. Un objet d\'exception pour une première impression parfaite.',
-    },
-    {
-      emoji: '📱',
-      title: 'Hub Social',
-      description: 'Centralisez Instagram, LinkedIn, WhatsApp et vos portfolios en un point d\'accès unique.',
-    },
-  ];
+const AuthSection = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success('Connexion réussie !');
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast.error(error.message || 'Erreur de connexion');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      toast.error(error.message || 'Erreur de connexion Google');
+    }
+  };
 
   return (
-    <section className="py-16 bg-[#FBFBFB]">
+    <section id="auth" className="py-24 bg-[#FBFBFB]">
       <div className="container mx-auto px-6">
+        {/* Section Header */}
         <motion.div 
-          className="grid md:grid-cols-3 gap-6"
+          className="max-w-4xl mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+        >
+          <h2 className="text-3xl md:text-4xl font-black text-[#0A1931] tracking-tighter mb-6">
+            Accès à l'Expérience i-wasp
+          </h2>
+          <p className="text-gray-600 text-lg leading-relaxed">
+            Comment vos clients rejoignent l'aventure. Cette section simule le processus d'authentification et de démarrage pour un nouvel utilisateur qui vient d'acquérir sa carte.
+          </p>
+        </motion.div>
+
+        <motion.div 
+          className="grid lg:grid-cols-2 gap-8 max-w-5xl"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
         >
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              variants={fadeInUp}
-              className="bg-white rounded-[2rem] p-8 shadow-lg hover:shadow-xl transition-all duration-500 border border-gray-100 hover:-translate-y-2"
-            >
-              <div className="w-16 h-16 rounded-2xl bg-[#0A1931]/5 flex items-center justify-center mb-6 text-3xl">
-                {feature.emoji}
+          {/* Login Card */}
+          <motion.div variants={fadeInUp} className="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100">
+            <div className="text-center mb-8">
+              <span className="text-5xl mb-4 block">👋</span>
+              <h3 className="text-2xl font-black text-[#0A1931] tracking-tight">Ravi de vous revoir</h3>
+              <p className="text-gray-500">Connectez-vous pour gérer votre aura i-wasp</p>
+            </div>
+
+            <form onSubmit={handleEmailLogin} className="space-y-6">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="mehdi@email.com"
+                  className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-[#D4AF37] outline-none"
+                  required
+                />
               </div>
-              <h3 className="text-xl font-black text-[#0A1931] tracking-tight mb-3">{feature.title}</h3>
-              <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-            </motion.div>
-          ))}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Mot de passe</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-[#D4AF37] outline-none"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-4 bg-[#0A1931] text-white font-bold rounded-2xl hover:bg-[#162a4a] transition-colors disabled:opacity-50"
+              >
+                {isLoading ? 'Connexion...' : 'Se Connecter'}
+              </button>
+            </form>
+
+            {/* Google Login */}
+            <div className="mt-6">
+              <div className="relative flex items-center justify-center my-4">
+                <div className="border-t border-gray-200 w-full"></div>
+                <span className="bg-white px-4 text-gray-400 text-sm">ou</span>
+                <div className="border-t border-gray-200 w-full"></div>
+              </div>
+              <button
+                onClick={handleGoogleLogin}
+                className="w-full flex items-center justify-center gap-3 py-4 bg-white border-2 border-gray-200 rounded-2xl hover:border-[#D4AF37] hover:shadow-lg transition-all font-medium text-[#0A1931]"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continuer avec Google
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Register Card */}
+          <motion.div variants={fadeInUp} className="bg-gradient-to-br from-[#0A1931] to-[#162a4a] rounded-[2rem] p-8 shadow-lg relative overflow-hidden">
+            <div className="absolute top-10 right-10 text-[150px] font-black text-white/5 leading-none pointer-events-none">
+              ⚡
+            </div>
+            
+            <div className="text-center mb-8 relative z-10">
+              <span className="text-5xl mb-4 block">🏆</span>
+              <h3 className="text-2xl font-black text-[#D4AF37] tracking-tight">Devenir Membre Elite</h3>
+              <p className="text-gray-400">Prêt à dominer votre secteur ?</p>
+            </div>
+
+            <div className="space-y-4 mb-8 relative z-10">
+              {[
+                'Activez votre carte physique en 30 secondes',
+                'Laissez l\'IA rédiger votre présentation pro',
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-white">
+                  <div className="w-8 h-8 rounded-lg bg-[#D4AF37]/20 flex items-center justify-center">
+                    <CardIcon className="w-4 h-4 text-[#D4AF37]" />
+                  </div>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              to="/signup"
+              className="block w-full py-4 bg-[#D4AF37] text-[#0A1931] font-bold rounded-2xl text-center hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all relative z-10"
+            >
+              CRÉER MON PROFIL I-WASP
+            </Link>
+          </motion.div>
         </motion.div>
       </div>
     </section>
@@ -222,12 +345,9 @@ const FeaturesSection = () => {
 };
 
 // ============================================
-// SECTION: DASHBOARD
+// SECTION: CLIENT DASHBOARD
 // ============================================
-const DashboardSection = () => {
-  const [activeTab, setActiveTab] = useState('Vue Globale');
-  
-  // Chart data points for the line graph
+const ClientDashboardSection = () => {
   const chartData = [
     { day: 'Lun', value: 120 },
     { day: 'Mar', value: 180 },
@@ -237,216 +357,114 @@ const DashboardSection = () => {
     { day: 'Sam', value: 380 },
     { day: 'Dim', value: 450 },
   ];
-  
-  const maxValue = Math.max(...chartData.map(d => d.value));
-  
+
   return (
     <section id="dashboard" className="py-24 bg-[#FBFBFB]">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div 
-          className="max-w-4xl mb-16"
+          className="max-w-4xl mb-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
         >
           <h2 className="text-3xl md:text-4xl font-black text-[#0A1931] tracking-tighter mb-6">
-            Pilotez votre Performance
+            Votre Tour de Contrôle Personnelle
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed">
-            Le Tableau de Bord i-wasp transforme les interactions physiques en données stratégiques. Suivez vos scans en temps réel, analysez l'engagement de vos visiteurs et recevez des conseils de notre IA pour perfectionner votre image de marque.
+            L'interface de gestion pour le client. C'est ici qu'il voit ses statistiques de visite et personnalise son profil digital i-wasp.
           </p>
         </motion.div>
 
-        {/* Dashboard Grid */}
         <motion.div 
-          className="grid lg:grid-cols-12 gap-6"
+          className="grid lg:grid-cols-3 gap-8"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
         >
-          {/* Left Sidebar */}
-          <motion.div variants={fadeInUp} className="lg:col-span-3 space-y-6">
-            {/* User Card */}
-            <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-[#0A1931] flex items-center justify-center text-white font-black text-lg">
-                  MK
-                </div>
-                <div>
-                  <div className="text-[#0A1931] font-black text-lg">Mehdi K.</div>
-                  <div className="text-[#D4AF37] text-xs font-bold tracking-wide uppercase">MEMBRE ELITE I-WASP</div>
-                </div>
-              </div>
-              
-              {/* Navigation Tabs */}
-              <div className="space-y-2">
-                {[
-                  { id: 'Vue Globale', icon: LayoutDashboard },
-                  { id: 'Mes Cartes', icon: CreditCard },
-                  { id: 'Analyses', icon: BarChart3 },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                      activeTab === tab.id 
-                        ? 'bg-[#0A1931] text-white' 
-                        : 'text-gray-500 hover:bg-gray-50'
-                    }`}
-                  >
-                    <tab.icon className="w-5 h-5" />
-                    <span className="font-medium">{tab.id}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Aura Score Card */}
-            <div className="bg-gradient-to-br from-[#0A1931] to-[#162a4a] rounded-[2rem] p-6 shadow-lg">
-              <div className="text-center mb-4">
-                <span className="text-[#D4AF37] font-bold text-sm tracking-widest uppercase">SCORE AURA DIGITALE</span>
-              </div>
-              
-              {/* Circular Progress */}
-              <div className="relative w-40 h-40 mx-auto mb-4">
-                <svg className="w-40 h-40 transform -rotate-90">
+          {/* Left Column - Score & Social */}
+          <motion.div variants={fadeInUp} className="space-y-6">
+            {/* Aura Score */}
+            <div className="bg-gradient-to-br from-[#0A1931] to-[#162a4a] rounded-[2rem] p-6">
+              <h3 className="text-[#D4AF37] font-bold text-sm mb-4">Score Aura ⚡</h3>
+              <div className="relative w-32 h-32 mx-auto mb-4">
+                <svg className="w-32 h-32 transform -rotate-90">
+                  <circle cx="64" cy="64" r="56" stroke="rgba(255,255,255,0.1)" strokeWidth="10" fill="none" />
                   <circle 
-                    cx="80" cy="80" r="70" 
-                    stroke="rgba(255,255,255,0.1)" 
-                    strokeWidth="12" 
-                    fill="none" 
-                  />
-                  <circle 
-                    cx="80" cy="80" r="70" 
+                    cx="64" cy="64" r="56" 
                     stroke="#D4AF37" 
-                    strokeWidth="12" 
+                    strokeWidth="10" 
                     fill="none"
                     strokeLinecap="round"
-                    strokeDasharray={`${92 * 4.4} ${100 * 4.4}`}
+                    strokeDasharray={`${92 * 3.52} ${100 * 3.52}`}
                   />
                 </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-4xl font-black text-white">92%</span>
-                  <span className="text-[#00D9A3] font-bold text-sm uppercase tracking-wide">EXCELLENT</span>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-3xl font-black text-white">92%</span>
                 </div>
               </div>
+              <button className="w-full py-3 bg-[#D4AF37]/20 text-[#D4AF37] font-medium rounded-xl text-sm hover:bg-[#D4AF37]/30 transition-colors">
+                Aperçu de mon profil
+              </button>
+            </div>
 
-              {/* AI Tip */}
-              <div className="p-4 bg-[#D4AF37]/10 rounded-xl border border-[#D4AF37]/20">
-                <p className="text-[#D4AF37] text-sm text-center">
-                  💡 Conseil IA: Ajoutez une story Instagram récente pour augmenter votre score de conversion.
-                </p>
+            {/* Social Links */}
+            <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
+              <h3 className="text-[#0A1931] font-bold mb-4">Réseaux Sociaux 🔗</h3>
+              <div className="space-y-3">
+                {[
+                  { icon: Linkedin, name: 'LinkedIn', status: 'Connecté', color: '#0077B5' },
+                  { icon: Instagram, name: 'Instagram', status: 'Connecté', color: '#E4405F' },
+                ].map((social, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <social.icon className="w-5 h-5" style={{ color: social.color }} />
+                      <span className="font-medium text-[#0A1931]">{social.name}</span>
+                    </div>
+                    <span className="text-[#00D9A3] text-sm font-medium">{social.status}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </motion.div>
 
-          {/* Right Content */}
-          <motion.div variants={fadeInUp} className="lg:col-span-9 space-y-6">
-            {/* Stats Row */}
+          {/* Right Column - Stats & Chart */}
+          <motion.div variants={fadeInUp} className="lg:col-span-2 space-y-6">
+            {/* Stats */}
             <div className="grid sm:grid-cols-2 gap-6">
-              {/* Scans Totaux */}
               <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
-                <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-[#0A1931]/5 flex items-center justify-center">
-                    <Users className="w-6 h-6 text-[#0A1931]" />
-                  </div>
-                  <span className="text-[#00D9A3] font-bold text-sm flex items-center gap-1">
-                    +18% <TrendingUp className="w-4 h-4" />
-                  </span>
-                </div>
-                <div className="mt-4">
-                  <div className="text-gray-500 text-xs font-bold tracking-wide uppercase mb-1">SCANS TOTAUX</div>
-                  <div className="text-4xl font-black text-[#0A1931] tracking-tighter">1,482</div>
-                </div>
+                <div className="text-gray-500 text-sm mb-2">Visiteurs ce mois 👥</div>
+                <div className="text-4xl font-black text-[#0A1931]">1,204</div>
               </div>
-              
-              {/* Taux de Sauvegarde */}
               <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
-                <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-[#0A1931]/5 flex items-center justify-center">
-                    <Save className="w-6 h-6 text-[#0A1931]" />
-                  </div>
-                  <span className="text-[#00D9A3] font-bold text-sm flex items-center gap-1">
-                    +5% <TrendingUp className="w-4 h-4" />
-                  </span>
-                </div>
-                <div className="mt-4">
-                  <div className="text-gray-500 text-xs font-bold tracking-wide uppercase mb-1">TAUX DE SAUVEGARDE</div>
-                  <div className="text-4xl font-black text-[#0A1931] tracking-tighter">74%</div>
-                </div>
+                <div className="text-gray-500 text-sm mb-2">Contacts enregistrés 📱</div>
+                <div className="text-4xl font-black text-[#0A1931]">342</div>
               </div>
             </div>
 
-            {/* Chart with Recharts */}
+            {/* Chart */}
             <div className="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100">
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-2xl font-black text-[#0A1931] tracking-tight">Tendances des Interactions</h3>
-                <div className="flex items-center gap-2 text-gray-500 text-sm cursor-pointer hover:text-[#0A1931] transition-colors">
-                  <span className="font-medium">7 derniers jours</span>
-                  <ChevronDown className="w-4 h-4" />
-                </div>
-              </div>
-              
-              {/* Recharts Area Chart */}
-              <div className="h-72">
+              <h3 className="text-xl font-black text-[#0A1931] mb-6">Tendances des Visites sur i-wasp 📈</h3>
+              <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={chartData}
-                    margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-                  >
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                     <defs>
-                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#00D9A3" stopOpacity={0.3}/>
                         <stop offset="95%" stopColor="#00D9A3" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                    <XAxis 
-                      dataKey="day" 
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#9ca3af', fontSize: 12 }}
-                      dy={10}
-                    />
-                    <YAxis 
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#9ca3af', fontSize: 12 }}
-                      dx={-10}
-                      domain={[0, 500]}
-                      ticks={[0, 100, 200, 300, 400, 500]}
-                    />
+                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} />
                     <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#0A1931', 
-                        border: 'none', 
-                        borderRadius: '12px',
-                        boxShadow: '0 10px 40px rgba(0,0,0,0.2)'
-                      }}
-                      labelStyle={{ color: '#D4AF37', fontWeight: 'bold', marginBottom: '4px' }}
+                      contentStyle={{ backgroundColor: '#0A1931', border: 'none', borderRadius: '12px' }}
+                      labelStyle={{ color: '#D4AF37', fontWeight: 'bold' }}
                       itemStyle={{ color: '#fff' }}
-                      formatter={(value: number) => [`${value} interactions`, 'Total']}
-                      labelFormatter={(label) => `${label}`}
-                      cursor={{ stroke: '#D4AF37', strokeWidth: 1, strokeDasharray: '5 5' }}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke="#00D9A3" 
-                      strokeWidth={3}
-                      fill="url(#colorValue)"
-                      dot={{ fill: '#fff', stroke: '#00D9A3', strokeWidth: 3, r: 5 }}
-                      activeDot={{ 
-                        fill: '#00D9A3', 
-                        stroke: '#fff', 
-                        strokeWidth: 3, 
-                        r: 8,
-                        style: { filter: 'drop-shadow(0 0 8px rgba(0, 217, 163, 0.5))' }
-                      }}
-                    />
+                    <Area type="monotone" dataKey="value" stroke="#00D9A3" strokeWidth={3} fill="url(#colorVisits)" dot={{ fill: '#fff', stroke: '#00D9A3', strokeWidth: 3, r: 5 }} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -459,24 +477,24 @@ const DashboardSection = () => {
 };
 
 // ============================================
-// SECTION: PROFILE EXPERIENCE
+// SECTION: PROFILE RENDER
 // ============================================
-const ProfileExperienceSection = () => (
+const ProfileRenderSection = () => (
   <section id="profile" className="py-24 bg-[#FBFBFB]">
     <div className="container mx-auto px-6">
       {/* Section Header */}
       <motion.div 
-        className="max-w-4xl mb-16"
+        className="text-center max-w-4xl mx-auto mb-12"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInUp}
       >
-        <h2 className="text-3xl md:text-4xl font-black text-[#0A1931] tracking-tighter mb-6">
-          L'Interface de votre Aura
+        <h2 className="text-3xl md:text-4xl font-black text-[#0A1931] tracking-tighter mb-4">
+          Le Rendu Final
         </h2>
-        <p className="text-gray-600 text-lg leading-relaxed">
-          Lorsqu'un partenaire scanne votre carte i-wasp, voici l'expérience qu'il découvre. Un design mobile-first fluide, inspiré des codes du luxe et des réseaux sociaux, conçu pour simplifier la prise de contact et maximiser votre impact visuel.
+        <p className="text-gray-600 text-lg">
+          C'est l'interface que vos partenaires voient en scannant votre carte i-wasp.
         </p>
       </motion.div>
 
@@ -488,98 +506,47 @@ const ProfileExperienceSection = () => (
         viewport={{ once: true }}
         variants={fadeInUp}
       >
-        <div className="relative">
-          {/* Phone Frame */}
-          <div className="w-[320px] bg-[#0A1931] rounded-[3rem] p-3 shadow-2xl">
-            {/* Status Bar */}
-            <div className="flex items-center justify-between px-6 py-2 text-white text-sm">
-              <span className="font-semibold">12:45</span>
-              <span className="text-xs">📶 🔋</span>
+        <div className="w-[320px] bg-[#0A1931] rounded-[3rem] p-3 shadow-2xl">
+          {/* Status Bar */}
+          <div className="flex items-center justify-between px-6 py-2 text-white text-sm">
+            <span className="font-semibold">14:30</span>
+            <span className="text-xs">📶 🔋</span>
+          </div>
+          
+          {/* Screen */}
+          <div className="bg-white rounded-[2.5rem] overflow-hidden">
+            {/* Cover Image */}
+            <div className="h-28 bg-gradient-to-br from-gray-200 to-gray-300 relative">
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 border-4 border-white shadow-lg flex items-center justify-center">
+                  <span className="text-2xl">👤</span>
+                </div>
+              </div>
             </div>
             
-            {/* Screen Content */}
-            <div className="bg-white rounded-[2.5rem] overflow-hidden">
-              {/* Header with gradient */}
-              <div className="relative h-32 bg-gradient-to-br from-[#0A1931] to-[#162a4a]">
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 border-4 border-white shadow-lg flex items-center justify-center">
-                    <span className="text-2xl">👤</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Profile Info */}
-              <div className="pt-16 pb-6 px-6 text-center">
-                <h3 className="text-xl font-black text-[#0A1931] tracking-tight">Mehdi El Alami</h3>
-                <p className="text-[#D4AF37] font-medium text-sm mb-2">Fondateur i-wasp Elite 🚀</p>
-                <p className="text-gray-500 text-sm leading-relaxed">
-                  Digitalisant le networking au Maroc via le NFC et l'IA. Expert en identité digitale premium.
-                </p>
-              </div>
+            {/* Profile Info */}
+            <div className="pt-14 pb-4 px-6 text-center">
+              <h3 className="text-xl font-black text-[#0A1931]">Mehdi El Alami</h3>
+              <p className="text-[#D4AF37] font-medium text-sm">CEO i-wasp Elite 🚀</p>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-3 px-6 mb-6">
-                <button className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#0A1931] text-white rounded-xl font-bold text-sm">
-                  <Save className="w-4 h-4" />
-                  Enregistrer
-                </button>
-                <button className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white rounded-xl font-bold text-sm">
-                  <MessageCircle className="w-4 h-4" />
-                  WhatsApp
-                </button>
-              </div>
+            {/* Action Buttons */}
+            <div className="flex gap-3 px-6 mb-4">
+              <button className="flex-1 py-3 bg-[#0A1931] text-white rounded-xl font-bold text-sm">Enregistrer</button>
+              <button className="flex-1 py-3 bg-[#25D366] text-white rounded-xl font-bold text-sm">WhatsApp</button>
+            </div>
 
-              {/* Stories */}
-              <div className="px-6 mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[#0A1931] font-bold text-sm">Stories i-wasp</span>
-                  <span className="text-[#D4AF37] text-sm">Voir tout</span>
+            {/* Links */}
+            <div className="px-6 pb-6 space-y-2">
+              {[
+                { icon: Linkedin, name: 'LinkedIn Profile' },
+                { icon: Globe, name: 'Site Officiel' },
+              ].map((link, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <link.icon className="w-5 h-5 text-[#0A1931]" />
+                  <span className="text-[#0A1931] font-medium text-sm">{link.name}</span>
                 </div>
-                <div className="flex gap-3">
-                  {[
-                    { emoji: '🔥', label: 'VISION' },
-                    { emoji: '💼', label: 'PROJETS' },
-                    { emoji: '🎥', label: 'DEMO' },
-                  ].map((story, i) => (
-                    <div key={i} className="text-center">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#F4D03F] p-0.5 mb-1">
-                        <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-xl">
-                          {story.emoji}
-                        </div>
-                      </div>
-                      <span className="text-[10px] text-gray-500 font-bold">{story.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Social Links */}
-              <div className="px-6 pb-6 space-y-3">
-                {[
-                  { icon: Linkedin, name: 'LinkedIn', subtitle: 'Reseau Professionnel', color: '#0077B5' },
-                  { icon: Instagram, name: 'Instagram', subtitle: 'Portfolio Visuel', color: '#E4405F' },
-                  { icon: Globe, name: 'Site Web', subtitle: 'www.i-wasp.com', color: '#0A1931' },
-                ].map((link, i) => (
-                  <div key={i} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: `${link.color}15` }}>
-                      <link.icon className="w-5 h-5" style={{ color: link.color }} />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[#0A1931] font-bold text-sm">{link.name}</div>
-                      <div className="text-gray-400 text-xs">{link.subtitle}</div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-gray-300" />
-                  </div>
-                ))}
-              </div>
-
-              {/* Footer */}
-              <div className="py-4 bg-gray-50 text-center">
-                <div className="flex items-center justify-center gap-2 text-gray-400 text-xs">
-                  <Sparkles className="w-3 h-3" />
-                  <span>Propulsé par i-wasp</span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -589,142 +556,236 @@ const ProfileExperienceSection = () => (
 );
 
 // ============================================
-// SECTION: INTELLIGENCE IA
+// SECTION: ADMIN CONSOLE
 // ============================================
-const IntelligenceSection = () => (
-  <section id="intelligence" className="py-24 bg-[#FBFBFB]">
-    <div className="container mx-auto px-6">
-      {/* Section Header */}
-      <motion.div 
-        className="max-w-4xl mb-16"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeInUp}
-      >
-        <h2 className="text-3xl md:text-4xl font-black text-[#0A1931] tracking-tighter mb-6">
-          L'Intelligence au Coeur du Réseau
-        </h2>
-        <p className="text-gray-600 text-lg leading-relaxed">
-          Derrière chaque carte i-wasp se cache un moteur d'IA sophistiqué. Nous utilisons des algorithmes de traitement du langage naturel et d'analyse prédictive pour transformer un simple profil en un outil de conversion puissant. Voici l'architecture de notre intelligence.
-        </p>
-      </motion.div>
+const AdminConsoleSection = () => {
+  const adminStats = [
+    { label: 'Total Utilisateurs', value: '15,482' },
+    { label: 'Cartes Actives', value: '12,104' },
+    { label: 'CA Mensuel (estimé)', value: '1.2M MAD' },
+    { label: 'Alertes Système', value: '0' },
+  ];
 
-      {/* AI Pipeline */}
-      <motion.div 
-        className="grid lg:grid-cols-3 gap-8 mb-16"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={staggerContainer}
-      >
-        {/* Step 1: Raw Data */}
-        <motion.div variants={fadeInUp} className="bg-[#0A1931] rounded-[2rem] p-8 text-center">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-white/10 flex items-center justify-center mb-6">
-            <Database className="w-8 h-8 text-[#D4AF37]" />
-          </div>
-          <h3 className="text-xl font-black text-white mb-3">Données Brutes</h3>
-          <p className="text-gray-400 leading-relaxed">
-            Saisie de vos informations, bio actuelle, et liens sociaux.
+  const members = [
+    { initials: 'MK', name: 'Mehdi K.', id: 'IW-4820', card: 'Or 24K Edition', status: 'Actif', activity: 'Il y a 2 min' },
+    { initials: 'SB', name: 'Sarah B.', id: 'IW-9201', card: 'Métal Noir', status: 'Actif', activity: 'Hier, 18:45' },
+    { initials: 'RM', name: 'Rayan M.', id: 'IW-1102', card: 'Standard PVC', status: 'Suspendu', activity: 'Jamais connecté' },
+  ];
+
+  const growthData = [
+    { month: 'Jan', users: 5000 },
+    { month: 'Fév', users: 7500 },
+    { month: 'Mar', users: 9000 },
+    { month: 'Avr', users: 11000 },
+    { month: 'Mai', users: 13500 },
+    { month: 'Juin', users: 15482 },
+  ];
+
+  return (
+    <section id="admin" className="py-24 bg-[#FBFBFB]">
+      <div className="container mx-auto px-6">
+        {/* Section Header */}
+        <motion.div 
+          className="text-center max-w-4xl mx-auto mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+        >
+          <h2 className="text-3xl md:text-4xl font-black text-[#0A1931] tracking-tighter mb-4">
+            Console Admin Centrale 👑
+          </h2>
+          <p className="text-gray-600 text-lg italic">
+            "Votre tour de contrôle pour gérer le réseau i-wasp au Maroc et à l'international."
           </p>
         </motion.div>
 
-        {/* Step 2: AI Engine */}
-        <motion.div variants={fadeInUp} className="bg-gradient-to-br from-[#D4AF37] to-[#B8956C] rounded-[2rem] p-8 text-center shadow-[0_0_40px_rgba(212,175,55,0.3)]">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0A1931] flex items-center justify-center mb-6">
-            <Cpu className="w-8 h-8 text-[#D4AF37]" />
+        {/* Admin Stats */}
+        <motion.div 
+          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          {adminStats.map((stat, i) => (
+            <motion.div 
+              key={i}
+              variants={fadeInUp}
+              className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100 text-center"
+            >
+              <div className="text-gray-500 text-sm mb-2">{stat.label}</div>
+              <div className="text-3xl font-black text-[#0A1931]">{stat.value}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Members Table */}
+        <motion.div 
+          className="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100 mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-xl font-black text-[#0A1931]">Gestion des Membres i-wasp Elite</h3>
+              <p className="text-gray-500 text-sm">Gérez, activez ou révoquez les accès à distance.</p>
+            </div>
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                placeholder="Rechercher..." 
+                className="px-4 py-2 bg-gray-50 rounded-xl border-none text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none"
+              />
+            </div>
           </div>
-          <h3 className="text-xl font-black text-[#0A1931] mb-4">IA Engine</h3>
-          <div className="space-y-2 text-left">
-            {['Analyse Sémantique', 'Optimisation SEO', 'Prédiction Engagement'].map((item, i) => (
-              <div key={i} className="flex items-center gap-2 text-[#0A1931]/80 font-medium">
-                <span className="text-[#00D9A3]">✓</span>
-                {item}
-              </div>
-            ))}
+
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="text-left text-xs font-bold text-gray-500 uppercase tracking-wide border-b border-gray-100">
+                  <th className="pb-4">Membre</th>
+                  <th className="pb-4">Type de Carte</th>
+                  <th className="pb-4">Statut NFC</th>
+                  <th className="pb-4">Dernière Activité</th>
+                  <th className="pb-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map((member, i) => (
+                  <tr key={i} className="border-b border-gray-50">
+                    <td className="py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#F4D03F] flex items-center justify-center text-[#0A1931] font-bold text-sm">
+                          {member.initials}
+                        </div>
+                        <div>
+                          <div className="font-bold text-[#0A1931]">{member.name}</div>
+                          <div className="text-gray-400 text-xs">ID: {member.id}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 text-[#0A1931]">{member.card}</td>
+                    <td className="py-4">
+                      <span className={`inline-flex items-center gap-1 text-sm font-medium ${
+                        member.status === 'Actif' ? 'text-[#00D9A3]' : 'text-orange-500'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full ${
+                          member.status === 'Actif' ? 'bg-[#00D9A3]' : 'bg-orange-500'
+                        }`}></span>
+                        {member.status}
+                      </span>
+                    </td>
+                    <td className="py-4 text-gray-500 text-sm">{member.activity}</td>
+                    <td className="py-4">
+                      <div className="flex gap-2">
+                        <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                          <Edit className="w-4 h-4 text-gray-400" />
+                        </button>
+                        <button className="p-2 hover:bg-red-50 rounded-lg transition-colors">
+                          <Trash2 className="w-4 h-4 text-red-400" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </motion.div>
 
-        {/* Step 3: Optimized Aura */}
-        <motion.div variants={fadeInUp} className="bg-[#0A1931] rounded-[2rem] p-8 text-center">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-white/10 flex items-center justify-center mb-6">
-            <Zap className="w-8 h-8 text-[#00D9A3]" />
-          </div>
-          <h3 className="text-xl font-black text-white mb-3">Aura Optimisée</h3>
-          <p className="text-gray-400 leading-relaxed">
-            Contenu premium, score 90+, et conseils personnalisés.
-          </p>
-        </motion.div>
-      </motion.div>
-
-      {/* Performance Metrics */}
-      <motion.div 
-        className="grid lg:grid-cols-2 gap-8"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={staggerContainer}
-      >
-        {/* Efficiency Stats */}
-        <motion.div variants={fadeInUp} className="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100">
-          <h3 className="text-xl font-black text-[#0A1931] mb-6">Efficacité de la Stack</h3>
-          <div className="space-y-6">
-            {[
-              { label: 'Vitesse NFC', value: 99.9 },
-              { label: 'Précision IA', value: 94 },
-              { label: 'Uptime Plateforme', value: 100 },
-            ].map((stat, i) => (
-              <div key={i}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-gray-600 font-medium">{stat.label}</span>
-                  <span className="text-[#0A1931] font-bold">{stat.value}%</span>
-                </div>
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <motion.div 
-                    className="h-full bg-gradient-to-r from-[#D4AF37] to-[#00D9A3] rounded-full"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${stat.value}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: i * 0.2 }}
-                  />
-                </div>
-              </div>
-            ))}
+        {/* Growth Chart */}
+        <motion.div 
+          className="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+        >
+          <h3 className="text-xl font-black text-[#0A1931] mb-6">Croissance du Réseau i-wasp 🚀</h3>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={growthData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorGrowth" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#D4AF37" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#0A1931', border: 'none', borderRadius: '12px' }}
+                  labelStyle={{ color: '#D4AF37', fontWeight: 'bold' }}
+                  itemStyle={{ color: '#fff' }}
+                  formatter={(value: number) => [`${value.toLocaleString()} utilisateurs`, 'Total']}
+                />
+                <Area type="monotone" dataKey="users" stroke="#D4AF37" strokeWidth={3} fill="url(#colorGrowth)" dot={{ fill: '#fff', stroke: '#D4AF37', strokeWidth: 3, r: 5 }} />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </motion.div>
-
-        {/* Zero Compromise Card */}
-        <motion.div variants={fadeInUp} className="bg-gradient-to-br from-[#D4AF37] to-[#F4D03F] rounded-[2rem] p-8 flex flex-col justify-center shadow-[0_0_40px_rgba(212,175,55,0.3)]">
-          <div className="text-6xl mb-4">🔝</div>
-          <h3 className="text-2xl font-black text-[#0A1931] mb-3">Zéro Compromis</h3>
-          <p className="text-[#0A1931]/70 leading-relaxed">
-            Une technologie bâtie pour le futur du networking au Maroc.
-          </p>
-        </motion.div>
-      </motion.div>
-    </div>
-  </section>
-);
+      </div>
+    </section>
+  );
+};
 
 // ============================================
 // FOOTER
 // ============================================
 const EliteFooter = () => (
-  <footer className="py-12 bg-[#0A1931]">
-    <div className="container mx-auto px-6 text-center">
-      <div className="flex items-center justify-center gap-3 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#D4AF37] to-[#F4D03F] flex items-center justify-center">
-          <span className="text-[#0A1931] font-black text-xs">iW</span>
+  <footer className="py-16 bg-[#0A1931]">
+    <div className="container mx-auto px-6">
+      <div className="grid md:grid-cols-3 gap-12 mb-12">
+        {/* Brand */}
+        <div>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#F4D03F] flex items-center justify-center">
+              <span className="text-[#0A1931] font-black text-sm">iW</span>
+            </div>
+            <span className="text-white font-black text-xl tracking-tight">i-wasp</span>
+          </div>
+          <p className="text-gray-400 text-sm leading-relaxed">
+            Établir le standard mondial de l'identité digitale de prestige au Maroc.
+          </p>
         </div>
-        <span className="text-white font-black tracking-tight">i-wasp Elite</span>
+
+        {/* Links */}
+        <div>
+          <h4 className="text-white font-bold mb-4">Exploration</h4>
+          <ul className="space-y-2 text-gray-400 text-sm">
+            <li><a href="#vision" className="hover:text-[#D4AF37] transition-colors">Vision</a></li>
+            <li><a href="#" className="hover:text-[#D4AF37] transition-colors">Intelligence IA</a></li>
+            <li><a href="#" className="hover:text-[#D4AF37] transition-colors">Boutique Elite</a></li>
+          </ul>
+        </div>
+
+        {/* Contact */}
+        <div>
+          <h4 className="text-white font-bold mb-4">Réseau i-wasp</h4>
+          <ul className="space-y-2 text-gray-400 text-sm">
+            <li className="flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              Casablanca / Monde
+            </li>
+            <li className="flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              prestige@i-wasp.com
+            </li>
+          </ul>
+        </div>
       </div>
-      <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
-        Réinventer l'aura digitale des leaders au Maroc.<br />
-        Fusionnant matériel de luxe et intelligence artificielle de pointe.
-      </p>
-      <p className="text-gray-500 text-xs">
-        © 2026 i-wasp. Rapport Stratégique Confidentiel.
-      </p>
+
+      <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p className="text-gray-500 text-sm">© 2026 i-wasp. Console de Gestion Unifiée.</p>
+        <div className="flex gap-6 text-gray-400 text-sm">
+          <a href="#" className="hover:text-[#D4AF37] transition-colors">Confidentialité</a>
+          <a href="#" className="hover:text-[#D4AF37] transition-colors">Conditions d'Elite</a>
+        </div>
+      </div>
     </div>
   </footer>
 );
@@ -736,12 +797,11 @@ const IWASPElite = () => {
   return (
     <div className="min-h-screen bg-[#FBFBFB] font-sans">
       <EliteNavbar />
-      <VisionIntro />
-      <HeroSection />
-      <FeaturesSection />
-      <DashboardSection />
-      <ProfileExperienceSection />
-      <IntelligenceSection />
+      <VisionSection />
+      <AuthSection />
+      <ClientDashboardSection />
+      <ProfileRenderSection />
+      <AdminConsoleSection />
       <EliteFooter />
     </div>
   );
