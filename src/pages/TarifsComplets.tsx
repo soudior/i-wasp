@@ -377,7 +377,7 @@ export default function TarifsComplets() {
               </div>
               <div className="text-center md:text-right shrink-0">
                 <div className="text-3xl font-bold">
-                  {formatPrice(WEB_MAINTENANCE.priceMad)}
+                  {formatPrice(WEB_MAINTENANCE.monthly.priceMad)}
                 </div>
                 <p className="text-sm text-muted-foreground">/mois</p>
               </div>
