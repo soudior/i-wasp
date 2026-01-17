@@ -340,100 +340,121 @@ const DashboardSection = () => {
 };
 
 // Profile Experience Section
-const ProfileExperienceSection = () => (
-  <section className="py-24 bg-[#FBFBFB]">
-    <div className="container mx-auto px-6">
-      {/* Section header */}
-      <motion.div 
-        className="text-center mb-16"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeInUp}
-      >
-        <h2 className="text-4xl md:text-5xl font-black text-[#0A1931] mb-4">
-          L'Interface de votre <span className="text-[#D4AF37]">Aura</span>
-        </h2>
-        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Lorsqu'un partenaire scanne votre carte i-wasp, voici l'expérience qu'il découvre.
-        </p>
-      </motion.div>
+const ProfileExperienceSection = () => {
+  const stories = [
+    { emoji: '🔥', label: 'VISION', bgColor: 'bg-orange-500' },
+    { emoji: '💼', label: 'PROJETS', bgColor: 'bg-[#2a2a3e]' },
+    { emoji: '📹', label: 'DEMO', bgColor: 'bg-[#2a2a3e]' }
+  ];
 
-      {/* Phone mockup */}
-      <motion.div 
-        className="flex justify-center"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={scaleIn}
-      >
-        <div className="relative">
-          {/* Phone frame */}
-          <div className="w-[320px] bg-[#0A1931] rounded-[3rem] p-3 shadow-2xl">
-            {/* Phone notch */}
-            <div className="absolute top-6 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full z-20" />
-            
-            {/* Phone screen */}
-            <div className="bg-gradient-to-br from-[#0f0f1a] to-[#1a1a2e] rounded-[2.5rem] overflow-hidden">
-              {/* Status bar */}
-              <div className="flex justify-between items-center px-8 py-3 text-white text-xs">
-                <span className="font-medium">12:45</span>
-                <div className="flex items-center gap-1">
-                  <span>📶</span>
-                  <span>🔋</span>
+  return (
+    <section className="py-24 bg-[#FBFBFB]">
+      <div className="container mx-auto px-6">
+        {/* Section header */}
+        <motion.div 
+          className="text-center mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+        >
+          <h2 className="text-4xl md:text-5xl font-black text-[#0A1931] mb-4">
+            L'Interface de votre <span className="text-[#D4AF37]">Aura</span>
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            Lorsqu'un partenaire scanne votre carte i-wasp, voici l'expérience qu'il découvre. Un design mobile-first fluide, inspiré des codes du luxe et des réseaux sociaux, conçu pour simplifier la prise de contact et maximiser votre impact visuel.
+          </p>
+        </motion.div>
+
+        {/* Phone mockup */}
+        <motion.div 
+          className="flex justify-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={scaleIn}
+        >
+          <div className="relative">
+            {/* Phone frame */}
+            <div className="w-[340px] bg-[#0A1931] rounded-[3rem] p-3 shadow-2xl border-4 border-[#D4AF37]/30">
+              {/* Phone notch */}
+              <div className="absolute top-6 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full z-20" />
+              
+              {/* Phone screen */}
+              <div className="bg-gradient-to-b from-[#0f1629] to-[#1a1f3a] rounded-[2.5rem] overflow-hidden min-h-[600px]">
+                {/* Status bar */}
+                <div className="flex justify-between items-center px-8 py-3 text-white text-xs">
+                  <span className="font-semibold">12:45</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#00D9A3]" />
+                    <div className="w-2 h-2 rounded-full bg-[#00D9A3]" />
+                  </div>
                 </div>
-              </div>
 
-              {/* Profile content */}
-              <div className="px-6 pb-8">
-                {/* Cover & Avatar */}
-                <div className="relative mb-16">
-                  <div className="h-24 bg-gradient-to-r from-[#D4AF37]/30 to-[#00D9A3]/30 rounded-2xl" />
-                  <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#F4D03F] p-1">
-                      <div className="w-full h-full rounded-full bg-[#0A1931] flex items-center justify-center text-white text-2xl font-bold">
-                        ME
+                {/* Share button */}
+                <div className="absolute top-16 right-8 z-10">
+                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center">
+                    <ExternalLink className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+
+                {/* Profile content */}
+                <div className="px-6 pb-8 pt-8">
+                  {/* Avatar with gold ring */}
+                  <div className="flex justify-center mb-6">
+                    <div className="relative">
+                      <div className="w-28 h-28 rounded-full p-1 bg-gradient-to-br from-[#D4AF37] to-[#F4D03F]">
+                        <div className="w-full h-full rounded-full bg-gradient-to-br from-[#4a90a4] to-[#6bb5c9] flex items-center justify-center overflow-hidden">
+                          {/* Stylized avatar */}
+                          <div className="w-full h-full bg-gradient-to-br from-[#4a90a4] to-[#6bb5c9] flex items-center justify-center">
+                            <span className="text-3xl font-bold text-white/80">👤</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Name & Bio */}
-                <div className="text-center mb-6">
-                  <h3 className="text-white font-bold text-xl">Mehdi El Alami</h3>
-                  <p className="text-[#D4AF37] text-sm mb-2">Fondateur i-wasp Elite 🚀</p>
-                  <p className="text-gray-400 text-xs leading-relaxed">
-                    Digitalisant le networking au Maroc via le NFC et l'IA.
-                  </p>
-                </div>
-
-                {/* Action buttons */}
-                <div className="flex gap-3 mb-6">
-                  <button className="flex-1 flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-[#D4AF37] to-[#F4D03F] text-[#0A1931] font-bold rounded-xl text-sm">
-                    <Save className="w-4 h-4" />
-                    Enregistrer
-                  </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white font-bold rounded-xl text-sm">
-                    <MessageCircle className="w-4 h-4" />
-                    WhatsApp
-                  </button>
-                </div>
-
-                {/* Stories */}
-                <div className="mb-6">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-white text-sm font-bold">Stories i-wasp</span>
-                    <span className="text-[#D4AF37] text-xs">Voir tout</span>
+                  {/* Name & Title */}
+                  <div className="text-center mb-6">
+                    <h3 className="text-white font-black text-2xl mb-2">Mehdi El Alami</h3>
+                    <p className="text-[#D4AF37] text-sm font-bold tracking-wider uppercase mb-3">
+                      FONDATEUR I-WASP ELITE 🚀
+                    </p>
+                    <p className="text-gray-400 text-sm leading-relaxed max-w-[200px] mx-auto">
+                      Digitalisant le networking au Maroc via le NFC et l'IA. Expert en identité digitale premium.
+                    </p>
                   </div>
-                  <div className="flex gap-3">
-                    {['🔥 VISION', '💼 PROJETS', '🎥 DEMO'].map((story, i) => (
-                      <div key={i} className="flex-1 aspect-square rounded-xl bg-gradient-to-br from-[#D4AF37]/20 to-[#00D9A3]/20 border border-white/10 flex flex-col items-center justify-center p-2">
-                        <span className="text-xl">{story.split(' ')[0]}</span>
-                        <span className="text-white text-[10px] mt-1">{story.split(' ')[1]}</span>
-                      </div>
-                    ))}
+
+                  {/* Action buttons */}
+                  <div className="flex gap-3 mb-8">
+                    <button className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-[#D4AF37] to-[#F4D03F] text-[#0A1931] font-bold rounded-xl text-sm uppercase tracking-wide">
+                      <Save className="w-4 h-4" />
+                      Enregistrer
+                    </button>
+                    <button className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-white/10 border border-white/20 text-white font-bold rounded-xl text-sm uppercase tracking-wide">
+                      <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                      WhatsApp
+                    </button>
                   </div>
-                </div>
+
+                  {/* Stories */}
+                  <div className="mb-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-white text-sm font-bold uppercase tracking-wider">Stories I-WASP</span>
+                      <span className="text-[#D4AF37] text-xs font-semibold uppercase">Voir tout</span>
+                    </div>
+                    <div className="flex gap-3">
+                      {stories.map((story, i) => (
+                        <div 
+                          key={i} 
+                          className={`flex-1 aspect-square rounded-2xl ${story.bgColor} flex flex-col items-center justify-center p-3 transition-transform hover:scale-105`}
+                        >
+                          <span className="text-2xl mb-1">{story.emoji}</span>
+                          <span className="text-white text-[10px] font-bold tracking-wider">{story.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
                 {/* Social links */}
                 <div className="space-y-2">
@@ -473,7 +494,8 @@ const ProfileExperienceSection = () => (
       </motion.div>
     </div>
   </section>
-);
+  );
+};
 
 // AI Intelligence Section
 const AIIntelligenceSection = () => (
