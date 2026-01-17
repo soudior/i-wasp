@@ -68,7 +68,6 @@ const EliteNavbar = () => {
     { id: 'auth', label: "S'inscrire" },
     { id: 'dashboard', label: 'Dashboard Client' },
     { id: 'profile', label: 'Rendu Profil' },
-    { id: 'admin', label: 'Console Admin 👑' },
   ];
 
   const scrollToSection = (id: string) => {
@@ -1270,7 +1269,6 @@ const IWASPElite = () => {
       <AuthSection />
       <ClientDashboardSection />
       <ProfileRenderSection />
-      <AdminConsoleSection />
       <EliteFooter />
     </div>
   );
