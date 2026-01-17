@@ -15,6 +15,9 @@ import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { QRCodeSVG } from "qrcode.react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import {
   FileDown,
   Loader2,
@@ -26,12 +29,15 @@ import {
   Info,
   Download,
   FileText,
-  Layers
+  Layers,
+  User,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { 
   CARD_DIMENSIONS, 
@@ -89,6 +95,28 @@ export function EvolisPDFGenerator({
   const [selectedColor, setSelectedColor] = useState<PrintColor>(design?.backgroundColor || "black");
   const [logoUrl, setLogoUrl] = useState<string | undefined>(design?.logoUrl);
   const [logoDimensions, setLogoDimensions] = useState<{ width: number; height: number } | null>(null);
+  const [selectedCardId, setSelectedCardId] = useState<string>("");
+
+  // Fetch digital cards with serial codes
+  const { data: digitalCards } = useQuery({
+    queryKey: ['evolis-digital-cards'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('digital_cards')
+        .select('id, first_name, last_name, company, serial_code, slug')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const selectedCard = digitalCards?.find(c => c.id === selectedCardId);
+  
+  // Generate activation URL with pre-filled serial code
+  const activationUrl = selectedCard?.serial_code 
+    ? `${window.location.origin}/activation?code=${selectedCard.serial_code}`
+    : `${window.location.origin}/activation`;
 
   const colorConfig = PRINT_COLORS[selectedColor];
 
@@ -96,6 +124,7 @@ export function EvolisPDFGenerator({
     setLogoUrl(url);
     setLogoDimensions(dimensions);
   };
+
 
   // Generate print-ready PDF for Evolis
   const generateEvolisPDF = async () => {
@@ -287,6 +316,67 @@ export function EvolisPDFGenerator({
           </CardContent>
         </Card>
 
+        {/* Card Selector for QR Code */}
+        <Card 
+          className="border"
+          style={{ 
+            backgroundColor: 'rgba(255, 255, 255, 0.02)',
+            borderColor: 'rgba(245, 245, 245, 0.1)'
+          }}
+        >
+          <CardHeader className="pb-3">
+            <CardTitle 
+              className="text-sm flex items-center gap-2"
+              style={{ color: '#F5F5F5' }}
+            >
+              <User size={16} />
+              Carte digitale (QR code d'activation)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Select value={selectedCardId} onValueChange={setSelectedCardId}>
+              <SelectTrigger 
+                className="w-full border"
+                style={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  borderColor: 'rgba(245, 245, 245, 0.1)',
+                  color: '#F5F5F5'
+                }}
+              >
+                <SelectValue placeholder="Sélectionner une carte..." />
+              </SelectTrigger>
+              <SelectContent>
+                {digitalCards?.map((card) => (
+                  <SelectItem key={card.id} value={card.id}>
+                    <div className="flex items-center gap-2">
+                      <span>{card.first_name} {card.last_name}</span>
+                      {card.company && (
+                        <span className="text-muted-foreground text-xs">• {card.company}</span>
+                      )}
+                      {card.serial_code && (
+                        <code className="text-xs text-cyan-400 ml-2">{card.serial_code}</code>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedCard && (
+              <div 
+                className="mt-3 p-3 rounded-lg"
+                style={{ backgroundColor: 'rgba(34, 211, 238, 0.1)' }}
+              >
+                <p className="text-xs mb-1" style={{ color: 'rgba(245, 245, 245, 0.5)' }}>
+                  URL du QR code (portail d'activation) :
+                </p>
+                <code className="text-xs break-all" style={{ color: '#22D3EE' }}>
+                  {activationUrl}
+                </code>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Logo Upload Section */}
         <Card 
           className="border"
@@ -438,29 +528,50 @@ export function EvolisPDFGenerator({
               >
                 {/* Card Content - Back */}
                 <div className="w-full h-full flex flex-col items-center justify-center p-6">
-                  {/* QR Code Placeholder */}
+                  {/* QR Code - Dynamic based on selected card */}
                   <div 
-                    className="w-20 h-20 rounded-lg flex items-center justify-center mb-3"
+                    className="w-20 h-20 rounded-lg flex items-center justify-center mb-3 p-1"
                     style={{ backgroundColor: '#FFFFFF' }}
                   >
-                    <div className="grid grid-cols-3 gap-1 p-2">
-                      {[...Array(9)].map((_, i) => (
-                        <div 
-                          key={i} 
-                          className="w-3 h-3"
-                          style={{ 
-                            backgroundColor: i % 2 === 0 ? '#0B0B0B' : 'transparent'
-                          }}
-                        />
-                      ))}
-                    </div>
+                    {selectedCard?.serial_code ? (
+                      <QRCodeSVG 
+                        value={activationUrl}
+                        size={72}
+                        level="H"
+                        bgColor="#FFFFFF"
+                        fgColor="#0B0B0B"
+                      />
+                    ) : (
+                      <div className="grid grid-cols-3 gap-1 p-2">
+                        {[...Array(9)].map((_, i) => (
+                          <div 
+                            key={i} 
+                            className="w-3 h-3"
+                            style={{ 
+                              backgroundColor: i % 2 === 0 ? '#0B0B0B' : 'transparent'
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <p 
                     className="text-xs text-center"
                     style={{ color: colorConfig.textColor }}
                   >
-                    Scanner pour voir le profil
+                    {selectedCard?.serial_code 
+                      ? `Code: ${selectedCard.serial_code}`
+                      : "Scanner pour activer"
+                    }
                   </p>
+                  {selectedCard && (
+                    <p 
+                      className="text-[10px] text-center mt-1 opacity-60"
+                      style={{ color: colorConfig.textColor }}
+                    >
+                      {selectedCard.first_name} {selectedCard.last_name}
+                    </p>
+                  )}
                 </div>
               </motion.div>
             </div>
