@@ -50,14 +50,66 @@ interface CollectedData {
   contactPhone?: string;
 }
 
-const QUICK_SUGGESTIONS = [
-  { label: "Restaurant", icon: "🍽️" },
-  { label: "Boutique", icon: "🛍️" },
-  { label: "Coach", icon: "💪" },
-  { label: "Artisan", icon: "🔨" },
-  { label: "Agence", icon: "💼" },
-  { label: "Freelance", icon: "💻" },
-];
+// Contextual suggestions based on current step
+const CONTEXTUAL_SUGGESTIONS: Record<string, Array<{ label: string; icon: string }>> = {
+  business_type: [
+    { label: "Restaurant", icon: "🍽️" },
+    { label: "Boutique en ligne", icon: "🛍️" },
+    { label: "Coach sportif", icon: "💪" },
+    { label: "Artisan", icon: "🔨" },
+    { label: "Agence digitale", icon: "💼" },
+    { label: "Freelance", icon: "💻" },
+  ],
+  business_name: [
+    { label: "Je n'ai pas encore de nom", icon: "🤔" },
+    { label: "Proposez-moi des idées", icon: "💡" },
+  ],
+  description: [
+    { label: "C'est une entreprise locale", icon: "📍" },
+    { label: "Je travaille en ligne uniquement", icon: "🌐" },
+    { label: "Je débute mon activité", icon: "🚀" },
+    { label: "J'ai déjà des clients", icon: "👥" },
+  ],
+  services: [
+    { label: "Services à domicile", icon: "🏠" },
+    { label: "Livraison disponible", icon: "🚚" },
+    { label: "Sur rendez-vous", icon: "📅" },
+    { label: "Boutique physique", icon: "🏪" },
+  ],
+  products: [
+    { label: "Produits artisanaux", icon: "✨" },
+    { label: "Services personnalisés", icon: "🎯" },
+    { label: "Formation / Coaching", icon: "📚" },
+    { label: "Consultation", icon: "💬" },
+  ],
+  style: [
+    { label: "Moderne et épuré", icon: "✨" },
+    { label: "Classique et élégant", icon: "🎩" },
+    { label: "Coloré et dynamique", icon: "🌈" },
+    { label: "Minimaliste", icon: "⚪" },
+    { label: "Luxe et premium", icon: "💎" },
+    { label: "Naturel et organique", icon: "🌿" },
+  ],
+  colors: [
+    { label: "Bleu professionnel", icon: "💙" },
+    { label: "Vert nature", icon: "💚" },
+    { label: "Noir élégant", icon: "🖤" },
+    { label: "Orange énergique", icon: "🧡" },
+    { label: "Rose moderne", icon: "💗" },
+    { label: "Laissez-moi choisir", icon: "🎨" },
+  ],
+  contact: [
+    { label: "Email uniquement", icon: "📧" },
+    { label: "Téléphone + Email", icon: "📞" },
+    { label: "Formulaire de contact", icon: "📝" },
+    { label: "WhatsApp business", icon: "💬" },
+  ],
+  confirmation: [
+    { label: "Oui, c'est parfait !", icon: "✅" },
+    { label: "Je veux modifier quelque chose", icon: "✏️" },
+    { label: "Recommencer", icon: "🔄" },
+  ],
+};
 
 const INITIAL_MESSAGE: Message = {
   id: "welcome",
@@ -885,45 +937,61 @@ export default function WebStudioAI() {
               </motion.div>
             )}
             
-            {/* Quick suggestions - First question only */}
-            {messages.length === 1 && !isLoading && (
-              <motion.div
-                className="flex flex-wrap gap-3 justify-center pt-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                {QUICK_SUGGESTIONS.map((suggestion, i) => (
-                  <motion.button
-                    key={suggestion.label}
-                    onClick={() => sendMessage(suggestion.label)}
-                    className="px-5 py-3 rounded-2xl text-sm font-medium flex items-center gap-2"
-                    style={{
-                      backgroundColor: theme.card,
-                      color: theme.text,
-                      boxShadow: isDark 
-                        ? "0 2px 10px rgba(0,0,0,0.3)"
-                        : "0 2px 10px rgba(0,0,0,0.05)",
-                      border: `1px solid ${theme.cardBorder}`,
-                    }}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 + i * 0.08 }}
-                    whileHover={{ 
-                      scale: 1.05, 
-                      boxShadow: isDark 
-                        ? "0 8px 25px rgba(0,0,0,0.4)"
-                        : "0 8px 25px rgba(0,0,0,0.08)",
-                      backgroundColor: `${theme.accent}15`,
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span>{suggestion.icon}</span>
-                    {suggestion.label}
-                  </motion.button>
-                ))}
-              </motion.div>
-            )}
+            {/* Contextual quick suggestions based on current step */}
+            <AnimatePresence mode="wait">
+              {!isLoading && !isReadyToGenerate && CONTEXTUAL_SUGGESTIONS[currentStep] && (
+                <motion.div
+                  key={currentStep}
+                  className="flex flex-wrap gap-2.5 justify-center pt-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10, transition: { duration: 0.15 } }}
+                  transition={{ delay: 0.2, duration: 0.3 }}
+                >
+                  {CONTEXTUAL_SUGGESTIONS[currentStep].map((suggestion, i) => (
+                    <motion.button
+                      key={`${currentStep}-${suggestion.label}`}
+                      onClick={() => sendMessage(suggestion.label)}
+                      className="px-4 py-2.5 rounded-xl text-[13px] font-medium flex items-center gap-2 backdrop-blur-sm"
+                      style={{
+                        backgroundColor: theme.card,
+                        color: theme.text,
+                        boxShadow: isDark 
+                          ? "0 2px 10px rgba(0,0,0,0.3)"
+                          : "0 2px 10px rgba(0,0,0,0.05)",
+                        border: `1px solid ${theme.cardBorder}`,
+                      }}
+                      initial={{ opacity: 0, y: 12, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ 
+                        delay: 0.25 + i * 0.05,
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 25,
+                      }}
+                      whileHover={{ 
+                        scale: 1.05, 
+                        y: -2,
+                        boxShadow: isDark 
+                          ? `0 8px 25px rgba(0,0,0,0.4), 0 0 0 1px ${theme.accent}40`
+                          : `0 8px 25px rgba(0,0,0,0.08), 0 0 0 1px ${theme.accent}30`,
+                        backgroundColor: isDark ? `${theme.accent}20` : `${theme.accent}10`,
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <motion.span
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.3 + i * 0.05 }}
+                      >
+                        {suggestion.icon}
+                      </motion.span>
+                      {suggestion.label}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
             
             <div ref={messagesEndRef} />
           </div>
