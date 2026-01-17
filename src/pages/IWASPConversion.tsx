@@ -586,6 +586,7 @@ export default function IWASPConversion() {
             <nav className="flex gap-6 text-sm text-muted-foreground">
               <Link to="/iwasp/produit" className="hover:text-foreground transition-colors">Produit</Link>
               <Link to="/express/offre" className="hover:text-foreground transition-colors">Commander</Link>
+              <Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link>
             </nav>
           </div>
           <p className="text-xs text-muted-foreground">
