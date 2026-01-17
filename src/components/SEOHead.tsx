@@ -12,7 +12,7 @@ interface SEOHeadProps {
   description: string;
   canonical?: string;
   image?: string;
-  type?: "website" | "article" | "product";
+  type?: "website" | "article" | "product" | "profile";
   noindex?: boolean;
 }
 
@@ -91,43 +91,80 @@ export function SEOHead({
 // Predefined SEO configs for common pages
 export const SEO_CONFIGS = {
   home: {
-    title: "i-wasp — Haute Couture Digitale",
-    description: "Maison d'identité professionnelle digitale. Cartes de visite NFC premium et ongles connectés. Sobre, précise, intemporelle.",
+    title: "IWASP — Premium NFC Business Cards | Digital Identity",
+    description: "Premium NFC business cards for professionals worldwide. Share your contact info with a single tap. Ships globally from Europe.",
     canonical: "/",
+    image: "https://i-wasp.lovable.app/og-home.png",
   },
   products: {
-    title: "Produits NFC Premium",
-    description: "Découvrez notre collection de cartes de visite NFC premium. Design minimaliste, matériaux nobles, technologie de pointe.",
+    title: "NFC Cards & Products | IWASP",
+    description: "Discover our premium NFC business cards collection. Minimalist design, noble materials, cutting-edge technology. Free worldwide shipping.",
     canonical: "/produits",
   },
   nails: {
-    title: "i-wasp Nails — Ongles Connectés",
-    description: "Les premiers ongles connectés NFC au monde. Partagez vos informations d'un simple toucher. Innovation beauté et technologie.",
+    title: "NFC Nails — Connected Beauty | IWASP",
+    description: "The world's first NFC connected nails. Share your information with a simple touch. Beauty innovation meets technology.",
     canonical: "/nails",
   },
   contact: {
-    title: "Contact",
-    description: "Contactez l'équipe i-wasp pour vos projets de cartes de visite NFC premium ou pour devenir partenaire.",
+    title: "Contact Us | IWASP",
+    description: "Contact the IWASP team for your premium NFC business card projects or to become a partner. Worldwide support.",
     canonical: "/contact",
   },
   pricing: {
-    title: "Tarifs",
-    description: "Découvrez nos offres et tarifs pour les cartes de visite NFC premium i-wasp. Solutions pour particuliers et entreprises.",
+    title: "Pricing Plans | IWASP",
+    description: "Simple and transparent pricing for IWASP premium NFC business cards. Solutions for individuals and enterprises worldwide.",
     canonical: "/pricing",
   },
   faq: {
-    title: "FAQ — Questions Fréquentes",
-    description: "Trouvez les réponses à vos questions sur les cartes de visite NFC i-wasp. Fonctionnement, compatibilité, livraison.",
+    title: "FAQ — Frequently Asked Questions | IWASP",
+    description: "Find answers to your questions about IWASP NFC business cards. How it works, compatibility, worldwide delivery.",
     canonical: "/faq",
   },
   about: {
-    title: "À Propos",
-    description: "Découvrez l'histoire et la vision d'i-wasp, maison d'identité professionnelle digitale au Maroc.",
+    title: "About Us | IWASP",
+    description: "Discover the story and vision of IWASP, the premium digital professional identity house. Based in Morocco, serving worldwide.",
     canonical: "/about",
   },
   enterprise: {
-    title: "Solutions Entreprises",
-    description: "Solutions NFC sur mesure pour les entreprises. Cartes de visite connectées, badges, accès. Contactez-nous pour un devis.",
+    title: "Enterprise Solutions | IWASP",
+    description: "Custom NFC solutions for businesses. Connected business cards, badges, access control. Contact us for a quote.",
     canonical: "/enterprise",
   },
+  order: {
+    title: "Order Your NFC Card | IWASP",
+    description: "Choose your premium NFC business card. Multiple designs available. Free worldwide shipping. 48h express delivery.",
+    canonical: "/order/offre",
+  },
+  webStudio: {
+    title: "Web Studio — AI Website Builder | IWASP",
+    description: "Create your professional website with AI. Turnkey solution: design, hosting, domain included. Launch in 48 hours.",
+    canonical: "/web-studio",
+  },
+  dashboard: {
+    title: "Dashboard | IWASP",
+    description: "Manage your digital business cards, track analytics, and capture leads from your IWASP dashboard.",
+    canonical: "/dashboard",
+  },
 } as const;
+
+// Dynamic SEO config generator for public cards
+export function getPublicCardSEO(card: {
+  first_name: string;
+  last_name: string;
+  title?: string | null;
+  company?: string | null;
+  photo_url?: string | null;
+  slug: string;
+}) {
+  const fullName = `${card.first_name} ${card.last_name}`.trim();
+  const role = card.title ? `${card.title}${card.company ? ` at ${card.company}` : ''}` : card.company || '';
+  
+  return {
+    title: `${fullName}${role ? ` — ${role}` : ''} | IWASP`,
+    description: `Connect with ${fullName}${role ? `, ${role}` : ''}. Tap to get contact info, save to phone, and connect on social media.`,
+    canonical: `/c/${card.slug}`,
+    image: card.photo_url || "https://i-wasp.lovable.app/og-card.png",
+    type: "profile" as const,
+  };
+}
