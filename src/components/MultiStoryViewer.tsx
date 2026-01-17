@@ -1,10 +1,10 @@
 /**
  * MultiStoryViewer - Affichage plein écran immersif des stories (style Instagram Premium)
  * Défilement automatique, navigation tactile fluide, animations premium
- * Avec tracking analytics détaillé
+ * Avec tracking analytics détaillé et optimisations performance
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import { X, MessageCircle, ChevronLeft, ChevronRight, Eye, Pause, Play, Volume2, VolumeX, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useStoryAnalytics } from "@/hooks/useStoryAnalytics";
+import { useReducedMotion, getOptimizedTransition } from "@/hooks/useReducedMotion";
 
 interface Story {
   id: string;
@@ -62,11 +63,32 @@ export function MultiStoryViewer({
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
   
   const { trackEvent } = useStoryAnalytics();
+  const { shouldReduceMotion, durationMultiplier } = useReducedMotion();
 
   const currentStory = stories[currentIndex];
   const dragX = useMotionValue(0);
-  const dragOpacity = useTransform(dragX, [-200, 0, 200], [0.5, 1, 0.5]);
-  const dragScale = useTransform(dragX, [-200, 0, 200], [0.9, 1, 0.9]);
+  // Désactiver les transforms coûteux en mode réduit
+  const dragOpacity = useTransform(dragX, [-200, 0, 200], shouldReduceMotion ? [1, 1, 1] : [0.5, 1, 0.5]);
+  const dragScale = useTransform(dragX, [-200, 0, 200], shouldReduceMotion ? [1, 1, 1] : [0.9, 1, 0.9]);
+
+  // Transitions optimisées mémorisées
+  const optimizedTransition = useMemo(() => getOptimizedTransition(shouldReduceMotion), [shouldReduceMotion]);
+  
+  // Animation variants optimisées pour les contenus
+  const contentVariants = useMemo(() => {
+    if (shouldReduceMotion) {
+      return {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+      };
+    }
+    return {
+      initial: { opacity: 0, scale: 1.1, x: 50 },
+      animate: { opacity: 1, scale: 1, x: 0 },
+      exit: { opacity: 0, scale: 0.9, x: -50 },
+    };
+  }, [shouldReduceMotion]);
 
   // Cleanup function for interval
   const clearProgressInterval = useCallback(() => {
@@ -252,38 +274,40 @@ export function MultiStoryViewer({
         className="fixed inset-0 z-[100] bg-black flex items-center justify-center"
         style={{ touchAction: 'none' }}
       >
-        {/* Blurred background */}
-        <motion.div
-          className="absolute inset-0 overflow-hidden"
-          style={{ opacity: dragOpacity }}
-        >
-          {currentStory.content_type === "image" && currentStory.image_url && (
-            <img
-              src={currentStory.image_url}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover blur-3xl scale-150 opacity-30"
-            />
-          )}
-          {currentStory.content_type === "text" && (
-            <div
-              className="w-full h-full opacity-30"
-              style={{ backgroundColor: currentStory.text_background_color || "#1D1D1F" }}
-            />
-          )}
-        </motion.div>
+        {/* Blurred background - désactivé en mode réduit */}
+        {!shouldReduceMotion && (
+          <motion.div
+            className="absolute inset-0 overflow-hidden"
+            style={{ opacity: dragOpacity }}
+          >
+            {currentStory.content_type === "image" && currentStory.image_url && (
+              <img
+                src={currentStory.image_url}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover blur-3xl scale-150 opacity-30"
+              />
+            )}
+            {currentStory.content_type === "text" && (
+              <div
+                className="w-full h-full opacity-30"
+                style={{ backgroundColor: currentStory.text_background_color || "#1D1D1F" }}
+              />
+            )}
+          </motion.div>
+        )}
 
         {/* Story container */}
         <motion.div
           ref={containerRef}
           className="relative w-full h-full max-w-lg mx-auto flex flex-col"
-          drag="x"
+          drag={shouldReduceMotion ? false : "x"}
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.2}
           onDragStart={() => { setIsDragging(true); setIsPaused(true); }}
           onDragEnd={handleDragEnd}
-          style={{ x: dragX, scale: dragScale }}
+          style={shouldReduceMotion ? undefined : { x: dragX, scale: dragScale }}
           onClick={handleClick}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -319,9 +343,9 @@ export function MultiStoryViewer({
           {/* Header */}
           <motion.div
             className="absolute top-8 left-0 right-0 z-20 flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)]"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -20 }}
+            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            transition={shouldReduceMotion ? { duration: 0.15 } : { delay: 0.2 }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3">
@@ -362,8 +386,8 @@ export function MultiStoryViewer({
               {/* Mute button for videos */}
               {currentStory.content_type === "video" && (
                 <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.1 }}
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsMuted(!isMuted);
@@ -371,32 +395,32 @@ export function MultiStoryViewer({
                       videoRef.current.muted = !isMuted;
                     }
                   }}
-                  className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white"
+                  className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white active:scale-95"
                 >
                   {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
                 </motion.button>
               )}
               
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.1 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsPaused(!isPaused);
                 }}
-                className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white"
+                className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white active:scale-95"
               >
                 {isPaused ? <Play size={16} /> : <Pause size={16} />}
               </motion.button>
               
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.1 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   onClose();
                 }}
-                className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white"
+                className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white active:scale-95"
               >
                 <X size={18} />
               </motion.button>
@@ -408,10 +432,10 @@ export function MultiStoryViewer({
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStory.id}
-                initial={{ opacity: 0, scale: 1.1, x: 50 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.9, x: -50 }}
-                transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
+                initial={contentVariants.initial}
+                animate={contentVariants.animate}
+                exit={contentVariants.exit}
+                transition={shouldReduceMotion ? { duration: 0.15 } : { duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
                 className="w-full h-full flex items-center justify-center"
               >
                 {/* Image story */}
@@ -420,7 +444,7 @@ export function MultiStoryViewer({
                     src={currentStory.image_url}
                     alt="Story"
                     className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
-                    layoutId={`story-image-${currentStory.id}`}
+                    layoutId={shouldReduceMotion ? undefined : `story-image-${currentStory.id}`}
                   />
                 )}
 
@@ -444,15 +468,15 @@ export function MultiStoryViewer({
                     style={{
                       backgroundColor: currentStory.text_background_color || "#1D1D1F",
                     }}
-                    initial={{ rotateY: -15 }}
-                    animate={{ rotateY: 0 }}
-                    transition={{ duration: 0.4 }}
+                    initial={shouldReduceMotion ? undefined : { rotateY: -15 }}
+                    animate={shouldReduceMotion ? undefined : { rotateY: 0 }}
+                    transition={shouldReduceMotion ? undefined : { duration: 0.4 }}
                   >
                     <motion.p 
                       className="text-white text-xl sm:text-2xl md:text-3xl font-semibold text-center leading-relaxed max-w-xl"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15 }}
+                      initial={shouldReduceMotion ? undefined : { opacity: 0, y: 20 }}
+                      animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+                      transition={shouldReduceMotion ? undefined : { delay: 0.15 }}
                     >
                       {currentStory.text_content}
                     </motion.p>
@@ -462,7 +486,7 @@ export function MultiStoryViewer({
             </AnimatePresence>
           </div>
 
-          {/* Navigation arrows (desktop only) */}
+          {/* Navigation arrows (desktop only) - simplifiées en mode réduit */}
           <div
             className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden md:block"
             onClick={(e) => e.stopPropagation()}
@@ -470,13 +494,13 @@ export function MultiStoryViewer({
             <AnimatePresence>
               {currentIndex > 0 && (
                 <motion.button
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.2)" }}
-                  whileTap={{ scale: 0.9 }}
+                  initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -10 }}
+                  animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                  exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -10 }}
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.1, backgroundColor: "rgba(255,255,255,0.2)" }}
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
                   onClick={goToPrev}
-                  className="w-10 h-10 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white"
+                  className="w-10 h-10 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white active:scale-95"
                 >
                   <ChevronLeft size={22} />
                 </motion.button>
@@ -491,13 +515,13 @@ export function MultiStoryViewer({
             <AnimatePresence>
               {currentIndex < stories.length - 1 && (
                 <motion.button
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 10 }}
-                  whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.2)" }}
-                  whileTap={{ scale: 0.9 }}
+                  initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 10 }}
+                  animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                  exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 10 }}
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.1, backgroundColor: "rgba(255,255,255,0.2)" }}
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
                   onClick={goToNext}
-                  className="w-10 h-10 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white"
+                  className="w-10 h-10 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white active:scale-95"
                 >
                   <ChevronRight size={22} />
                 </motion.button>
@@ -508,9 +532,9 @@ export function MultiStoryViewer({
           {/* Bottom section */}
           <motion.div
             className="absolute bottom-0 left-0 right-0 z-20 pb-[env(safe-area-inset-bottom,24px)]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            transition={shouldReduceMotion ? { duration: 0.15 } : { delay: 0.3 }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Stats bar */}
@@ -518,7 +542,7 @@ export function MultiStoryViewer({
               <div className="flex items-center gap-4">
                 <motion.div 
                   className="flex items-center gap-1.5 text-white/70"
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
                 >
                   <Eye size={16} />
                   <span className="text-sm font-medium">
@@ -533,8 +557,8 @@ export function MultiStoryViewer({
 
               {/* Share button */}
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.1 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   // Share functionality
@@ -545,7 +569,7 @@ export function MultiStoryViewer({
                     });
                   }
                 }}
-                className="w-9 h-9 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white"
+                className="w-9 h-9 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white active:scale-95"
               >
                 <Share2 size={16} />
               </motion.button>
@@ -555,10 +579,10 @@ export function MultiStoryViewer({
             {whatsappNumber && (
               <div className="px-4">
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
                   onClick={handleReplyWhatsApp}
-                  className="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-2xl font-medium flex items-center justify-center gap-2 shadow-lg shadow-green-500/25"
+                  className="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-2xl font-medium flex items-center justify-center gap-2 shadow-lg shadow-green-500/25 active:scale-[0.98]"
                 >
                   <MessageCircle size={20} />
                   Répondre via WhatsApp
@@ -567,13 +591,14 @@ export function MultiStoryViewer({
             )}
           </motion.div>
 
-          {/* Pause indicator */}
+          {/* Pause indicator - simplifié en mode réduit */}
           <AnimatePresence>
             {isPaused && !isDragging && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.5 }}
+                initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5 }}
+                animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+                exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5 }}
+                transition={shouldReduceMotion ? { duration: 0.1 } : undefined}
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
               >
                 <div className="w-16 h-16 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center">
@@ -584,8 +609,8 @@ export function MultiStoryViewer({
           </AnimatePresence>
         </motion.div>
 
-        {/* Story preview thumbnails (desktop) */}
-        {stories.length > 1 && (
+        {/* Story preview thumbnails (desktop) - masquées en mode réduit pour économiser les ressources */}
+        {stories.length > 1 && !shouldReduceMotion && (
           <motion.div
             className="hidden lg:flex absolute bottom-8 left-1/2 -translate-x-1/2 gap-2 z-10"
             initial={{ opacity: 0, y: 20 }}
