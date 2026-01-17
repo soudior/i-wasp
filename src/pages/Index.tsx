@@ -1,57 +1,30 @@
 /**
- * Index / Home Page — IWASP
+ * i-wasp OMNIA EDITION — Landing "Manifeste"
  * 
- * Style: Apple Human Interface Guidelines (Cupertino)
- * Minimal, airy, high-end, calm, professional
- * International focus - English content with i18n support
+ * Philosophie : "L'Art de la Présence"
+ * Style : Soie liquide, obsidienne, architecture Aman Hotels
  */
 
 import { Link } from "react-router-dom";
-import { ArrowRight, Smartphone, CreditCard, Zap, Shield, BarChart3, HeartHandshake, Globe } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { APPLE } from "@/lib/applePalette";
-import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
-import { NFCDemoSection } from "@/components/landing/NFCDemoSection";
-import { SocialProofSection } from "@/components/landing/SocialProofSection";
-import { ComparisonSection } from "@/components/landing/ComparisonSection";
-import { PricingSection } from "@/components/landing/PricingSection";
-import { FAQSection } from "@/components/landing/FAQSection";
-import { FooterSection } from "@/components/landing/FooterSection";
-import { LanguageSelector } from "@/components/LanguageSelector";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
+import { OmniaCard3D, OmniaGlow } from "@/components/omnia/OmniaGlass";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
-// Animation variants - Smooth Apple-style
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.8, ease: "easeOut" as const }
-  }
-};
-
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: { 
+// Animation variants — Liquid, ethereal
+const liquidReveal = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i: number) => ({
     opacity: 1,
-    transition: { duration: 0.6, ease: "easeOut" as const }
-  }
-};
-
-const stagger = {
-  visible: {
-    transition: { staggerChildren: 0.1 }
-  }
-};
-
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
-    scale: 1,
-    transition: { duration: 0.6, ease: "easeOut" as const }
-  }
+    y: 0,
+    transition: {
+      duration: 1.8,
+      delay: i * 0.15,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  }),
 };
 
 const Index = () => {
@@ -60,482 +33,198 @@ const Index = () => {
   return (
     <>
       <SEOHead {...SEO_CONFIGS.home} />
-      <div
-      className="min-h-screen font-sans antialiased"
-      style={{ backgroundColor: APPLE.background }}
-    >
-      {/* ═══════════════════════════════════════════════════════════════════
-          NAVIGATION — Apple-style minimal
-          ═══════════════════════════════════════════════════════════════════ */}
-      <motion.nav 
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl"
-        style={{ 
-          backgroundColor: 'rgba(245, 245, 247, 0.8)',
-          borderBottom: `1px solid ${APPLE.border}`
-        }}
-      >
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link 
-            to="/" 
-            className="text-xl font-semibold tracking-tight"
-            style={{ color: APPLE.text }}
-          >
-            IWASP
-          </Link>
-          
-          <div className="flex items-center gap-4">
-            {/* Language Selector */}
-            <LanguageSelector />
-
-            <Link
-              to="/login"
-              className="text-sm font-medium transition-colors duration-200"
-              style={{ color: APPLE.textSecondary }}
-              onMouseEnter={(e) => e.currentTarget.style.color = APPLE.accent}
-              onMouseLeave={(e) => e.currentTarget.style.color = APPLE.textSecondary}
-            >
-              {t('nav.login')}
-            </Link>
+      
+      <div className="min-h-screen bg-omnia-obsidienne relative overflow-hidden">
+        
+        {/* ═══════════════════════════════════════════════════════════════
+            GLOW AMBIANCE — Champagne radial ultra-diffus
+            ═══════════════════════════════════════════════════════════════ */}
+        <OmniaGlow 
+          className="w-full h-[60vh] top-0 left-0 right-0" 
+          intensity="medium" 
+        />
+        
+        {/* ═══════════════════════════════════════════════════════════════
+            NAVIGATION — Quasi-invisible, flottante
+            ═══════════════════════════════════════════════════════════════ */}
+        <motion.nav
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed top-0 left-0 right-0 z-50 px-8 py-6"
+        >
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
             <Link 
-              to="/order/offre"
-              className="text-sm font-medium px-5 py-2.5 rounded-full transition-all duration-200"
-              style={{ 
-                backgroundColor: APPLE.accent,
-                color: '#FFFFFF'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = APPLE.accentHover}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = APPLE.accent}
+              to="/" 
+              className="font-display text-xl tracking-[0.15em] text-omnia-champagne"
             >
-              {t('nav.order')}
+              OMNIA
             </Link>
-          </div>
-        </div>
-      </motion.nav>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          HERO — Clean Apple style
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={stagger}
-          >
-            {/* Badge */}
-            <motion.div 
-              variants={fadeUp}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
-              style={{ 
-                backgroundColor: APPLE.accentSubtle,
-                color: APPLE.accent
-              }}
-            >
-              <Zap className="w-4 h-4" />
-              <span className="text-sm font-medium">{t('home.badge')}</span>
-            </motion.div>
             
-            {/* Titre principal */}
-            <motion.h1 
-              variants={fadeUp}
-              className="text-5xl sm:text-6xl md:text-7xl font-semibold leading-[1.05] tracking-tight mb-6"
-              style={{ 
-                color: APPLE.text,
-                letterSpacing: '-0.02em'
-              }}
+            <div className="flex items-center gap-6">
+              <LanguageSelector />
+              
+              <Link
+                to="/login"
+                className="font-body text-sm font-extralight tracking-wider text-omnia-ivoire/60 hover:text-omnia-champagne transition-colors duration-700"
+              >
+                Synchronisation
+              </Link>
+              
+              <Link
+                to="/order/offre"
+                className="font-body text-xs font-light tracking-[0.2em] uppercase px-6 py-3 rounded-full bg-omnia-champagne/10 text-omnia-champagne border border-omnia-champagne/20 hover:bg-omnia-champagne/20 transition-all duration-700"
+              >
+                Acquérir
+              </Link>
+            </div>
+          </div>
+        </motion.nav>
+
+        {/* ═══════════════════════════════════════════════════════════════
+            HERO — Titre monumental "Dominez l'Invisible"
+            ═══════════════════════════════════════════════════════════════ */}
+        <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-32 pb-20">
+          <div className="max-w-5xl mx-auto text-center">
+            
+            {/* Tagline subtile */}
+            <motion.p
+              custom={0}
+              initial="hidden"
+              animate="visible"
+              variants={liquidReveal}
+              className="font-mono text-[10px] tracking-[0.4em] uppercase text-omnia-champagne/60 mb-8"
             >
-              {t('home.title1')}
+              L'Art de la Présence
+            </motion.p>
+            
+            {/* Titre monumental */}
+            <motion.h1
+              custom={1}
+              initial="hidden"
+              animate="visible"
+              variants={liquidReveal}
+              className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-normal tracking-[0.08em] leading-[0.95] text-omnia-ivoire mb-6"
+            >
+              Dominez
               <br />
-              <span style={{ color: APPLE.accent }}>{t('home.title2')}</span>
+              <span className="text-omnia-champagne">l'Invisible</span>
             </motion.h1>
             
-            {/* Sous-titre */}
-            <motion.p 
-              variants={fadeUp}
-              className="text-xl sm:text-2xl max-w-2xl mx-auto leading-relaxed mb-6"
-              style={{ color: APPLE.textSecondary }}
+            {/* Sous-titre éthéré */}
+            <motion.p
+              custom={2}
+              initial="hidden"
+              animate="visible"
+              variants={liquidReveal}
+              className="font-body text-lg sm:text-xl font-extralight tracking-wide leading-relaxed text-omnia-ivoire/50 max-w-2xl mx-auto mb-12"
             >
-              {t('home.subtitle')}
+              Votre héritage digital. Une liaison silencieuse entre vous et le monde.
+              <br className="hidden sm:block" />
+              Présence. Omniprésence. i-wasp Omnia.
             </motion.p>
-            
-            {/* Worldwide shipping badge */}
-            <motion.div 
-              variants={fadeUp}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-10"
-              style={{ 
-                backgroundColor: APPLE.backgroundPure,
-                boxShadow: APPLE.shadowSm
-              }}
-            >
-              <Globe className="w-4 h-4" style={{ color: APPLE.accent }} />
-              <span className="text-sm font-medium" style={{ color: APPLE.text }}>
-                {t('home.worldwideShipping')}
-              </span>
-            </motion.div>
             
             {/* CTAs */}
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
+            <motion.div
+              custom={3}
+              initial="hidden"
+              animate="visible"
+              variants={liquidReveal}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            >
+              <Link
                 to="/order/offre"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-medium transition-all duration-200"
-                style={{ 
-                  backgroundColor: APPLE.accent,
-                  color: '#FFFFFF'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = APPLE.accentHover}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = APPLE.accent}
+                className="group inline-flex items-center gap-3 px-10 py-5 rounded-full bg-omnia-champagne text-omnia-obsidienne font-body text-xs font-light tracking-[0.2em] uppercase transition-all duration-700 hover:scale-[1.02] hover:shadow-glow-champagne"
               >
-                {t('home.cta')}
-                <ArrowRight className="w-4 h-4" />
+                Acquérir votre Calibre
+                <ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" />
               </Link>
-              <Link 
+              
+              <Link
                 to="/contact"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-medium transition-all duration-200"
-                style={{ 
-                  backgroundColor: APPLE.backgroundPure,
-                  color: APPLE.text,
-                  boxShadow: APPLE.shadowSm
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.boxShadow = APPLE.shadowMd}
-                onMouseLeave={(e) => e.currentTarget.style.boxShadow = APPLE.shadowSm}
+                className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-transparent text-omnia-ivoire/70 font-body text-xs font-extralight tracking-[0.2em] uppercase border border-white/10 hover:border-omnia-champagne/30 hover:text-omnia-champagne transition-all duration-700"
               >
-                {t('home.learnMore')}
+                Immersion
               </Link>
             </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          PRODUCT SHOWCASE — Visual card
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-16 px-6">
-        <motion.div 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={scaleIn}
-          className="max-w-4xl mx-auto"
-        >
-          <div 
-            className="relative rounded-3xl p-12 sm:p-16 overflow-hidden"
-            style={{ 
-              backgroundColor: APPLE.backgroundPure,
-              boxShadow: APPLE.shadowLg
-            }}
-          >
-            {/* Card mockup */}
-            <div className="flex flex-col md:flex-row items-center gap-12">
-              <div 
-                className="w-64 h-40 rounded-2xl flex items-center justify-center relative"
-                style={{ 
-                  background: 'linear-gradient(135deg, #1D1D1F 0%, #3D3D3F 100%)',
-                  boxShadow: APPLE.shadowElevated
-                }}
-              >
-                <span className="text-white/90 text-lg font-medium tracking-wide">IWASP</span>
-                {/* NFC indicator */}
-                <div className="absolute top-4 right-4">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                    <Smartphone className="w-4 h-4 text-white/60" />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex-1 text-center md:text-left">
-                <h2 
-                  className="text-2xl sm:text-3xl font-semibold mb-4 tracking-tight"
-                  style={{ color: APPLE.text }}
-                >
-                  {t('home.designTitle')}
-                </h2>
-                <p 
-                  className="text-lg leading-relaxed mb-6"
-                  style={{ color: APPLE.textSecondary }}
-                >
-                  {t('home.designDesc')}
-                </p>
-                <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                  {[t('home.tag1'), t('home.tag2'), t('home.tag3')].map((tag) => (
-                    <span 
-                      key={tag}
-                      className="px-3 py-1.5 rounded-full text-sm font-medium"
-                      style={{ 
-                        backgroundColor: APPLE.accentSubtle,
-                        color: APPLE.accent
-                      }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          FEATURES — Apple grid style
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={stagger}
-            className="text-center mb-16"
-          >
-            <motion.h2 
-              variants={fadeUp}
-              className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4"
-              style={{ color: APPLE.text }}
-            >
-              {t('home.featuresTitle')}
-            </motion.h2>
-            <motion.p 
-              variants={fadeUp}
-              className="text-xl max-w-2xl mx-auto"
-              style={{ color: APPLE.textSecondary }}
-            >
-              {t('home.featuresSubtitle')}
-            </motion.p>
-          </motion.div>
-
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={stagger}
-            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {[
-              { 
-                icon: CreditCard, 
-                title: t('home.feature1Title'), 
-                description: t('home.feature1Desc')
-              },
-              { 
-                icon: Smartphone, 
-                title: t('home.feature2Title'), 
-                description: t('home.feature2Desc')
-              },
-              { 
-                icon: Zap, 
-                title: t('home.feature3Title'), 
-                description: t('home.feature3Desc')
-              },
-              { 
-                icon: Shield, 
-                title: t('home.feature4Title'), 
-                description: t('home.feature4Desc')
-              },
-              { 
-                icon: BarChart3, 
-                title: t('home.feature5Title'), 
-                description: t('home.feature5Desc')
-              },
-              { 
-                icon: HeartHandshake, 
-                title: t('home.feature6Title'), 
-                description: t('home.feature6Desc')
-              }
-            ].map((feature, index) => (
-              <motion.div 
-                key={index}
-                variants={fadeUp}
-                className="p-8 rounded-2xl transition-all duration-300"
-                style={{ 
-                  backgroundColor: APPLE.backgroundPure,
-                  boxShadow: APPLE.shadowCard
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = APPLE.shadowMd;
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = APPLE.shadowCard;
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <div 
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
-                  style={{ backgroundColor: APPLE.accentSubtle }}
-                >
-                  <feature.icon className="w-6 h-6" style={{ color: APPLE.accent }} />
-                </div>
-                <h3 
-                  className="text-lg font-semibold mb-2"
-                  style={{ color: APPLE.text }}
-                >
-                  {feature.title}
-                </h3>
-                <p 
-                  className="text-base leading-relaxed"
-                  style={{ color: APPLE.textSecondary }}
-                >
-                  {feature.description}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          HOW IT WORKS — 3 steps visual
-          ═══════════════════════════════════════════════════════════════════ */}
-      <HowItWorksSection />
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          NFC DEMO — Visual demonstration
-          ═══════════════════════════════════════════════════════════════════ */}
-      <NFCDemoSection />
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          SOCIAL PROOF — International credibility
-          ═══════════════════════════════════════════════════════════════════ */}
-      <SocialProofSection />
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          COMPARISON — vs Traditional cards
-          ═══════════════════════════════════════════════════════════════════ */}
-      <ComparisonSection />
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          PRICING — Plans with toggle
-          ═══════════════════════════════════════════════════════════════════ */}
-      <PricingSection />
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          CTA SECTION — Clean and focused
-          ═══════════════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-6">
-        <motion.div 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          variants={fadeUp}
-          className="max-w-4xl mx-auto"
-        >
-          <div 
-            className="rounded-3xl p-12 sm:p-16 text-center"
-            style={{ 
-              backgroundColor: APPLE.backgroundPure,
-              boxShadow: APPLE.shadowLg
-            }}
-          >
-            <h2 
-              className="text-3xl sm:text-4xl font-semibold tracking-tight mb-4"
-              style={{ color: APPLE.text }}
-            >
-              {t('home.ctaTitle')}
-            </h2>
-            <p 
-              className="text-lg mb-8 max-w-xl mx-auto"
-              style={{ color: APPLE.textSecondary }}
-            >
-              {t('home.ctaSubtitle')}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                to="/order/offre"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-medium transition-all duration-200"
-                style={{ 
-                  backgroundColor: APPLE.accent,
-                  color: '#FFFFFF'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = APPLE.accentHover}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = APPLE.accent}
-              >
-                {t('home.ctaButton')}
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link 
-                to="/contact"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-medium transition-all duration-200"
-                style={{ 
-                  backgroundColor: 'transparent',
-                  color: APPLE.accent,
-                  border: `1.5px solid ${APPLE.accent}`
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = APPLE.accentSubtle;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                {t('home.ctaContact')}
-              </Link>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          FOOTER — Minimal Apple style
-          ═══════════════════════════════════════════════════════════════════ */}
-      <footer 
-        className="py-12 px-6"
-        style={{ borderTop: `1px solid ${APPLE.border}` }}
-      >
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="text-center md:text-left">
-              <span 
-                className="text-lg font-semibold"
-                style={{ color: APPLE.text }}
-              >
-                IWASP
-              </span>
-              <p 
-                className="text-sm mt-1"
-                style={{ color: APPLE.textMuted }}
-              >
-                Tap. Connect. Empower.
-              </p>
-            </div>
-            
-            <div className="flex flex-wrap justify-center gap-8">
-              {[
-                { label: t('footer.contact'), to: '/contact' },
-                { label: t('footer.about'), to: '/about' },
-                { label: 'FAQ', to: '/faq' },
-                { label: t('footer.terms'), to: '/cgv' }
-              ].map((link) => (
-                <Link 
-                  key={link.to}
-                  to={link.to}
-                  className="text-sm transition-colors duration-200"
-                  style={{ color: APPLE.textSecondary }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = APPLE.accent}
-                  onMouseLeave={(e) => e.currentTarget.style.color = APPLE.textSecondary}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
           </div>
           
-          <div 
-            className="mt-12 pt-8 text-center"
-            style={{ borderTop: `1px solid ${APPLE.border}` }}
+          {/* ═══════════════════════════════════════════════════════════════
+              CARTE 3D FLOTTANTE
+              ═══════════════════════════════════════════════════════════════ */}
+          <motion.div
+            custom={4}
+            initial="hidden"
+            animate="visible"
+            variants={liquidReveal}
+            className="mt-20 sm:mt-24"
           >
-            <p 
-              className="text-xs"
-              style={{ color: APPLE.textMuted }}
+            <OmniaCard3D />
+          </motion.div>
+          
+          {/* Indication scroll */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 3, duration: 1.5 }}
+            className="absolute bottom-12 left-1/2 -translate-x-1/2"
+          >
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="w-px h-12 bg-gradient-to-b from-omnia-champagne/40 to-transparent"
+            />
+          </motion.div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════
+            SECTION MANIFESTE — Philosophie
+            ═══════════════════════════════════════════════════════════════ */}
+        <section className="relative py-32 px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
             >
-              © 2025 IWASP. {t('footer.rights')}.
+              <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-omnia-champagne/50 mb-8">
+                Manifeste
+              </p>
+              
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-[0.06em] leading-[1.2] text-omnia-ivoire mb-8">
+                La technologie doit être
+                <br />
+                <span className="text-omnia-champagne">fluide, éthérée et silencieuse</span>
+              </h2>
+              
+              <p className="font-body text-base sm:text-lg font-extralight tracking-wide leading-relaxed text-omnia-ivoire/40 max-w-2xl mx-auto">
+                Nous ne vendons pas un outil. Nous transmettons un héritage digital.
+                Une infrastructure invisible qui porte votre présence au-delà des frontières physiques.
+              </p>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════
+            FOOTER MINIMAL
+            ═══════════════════════════════════════════════════════════════ */}
+        <footer className="relative py-16 px-6 border-t border-white/[0.03]">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+            <p className="font-display text-sm tracking-[0.1em] text-omnia-champagne/60">
+              i-wasp Omnia
+            </p>
+            
+            <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-omnia-ivoire/30">
+              L'Art de la Présence
+            </p>
+            
+            <p className="font-body text-xs font-extralight tracking-wide text-omnia-ivoire/30">
+              © {new Date().getFullYear()}
             </p>
           </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
     </>
   );
 };
