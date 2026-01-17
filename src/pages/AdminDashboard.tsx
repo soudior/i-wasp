@@ -61,6 +61,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { GlobalSearchModal } from "@/components/admin/GlobalSearchModal";
 import { PushNotificationsWidget } from "@/components/admin/PushNotificationsWidget";
+import { AllClientsWidget } from "@/components/admin/AllClientsWidget";
 
 // Gotham color palette
 const GOTHAM = {
@@ -788,6 +789,11 @@ function AdminDashboardContent() {
             </CardContent>
           </Card>
         </div>
+
+        {/* All Clients Widget */}
+        <section>
+          <AllClientsWidget />
+        </section>
 
         {/* Quick Actions Grid */}
         <section>
