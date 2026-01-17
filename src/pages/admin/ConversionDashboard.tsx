@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { AdminGuard } from '@/components/AdminGuard';
+import { AdminOmniaLayout } from '@/layouts/AdminOmniaLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { format, subDays } from 'date-fns';
@@ -28,15 +28,32 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 
+// OMNIA Design System Colors
+const OMNIA = {
+  obsidienne: "#030303",
+  obsidienneElevated: "#0A0A0A",
+  obsidienneSurface: "#111111",
+  champagne: "#DCC7B0",
+  champagneMuted: "rgba(220, 199, 176, 0.6)",
+  ivoire: "#FDFCFB",
+  ivoireMuted: "rgba(253, 252, 251, 0.5)",
+  border: "rgba(220, 199, 176, 0.15)",
+  success: "#22C55E",
+  info: "#3B82F6",
+  purple: "#A855F7",
+  pink: "#EC4899",
+};
+
+// Alias for backward compatibility
 const COLORS = {
-  primary: '#FFC700',
-  success: '#22C55E',
-  info: '#3B82F6',
-  purple: '#A855F7',
-  pink: '#EC4899',
-  bg: '#0B0B0B',
-  text: '#F5F5F5',
-  muted: 'rgba(245, 245, 245, 0.5)',
+  primary: OMNIA.champagne,
+  success: OMNIA.success,
+  info: OMNIA.info,
+  purple: OMNIA.purple,
+  pink: OMNIA.pink,
+  bg: OMNIA.obsidienne,
+  text: OMNIA.ivoire,
+  muted: OMNIA.ivoireMuted,
 };
 
 interface FunnelData {
@@ -280,74 +297,49 @@ function ConversionDashboardContent() {
     : '0';
 
   return (
-    <div 
-      className="min-h-dvh w-full"
-      style={{ backgroundColor: COLORS.bg }}
-    >
-      {/* Header */}
-      <header 
-        className="sticky top-0 z-10 backdrop-blur border-b px-4 py-4"
-        style={{ 
-          backgroundColor: 'rgba(11, 11, 11, 0.95)',
-          borderColor: `${COLORS.primary}20`,
-        }}
-      >
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link 
-              to="/admin"
-              className="w-10 h-10 rounded-lg flex items-center justify-center border transition-colors hover:bg-white/5"
-              style={{ borderColor: 'rgba(255,255,255,0.1)' }}
-            >
-              <ArrowLeft size={20} style={{ color: COLORS.text }} />
-            </Link>
-            <div>
-              <h1 
-                className="text-lg font-bold"
-                style={{ color: COLORS.text }}
+    <div className="space-y-8">
+      {/* Actions Bar */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div 
+            className="flex rounded-xl overflow-hidden border" 
+            style={{ 
+              borderColor: OMNIA.border,
+              backgroundColor: OMNIA.obsidienneElevated 
+            }}
+          >
+            {[7, 14, 30].map((days) => (
+              <button
+                key={days}
+                onClick={() => setSelectedDays(days)}
+                className="px-4 py-2 text-sm font-medium transition-colors"
+                style={{ 
+                  backgroundColor: selectedDays === days ? OMNIA.champagne : 'transparent',
+                  color: selectedDays === days ? OMNIA.obsidienne : OMNIA.ivoireMuted,
+                }}
               >
-                Analytics & Conversions
-              </h1>
-              <p 
-                className="text-xs"
-                style={{ color: COLORS.muted }}
-              >
-                Express Checkout & Web Studio
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex rounded-lg overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-              {[7, 14, 30].map((days) => (
-                <button
-                  key={days}
-                  onClick={() => setSelectedDays(days)}
-                  className="px-3 py-1.5 text-xs font-medium transition-colors"
-                  style={{ 
-                    backgroundColor: selectedDays === days ? COLORS.primary : 'transparent',
-                    color: selectedDays === days ? '#000' : COLORS.muted,
-                  }}
-                >
-                  {days}j
-                </button>
-              ))}
-            </div>
-            <Button
-              onClick={() => refetchFunnel()}
-              size="sm"
-              variant="outline"
-              className="gap-2"
-            >
-              <RefreshCw size={14} />
-              Actualiser
-            </Button>
+                {days}j
+              </button>
+            ))}
           </div>
         </div>
-      </header>
+        <Button
+          onClick={() => refetchFunnel()}
+          size="sm"
+          className="gap-2"
+          style={{ 
+            backgroundColor: `${OMNIA.champagne}15`,
+            borderColor: `${OMNIA.champagne}30`,
+            color: OMNIA.champagne 
+          }}
+        >
+          <RefreshCw size={14} />
+          Actualiser
+        </Button>
+      </div>
 
-      <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-        {/* Key Metrics */}
-        <section>
+      {/* Key Metrics */}
+      <section>
           <h2 
             className="text-sm font-medium mb-4 flex items-center gap-2"
             style={{ color: COLORS.muted }}
@@ -616,15 +608,14 @@ function ConversionDashboardContent() {
             </Card>
           </section>
         )}
-      </main>
-    </div>
-  );
+      </div>
+    );
 }
 
 export default function ConversionDashboard() {
   return (
-    <AdminGuard>
+    <AdminOmniaLayout title="Analytics & Conversions" subtitle="Suivi des performances">
       <ConversionDashboardContent />
-    </AdminGuard>
+    </AdminOmniaLayout>
   );
 }

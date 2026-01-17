@@ -14,7 +14,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { AdminGuard } from "@/components/AdminGuard";
+import { AdminOmniaLayout } from "@/layouts/AdminOmniaLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -57,6 +57,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { QRCodeSVG } from "qrcode.react";
 import { downloadVCard } from "@/lib/vcard";
+
+// OMNIA Design System Colors
+const OMNIA = {
+  obsidienne: "#030303",
+  obsidienneElevated: "#0A0A0A",
+  obsidienneSurface: "#111111",
+  champagne: "#DCC7B0",
+  champagneMuted: "rgba(220, 199, 176, 0.6)",
+  ivoire: "#FDFCFB",
+  ivoireMuted: "rgba(253, 252, 251, 0.5)",
+  border: "rgba(220, 199, 176, 0.15)",
+};
 
 // Steps configuration
 const STEPS = [
@@ -127,9 +139,9 @@ const initialData: CardData = {
 
 export default function AdminCardGenerator() {
   return (
-    <AdminGuard>
+    <AdminOmniaLayout title="Générateur de Carte" subtitle="Création avancée">
       <CardGeneratorContent />
-    </AdminGuard>
+    </AdminOmniaLayout>
   );
 }
 

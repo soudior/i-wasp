@@ -4,13 +4,13 @@
  * Admin-only access for production
  */
 
-import { AdminGuard } from "@/components/AdminGuard";
+import { AdminOmniaLayout } from "@/layouts/AdminOmniaLayout";
 import { EvolisPDFGenerator } from "@/components/print/EvolisPDFGenerator";
 
 export default function EvolisPrintPage() {
   return (
-    <AdminGuard>
+    <AdminOmniaLayout title="Impression Evolis" subtitle="Export PDF professionnel">
       <EvolisPDFGenerator />
-    </AdminGuard>
+    </AdminOmniaLayout>
   );
 }

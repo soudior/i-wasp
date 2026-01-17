@@ -2,8 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/hooks/useAdmin";
-import { AdminGuard } from "@/components/AdminGuard";
-import { DashboardLayout } from "@/layouts/DashboardLayout";
+import { AdminOmniaLayout } from "@/layouts/AdminOmniaLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +33,22 @@ import {
   AlertCircle
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+
+// OMNIA Design System Colors
+const OMNIA = {
+  obsidienne: "#030303",
+  obsidienneElevated: "#0A0A0A",
+  obsidienneSurface: "#111111",
+  champagne: "#DCC7B0",
+  champagneMuted: "rgba(220, 199, 176, 0.6)",
+  ivoire: "#FDFCFB",
+  ivoireMuted: "rgba(253, 252, 251, 0.5)",
+  border: "rgba(220, 199, 176, 0.15)",
+  success: "#22C55E",
+  warning: "#F59E0B",
+  error: "#EF4444",
+  info: "#3B82F6",
+};
 
 type OrderStatus = "generated" | "pending" | "paid" | "in_production" | "live" | "delivered" | "cancelled";
 
@@ -260,9 +275,8 @@ export default function AdminWebStudioIA() {
   }
 
   return (
-    <AdminGuard>
-      <DashboardLayout>
-        <div className="space-y-6 p-4 md:p-6">
+    <AdminOmniaLayout title="Web Studio IA" subtitle="Génération de sites">
+      <div className="space-y-6">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
@@ -676,7 +690,6 @@ export default function AdminWebStudioIA() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </DashboardLayout>
-    </AdminGuard>
+    </AdminOmniaLayout>
   );
 }
