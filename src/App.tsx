@@ -152,6 +152,7 @@ const WebStudioCheckout = lazy(() => import("./pages/web-studio/WebStudioCheckou
 
 // NEW Web Studio IA pages
 const WebStudioOffres = lazy(() => import("./pages/web-studio/WebStudioOffres"));
+const WebStudioPricing = lazy(() => import("./pages/web-studio/WebStudioPricing"));
 const WebStudioConfiguration = lazy(() => import("./pages/web-studio/WebStudioConfiguration"));
 const WebStudioPaiement = lazy(() => import("./pages/web-studio/WebStudioPaiement"));
 const WebStudioIASuccess = lazy(() => import("./pages/web-studio/WebStudioIASuccess"));
@@ -315,6 +316,7 @@ const App = () => {
                               <Route path="/web-studio/blog-editor" element={<BlogEditor />} />
                               <Route path="/web-studio/preview" element={<WebsitePreview />} />
                               <Route path="/web-studio/offres" element={<WebStudioOffres />} />
+                              <Route path="/web-studio/pricing" element={<WebStudioPricing />} />
                               <Route path="/web-studio/configuration" element={<WebStudioConfiguration />} />
                               <Route path="/web-studio/paiement" element={<WebStudioPaiement />} />
                               <Route path="/web-studio/ia-success" element={<WebStudioIASuccess />} />
