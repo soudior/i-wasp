@@ -68,6 +68,7 @@ import { AllClientsWidget } from "@/components/admin/AllClientsWidget";
 import { ClientDataExportImport } from "@/components/admin/ClientDataExportImport";
 import { ClientRemindersWidget } from "@/components/admin/ClientRemindersWidget";
 import { TagReminderRulesWidget } from "@/components/admin/TagReminderRulesWidget";
+import { SerialCodesWidget } from "@/components/admin/SerialCodesWidget";
 
 // MANSORY Ultra-Luxe Color Palette
 const MANSORY = {
@@ -1137,6 +1138,11 @@ function AdminDashboardContent() {
         <section className="grid lg:grid-cols-2 gap-6">
           <ClientRemindersWidget />
           <TagReminderRulesWidget />
+        </section>
+
+        {/* Serial Codes Section */}
+        <section>
+          <SerialCodesWidget />
         </section>
 
         {/* Quick Actions Grid */}
