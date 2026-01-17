@@ -22,7 +22,7 @@ const liquidReveal = {
     transition: {
       duration: 1.8,
       delay: i * 0.15,
-      ease: [0.16, 1, 0.3, 1],
+      ease: [0.16, 1, 0.3, 1] as const,
     },
   }),
 };
