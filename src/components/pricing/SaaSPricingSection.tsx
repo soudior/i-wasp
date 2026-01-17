@@ -1,13 +1,13 @@
 /**
  * SaaS Pricing Section
- * Complete pricing grid with all 4 tiers
+ * Complete pricing grid with 3 tiers: FREE, PRO, BUSINESS
  */
 
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
-import { SaaSPricingCard } from './SaaSPricingCard';
+import { Sparkles, Check } from 'lucide-react';
+import { SAAS_PLANS, SAAS_FEATURE_COMPARISON } from '@/lib/saasPlans';
 import { useSaaSSubscription } from '@/hooks/useSaaSSubscription';
-import { SAAS_FEATURE_COMPARISON } from '@/lib/saasPlans';
+import { SaaSPricingCard } from './SaaSPricingCard';
 
 const COLORS = {
   noir: "#050505",
@@ -26,7 +26,7 @@ export function SaaSPricingSection() {
 
   return (
     <section className="py-20 px-4" style={{ backgroundColor: COLORS.noirSoft }}>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
           <motion.div
@@ -51,17 +51,16 @@ export function SaaSPricingSection() {
             </h2>
             
             <p className="text-lg font-light max-w-2xl mx-auto" style={{ color: COLORS.gris }}>
-              De la carte NFC au site e-commerce complet, nous avons une solution pour chaque étape de votre croissance.
+              De la carte NFC au site complet, nous avons une solution pour chaque étape de votre croissance.
             </p>
           </motion.div>
         </div>
 
-        {/* Pricing Cards Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-start mb-20">
+        {/* Pricing Cards Grid - 3 columns */}
+        <div className="grid md:grid-cols-3 gap-6 items-start mb-20">
           <SaaSPricingCard planId="free" isCurrentPlan={currentPlan === 'free'} />
-          <SaaSPricingCard planId="identity" isCurrentPlan={currentPlan === 'identity'} />
-          <SaaSPricingCard planId="professional" isCurrentPlan={currentPlan === 'professional'} />
-          <SaaSPricingCard planId="enterprise" isCurrentPlan={currentPlan === 'enterprise'} />
+          <SaaSPricingCard planId="pro" isCurrentPlan={currentPlan === 'pro'} />
+          <SaaSPricingCard planId="business" isCurrentPlan={currentPlan === 'business'} />
         </div>
 
         {/* Feature Comparison Table */}
@@ -92,14 +91,11 @@ export function SaaSPricingSection() {
                   <th className="text-center p-4 font-medium text-sm" style={{ color: COLORS.gris }}>
                     Free
                   </th>
-                  <th className="text-center p-4 font-medium text-sm" style={{ color: COLORS.gris }}>
-                    Identity
-                  </th>
                   <th className="text-center p-4 font-medium text-sm" style={{ color: COLORS.or }}>
-                    Professional
+                    Pro
                   </th>
                   <th className="text-center p-4 font-medium text-sm" style={{ color: COLORS.gris }}>
-                    Enterprise
+                    Business
                   </th>
                 </tr>
               </thead>
@@ -107,7 +103,7 @@ export function SaaSPricingSection() {
                 {SAAS_FEATURE_COMPARISON.map((category, catIndex) => (
                   <>
                     <tr key={`cat-${catIndex}`} style={{ backgroundColor: `${COLORS.or}05` }}>
-                      <td colSpan={5} className="p-4 text-xs uppercase tracking-widest font-medium" style={{ color: COLORS.or }}>
+                      <td colSpan={4} className="p-4 text-xs uppercase tracking-widest font-medium" style={{ color: COLORS.or }}>
                         {category.category}
                       </td>
                     </tr>
@@ -116,9 +112,9 @@ export function SaaSPricingSection() {
                         <td className="p-4 text-sm" style={{ color: COLORS.ivoire }}>
                           {feature.name}
                         </td>
-                        {['free', 'identity', 'professional', 'enterprise'].map((plan) => (
+                        {(['free', 'pro', 'business'] as const).map((plan) => (
                           <td key={plan} className="text-center p-4">
-                            {renderFeatureValue(feature[plan as keyof typeof feature])}
+                            {renderFeatureValue(feature[plan])}
                           </td>
                         ))}
                       </tr>
@@ -138,9 +134,7 @@ function renderFeatureValue(value: boolean | string | number) {
   if (typeof value === 'boolean') {
     return value ? (
       <span className="inline-flex items-center justify-center w-6 h-6 rounded-full" style={{ backgroundColor: `${COLORS.or}20` }}>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <path d="M10 3L4.5 8.5L2 6" stroke={COLORS.or} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <Check size={12} style={{ color: COLORS.or }} />
       </span>
     ) : (
       <span className="text-sm" style={{ color: `${COLORS.gris}40` }}>—</span>
