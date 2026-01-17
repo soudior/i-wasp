@@ -1,14 +1,30 @@
 import { motion, type Variants } from 'framer-motion';
-import { ArrowRight, Sparkles, TrendingUp, LayoutDashboard, CreditCard, BarChart3, Save, MessageCircle, Linkedin, Instagram, Globe, ChevronRight, ChevronDown, Cpu, Database, Zap, Users, Eye, Edit, Trash2, CreditCard as CardIcon, Mail, Lock, Check, Crown, Phone, MapPin } from 'lucide-react';
+import { ArrowRight, Sparkles, TrendingUp, LayoutDashboard, CreditCard, BarChart3, Save, MessageCircle, Linkedin, Instagram, Globe, ChevronRight, ChevronDown, Cpu, Database, Zap, Users, Eye, Edit, Trash2, CreditCard as CardIcon, Mail, Lock, Check, Crown, Phone, MapPin, User, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 // Images
 import heroBackground from '@/assets/hero-background.jpg';
 import profilePhoto from '@/assets/profile-photo.jpg';
+
+// ============================================
+// VALIDATION SCHEMAS
+// ============================================
+const signupSchema = z.object({
+  firstName: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères').max(50, 'Le prénom est trop long'),
+  lastName: z.string().min(2, 'Le nom doit contenir au moins 2 caractères').max(50, 'Le nom est trop long'),
+  email: z.string().email('Email invalide').max(255, 'Email trop long'),
+  password: z.string()
+    .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
+    .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins une majuscule')
+    .regex(/[0-9]/, 'Le mot de passe doit contenir au moins un chiffre'),
+});
+
+type SignupFormData = z.infer<typeof signupSchema>;
 
 // ============================================
 // DESIGN SYSTEM - i-wasp ELITE
@@ -191,23 +207,39 @@ const VisionSection = () => (
 // SECTION: AUTH (Login / Register)
 // ============================================
 const AuthSection = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  // Login state
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
+  
+  // Register state
+  const [signupForm, setSignupForm] = useState<SignupFormData>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+  });
+  const [signupErrors, setSignupErrors] = useState<Partial<Record<keyof SignupFormData, string>>>({});
+  const [isSignupLoading, setIsSignupLoading] = useState(false);
+  const [showSignupForm, setShowSignupForm] = useState(false);
+  
   const navigate = useNavigate();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsLoginLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email: loginEmail, 
+        password: loginPassword 
+      });
       if (error) throw error;
       toast.success('Connexion réussie !');
       navigate('/dashboard');
     } catch (error: any) {
       toast.error(error.message || 'Erreur de connexion');
     } finally {
-      setIsLoading(false);
+      setIsLoginLoading(false);
     }
   };
 
@@ -222,6 +254,72 @@ const AuthSection = () => {
       if (error) throw error;
     } catch (error: any) {
       toast.error(error.message || 'Erreur de connexion Google');
+    }
+  };
+
+  const validateField = (field: keyof SignupFormData, value: string) => {
+    try {
+      signupSchema.shape[field].parse(value);
+      setSignupErrors(prev => ({ ...prev, [field]: undefined }));
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setSignupErrors(prev => ({ ...prev, [field]: err.errors[0].message }));
+      }
+      return false;
+    }
+  };
+
+  const handleSignupChange = (field: keyof SignupFormData, value: string) => {
+    setSignupForm(prev => ({ ...prev, [field]: value }));
+    validateField(field, value);
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate all fields
+    const result = signupSchema.safeParse(signupForm);
+    if (!result.success) {
+      const errors: Partial<Record<keyof SignupFormData, string>> = {};
+      result.error.errors.forEach(err => {
+        const field = err.path[0] as keyof SignupFormData;
+        if (!errors[field]) {
+          errors[field] = err.message;
+        }
+      });
+      setSignupErrors(errors);
+      toast.error('Veuillez corriger les erreurs du formulaire');
+      return;
+    }
+
+    setIsSignupLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: signupForm.email,
+        password: signupForm.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            first_name: signupForm.firstName,
+            last_name: signupForm.lastName,
+          }
+        }
+      });
+
+      if (error) {
+        if (error.message.includes('already registered')) {
+          throw new Error('Cet email est déjà utilisé. Essayez de vous connecter.');
+        }
+        throw error;
+      }
+
+      toast.success('Compte créé avec succès ! Bienvenue chez i-wasp Elite 🎉');
+      navigate('/onboarding');
+    } catch (error: any) {
+      toast.error(error.message || 'Erreur lors de la création du compte');
+    } finally {
+      setIsSignupLoading(false);
     }
   };
 
@@ -264,8 +362,8 @@ const AuthSection = () => {
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Email</label>
                 <input
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
                   placeholder="mehdi@email.com"
                   className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-[#D4AF37] outline-none"
                   required
@@ -275,8 +373,8 @@ const AuthSection = () => {
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Mot de passe</label>
                 <input
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-[#D4AF37] outline-none"
                   required
@@ -284,10 +382,10 @@ const AuthSection = () => {
               </div>
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoginLoading}
                 className="w-full py-4 bg-[#0A1931] text-white font-bold rounded-2xl hover:bg-[#162a4a] transition-colors disabled:opacity-50"
               >
-                {isLoading ? 'Connexion...' : 'Se Connecter'}
+                {isLoginLoading ? 'Connexion...' : 'Se Connecter'}
               </button>
             </form>
 
@@ -319,32 +417,163 @@ const AuthSection = () => {
               ⚡
             </div>
             
-            <div className="text-center mb-8 relative z-10">
-              <span className="text-5xl mb-4 block">🏆</span>
-              <h3 className="text-2xl font-black text-[#D4AF37] tracking-tight">Devenir Membre Elite</h3>
-              <p className="text-gray-400">Prêt à dominer votre secteur ?</p>
-            </div>
-
-            <div className="space-y-4 mb-8 relative z-10">
-              {[
-                'Activez votre carte physique en 30 secondes',
-                'Laissez l\'IA rédiger votre présentation pro',
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 text-white">
-                  <div className="w-8 h-8 rounded-lg bg-[#D4AF37]/20 flex items-center justify-center">
-                    <CardIcon className="w-4 h-4 text-[#D4AF37]" />
-                  </div>
-                  <span>{item}</span>
+            {!showSignupForm ? (
+              <>
+                <div className="text-center mb-8 relative z-10">
+                  <span className="text-5xl mb-4 block">🏆</span>
+                  <h3 className="text-2xl font-black text-[#D4AF37] tracking-tight">Devenir Membre Elite</h3>
+                  <p className="text-gray-400">Prêt à dominer votre secteur ?</p>
                 </div>
-              ))}
-            </div>
 
-            <Link
-              to="/signup"
-              className="block w-full py-4 bg-[#D4AF37] text-[#0A1931] font-bold rounded-2xl text-center hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all relative z-10"
-            >
-              CRÉER MON PROFIL I-WASP
-            </Link>
+                <div className="space-y-4 mb-8 relative z-10">
+                  {[
+                    'Activez votre carte physique en 30 secondes',
+                    'Laissez l\'IA rédiger votre présentation pro',
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 text-white">
+                      <div className="w-8 h-8 rounded-lg bg-[#D4AF37]/20 flex items-center justify-center">
+                        <CardIcon className="w-4 h-4 text-[#D4AF37]" />
+                      </div>
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setShowSignupForm(true)}
+                  className="block w-full py-4 bg-[#D4AF37] text-[#0A1931] font-bold rounded-2xl text-center hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all relative z-10"
+                >
+                  CRÉER MON PROFIL I-WASP
+                </button>
+              </>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative z-10"
+              >
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-black text-[#D4AF37] tracking-tight">Créer mon compte Elite</h3>
+                  <p className="text-gray-400 text-sm">Rejoignez le réseau d'influence i-wasp</p>
+                </div>
+
+                <form onSubmit={handleSignup} className="space-y-4">
+                  {/* First Name */}
+                  <div>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="text"
+                        value={signupForm.firstName}
+                        onChange={(e) => handleSignupChange('firstName', e.target.value)}
+                        placeholder="Prénom"
+                        className={`w-full pl-12 pr-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-[#D4AF37] outline-none ${
+                          signupErrors.firstName ? 'border-red-400' : 'border-white/20'
+                        }`}
+                      />
+                    </div>
+                    {signupErrors.firstName && (
+                      <p className="mt-1 text-red-400 text-xs flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {signupErrors.firstName}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Last Name */}
+                  <div>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="text"
+                        value={signupForm.lastName}
+                        onChange={(e) => handleSignupChange('lastName', e.target.value)}
+                        placeholder="Nom"
+                        className={`w-full pl-12 pr-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-[#D4AF37] outline-none ${
+                          signupErrors.lastName ? 'border-red-400' : 'border-white/20'
+                        }`}
+                      />
+                    </div>
+                    {signupErrors.lastName && (
+                      <p className="mt-1 text-red-400 text-xs flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {signupErrors.lastName}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="email"
+                        value={signupForm.email}
+                        onChange={(e) => handleSignupChange('email', e.target.value)}
+                        placeholder="Email"
+                        className={`w-full pl-12 pr-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-[#D4AF37] outline-none ${
+                          signupErrors.email ? 'border-red-400' : 'border-white/20'
+                        }`}
+                      />
+                    </div>
+                    {signupErrors.email && (
+                      <p className="mt-1 text-red-400 text-xs flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {signupErrors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Password */}
+                  <div>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="password"
+                        value={signupForm.password}
+                        onChange={(e) => handleSignupChange('password', e.target.value)}
+                        placeholder="Mot de passe"
+                        className={`w-full pl-12 pr-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-[#D4AF37] outline-none ${
+                          signupErrors.password ? 'border-red-400' : 'border-white/20'
+                        }`}
+                      />
+                    </div>
+                    {signupErrors.password && (
+                      <p className="mt-1 text-red-400 text-xs flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {signupErrors.password}
+                      </p>
+                    )}
+                    <p className="mt-1 text-gray-500 text-xs">
+                      8 caractères min, 1 majuscule, 1 chiffre
+                    </p>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSignupLoading}
+                    className="w-full py-4 bg-[#D4AF37] text-[#0A1931] font-bold rounded-xl hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all disabled:opacity-50"
+                  >
+                    {isSignupLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <span className="w-5 h-5 border-2 border-[#0A1931]/30 border-t-[#0A1931] rounded-full animate-spin" />
+                        Création...
+                      </span>
+                    ) : (
+                      'CRÉER MON COMPTE'
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowSignupForm(false)}
+                    className="w-full py-2 text-gray-400 text-sm hover:text-white transition-colors"
+                  >
+                    ← Retour
+                  </button>
+                </form>
+              </motion.div>
+            )}
           </motion.div>
         </motion.div>
       </div>
