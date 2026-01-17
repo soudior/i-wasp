@@ -90,31 +90,37 @@ const Activation = () => {
     setIsVerifying(true);
     setError("");
     
-    // Simulate verification delay for dramatic effect
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
     try {
-      // Check if this matches a card in the database by slug pattern
-      // For demo purposes, we'll accept any 12-char code and simulate recognition
-      const demoNames: Record<string, string> = {
-        "SN4820ABSC01": "MEHDI EL ALAMI",
-        "DEMO12345678": "UTILISATEUR DEMO",
-        "OMNI00000001": "MEMBRE OMNIA",
-      };
+      console.log("[Activation] Verifying serial code...");
       
-      const foundName = demoNames[code];
+      // Call the edge function to verify the code
+      const { data, error: fnError } = await supabase.functions.invoke('verify-activation-code', {
+        body: { serial_code: code }
+      });
       
-      if (foundName) {
-        setUserName(foundName);
-        setIsRecognized(true);
+      if (fnError) {
+        console.error("[Activation] Edge function error:", fnError);
+        setError("Erreur de connexion. Veuillez réessayer.");
         setIsVerifying(false);
-      } else {
-        // For any other valid format, show generic welcome
-        setUserName("NOUVEAU MEMBRE");
-        setIsRecognized(true);
-        setIsVerifying(false);
+        return;
       }
+      
+      if (data?.success) {
+        console.log("[Activation] Card found:", data.full_name);
+        setUserName(data.full_name || "MEMBRE OMNIA");
+        setIsRecognized(true);
+        
+        // Store card info for later use
+        sessionStorage.setItem('activated_card_id', data.card_id);
+        sessionStorage.setItem('activated_card_slug', data.slug);
+      } else {
+        console.log("[Activation] Card not found");
+        setError(data?.error || "Code de série non reconnu. Vérifiez et réessayez.");
+      }
+      
+      setIsVerifying(false);
     } catch (err) {
+      console.error("[Activation] Unexpected error:", err);
       setError("Erreur de vérification. Veuillez réessayer.");
       setIsVerifying(false);
     }

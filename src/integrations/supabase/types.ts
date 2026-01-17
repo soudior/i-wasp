@@ -455,6 +455,7 @@ export type Database = {
           nfc_enabled: boolean
           phone: string | null
           photo_url: string | null
+          serial_code: string | null
           slug: string
           social_links: Json | null
           tagline: string | null
@@ -486,6 +487,7 @@ export type Database = {
           nfc_enabled?: boolean
           phone?: string | null
           photo_url?: string | null
+          serial_code?: string | null
           slug: string
           social_links?: Json | null
           tagline?: string | null
@@ -517,6 +519,7 @@ export type Database = {
           nfc_enabled?: boolean
           phone?: string | null
           photo_url?: string | null
+          serial_code?: string | null
           slug?: string
           social_links?: Json | null
           tagline?: string | null
@@ -1761,6 +1764,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      verify_activation_code: { Args: { p_serial_code: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
