@@ -1,29 +1,34 @@
 /**
  * Web Studio AI - Assistant conversationnel premium
  * Interface de chat style Apple/Cupertino avec animations fluides
+ * Support du mode sombre et animations hero avec particules
  */
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { Send, Sparkles, Globe, ArrowRight, MessageCircle, Zap, CheckCircle2 } from "lucide-react";
+import { Send, Sparkles, Globe, ArrowRight, Zap, CheckCircle2, Moon, Sun } from "lucide-react";
 import { CoutureNavbar } from "@/components/CoutureNavbar";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-// Apple-inspired color palette
-const APPLE = {
-  bg: "#F5F5F7",
-  bgDark: "#1D1D1F",
-  card: "#FFFFFF",
-  cardDark: "rgba(255,255,255,0.08)",
-  text: "#1D1D1F",
-  textSecondary: "#86868B",
+// Apple-inspired color palette with dark mode support
+const getTheme = (isDark: boolean) => ({
+  bg: isDark ? "#000000" : "#F5F5F7",
+  bgGradient: isDark 
+    ? "linear-gradient(180deg, #000000 0%, #1D1D1F 100%)" 
+    : "linear-gradient(180deg, #F5F5F7 0%, #E8E8ED 100%)",
+  card: isDark ? "rgba(255,255,255,0.08)" : "#FFFFFF",
+  cardBorder: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.04)",
+  text: isDark ? "#F5F5F7" : "#1D1D1F",
+  textSecondary: isDark ? "#8E8E93" : "#86868B",
   accent: "#007AFF",
   accentLight: "#5AC8FA",
   success: "#34C759",
-  border: "rgba(0,0,0,0.06)",
-};
+  particle: isDark ? "rgba(255,255,255,0.15)" : "rgba(0,122,255,0.08)",
+  inputBg: isDark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.9)",
+  shimmer: isDark ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.6)",
+});
 
 interface Message {
   id: string;
@@ -61,69 +66,264 @@ const INITIAL_MESSAGE: Message = {
   timestamp: new Date(),
 };
 
+// Floating particles component
+const FloatingParticles = ({ isDark }: { isDark: boolean }) => {
+  const theme = getTheme(isDark);
+  const particles = useMemo(() => 
+    Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 4 + 2,
+      duration: Math.random() * 20 + 15,
+      delay: Math.random() * 5,
+    })), []
+  );
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {particles.map((particle) => (
+        <motion.div
+          key={particle.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${particle.x}%`,
+            top: `${particle.y}%`,
+            width: particle.size,
+            height: particle.size,
+            backgroundColor: theme.particle,
+          }}
+          animate={{
+            y: [0, -100, 0],
+            x: [0, Math.random() * 50 - 25, 0],
+            opacity: [0, 0.8, 0],
+            scale: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: particle.duration,
+            repeat: Infinity,
+            delay: particle.delay,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+// Hero animation component
+const HeroAnimation = ({ isDark, onComplete }: { isDark: boolean; onComplete: () => void }) => {
+  const theme = getTheme(isDark);
+  
+  useEffect(() => {
+    const timer = setTimeout(onComplete, 2500);
+    return () => clearTimeout(timer);
+  }, [onComplete]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 flex items-center justify-center z-50"
+      style={{ background: theme.bgGradient }}
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 0 }}
+      transition={{ delay: 2, duration: 0.5 }}
+    >
+      <FloatingParticles isDark={isDark} />
+      
+      <div className="text-center">
+        {/* Animated logo/icon */}
+        <motion.div
+          className="relative w-24 h-24 mx-auto mb-8"
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
+        >
+          {/* Glowing rings */}
+          {[...Array(3)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute inset-0 rounded-full"
+              style={{ border: `2px solid ${theme.accent}` }}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ 
+                scale: [1, 1.5 + i * 0.3], 
+                opacity: [0.6 - i * 0.15, 0] 
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                delay: 0.5 + i * 0.3,
+                ease: "easeOut",
+              }}
+            />
+          ))}
+          
+          <motion.div
+            className="absolute inset-0 rounded-full flex items-center justify-center"
+            style={{ 
+              background: `linear-gradient(135deg, ${theme.accent}30 0%, ${theme.accentLight}20 100%)`,
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            >
+              <Sparkles size={40} style={{ color: theme.accent }} />
+            </motion.div>
+          </motion.div>
+        </motion.div>
+        
+        {/* Title animation */}
+        <motion.h1
+          className="text-3xl font-semibold mb-3"
+          style={{ color: theme.text }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+        >
+          Web Studio
+        </motion.h1>
+        
+        <motion.p
+          className="text-sm"
+          style={{ color: theme.textSecondary }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
+          Créez votre site web en quelques minutes
+        </motion.p>
+        
+        {/* Loading dots */}
+        <motion.div 
+          className="flex items-center justify-center gap-1.5 mt-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+        >
+          {[0, 1, 2].map((i) => (
+            <motion.div
+              key={i}
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: theme.accent }}
+              animate={{
+                y: [0, -8, 0],
+                opacity: [0.4, 1, 0.4],
+              }}
+              transition={{
+                duration: 0.8,
+                repeat: Infinity,
+                delay: i * 0.15,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
 // Typing animation component
-const TypingIndicator = () => (
-  <motion.div 
-    className="flex items-center gap-1.5 px-4 py-3"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-  >
-    {[0, 1, 2].map((i) => (
-      <motion.div
-        key={i}
-        className="w-2 h-2 rounded-full"
-        style={{ backgroundColor: APPLE.accent }}
-        animate={{
-          y: [0, -6, 0],
-          opacity: [0.4, 1, 0.4],
-        }}
-        transition={{
-          duration: 0.8,
-          repeat: Infinity,
-          delay: i * 0.15,
-          ease: "easeInOut",
-        }}
-      />
-    ))}
-  </motion.div>
-);
+const TypingIndicator = ({ isDark }: { isDark: boolean }) => {
+  const theme = getTheme(isDark);
+  return (
+    <motion.div 
+      className="flex items-center gap-1.5 px-4 py-3"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          className="w-2 h-2 rounded-full"
+          style={{ backgroundColor: theme.accent }}
+          animate={{
+            y: [0, -6, 0],
+            opacity: [0.4, 1, 0.4],
+          }}
+          transition={{
+            duration: 0.8,
+            repeat: Infinity,
+            delay: i * 0.15,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </motion.div>
+  );
+};
 
 // Progress step component
-const ProgressStep = ({ active, completed, label }: { active: boolean; completed: boolean; label: string }) => (
-  <motion.div 
-    className="flex flex-col items-center gap-1.5"
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-  >
-    <motion.div
-      className="w-3 h-3 rounded-full flex items-center justify-center"
-      style={{
-        backgroundColor: completed ? APPLE.success : active ? APPLE.accent : "rgba(0,0,0,0.1)",
-      }}
-      animate={{
-        scale: active ? [1, 1.2, 1] : 1,
-      }}
-      transition={{
-        duration: 2,
-        repeat: active ? Infinity : 0,
-        ease: "easeInOut",
-      }}
+const ProgressStep = ({ active, completed, label, isDark }: { active: boolean; completed: boolean; label: string; isDark: boolean }) => {
+  const theme = getTheme(isDark);
+  return (
+    <motion.div 
+      className="flex flex-col items-center gap-1.5"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
     >
-      {completed && (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        >
-          <CheckCircle2 size={10} color="white" />
-        </motion.div>
-      )}
+      <motion.div
+        className="w-3 h-3 rounded-full flex items-center justify-center"
+        style={{
+          backgroundColor: completed ? theme.success : active ? theme.accent : isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
+        }}
+        animate={{
+          scale: active ? [1, 1.2, 1] : 1,
+        }}
+        transition={{
+          duration: 2,
+          repeat: active ? Infinity : 0,
+          ease: "easeInOut",
+        }}
+      >
+        {completed && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+          >
+            <CheckCircle2 size={10} color="white" />
+          </motion.div>
+        )}
+      </motion.div>
+      <span className="text-[10px] font-medium" style={{ color: completed ? theme.success : theme.textSecondary }}>
+        {label}
+      </span>
     </motion.div>
-    <span className="text-[10px] font-medium" style={{ color: completed ? APPLE.success : APPLE.textSecondary }}>
-      {label}
-    </span>
-  </motion.div>
-);
+  );
+};
+
+// Theme toggle button
+const ThemeToggle = ({ isDark, onToggle }: { isDark: boolean; onToggle: () => void }) => {
+  const theme = getTheme(isDark);
+  return (
+    <motion.button
+      onClick={onToggle}
+      className="fixed top-24 right-4 z-40 p-3 rounded-full backdrop-blur-xl"
+      style={{
+        backgroundColor: theme.card,
+        border: `1px solid ${theme.cardBorder}`,
+        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+      }}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+    >
+      <motion.div
+        initial={false}
+        animate={{ rotate: isDark ? 180 : 0 }}
+        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+      >
+        {isDark ? (
+          <Sun size={18} style={{ color: "#FFD60A" }} />
+        ) : (
+          <Moon size={18} style={{ color: theme.textSecondary }} />
+        )}
+      </motion.div>
+    </motion.button>
+  );
+};
 
 export default function WebStudioAI() {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
@@ -135,10 +335,27 @@ export default function WebStudioAI() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedSiteUrl, setGeneratedSiteUrl] = useState<string | null>(null);
   const [generationProgress, setGenerationProgress] = useState(0);
+  const [showHero, setShowHero] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  
+  const theme = getTheme(isDark);
+
+  // Listen for system theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => setIsDark(e.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -149,8 +366,8 @@ export default function WebStudioAI() {
   }, [messages]);
 
   useEffect(() => {
-    if (!isLoading) inputRef.current?.focus();
-  }, [isLoading]);
+    if (!isLoading && !showHero) inputRef.current?.focus();
+  }, [isLoading, showHero]);
 
   const sendMessage = async (customMessage?: string) => {
     const messageText = customMessage || input.trim();
@@ -322,19 +539,35 @@ export default function WebStudioAI() {
 
   const completedSteps = progressSteps.filter(s => collectedData[s.key as keyof CollectedData]).length;
 
+  // Hero animation
+  if (showHero) {
+    return (
+      <>
+        <SEOHead {...SEO_CONFIGS.webStudio} />
+        <HeroAnimation isDark={isDark} onComplete={() => setShowHero(false)} />
+      </>
+    );
+  }
+
   // Success state - site generated
   if (generatedSiteUrl) {
     return (
       <>
         <SEOHead {...SEO_CONFIGS.webStudio} />
-        <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${APPLE.bg} 0%, #E8E8ED 100%)` }}>
+        <div className="min-h-screen" style={{ background: theme.bgGradient }}>
           <CoutureNavbar />
+          <ThemeToggle isDark={isDark} onToggle={() => setIsDark(!isDark)} />
+          <FloatingParticles isDark={isDark} />
+          
           <main className="pt-24 pb-20 px-4 flex items-center justify-center min-h-screen">
             <motion.div
-              className="max-w-md w-full rounded-3xl p-10 text-center"
+              className="max-w-md w-full rounded-3xl p-10 text-center relative overflow-hidden"
               style={{
-                backgroundColor: APPLE.card,
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.03)",
+                backgroundColor: theme.card,
+                border: `1px solid ${theme.cardBorder}`,
+                boxShadow: isDark 
+                  ? "0 25px 50px -12px rgba(0, 0, 0, 0.5)" 
+                  : "0 25px 50px -12px rgba(0, 0, 0, 0.1)",
               }}
               initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -342,7 +575,7 @@ export default function WebStudioAI() {
             >
               <motion.div
                 className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
-                style={{ background: `linear-gradient(135deg, ${APPLE.success}20 0%, ${APPLE.success}10 100%)` }}
+                style={{ background: `linear-gradient(135deg, ${theme.success}20 0%, ${theme.success}10 100%)` }}
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", delay: 0.2, stiffness: 200 }}
@@ -352,13 +585,13 @@ export default function WebStudioAI() {
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.4, type: "spring" }}
                 >
-                  <Globe size={36} style={{ color: APPLE.success }} />
+                  <Globe size={36} style={{ color: theme.success }} />
                 </motion.div>
               </motion.div>
               
               <motion.h2 
                 className="text-2xl font-semibold mb-2"
-                style={{ color: APPLE.text }}
+                style={{ color: theme.text }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
@@ -367,7 +600,7 @@ export default function WebStudioAI() {
               </motion.h2>
               <motion.p 
                 className="text-sm mb-8"
-                style={{ color: APPLE.textSecondary }}
+                style={{ color: theme.textSecondary }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
@@ -381,13 +614,13 @@ export default function WebStudioAI() {
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-3 w-full px-6 py-4 rounded-2xl font-medium text-white"
                 style={{
-                  background: `linear-gradient(135deg, ${APPLE.accent} 0%, ${APPLE.accentLight} 100%)`,
-                  boxShadow: `0 8px 20px ${APPLE.accent}30`,
+                  background: `linear-gradient(135deg, ${theme.accent} 0%, ${theme.accentLight} 100%)`,
+                  boxShadow: `0 8px 20px ${theme.accent}30`,
                 }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                whileHover={{ scale: 1.02, boxShadow: `0 12px 30px ${APPLE.accent}40` }}
+                whileHover={{ scale: 1.02, boxShadow: `0 12px 30px ${theme.accent}40` }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Globe size={18} />
@@ -404,7 +637,7 @@ export default function WebStudioAI() {
                   setGeneratedSiteUrl(null);
                 }}
                 className="mt-6 text-sm font-medium"
-                style={{ color: APPLE.accent }}
+                style={{ color: theme.accent }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
@@ -424,14 +657,19 @@ export default function WebStudioAI() {
     return (
       <>
         <SEOHead {...SEO_CONFIGS.webStudio} />
-        <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${APPLE.bg} 0%, #E8E8ED 100%)` }}>
+        <div className="min-h-screen" style={{ background: theme.bgGradient }}>
           <CoutureNavbar />
+          <FloatingParticles isDark={isDark} />
+          
           <main className="pt-24 pb-20 px-4 flex items-center justify-center min-h-screen">
             <motion.div
               className="max-w-md w-full rounded-3xl p-10 text-center"
               style={{
-                backgroundColor: APPLE.card,
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.1)",
+                backgroundColor: theme.card,
+                border: `1px solid ${theme.cardBorder}`,
+                boxShadow: isDark 
+                  ? "0 25px 50px -12px rgba(0, 0, 0, 0.5)" 
+                  : "0 25px 50px -12px rgba(0, 0, 0, 0.1)",
               }}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -443,7 +681,7 @@ export default function WebStudioAI() {
                     key={i}
                     className="absolute inset-0 rounded-full"
                     style={{
-                      border: `2px solid ${APPLE.accent}`,
+                      border: `2px solid ${theme.accent}`,
                       opacity: 0.3 - i * 0.1,
                     }}
                     animate={{
@@ -460,47 +698,49 @@ export default function WebStudioAI() {
                 ))}
                 <motion.div
                   className="absolute inset-0 rounded-full flex items-center justify-center"
-                  style={{ background: `linear-gradient(135deg, ${APPLE.accent}20 0%, ${APPLE.accentLight}10 100%)` }}
+                  style={{ background: `linear-gradient(135deg, ${theme.accent}20 0%, ${theme.accentLight}10 100%)` }}
                   animate={{ rotate: 360 }}
                   transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                 >
-                  <Sparkles size={32} style={{ color: APPLE.accent }} />
+                  <Sparkles size={32} style={{ color: theme.accent }} />
                 </motion.div>
               </div>
               
               <motion.h2 
                 className="text-xl font-semibold mb-2"
-                style={{ color: APPLE.text }}
+                style={{ color: theme.text }}
                 animate={{ opacity: [0.7, 1, 0.7] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
                 Création en cours...
               </motion.h2>
-              <p className="text-sm mb-8" style={{ color: APPLE.textSecondary }}>
+              <p className="text-sm mb-8" style={{ color: theme.textSecondary }}>
                 {generationProgress < 40 && "Analyse de votre projet..."}
                 {generationProgress >= 40 && generationProgress < 70 && "Design et structure en cours..."}
                 {generationProgress >= 70 && "Finalisation et mise en ligne..."}
               </p>
               
               {/* Premium progress bar */}
-              <div className="relative w-full h-1.5 rounded-full overflow-hidden mb-4" style={{ backgroundColor: "rgba(0,0,0,0.05)" }}>
+              <div 
+                className="relative w-full h-1.5 rounded-full overflow-hidden mb-4" 
+                style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }}
+              >
                 <motion.div
                   className="absolute top-0 left-0 h-full rounded-full"
-                  style={{ background: `linear-gradient(90deg, ${APPLE.accent}, ${APPLE.accentLight})` }}
+                  style={{ background: `linear-gradient(90deg, ${theme.accent}, ${theme.accentLight})` }}
                   initial={{ width: "0%" }}
                   animate={{ width: `${generationProgress}%` }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
                 />
-                {/* Shimmer effect */}
                 <motion.div
                   className="absolute top-0 h-full w-20 rounded-full"
-                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)" }}
+                  style={{ background: `linear-gradient(90deg, transparent, ${theme.shimmer}, transparent)` }}
                   animate={{ left: ["-20%", "120%"] }}
                   transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                 />
               </div>
               
-              <p className="text-xs font-medium" style={{ color: APPLE.textSecondary }}>
+              <p className="text-xs font-medium" style={{ color: theme.textSecondary }}>
                 {generationProgress}%
               </p>
             </motion.div>
@@ -510,14 +750,16 @@ export default function WebStudioAI() {
     );
   }
 
-  // Chat interface - Premium Apple style
+  // Chat interface - Premium Apple style with dark mode
   return (
     <>
       <SEOHead {...SEO_CONFIGS.webStudio} />
-      <div className="min-h-screen flex flex-col" style={{ background: `linear-gradient(180deg, ${APPLE.bg} 0%, #E8E8ED 100%)` }}>
+      <div className="min-h-screen flex flex-col" style={{ background: theme.bgGradient }}>
         <CoutureNavbar />
+        <ThemeToggle isDark={isDark} onToggle={() => setIsDark(!isDark)} />
+        <FloatingParticles isDark={isDark} />
         
-        <main className="flex-1 flex flex-col pt-20 pb-4 max-w-2xl mx-auto w-full px-4">
+        <main className="flex-1 flex flex-col pt-20 pb-4 max-w-2xl mx-auto w-full px-4 relative z-10">
           {/* Header with glassmorphism */}
           <motion.div 
             className="text-center py-6"
@@ -528,9 +770,9 @@ export default function WebStudioAI() {
             <motion.div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 backdrop-blur-xl"
               style={{ 
-                backgroundColor: "rgba(255,255,255,0.8)",
-                border: "1px solid rgba(0,0,0,0.05)",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+                backgroundColor: theme.inputBg,
+                border: `1px solid ${theme.cardBorder}`,
+                boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
               }}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -540,17 +782,17 @@ export default function WebStudioAI() {
                 animate={{ rotate: [0, 15, -15, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
-                <Sparkles size={14} style={{ color: APPLE.accent }} />
+                <Sparkles size={14} style={{ color: theme.accent }} />
               </motion.div>
-              <span className="text-xs font-semibold" style={{ color: APPLE.accent }}>
+              <span className="text-xs font-semibold" style={{ color: theme.accent }}>
                 Assistant Web Studio
               </span>
             </motion.div>
             
-            <h1 className="text-2xl font-semibold mb-2" style={{ color: APPLE.text }}>
+            <h1 className="text-2xl font-semibold mb-2" style={{ color: theme.text }}>
               Créez votre site web
             </h1>
-            <p className="text-sm" style={{ color: APPLE.textSecondary }}>
+            <p className="text-sm" style={{ color: theme.textSecondary }}>
               En quelques questions, votre site sera prêt
             </p>
           </motion.div>
@@ -570,7 +812,8 @@ export default function WebStudioAI() {
                     key={step.key} 
                     active={isActive} 
                     completed={isCompleted} 
-                    label={step.label} 
+                    label={step.label}
+                    isDark={isDark}
                   />
                 );
               })}
@@ -591,7 +834,6 @@ export default function WebStudioAI() {
                     type: "spring",
                     stiffness: 400,
                     damping: 30,
-                    delay: index === messages.length - 1 ? 0 : 0,
                   }}
                 >
                   <motion.div
@@ -601,11 +843,14 @@ export default function WebStudioAI() {
                         : "rounded-bl-lg"
                     }`}
                     style={{
-                      backgroundColor: message.role === "user" ? APPLE.accent : APPLE.card,
-                      color: message.role === "user" ? "#FFFFFF" : APPLE.text,
+                      backgroundColor: message.role === "user" ? theme.accent : theme.card,
+                      color: message.role === "user" ? "#FFFFFF" : theme.text,
+                      border: message.role === "assistant" ? `1px solid ${theme.cardBorder}` : "none",
                       boxShadow: message.role === "user" 
-                        ? `0 4px 15px ${APPLE.accent}30`
-                        : "0 2px 15px rgba(0, 0, 0, 0.05)",
+                        ? `0 4px 15px ${theme.accent}30`
+                        : isDark 
+                          ? "0 2px 15px rgba(0, 0, 0, 0.3)"
+                          : "0 2px 15px rgba(0, 0, 0, 0.05)",
                     }}
                     whileHover={{ scale: 1.01 }}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -628,11 +873,14 @@ export default function WebStudioAI() {
                 <div
                   className="rounded-2xl rounded-bl-lg"
                   style={{
-                    backgroundColor: APPLE.card,
-                    boxShadow: "0 2px 15px rgba(0, 0, 0, 0.05)",
+                    backgroundColor: theme.card,
+                    border: `1px solid ${theme.cardBorder}`,
+                    boxShadow: isDark 
+                      ? "0 2px 15px rgba(0, 0, 0, 0.3)"
+                      : "0 2px 15px rgba(0, 0, 0, 0.05)",
                   }}
                 >
-                  <TypingIndicator />
+                  <TypingIndicator isDark={isDark} />
                 </div>
               </motion.div>
             )}
@@ -643,7 +891,7 @@ export default function WebStudioAI() {
                 className="flex flex-wrap gap-3 justify-center pt-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, staggerChildren: 0.1 }}
+                transition={{ delay: 0.3 }}
               >
                 {QUICK_SUGGESTIONS.map((suggestion, i) => (
                   <motion.button
@@ -651,18 +899,22 @@ export default function WebStudioAI() {
                     onClick={() => sendMessage(suggestion.label)}
                     className="px-5 py-3 rounded-2xl text-sm font-medium flex items-center gap-2"
                     style={{
-                      backgroundColor: APPLE.card,
-                      color: APPLE.text,
-                      boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-                      border: "1px solid rgba(0,0,0,0.04)",
+                      backgroundColor: theme.card,
+                      color: theme.text,
+                      boxShadow: isDark 
+                        ? "0 2px 10px rgba(0,0,0,0.3)"
+                        : "0 2px 10px rgba(0,0,0,0.05)",
+                      border: `1px solid ${theme.cardBorder}`,
                     }}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.7 + i * 0.08 }}
+                    transition={{ delay: 0.4 + i * 0.08 }}
                     whileHover={{ 
                       scale: 1.05, 
-                      boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                      backgroundColor: `${APPLE.accent}10`,
+                      boxShadow: isDark 
+                        ? "0 8px 25px rgba(0,0,0,0.4)"
+                        : "0 8px 25px rgba(0,0,0,0.08)",
+                      backgroundColor: `${theme.accent}15`,
                     }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -690,20 +942,19 @@ export default function WebStudioAI() {
                   onClick={handleGenerateSite}
                   className="w-full flex items-center justify-center gap-3 px-6 py-5 rounded-2xl font-semibold text-white relative overflow-hidden"
                   style={{
-                    background: `linear-gradient(135deg, ${APPLE.accent} 0%, ${APPLE.accentLight} 100%)`,
-                    boxShadow: `0 10px 30px ${APPLE.accent}40`,
+                    background: `linear-gradient(135deg, ${theme.accent} 0%, ${theme.accentLight} 100%)`,
+                    boxShadow: `0 10px 30px ${theme.accent}40`,
                   }}
                   whileHover={{ 
                     scale: 1.02,
-                    boxShadow: `0 15px 40px ${APPLE.accent}50`,
+                    boxShadow: `0 15px 40px ${theme.accent}50`,
                   }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  {/* Shimmer effect */}
                   <motion.div
                     className="absolute inset-0"
                     style={{
-                      background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+                      background: `linear-gradient(90deg, transparent, ${theme.shimmer}, transparent)`,
                     }}
                     animate={{ x: ["-100%", "200%"] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -720,8 +971,10 @@ export default function WebStudioAI() {
           <motion.div
             className="rounded-2xl p-1.5 backdrop-blur-xl"
             style={{
-              backgroundColor: "rgba(255,255,255,0.9)",
-              boxShadow: "0 8px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)",
+              backgroundColor: theme.inputBg,
+              boxShadow: isDark 
+                ? "0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)"
+                : "0 8px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)",
             }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -736,16 +989,16 @@ export default function WebStudioAI() {
                 onKeyPress={handleKeyPress}
                 placeholder="Tapez votre réponse..."
                 disabled={isLoading || isReadyToGenerate}
-                className="flex-1 bg-transparent px-4 py-4 text-sm outline-none font-medium"
-                style={{ color: APPLE.text }}
+                className="flex-1 bg-transparent px-4 py-4 text-sm outline-none font-medium placeholder:opacity-50"
+                style={{ color: theme.text }}
               />
               <motion.button
                 onClick={() => sendMessage()}
                 disabled={!input.trim() || isLoading}
                 className="p-3.5 rounded-xl disabled:opacity-40 transition-all"
                 style={{
-                  backgroundColor: input.trim() ? APPLE.accent : "rgba(0,0,0,0.05)",
-                  color: input.trim() ? "#FFFFFF" : APPLE.textSecondary,
+                  backgroundColor: input.trim() ? theme.accent : isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                  color: input.trim() ? "#FFFFFF" : theme.textSecondary,
                 }}
                 whileHover={{ scale: input.trim() ? 1.08 : 1 }}
                 whileTap={{ scale: input.trim() ? 0.92 : 1 }}
@@ -758,7 +1011,7 @@ export default function WebStudioAI() {
           {/* Footer hint */}
           <motion.p 
             className="text-center text-xs mt-4 font-medium"
-            style={{ color: APPLE.textSecondary }}
+            style={{ color: theme.textSecondary }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
