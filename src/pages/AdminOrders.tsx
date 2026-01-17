@@ -1,5 +1,15 @@
-import { useState, useEffect } from "react";
+/**
+ * AdminOrders - Order Management with OMNIA Design System
+ * 
+ * Palette OMNIA:
+ * - Obsidienne: #030303 (Fond principal)
+ * - Champagne: #DCC7B0 (Accent principal)
+ * - Ivoire: #FDFCFB (Texte & détails)
+ */
+
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { 
   useIsAdmin, 
   useAllOrders, 
@@ -13,19 +23,10 @@ import { getOrderStatusLabel, getOrderStatusColor } from "@/hooks/useOrders";
 import { formatPrice } from "@/lib/pricing";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -41,25 +42,52 @@ import {
   Package, 
   Download,
   Eye,
-  Shield,
   XCircle,
   Loader2,
   StickyNote,
   Clock,
   MapPin,
-  User,
   TrendingUp,
   Crown,
   CreditCard,
-  Image as ImageIcon,
   MessageCircle,
   Phone,
-  Pencil
+  Pencil,
+  Settings,
+  ChevronRight,
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { Order } from "@/hooks/useOrders";
 import { toast } from "sonner";
+import { AdminOmniaLayout } from "@/layouts/AdminOmniaLayout";
+import { useEffect } from "react";
+
+// ═══════════════════════════════════════════════════════════════════════════
+// OMNIA PALETTE
+// ═══════════════════════════════════════════════════════════════════════════
+const OMNIA = {
+  obsidienne: '#030303',
+  obsidienneSurface: '#0A0A0A',
+  obsidienneElevated: '#111111',
+  champagne: '#DCC7B0',
+  champagneMuted: 'rgba(220, 199, 176, 0.15)',
+  ivoire: '#FDFCFB',
+  ivoireMuted: 'rgba(253, 252, 251, 0.6)',
+  ivoireSubtle: 'rgba(253, 252, 251, 0.4)',
+  border: 'rgba(255, 255, 255, 0.05)',
+  borderActive: 'rgba(220, 199, 176, 0.2)',
+  success: '#4ADE80',
+  successMuted: 'rgba(74, 222, 128, 0.15)',
+  warning: '#FBBF24',
+  warningMuted: 'rgba(251, 191, 36, 0.15)',
+  info: '#60A5FA',
+  infoMuted: 'rgba(96, 165, 250, 0.15)',
+  purple: '#A78BFA',
+  purpleMuted: 'rgba(167, 139, 250, 0.15)',
+  danger: '#F87171',
+  dangerMuted: 'rgba(248, 113, 113, 0.15)',
+};
 
 // Admin statistics hook
 function useAdminStats() {
@@ -73,7 +101,6 @@ function useAdminStats() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        // Fetch revenue from orders
         const { data: ordersData } = await supabase
           .from("orders")
           .select("total_price_cents, status");
@@ -83,7 +110,6 @@ function useAdminStats() {
           o.status === "pending" || o.status === "paid" || o.status === "in_production"
         ).length || 0;
 
-        // Fetch gold subscribers
         const { count: goldCount } = await supabase
           .from("subscriptions")
           .select("*", { count: "exact", head: true })
@@ -105,6 +131,101 @@ function useAdminStats() {
   }, []);
 
   return { stats, loading };
+}
+
+// Stat Card Component - OMNIA Style
+function OmniaStatCard({ 
+  label, 
+  value, 
+  icon: Icon, 
+  color,
+  colorMuted,
+}: { 
+  label: string; 
+  value: string | number; 
+  icon: React.ElementType; 
+  color: string;
+  colorMuted: string;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative overflow-hidden rounded-2xl p-5"
+      style={{ 
+        background: `linear-gradient(135deg, ${OMNIA.obsidienneElevated} 0%, ${OMNIA.obsidienneSurface} 100%)`,
+        border: `1px solid ${OMNIA.border}`,
+      }}
+    >
+      <div 
+        className="absolute -top-10 -right-10 w-24 h-24 rounded-full blur-2xl opacity-30"
+        style={{ backgroundColor: color }}
+      />
+      <div className="relative z-10 flex items-start gap-4">
+        <div 
+          className="w-11 h-11 rounded-xl flex items-center justify-center"
+          style={{ backgroundColor: colorMuted }}
+        >
+          <Icon size={20} style={{ color }} />
+        </div>
+        <div>
+          <p 
+            className="text-2xl font-light tracking-tight"
+            style={{ color: OMNIA.ivoire }}
+          >
+            {value}
+          </p>
+          <p 
+            className="text-xs font-light uppercase tracking-wider mt-0.5"
+            style={{ color: OMNIA.ivoireSubtle }}
+          >
+            {label}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// Pipeline Stage Component
+function PipelineStage({ 
+  label, 
+  count, 
+  icon: Icon, 
+  color,
+  colorMuted,
+  isActive,
+}: { 
+  label: string; 
+  count: number; 
+  icon: React.ElementType; 
+  color: string;
+  colorMuted: string;
+  isActive?: boolean;
+}) {
+  return (
+    <div 
+      className="flex flex-col items-center p-4 rounded-xl transition-all duration-300"
+      style={{ 
+        backgroundColor: isActive ? colorMuted : 'transparent',
+        border: `1px solid ${isActive ? color + '40' : OMNIA.border}`,
+      }}
+    >
+      <Icon size={18} className="mb-2" style={{ color }} />
+      <p 
+        className="text-xl font-light"
+        style={{ color: OMNIA.ivoire }}
+      >
+        {count}
+      </p>
+      <p 
+        className="text-[10px] uppercase tracking-widest mt-1"
+        style={{ color: OMNIA.ivoireSubtle }}
+      >
+        {label}
+      </p>
+    </div>
+  );
 }
 
 export default function AdminOrders() {
@@ -160,11 +281,9 @@ export default function AdminOrders() {
     const phone = order.shipping_phone?.replace(/[\s\-\.\(\)]/g, "") || "";
     const cleanPhone = phone.startsWith("+") ? phone.slice(1) : phone;
     
-    // Get product type
     const productType = getProductTypeLabel(order);
     const productName = productType.label;
     
-    // Build message
     const message = encodeURIComponent(
       `Bonjour ${order.shipping_name || ""},\n\n` +
       `Ici l'équipe i-wasp Maroc 🐝\n\n` +
@@ -182,42 +301,16 @@ export default function AdminOrders() {
 
   // Get product type label
   const getProductTypeLabel = (order: Order) => {
-    // Check order_items for product type or use order_type field
     const items = order.order_items as any[];
     if (items && items.length > 0) {
       const hasNails = items.some(item => 
         item.name?.toLowerCase().includes("nail") || 
         item.name?.toLowerCase().includes("ongle")
       );
-      if (hasNails) return { label: "Ongles NFC", color: "bg-pink-100 text-pink-800" };
+      if (hasNails) return { label: "Ongles NFC", color: OMNIA.purple };
     }
-    return { label: "Carte NFC", color: "bg-blue-100 text-blue-800" };
+    return { label: "Carte NFC", color: OMNIA.info };
   };
-  
-  // Loading state
-  if (checkingAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-  
-  // Access denied
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <Shield className="h-16 w-16 text-muted-foreground" />
-        <h1 className="text-2xl font-bold">Accès refusé</h1>
-        <p className="text-muted-foreground">
-          Vous n'avez pas les droits d'administration.
-        </p>
-        <Button onClick={() => navigate("/dashboard")}>
-          Retour au tableau de bord
-        </Button>
-      </div>
-    );
-  }
   
   // Handle view order details
   const handleViewDetails = (order: Order) => {
@@ -241,7 +334,6 @@ export default function AdminOrders() {
         tracking_number: editTracking || null 
       };
       
-      // Set timestamps based on status change
       if (editStatus === "paid" && selectedOrder.status !== "paid") {
         updates.paid_at = new Date().toISOString();
       }
@@ -299,10 +391,9 @@ export default function AdminOrders() {
     }
   };
   
-  // Handle reject order (set back to pending or mark as cancelled)
+  // Handle reject order
   const handleRejectOrder = (order: Order) => {
     if (confirm(`Rejeter la commande ${order.order_number} ?`)) {
-      // For now, we just add a note - in production, you'd have a cancelled status
       updateOrder.mutate({
         orderId: order.id,
         updates: { admin_notes: `[REJETÉE] ${(order as any).admin_notes || ""}` } as any
@@ -310,193 +401,41 @@ export default function AdminOrders() {
       toast.info("Commande marquée comme rejetée");
     }
   };
-  
-  // Get action buttons based on order status
-  const getOrderActions = (order: Order) => {
-    const actions: JSX.Element[] = [];
-    
-    // Always show edit, notes and details buttons
-    actions.push(
-      <Button
-        key="edit"
-        size="sm"
-        variant="ghost"
-        onClick={() => handleOpenEdit(order)}
-        title="Modifier statut/tracking"
-        className="text-blue-600 hover:text-blue-700"
-      >
-        <Pencil className="h-4 w-4" />
-      </Button>,
-      <Button
-        key="notes"
-        size="sm"
-        variant="ghost"
-        onClick={() => handleOpenNotes(order)}
-        title="Notes internes"
-      >
-        <StickyNote className="h-4 w-4" />
-      </Button>,
-      <Button
-        key="details"
-        size="sm"
-        variant="ghost"
-        onClick={() => handleViewDetails(order)}
-        title="Voir détails"
-      >
-        <Eye className="h-4 w-4" />
-      </Button>
-    );
-    
-    switch (order.status) {
-      case "pending":
-        actions.push(
-          <Button
-            key="confirm"
-            size="sm"
-            onClick={() => confirmOrder.mutate(order.id)}
-            disabled={confirmOrder.isPending}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            <CheckCircle2 className="h-4 w-4 mr-1" />
-            Confirmer
-          </Button>,
-          <Button
-            key="reject"
-            size="sm"
-            variant="destructive"
-            onClick={() => handleRejectOrder(order)}
-          >
-            <XCircle className="h-4 w-4 mr-1" />
-            Rejeter
-          </Button>
-        );
-        break;
-      
-      case "paid":
-        actions.push(
-          <Button
-            key="production"
-            size="sm"
-            onClick={() => startProduction.mutate(order.id)}
-            disabled={startProduction.isPending}
-          >
-            <Factory className="h-4 w-4 mr-1" />
-            Production
-          </Button>,
-          <Button
-            key="download"
-            size="sm"
-            variant="outline"
-            onClick={() => {
-              toast.info("Génération PDF en cours...");
-              // TODO: Generate and download print PDF
-              console.log("Download PDF for order:", order.order_number);
-            }}
-          >
-            <Download className="h-4 w-4 mr-1" />
-            PDF
-          </Button>
-        );
-        break;
-      
-      case "in_production":
-        actions.push(
-          <Button
-            key="ship"
-            size="sm"
-            onClick={() => handleOpenShipDialog(order)}
-            disabled={markShipped.isPending}
-          >
-            <Truck className="h-4 w-4 mr-1" />
-            Expédier
-          </Button>,
-          <Button
-            key="download"
-            size="sm"
-            variant="outline"
-            onClick={() => {
-              toast.info("Génération PDF en cours...");
-              console.log("Download PDF for order:", order.order_number);
-            }}
-          >
-            <Download className="h-4 w-4 mr-1" />
-            PDF
-          </Button>
-        );
-        break;
-      
-      case "shipped":
-        actions.push(
-          <Button
-            key="delivered"
-            size="sm"
-            onClick={() => markDelivered.mutate(order.id)}
-            disabled={markDelivered.isPending}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            <Package className="h-4 w-4 mr-1" />
-            Livré (Payé)
-          </Button>
-        );
-        break;
-      
-      case "delivered":
-        actions.push(
-          <Badge key="done" variant="secondary" className="bg-green-100 text-green-800">
-            ✓ Terminée
-          </Badge>
-        );
-        break;
-    }
-    
-    return actions;
-  };
-  
-  // Stats
-  const pendingCount = orders?.filter(o => o.status === "pending").length || 0;
-  const confirmedCount = orders?.filter(o => o.status === "paid").length || 0;
-  const productionCount = orders?.filter(o => o.status === "in_production").length || 0;
-  const shippedCount = orders?.filter(o => o.status === "shipped").length || 0;
-  const deliveredCount = orders?.filter(o => o.status === "delivered").length || 0;
 
-  // Get card type from template
-  const getCardTypeForExport = (template: string): string => {
-    if (template.includes("airbnb") || template.includes("hotel") || template.includes("rental") || template.includes("booking")) {
-      return "Airbnb / Booking";
-    }
-    if (template.includes("employee") || template.includes("salari")) {
-      return "Salarié";
-    }
-    return "Business";
-  };
-
-  // Get offer plan from price
-  const getOfferFromPrice = (priceCents: number): string => {
-    if (priceCents === 0) return "Free";
-    if (priceCents <= 15000) return "Gold";
-    return "Premium";
-  };
-
-  // Get status emoji for Google Sheet
-  const getStatusEmoji = (status: string): string => {
-    switch (status) {
-      case "pending": return "🟡 Nouvelle";
-      case "paid": return "🟠 En cours";
-      case "in_production": return "🟠 En cours";
-      case "shipped": return "🟢 Prête";
-      case "delivered": return "🔴 Livrée";
-      default: return status;
-    }
-  };
-
-  // Export CSV function - Format Google Sheet "Commandes iWasp"
+  // Export CSV function
   const handleExportCSV = () => {
     if (!orders || orders.length === 0) {
       toast.error("Aucune commande à exporter");
       return;
     }
 
-    // Headers matching Google Sheet columns
+    const getCardTypeForExport = (template: string): string => {
+      if (template.includes("airbnb") || template.includes("hotel") || template.includes("rental") || template.includes("booking")) {
+        return "Airbnb / Booking";
+      }
+      if (template.includes("employee") || template.includes("salari")) {
+        return "Salarié";
+      }
+      return "Business";
+    };
+
+    const getOfferFromPrice = (priceCents: number): string => {
+      if (priceCents === 0) return "Free";
+      if (priceCents <= 15000) return "Gold";
+      return "Premium";
+    };
+
+    const getStatusEmoji = (status: string): string => {
+      switch (status) {
+        case "pending": return "🟡 Nouvelle";
+        case "paid": return "🟠 En cours";
+        case "in_production": return "🟠 En cours";
+        case "shipped": return "🟢 Prête";
+        case "delivered": return "🔴 Livrée";
+        default: return status;
+      }
+    };
+
     const headers = [
       "Nom du client",
       "Téléphone",
@@ -534,7 +473,6 @@ export default function AdminOrders() {
       ];
     });
 
-    // Use tab separator for easy paste to Google Sheets
     const csvContent = [
       headers.join("\t"),
       ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join("\t"))
@@ -550,467 +488,504 @@ export default function AdminOrders() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    toast.success(`${orders.length} commandes exportées pour Google Sheets`);
+    toast.success(`${orders.length} commandes exportées`);
   };
   
+  // Stats
+  const pendingCount = orders?.filter(o => o.status === "pending").length || 0;
+  const confirmedCount = orders?.filter(o => o.status === "paid").length || 0;
+  const productionCount = orders?.filter(o => o.status === "in_production").length || 0;
+  const shippedCount = orders?.filter(o => o.status === "shipped").length || 0;
+  const deliveredCount = orders?.filter(o => o.status === "delivered").length || 0;
+
+  // Get order status for OMNIA
+  const getOmniaStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return { bg: OMNIA.warningMuted, text: OMNIA.warning };
+      case 'paid': return { bg: OMNIA.infoMuted, text: OMNIA.info };
+      case 'in_production': return { bg: OMNIA.purpleMuted, text: OMNIA.purple };
+      case 'shipped': return { bg: OMNIA.champagneMuted, text: OMNIA.champagne };
+      case 'delivered': return { bg: OMNIA.successMuted, text: OMNIA.success };
+      default: return { bg: OMNIA.border, text: OMNIA.ivoireMuted };
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-              <Shield className="h-8 w-8" />
-              Administration des commandes
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Gestion des commandes COD - Maroc
+    <AdminOmniaLayout title="Commandes" subtitle="Gestion des commandes">
+      <div className="space-y-6">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <OmniaStatCard
+            label="Chiffre d'affaires"
+            value={loadingStats ? "..." : formatPrice(stats.totalRevenue)}
+            icon={TrendingUp}
+            color={OMNIA.champagne}
+            colorMuted={OMNIA.champagneMuted}
+          />
+          <OmniaStatCard
+            label="Abonnés GOLD"
+            value={loadingStats ? "..." : stats.goldSubscribers}
+            icon={Crown}
+            color={OMNIA.warning}
+            colorMuted={OMNIA.warningMuted}
+          />
+          <OmniaStatCard
+            label="Cartes à produire"
+            value={loadingStats ? "..." : stats.cardsToProuce}
+            icon={CreditCard}
+            color={OMNIA.purple}
+            colorMuted={OMNIA.purpleMuted}
+          />
+        </div>
+
+        {/* Pipeline */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl p-5"
+          style={{ 
+            background: `linear-gradient(135deg, ${OMNIA.obsidienneElevated} 0%, ${OMNIA.obsidienneSurface} 100%)`,
+            border: `1px solid ${OMNIA.border}`,
+          }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 
+              className="text-sm font-medium uppercase tracking-wider"
+              style={{ color: OMNIA.champagne }}
+            >
+              Pipeline
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleExportCSV}
+              className="text-xs"
+              style={{ color: OMNIA.ivoireMuted }}
+            >
+              <Download size={14} className="mr-2" />
+              Export CSV
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-5 gap-2">
+            <PipelineStage label="Attente" count={pendingCount} icon={Clock} color={OMNIA.warning} colorMuted={OMNIA.warningMuted} isActive={pendingCount > 0} />
+            <PipelineStage label="Confirmées" count={confirmedCount} icon={CheckCircle2} color={OMNIA.info} colorMuted={OMNIA.infoMuted} />
+            <PipelineStage label="Production" count={productionCount} icon={Settings} color={OMNIA.purple} colorMuted={OMNIA.purpleMuted} />
+            <PipelineStage label="Expédiées" count={shippedCount} icon={Truck} color={OMNIA.champagne} colorMuted={OMNIA.champagneMuted} />
+            <PipelineStage label="Livrées" count={deliveredCount} icon={Package} color={OMNIA.success} colorMuted={OMNIA.successMuted} />
+          </div>
+        </motion.div>
+
+        {/* Orders List */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl overflow-hidden"
+          style={{ 
+            background: OMNIA.obsidienneElevated,
+            border: `1px solid ${OMNIA.border}`,
+          }}
+        >
+          <div className="p-5 border-b" style={{ borderColor: OMNIA.border }}>
+            <h3 
+              className="text-sm font-medium uppercase tracking-wider"
+              style={{ color: OMNIA.champagne }}
+            >
+              Toutes les commandes
+            </h3>
+            <p className="text-xs mt-1" style={{ color: OMNIA.ivoireSubtle }}>
+              {orders?.length || 0} commandes au total
             </p>
           </div>
-          <Button onClick={handleExportCSV} variant="outline" className="gap-2">
-            <Download className="h-4 w-4" />
-            Exporter CSV
-          </Button>
-        </div>
-        
-        {/* Workflow reminder */}
-        <Card className="mb-6 border-amber-200 bg-amber-50/50">
-          <CardContent className="pt-4">
-            <div className="flex items-start gap-3">
-              <Clock className="h-5 w-5 text-amber-600 mt-0.5" />
-              <div className="text-sm">
-                <p className="font-medium text-amber-800">Rappel du workflow COD</p>
-                <p className="text-amber-700">
-                  En attente → <strong>Confirmée</strong> (admin) → Production → Expédiée → <strong>Livrée (Payé)</strong>
-                </p>
-                <p className="text-amber-600 mt-1">
-                  ⚠️ Le PDF imprimeur n'est disponible qu'après confirmation de la commande
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Revenue & GOLD Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card className="bg-gradient-to-br from-amber-500/10 to-yellow-500/10 border-amber-200">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-amber-500/20 rounded-full">
-                  <TrendingUp className="h-6 w-6 text-amber-600" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-amber-700">
-                    {loadingStats ? "..." : formatPrice(stats.totalRevenue)}
-                  </div>
-                  <p className="text-sm text-amber-600">Chiffre d'affaires total</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-yellow-500/10 to-amber-500/10 border-yellow-200">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-yellow-500/20 rounded-full">
-                  <Crown className="h-6 w-6 text-yellow-600" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-yellow-700">
-                    {loadingStats ? "..." : stats.goldSubscribers}
-                  </div>
-                  <p className="text-sm text-yellow-600">Abonnés GOLD actifs</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border-purple-200">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-purple-500/20 rounded-full">
-                  <CreditCard className="h-6 w-6 text-purple-600" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-700">
-                    {loadingStats ? "..." : stats.cardsToProuce}
-                  </div>
-                  <p className="text-sm text-purple-600">Cartes à produire</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
-        {/* Order Status Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-amber-600">{pendingCount}</div>
-              <p className="text-sm text-muted-foreground">En attente</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-blue-600">{confirmedCount}</div>
-              <p className="text-sm text-muted-foreground">Confirmées</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-purple-600">{productionCount}</div>
-              <p className="text-sm text-muted-foreground">En production</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-indigo-600">{shippedCount}</div>
-              <p className="text-sm text-muted-foreground">Expédiées</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold">{orders?.length || 0}</div>
-              <p className="text-sm text-muted-foreground">Total</p>
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* Orders Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Toutes les commandes</CardTitle>
-            <CardDescription>
-              Confirmez les commandes COD avant de lancer la production
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loadingOrders ? (
-              <div className="flex justify-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin" />
-              </div>
-            ) : orders && orders.length > 0 ? (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>N° Commande</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Client</TableHead>
-                      <TableHead>Produit</TableHead>
-                      <TableHead>Logo</TableHead>
-                      <TableHead>Qté</TableHead>
-                      <TableHead>Total</TableHead>
-                      <TableHead>Statut</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {orders.map((order) => (
-                      <TableRow key={order.id} className={order.status === "pending" ? "bg-amber-50/50" : ""}>
-                        <TableCell className="font-mono font-medium">
-                          {order.order_number}
-                          {(order as any).admin_notes && (
-                            <StickyNote className="h-3 w-3 inline ml-1 text-amber-500" />
-                          )}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {format(new Date(order.created_at), "dd/MM/yy", { locale: fr })}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <div>
-                              <p className="font-medium text-sm">{order.shipping_name}</p>
-                              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                <MapPin className="h-3 w-3" />
-                                {order.shipping_city}
-                              </p>
-                            </div>
-                            {/* Contact Buttons */}
-                            {order.shipping_phone && (
-                              <div className="flex items-center gap-1 ml-2">
-                                <a
-                                  href={generateWhatsAppLink(order)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="p-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white transition-colors shrink-0"
-                                  title="Envoyer confirmation WhatsApp"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <MessageCircle className="h-4 w-4" />
-                                </a>
-                                <a
-                                  href={`tel:${order.shipping_phone}`}
-                                  className="p-1.5 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-colors shrink-0"
-                                  title="Appeler le client"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <Phone className="h-4 w-4" />
-                                </a>
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getProductTypeLabel(order).color}>
-                            {getProductTypeLabel(order).label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {order.logo_url ? (
-                            <button 
-                              onClick={() => handleDownloadLogo(order)}
-                              className="group relative"
-                              title="Télécharger le logo"
-                            >
-                              <img 
-                                src={order.logo_url} 
-                                alt="Logo" 
-                                className="h-8 w-8 object-contain rounded border bg-white group-hover:ring-2 ring-primary transition-all"
-                              />
-                              <Download className="absolute -bottom-1 -right-1 h-3 w-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </button>
-                          ) : (
-                            <span className="text-muted-foreground text-xs">—</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {order.quantity}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {formatPrice(order.total_price_cents)}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getOrderStatusColor(order.status)}>
+          {loadingOrders ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-6 w-6 animate-spin" style={{ color: OMNIA.champagne }} />
+            </div>
+          ) : orders && orders.length > 0 ? (
+            <div className="divide-y" style={{ borderColor: OMNIA.border }}>
+              {orders.map((order, index) => {
+                const statusColor = getOmniaStatusColor(order.status);
+                const productType = getProductTypeLabel(order);
+                
+                return (
+                  <motion.div
+                    key={order.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.02 }}
+                    className="p-4 hover:bg-white/[0.02] transition-colors"
+                    style={{ borderColor: OMNIA.border }}
+                  >
+                    <div className="flex items-center gap-4">
+                      {/* Order Number & Status */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-1">
+                          <span 
+                            className="font-mono text-sm font-medium"
+                            style={{ color: OMNIA.ivoire }}
+                          >
+                            #{order.order_number}
+                          </span>
+                          <span 
+                            className="text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider"
+                            style={{ backgroundColor: statusColor.bg, color: statusColor.text }}
+                          >
                             {getOrderStatusLabel(order.status)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center justify-end gap-1 flex-wrap">
-                            {getOrderActions(order)}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                Aucune commande pour le moment
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        
-        {/* Order Details Dialog */}
-        <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Détails commande {selectedOrder?.order_number}</DialogTitle>
-              <DialogDescription>
-                Informations complètes de la commande
-              </DialogDescription>
-            </DialogHeader>
-            {selectedOrder && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground">Statut</p>
-                    <Badge className={getOrderStatusColor(selectedOrder.status)}>
-                      {getOrderStatusLabel(selectedOrder.status)}
-                    </Badge>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Date</p>
-                    <p className="font-medium">
-                      {format(new Date(selectedOrder.created_at), "dd MMMM yyyy à HH:mm", { locale: fr })}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Quantité</p>
-                    <p className="font-medium">{selectedOrder.quantity} carte(s)</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Total</p>
-                    <p className="font-medium">{formatPrice(selectedOrder.total_price_cents)}</p>
-                  </div>
-                </div>
-                
-                <div className="border-t pt-4">
-                  <p className="text-muted-foreground text-sm mb-2">Livraison</p>
-                  <div className="bg-muted/50 rounded-lg p-3 text-sm">
-                    <p className="font-medium">{selectedOrder.shipping_name}</p>
-                    <p>{selectedOrder.shipping_address}</p>
-                    <p>{selectedOrder.shipping_postal_code} {selectedOrder.shipping_city}</p>
-                    <p>{selectedOrder.shipping_country === "MA" ? "🇲🇦 Maroc" : selectedOrder.shipping_country}</p>
-                  </div>
-                </div>
-                
-                <div className="border-t pt-4">
-                  <p className="text-muted-foreground text-sm mb-2">Configuration carte</p>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Template</p>
-                      <p className="font-medium">{selectedOrder.template}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Type</p>
-                      <p className="font-medium capitalize">{selectedOrder.order_type}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Fond</p>
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-4 h-4 rounded border"
-                          style={{ backgroundColor: selectedOrder.background_color || "#fff" }}
-                        />
-                        <span className="font-medium">{selectedOrder.background_type}</span>
+                          </span>
+                          {(order as any).admin_notes && (
+                            <StickyNote size={12} style={{ color: OMNIA.warning }} />
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 text-xs" style={{ color: OMNIA.ivoireMuted }}>
+                          <span>{order.shipping_name}</span>
+                          <span>·</span>
+                          <MapPin size={10} />
+                          <span>{order.shipping_city}</span>
+                          <span>·</span>
+                          <span style={{ color: productType.color }}>{productType.label}</span>
+                        </div>
+                      </div>
+
+                      {/* Price */}
+                      <div className="text-right">
+                        <p 
+                          className="font-medium"
+                          style={{ color: OMNIA.champagne }}
+                        >
+                          {formatPrice(order.total_price_cents)}
+                        </p>
+                        <p className="text-[10px]" style={{ color: OMNIA.ivoireSubtle }}>
+                          {format(new Date(order.created_at), "dd/MM/yy", { locale: fr })}
+                        </p>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-1">
+                        {order.shipping_phone && (
+                          <>
+                            <a
+                              href={generateWhatsAppLink(order)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 rounded-lg transition-colors"
+                              style={{ backgroundColor: OMNIA.successMuted }}
+                              title="WhatsApp"
+                            >
+                              <MessageCircle size={14} style={{ color: OMNIA.success }} />
+                            </a>
+                            <a
+                              href={`tel:${order.shipping_phone}`}
+                              className="p-2 rounded-lg transition-colors"
+                              style={{ backgroundColor: OMNIA.infoMuted }}
+                              title="Appeler"
+                            >
+                              <Phone size={14} style={{ color: OMNIA.info }} />
+                            </a>
+                          </>
+                        )}
+                        
+                        <button
+                          onClick={() => handleOpenEdit(order)}
+                          className="p-2 rounded-lg transition-colors hover:bg-white/5"
+                          title="Modifier"
+                        >
+                          <Pencil size={14} style={{ color: OMNIA.ivoireMuted }} />
+                        </button>
+                        
+                        <button
+                          onClick={() => handleOpenNotes(order)}
+                          className="p-2 rounded-lg transition-colors hover:bg-white/5"
+                          title="Notes"
+                        >
+                          <StickyNote size={14} style={{ color: OMNIA.ivoireMuted }} />
+                        </button>
+                        
+                        <button
+                          onClick={() => handleViewDetails(order)}
+                          className="p-2 rounded-lg transition-colors hover:bg-white/5"
+                          title="Détails"
+                        >
+                          <Eye size={14} style={{ color: OMNIA.ivoireMuted }} />
+                        </button>
+
+                        {/* Status actions */}
+                        {order.status === "pending" && (
+                          <>
+                            <button
+                              onClick={() => confirmOrder.mutate(order.id)}
+                              disabled={confirmOrder.isPending}
+                              className="p-2 rounded-lg transition-colors"
+                              style={{ backgroundColor: OMNIA.successMuted }}
+                              title="Confirmer"
+                            >
+                              <CheckCircle2 size={14} style={{ color: OMNIA.success }} />
+                            </button>
+                            <button
+                              onClick={() => handleRejectOrder(order)}
+                              className="p-2 rounded-lg transition-colors"
+                              style={{ backgroundColor: OMNIA.dangerMuted }}
+                              title="Rejeter"
+                            >
+                              <XCircle size={14} style={{ color: OMNIA.danger }} />
+                            </button>
+                          </>
+                        )}
+                        
+                        {order.status === "paid" && (
+                          <button
+                            onClick={() => startProduction.mutate(order.id)}
+                            disabled={startProduction.isPending}
+                            className="p-2 rounded-lg transition-colors"
+                            style={{ backgroundColor: OMNIA.purpleMuted }}
+                            title="Production"
+                          >
+                            <Factory size={14} style={{ color: OMNIA.purple }} />
+                          </button>
+                        )}
+                        
+                        {order.status === "in_production" && (
+                          <button
+                            onClick={() => handleOpenShipDialog(order)}
+                            disabled={markShipped.isPending}
+                            className="p-2 rounded-lg transition-colors"
+                            style={{ backgroundColor: OMNIA.champagneMuted }}
+                            title="Expédier"
+                          >
+                            <Truck size={14} style={{ color: OMNIA.champagne }} />
+                          </button>
+                        )}
+                        
+                        {order.status === "shipped" && (
+                          <button
+                            onClick={() => markDelivered.mutate(order.id)}
+                            disabled={markDelivered.isPending}
+                            className="p-2 rounded-lg transition-colors"
+                            style={{ backgroundColor: OMNIA.successMuted }}
+                            title="Livré"
+                          >
+                            <Package size={14} style={{ color: OMNIA.success }} />
+                          </button>
+                        )}
+
+                        <ChevronRight size={14} style={{ color: OMNIA.ivoireSubtle }} />
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-12" style={{ color: OMNIA.ivoireSubtle }}>
+              Aucune commande pour le moment
+            </div>
+          )}
+        </motion.div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          DIALOGS - OMNIA Style
+          ═══════════════════════════════════════════════════════════════════ */}
+      
+      {/* Order Details Dialog */}
+      <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
+        <DialogContent className="bg-omnia-obsidienne-surface border-white/10 text-omnia-ivoire">
+          <DialogHeader>
+            <DialogTitle className="text-omnia-champagne">
+              Détails commande {selectedOrder?.order_number}
+            </DialogTitle>
+            <DialogDescription className="text-omnia-ivoire-muted">
+              Informations complètes
+            </DialogDescription>
+          </DialogHeader>
+          {selectedOrder && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-omnia-ivoire-muted text-xs uppercase tracking-wider mb-1">Statut</p>
+                  <span 
+                    className="text-xs px-2 py-1 rounded-full"
+                    style={{ 
+                      backgroundColor: getOmniaStatusColor(selectedOrder.status).bg,
+                      color: getOmniaStatusColor(selectedOrder.status).text
+                    }}
+                  >
+                    {getOrderStatusLabel(selectedOrder.status)}
+                  </span>
                 </div>
-                
-                {selectedOrder.tracking_number && (
-                  <div className="border-t pt-4">
-                    <p className="text-muted-foreground text-sm mb-1">Numéro de suivi</p>
-                    <p className="font-mono font-medium">{selectedOrder.tracking_number}</p>
-                  </div>
-                )}
-                
-                {(selectedOrder as any).admin_notes && (
-                  <div className="border-t pt-4">
-                    <p className="text-muted-foreground text-sm mb-1">Notes internes</p>
-                    <p className="text-sm bg-amber-50 p-2 rounded">{(selectedOrder as any).admin_notes}</p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-omnia-ivoire-muted text-xs uppercase tracking-wider mb-1">Date</p>
+                  <p className="font-medium">
+                    {format(new Date(selectedOrder.created_at), "dd MMMM yyyy", { locale: fr })}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-omnia-ivoire-muted text-xs uppercase tracking-wider mb-1">Quantité</p>
+                  <p className="font-medium">{selectedOrder.quantity} carte(s)</p>
+                </div>
+                <div>
+                  <p className="text-omnia-ivoire-muted text-xs uppercase tracking-wider mb-1">Total</p>
+                  <p className="font-medium text-omnia-champagne">{formatPrice(selectedOrder.total_price_cents)}</p>
+                </div>
               </div>
-            )}
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setDetailsDialogOpen(false)}>
-                Fermer
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-        
-        {/* Admin Notes Dialog */}
-        <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Notes internes</DialogTitle>
-              <DialogDescription>
-                Commande {selectedOrder?.order_number} - Notes visibles uniquement par les admins
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4">
-              <Label htmlFor="admin-notes">Notes</Label>
-              <Textarea
-                id="admin-notes"
-                value={adminNotes}
-                onChange={(e) => setAdminNotes(e.target.value)}
-                placeholder="Ajoutez des notes internes sur cette commande..."
-                className="mt-2 min-h-[120px]"
+              
+              <div className="border-t border-white/10 pt-4">
+                <p className="text-omnia-ivoire-muted text-xs uppercase tracking-wider mb-2">Livraison</p>
+                <div className="bg-white/5 rounded-xl p-3 text-sm">
+                  <p className="font-medium">{selectedOrder.shipping_name}</p>
+                  <p className="text-omnia-ivoire-muted">{selectedOrder.shipping_address}</p>
+                  <p className="text-omnia-ivoire-muted">{selectedOrder.shipping_postal_code} {selectedOrder.shipping_city}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setDetailsDialogOpen(false)}
+              className="border-white/10 text-omnia-ivoire hover:bg-white/5"
+            >
+              Fermer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Admin Notes Dialog */}
+      <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>
+        <DialogContent className="bg-omnia-obsidienne-surface border-white/10 text-omnia-ivoire">
+          <DialogHeader>
+            <DialogTitle className="text-omnia-champagne">Notes internes</DialogTitle>
+            <DialogDescription className="text-omnia-ivoire-muted">
+              Commande {selectedOrder?.order_number}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Textarea
+              value={adminNotes}
+              onChange={(e) => setAdminNotes(e.target.value)}
+              placeholder="Ajoutez des notes..."
+              className="min-h-[120px] bg-white/5 border-white/10 text-omnia-ivoire placeholder:text-omnia-ivoire-muted"
+            />
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setNotesDialogOpen(false)}
+              className="border-white/10 text-omnia-ivoire hover:bg-white/5"
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={handleSaveNotes} 
+              disabled={updateOrder.isPending}
+              className="bg-omnia-champagne text-omnia-obsidienne hover:bg-omnia-champagne/90"
+            >
+              {updateOrder.isPending ? "..." : "Enregistrer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Shipping Dialog */}
+      <Dialog open={shipDialogOpen} onOpenChange={setShipDialogOpen}>
+        <DialogContent className="bg-omnia-obsidienne-surface border-white/10 text-omnia-ivoire">
+          <DialogHeader>
+            <DialogTitle className="text-omnia-champagne">Expédier la commande</DialogTitle>
+            <DialogDescription className="text-omnia-ivoire-muted">
+              {selectedOrder?.order_number} - {selectedOrder?.quantity} carte(s)
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="bg-white/5 rounded-xl p-3 text-sm">
+              <p className="font-medium">{selectedOrder?.shipping_name}</p>
+              <p className="text-omnia-ivoire-muted">{selectedOrder?.shipping_address}</p>
+              <p className="text-omnia-ivoire-muted">{selectedOrder?.shipping_postal_code} {selectedOrder?.shipping_city}</p>
+            </div>
+            <div>
+              <Label className="text-omnia-ivoire-muted text-xs uppercase tracking-wider">
+                Numéro de suivi (optionnel)
+              </Label>
+              <Input
+                value={trackingNumber}
+                onChange={(e) => setTrackingNumber(e.target.value)}
+                placeholder="Ex: MA123456789"
+                className="mt-2 bg-white/5 border-white/10 text-omnia-ivoire"
               />
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setNotesDialogOpen(false)}>
-                Annuler
-              </Button>
-              <Button onClick={handleSaveNotes} disabled={updateOrder.isPending}>
-                {updateOrder.isPending ? "Enregistrement..." : "Enregistrer"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-        
-        {/* Shipping Dialog */}
-        <Dialog open={shipDialogOpen} onOpenChange={setShipDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Expédier la commande</DialogTitle>
-              <DialogDescription>
-                Commande {selectedOrder?.order_number} - {selectedOrder?.quantity} carte(s)
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4 space-y-4">
-              <div className="bg-muted/50 rounded-lg p-3 text-sm">
-                <p className="font-medium">{selectedOrder?.shipping_name}</p>
-                <p>{selectedOrder?.shipping_address}</p>
-                <p>{selectedOrder?.shipping_postal_code} {selectedOrder?.shipping_city}</p>
-              </div>
-              <div>
-                <Label htmlFor="tracking">Numéro de suivi (optionnel)</Label>
-                <Input
-                  id="tracking"
-                  value={trackingNumber}
-                  onChange={(e) => setTrackingNumber(e.target.value)}
-                  placeholder="Ex: MA123456789"
-                  className="mt-2"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShipDialogOpen(false)}>
-                Annuler
-              </Button>
-              <Button onClick={handleConfirmShip} disabled={markShipped.isPending}>
-                <Truck className="h-4 w-4 mr-2" />
-                {markShipped.isPending ? "Traitement..." : "Confirmer l'expédition"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShipDialogOpen(false)}
+              className="border-white/10 text-omnia-ivoire hover:bg-white/5"
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={handleConfirmShip} 
+              disabled={markShipped.isPending}
+              className="bg-omnia-champagne text-omnia-obsidienne hover:bg-omnia-champagne/90"
+            >
+              <Truck className="h-4 w-4 mr-2" />
+              {markShipped.isPending ? "..." : "Confirmer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-        {/* Edit Status & Tracking Dialog */}
-        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Modifier la commande</DialogTitle>
-              <DialogDescription>
-                Commande {selectedOrder?.order_number} - Modifier le statut et le numéro de suivi
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4 space-y-4">
-              <div>
-                <Label htmlFor="edit-status">Statut de la commande</Label>
-                <select
-                  id="edit-status"
-                  value={editStatus}
-                  onChange={(e) => setEditStatus(e.target.value)}
-                  className="mt-2 w-full h-10 px-3 rounded-md border border-input bg-background text-sm"
-                >
-                  <option value="pending">🟡 En attente</option>
-                  <option value="paid">🔵 Confirmée (Payée)</option>
-                  <option value="in_production">🟣 En production</option>
-                  <option value="shipped">🔷 Expédiée</option>
-                  <option value="delivered">🟢 Livrée</option>
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="edit-tracking">Numéro de suivi</Label>
-                <Input
-                  id="edit-tracking"
-                  value={editTracking}
-                  onChange={(e) => setEditTracking(e.target.value)}
-                  placeholder="Ex: MA123456789"
-                  className="mt-2"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Le client sera notifié si le statut change à "Expédiée"
-                </p>
-              </div>
+      {/* Edit Status Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="bg-omnia-obsidienne-surface border-white/10 text-omnia-ivoire">
+          <DialogHeader>
+            <DialogTitle className="text-omnia-champagne">Modifier la commande</DialogTitle>
+            <DialogDescription className="text-omnia-ivoire-muted">
+              {selectedOrder?.order_number}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div>
+              <Label className="text-omnia-ivoire-muted text-xs uppercase tracking-wider">Statut</Label>
+              <select
+                value={editStatus}
+                onChange={(e) => setEditStatus(e.target.value)}
+                className="mt-2 w-full h-10 px-3 rounded-lg bg-white/5 border border-white/10 text-omnia-ivoire text-sm"
+              >
+                <option value="pending">🟡 En attente</option>
+                <option value="paid">🔵 Confirmée</option>
+                <option value="in_production">🟣 Production</option>
+                <option value="shipped">🔷 Expédiée</option>
+                <option value="delivered">🟢 Livrée</option>
+              </select>
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
-                Annuler
-              </Button>
-              <Button onClick={handleSaveEdit} disabled={updateOrder.isPending}>
-                <CheckCircle2 className="h-4 w-4 mr-2" />
-                {updateOrder.isPending ? "Enregistrement..." : "Enregistrer"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </div>
+            <div>
+              <Label className="text-omnia-ivoire-muted text-xs uppercase tracking-wider">Numéro de suivi</Label>
+              <Input
+                value={editTracking}
+                onChange={(e) => setEditTracking(e.target.value)}
+                placeholder="Ex: MA123456789"
+                className="mt-2 bg-white/5 border-white/10 text-omnia-ivoire"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setEditDialogOpen(false)}
+              className="border-white/10 text-omnia-ivoire hover:bg-white/5"
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={handleSaveEdit} 
+              disabled={updateOrder.isPending}
+              className="bg-omnia-champagne text-omnia-obsidienne hover:bg-omnia-champagne/90"
+            >
+              {updateOrder.isPending ? "..." : "Enregistrer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </AdminOmniaLayout>
   );
 }
