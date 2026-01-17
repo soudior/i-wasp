@@ -23,6 +23,8 @@ import {
   Instagram,
   FileText,
   ExternalLink,
+  Tag,
+  StickyNote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +37,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { ClientNotesPanel } from "./ClientNotesPanel";
+import { ClientTagAssignments } from "./ClientTagAssignments";
 
 // Gotham colors
 const GOTHAM = {
@@ -226,191 +231,229 @@ export function ClientEditModal({ open, onClose, clientId, clientType }: ClientE
             <Loader2 size={24} className="animate-spin" style={{ color: GOTHAM.gold }} />
           </div>
         ) : clientType === 'card' && cardData ? (
-          <ScrollArea className="max-h-[60vh]">
-            <div className="space-y-4 pr-4">
-              {/* Name fields */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                    <User size={12} /> Prénom *
-                  </Label>
-                  <Input
-                    value={cardData.first_name}
-                    onChange={(e) => setCardData({ ...cardData, first_name: e.target.value })}
-                    className="h-9 text-sm"
-                    style={inputStyle}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                    <User size={12} /> Nom *
-                  </Label>
-                  <Input
-                    value={cardData.last_name}
-                    onChange={(e) => setCardData({ ...cardData, last_name: e.target.value })}
-                    className="h-9 text-sm"
-                    style={inputStyle}
-                  />
-                </div>
-              </div>
+          <Tabs defaultValue="info" className="w-full">
+            <TabsList className="w-full mb-4" style={{ backgroundColor: GOTHAM.bg }}>
+              <TabsTrigger value="info" className="flex-1 text-xs gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                <User size={12} /> Infos
+              </TabsTrigger>
+              <TabsTrigger value="tags" className="flex-1 text-xs gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                <Tag size={12} /> Tags
+              </TabsTrigger>
+              <TabsTrigger value="notes" className="flex-1 text-xs gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                <StickyNote size={12} /> Notes
+              </TabsTrigger>
+            </TabsList>
 
-              {/* Contact fields */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                    <Mail size={12} /> Email
-                  </Label>
-                  <Input
-                    type="email"
-                    value={cardData.email || ''}
-                    onChange={(e) => setCardData({ ...cardData, email: e.target.value })}
-                    className="h-9 text-sm"
-                    style={inputStyle}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                    <Phone size={12} /> Téléphone
-                  </Label>
-                  <Input
-                    value={cardData.phone || ''}
-                    onChange={(e) => setCardData({ ...cardData, phone: e.target.value })}
-                    className="h-9 text-sm"
-                    style={inputStyle}
-                  />
-                </div>
-              </div>
+            <TabsContent value="info">
+              <ScrollArea className="max-h-[50vh]">
+                <div className="space-y-4 pr-4">
+                  {/* Name fields */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                        <User size={12} /> Prénom *
+                      </Label>
+                      <Input
+                        value={cardData.first_name}
+                        onChange={(e) => setCardData({ ...cardData, first_name: e.target.value })}
+                        className="h-9 text-sm"
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                        <User size={12} /> Nom *
+                      </Label>
+                      <Input
+                        value={cardData.last_name}
+                        onChange={(e) => setCardData({ ...cardData, last_name: e.target.value })}
+                        className="h-9 text-sm"
+                        style={inputStyle}
+                      />
+                    </div>
+                  </div>
 
-              {/* Company & Title */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                    <Building2 size={12} /> Entreprise
-                  </Label>
-                  <Input
-                    value={cardData.company || ''}
-                    onChange={(e) => setCardData({ ...cardData, company: e.target.value })}
-                    className="h-9 text-sm"
-                    style={inputStyle}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                    <Briefcase size={12} /> Poste
-                  </Label>
-                  <Input
-                    value={cardData.title || ''}
-                    onChange={(e) => setCardData({ ...cardData, title: e.target.value })}
-                    className="h-9 text-sm"
-                    style={inputStyle}
-                  />
-                </div>
-              </div>
+                  {/* Contact fields */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                        <Mail size={12} /> Email
+                      </Label>
+                      <Input
+                        type="email"
+                        value={cardData.email || ''}
+                        onChange={(e) => setCardData({ ...cardData, email: e.target.value })}
+                        className="h-9 text-sm"
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                        <Phone size={12} /> Téléphone
+                      </Label>
+                      <Input
+                        value={cardData.phone || ''}
+                        onChange={(e) => setCardData({ ...cardData, phone: e.target.value })}
+                        className="h-9 text-sm"
+                        style={inputStyle}
+                      />
+                    </div>
+                  </div>
 
-              {/* Location & Website */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                    <MapPin size={12} /> Ville
-                  </Label>
-                  <Input
-                    value={cardData.location || ''}
-                    onChange={(e) => setCardData({ ...cardData, location: e.target.value })}
-                    className="h-9 text-sm"
-                    style={inputStyle}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                    <Globe size={12} /> Site Web
-                  </Label>
-                  <Input
-                    value={cardData.website || ''}
-                    onChange={(e) => setCardData({ ...cardData, website: e.target.value })}
-                    className="h-9 text-sm"
-                    style={inputStyle}
-                  />
-                </div>
-              </div>
+                  {/* Company & Title */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                        <Building2 size={12} /> Entreprise
+                      </Label>
+                      <Input
+                        value={cardData.company || ''}
+                        onChange={(e) => setCardData({ ...cardData, company: e.target.value })}
+                        className="h-9 text-sm"
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                        <Briefcase size={12} /> Poste
+                      </Label>
+                      <Input
+                        value={cardData.title || ''}
+                        onChange={(e) => setCardData({ ...cardData, title: e.target.value })}
+                        className="h-9 text-sm"
+                        style={inputStyle}
+                      />
+                    </div>
+                  </div>
 
-              {/* Social */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                    <Linkedin size={12} /> LinkedIn
-                  </Label>
-                  <Input
-                    value={cardData.linkedin || ''}
-                    onChange={(e) => setCardData({ ...cardData, linkedin: e.target.value })}
-                    className="h-9 text-sm"
-                    style={inputStyle}
-                    placeholder="URL"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                    <MessageCircle size={12} /> WhatsApp
-                  </Label>
-                  <Input
-                    value={cardData.whatsapp || ''}
-                    onChange={(e) => setCardData({ ...cardData, whatsapp: e.target.value })}
-                    className="h-9 text-sm"
-                    style={inputStyle}
-                    placeholder="+212..."
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                    <Instagram size={12} /> Instagram
-                  </Label>
-                  <Input
-                    value={cardData.instagram || ''}
-                    onChange={(e) => setCardData({ ...cardData, instagram: e.target.value })}
-                    className="h-9 text-sm"
-                    style={inputStyle}
-                    placeholder="@username"
-                  />
-                </div>
-              </div>
+                  {/* Location & Website */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                        <MapPin size={12} /> Ville
+                      </Label>
+                      <Input
+                        value={cardData.location || ''}
+                        onChange={(e) => setCardData({ ...cardData, location: e.target.value })}
+                        className="h-9 text-sm"
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                        <Globe size={12} /> Site Web
+                      </Label>
+                      <Input
+                        value={cardData.website || ''}
+                        onChange={(e) => setCardData({ ...cardData, website: e.target.value })}
+                        className="h-9 text-sm"
+                        style={inputStyle}
+                      />
+                    </div>
+                  </div>
 
-              {/* Tagline */}
-              <div className="space-y-1.5">
-                <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
-                  <FileText size={12} /> Slogan / Bio
-                </Label>
-                <Textarea
-                  value={cardData.tagline || ''}
-                  onChange={(e) => setCardData({ ...cardData, tagline: e.target.value })}
-                  className="text-sm min-h-[60px]"
-                  style={inputStyle}
-                  placeholder="Votre accroche..."
-                />
-              </div>
+                  {/* Social */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                        <Linkedin size={12} /> LinkedIn
+                      </Label>
+                      <Input
+                        value={cardData.linkedin || ''}
+                        onChange={(e) => setCardData({ ...cardData, linkedin: e.target.value })}
+                        className="h-9 text-sm"
+                        style={inputStyle}
+                        placeholder="URL"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                        <MessageCircle size={12} /> WhatsApp
+                      </Label>
+                      <Input
+                        value={cardData.whatsapp || ''}
+                        onChange={(e) => setCardData({ ...cardData, whatsapp: e.target.value })}
+                        className="h-9 text-sm"
+                        style={inputStyle}
+                        placeholder="+212..."
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                        <Instagram size={12} /> Instagram
+                      </Label>
+                      <Input
+                        value={cardData.instagram || ''}
+                        onChange={(e) => setCardData({ ...cardData, instagram: e.target.value })}
+                        className="h-9 text-sm"
+                        style={inputStyle}
+                        placeholder="@username"
+                      />
+                    </div>
+                  </div>
 
-              {/* Slug (read-only) */}
-              <div className="space-y-1.5">
-                <Label className="text-xs" style={{ color: GOTHAM.textMuted }}>
-                  URL de la carte
-                </Label>
-                <div 
-                  className="flex items-center gap-2 p-2 rounded text-xs"
-                  style={{ backgroundColor: GOTHAM.bg }}
-                >
-                  <span style={{ color: GOTHAM.textMuted }}>i-wasp.lovable.app/card/</span>
-                  <span style={{ color: GOTHAM.gold }}>{cardData.slug}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 px-2 ml-auto"
-                    onClick={() => window.open(`/card/${cardData.slug}`, '_blank')}
-                    style={{ color: GOTHAM.gold }}
-                  >
-                    <ExternalLink size={12} />
-                  </Button>
+                  {/* Tagline */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs flex items-center gap-1.5" style={{ color: GOTHAM.textMuted }}>
+                      <FileText size={12} /> Slogan / Bio
+                    </Label>
+                    <Textarea
+                      value={cardData.tagline || ''}
+                      onChange={(e) => setCardData({ ...cardData, tagline: e.target.value })}
+                      className="text-sm min-h-[60px]"
+                      style={inputStyle}
+                      placeholder="Votre accroche..."
+                    />
+                  </div>
+
+                  {/* Slug (read-only) */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs" style={{ color: GOTHAM.textMuted }}>
+                      URL de la carte
+                    </Label>
+                    <div 
+                      className="flex items-center gap-2 p-2 rounded text-xs"
+                      style={{ backgroundColor: GOTHAM.bg }}
+                    >
+                      <span style={{ color: GOTHAM.textMuted }}>i-wasp.lovable.app/card/</span>
+                      <span style={{ color: GOTHAM.gold }}>{cardData.slug}</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 ml-auto"
+                        onClick={() => window.open(`/card/${cardData.slug}`, '_blank')}
+                        style={{ color: GOTHAM.gold }}
+                      >
+                        <ExternalLink size={12} />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </ScrollArea>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="tags">
+              <ScrollArea className="max-h-[50vh]">
+                <div className="pr-4">
+                  <ClientTagAssignments 
+                    clientId={cardData.id} 
+                    clientType="card" 
+                  />
+                </div>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="notes">
+              <ScrollArea className="max-h-[50vh]">
+                <div className="pr-4">
+                  <ClientNotesPanel 
+                    clientId={cardData.id} 
+                    clientType="card" 
+                  />
+                </div>
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
         ) : clientType === 'website' && websiteData ? (
           <ScrollArea className="max-h-[60vh]">
             <div className="space-y-4 pr-4">

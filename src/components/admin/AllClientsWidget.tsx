@@ -27,6 +27,7 @@ import {
   Crown,
   Sparkles,
   Edit2,
+  Tag,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow, format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { ClientEditModal } from "./ClientEditModal";
+import { ClientTagAssignments } from "./ClientTagAssignments";
 
 // Gotham colors
 const GOTHAM = {
@@ -76,11 +78,39 @@ export function AllClientsWidget() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [editModal, setEditModal] = useState<{ open: boolean; id: string; type: 'card' | 'website' }>({
     open: false,
     id: '',
     type: 'card',
+  });
+
+  // Fetch all tags
+  const { data: allTags } = useQuery({
+    queryKey: ['client-tags'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('client_tags')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch tag assignments
+  const { data: tagAssignments } = useQuery({
+    queryKey: ['all-client-tag-assignments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('client_tag_assignments')
+        .select('client_id, tag_id');
+      
+      if (error) throw error;
+      return data;
+    },
   });
 
   // Hardcoded premium client cards (not in database)
@@ -411,6 +441,20 @@ export function AllClientsWidget() {
     if (sourceFilter) {
       filtered = filtered.filter(c => c.source === sourceFilter);
     }
+
+    // Tag filter
+    if (tagFilter && tagAssignments) {
+      const clientIdsWithTag = new Set(
+        tagAssignments
+          .filter(a => a.tag_id === tagFilter)
+          .map(a => a.client_id)
+      );
+      filtered = filtered.filter(c => {
+        // Extract real ID from prefixed ID
+        const realId = c.id.replace(/^(card-|web-|lead-|order-)/, '');
+        return clientIdsWithTag.has(realId) || clientIdsWithTag.has(c.id);
+      });
+    }
     
     // Search filter
     if (search) {
@@ -424,7 +468,7 @@ export function AllClientsWidget() {
     }
     
     return filtered;
-  }, [allClients, search, sourceFilter]);
+  }, [allClients, search, sourceFilter, tagFilter, tagAssignments]);
 
   // Stats by source
   const stats = useMemo(() => {
@@ -439,6 +483,7 @@ export function AllClientsWidget() {
   }, [allClients]);
 
   const displayedClients = isExpanded ? filteredClients : filteredClients.slice(0, 8);
+
 
   return (
     <Card 
@@ -502,6 +547,27 @@ export function AllClientsWidget() {
             </button>
           ))}
         </div>
+
+        {/* Tag filter */}
+        {allTags && allTags.length > 0 && (
+          <div className="flex items-center gap-1.5 mt-2 overflow-x-auto pb-1">
+            <Tag size={12} style={{ color: GOTHAM.textMuted }} />
+            {allTags.map((tag: any) => (
+              <button
+                key={tag.id}
+                onClick={() => setTagFilter(tagFilter === tag.id ? null : tag.id)}
+                className="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium transition-colors whitespace-nowrap"
+                style={{ 
+                  backgroundColor: tagFilter === tag.id ? `${tag.color}30` : `${tag.color}10`,
+                  color: tag.color,
+                  border: tagFilter === tag.id ? `1px solid ${tag.color}` : '1px solid transparent',
+                }}
+              >
+                {tag.name}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Search */}
         <div className="relative mt-2">
