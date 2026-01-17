@@ -2,6 +2,7 @@ import { motion, type Variants } from 'framer-motion';
 import { ArrowRight, Sparkles, Smartphone, Bot, TrendingUp, Eye, LayoutDashboard, CreditCard, BarChart3, Save, MessageCircle, Linkedin, Instagram, Globe, ChevronRight, ChevronDown, Cpu, Database, Zap, Settings, FileText, Users } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 
 // ============================================
 // DESIGN SYSTEM - i-wasp ELITE
@@ -379,86 +380,75 @@ const DashboardSection = () => {
               </div>
             </div>
 
-            {/* Chart */}
+            {/* Chart with Recharts */}
             <div className="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100">
               <div className="flex items-center justify-between mb-8">
                 <h3 className="text-2xl font-black text-[#0A1931] tracking-tight">Tendances des Interactions</h3>
-                <div className="flex items-center gap-2 text-gray-500 text-sm">
+                <div className="flex items-center gap-2 text-gray-500 text-sm cursor-pointer hover:text-[#0A1931] transition-colors">
                   <span className="font-medium">7 derniers jours</span>
                   <ChevronDown className="w-4 h-4" />
                 </div>
               </div>
               
-              {/* Line Chart */}
-              <div className="relative h-64">
-                {/* Y-axis labels */}
-                <div className="absolute left-0 top-0 bottom-8 w-12 flex flex-col justify-between text-xs text-gray-400">
-                  <span>500</span>
-                  <span>400</span>
-                  <span>300</span>
-                  <span>200</span>
-                  <span>100</span>
-                  <span>0</span>
-                </div>
-                
-                {/* Chart area */}
-                <div className="ml-12 h-full flex flex-col">
-                  <div className="flex-1 relative">
-                    {/* Grid lines */}
-                    {[0, 1, 2, 3, 4, 5].map((i) => (
-                      <div 
-                        key={i} 
-                        className="absolute w-full border-t border-gray-100" 
-                        style={{ top: `${i * 20}%` }} 
-                      />
-                    ))}
-                    
-                    {/* SVG Line */}
-                    <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-                      <defs>
-                        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor="#00D9A3" />
-                          <stop offset="100%" stopColor="#00D9A3" />
-                        </linearGradient>
-                      </defs>
-                      <polyline
-                        fill="none"
-                        stroke="url(#lineGradient)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        points={chartData.map((d, i) => {
-                          const x = (i / (chartData.length - 1)) * 100;
-                          const y = 100 - (d.value / 500) * 100;
-                          return `${x}%,${y}%`;
-                        }).join(' ')}
-                      />
-                      {/* Data points */}
-                      {chartData.map((d, i) => {
-                        const x = (i / (chartData.length - 1)) * 100;
-                        const y = 100 - (d.value / 500) * 100;
-                        return (
-                          <circle
-                            key={i}
-                            cx={`${x}%`}
-                            cy={`${y}%`}
-                            r="6"
-                            fill="white"
-                            stroke="#00D9A3"
-                            strokeWidth="3"
-                          />
-                        );
-                      })}
-                    </svg>
-                  </div>
-                  
-                  {/* X-axis labels */}
-                  <div className="h-8 flex justify-between items-center text-xs text-gray-400 px-2">
-                    {chartData.map((d, i) => (
-                      <span key={i}>{d.day}</span>
-                    ))}
-                  </div>
-                </div>
+              {/* Recharts Area Chart */}
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={chartData}
+                    margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#00D9A3" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#00D9A3" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                    <XAxis 
+                      dataKey="day" 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#9ca3af', fontSize: 12 }}
+                      dy={10}
+                    />
+                    <YAxis 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#9ca3af', fontSize: 12 }}
+                      dx={-10}
+                      domain={[0, 500]}
+                      ticks={[0, 100, 200, 300, 400, 500]}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#0A1931', 
+                        border: 'none', 
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 40px rgba(0,0,0,0.2)'
+                      }}
+                      labelStyle={{ color: '#D4AF37', fontWeight: 'bold', marginBottom: '4px' }}
+                      itemStyle={{ color: '#fff' }}
+                      formatter={(value: number) => [`${value} interactions`, 'Total']}
+                      labelFormatter={(label) => `${label}`}
+                      cursor={{ stroke: '#D4AF37', strokeWidth: 1, strokeDasharray: '5 5' }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#00D9A3" 
+                      strokeWidth={3}
+                      fill="url(#colorValue)"
+                      dot={{ fill: '#fff', stroke: '#00D9A3', strokeWidth: 3, r: 5 }}
+                      activeDot={{ 
+                        fill: '#00D9A3', 
+                        stroke: '#fff', 
+                        strokeWidth: 3, 
+                        r: 8,
+                        style: { filter: 'drop-shadow(0 0 8px rgba(0, 217, 163, 0.5))' }
+                      }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </motion.div>
