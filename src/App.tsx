@@ -235,15 +235,16 @@ const App = () => {
                         <OrderFunnelProvider>
                           <Suspense fallback={<RouteLoader />}>
                             <Routes>
-{/* HOME - I-WASP Premium Landing */}
-                            <Route path="/" element={<IWASPConversion />} />
-                            <Route path="/iwasp" element={<IWASPConversion />} />
+{/* HOME - I-WASP Elite Landing */}
+                            <Route path="/" element={<IWASPElite />} />
+                            <Route path="/elite" element={<IWASPElite />} />
+                            <Route path="/iwasp" element={<IWASPElite />} />
                             <Route path="/iwasp/produit" element={<IWASPProduitConversion />} />
                             <Route path="/produit" element={<IWASPProduit />} />
                             <Route path="/produit-legacy" element={<IWASPProduit />} />
                             <Route path="/home-legacy" element={<HomeLuxeMax />} />
                             <Route path="/home-premium" element={<IWASPLanding />} />
-                            <Route path="/elite" element={<IWASPElite />} />
+                            <Route path="/conversion" element={<IWASPConversion />} />
                             <Route path="/legacy" element={<HomeSaaS />} />
                             <Route path="/classic" element={<Index />} />
                             
