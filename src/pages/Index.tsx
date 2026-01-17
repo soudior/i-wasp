@@ -11,6 +11,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import mehdiProfileImg from "@/assets/mehdi-profile.jpg";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ANIMATIONS — Liquid & Ethereal
@@ -647,11 +648,10 @@ const Index = () => {
                                 filter: "grayscale(100%) contrast(1.1)",
                               }}
                             >
-                              <div 
-                                className="w-full h-full"
-                                style={{
-                                  background: "linear-gradient(135deg, #3A3A3A 0%, #1A1A1A 100%)",
-                                }}
+                              <img 
+                                src={mehdiProfileImg}
+                                alt="Mehdi El Alami"
+                                className="w-full h-full object-cover"
                               />
                             </div>
                           </div>
