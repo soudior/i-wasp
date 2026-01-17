@@ -63,6 +63,8 @@ import { GlobalSearchModal } from "@/components/admin/GlobalSearchModal";
 import { PushNotificationsWidget } from "@/components/admin/PushNotificationsWidget";
 import { AllClientsWidget } from "@/components/admin/AllClientsWidget";
 import { ClientDataExportImport } from "@/components/admin/ClientDataExportImport";
+import { ClientRemindersWidget } from "@/components/admin/ClientRemindersWidget";
+import { TagReminderRulesWidget } from "@/components/admin/TagReminderRulesWidget";
 
 // Gotham color palette
 const GOTHAM = {
@@ -797,6 +799,12 @@ function AdminDashboardContent() {
             <AllClientsWidget />
           </div>
           <ClientDataExportImport />
+        </section>
+
+        {/* Reminders Section */}
+        <section className="grid lg:grid-cols-2 gap-6">
+          <ClientRemindersWidget />
+          <TagReminderRulesWidget />
         </section>
 
         {/* Quick Actions Grid */}

@@ -279,6 +279,62 @@ export type Database = {
         }
         Relationships: []
       }
+      client_reminders: {
+        Row: {
+          client_id: string
+          client_type: string
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          due_date: string
+          id: string
+          priority: string
+          reminder_type: string
+          status: string
+          tag_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          client_type: string
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date: string
+          id?: string
+          priority?: string
+          reminder_type?: string
+          status?: string
+          tag_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          client_type?: string
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          priority?: string
+          reminder_type?: string
+          status?: string
+          tag_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_reminders_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "client_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_tag_assignments: {
         Row: {
           client_id: string
@@ -1145,6 +1201,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      tag_reminder_rules: {
+        Row: {
+          created_at: string
+          days_after_assignment: number
+          id: string
+          is_active: boolean
+          priority: string
+          reminder_description: string | null
+          reminder_title: string
+          tag_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          days_after_assignment?: number
+          id?: string
+          is_active?: boolean
+          priority?: string
+          reminder_description?: string | null
+          reminder_title: string
+          tag_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          days_after_assignment?: number
+          id?: string
+          is_active?: boolean
+          priority?: string
+          reminder_description?: string | null
+          reminder_title?: string
+          tag_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tag_reminder_rules_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "client_tags"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       template_assignments: {
         Row: {
