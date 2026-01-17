@@ -135,11 +135,13 @@ export const SEO_CONFIGS = {
     title: "Order Your NFC Card | IWASP",
     description: "Choose your premium NFC business card. Multiple designs available. Free worldwide shipping. 48h express delivery.",
     canonical: "/order/offre",
+    image: "https://i-wasp.lovable.app/og-order.png",
   },
   webStudio: {
     title: "Web Studio — AI Website Builder | IWASP",
     description: "Create your professional website with AI. Turnkey solution: design, hosting, domain included. Launch in 48 hours.",
     canonical: "/web-studio",
+    image: "https://i-wasp.lovable.app/og-webstudio.png",
   },
   dashboard: {
     title: "Dashboard | IWASP",
