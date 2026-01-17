@@ -595,7 +595,7 @@ export default function SaaSPricing() {
                                     WebkitTextFillColor: isPopular ? "transparent" : COLORS.ivoire,
                                   }}
                                 >
-                                  {formatSaaSPrice(plan.price)}
+                                  {formatSaaSPrice(plan.priceEur)}
                                 </span>
                                 <span 
                                   className="text-base font-medium"
@@ -907,7 +907,7 @@ export default function SaaSPricing() {
                               WebkitTextFillColor: "transparent",
                             }}
                           >
-                            {formatSaaSPrice(SAAS_PLANS[selectedPlan.toUpperCase() as keyof typeof SAAS_PLANS].price)}
+                            {formatSaaSPrice(SAAS_PLANS[selectedPlan.toUpperCase() as keyof typeof SAAS_PLANS].priceEur)}
                           </p>
                           <p 
                             className="text-xs"

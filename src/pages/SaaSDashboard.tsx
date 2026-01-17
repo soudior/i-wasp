@@ -59,16 +59,14 @@ const COLORS = {
 
 const planIcons = {
   free: Zap,
-  identity: Zap,
-  professional: Star,
-  enterprise: Crown,
+  pro: Star,
+  business: Crown,
 };
 
 const planColors = {
   free: COLORS.gris,
-  identity: COLORS.or,
-  professional: COLORS.or,
-  enterprise: COLORS.orLight,
+  pro: COLORS.or,
+  business: COLORS.orLight,
 };
 
 // Animation variants
@@ -95,7 +93,7 @@ const FEATURE_CARDS = [
     description: 'Créez et gérez vos cartes NFC professionnelles',
     icon: CreditCard,
     href: '/dashboard',
-    plans: ['identity', 'professional', 'enterprise'],
+    plans: ['pro', 'business'],
     color: COLORS.or,
   },
   {
@@ -104,16 +102,16 @@ const FEATURE_CARDS = [
     description: 'Générez des sites web avec l\'IA i-wasp',
     icon: Globe,
     href: '/web-studio/offres',
-    plans: ['identity', 'professional', 'enterprise'],
+    plans: ['pro', 'business'],
     color: '#3B82F6',
   },
   {
     id: 'analytics',
-    title: 'Analytics',
+    title: 'Analytics IA',
     description: 'Statistiques détaillées de vos cartes',
     icon: BarChart3,
     href: '/dashboard',
-    plans: ['professional', 'enterprise'],
+    plans: ['pro', 'business'],
     color: '#10B981',
   },
   {
@@ -122,7 +120,7 @@ const FEATURE_CARDS = [
     description: 'Collectez et gérez vos contacts',
     icon: Users,
     href: '/dashboard',
-    plans: ['professional', 'enterprise'],
+    plans: ['pro', 'business'],
     color: '#8B5CF6',
   },
   {
@@ -131,34 +129,34 @@ const FEATURE_CARDS = [
     description: 'Envoyez des notifications à vos contacts',
     icon: Bell,
     href: '/dashboard',
-    plans: ['professional', 'enterprise'],
+    plans: ['pro', 'business'],
     color: '#F59E0B',
   },
   {
     id: 'branding',
-    title: 'Branding Avancé',
-    description: 'Personnalisez vos cartes et votre profil',
+    title: 'White-label',
+    description: 'Supprimez le branding IWASP',
     icon: Palette,
     href: '/dashboard',
-    plans: ['professional', 'enterprise'],
+    plans: ['business'],
     color: '#EC4899',
   },
   {
-    id: 'ecommerce',
-    title: 'E-commerce',
-    description: 'Boutique en ligne intégrée',
+    id: 'api',
+    title: 'API Complète',
+    description: 'Intégrez IWASP à vos outils',
     icon: Package,
     href: '/web-studio/offres',
-    plans: ['enterprise'],
+    plans: ['business'],
     color: '#14B8A6',
   },
   {
     id: 'support',
-    title: 'Support Dédié',
-    description: 'Manager dédié 24/7',
+    title: 'Support Prioritaire',
+    description: 'Assistance dédiée',
     icon: MessageSquare,
     href: '/contact',
-    plans: ['enterprise'],
+    plans: ['business'],
     color: '#6366F1',
   },
 ];
@@ -173,30 +171,28 @@ export default function SaaSDashboard() {
 
   const currentPlan = (subscription?.plan || 'free') as SaaSPlanId;
   const planConfig = SAAS_PLANS[currentPlan.toUpperCase() as keyof typeof SAAS_PLANS];
-  const PlanIcon = planIcons[currentPlan] || Zap;
+  const PlanIcon = planIcons[currentPlan as keyof typeof planIcons] || Zap;
   
   // Get features based on plan
   const features = subscription?.features || {
-    nfcCardsPerMonth: 0,
-    sitePages: 0,
-    iwaspCredits: 0,
-    logoOnCard: false,
-    ecommerce: false,
-    analytics: 'none',
-    support: 'email',
+    vcard: true,
+    qrCode: true,
+    nfc: true,
+    sitePersonnalise: false,
+    collections: false,
+    stories: false,
+    pushNotifications: false,
+    analyticsIA: false,
+    whiteLabel: false,
+    api: false,
   };
 
-  // Calculate credits (simulated for now - you'd track this in DB)
-  const creditsUsed = 2; // Example: 2 credits used this month
-  const maxCredits = typeof features.iwaspCredits === 'number' ? features.iwaspCredits : 999;
-  const creditsRemaining = typeof features.iwaspCredits === 'string' 
-    ? 999 // Unlimited
-    : Math.max(0, features.iwaspCredits - creditsUsed);
-  const isUnlimitedCredits = features.iwaspCredits === 'unlimited';
+  // Subscription status info
+  const isPremium = currentPlan === 'pro' || currentPlan === 'business';
 
   // NFC cards usage
   const nfcCardsUsed = cards.length;
-  const nfcCardsMax = features.nfcCardsPerMonth || 0;
+  const nfcCardsMax = isPremium ? 10 : 1; // Pro/Business: 10 cards, Free: 1 card
   const nfcProgress = nfcCardsMax > 0 ? (nfcCardsUsed / nfcCardsMax) * 100 : 0;
 
   const userName = user?.user_metadata?.first_name || user?.email?.split("@")[0] || "Utilisateur";
@@ -356,7 +352,7 @@ export default function SaaSDashboard() {
                   {currentPlan !== 'free' && (
                     <div className="text-right">
                       <p className="text-3xl font-light" style={{ color: COLORS.or }}>
-                        {formatSaaSPrice(planConfig?.price || 0)}
+                        {formatSaaSPrice(planConfig?.priceEur || 0)}
                       </p>
                       <p className="text-xs" style={{ color: COLORS.gris }}>/mois</p>
                     </div>
@@ -396,7 +392,7 @@ export default function SaaSDashboard() {
                             </>
                           )}
                         </Button>
-                        {currentPlan !== 'enterprise' && (
+                        {currentPlan !== 'business' && (
                           <Button
                             onClick={() => navigate('/saas-pricing')}
                             className="px-6 py-3"
@@ -418,21 +414,7 @@ export default function SaaSDashboard() {
           </motion.div>
 
           {/* Usage Stats Grid */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {/* i-wasp Credits */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <IWASPCreditsDisplay
-                credits={creditsRemaining}
-                maxCredits={maxCredits}
-                isUnlimited={isUnlimitedCredits}
-                variant="full"
-              />
-            </motion.div>
-
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
             {/* NFC Cards Usage */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -491,8 +473,8 @@ export default function SaaSDashboard() {
               )}
 
               <p className="text-sm mt-4" style={{ color: COLORS.gris }}>
-                {nfcCardsMax === 0 
-                  ? "Passez à un plan payant pour créer des cartes"
+                {!isPremium 
+                  ? "Passez à un plan payant pour plus de cartes"
                   : nfcProgress > 80 
                     ? "Limite bientôt atteinte"
                     : "Créez des cartes NFC professionnelles"
