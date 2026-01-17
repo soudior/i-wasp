@@ -1,11 +1,13 @@
 import { motion, type Variants } from 'framer-motion';
-import { ArrowRight, Sparkles, TrendingUp, LayoutDashboard, CreditCard, BarChart3, Save, MessageCircle, Linkedin, Instagram, Globe, ChevronRight, ChevronDown, Cpu, Database, Zap, Users, Eye, Edit, Trash2, CreditCard as CardIcon, Mail, Lock, Check, Crown, Phone, MapPin, User, AlertCircle } from 'lucide-react';
+import { ArrowRight, Sparkles, TrendingUp, LayoutDashboard, CreditCard, BarChart3, Save, MessageCircle, Linkedin, Instagram, Globe, ChevronRight, ChevronDown, Cpu, Database, Zap, Users, Eye, Edit, Trash2, CreditCard as CardIcon, Mail, Lock, Check, Crown, Phone, MapPin, User, AlertCircle, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { useUserDashboardData } from '@/hooks/useUserDashboardData';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Images
 import heroBackground from '@/assets/hero-background.jpg';
@@ -686,7 +688,11 @@ const AuthSection = () => {
 // SECTION: CLIENT DASHBOARD
 // ============================================
 const ClientDashboardSection = () => {
-  const chartData = [
+  const { user } = useAuth();
+  const { card, stats, weeklyData, isLoading, error } = useUserDashboardData();
+
+  // Fallback demo data when not logged in
+  const demoChartData = [
     { day: 'Lun', value: 120 },
     { day: 'Mar', value: 180 },
     { day: 'Mer', value: 150 },
@@ -694,6 +700,18 @@ const ClientDashboardSection = () => {
     { day: 'Ven', value: 320 },
     { day: 'Sam', value: 380 },
     { day: 'Dim', value: 450 },
+  ];
+
+  const chartData = user && weeklyData.length > 0 ? weeklyData : demoChartData;
+  const displayStats = user ? stats : { monthlyVisitors: 1204, totalContacts: 342, auraScore: 92 };
+  
+  // Determine social connection status
+  const socialLinks = user && card ? [
+    { icon: Linkedin, name: 'LinkedIn', connected: !!card.linkedin, color: '#0077B5' },
+    { icon: Instagram, name: 'Instagram', connected: !!card.instagram, color: '#E4405F' },
+  ] : [
+    { icon: Linkedin, name: 'LinkedIn', connected: true, color: '#0077B5' },
+    { icon: Instagram, name: 'Instagram', connected: true, color: '#E4405F' },
   ];
 
   return (
@@ -711,104 +729,207 @@ const ClientDashboardSection = () => {
             Votre Tour de Contrôle Personnelle
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed">
-            L'interface de gestion pour le client. C'est ici qu'il voit ses statistiques de visite et personnalise son profil digital i-wasp.
+            {user 
+              ? `Bienvenue ${card?.firstName || 'sur votre dashboard'}. Voici vos statistiques en temps réel.`
+              : "L'interface de gestion pour le client. C'est ici qu'il voit ses statistiques de visite et personnalise son profil digital i-wasp."
+            }
           </p>
         </motion.div>
 
-        <motion.div 
-          className="grid lg:grid-cols-3 gap-8"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-        >
-          {/* Left Column - Score & Social */}
-          <motion.div variants={fadeInUp} className="space-y-6">
-            {/* Aura Score */}
-            <div className="bg-gradient-to-br from-[#0A1931] to-[#162a4a] rounded-[2rem] p-6">
-              <h3 className="text-[#D4AF37] font-bold text-sm mb-4">Score Aura ⚡</h3>
-              <div className="relative w-32 h-32 mx-auto mb-4">
-                <svg className="w-32 h-32 transform -rotate-90">
-                  <circle cx="64" cy="64" r="56" stroke="rgba(255,255,255,0.1)" strokeWidth="10" fill="none" />
-                  <circle 
-                    cx="64" cy="64" r="56" 
-                    stroke="#D4AF37" 
-                    strokeWidth="10" 
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeDasharray={`${92 * 3.52} ${100 * 3.52}`}
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-3xl font-black text-white">92%</span>
+        {/* Loading State */}
+        {isLoading && user && (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-[#D4AF37] animate-spin" />
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mb-8">
+            <p className="text-red-600 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5" />
+              {error}
+            </p>
+          </div>
+        )}
+
+        {/* Dashboard Content */}
+        {!isLoading && (
+          <motion.div 
+            className="grid lg:grid-cols-3 gap-8"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+          >
+            {/* Left Column - Score & Social */}
+            <motion.div variants={fadeInUp} className="space-y-6">
+              {/* Aura Score */}
+              <div className="bg-gradient-to-br from-[#0A1931] to-[#162a4a] rounded-[2rem] p-6">
+                <h3 className="text-[#D4AF37] font-bold text-sm mb-4">Score Aura ⚡</h3>
+                <div className="relative w-32 h-32 mx-auto mb-4">
+                  <svg className="w-32 h-32 transform -rotate-90">
+                    <circle cx="64" cy="64" r="56" stroke="rgba(255,255,255,0.1)" strokeWidth="10" fill="none" />
+                    <motion.circle 
+                      cx="64" cy="64" r="56" 
+                      stroke="#D4AF37" 
+                      strokeWidth="10" 
+                      fill="none"
+                      strokeLinecap="round"
+                      initial={{ strokeDasharray: "0 352" }}
+                      animate={{ strokeDasharray: `${displayStats.auraScore * 3.52} 352` }}
+                      transition={{ duration: 1, delay: 0.3 }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-3xl font-black text-white">{displayStats.auraScore}%</span>
+                  </div>
+                </div>
+                {user && card ? (
+                  <Link 
+                    to={`/c/${card.slug}`}
+                    className="block w-full py-3 bg-[#D4AF37]/20 text-[#D4AF37] font-medium rounded-xl text-sm text-center hover:bg-[#D4AF37]/30 transition-colors"
+                  >
+                    Aperçu de mon profil
+                  </Link>
+                ) : (
+                  <button className="w-full py-3 bg-[#D4AF37]/20 text-[#D4AF37] font-medium rounded-xl text-sm hover:bg-[#D4AF37]/30 transition-colors">
+                    Aperçu de mon profil
+                  </button>
+                )}
+                {user && displayStats.auraScore < 100 && (
+                  <p className="text-gray-400 text-xs text-center mt-3">
+                    Complétez votre profil pour augmenter votre score
+                  </p>
+                )}
+              </div>
+
+              {/* Social Links */}
+              <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
+                <h3 className="text-[#0A1931] font-bold mb-4">Réseaux Sociaux 🔗</h3>
+                <div className="space-y-3">
+                  {socialLinks.map((social, i) => (
+                    <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                      <div className="flex items-center gap-3">
+                        <social.icon className="w-5 h-5" style={{ color: social.color }} />
+                        <span className="font-medium text-[#0A1931]">{social.name}</span>
+                      </div>
+                      <span className={`text-sm font-medium ${social.connected ? 'text-[#00D9A3]' : 'text-gray-400'}`}>
+                        {social.connected ? 'Connecté' : 'Non connecté'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {user && !card?.linkedin && !card?.instagram && (
+                  <Link 
+                    to="/dashboard"
+                    className="block text-center text-[#D4AF37] text-sm mt-4 hover:underline"
+                  >
+                    Ajouter vos réseaux →
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Right Column - Stats & Chart */}
+            <motion.div variants={fadeInUp} className="lg:col-span-2 space-y-6">
+              {/* Stats */}
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
+                  <div className="text-gray-500 text-sm mb-2">Visiteurs ce mois 👥</div>
+                  <motion.div 
+                    className="text-4xl font-black text-[#0A1931]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {displayStats.monthlyVisitors.toLocaleString('fr-FR')}
+                  </motion.div>
+                  {user && (
+                    <div className="flex items-center gap-1 mt-2 text-[#00D9A3] text-sm">
+                      <TrendingUp className="w-4 h-4" />
+                      <span>Données en temps réel</span>
+                    </div>
+                  )}
+                </div>
+                <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
+                  <div className="text-gray-500 text-sm mb-2">Contacts enregistrés 📱</div>
+                  <motion.div 
+                    className="text-4xl font-black text-[#0A1931]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                  >
+                    {displayStats.totalContacts.toLocaleString('fr-FR')}
+                  </motion.div>
+                  {user && (
+                    <Link to="/dashboard" className="flex items-center gap-1 mt-2 text-[#D4AF37] text-sm hover:underline">
+                      Voir tous les contacts →
+                    </Link>
+                  )}
                 </div>
               </div>
-              <button className="w-full py-3 bg-[#D4AF37]/20 text-[#D4AF37] font-medium rounded-xl text-sm hover:bg-[#D4AF37]/30 transition-colors">
-                Aperçu de mon profil
-              </button>
-            </div>
 
-            {/* Social Links */}
-            <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
-              <h3 className="text-[#0A1931] font-bold mb-4">Réseaux Sociaux 🔗</h3>
-              <div className="space-y-3">
-                {[
-                  { icon: Linkedin, name: 'LinkedIn', status: 'Connecté', color: '#0077B5' },
-                  { icon: Instagram, name: 'Instagram', status: 'Connecté', color: '#E4405F' },
-                ].map((social, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                    <div className="flex items-center gap-3">
-                      <social.icon className="w-5 h-5" style={{ color: social.color }} />
-                      <span className="font-medium text-[#0A1931]">{social.name}</span>
-                    </div>
-                    <span className="text-[#00D9A3] text-sm font-medium">{social.status}</span>
-                  </div>
-                ))}
+              {/* Chart */}
+              <div className="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-black text-[#0A1931]">Tendances des Visites 📈</h3>
+                  {!user && (
+                    <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Données démo</span>
+                  )}
+                </div>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#00D9A3" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#00D9A3" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                      <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#0A1931', border: 'none', borderRadius: '12px' }}
+                        labelStyle={{ color: '#D4AF37', fontWeight: 'bold' }}
+                        itemStyle={{ color: '#fff' }}
+                        formatter={(value: number) => [`${value} visites`, 'Visites']}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="value" 
+                        stroke="#00D9A3" 
+                        strokeWidth={3} 
+                        fill="url(#colorVisits)" 
+                        dot={{ fill: '#fff', stroke: '#00D9A3', strokeWidth: 3, r: 5 }} 
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
+        )}
 
-          {/* Right Column - Stats & Chart */}
-          <motion.div variants={fadeInUp} className="lg:col-span-2 space-y-6">
-            {/* Stats */}
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
-                <div className="text-gray-500 text-sm mb-2">Visiteurs ce mois 👥</div>
-                <div className="text-4xl font-black text-[#0A1931]">1,204</div>
-              </div>
-              <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
-                <div className="text-gray-500 text-sm mb-2">Contacts enregistrés 📱</div>
-                <div className="text-4xl font-black text-[#0A1931]">342</div>
-              </div>
-            </div>
-
-            {/* Chart */}
-            <div className="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100">
-              <h3 className="text-xl font-black text-[#0A1931] mb-6">Tendances des Visites sur i-wasp 📈</h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#00D9A3" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#00D9A3" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#0A1931', border: 'none', borderRadius: '12px' }}
-                      labelStyle={{ color: '#D4AF37', fontWeight: 'bold' }}
-                      itemStyle={{ color: '#fff' }}
-                    />
-                    <Area type="monotone" dataKey="value" stroke="#00D9A3" strokeWidth={3} fill="url(#colorVisits)" dot={{ fill: '#fff', stroke: '#00D9A3', strokeWidth: 3, r: 5 }} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+        {/* CTA for non-logged users */}
+        {!user && (
+          <motion.div 
+            className="mt-12 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-gray-500 mb-4">Connectez-vous pour voir vos vraies statistiques</p>
+            <a 
+              href="#auth" 
+              className="inline-flex items-center gap-2 px-8 py-4 bg-[#0A1931] text-white font-bold rounded-2xl hover:bg-[#162a4a] transition-colors"
+            >
+              Se connecter
+              <ArrowRight className="w-5 h-5" />
+            </a>
           </motion.div>
-        </motion.div>
+        )}
       </div>
     </section>
   );
