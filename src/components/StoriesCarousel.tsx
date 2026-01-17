@@ -3,13 +3,14 @@
  * Affiche les stories de plusieurs utilisateurs dans une bande horizontale scrollable
  */
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StoryRing } from "./StoryRing";
 import { MultiStoryViewer } from "./MultiStoryViewer";
 import { supabase } from "@/integrations/supabase/client";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface Story {
   id: string;
@@ -91,6 +92,18 @@ export function StoriesCarousel({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+  
+  // Animation optimization for low-power devices
+  const { shouldReduceMotion, durationMultiplier } = useReducedMotion();
+  
+  // Optimized transitions based on device capability
+  const optimizedTransition = useMemo(() => ({
+    duration: shouldReduceMotion ? 0.1 : 0.2,
+    ease: "easeOut" as const,
+  }), [shouldReduceMotion]);
+  
+  // Stagger delay for list animations
+  const staggerDelay = shouldReduceMotion ? 0 : 0.05;
 
   // Fetch stories if cardIds provided
   useEffect(() => {
@@ -178,12 +191,13 @@ export function StoriesCarousel({
         {/* Scroll container */}
         <div className="relative">
           {/* Left scroll button */}
-          <AnimatePresence>
+          <AnimatePresence mode={shouldReduceMotion ? "wait" : "sync"}>
             {canScrollLeft && (
               <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
+                initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
+                animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+                exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
+                transition={optimizedTransition}
                 onClick={() => scroll("left")}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-background/90 backdrop-blur-sm border border-border/50 shadow-lg flex items-center justify-center text-foreground hover:bg-accent transition-colors hidden md:flex"
               >
@@ -193,12 +207,13 @@ export function StoriesCarousel({
           </AnimatePresence>
 
           {/* Right scroll button */}
-          <AnimatePresence>
+          <AnimatePresence mode={shouldReduceMotion ? "wait" : "sync"}>
             {canScrollRight && usersWithContent.length > 4 && (
               <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
+                initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
+                animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+                exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
+                transition={optimizedTransition}
                 onClick={() => scroll("right")}
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-background/90 backdrop-blur-sm border border-border/50 shadow-lg flex items-center justify-center text-foreground hover:bg-accent transition-colors hidden md:flex"
               >
@@ -220,8 +235,9 @@ export function StoriesCarousel({
             {/* Add Story button (Your Story) */}
             {showAddStory && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
+                animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+                transition={optimizedTransition}
                 className="flex flex-col items-center flex-shrink-0"
               >
                 <button
@@ -249,7 +265,7 @@ export function StoriesCarousel({
                       </div>
                     )}
                     
-                    {/* Plus button */}
+                    {/* Plus button - disable hover/tap animations in reduced motion mode */}
                     <motion.div
                       className={cn(
                         "absolute rounded-full bg-primary border-2 border-background flex items-center justify-center shadow-lg",
@@ -257,8 +273,8 @@ export function StoriesCarousel({
                         config.ring === "md" && "-bottom-0.5 -right-0.5 w-6 h-6",
                         config.ring === "lg" && "-bottom-1 -right-1 w-7 h-7"
                       )}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
+                      whileHover={shouldReduceMotion ? undefined : { scale: 1.1 }}
+                      whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
                     >
                       <Plus size={config.ring === "sm" ? 12 : config.ring === "md" ? 14 : 16} className="text-primary-foreground" />
                     </motion.div>
@@ -281,9 +297,9 @@ export function StoriesCarousel({
             {usersWithContent.map((user, index) => (
               <motion.div
                 key={user.id}
-                initial={{ opacity: 0, scale: 0.8, x: 20 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
+                initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8, x: 20 }}
+                animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1, x: 0 }}
+                transition={optimizedTransition}
                 className="flex flex-col items-center flex-shrink-0"
               >
                 <button
