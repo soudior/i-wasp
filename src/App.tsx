@@ -139,6 +139,7 @@ const PromoPackSuccess = lazy(() => import("./pages/PromoPackSuccess"));
 // NEW Web Studio funnel pages
 const WebStudioLayout = lazy(() => import("./pages/web-studio/WebStudioLayout"));
 const WebStudioEntry = lazy(() => import("./pages/web-studio/WebStudioEntry"));
+const WebStudioAI = lazy(() => import("./pages/web-studio/WebStudioAI"));
 const StepEntreprise = lazy(() => import("./pages/web-studio/StepEntreprise"));
 const StepProduits = lazy(() => import("./pages/web-studio/StepProduits"));
 const StepDesign = lazy(() => import("./pages/web-studio/StepDesign"));
@@ -318,9 +319,14 @@ const App = () => {
                               <Route path="/web-studio/paiement" element={<WebStudioPaiement />} />
                               <Route path="/web-studio/ia-success" element={<WebStudioIASuccess />} />
                               
-                              {/* Web Studio - Funnel with layout (must be after standalone routes) */}
-                              <Route path="/web-studio/*" element={<WebStudioLayout />}>
-                                <Route path="" element={<WebStudioEntry />} />
+                              {/* Web Studio AI - New Chat Interface (Main entry point) */}
+                              <Route path="/web-studio" element={<WebStudioAI />} />
+                              <Route path="/web-studio/chat" element={<WebStudioAI />} />
+                              <Route path="/web-studio/landing" element={<WebStudioEntry />} />
+                              
+                              {/* Web Studio - Legacy Funnel (kept for existing users) */}
+                              <Route path="/web-studio/funnel/*" element={<WebStudioLayout />}>
+                                <Route path="" element={<Navigate to="/web-studio/funnel/entreprise" replace />} />
                                 <Route path="entreprise" element={<StepEntreprise />} />
                                 <Route path="produits" element={<StepProduits />} />
                                 <Route path="design" element={<StepDesign />} />
