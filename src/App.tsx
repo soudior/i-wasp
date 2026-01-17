@@ -49,6 +49,7 @@ const FinalizeCard = lazy(() => import("./pages/FinalizeCard"));
 const HomeSaaS = lazy(() => import("./pages/HomeSaaS"));
 const HomeLuxeMax = lazy(() => import("./pages/HomeLuxeMax"));
 const Index = lazy(() => import("./pages/Index"));
+const Activation = lazy(() => import("./pages/Activation"));
 const Demo = lazy(() => import("./pages/Demo"));
 const Cart = lazy(() => import("./pages/Cart"));
 const HerbalismCard = lazy(() => import("./pages/HerbalismCard"));
@@ -276,6 +277,10 @@ const App = () => {
                               <Route path="/register" element={<Signup />} />
                               <Route path="/forgot-password" element={<ForgotPassword />} />
                               <Route path="/reset-password" element={<ResetPassword />} />
+                              
+                              {/* Activation Portal - OMNIA */}
+                              <Route path="/activation" element={<Activation />} />
+                              <Route path="/ignition" element={<Activation />} />
                               
                               {/* Guest card creation - redirect to express checkout */}
                               <Route path="/create" element={<Navigate to="/express/offre" replace />} />
