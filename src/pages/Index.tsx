@@ -7,22 +7,18 @@
  */
 
 import { Link } from "react-router-dom";
-import { ArrowRight, Smartphone, CreditCard, Zap, Shield, BarChart3, HeartHandshake, Globe, ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Smartphone, CreditCard, Zap, Shield, BarChart3, HeartHandshake, Globe } from "lucide-react";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { useState, useRef, useEffect } from "react";
 import { APPLE } from "@/lib/applePalette";
 import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { NFCDemoSection } from "@/components/landing/NFCDemoSection";
 import { SocialProofSection } from "@/components/landing/SocialProofSection";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { PricingSection } from "@/components/landing/PricingSection";
-
-// Language options
-const languages = [
-  { code: "en", label: "EN", flag: "🇬🇧" },
-  { code: "fr", label: "FR", flag: "🇫🇷" },
-];
+import { FAQSection } from "@/components/landing/FAQSection";
+import { FooterSection } from "@/components/landing/FooterSection";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 // Animation variants - Smooth Apple-style
 const fadeUp = {
@@ -58,27 +54,8 @@ const scaleIn = {
 };
 
 const Index = () => {
-  const { t, i18n } = useTranslation();
-  const [langOpen, setLangOpen] = useState(false);
-  const langRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (langRef.current && !langRef.current.contains(event.target as Node)) {
-        setLangOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const currentLang = languages.find(l => l.code === i18n.language) || languages[0];
-
-  const changeLanguage = (code: string) => {
-    i18n.changeLanguage(code);
-    setLangOpen(false);
-  };
   return (
     <div 
       className="min-h-screen font-sans antialiased"
