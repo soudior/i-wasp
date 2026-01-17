@@ -16,12 +16,14 @@ import {
   Check,
   X,
   AlertCircle,
+  AlertTriangle,
   Loader2,
   Users,
   Table,
   FileText,
   Copy,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,10 +71,320 @@ const TEMPLATE_COLUMNS = [
   { key: 'tagline', label: 'Slogan', required: false, example: 'Expert en innovation' },
 ];
 
+// ============= DATA VALIDATION & CLEANING UTILITIES =============
+
+/**
+ * Normalize phone number to international format
+ * Supports: France (+33), Morocco (+212), international formats
+ */
+const normalizePhone = (phone: string): { normalized: string; isValid: boolean; warning?: string } => {
+  if (!phone || !phone.trim()) return { normalized: '', isValid: true };
+  
+  // Remove all non-digit characters except +
+  let cleaned = phone.replace(/[^\d+]/g, '');
+  
+  // If starts with 00, replace with +
+  if (cleaned.startsWith('00')) {
+    cleaned = '+' + cleaned.slice(2);
+  }
+  
+  // Handle French numbers
+  if (cleaned.startsWith('0') && cleaned.length === 10) {
+    cleaned = '+33' + cleaned.slice(1);
+  }
+  
+  // Handle Moroccan numbers (06, 07, 05)
+  if (cleaned.match(/^0[567]\d{8}$/)) {
+    cleaned = '+212' + cleaned.slice(1);
+  }
+  
+  // Validate final format
+  const isValid = /^\+\d{10,15}$/.test(cleaned) || cleaned === '';
+  
+  // Detect potential issues
+  let warning: string | undefined;
+  if (cleaned && !cleaned.startsWith('+')) {
+    warning = 'Format international recommandé (+XX...)';
+  }
+  
+  return { normalized: cleaned || phone.trim(), isValid, warning };
+};
+
+/**
+ * Normalize and validate email
+ */
+const normalizeEmail = (email: string): { normalized: string; isValid: boolean; suggestions: string[] } => {
+  if (!email || !email.trim()) return { normalized: '', isValid: true, suggestions: [] };
+  
+  let cleaned = email.trim().toLowerCase();
+  const suggestions: string[] = [];
+  
+  // Common typo fixes
+  const typoFixes: Record<string, string> = {
+    'gmial.com': 'gmail.com',
+    'gmal.com': 'gmail.com',
+    'gamil.com': 'gmail.com',
+    'gnail.com': 'gmail.com',
+    'gmail.fr': 'gmail.com',
+    'hotmal.com': 'hotmail.com',
+    'hotmai.com': 'hotmail.com',
+    'hotmial.com': 'hotmail.com',
+    'outook.com': 'outlook.com',
+    'outlok.com': 'outlook.com',
+    'yahooo.com': 'yahoo.com',
+    'yaho.com': 'yahoo.com',
+    'yahoo.fr': 'yahoo.fr',
+  };
+  
+  // Check for common typos
+  const domain = cleaned.split('@')[1];
+  if (domain && typoFixes[domain]) {
+    const corrected = cleaned.replace(domain, typoFixes[domain]);
+    suggestions.push(`Correction suggérée: ${corrected}`);
+    cleaned = corrected;
+  }
+  
+  // Validate email format
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const isValid = emailRegex.test(cleaned);
+  
+  return { normalized: cleaned, isValid, suggestions };
+};
+
+/**
+ * Normalize name (capitalize properly)
+ */
+const normalizeName = (name: string): string => {
+  if (!name || !name.trim()) return '';
+  
+  return name
+    .trim()
+    .toLowerCase()
+    .split(/[\s-]+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(name.includes('-') ? '-' : ' ');
+};
+
+/**
+ * Normalize company name
+ */
+const normalizeCompany = (company: string): string => {
+  if (!company || !company.trim()) return '';
+  
+  let cleaned = company.trim();
+  
+  // Capitalize first letter of each word, preserve acronyms
+  cleaned = cleaned
+    .split(' ')
+    .map(word => {
+      // Keep all-caps words (acronyms like SARL, SAS)
+      if (word === word.toUpperCase() && word.length <= 5) return word;
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(' ');
+  
+  return cleaned;
+};
+
+/**
+ * Normalize URL (website, LinkedIn, etc.)
+ */
+const normalizeUrl = (url: string, type: 'website' | 'linkedin' | 'instagram'): { normalized: string; isValid: boolean } => {
+  if (!url || !url.trim()) return { normalized: '', isValid: true };
+  
+  let cleaned = url.trim();
+  
+  // Add https:// if missing for website/linkedin
+  if (type !== 'instagram' && !cleaned.match(/^https?:\/\//i)) {
+    cleaned = 'https://' + cleaned;
+  }
+  
+  // Handle Instagram handles
+  if (type === 'instagram') {
+    // Remove @ if present
+    cleaned = cleaned.replace(/^@/, '');
+    // If it's a URL, extract username
+    const instaMatch = cleaned.match(/instagram\.com\/([^\/\?]+)/);
+    if (instaMatch) {
+      cleaned = instaMatch[1];
+    }
+  }
+  
+  // Validate LinkedIn URL
+  if (type === 'linkedin') {
+    const isValid = cleaned.includes('linkedin.com');
+    return { normalized: cleaned, isValid };
+  }
+  
+  // Basic URL validation
+  try {
+    if (type === 'website') {
+      new URL(cleaned);
+    }
+    return { normalized: cleaned, isValid: true };
+  } catch {
+    return { normalized: cleaned, isValid: false };
+  }
+};
+
+/**
+ * Normalize WhatsApp number
+ */
+const normalizeWhatsApp = (whatsapp: string): { normalized: string; isValid: boolean } => {
+  if (!whatsapp || !whatsapp.trim()) return { normalized: '', isValid: true };
+  
+  // Use phone normalization
+  const { normalized, isValid } = normalizePhone(whatsapp);
+  
+  // Remove + for WhatsApp (use digits only)
+  const whatsappNum = normalized.replace(/^\+/, '');
+  
+  return { normalized: whatsappNum, isValid };
+};
+
+/**
+ * Clean and validate a complete row
+ */
+interface CleanedRow {
+  original: any;
+  cleaned: any;
+  errors: string[];
+  warnings: string[];
+  corrections: string[];
+}
+
+const cleanAndValidateRow = (row: any): CleanedRow => {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const corrections: string[] = [];
+  const cleaned: any = { ...row };
+  
+  // Required fields
+  if (!row.first_name?.trim()) {
+    errors.push('Prénom requis');
+  } else {
+    const normalizedFirst = normalizeName(row.first_name);
+    if (normalizedFirst !== row.first_name.trim()) {
+      corrections.push(`Prénom: "${row.first_name}" → "${normalizedFirst}"`);
+    }
+    cleaned.first_name = normalizedFirst;
+  }
+  
+  if (!row.last_name?.trim()) {
+    errors.push('Nom requis');
+  } else {
+    const normalizedLast = normalizeName(row.last_name);
+    if (normalizedLast !== row.last_name.trim()) {
+      corrections.push(`Nom: "${row.last_name}" → "${normalizedLast}"`);
+    }
+    cleaned.last_name = normalizedLast;
+  }
+  
+  // Email
+  if (row.email) {
+    const { normalized, isValid, suggestions } = normalizeEmail(row.email);
+    if (!isValid) {
+      errors.push('Email invalide');
+    }
+    if (normalized !== row.email.trim().toLowerCase()) {
+      corrections.push(`Email: "${row.email}" → "${normalized}"`);
+    }
+    suggestions.forEach(s => warnings.push(s));
+    cleaned.email = normalized;
+  }
+  
+  // Phone
+  if (row.phone) {
+    const { normalized, isValid, warning } = normalizePhone(row.phone);
+    if (!isValid) {
+      warnings.push('Format téléphone non standard');
+    }
+    if (warning) warnings.push(warning);
+    if (normalized !== row.phone.trim()) {
+      corrections.push(`Tél: "${row.phone}" → "${normalized}"`);
+    }
+    cleaned.phone = normalized;
+  }
+  
+  // WhatsApp
+  if (row.whatsapp) {
+    const { normalized, isValid } = normalizeWhatsApp(row.whatsapp);
+    if (!isValid) {
+      warnings.push('Format WhatsApp non standard');
+    }
+    if (normalized !== row.whatsapp.trim().replace(/^\+/, '')) {
+      corrections.push(`WhatsApp: "${row.whatsapp}" → "${normalized}"`);
+    }
+    cleaned.whatsapp = normalized;
+  }
+  
+  // Company
+  if (row.company) {
+    const normalizedCompany = normalizeCompany(row.company);
+    if (normalizedCompany !== row.company.trim()) {
+      corrections.push(`Entreprise: "${row.company}" → "${normalizedCompany}"`);
+    }
+    cleaned.company = normalizedCompany;
+  }
+  
+  // Website
+  if (row.website) {
+    const { normalized, isValid } = normalizeUrl(row.website, 'website');
+    if (!isValid) {
+      warnings.push('URL site web invalide');
+    }
+    if (normalized !== row.website.trim()) {
+      corrections.push(`Site: "${row.website}" → "${normalized}"`);
+    }
+    cleaned.website = normalized;
+  }
+  
+  // LinkedIn
+  if (row.linkedin) {
+    const { normalized, isValid } = normalizeUrl(row.linkedin, 'linkedin');
+    if (!isValid) {
+      warnings.push('URL LinkedIn invalide');
+    }
+    if (normalized !== row.linkedin.trim()) {
+      corrections.push(`LinkedIn: "${row.linkedin}" → "${normalized}"`);
+    }
+    cleaned.linkedin = normalized;
+  }
+  
+  // Instagram
+  if (row.instagram) {
+    const { normalized } = normalizeUrl(row.instagram, 'instagram');
+    if (normalized !== row.instagram.trim().replace(/^@/, '')) {
+      corrections.push(`Instagram: "${row.instagram}" → "@${normalized}"`);
+    }
+    cleaned.instagram = normalized;
+  }
+  
+  // Title (capitalize)
+  if (row.title) {
+    const normalizedTitle = row.title.trim().charAt(0).toUpperCase() + row.title.trim().slice(1);
+    cleaned.title = normalizedTitle;
+  }
+  
+  // Location (capitalize)
+  if (row.location) {
+    cleaned.location = normalizeName(row.location);
+  }
+  
+  // Tagline (trim only)
+  if (row.tagline) {
+    cleaned.tagline = row.tagline.trim();
+  }
+  
+  return { original: row, cleaned, errors, warnings, corrections };
+};
+
 interface ImportPreview {
-  valid: any[];
-  invalid: { row: number; data: any; errors: string[] }[];
+  valid: CleanedRow[];
+  invalid: CleanedRow[];
   headers: string[];
+  totalCorrections: number;
+  totalWarnings: number;
 }
 
 export function ClientDataExportImport() {
@@ -295,30 +607,28 @@ export function ClientDataExportImport() {
       const text = e.target?.result as string;
       const { headers, rows } = parseCSV(text);
 
-      // Validate rows
-      const valid: any[] = [];
-      const invalid: { row: number; data: any; errors: string[] }[] = [];
+      // Clean and validate all rows
+      const valid: CleanedRow[] = [];
+      const invalid: CleanedRow[] = [];
+      let totalCorrections = 0;
+      let totalWarnings = 0;
 
       rows.forEach((row, index) => {
-        const errors: string[] = [];
+        const cleanedRow = cleanAndValidateRow(row);
+        // Add row number for reference
+        (cleanedRow as any).rowNumber = index + 2;
+        
+        totalCorrections += cleanedRow.corrections.length;
+        totalWarnings += cleanedRow.warnings.length;
 
-        // Check required fields
-        if (!row.first_name?.trim()) errors.push('Prénom requis');
-        if (!row.last_name?.trim()) errors.push('Nom requis');
-
-        // Validate email format if provided
-        if (row.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) {
-          errors.push('Email invalide');
-        }
-
-        if (errors.length > 0) {
-          invalid.push({ row: index + 2, data: row, errors });
+        if (cleanedRow.errors.length > 0) {
+          invalid.push(cleanedRow);
         } else {
-          valid.push(row);
+          valid.push(cleanedRow);
         }
       });
 
-      setImportPreview({ valid, invalid, headers });
+      setImportPreview({ valid, invalid, headers, totalCorrections, totalWarnings });
       setShowImportDialog(true);
     };
     reader.readAsText(file);
@@ -343,22 +653,22 @@ export function ClientDataExportImport() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Non authentifié');
 
-      // Prepare cards data
-      const cardsToInsert = importPreview.valid.map(row => ({
+      // Prepare cards data using cleaned data
+      const cardsToInsert = importPreview.valid.map(item => ({
         user_id: user.id,
-        first_name: row.first_name.trim(),
-        last_name: row.last_name.trim(),
-        email: row.email?.trim() || null,
-        phone: row.phone?.trim() || null,
-        company: row.company?.trim() || null,
-        title: row.title?.trim() || null,
-        linkedin: row.linkedin?.trim() || null,
-        whatsapp: row.whatsapp?.trim() || null,
-        instagram: row.instagram?.trim() || null,
-        website: row.website?.trim() || null,
-        location: row.location?.trim() || null,
-        tagline: row.tagline?.trim() || null,
-        slug: `${row.first_name.toLowerCase().trim()}-${row.last_name.toLowerCase().trim()}-${Date.now().toString(36)}`.replace(/\s+/g, '-'),
+        first_name: item.cleaned.first_name || '',
+        last_name: item.cleaned.last_name || '',
+        email: item.cleaned.email || null,
+        phone: item.cleaned.phone || null,
+        company: item.cleaned.company || null,
+        title: item.cleaned.title || null,
+        linkedin: item.cleaned.linkedin || null,
+        whatsapp: item.cleaned.whatsapp || null,
+        instagram: item.cleaned.instagram || null,
+        website: item.cleaned.website || null,
+        location: item.cleaned.location || null,
+        tagline: item.cleaned.tagline || null,
+        slug: `${(item.cleaned.first_name || '').toLowerCase()}-${(item.cleaned.last_name || '').toLowerCase()}-${Date.now().toString(36)}`.replace(/\s+/g, '-'),
         template: 'default',
       }));
 
@@ -369,7 +679,7 @@ export function ClientDataExportImport() {
 
       if (error) throw error;
 
-      toast.success(`${data.length} cartes importées avec succès`);
+      toast.success(`${data.length} cartes importées avec succès (${importPreview.totalCorrections} corrections appliquées)`);
       queryClient.invalidateQueries({ queryKey: ['all-clients-unified'] });
       queryClient.invalidateQueries({ queryKey: ['export-clients-data'] });
       setShowImportDialog(false);
@@ -532,9 +842,9 @@ export function ClientDataExportImport() {
           {importPreview && (
             <div className="space-y-4">
               {/* Summary */}
-              <div className="flex gap-4">
+              <div className="flex gap-4 flex-wrap">
                 <div 
-                  className="flex-1 p-3 rounded-lg"
+                  className="flex-1 min-w-[140px] p-3 rounded-lg"
                   style={{ backgroundColor: `${GOTHAM.success}20` }}
                 >
                   <div className="flex items-center gap-2">
@@ -546,7 +856,7 @@ export function ClientDataExportImport() {
                 </div>
                 {importPreview.invalid.length > 0 && (
                   <div 
-                    className="flex-1 p-3 rounded-lg"
+                    className="flex-1 min-w-[140px] p-3 rounded-lg"
                     style={{ backgroundColor: `${GOTHAM.danger}20` }}
                   >
                     <div className="flex items-center gap-2">
@@ -557,13 +867,39 @@ export function ClientDataExportImport() {
                     </div>
                   </div>
                 )}
+                {importPreview.totalCorrections > 0 && (
+                  <div 
+                    className="flex-1 min-w-[140px] p-3 rounded-lg"
+                    style={{ backgroundColor: `${GOTHAM.info}20` }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Sparkles size={16} style={{ color: GOTHAM.info }} />
+                      <span className="text-sm font-medium" style={{ color: GOTHAM.info }}>
+                        {importPreview.totalCorrections} corrections auto
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {importPreview.totalWarnings > 0 && (
+                  <div 
+                    className="flex-1 min-w-[140px] p-3 rounded-lg"
+                    style={{ backgroundColor: `${GOTHAM.warning}20` }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle size={16} style={{ color: GOTHAM.warning }} />
+                      <span className="text-sm font-medium" style={{ color: GOTHAM.warning }}>
+                        {importPreview.totalWarnings} avertissements
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Valid Preview */}
+              {/* Valid Preview with corrections */}
               {importPreview.valid.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-xs font-medium" style={{ color: GOTHAM.text }}>
-                    Aperçu des données valides
+                    Aperçu des données nettoyées
                   </p>
                   <ScrollArea className="h-[200px] rounded-lg border" style={{ borderColor: GOTHAM.borderMuted }}>
                     <table className="w-full text-xs">
@@ -573,17 +909,29 @@ export function ClientDataExportImport() {
                           <th className="p-2 text-left" style={{ color: GOTHAM.textMuted }}>Nom</th>
                           <th className="p-2 text-left" style={{ color: GOTHAM.textMuted }}>Email</th>
                           <th className="p-2 text-left" style={{ color: GOTHAM.textMuted }}>Téléphone</th>
-                          <th className="p-2 text-left" style={{ color: GOTHAM.textMuted }}>Entreprise</th>
+                          <th className="p-2 text-left" style={{ color: GOTHAM.textMuted }}>Corrections</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {importPreview.valid.slice(0, 10).map((row, i) => (
+                        {importPreview.valid.slice(0, 10).map((item, i) => (
                           <tr key={i} style={{ borderBottom: `1px solid ${GOTHAM.borderMuted}` }}>
-                            <td className="p-2" style={{ color: GOTHAM.text }}>{row.first_name}</td>
-                            <td className="p-2" style={{ color: GOTHAM.text }}>{row.last_name}</td>
-                            <td className="p-2" style={{ color: GOTHAM.textMuted }}>{row.email || '-'}</td>
-                            <td className="p-2" style={{ color: GOTHAM.textMuted }}>{row.phone || '-'}</td>
-                            <td className="p-2" style={{ color: GOTHAM.textMuted }}>{row.company || '-'}</td>
+                            <td className="p-2" style={{ color: GOTHAM.text }}>{item.cleaned.first_name}</td>
+                            <td className="p-2" style={{ color: GOTHAM.text }}>{item.cleaned.last_name}</td>
+                            <td className="p-2" style={{ color: GOTHAM.textMuted }}>{item.cleaned.email || '-'}</td>
+                            <td className="p-2" style={{ color: GOTHAM.textMuted }}>{item.cleaned.phone || '-'}</td>
+                            <td className="p-2">
+                              {item.corrections.length > 0 ? (
+                                <span 
+                                  className="px-1.5 py-0.5 rounded text-[10px]"
+                                  style={{ backgroundColor: `${GOTHAM.info}20`, color: GOTHAM.info }}
+                                  title={item.corrections.join('\n')}
+                                >
+                                  {item.corrections.length} fix
+                                </span>
+                              ) : (
+                                <span style={{ color: GOTHAM.textMuted }}>-</span>
+                              )}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -594,6 +942,31 @@ export function ClientDataExportImport() {
                       </p>
                     )}
                   </ScrollArea>
+                  
+                  {/* Corrections detail */}
+                  {importPreview.totalCorrections > 0 && (
+                    <div 
+                      className="p-3 rounded-lg text-xs space-y-1"
+                      style={{ backgroundColor: `${GOTHAM.info}10` }}
+                    >
+                      <p className="font-medium" style={{ color: GOTHAM.info }}>
+                        ✨ Corrections automatiques appliquées:
+                      </p>
+                      <ul className="space-y-0.5 max-h-[80px] overflow-y-auto" style={{ color: GOTHAM.textMuted }}>
+                        {importPreview.valid
+                          .flatMap(item => item.corrections)
+                          .slice(0, 8)
+                          .map((correction, i) => (
+                            <li key={i}>• {correction}</li>
+                          ))}
+                        {importPreview.totalCorrections > 8 && (
+                          <li style={{ color: GOTHAM.info }}>
+                            ... et {importPreview.totalCorrections - 8} autres corrections
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -612,7 +985,7 @@ export function ClientDataExportImport() {
                           style={{ backgroundColor: `${GOTHAM.danger}10` }}
                         >
                           <span className="text-xs font-mono" style={{ color: GOTHAM.danger }}>
-                            Ligne {item.row}:
+                            Ligne {(item as any).rowNumber || i + 2}:
                           </span>
                           <span className="text-xs" style={{ color: GOTHAM.textMuted }}>
                             {item.errors.join(', ')}
