@@ -15,11 +15,13 @@ import {
   ExternalLink,
   User,
   Building2,
-  QrCode
+  QrCode,
+  Download
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
@@ -99,6 +101,42 @@ export function SerialCodesWidget() {
     }
   };
 
+  const handleExportCSV = () => {
+    if (!filteredCards || filteredCards.length === 0) {
+      toast.error("Aucune donnée à exporter");
+      return;
+    }
+
+    const headers = ["Prénom", "Nom", "Entreprise", "Code de Série", "Slug", "Statut", "NFC", "Date de création"];
+    const rows = filteredCards.map(card => [
+      card.first_name,
+      card.last_name,
+      card.company || "",
+      card.serial_code || "",
+      card.slug,
+      card.is_active ? "Actif" : "Inactif",
+      card.nfc_enabled ? "Oui" : "Non",
+      format(new Date(card.created_at), "dd/MM/yyyy HH:mm")
+    ]);
+
+    const csvContent = [
+      headers.join(";"),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(";"))
+    ].join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `codes-serie-iwasp-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast.success(`${filteredCards.length} codes exportés`);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -134,16 +172,29 @@ export function SerialCodesWidget() {
             </p>
           </div>
         </div>
-        <Badge 
-          className="text-xs px-2 py-0.5"
-          style={{ 
-            backgroundColor: MANSORY.goldMuted,
-            color: MANSORY.gold,
-            border: 'none'
-          }}
-        >
-          Activation
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-8 text-xs gap-1.5"
+            style={{ color: MANSORY.gold }}
+            onClick={handleExportCSV}
+            disabled={!filteredCards?.length}
+          >
+            <Download size={14} />
+            Export CSV
+          </Button>
+          <Badge 
+            className="text-xs px-2 py-0.5"
+            style={{ 
+              backgroundColor: MANSORY.goldMuted,
+              color: MANSORY.gold,
+              border: 'none'
+            }}
+          >
+            Activation
+          </Badge>
+        </div>
       </div>
 
       {/* Search */}
