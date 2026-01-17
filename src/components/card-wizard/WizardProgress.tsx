@@ -1,9 +1,14 @@
 /**
  * WizardProgress - Barre de progression premium IWASP
+ * 
+ * OPTIMISÉ POUR MOBILE:
+ * - Animations réduites sur appareils peu puissants
+ * - Support de prefers-reduced-motion
  */
 
 import { motion } from "framer-motion";
 import { Check, LucideIcon } from "lucide-react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface Step {
   id: string;
@@ -19,6 +24,8 @@ interface WizardProgressProps {
 }
 
 export function WizardProgress({ steps, currentStep, validation }: WizardProgressProps) {
+  const { shouldReduceMotion, allowInfiniteAnimations } = useReducedMotion();
+  
   return (
     <div className="flex items-center gap-1 md:gap-2">
       {steps.map((step, index) => {
@@ -33,14 +40,14 @@ export function WizardProgress({ steps, currentStep, validation }: WizardProgres
               <motion.div
                 initial={false}
                 animate={{
-                  scale: isActive ? 1.1 : 1,
+                  scale: isActive && !shouldReduceMotion ? 1.1 : 1,
                   backgroundColor: isCompleted 
                     ? "hsl(var(--accent))" 
                     : isActive 
                       ? "hsl(var(--primary))" 
                       : "hsl(var(--muted))",
                 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
+                transition={{ duration: shouldReduceMotion ? 0.1 : 0.3, ease: "easeInOut" }}
                 className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center ${
                   isCompleted || isActive ? "text-primary-foreground" : "text-muted-foreground"
                 }`}
@@ -52,8 +59,8 @@ export function WizardProgress({ steps, currentStep, validation }: WizardProgres
                 )}
               </motion.div>
               
-              {/* Active pulse */}
-              {isActive && (
+              {/* Active pulse - Désactivé en mode réduit */}
+              {isActive && allowInfiniteAnimations && (
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1.3, opacity: 0 }}
@@ -73,12 +80,12 @@ export function WizardProgress({ steps, currentStep, validation }: WizardProgres
                 <motion.div
                   initial={false}
                   animate={{
-                    scaleX: isPast ? 1 : 0,
+                    scaleX: isPast ? 1 : shouldReduceMotion ? 0.3 : 0,
                     backgroundColor: isPast 
                       ? "hsl(var(--accent))" 
                       : "hsl(var(--border))",
                   }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  transition={{ duration: shouldReduceMotion ? 0.1 : 0.3, ease: "easeInOut" }}
                   className="h-full origin-left bg-border"
                   style={{ 
                     scaleX: isPast ? 1 : 0.3,
