@@ -101,10 +101,13 @@ const Activation = () => {
   // Auto-verify when code is complete (12 chars = XXXX-XXXX-XXXX)
   useEffect(() => {
     const cleanCode = serialCode.replace(/-/g, "");
+    console.log("[Activation] Code changed:", serialCode, "| Clean length:", cleanCode.length, "| isVerifying:", isVerifying, "| isRecognized:", isRecognized);
+    
     if (cleanCode.length === 12 && !isVerifying && !isRecognized) {
+      console.log("[Activation] Triggering verification for code:", cleanCode);
       verifySerialCode(cleanCode);
     }
-  }, [serialCode]);
+  }, [serialCode, isVerifying, isRecognized]);
 
   const verifySerialCode = async (code: string) => {
     setIsVerifying(true);
