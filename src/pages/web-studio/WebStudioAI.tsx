@@ -1,24 +1,28 @@
 /**
- * Web Studio AI - Assistant conversationnel pour créer des sites web
- * Interface de chat simple et intuitive
+ * Web Studio AI - Assistant conversationnel premium
+ * Interface de chat style Apple/Cupertino avec animations fluides
  */
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2, Sparkles, Globe, Check, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { Send, Sparkles, Globe, ArrowRight, MessageCircle, Zap, CheckCircle2 } from "lucide-react";
 import { CoutureNavbar } from "@/components/CoutureNavbar";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const STUDIO = {
-  noir: "#050505",
-  noirSoft: "#0A0A0A",
-  noirCard: "#111111",
-  or: "#D4A853",
-  orLight: "#E8C87A",
-  ivoire: "#F5F5F5",
-  gris: "#6B6B6B",
+// Apple-inspired color palette
+const APPLE = {
+  bg: "#F5F5F7",
+  bgDark: "#1D1D1F",
+  card: "#FFFFFF",
+  cardDark: "rgba(255,255,255,0.08)",
+  text: "#1D1D1F",
+  textSecondary: "#86868B",
+  accent: "#007AFF",
+  accentLight: "#5AC8FA",
+  success: "#34C759",
+  border: "rgba(0,0,0,0.06)",
 };
 
 interface Message {
@@ -42,20 +46,84 @@ interface CollectedData {
 }
 
 const QUICK_SUGGESTIONS = [
-  "Restaurant",
-  "Boutique",
-  "Coach",
-  "Artisan",
-  "Agence",
-  "Consultant",
+  { label: "Restaurant", icon: "🍽️" },
+  { label: "Boutique", icon: "🛍️" },
+  { label: "Coach", icon: "💪" },
+  { label: "Artisan", icon: "🔨" },
+  { label: "Agence", icon: "💼" },
+  { label: "Freelance", icon: "💻" },
 ];
 
 const INITIAL_MESSAGE: Message = {
   id: "welcome",
   role: "assistant",
-  content: "Bonjour ! 👋 Je suis votre assistant pour créer votre site web professionnel. En quelques questions, je vais comprendre votre projet et vous proposer un site sur mesure.\n\nPour commencer, quel est votre domaine d'activité ? (ex: restaurant, boutique, coach, artisan...)",
+  content: "Bonjour ! 👋\n\nJe suis votre assistant pour créer votre site web professionnel. En quelques questions simples, je vais comprendre votre projet et vous proposer un site sur mesure.\n\nQuel est votre domaine d'activité ?",
   timestamp: new Date(),
 };
+
+// Typing animation component
+const TypingIndicator = () => (
+  <motion.div 
+    className="flex items-center gap-1.5 px-4 py-3"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+  >
+    {[0, 1, 2].map((i) => (
+      <motion.div
+        key={i}
+        className="w-2 h-2 rounded-full"
+        style={{ backgroundColor: APPLE.accent }}
+        animate={{
+          y: [0, -6, 0],
+          opacity: [0.4, 1, 0.4],
+        }}
+        transition={{
+          duration: 0.8,
+          repeat: Infinity,
+          delay: i * 0.15,
+          ease: "easeInOut",
+        }}
+      />
+    ))}
+  </motion.div>
+);
+
+// Progress step component
+const ProgressStep = ({ active, completed, label }: { active: boolean; completed: boolean; label: string }) => (
+  <motion.div 
+    className="flex flex-col items-center gap-1.5"
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+  >
+    <motion.div
+      className="w-3 h-3 rounded-full flex items-center justify-center"
+      style={{
+        backgroundColor: completed ? APPLE.success : active ? APPLE.accent : "rgba(0,0,0,0.1)",
+      }}
+      animate={{
+        scale: active ? [1, 1.2, 1] : 1,
+      }}
+      transition={{
+        duration: 2,
+        repeat: active ? Infinity : 0,
+        ease: "easeInOut",
+      }}
+    >
+      {completed && (
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        >
+          <CheckCircle2 size={10} color="white" />
+        </motion.div>
+      )}
+    </motion.div>
+    <span className="text-[10px] font-medium" style={{ color: completed ? APPLE.success : APPLE.textSecondary }}>
+      {label}
+    </span>
+  </motion.div>
+);
 
 export default function WebStudioAI() {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
@@ -81,16 +149,17 @@ export default function WebStudioAI() {
   }, [messages]);
 
   useEffect(() => {
-    inputRef.current?.focus();
+    if (!isLoading) inputRef.current?.focus();
   }, [isLoading]);
 
-  const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+  const sendMessage = async (customMessage?: string) => {
+    const messageText = customMessage || input.trim();
+    if (!messageText || isLoading) return;
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       role: "user",
-      content: input.trim(),
+      content: messageText,
       timestamp: new Date(),
     };
 
@@ -99,7 +168,6 @@ export default function WebStudioAI() {
     setIsLoading(true);
 
     try {
-      // Prepare conversation for API
       const conversationHistory = messages.map(m => ({
         role: m.role,
         content: m.content,
@@ -118,22 +186,18 @@ export default function WebStudioAI() {
 
       if (error) throw error;
 
-      // Update collected data
       if (data.extractedData) {
         setCollectedData(prev => ({ ...prev, ...data.extractedData }));
       }
 
-      // Update step
       if (data.nextStep) {
         setCurrentStep(data.nextStep);
       }
 
-      // Check if ready to generate
       if (data.isReadyToGenerate) {
         setIsReadyToGenerate(true);
       }
 
-      // Add assistant response
       const assistantMessage: Message = {
         id: `assistant-${Date.now()}`,
         role: "assistant",
@@ -160,7 +224,6 @@ export default function WebStudioAI() {
     setGenerationProgress(10);
 
     try {
-      // Step 1: Generate proposal
       setGenerationProgress(20);
       const { data: proposalData, error: proposalError } = await supabase.functions.invoke("generate-website", {
         body: collectedData,
@@ -171,7 +234,6 @@ export default function WebStudioAI() {
 
       setGenerationProgress(40);
 
-      // Step 2: Create order
       const { data: orderData, error: orderError } = await supabase.functions.invoke("webstudio-order", {
         body: {
           sessionId: `chat-${Date.now()}`,
@@ -189,18 +251,14 @@ export default function WebStudioAI() {
       const proposalId = orderData.proposalId;
       setGenerationProgress(60);
 
-      // Step 3: Generate actual site
-      const { data: genData, error: genError } = await supabase.functions.invoke("generate-website-code", {
+      const { error: genError } = await supabase.functions.invoke("generate-website-code", {
         body: { proposalId },
       });
 
-      if (genError) {
-        console.error("Site generation error:", genError);
-      }
+      if (genError) console.error("Site generation error:", genError);
 
       setGenerationProgress(80);
 
-      // Step 4: Poll for completion
       let attempts = 0;
       const maxAttempts = 30;
 
@@ -223,15 +281,12 @@ export default function WebStudioAI() {
           return;
         }
 
-        if (website?.status === "failed") {
-          break;
-        }
+        if (website?.status === "failed") break;
 
         attempts++;
         setGenerationProgress(80 + Math.min(15, attempts * 0.5));
       }
 
-      // If we reach here, show success anyway
       toast({
         title: "Site en cours de création",
         description: "Vous recevrez un email quand il sera prêt.",
@@ -256,50 +311,83 @@ export default function WebStudioAI() {
     }
   };
 
+  const progressSteps = [
+    { key: "businessType", label: "Activité" },
+    { key: "businessName", label: "Nom" },
+    { key: "description", label: "Description" },
+    { key: "products", label: "Services" },
+    { key: "style", label: "Style" },
+    { key: "contactEmail", label: "Contact" },
+  ];
+
+  const completedSteps = progressSteps.filter(s => collectedData[s.key as keyof CollectedData]).length;
+
   // Success state - site generated
   if (generatedSiteUrl) {
     return (
       <>
         <SEOHead {...SEO_CONFIGS.webStudio} />
-        <div className="min-h-screen" style={{ backgroundColor: STUDIO.noir }}>
+        <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${APPLE.bg} 0%, #E8E8ED 100%)` }}>
           <CoutureNavbar />
           <main className="pt-24 pb-20 px-4 flex items-center justify-center min-h-screen">
             <motion.div
-              className="max-w-md w-full rounded-3xl p-8 text-center"
+              className="max-w-md w-full rounded-3xl p-10 text-center"
               style={{
-                backgroundColor: STUDIO.noirCard,
-                border: `1px solid ${STUDIO.or}30`,
+                backgroundColor: APPLE.card,
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.03)",
               }}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
               <motion.div
-                className="w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center"
-                style={{ backgroundColor: `${STUDIO.or}20` }}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", delay: 0.2 }}
+                className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
+                style={{ background: `linear-gradient(135deg, ${APPLE.success}20 0%, ${APPLE.success}10 100%)` }}
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", delay: 0.2, stiffness: 200 }}
               >
-                <Globe size={48} style={{ color: STUDIO.or }} />
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.4, type: "spring" }}
+                >
+                  <Globe size={36} style={{ color: APPLE.success }} />
+                </motion.div>
               </motion.div>
               
-              <h2 className="text-2xl font-medium mb-3" style={{ color: STUDIO.ivoire }}>
-                Votre site est en ligne ! 🎉
-              </h2>
-              <p className="text-sm mb-8" style={{ color: STUDIO.gris }}>
+              <motion.h2 
+                className="text-2xl font-semibold mb-2"
+                style={{ color: APPLE.text }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                Votre site est en ligne !
+              </motion.h2>
+              <motion.p 
+                className="text-sm mb-8"
+                style={{ color: APPLE.textSecondary }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
                 {collectedData.businessName || "Votre site"} est maintenant accessible à tous.
-              </p>
+              </motion.p>
               
               <motion.a
                 href={generatedSiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-3 w-full px-6 py-4 rounded-xl font-medium text-sm mb-4"
+                className="flex items-center justify-center gap-3 w-full px-6 py-4 rounded-2xl font-medium text-white"
                 style={{
-                  background: `linear-gradient(135deg, ${STUDIO.or} 0%, ${STUDIO.orLight} 100%)`,
-                  color: STUDIO.noir,
+                  background: `linear-gradient(135deg, ${APPLE.accent} 0%, ${APPLE.accentLight} 100%)`,
+                  boxShadow: `0 8px 20px ${APPLE.accent}30`,
                 }}
-                whileHover={{ scale: 1.02 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                whileHover={{ scale: 1.02, boxShadow: `0 12px 30px ${APPLE.accent}40` }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Globe size={18} />
@@ -307,7 +395,7 @@ export default function WebStudioAI() {
                 <ArrowRight size={16} />
               </motion.a>
               
-              <button
+              <motion.button
                 onClick={() => {
                   setMessages([INITIAL_MESSAGE]);
                   setCollectedData({});
@@ -315,11 +403,15 @@ export default function WebStudioAI() {
                   setIsReadyToGenerate(false);
                   setGeneratedSiteUrl(null);
                 }}
-                className="text-sm underline"
-                style={{ color: STUDIO.gris }}
+                className="mt-6 text-sm font-medium"
+                style={{ color: APPLE.accent }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                whileHover={{ scale: 1.05 }}
               >
                 Créer un autre site
-              </button>
+              </motion.button>
             </motion.div>
           </main>
         </div>
@@ -327,53 +419,89 @@ export default function WebStudioAI() {
     );
   }
 
-  // Generating state
+  // Generating state with beautiful animation
   if (isGenerating) {
     return (
       <>
         <SEOHead {...SEO_CONFIGS.webStudio} />
-        <div className="min-h-screen" style={{ backgroundColor: STUDIO.noir }}>
+        <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${APPLE.bg} 0%, #E8E8ED 100%)` }}>
           <CoutureNavbar />
           <main className="pt-24 pb-20 px-4 flex items-center justify-center min-h-screen">
             <motion.div
-              className="max-w-md w-full rounded-3xl p-8 text-center"
+              className="max-w-md w-full rounded-3xl p-10 text-center"
               style={{
-                backgroundColor: STUDIO.noirCard,
-                border: `1px solid ${STUDIO.or}30`,
+                backgroundColor: APPLE.card,
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.1)",
               }}
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
             >
-              <motion.div
-                className="w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center"
-                style={{ backgroundColor: `${STUDIO.or}15` }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              >
-                <Sparkles size={40} style={{ color: STUDIO.or }} />
-              </motion.div>
+              {/* Animated rings */}
+              <div className="relative w-24 h-24 mx-auto mb-8">
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      border: `2px solid ${APPLE.accent}`,
+                      opacity: 0.3 - i * 0.1,
+                    }}
+                    animate={{
+                      scale: [1, 1.5 + i * 0.3],
+                      opacity: [0.3, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: i * 0.5,
+                      ease: "easeOut",
+                    }}
+                  />
+                ))}
+                <motion.div
+                  className="absolute inset-0 rounded-full flex items-center justify-center"
+                  style={{ background: `linear-gradient(135deg, ${APPLE.accent}20 0%, ${APPLE.accentLight}10 100%)` }}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                >
+                  <Sparkles size={32} style={{ color: APPLE.accent }} />
+                </motion.div>
+              </div>
               
-              <h2 className="text-xl font-medium mb-3" style={{ color: STUDIO.ivoire }}>
-                Création de votre site en cours...
-              </h2>
-              <p className="text-sm mb-6" style={{ color: STUDIO.gris }}>
+              <motion.h2 
+                className="text-xl font-semibold mb-2"
+                style={{ color: APPLE.text }}
+                animate={{ opacity: [0.7, 1, 0.7] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                Création en cours...
+              </motion.h2>
+              <p className="text-sm mb-8" style={{ color: APPLE.textSecondary }}>
                 {generationProgress < 40 && "Analyse de votre projet..."}
                 {generationProgress >= 40 && generationProgress < 70 && "Design et structure en cours..."}
                 {generationProgress >= 70 && "Finalisation et mise en ligne..."}
               </p>
               
-              <div className="w-full h-2 rounded-full overflow-hidden mb-4" style={{ backgroundColor: `${STUDIO.ivoire}10` }}>
+              {/* Premium progress bar */}
+              <div className="relative w-full h-1.5 rounded-full overflow-hidden mb-4" style={{ backgroundColor: "rgba(0,0,0,0.05)" }}>
                 <motion.div
-                  className="h-full rounded-full"
-                  style={{ background: `linear-gradient(90deg, ${STUDIO.or}, ${STUDIO.orLight})` }}
+                  className="absolute top-0 left-0 h-full rounded-full"
+                  style={{ background: `linear-gradient(90deg, ${APPLE.accent}, ${APPLE.accentLight})` }}
                   initial={{ width: "0%" }}
                   animate={{ width: `${generationProgress}%` }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                />
+                {/* Shimmer effect */}
+                <motion.div
+                  className="absolute top-0 h-full w-20 rounded-full"
+                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)" }}
+                  animate={{ left: ["-20%", "120%"] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                 />
               </div>
               
-              <p className="text-xs" style={{ color: STUDIO.gris }}>
-                {generationProgress}% • Environ 30-60 secondes
+              <p className="text-xs font-medium" style={{ color: APPLE.textSecondary }}>
+                {generationProgress}%
               </p>
             </motion.div>
           </main>
@@ -382,119 +510,164 @@ export default function WebStudioAI() {
     );
   }
 
-  // Chat interface
+  // Chat interface - Premium Apple style
   return (
     <>
       <SEOHead {...SEO_CONFIGS.webStudio} />
-      <div className="min-h-screen flex flex-col" style={{ backgroundColor: STUDIO.noir }}>
+      <div className="min-h-screen flex flex-col" style={{ background: `linear-gradient(180deg, ${APPLE.bg} 0%, #E8E8ED 100%)` }}>
         <CoutureNavbar />
         
-        {/* Chat container */}
         <main className="flex-1 flex flex-col pt-20 pb-4 max-w-2xl mx-auto w-full px-4">
-          {/* Header */}
-          <div className="text-center py-6">
+          {/* Header with glassmorphism */}
+          <motion.div 
+            className="text-center py-6"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             <motion.div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
-              style={{ backgroundColor: `${STUDIO.or}15`, border: `1px solid ${STUDIO.or}30` }}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 backdrop-blur-xl"
+              style={{ 
+                backgroundColor: "rgba(255,255,255,0.8)",
+                border: "1px solid rgba(0,0,0,0.05)",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+              }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
             >
-              <Sparkles size={14} style={{ color: STUDIO.or }} />
-              <span className="text-xs font-medium" style={{ color: STUDIO.or }}>
+              <motion.div
+                animate={{ rotate: [0, 15, -15, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <Sparkles size={14} style={{ color: APPLE.accent }} />
+              </motion.div>
+              <span className="text-xs font-semibold" style={{ color: APPLE.accent }}>
                 Assistant Web Studio
               </span>
             </motion.div>
-            <h1 className="text-xl font-medium" style={{ color: STUDIO.ivoire }}>
-              Créez votre site en quelques minutes
+            
+            <h1 className="text-2xl font-semibold mb-2" style={{ color: APPLE.text }}>
+              Créez votre site web
             </h1>
-          </div>
+            <p className="text-sm" style={{ color: APPLE.textSecondary }}>
+              En quelques questions, votre site sera prêt
+            </p>
+          </motion.div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto space-y-4 mb-4">
+          {/* Progress bar */}
+          {completedSteps > 0 && !isReadyToGenerate && (
+            <motion.div 
+              className="flex items-center justify-center gap-6 mb-6 px-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              {progressSteps.map((step, i) => {
+                const isCompleted = !!collectedData[step.key as keyof CollectedData];
+                const isActive = !isCompleted && progressSteps.slice(0, i).every(s => collectedData[s.key as keyof CollectedData]);
+                return (
+                  <ProgressStep 
+                    key={step.key} 
+                    active={isActive} 
+                    completed={isCompleted} 
+                    label={step.label} 
+                  />
+                );
+              })}
+            </motion.div>
+          )}
+
+          {/* Messages container */}
+          <div className="flex-1 overflow-y-auto space-y-4 mb-4 px-2">
             <AnimatePresence mode="popLayout">
-              {messages.map((message) => (
+              {messages.map((message, index) => (
                 <motion.div
                   key={message.id}
                   className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                  transition={{ 
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 30,
+                    delay: index === messages.length - 1 ? 0 : 0,
+                  }}
                 >
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                      message.role === "user" ? "rounded-br-md" : "rounded-bl-md"
+                  <motion.div
+                    className={`max-w-[85%] rounded-2xl px-5 py-3.5 ${
+                      message.role === "user" 
+                        ? "rounded-br-lg" 
+                        : "rounded-bl-lg"
                     }`}
                     style={{
-                      backgroundColor: message.role === "user" ? STUDIO.or : STUDIO.noirCard,
-                      color: message.role === "user" ? STUDIO.noir : STUDIO.ivoire,
-                      border: message.role === "assistant" ? `1px solid ${STUDIO.ivoire}10` : "none",
+                      backgroundColor: message.role === "user" ? APPLE.accent : APPLE.card,
+                      color: message.role === "user" ? "#FFFFFF" : APPLE.text,
+                      boxShadow: message.role === "user" 
+                        ? `0 4px 15px ${APPLE.accent}30`
+                        : "0 2px 15px rgba(0, 0, 0, 0.05)",
                     }}
+                    whileHover={{ scale: 1.01 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   >
-                    <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed font-medium">
                       {message.content}
                     </p>
-                  </div>
+                  </motion.div>
                 </motion.div>
               ))}
             </AnimatePresence>
             
-            {/* Loading indicator */}
+            {/* Typing indicator */}
             {isLoading && (
               <motion.div
                 className="flex justify-start"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
               >
                 <div
-                  className="rounded-2xl rounded-bl-md px-4 py-3"
+                  className="rounded-2xl rounded-bl-lg"
                   style={{
-                    backgroundColor: STUDIO.noirCard,
-                    border: `1px solid ${STUDIO.ivoire}10`,
+                    backgroundColor: APPLE.card,
+                    boxShadow: "0 2px 15px rgba(0, 0, 0, 0.05)",
                   }}
                 >
-                  <div className="flex items-center gap-2">
-                    <Loader2 size={16} className="animate-spin" style={{ color: STUDIO.or }} />
-                    <span className="text-sm" style={{ color: STUDIO.gris }}>
-                      En train d'écrire...
-                    </span>
-                  </div>
+                  <TypingIndicator />
                 </div>
               </motion.div>
             )}
             
-            {/* Quick suggestions for first question */}
+            {/* Quick suggestions - First question only */}
             {messages.length === 1 && !isLoading && (
               <motion.div
-                className="flex flex-wrap gap-2 justify-center"
-                initial={{ opacity: 0, y: 10 }}
+                className="flex flex-wrap gap-3 justify-center pt-4"
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.6, staggerChildren: 0.1 }}
               >
-                {QUICK_SUGGESTIONS.map((suggestion) => (
+                {QUICK_SUGGESTIONS.map((suggestion, i) => (
                   <motion.button
-                    key={suggestion}
-                    onClick={() => {
-                      setInput(suggestion);
-                      setTimeout(() => {
-                        const event = { key: "Enter", shiftKey: false, preventDefault: () => {} };
-                        setInput(suggestion);
-                      }, 100);
-                    }}
-                    className="px-4 py-2 rounded-full text-xs transition-all"
+                    key={suggestion.label}
+                    onClick={() => sendMessage(suggestion.label)}
+                    className="px-5 py-3 rounded-2xl text-sm font-medium flex items-center gap-2"
                     style={{
-                      backgroundColor: `${STUDIO.ivoire}08`,
-                      border: `1px solid ${STUDIO.ivoire}20`,
-                      color: STUDIO.ivoire,
+                      backgroundColor: APPLE.card,
+                      color: APPLE.text,
+                      boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+                      border: "1px solid rgba(0,0,0,0.04)",
                     }}
-                    whileHover={{
-                      backgroundColor: `${STUDIO.or}20`,
-                      borderColor: STUDIO.or,
-                      color: STUDIO.or,
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 + i * 0.08 }}
+                    whileHover={{ 
+                      scale: 1.05, 
+                      boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+                      backgroundColor: `${APPLE.accent}10`,
                     }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {suggestion}
+                    <span>{suggestion.icon}</span>
+                    {suggestion.label}
                   </motion.button>
                 ))}
               </motion.div>
@@ -504,37 +677,55 @@ export default function WebStudioAI() {
           </div>
 
           {/* Generate button when ready */}
-          {isReadyToGenerate && (
-            <motion.div
-              className="mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <motion.button
-                onClick={handleGenerateSite}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-medium text-sm"
-                style={{
-                  background: `linear-gradient(135deg, ${STUDIO.or} 0%, ${STUDIO.orLight} 100%)`,
-                  color: STUDIO.noir,
-                  boxShadow: `0 8px 32px ${STUDIO.or}40`,
-                }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+          <AnimatePresence>
+            {isReadyToGenerate && (
+              <motion.div
+                className="mb-4 px-2"
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
               >
-                <Sparkles size={18} />
-                Créer mon site maintenant
-                <ArrowRight size={16} />
-              </motion.button>
-            </motion.div>
-          )}
+                <motion.button
+                  onClick={handleGenerateSite}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-5 rounded-2xl font-semibold text-white relative overflow-hidden"
+                  style={{
+                    background: `linear-gradient(135deg, ${APPLE.accent} 0%, ${APPLE.accentLight} 100%)`,
+                    boxShadow: `0 10px 30px ${APPLE.accent}40`,
+                  }}
+                  whileHover={{ 
+                    scale: 1.02,
+                    boxShadow: `0 15px 40px ${APPLE.accent}50`,
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {/* Shimmer effect */}
+                  <motion.div
+                    className="absolute inset-0"
+                    style={{
+                      background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+                    }}
+                    animate={{ x: ["-100%", "200%"] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                  <Zap size={20} />
+                  <span className="relative">Créer mon site maintenant</span>
+                  <ArrowRight size={18} />
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* Input area */}
-          <div
-            className="rounded-2xl p-2"
+          {/* Input area - Floating glassmorphism style */}
+          <motion.div
+            className="rounded-2xl p-1.5 backdrop-blur-xl"
             style={{
-              backgroundColor: STUDIO.noirCard,
-              border: `1px solid ${STUDIO.ivoire}15`,
+              backgroundColor: "rgba(255,255,255,0.9)",
+              boxShadow: "0 8px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)",
             }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
           >
             <div className="flex items-center gap-2">
               <input
@@ -545,50 +736,35 @@ export default function WebStudioAI() {
                 onKeyPress={handleKeyPress}
                 placeholder="Tapez votre réponse..."
                 disabled={isLoading || isReadyToGenerate}
-                className="flex-1 bg-transparent px-4 py-3 text-sm outline-none"
-                style={{ color: STUDIO.ivoire }}
+                className="flex-1 bg-transparent px-4 py-4 text-sm outline-none font-medium"
+                style={{ color: APPLE.text }}
               />
               <motion.button
-                onClick={sendMessage}
+                onClick={() => sendMessage()}
                 disabled={!input.trim() || isLoading}
-                className="p-3 rounded-xl disabled:opacity-50"
+                className="p-3.5 rounded-xl disabled:opacity-40 transition-all"
                 style={{
-                  backgroundColor: input.trim() ? STUDIO.or : `${STUDIO.ivoire}10`,
-                  color: input.trim() ? STUDIO.noir : STUDIO.gris,
+                  backgroundColor: input.trim() ? APPLE.accent : "rgba(0,0,0,0.05)",
+                  color: input.trim() ? "#FFFFFF" : APPLE.textSecondary,
                 }}
-                whileHover={{ scale: input.trim() ? 1.05 : 1 }}
-                whileTap={{ scale: input.trim() ? 0.95 : 1 }}
+                whileHover={{ scale: input.trim() ? 1.08 : 1 }}
+                whileTap={{ scale: input.trim() ? 0.92 : 1 }}
               >
-                {isLoading ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  <Send size={18} />
-                )}
+                <Send size={18} />
               </motion.button>
             </div>
-          </div>
-
-          {/* Progress indicator */}
-          {Object.keys(collectedData).length > 0 && !isReadyToGenerate && (
-            <motion.div
-              className="flex items-center justify-center gap-2 mt-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              {["businessType", "businessName", "description", "products", "style", "contactEmail"].map((field, i) => (
-                <div
-                  key={field}
-                  className="w-2 h-2 rounded-full transition-all"
-                  style={{
-                    backgroundColor: collectedData[field as keyof CollectedData] ? STUDIO.or : `${STUDIO.ivoire}20`,
-                  }}
-                />
-              ))}
-              <span className="text-xs ml-2" style={{ color: STUDIO.gris }}>
-                {Object.keys(collectedData).filter(k => collectedData[k as keyof CollectedData]).length}/6 infos collectées
-              </span>
-            </motion.div>
-          )}
+          </motion.div>
+          
+          {/* Footer hint */}
+          <motion.p 
+            className="text-center text-xs mt-4 font-medium"
+            style={{ color: APPLE.textSecondary }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            Powered by IWASP • Création de site web intelligent
+          </motion.p>
         </main>
       </div>
     </>
