@@ -1,13 +1,17 @@
 /**
- * AdminClients - Simple Client Management Dashboard
- * Apple Cupertino style, minimal and professional
+ * AdminClients - Client Management with OMNIA Design System
+ * 
+ * Palette OMNIA:
+ * - Obsidienne: #030303 (Fond principal)
+ * - Champagne: #DCC7B0 (Accent principal)
+ * - Ivoire: #FDFCFB (Texte & détails)
  */
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,28 +20,58 @@ import {
   Plus, 
   Pencil, 
   Copy, 
-  Phone, 
-  Mail, 
-  Globe,
   X,
   Check,
   Loader2,
   Download,
   Trash2,
-  Lock,
-  LogOut,
   ExternalLink,
-  CreditCard,
-  ShoppingBag,
   Users,
   Key,
-  Crown
+  Crown,
+  Search,
+  ChevronRight,
 } from "lucide-react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { downloadVCard } from "@/lib/vcard";
 import { clientFormSchema, validateForm, type ClientFormData } from "@/lib/validation";
 import { TemplateAssignmentPanel } from "@/components/admin/TemplateAssignmentPanel";
 import { WhiteLabelManager } from "@/components/admin/WhiteLabelManager";
+import { AdminOmniaLayout } from "@/layouts/AdminOmniaLayout";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+// ═══════════════════════════════════════════════════════════════════════════
+// OMNIA PALETTE
+// ═══════════════════════════════════════════════════════════════════════════
+const OMNIA = {
+  obsidienne: '#030303',
+  obsidienneSurface: '#0A0A0A',
+  obsidienneElevated: '#111111',
+  champagne: '#DCC7B0',
+  champagneMuted: 'rgba(220, 199, 176, 0.15)',
+  ivoire: '#FDFCFB',
+  ivoireMuted: 'rgba(253, 252, 251, 0.6)',
+  ivoireSubtle: 'rgba(253, 252, 251, 0.4)',
+  border: 'rgba(255, 255, 255, 0.05)',
+  borderActive: 'rgba(220, 199, 176, 0.2)',
+  success: '#4ADE80',
+  successMuted: 'rgba(74, 222, 128, 0.15)',
+  warning: '#FBBF24',
+  warningMuted: 'rgba(251, 191, 36, 0.15)',
+  info: '#60A5FA',
+  infoMuted: 'rgba(96, 165, 250, 0.15)',
+  purple: '#A78BFA',
+  purpleMuted: 'rgba(167, 139, 250, 0.15)',
+  danger: '#F87171',
+  dangerMuted: 'rgba(248, 113, 113, 0.15)',
+};
 
 interface Client {
   id: string;
@@ -74,11 +108,8 @@ const initialFormData: ClientFormState = {
   whatsapp: "",
 };
 
-// Security: Admin access is controlled by RLS policies using has_role(auth.uid(), 'admin')
-// No client-side password needed - database enforces access control
-
 export default function AdminClients() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
@@ -87,45 +118,10 @@ export default function AdminClients() {
   const [formData, setFormData] = useState<ClientFormState>(initialFormData);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
   const [activeTab, setActiveTab] = useState<"clients" | "templates" | "whitelabel">("clients");
-  
-  // Check admin role via RLS - the database queries will fail if user doesn't have admin role
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [checkingRole, setCheckingRole] = useState(true);
-
-  // Verify admin role on mount
-  useEffect(() => {
-    async function checkAdminRole() {
-      if (!user) {
-        setIsAdmin(false);
-        setCheckingRole(false);
-        return;
-      }
-      
-      try {
-        // Check if user has admin role via RLS
-        const { data, error } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .eq('role', 'admin')
-          .maybeSingle();
-        
-        setIsAdmin(!!data);
-      } catch (error) {
-        console.error('Error checking admin role:', error);
-        setIsAdmin(false);
-      } finally {
-        setCheckingRole(false);
-      }
-    }
-    
-    checkAdminRole();
-  }, [user]);
-
-  const handleLogout = async () => {
-    navigate('/');
-  };
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Fetch all clients (admin sees all cards)
   const { data: clients, isLoading } = useQuery({
@@ -205,11 +201,11 @@ export default function AdminClients() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminClients"] });
       toast.success("Client supprimé");
-      setDeletingClientId(null);
+      setDeleteDialogOpen(false);
+      setClientToDelete(null);
     },
     onError: () => {
       toast.error("Erreur lors de la suppression");
-      setDeletingClientId(null);
     },
   });
 
@@ -236,10 +232,20 @@ export default function AdminClients() {
     setShowForm(true);
   };
 
+  const handleOpenDeleteDialog = (client: Client) => {
+    setClientToDelete(client);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (clientToDelete) {
+      deleteClient.mutate(clientToDelete.id);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate with zod schema
     const validation = validateForm(clientFormSchema, formData);
     
     if (validation.success === false) {
@@ -249,7 +255,6 @@ export default function AdminClients() {
       return;
     }
     
-    // Clear errors on success
     setFieldErrors({});
     const sanitizedData = validation.data;
     
@@ -260,7 +265,6 @@ export default function AdminClients() {
     }
   };
 
-  // Handle field change with error clearing
   const handleFieldChange = (field: keyof ClientFormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
     if (fieldErrors[field]) {
@@ -272,7 +276,6 @@ export default function AdminClients() {
     }
   };
 
-  // Generate NFC URL - use production domain
   const getNfcUrl = (slug: string) => `https://i-wasp.com/card/${slug}`;
 
   const copyNfcLink = (slug: string) => {
@@ -298,483 +301,475 @@ export default function AdminClients() {
     toast.success("vCard téléchargée");
   };
 
-  // Loading state
-  if (authLoading || checkingRole || isLoading) {
+  // Filter clients based on search
+  const filteredClients = clients?.filter(client => {
+    if (!searchQuery) return true;
+    const search = searchQuery.toLowerCase();
     return (
-      <div className="min-h-dvh flex items-center justify-center" style={{ backgroundColor: "#F5F5F7" }}>
-        <Loader2 className="h-8 w-8 animate-spin" style={{ color: "#007AFF" }} />
-      </div>
+      client.first_name.toLowerCase().includes(search) ||
+      client.last_name.toLowerCase().includes(search) ||
+      (client.company?.toLowerCase().includes(search)) ||
+      (client.email?.toLowerCase().includes(search))
     );
-  }
+  });
 
-  // Redirect to setup if no cards exist
-  if (!isLoading && clients && clients.length === 0) {
-    return <Navigate to="/setup" replace />;
-  }
-
-  // Auth check - redirect with clear message
-  if (!user) {
-    return (
-      <div className="min-h-dvh flex items-center justify-center p-4" style={{ backgroundColor: "#F5F5F7" }}>
-        <div className="w-full max-w-sm rounded-2xl p-8 shadow-sm text-center" style={{ backgroundColor: "#FFFFFF" }}>
-          <div 
-            className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center"
-            style={{ backgroundColor: "#FEF3C7" }}
-          >
-            <Lock className="h-5 w-5" style={{ color: "#D97706" }} />
-          </div>
-          <h1 className="text-lg font-semibold mb-2" style={{ color: "#1D1D1F" }}>
-            Non authentifié
-          </h1>
-          <p className="text-sm mb-6" style={{ color: "#8E8E93" }}>
-            Veuillez vous connecter pour accéder à cette page.
-          </p>
-          <button
-            onClick={() => window.location.href = "/login"}
-            className="w-full py-3 rounded-xl font-medium text-sm transition-all active:scale-[0.98]"
-            style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
-          >
-            Se connecter
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Admin role check - enforced by RLS
-  if (!isAdmin) {
-    return (
-      <div className="min-h-dvh flex items-center justify-center p-4" style={{ backgroundColor: "#F5F5F7" }}>
-        <div className="w-full max-w-sm rounded-2xl p-8 shadow-sm text-center" style={{ backgroundColor: "#FFFFFF" }}>
-          <div 
-            className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center"
-            style={{ backgroundColor: "#FEE2E2" }}
-          >
-            <Lock className="h-5 w-5" style={{ color: "#DC2626" }} />
-          </div>
-          <h1 className="text-lg font-semibold mb-2" style={{ color: "#1D1D1F" }}>
-            Accès refusé
-          </h1>
-          <p className="text-sm mb-6" style={{ color: "#8E8E93" }}>
-            Vous n'avez pas les droits administrateur pour accéder à cette page.
-          </p>
-          <button
-            onClick={() => navigate('/')}
-            className="w-full py-3 rounded-xl font-medium text-sm transition-all active:scale-[0.98]"
-            style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
-          >
-            Retour à l'accueil
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const hasNoClients = !isLoading && (!clients || clients.length === 0);
-
-  // Auto-show form when no clients exist (first card experience)
-  const shouldShowForm = showForm || hasNoClients;
+  const tabs = [
+    { id: "clients", label: "Clients", icon: Users },
+    { id: "templates", label: "Templates", icon: Key },
+    { id: "whitelabel", label: "White-label", icon: Crown },
+  ] as const;
 
   return (
-    <div className="min-h-dvh" style={{ backgroundColor: "#F5F5F7" }}>
-      {/* Header */}
-      <header className="sticky top-0 z-10 backdrop-blur-xl border-b" style={{ backgroundColor: "rgba(245, 245, 247, 0.8)", borderColor: "rgba(0,0,0,0.08)" }}>
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-semibold tracking-tight" style={{ color: "#1D1D1F" }}>
-            {hasNoClients ? "Créez votre première carte" : "Administration"}
-          </h1>
-          <button
-            onClick={handleLogout}
-            className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
-            title="Retour"
-          >
-            <LogOut className="h-5 w-5" style={{ color: "#8E8E93" }} />
-          </button>
-        </div>
-        
+    <AdminOmniaLayout title="Clients" subtitle="Gestion des cartes digitales">
+      <div className="space-y-6">
         {/* Tabs */}
-        {!hasNoClients && (
-          <div className="max-w-4xl mx-auto px-4 pb-3">
-            <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: "#E5E5E7" }}>
-              <button
-                onClick={() => setActiveTab("clients")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === "clients"
-                    ? "bg-white shadow-sm"
-                    : "hover:bg-white/50"
-                }`}
-                style={{ color: activeTab === "clients" ? "#1D1D1F" : "#8E8E93" }}
-              >
-                <Users className="h-4 w-4" />
-                Clients
-              </button>
-              <button
-                onClick={() => setActiveTab("templates")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === "templates"
-                    ? "bg-white shadow-sm"
-                    : "hover:bg-white/50"
-                }`}
-                style={{ color: activeTab === "templates" ? "#1D1D1F" : "#8E8E93" }}
-              >
-                <Key className="h-4 w-4" />
-                Templates
-              </button>
-              <button
-                onClick={() => setActiveTab("whitelabel")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === "whitelabel"
-                    ? "bg-white shadow-sm"
-                    : "hover:bg-white/50"
-                }`}
-                style={{ color: activeTab === "whitelabel" ? "#1D1D1F" : "#8E8E93" }}
-              >
-                <Crown className="h-4 w-4" />
-                White-label
-              </button>
-            </div>
-          </div>
-        )}
-      </header>
+        <div 
+          className="flex gap-1 p-1 rounded-xl w-fit"
+          style={{ backgroundColor: OMNIA.obsidienneElevated, border: `1px solid ${OMNIA.border}` }}
+        >
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-light transition-all"
+              style={{
+                backgroundColor: activeTab === tab.id ? OMNIA.champagneMuted : 'transparent',
+                color: activeTab === tab.id ? OMNIA.champagne : OMNIA.ivoireMuted,
+                border: activeTab === tab.id ? `1px solid ${OMNIA.borderActive}` : '1px solid transparent',
+              }}
+            >
+              <tab.icon size={16} />
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Templates Tab */}
-        {activeTab === "templates" && !hasNoClients && (
-          <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: "#0B0B0B" }}>
+        {activeTab === "templates" && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl p-6"
+            style={{ 
+              background: OMNIA.obsidienneElevated,
+              border: `1px solid ${OMNIA.border}`,
+            }}
+          >
             <TemplateAssignmentPanel />
-          </div>
+          </motion.div>
         )}
 
         {/* White-label Tab */}
-        {activeTab === "whitelabel" && !hasNoClients && (
-          <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: "#FFFFFF" }}>
+        {activeTab === "whitelabel" && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl p-6"
+            style={{ 
+              background: OMNIA.obsidienneElevated,
+              border: `1px solid ${OMNIA.border}`,
+            }}
+          >
             <WhiteLabelManager />
-          </div>
+          </motion.div>
         )}
 
         {/* Clients Tab */}
-        {(activeTab === "clients" || hasNoClients) && (
-          <>
-        {/* Add Client Button - only show when clients exist and form is not shown */}
-        {!shouldShowForm && clients && clients.length > 0 && (
-          <Button
-            onClick={() => setShowForm(true)}
-            className="w-full sm:w-auto rounded-xl font-medium"
-            style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Ajouter un client
-          </Button>
-        )}
+        {activeTab === "clients" && (
+          <div className="space-y-6">
+            {/* Header Actions */}
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              {/* Search */}
+              <div 
+                className="relative flex-1 max-w-md"
+              >
+                <Search 
+                  size={16} 
+                  className="absolute left-3 top-1/2 -translate-y-1/2"
+                  style={{ color: OMNIA.ivoireSubtle }}
+                />
+                <input
+                  type="text"
+                  placeholder="Rechercher un client..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm bg-transparent border outline-none transition-colors"
+                  style={{ 
+                    borderColor: OMNIA.border,
+                    color: OMNIA.ivoire,
+                  }}
+                />
+              </div>
 
-        {/* Client Form */}
-        {shouldShowForm && (
-          <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: "#FFFFFF" }}>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-medium" style={{ color: "#1D1D1F" }}>
-                {editingClient ? "Modifier le client" : hasNoClients ? "Nouvelle carte NFC" : "Nouveau client"}
-              </h2>
-              {/* Only show close button if there are existing clients */}
-              {!hasNoClients && (
-                <button onClick={resetForm} className="p-2 rounded-full hover:bg-gray-100">
-                  <X className="h-5 w-5" style={{ color: "#8E8E93" }} />
-                </button>
-              )}
+              {/* Add Button */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowForm(true)}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
+                style={{ 
+                  backgroundColor: OMNIA.champagne,
+                  color: OMNIA.obsidienne,
+                }}
+              >
+                <Plus size={16} />
+                Ajouter un client
+              </motion.button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label style={{ color: "#1D1D1F" }}>Prénom</Label>
-                  <Input
-                    value={formData.first_name}
-                    onChange={handleFieldChange("first_name")}
-                    required
-                    className={`rounded-xl border-gray-200 ${fieldErrors.first_name ? "border-red-500" : ""}`}
-                    style={{ backgroundColor: "#F5F5F7" }}
-                  />
-                  {fieldErrors.first_name && (
-                    <p className="text-xs text-red-500">{fieldErrors.first_name}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label style={{ color: "#1D1D1F" }}>Nom</Label>
-                  <Input
-                    value={formData.last_name}
-                    onChange={handleFieldChange("last_name")}
-                    required
-                    className={`rounded-xl border-gray-200 ${fieldErrors.last_name ? "border-red-500" : ""}`}
-                    style={{ backgroundColor: "#F5F5F7" }}
-                  />
-                  {fieldErrors.last_name && (
-                    <p className="text-xs text-red-500">{fieldErrors.last_name}</p>
-                  )}
-                </div>
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div 
+                className="p-4 rounded-xl"
+                style={{ backgroundColor: OMNIA.obsidienneElevated, border: `1px solid ${OMNIA.border}` }}
+              >
+                <p className="text-2xl font-light" style={{ color: OMNIA.champagne }}>
+                  {clients?.length || 0}
+                </p>
+                <p className="text-xs uppercase tracking-wider mt-1" style={{ color: OMNIA.ivoireSubtle }}>
+                  Total clients
+                </p>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label style={{ color: "#1D1D1F" }}>Poste</Label>
-                  <Input
-                    value={formData.title}
-                    onChange={handleFieldChange("title")}
-                    className={`rounded-xl border-gray-200 ${fieldErrors.title ? "border-red-500" : ""}`}
-                    style={{ backgroundColor: "#F5F5F7" }}
-                  />
-                  {fieldErrors.title && (
-                    <p className="text-xs text-red-500">{fieldErrors.title}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label style={{ color: "#1D1D1F" }}>Entreprise</Label>
-                  <Input
-                    value={formData.company}
-                    onChange={handleFieldChange("company")}
-                    className={`rounded-xl border-gray-200 ${fieldErrors.company ? "border-red-500" : ""}`}
-                    style={{ backgroundColor: "#F5F5F7" }}
-                  />
-                  {fieldErrors.company && (
-                    <p className="text-xs text-red-500">{fieldErrors.company}</p>
-                  )}
-                </div>
+              <div 
+                className="p-4 rounded-xl"
+                style={{ backgroundColor: OMNIA.obsidienneElevated, border: `1px solid ${OMNIA.border}` }}
+              >
+                <p className="text-2xl font-light" style={{ color: OMNIA.success }}>
+                  {clients?.filter(c => c.email).length || 0}
+                </p>
+                <p className="text-xs uppercase tracking-wider mt-1" style={{ color: OMNIA.ivoireSubtle }}>
+                  Avec email
+                </p>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label style={{ color: "#1D1D1F" }}>Téléphone</Label>
-                  <Input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleFieldChange("phone")}
-                    className={`rounded-xl border-gray-200 ${fieldErrors.phone ? "border-red-500" : ""}`}
-                    style={{ backgroundColor: "#F5F5F7" }}
-                  />
-                  {fieldErrors.phone && (
-                    <p className="text-xs text-red-500">{fieldErrors.phone}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label style={{ color: "#1D1D1F" }}>Email</Label>
-                  <Input
-                    type="email"
-                    value={formData.email}
-                    onChange={handleFieldChange("email")}
-                    className={`rounded-xl border-gray-200 ${fieldErrors.email ? "border-red-500" : ""}`}
-                    style={{ backgroundColor: "#F5F5F7" }}
-                  />
-                  {fieldErrors.email && (
-                    <p className="text-xs text-red-500">{fieldErrors.email}</p>
-                  )}
-                </div>
+              <div 
+                className="p-4 rounded-xl"
+                style={{ backgroundColor: OMNIA.obsidienneElevated, border: `1px solid ${OMNIA.border}` }}
+              >
+                <p className="text-2xl font-light" style={{ color: OMNIA.info }}>
+                  {clients?.filter(c => c.phone).length || 0}
+                </p>
+                <p className="text-xs uppercase tracking-wider mt-1" style={{ color: OMNIA.ivoireSubtle }}>
+                  Avec téléphone
+                </p>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label style={{ color: "#1D1D1F" }}>LinkedIn (optionnel)</Label>
-                  <Input
-                    value={formData.linkedin}
-                    onChange={handleFieldChange("linkedin")}
-                    placeholder="https://linkedin.com/in/..."
-                    className={`rounded-xl border-gray-200 ${fieldErrors.linkedin ? "border-red-500" : ""}`}
-                    style={{ backgroundColor: "#F5F5F7" }}
-                  />
-                  {fieldErrors.linkedin && (
-                    <p className="text-xs text-red-500">{fieldErrors.linkedin}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label style={{ color: "#1D1D1F" }}>WhatsApp (optionnel)</Label>
-                  <Input
-                    type="tel"
-                    value={formData.whatsapp}
-                    onChange={handleFieldChange("whatsapp")}
-                    placeholder="+33 6 12 34 56 78"
-                    className={`rounded-xl border-gray-200 ${fieldErrors.whatsapp ? "border-red-500" : ""}`}
-                    style={{ backgroundColor: "#F5F5F7" }}
-                  />
-                  {fieldErrors.whatsapp && (
-                    <p className="text-xs text-red-500">{fieldErrors.whatsapp}</p>
-                  )}
-                </div>
+              <div 
+                className="p-4 rounded-xl"
+                style={{ backgroundColor: OMNIA.obsidienneElevated, border: `1px solid ${OMNIA.border}` }}
+              >
+                <p className="text-2xl font-light" style={{ color: OMNIA.purple }}>
+                  {clients?.filter(c => c.linkedin).length || 0}
+                </p>
+                <p className="text-xs uppercase tracking-wider mt-1" style={{ color: OMNIA.ivoireSubtle }}>
+                  Avec LinkedIn
+                </p>
               </div>
+            </div>
 
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={resetForm}
-                  className="flex-1 rounded-xl"
+            {/* Clients List */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-2xl overflow-hidden"
+              style={{ 
+                background: OMNIA.obsidienneElevated,
+                border: `1px solid ${OMNIA.border}`,
+              }}
+            >
+              <div className="p-5 border-b" style={{ borderColor: OMNIA.border }}>
+                <h3 
+                  className="text-sm font-medium uppercase tracking-wider"
+                  style={{ color: OMNIA.champagne }}
                 >
-                  Annuler
-                </Button>
-                <Button
-                  type="submit"
-                  className="flex-1 rounded-xl font-medium"
-                  style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
-                  disabled={createClient.isPending || updateClient.isPending}
-                >
-                  {(createClient.isPending || updateClient.isPending) ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Check className="h-4 w-4 mr-2" />
-                      {editingClient ? "Enregistrer" : "Ajouter"}
-                    </>
-                  )}
-                </Button>
+                  Cartes digitales
+                </h3>
+                <p className="text-xs mt-1" style={{ color: OMNIA.ivoireSubtle }}>
+                  {filteredClients?.length || 0} résultat(s)
+                </p>
               </div>
-            </form>
+
+              {isLoading ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="h-6 w-6 animate-spin" style={{ color: OMNIA.champagne }} />
+                </div>
+              ) : filteredClients && filteredClients.length > 0 ? (
+                <div className="divide-y" style={{ borderColor: OMNIA.border }}>
+                  {filteredClients.map((client, index) => (
+                    <motion.div
+                      key={client.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.02 }}
+                      className="p-4 hover:bg-white/[0.02] transition-colors"
+                    >
+                      <div className="flex items-center gap-4">
+                        {/* Avatar */}
+                        <div 
+                          className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-medium flex-shrink-0"
+                          style={{ backgroundColor: OMNIA.champagneMuted, color: OMNIA.champagne }}
+                        >
+                          {client.first_name.charAt(0)}{client.last_name.charAt(0)}
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <p 
+                            className="font-medium truncate"
+                            style={{ color: OMNIA.ivoire }}
+                          >
+                            {client.first_name} {client.last_name}
+                          </p>
+                          <p 
+                            className="text-xs truncate"
+                            style={{ color: OMNIA.ivoireMuted }}
+                          >
+                            {[client.title, client.company].filter(Boolean).join(" · ") || "—"}
+                          </p>
+                        </div>
+
+                        {/* NFC Link */}
+                        <div className="hidden md:block">
+                          <p 
+                            className="text-xs font-mono truncate max-w-[200px]"
+                            style={{ color: OMNIA.ivoireSubtle }}
+                          >
+                            {getNfcUrl(client.slug)}
+                          </p>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => openNfcPage(client.slug)}
+                            className="p-2 rounded-lg transition-colors hover:bg-white/5"
+                            title="Ouvrir"
+                          >
+                            <ExternalLink size={14} style={{ color: OMNIA.ivoireMuted }} />
+                          </button>
+                          
+                          <button
+                            onClick={() => copyNfcLink(client.slug)}
+                            className="p-2 rounded-lg transition-colors"
+                            style={{ backgroundColor: OMNIA.successMuted }}
+                            title="Copier le lien"
+                          >
+                            <Copy size={14} style={{ color: OMNIA.success }} />
+                          </button>
+                          
+                          <button
+                            onClick={() => handleDownloadVCard(client)}
+                            className="p-2 rounded-lg transition-colors"
+                            style={{ backgroundColor: OMNIA.infoMuted }}
+                            title="Télécharger vCard"
+                          >
+                            <Download size={14} style={{ color: OMNIA.info }} />
+                          </button>
+                          
+                          <button
+                            onClick={() => handleEdit(client)}
+                            className="p-2 rounded-lg transition-colors"
+                            style={{ backgroundColor: OMNIA.champagneMuted }}
+                            title="Modifier"
+                          >
+                            <Pencil size={14} style={{ color: OMNIA.champagne }} />
+                          </button>
+                          
+                          <button
+                            onClick={() => handleOpenDeleteDialog(client)}
+                            className="p-2 rounded-lg transition-colors"
+                            style={{ backgroundColor: OMNIA.dangerMuted }}
+                            title="Supprimer"
+                          >
+                            <Trash2 size={14} style={{ color: OMNIA.danger }} />
+                          </button>
+
+                          <ChevronRight size={14} style={{ color: OMNIA.ivoireSubtle }} />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12" style={{ color: OMNIA.ivoireSubtle }}>
+                  {searchQuery ? "Aucun résultat" : "Aucun client pour le moment"}
+                </div>
+              )}
+            </motion.div>
           </div>
         )}
+      </div>
 
-        {/* Client Cards - Clean preview */}
-        {!hasNoClients && (
-        <div className="space-y-4">
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin" style={{ color: "#007AFF" }} />
-            </div>
-          ) : (
-            clients?.map((client) => (
-              <div
-                key={client.id}
-                className="rounded-2xl shadow-sm overflow-hidden"
-                style={{ backgroundColor: "#FFFFFF" }}
-              >
-                {/* Card Preview Header */}
-                <div className="p-5 border-b" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
-                  <div className="flex items-center gap-4">
-                    {/* Avatar */}
-                    <div 
-                      className="w-14 h-14 rounded-xl flex items-center justify-center text-xl font-semibold"
-                      style={{ backgroundColor: "#007AFF", color: "#FFFFFF" }}
-                    >
-                      {client.first_name.charAt(0)}{client.last_name.charAt(0)}
-                    </div>
-                    
-                    {/* Name & Role */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold truncate" style={{ color: "#1D1D1F" }}>
-                        {client.first_name} {client.last_name}
-                      </h3>
-                      {(client.title || client.company) && (
-                        <p className="text-sm truncate" style={{ color: "#8E8E93" }}>
-                          {[client.title, client.company].filter(Boolean).join(" · ")}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Edit Button */}
-                    <button
-                      onClick={() => handleEdit(client)}
-                      className="p-2.5 rounded-xl hover:bg-gray-100 transition-colors"
-                      title="Modifier"
-                    >
-                      <Pencil className="h-5 w-5" style={{ color: "#007AFF" }} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* NFC Link - Prominent */}
-                <div className="p-4" style={{ backgroundColor: "#F5F5F7" }}>
-                  <p className="text-xs font-medium mb-2" style={{ color: "#8E8E93" }}>
-                    Lien NFC
-                  </p>
-                  <div 
-                    className="rounded-xl p-3 font-mono text-sm truncate"
-                    style={{ backgroundColor: "#FFFFFF", color: "#1D1D1F" }}
-                    title={getNfcUrl(client.slug)}
-                  >
-                    {getNfcUrl(client.slug)}
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="p-4 grid grid-cols-3 gap-3">
-                  <button
-                    onClick={() => openNfcPage(client.slug)}
-                    className="flex flex-col items-center gap-2 p-3 rounded-xl transition-colors hover:bg-gray-50"
-                    style={{ backgroundColor: "#F5F5F7" }}
-                  >
-                    <ExternalLink className="h-5 w-5" style={{ color: "#007AFF" }} />
-                    <span className="text-xs font-medium" style={{ color: "#1D1D1F" }}>
-                      Ouvrir
-                    </span>
-                  </button>
-                  
-                  <button
-                    onClick={() => copyNfcLink(client.slug)}
-                    className="flex flex-col items-center gap-2 p-3 rounded-xl transition-colors hover:bg-gray-50"
-                    style={{ backgroundColor: "#F5F5F7" }}
-                  >
-                    <Copy className="h-5 w-5" style={{ color: "#34C759" }} />
-                    <span className="text-xs font-medium" style={{ color: "#1D1D1F" }}>
-                      Copier
-                    </span>
-                  </button>
-                  
-                  <button
-                    onClick={() => handleDownloadVCard(client)}
-                    className="flex flex-col items-center gap-2 p-3 rounded-xl transition-colors hover:bg-gray-50"
-                    style={{ backgroundColor: "#F5F5F7" }}
-                  >
-                    <Download className="h-5 w-5" style={{ color: "#FF9500" }} />
-                    <span className="text-xs font-medium" style={{ color: "#1D1D1F" }}>
-                      vCard
-                    </span>
-                  </button>
-                </div>
-
-                {/* Order NFC Card Button */}
-                <div className="px-4 pb-4">
-                  <button
-                    onClick={() => navigate("/order")}
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-medium text-sm transition-all active:scale-[0.98]"
-                    style={{ backgroundColor: "#1D1D1F", color: "#FFFFFF" }}
-                  >
-                    <CreditCard className="h-4 w-4" />
-                    Commander ma carte NFC
-                  </button>
-                </div>
-
-                {/* Delete - Small, secondary */}
-                <div className="px-4 pb-4 flex justify-end">
-                  {deletingClientId === client.id ? (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => deleteClient.mutate(client.id)}
-                        className="text-xs px-3 py-1.5 rounded-lg transition-colors"
-                        style={{ backgroundColor: "#FEE2E2", color: "#DC2626" }}
-                        disabled={deleteClient.isPending}
-                      >
-                        {deleteClient.isPending ? "..." : "Confirmer"}
-                      </button>
-                      <button
-                        onClick={() => setDeletingClientId(null)}
-                        className="text-xs px-3 py-1.5 rounded-lg transition-colors"
-                        style={{ color: "#8E8E93" }}
-                      >
-                        Annuler
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setDeletingClientId(client.id)}
-                      className="text-xs px-3 py-1.5 rounded-lg transition-colors hover:bg-red-50"
-                      style={{ color: "#8E8E93" }}
-                    >
-                      Supprimer
-                    </button>
-                  )}
-                </div>
+      {/* ═══════════════════════════════════════════════════════════════════
+          ADD/EDIT CLIENT DIALOG
+          ═══════════════════════════════════════════════════════════════════ */}
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="bg-omnia-obsidienne-surface border-white/10 text-omnia-ivoire max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-omnia-champagne">
+              {editingClient ? "Modifier le client" : "Nouveau client"}
+            </DialogTitle>
+            <DialogDescription className="text-omnia-ivoire-muted">
+              {editingClient ? "Mettre à jour les informations" : "Créer une nouvelle carte digitale"}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-omnia-ivoire-muted text-xs uppercase tracking-wider">Prénom</Label>
+                <Input
+                  value={formData.first_name}
+                  onChange={handleFieldChange("first_name")}
+                  required
+                  className={`bg-white/5 border-white/10 text-omnia-ivoire ${fieldErrors.first_name ? "border-red-500" : ""}`}
+                />
               </div>
-            ))
-          )}
-        </div>
-        )}
-        </>
-        )}
-      </main>
-    </div>
+              <div className="space-y-2">
+                <Label className="text-omnia-ivoire-muted text-xs uppercase tracking-wider">Nom</Label>
+                <Input
+                  value={formData.last_name}
+                  onChange={handleFieldChange("last_name")}
+                  required
+                  className={`bg-white/5 border-white/10 text-omnia-ivoire ${fieldErrors.last_name ? "border-red-500" : ""}`}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-omnia-ivoire-muted text-xs uppercase tracking-wider">Poste</Label>
+                <Input
+                  value={formData.title}
+                  onChange={handleFieldChange("title")}
+                  className="bg-white/5 border-white/10 text-omnia-ivoire"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-omnia-ivoire-muted text-xs uppercase tracking-wider">Entreprise</Label>
+                <Input
+                  value={formData.company}
+                  onChange={handleFieldChange("company")}
+                  className="bg-white/5 border-white/10 text-omnia-ivoire"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-omnia-ivoire-muted text-xs uppercase tracking-wider">Téléphone</Label>
+                <Input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleFieldChange("phone")}
+                  className="bg-white/5 border-white/10 text-omnia-ivoire"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-omnia-ivoire-muted text-xs uppercase tracking-wider">Email</Label>
+                <Input
+                  type="email"
+                  value={formData.email}
+                  onChange={handleFieldChange("email")}
+                  className="bg-white/5 border-white/10 text-omnia-ivoire"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-omnia-ivoire-muted text-xs uppercase tracking-wider">LinkedIn</Label>
+                <Input
+                  value={formData.linkedin}
+                  onChange={handleFieldChange("linkedin")}
+                  placeholder="https://linkedin.com/in/..."
+                  className="bg-white/5 border-white/10 text-omnia-ivoire"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-omnia-ivoire-muted text-xs uppercase tracking-wider">WhatsApp</Label>
+                <Input
+                  type="tel"
+                  value={formData.whatsapp}
+                  onChange={handleFieldChange("whatsapp")}
+                  placeholder="+33 6 12 34 56 78"
+                  className="bg-white/5 border-white/10 text-omnia-ivoire"
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="pt-4">
+              <Button 
+                type="button"
+                variant="outline" 
+                onClick={resetForm}
+                className="border-white/10 text-omnia-ivoire hover:bg-white/5"
+              >
+                Annuler
+              </Button>
+              <Button 
+                type="submit"
+                disabled={createClient.isPending || updateClient.isPending}
+                className="bg-omnia-champagne text-omnia-obsidienne hover:bg-omnia-champagne/90"
+              >
+                {(createClient.isPending || updateClient.isPending) ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Check className="h-4 w-4 mr-2" />
+                    {editingClient ? "Enregistrer" : "Créer"}
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          DELETE CONFIRMATION DIALOG
+          ═══════════════════════════════════════════════════════════════════ */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="bg-omnia-obsidienne-surface border-white/10 text-omnia-ivoire">
+          <DialogHeader>
+            <DialogTitle className="text-omnia-danger">Supprimer le client</DialogTitle>
+            <DialogDescription className="text-omnia-ivoire-muted">
+              Êtes-vous sûr de vouloir supprimer {clientToDelete?.first_name} {clientToDelete?.last_name} ?
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div 
+            className="p-4 rounded-xl my-4"
+            style={{ backgroundColor: OMNIA.dangerMuted }}
+          >
+            <p className="text-sm" style={{ color: OMNIA.danger }}>
+              ⚠️ Cette action est irréversible. La carte digitale et toutes les données associées seront définitivement supprimées.
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setDeleteDialogOpen(false)}
+              className="border-white/10 text-omnia-ivoire hover:bg-white/5"
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={handleConfirmDelete}
+              disabled={deleteClient.isPending}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {deleteClient.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Supprimer
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </AdminOmniaLayout>
   );
 }
