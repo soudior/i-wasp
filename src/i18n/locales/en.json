@@ -231,7 +231,16 @@
     "contact": "Contact",
     "privacy": "Privacy",
     "terms": "Terms",
-    "rights": "All rights reserved"
+    "rights": "All rights reserved",
+    "nfcCards": "NFC Cards",
+    "digitalProfile": "Digital Profile",
+    "pricing": "Pricing",
+    "enterprise": "Enterprise",
+    "careers": "Careers",
+    "press": "Press",
+    "cookies": "Cookies",
+    "refund": "Refund Policy",
+    "shipsWorldwide": "Ships worldwide from Europe"
   },
   "pricing": {
     "badge": "Simple, transparent pricing",
@@ -244,6 +253,24 @@
     "year": "year",
     "billedAnnually": "Billed annually",
     "popular": "Most Popular",
-    "guarantee": "30-day money-back guarantee • No hidden fees • Cancel anytime"
+    "guarantee": "30-day money-back guarantee • No hidden fees • Cancel anytime",
+    "identity": "Identity",
+    "professional": "Professional",
+    "enterprisePlan": "Enterprise",
+    "identityTagline": "Freelancers & Solo",
+    "professionalTagline": "SMBs & Teams",
+    "enterpriseTagline": "Agencies & Startups",
+    "startWithIdentity": "Start with Identity",
+    "goProfessional": "Go Professional",
+    "contactSales": "Contact Sales",
+    "compareTitle": "Detailed comparison",
+    "compareSubtitle": "Discover all features of each plan"
+  },
+  "faq": {
+    "badge": "Got questions?",
+    "title": "Frequently asked questions",
+    "subtitle": "Everything you need to know about our NFC cards",
+    "stillQuestions": "Still have questions?",
+    "contactUs": "Contact us"
   }
 }
