@@ -614,11 +614,11 @@ const Footer = () => (
         <span className="text-white font-bold text-xl">i-wasp Elite</span>
       </div>
       <p className="text-gray-400 max-w-md mx-auto mb-6">
-        Réinventer l'aura digitale des leaders au Maroc.<br />
+        Réinventer l'aura digitale des leaders en Europe.<br />
         Fusionnant matériel de luxe et intelligence artificielle de pointe.
       </p>
       <p className="text-gray-500 text-sm">
-        © 2026 i-wasp. Tous droits réservés.
+        © 2026 i-wasp. Rapport Stratégique Confidentiel.
       </p>
     </div>
   </footer>
