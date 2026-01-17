@@ -76,11 +76,173 @@ export function AllClientsWidget() {
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // Hardcoded premium client cards (not in database)
+  const HARDCODED_CLIENTS: UnifiedClient[] = [
+    {
+      id: 'hardcoded-kech-exclu',
+      name: 'Kech Exclu',
+      phone: '+212 661 381 626',
+      company: 'Kech Exclu Concierge',
+      source: 'card',
+      sourceLabel: 'Carte Premium',
+      sourceIcon: Crown,
+      sourceColor: GOTHAM.gold,
+      createdAt: new Date('2024-12-01'),
+      slug: 'kech-exclu',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Service Conciergerie Luxe Marrakech' },
+    },
+    {
+      id: 'hardcoded-maison-b-optic',
+      name: 'Maison B Optic x Marc Aurel',
+      phone: '+33 1 42 97 41 14',
+      company: 'Maison B Optic',
+      source: 'card',
+      sourceLabel: 'Carte Premium',
+      sourceIcon: Crown,
+      sourceColor: GOTHAM.gold,
+      createdAt: new Date('2024-11-15'),
+      slug: 'maison-b-optic',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Opticien Paris' },
+    },
+    {
+      id: 'hardcoded-luxe-prestige',
+      name: 'Luxe Prestige',
+      phone: '+212 661 381 626',
+      company: 'Luxe Prestige Concierge',
+      source: 'card',
+      sourceLabel: 'Carte Premium',
+      sourceIcon: Crown,
+      sourceColor: GOTHAM.gold,
+      createdAt: new Date('2024-12-10'),
+      slug: 'luxe-prestige',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Service Conciergerie VIP' },
+    },
+    {
+      id: 'hardcoded-khokha-signature',
+      name: 'Khokha Signature',
+      phone: '+212 600 000 000',
+      email: 'contact@khokhasignature.com',
+      company: 'Khokha Signature Fashion',
+      source: 'card',
+      sourceLabel: 'Carte Premium',
+      sourceIcon: Crown,
+      sourceColor: GOTHAM.gold,
+      createdAt: new Date('2025-01-10'),
+      slug: 'khokha-signature',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Boutique Fashion Luxe' },
+    },
+    {
+      id: 'hardcoded-la-maison-cupcake',
+      name: 'La Maison Cupcake',
+      phone: '+212 522 123 456',
+      email: 'contact@lamaisoncupcake.com',
+      company: 'La Maison Cupcake',
+      source: 'card',
+      sourceLabel: 'Carte Premium',
+      sourceIcon: Crown,
+      sourceColor: GOTHAM.gold,
+      createdAt: new Date('2025-01-08'),
+      slug: 'la-maison-cupcake',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Pâtisserie Artisanale' },
+    },
+    {
+      id: 'hardcoded-herbalism',
+      name: 'Herbalism Marrakech',
+      phone: '+212 666 540 329',
+      email: 'contact@herbalism.ma',
+      company: 'Herbalism Marrakech',
+      source: 'card',
+      sourceLabel: 'Carte Premium',
+      sourceIcon: Crown,
+      sourceColor: GOTHAM.gold,
+      createdAt: new Date('2024-10-20'),
+      slug: 'herbalism-marrakech',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Expérience Herbale' },
+    },
+    {
+      id: 'hardcoded-ibrahim-benelfares',
+      name: 'Ibrahim Benelfares',
+      phone: '+212 675 571 257',
+      company: 'Herbalism Marrakech',
+      source: 'card',
+      sourceLabel: 'Carte Premium',
+      sourceIcon: Crown,
+      sourceColor: GOTHAM.gold,
+      createdAt: new Date('2024-10-20'),
+      slug: 'ibrahim-benelfares',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Fondateur Herbalism' },
+    },
+    {
+      id: 'hardcoded-ariella',
+      name: 'Ariella',
+      phone: '+212 600 000 000',
+      company: 'Ariella',
+      source: 'card',
+      sourceLabel: 'Carte Premium',
+      sourceIcon: Crown,
+      sourceColor: GOTHAM.gold,
+      createdAt: new Date('2024-11-01'),
+      slug: 'ariella',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Client Premium' },
+    },
+    {
+      id: 'hardcoded-charles-lazimi',
+      name: 'Charles Lazimi',
+      phone: '+33 600 000 000',
+      company: 'Charles Lazimi',
+      source: 'card',
+      sourceLabel: 'Carte Premium',
+      sourceIcon: Crown,
+      sourceColor: GOTHAM.gold,
+      createdAt: new Date('2024-11-05'),
+      slug: 'charles-lazimi',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Client Premium' },
+    },
+    {
+      id: 'hardcoded-medina-travertin',
+      name: 'Medina Travertin',
+      phone: '+212 600 000 000',
+      company: 'Medina Travertin & Fès Zellij',
+      source: 'card',
+      sourceLabel: 'Carte Premium',
+      sourceIcon: Crown,
+      sourceColor: GOTHAM.gold,
+      createdAt: new Date('2024-10-15'),
+      slug: 'medina-travertin',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Pierre & Zellij' },
+    },
+    {
+      id: 'hardcoded-autoschluessel',
+      name: 'Autoschlüssel Express',
+      phone: '+49 800 000 000',
+      company: 'Autoschlüssel Express',
+      source: 'card',
+      sourceLabel: 'Carte Premium',
+      sourceIcon: Crown,
+      sourceColor: GOTHAM.gold,
+      createdAt: new Date('2024-09-20'),
+      slug: 'autoschluessel',
+      isPremium: true,
+      extra: { type: 'hardcoded', description: 'Service Clé Auto' },
+    },
+  ];
+
   // Fetch all clients data
   const { data: allClients, isLoading } = useQuery({
     queryKey: ['all-clients-unified'],
     queryFn: async () => {
-      const clients: UnifiedClient[] = [];
+      // Start with hardcoded clients
+      const clients: UnifiedClient[] = [...HARDCODED_CLIENTS];
 
       // 1. Digital Cards owners
       const { data: cards } = await supabase
@@ -90,6 +252,10 @@ export function AllClientsWidget() {
 
       if (cards) {
         cards.forEach(card => {
+          // Skip if slug matches a hardcoded card
+          const isHardcoded = HARDCODED_CLIENTS.some(hc => hc.slug === card.slug);
+          if (isHardcoded) return;
+
           clients.push({
             id: `card-${card.id}`,
             name: `${card.first_name} ${card.last_name}`,
