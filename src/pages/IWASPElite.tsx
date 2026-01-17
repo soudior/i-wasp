@@ -1,5 +1,5 @@
 import { motion, type Variants } from 'framer-motion';
-import { ArrowRight, Sparkles, Smartphone, Bot, TrendingUp, Eye, LayoutDashboard, CreditCard, BarChart3, Save, MessageCircle, Linkedin, Instagram, Globe, ChevronRight, Cpu, Database, Zap, Settings, FileText } from 'lucide-react';
+import { ArrowRight, Sparkles, Smartphone, Bot, TrendingUp, Eye, LayoutDashboard, CreditCard, BarChart3, Save, MessageCircle, Linkedin, Instagram, Globe, ChevronRight, ChevronDown, Cpu, Database, Zap, Settings, FileText, Users } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -226,6 +226,19 @@ const FeaturesSection = () => {
 const DashboardSection = () => {
   const [activeTab, setActiveTab] = useState('Vue Globale');
   
+  // Chart data points for the line graph
+  const chartData = [
+    { day: 'Lun', value: 120 },
+    { day: 'Mar', value: 180 },
+    { day: 'Mer', value: 150 },
+    { day: 'Jeu', value: 280 },
+    { day: 'Ven', value: 320 },
+    { day: 'Sam', value: 380 },
+    { day: 'Dim', value: 450 },
+  ];
+  
+  const maxValue = Math.max(...chartData.map(d => d.value));
+  
   return (
     <section id="dashboard" className="py-24 bg-[#FBFBFB]">
       <div className="container mx-auto px-6">
@@ -245,130 +258,207 @@ const DashboardSection = () => {
           </p>
         </motion.div>
 
-        {/* Dashboard Preview */}
+        {/* Dashboard Grid */}
         <motion.div 
-          className="grid lg:grid-cols-3 gap-8"
+          className="grid lg:grid-cols-12 gap-6"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
         >
-          {/* Sidebar */}
-          <motion.div variants={fadeInUp} className="bg-[#0A1931] rounded-[2rem] p-6">
-            {/* User Profile */}
-            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/10">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#F4D03F] flex items-center justify-center text-[#0A1931] font-bold">
-                MK
-              </div>
-              <div>
-                <div className="text-white font-bold">Mehdi K.</div>
-                <div className="text-gray-400 text-sm">Membre Elite i-wasp</div>
-              </div>
-            </div>
-            
-            {/* Navigation Tabs */}
-            <div className="space-y-2">
-              {['Vue Globale', 'Mes Cartes', 'Analyses'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                    activeTab === tab 
-                      ? 'bg-[#D4AF37]/20 text-[#D4AF37]' 
-                      : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                  }`}
-                >
-                  {tab === 'Vue Globale' && <LayoutDashboard className="w-5 h-5" />}
-                  {tab === 'Mes Cartes' && <CreditCard className="w-5 h-5" />}
-                  {tab === 'Analyses' && <BarChart3 className="w-5 h-5" />}
-                  {tab}
-                </button>
-              ))}
-            </div>
-
-            {/* Aura Score */}
-            <div className="mt-8 pt-6 border-t border-white/10">
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="w-5 h-5 text-[#D4AF37]" />
-                <span className="text-white font-bold">Score Aura Digitale</span>
-              </div>
-              
-              {/* Progress Ring */}
-              <div className="flex items-center gap-4">
-                <div className="relative w-20 h-20">
-                  <svg className="w-20 h-20 transform -rotate-90">
-                    <circle cx="40" cy="40" r="35" stroke="rgba(255,255,255,0.1)" strokeWidth="6" fill="none" />
-                    <circle 
-                      cx="40" cy="40" r="35" 
-                      stroke="#D4AF37" 
-                      strokeWidth="6" 
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeDasharray={`${92 * 2.2} ${100 * 2.2}`}
-                    />
-                  </svg>
+          {/* Left Sidebar */}
+          <motion.div variants={fadeInUp} className="lg:col-span-3 space-y-6">
+            {/* User Card */}
+            <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-[#0A1931] flex items-center justify-center text-white font-black text-lg">
+                  MK
                 </div>
                 <div>
-                  <div className="text-3xl font-black text-white">92%</div>
-                  <div className="text-[#00D9A3] text-sm font-bold">Excellent</div>
+                  <div className="text-[#0A1931] font-black text-lg">Mehdi K.</div>
+                  <div className="text-[#D4AF37] text-xs font-bold tracking-wide uppercase">MEMBRE ELITE I-WASP</div>
+                </div>
+              </div>
+              
+              {/* Navigation Tabs */}
+              <div className="space-y-2">
+                {[
+                  { id: 'Vue Globale', icon: LayoutDashboard },
+                  { id: 'Mes Cartes', icon: CreditCard },
+                  { id: 'Analyses', icon: BarChart3 },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                      activeTab === tab.id 
+                        ? 'bg-[#0A1931] text-white' 
+                        : 'text-gray-500 hover:bg-gray-50'
+                    }`}
+                  >
+                    <tab.icon className="w-5 h-5" />
+                    <span className="font-medium">{tab.id}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Aura Score Card */}
+            <div className="bg-gradient-to-br from-[#0A1931] to-[#162a4a] rounded-[2rem] p-6 shadow-lg">
+              <div className="text-center mb-4">
+                <span className="text-[#D4AF37] font-bold text-sm tracking-widest uppercase">SCORE AURA DIGITALE</span>
+              </div>
+              
+              {/* Circular Progress */}
+              <div className="relative w-40 h-40 mx-auto mb-4">
+                <svg className="w-40 h-40 transform -rotate-90">
+                  <circle 
+                    cx="80" cy="80" r="70" 
+                    stroke="rgba(255,255,255,0.1)" 
+                    strokeWidth="12" 
+                    fill="none" 
+                  />
+                  <circle 
+                    cx="80" cy="80" r="70" 
+                    stroke="#D4AF37" 
+                    strokeWidth="12" 
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray={`${92 * 4.4} ${100 * 4.4}`}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-4xl font-black text-white">92%</span>
+                  <span className="text-[#00D9A3] font-bold text-sm uppercase tracking-wide">EXCELLENT</span>
                 </div>
               </div>
 
               {/* AI Tip */}
-              <div className="mt-4 p-4 bg-[#D4AF37]/10 rounded-xl border border-[#D4AF37]/20">
-                <p className="text-[#D4AF37] text-sm">
+              <div className="p-4 bg-[#D4AF37]/10 rounded-xl border border-[#D4AF37]/20">
+                <p className="text-[#D4AF37] text-sm text-center">
                   💡 Conseil IA: Ajoutez une story Instagram récente pour augmenter votre score de conversion.
                 </p>
               </div>
             </div>
           </motion.div>
 
-          {/* Main Content */}
-          <motion.div variants={fadeInUp} className="lg:col-span-2 space-y-6">
-            {/* Stats Cards */}
+          {/* Right Content */}
+          <motion.div variants={fadeInUp} className="lg:col-span-9 space-y-6">
+            {/* Stats Row */}
             <div className="grid sm:grid-cols-2 gap-6">
+              {/* Scans Totaux */}
               <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
-                <div className="flex items-center justify-between mb-4">
-                  <Eye className="w-8 h-8 text-[#0A1931]/20" />
-                  <span className="text-[#00D9A3] font-bold text-sm">+18% 📈</span>
+                <div className="flex items-start justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-[#0A1931]/5 flex items-center justify-center">
+                    <Users className="w-6 h-6 text-[#0A1931]" />
+                  </div>
+                  <span className="text-[#00D9A3] font-bold text-sm flex items-center gap-1">
+                    +18% <TrendingUp className="w-4 h-4" />
+                  </span>
                 </div>
-                <div className="text-gray-500 text-sm mb-1">Scans Totaux</div>
-                <div className="text-3xl font-black text-[#0A1931]">1,482</div>
+                <div className="mt-4">
+                  <div className="text-gray-500 text-xs font-bold tracking-wide uppercase mb-1">SCANS TOTAUX</div>
+                  <div className="text-4xl font-black text-[#0A1931] tracking-tighter">1,482</div>
+                </div>
               </div>
               
+              {/* Taux de Sauvegarde */}
               <div className="bg-white rounded-[2rem] p-6 shadow-lg border border-gray-100">
-                <div className="flex items-center justify-between mb-4">
-                  <Save className="w-8 h-8 text-[#0A1931]/20" />
-                  <span className="text-[#00D9A3] font-bold text-sm">+5% 📈</span>
+                <div className="flex items-start justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-[#0A1931]/5 flex items-center justify-center">
+                    <Save className="w-6 h-6 text-[#0A1931]" />
+                  </div>
+                  <span className="text-[#00D9A3] font-bold text-sm flex items-center gap-1">
+                    +5% <TrendingUp className="w-4 h-4" />
+                  </span>
                 </div>
-                <div className="text-gray-500 text-sm mb-1">Taux de Sauvegarde</div>
-                <div className="text-3xl font-black text-[#0A1931]">74%</div>
+                <div className="mt-4">
+                  <div className="text-gray-500 text-xs font-bold tracking-wide uppercase mb-1">TAUX DE SAUVEGARDE</div>
+                  <div className="text-4xl font-black text-[#0A1931] tracking-tighter">74%</div>
+                </div>
               </div>
             </div>
 
-            {/* Chart Area */}
+            {/* Chart */}
             <div className="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-black text-[#0A1931]">Tendances des Interactions</h3>
-                <div className="flex gap-2">
-                  <button className="px-3 py-1.5 bg-[#0A1931] text-white text-sm rounded-lg font-medium">7 derniers jours</button>
-                  <button className="px-3 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-lg font-medium hover:bg-gray-200 transition-colors">30 derniers jours</button>
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-2xl font-black text-[#0A1931] tracking-tight">Tendances des Interactions</h3>
+                <div className="flex items-center gap-2 text-gray-500 text-sm">
+                  <span className="font-medium">7 derniers jours</span>
+                  <ChevronDown className="w-4 h-4" />
                 </div>
               </div>
               
-              {/* Simple Chart Visualization */}
-              <div className="h-48 flex items-end justify-between gap-2">
-                {[40, 65, 45, 80, 55, 90, 70].map((height, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                    <div 
-                      className="w-full bg-gradient-to-t from-[#D4AF37] to-[#F4D03F] rounded-t-lg transition-all duration-500"
-                      style={{ height: `${height}%` }}
-                    />
-                    <span className="text-xs text-gray-400">
-                      {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'][i]}
-                    </span>
+              {/* Line Chart */}
+              <div className="relative h-64">
+                {/* Y-axis labels */}
+                <div className="absolute left-0 top-0 bottom-8 w-12 flex flex-col justify-between text-xs text-gray-400">
+                  <span>500</span>
+                  <span>400</span>
+                  <span>300</span>
+                  <span>200</span>
+                  <span>100</span>
+                  <span>0</span>
+                </div>
+                
+                {/* Chart area */}
+                <div className="ml-12 h-full flex flex-col">
+                  <div className="flex-1 relative">
+                    {/* Grid lines */}
+                    {[0, 1, 2, 3, 4, 5].map((i) => (
+                      <div 
+                        key={i} 
+                        className="absolute w-full border-t border-gray-100" 
+                        style={{ top: `${i * 20}%` }} 
+                      />
+                    ))}
+                    
+                    {/* SVG Line */}
+                    <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#00D9A3" />
+                          <stop offset="100%" stopColor="#00D9A3" />
+                        </linearGradient>
+                      </defs>
+                      <polyline
+                        fill="none"
+                        stroke="url(#lineGradient)"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        points={chartData.map((d, i) => {
+                          const x = (i / (chartData.length - 1)) * 100;
+                          const y = 100 - (d.value / 500) * 100;
+                          return `${x}%,${y}%`;
+                        }).join(' ')}
+                      />
+                      {/* Data points */}
+                      {chartData.map((d, i) => {
+                        const x = (i / (chartData.length - 1)) * 100;
+                        const y = 100 - (d.value / 500) * 100;
+                        return (
+                          <circle
+                            key={i}
+                            cx={`${x}%`}
+                            cy={`${y}%`}
+                            r="6"
+                            fill="white"
+                            stroke="#00D9A3"
+                            strokeWidth="3"
+                          />
+                        );
+                      })}
+                    </svg>
                   </div>
-                ))}
+                  
+                  {/* X-axis labels */}
+                  <div className="h-8 flex justify-between items-center text-xs text-gray-400 px-2">
+                    {chartData.map((d, i) => (
+                      <span key={i}>{d.day}</span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
