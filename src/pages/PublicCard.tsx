@@ -22,6 +22,7 @@ import { DarkLuxuryBusinessTemplate } from "@/components/templates/DarkLuxuryBus
 import { IWASPBrandBadgeMinimal } from "@/components/templates/IWASPBrandBadge";
 import { IWASPBrandingFooter } from "@/components/IWASPBrandingFooter";
 import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
+import { SEOHead, getPublicCardSEO } from "@/components/SEOHead";
 import DualBrandShowcase from "./DualBrandShowcase";
 import MaisonBOpticCard from "./MaisonBOpticCard";
 import KechExcluCard from "./KechExcluCard";
@@ -319,6 +320,16 @@ const PublicCard = () => {
   const fullName = `${card.first_name} ${card.last_name}`;
   const subtitle = [card.title, card.company].filter(Boolean).join(" · ");
   
+  // Generate dynamic SEO for this card
+  const cardSEO = getPublicCardSEO({
+    first_name: card.first_name || '',
+    last_name: card.last_name || '',
+    title: card.title,
+    company: card.company,
+    photo_url: card.photo_url,
+    slug: card.slug || cleanedSlug,
+  });
+  
   // Get custom styles or use defaults
   const customStyles = (card as any).custom_styles;
   const bgColor = customStyles?.backgroundColor || "#F5F5F7";
@@ -339,9 +350,11 @@ const PublicCard = () => {
   const boxShadow = shadowMap[customStyles?.shadowPreset || "subtle"] || shadowMap.subtle;
 
   return (
-    <div 
-      className="min-h-dvh flex flex-col items-center justify-center p-4"
-      style={{ backgroundColor: bgColor }}
+    <>
+      <SEOHead {...cardSEO} />
+      <div 
+        className="min-h-dvh flex flex-col items-center justify-center p-4"
+        style={{ backgroundColor: bgColor }}
     >
       {/* Card */}
       <div 
@@ -471,6 +484,7 @@ const PublicCard = () => {
         variant="floating"
       />
     </div>
+    </>
   );
 };
 

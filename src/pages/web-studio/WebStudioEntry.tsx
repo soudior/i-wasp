@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CoutureNavbar } from "@/components/CoutureNavbar";
 import { CoutureFooter } from "@/components/CoutureFooter";
+import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { 
   Sparkles, 
   Globe, 
@@ -41,8 +42,10 @@ export default function WebStudioEntry() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: STUDIO.noir }}>
-      <CoutureNavbar />
+    <>
+      <SEOHead {...SEO_CONFIGS.webStudio} />
+      <div className="min-h-screen" style={{ backgroundColor: STUDIO.noir }}>
+        <CoutureNavbar />
 
       <main className="pt-24 pb-20 px-4">
         <div className="max-w-3xl mx-auto">
@@ -253,5 +256,6 @@ export default function WebStudioEntry() {
 
       <CoutureFooter />
     </div>
+    </>
   );
 }

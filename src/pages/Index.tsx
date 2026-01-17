@@ -19,6 +19,7 @@ import { PricingSection } from "@/components/landing/PricingSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { FooterSection } from "@/components/landing/FooterSection";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 
 // Animation variants - Smooth Apple-style
 const fadeUp = {
@@ -57,7 +58,9 @@ const Index = () => {
   const { t } = useTranslation();
 
   return (
-    <div 
+    <>
+      <SEOHead {...SEO_CONFIGS.home} />
+      <div
       className="min-h-screen font-sans antialiased"
       style={{ backgroundColor: APPLE.background }}
     >
@@ -533,6 +536,7 @@ const Index = () => {
         </div>
       </footer>
     </div>
+    </>
   );
 };
 
