@@ -5,7 +5,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AdminGuard } from "@/components/AdminGuard";
+import { AdminOmniaLayout } from "@/layouts/AdminOmniaLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -50,6 +50,18 @@ import { QRCodeSVG } from "qrcode.react";
 import { motion } from "framer-motion";
 import { StoryEditor } from "@/components/StoryEditor";
 import { useStories } from "@/hooks/useStories";
+
+// OMNIA Design System Colors
+const OMNIA = {
+  obsidienne: "#030303",
+  obsidienneElevated: "#0A0A0A",
+  obsidienneSurface: "#111111",
+  champagne: "#DCC7B0",
+  champagneMuted: "rgba(220, 199, 176, 0.6)",
+  ivoire: "#FDFCFB",
+  ivoireMuted: "rgba(253, 252, 251, 0.5)",
+  border: "rgba(220, 199, 176, 0.15)",
+};
 // Template options
 const TEMPLATES = [
   {
@@ -169,9 +181,9 @@ const initialData: BusinessCardData = {
 
 export default function AdminInstantCard() {
   return (
-    <AdminGuard>
+    <AdminOmniaLayout title="Création vCard Express" subtitle="Carte digitale">
       <AdminInstantCardContent />
-    </AdminGuard>
+    </AdminOmniaLayout>
   );
 }
 
