@@ -1,150 +1,151 @@
 @import "@fontsource/inter/300.css";
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
+@import "@fontsource/plus-jakarta-sans/200.css";
+@import "@fontsource/plus-jakarta-sans/300.css";
+@import "@fontsource/plus-jakarta-sans/400.css";
+@import "@fontsource/jetbrains-mono/400.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   i-wasp OMNIA EDITION — Design System
+   
+   Positionnement : Luxe invisible, omniprésence digitale, prestige immatériel.
+   Philosophie : "L'Art de la Présence"
+   
+   Palette OMNIA:
+   - Obsidienne: #030303 (Fond principal)
+   - Champagne: #DCC7B0 (Accent principal)
+   - Ivoire: #FDFCFB (Texte & détails)
+   
+   Typographie:
+   - Titres: Tenor Sans (Serif de luxe)
+   - Corps: Plus Jakarta Sans (Ultra-léger)
+   - Technique: JetBrains Mono (Données)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Tenor Sans from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Tenor+Sans&display=swap');
+
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════════
-       i-WASP DESIGN SYSTEM — HAUTE COUTURE DIGITALE
-       ═══════════════════════════════════════════════════════════════════
-       
-       Style: Maison de haute couture digitale
-       Ultra chic, minimal, luxe inégalable
-       Calme absolu, confiance silencieuse
-       
-       ═══════════════════════════════════════════════════════════════════
-       PALETTE "NOIR COUTURE"
-       ═══════════════════════════════════════════════════════════════════
-       - Noir Couture:    #0A0A0A (Fond principal)
-       - Ivoire Couture:  #F6F5F2 (Textes principaux)
-       - Gris Cendre:     #9B9B9B (Textes secondaires)
-       - Platine Mat:     #7E7E7E (Accent discret, très rare)
-       
-       Évoque : Silence, Maîtrise, Intemporalité, Confiance
+       PALETTE OMNIA — Obsidienne, Champagne, Ivoire
        ═══════════════════════════════════════════════════════════════════ */
     
-    /* ══════════════════════════════════════════════════════════════════
-       CORE PALETTE — NOIR COUTURE
-       ══════════════════════════════════════════════════════════════════ */
+    /* Obsidienne - Noir abyssal */
+    --omnia-obsidienne: 0 0% 1%;              /* #030303 */
+    --omnia-obsidienne-deep: 0 0% 0%;         /* #000000 */
+    --omnia-obsidienne-elevated: 0 0% 4%;     /* #0A0A0A */
+    --omnia-obsidienne-surface: 0 0% 7%;      /* #111111 */
     
-    --couture-noir: 0 0% 4%;              /* #0A0A0A - Noir profond */
-    --couture-noir-elevated: 0 0% 7%;     /* #121212 - Surface élevée */
-    --couture-noir-surface: 0 0% 10%;     /* #1A1A1A - Cards */
+    /* Champagne - Accent sablé */
+    --omnia-champagne: 30 37% 72%;            /* #DCC7B0 */
+    --omnia-champagne-light: 30 35% 84%;      /* #E8D9C7 */
+    --omnia-champagne-muted: 30 22% 64%;      /* #B8A48F */
     
-    --couture-ivoire: 45 15% 96%;         /* #F6F5F2 - Ivoire couture */
-    --couture-ivoire-soft: 45 10% 90%;    /* #E8E6E0 - Ivoire atténué */
+    /* Ivoire - Texte pur */
+    --omnia-ivoire: 30 25% 99%;               /* #FDFCFB */
+    --omnia-ivoire-soft: 30 12% 96%;          /* #F5F4F2 */
+    --omnia-ivoire-muted: 30 8% 87%;          /* #E0DFDD */
     
-    --couture-cendre: 0 0% 61%;           /* #9B9B9B - Gris cendre */
-    --couture-platine: 0 0% 49%;          /* #7E7E7E - Platine mat */
+    /* ═══════════════════════════════════════════════════════════════════
+       TOKENS SÉMANTIQUES — OMNIA
+       ═══════════════════════════════════════════════════════════════════ */
     
-    /* Text hierarchy */
-    --couture-text: 45 15% 96%;           /* Ivoire */
-    --couture-text-secondary: 0 0% 61%;   /* Gris cendre */
-    --couture-text-muted: 0 0% 49%;       /* Platine */
-    --couture-text-subtle: 0 0% 35%;      /* Très subtil */
+    --background: var(--omnia-obsidienne);
+    --foreground: var(--omnia-ivoire);
     
-    /* Borders - Ultra subtle */
-    --couture-border: 0 0% 100% / 0.08;
-    --couture-border-hover: 0 0% 100% / 0.15;
-    --couture-border-active: 0 0% 100% / 0.25;
+    --card: var(--omnia-obsidienne-surface);
+    --card-foreground: var(--omnia-ivoire);
     
-    /* ══════════════════════════════════════════════════════════════════
-       SURFACES — Noir profond
-       ══════════════════════════════════════════════════════════════════ */
-    --surface-bg: var(--couture-noir);
-    --surface-card: var(--couture-noir-surface);
-    --surface-elevated: var(--couture-noir-elevated);
-    --surface-overlay: 0 0% 12%;
+    --popover: var(--omnia-obsidienne-surface);
+    --popover-foreground: var(--omnia-ivoire);
     
-    /* ══════════════════════════════════════════════════════════════════
-       TOKENS SÉMANTIQUES — HAUTE COUTURE
-       ══════════════════════════════════════════════════════════════════ */
-    --background: var(--couture-noir);
-    --foreground: var(--couture-ivoire);
+    /* Primary = Champagne (pour CTA principaux) */
+    --primary: var(--omnia-champagne);
+    --primary-foreground: var(--omnia-obsidienne);
     
-    --card: var(--couture-noir-surface);
-    --card-foreground: var(--couture-ivoire);
+    --secondary: var(--omnia-obsidienne-elevated);
+    --secondary-foreground: var(--omnia-ivoire);
     
-    --popover: var(--couture-noir-surface);
-    --popover-foreground: var(--couture-ivoire);
+    --muted: var(--omnia-obsidienne-elevated);
+    --muted-foreground: var(--omnia-ivoire-muted);
     
-    /* Primary = Ivoire (pour CTA principaux) */
-    --primary: var(--couture-ivoire);
-    --primary-foreground: var(--couture-noir);
-    
-    --secondary: var(--couture-noir-elevated);
-    --secondary-foreground: var(--couture-ivoire);
-    
-    --muted: var(--couture-noir-elevated);
-    --muted-foreground: var(--couture-cendre);
-    
-    /* Accent = Platine (très discret) */
-    --accent: var(--couture-platine);
-    --accent-foreground: var(--couture-ivoire);
+    /* Accent = Champagne */
+    --accent: var(--omnia-champagne);
+    --accent-foreground: var(--omnia-obsidienne);
     
     --destructive: 0 40% 50%;
-    --destructive-foreground: var(--couture-ivoire);
+    --destructive-foreground: var(--omnia-ivoire);
     
-    --border: var(--couture-border);
-    --input: var(--couture-noir-surface);
-    --input-foreground: var(--couture-ivoire);
-    --ring: var(--couture-ivoire);
+    /* Borders - Ultra-subtils */
+    --border: 0 0% 100% / 0.05;
+    --input: var(--omnia-obsidienne-surface);
+    --input-foreground: var(--omnia-ivoire);
+    --ring: var(--omnia-champagne);
     
-    /* ══════════════════════════════════════════════════════════════════
-       RADIUS — Angles droits, pas de coins arrondis
-       ══════════════════════════════════════════════════════════════════ */
-    --radius: 0px;
-    --radius-card: 0px;
-    --radius-card-lg: 0px;
-    --radius-btn: 0px;
+    /* ═══════════════════════════════════════════════════════════════════
+       RADIUS — Arrondis massifs OMNIA
+       ═══════════════════════════════════════════════════════════════════ */
+    --radius: 1rem;
+    --radius-card: 2rem;
+    --radius-card-lg: 3rem;
+    --radius-btn: 9999px;
+    --radius-omnia: 4rem;
+    --radius-omnia-lg: 6rem;
     
-    /* ══════════════════════════════════════════════════════════════════
-       OMBRES — Presque inexistantes
-       ══════════════════════════════════════════════════════════════════ */
-    --shadow-xs: none;
-    --shadow-sm: none;
-    --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
-    --shadow-card: none;
-    --shadow-elevated: 0 16px 60px rgba(0, 0, 0, 0.6);
+    /* ═══════════════════════════════════════════════════════════════════
+       OMBRES & GLOWS — Éthérés
+       ═══════════════════════════════════════════════════════════════════ */
+    --shadow-xs: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 8px 40px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 16px 60px rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 4px 40px rgba(0, 0, 0, 0.4);
+    --shadow-elevated: 0 20px 80px rgba(0, 0, 0, 0.6);
+    --glow-champagne: 0 0 80px rgba(220, 199, 176, 0.08);
+    --glow-champagne-intense: 0 0 120px rgba(220, 199, 176, 0.15);
 
-    /* ══════════════════════════════════════════════════════════════════
-       TYPOGRAPHIE — Editorial + Neue Montreal style
-       Cormorant: Titres éditoriaux (style Canela/Editorial New)
-       Inter: UI & body (style Neue Montreal)
-       ══════════════════════════════════════════════════════════════════ */
-    --font-display: 'Cormorant', Georgia, serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    --font-accent: 'Cormorant', Georgia, serif;
+    /* ═══════════════════════════════════════════════════════════════════
+       TYPOGRAPHIE — Tenor Sans + Plus Jakarta Sans
+       ═══════════════════════════════════════════════════════════════════ */
+    --font-display: 'Tenor Sans', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-accent: 'Tenor Sans', Georgia, serif;
+    
+    /* Letter spacing OMNIA */
     --tracking-tight: -0.02em;
     --tracking-normal: 0em;
     --tracking-wide: 0.1em;
-    --tracking-ultra: 0.25em;
+    --tracking-wider: 0.2em;
+    --tracking-ultra: 0.3em;
 
     /* Surface tokens */
-    --surface-0: var(--couture-noir);
-    --surface-1: var(--couture-noir-surface);
-    --surface-2: var(--couture-noir-elevated);
-    --surface-3: 0 0% 15%;
+    --surface-0: var(--omnia-obsidienne);
+    --surface-1: var(--omnia-obsidienne-surface);
+    --surface-2: var(--omnia-obsidienne-elevated);
+    --surface-3: 0 0% 10%;
     
-    /* Glass - Dark variant */
-    --glass: 0 0% 8%;
-    --glass-opacity: 0.9;
-    --glass-border: 0 0% 100% / 0.06;
+    /* Glass OMNIA - Ultra-subtil */
+    --glass: 0 0% 100%;
+    --glass-opacity: 0.02;
+    --glass-border: 0 0% 100% / 0.05;
+    --glass-backdrop: blur(50px);
 
     /* Sidebar */
-    --sidebar-background: var(--couture-noir);
-    --sidebar-foreground: var(--couture-ivoire);
-    --sidebar-primary: var(--couture-ivoire);
-    --sidebar-primary-foreground: var(--couture-noir);
-    --sidebar-accent: var(--couture-platine);
-    --sidebar-accent-foreground: var(--couture-ivoire);
-    --sidebar-border: var(--couture-border);
-    --sidebar-ring: var(--couture-ivoire);
+    --sidebar-background: var(--omnia-obsidienne);
+    --sidebar-foreground: var(--omnia-ivoire);
+    --sidebar-primary: var(--omnia-champagne);
+    --sidebar-primary-foreground: var(--omnia-obsidienne);
+    --sidebar-accent: var(--omnia-champagne);
+    --sidebar-accent-foreground: var(--omnia-obsidienne);
+    --sidebar-border: 0 0% 100% / 0.05;
+    --sidebar-ring: var(--omnia-champagne);
     
     /* Mobile-first: Safe area insets */
     --safe-area-top: env(safe-area-inset-top, 0px);
@@ -160,50 +161,50 @@
     --ios-status-bar-height: max(20px, env(safe-area-inset-top, 20px));
     --ios-home-indicator-height: max(34px, env(safe-area-inset-bottom, 0px));
 
-    /* ══════════════════════════════════════════════════════════════════
-       SPACING SYSTEM - Grands espaces vides, rythme lent
-       ══════════════════════════════════════════════════════════════════ */
+    /* ═══════════════════════════════════════════════════════════════════
+       SPACING SYSTEM — Grands espaces vides
+       ═══════════════════════════════════════════════════════════════════ */
     --space-xs: 0.5rem;
     --space-sm: 1rem;
     --space-md: 2rem;
     --space-lg: 4rem;
     --space-xl: 6rem;
     --space-2xl: 8rem;
-    --space-section: 12rem;      /* 192px between sections */
-    --space-section-lg: 16rem;   /* 256px large sections */
+    --space-section: 12rem;
+    --space-section-lg: 16rem;
     --space-module: 3rem;
 
-    /* ══════════════════════════════════════════════════════════════════
-       ANIMATION TIMING - SLOW & LUXURIOUS (minimum 800ms)
-       ══════════════════════════════════════════════════════════════════ */
-    --duration-fast: 800ms;
-    --duration-normal: 1200ms;
-    --duration-slow: 1800ms;
-    --duration-slower: 2400ms;
-    --easing-default: cubic-bezier(0.25, 0.1, 0.25, 1);
-    --easing-in-out: cubic-bezier(0.42, 0, 0.58, 1);
-    --easing-luxury: cubic-bezier(0.16, 1, 0.3, 1);
+    /* ═══════════════════════════════════════════════════════════════════
+       ANIMATION TIMING — Silk & Liquid (très lent)
+       ═══════════════════════════════════════════════════════════════════ */
+    --duration-fast: 400ms;
+    --duration-normal: 800ms;
+    --duration-slow: 1200ms;
+    --duration-slower: 1800ms;
+    --duration-silk: 1200ms;
+    --duration-liquid: 1800ms;
+    --duration-ethereal: 2400ms;
+    --easing-silk: cubic-bezier(0.22, 1, 0.36, 1);
+    --easing-liquid: cubic-bezier(0.16, 1, 0.3, 1);
 
-    /* ══════════════════════════════════════════════════════════════════
-       MAX WIDTH - Premium content width
-       ══════════════════════════════════════════════════════════════════ */
+    /* ═══════════════════════════════════════════════════════════════════
+       MAX WIDTH — Premium content
+       ═══════════════════════════════════════════════════════════════════ */
     --max-content-width: 1200px;
     --max-content-narrow: 800px;
   }
 
-  /* ═══════════════════════════════════════════════════════════════════════════
-     LIGHT MODE (pour pages spécifiques si nécessaire)
-     ═══════════════════════════════════════════════════════════════════════════ */
+  /* Light mode override (pour pages spécifiques) */
   .light {
-    --background: 45 15% 96%;
-    --foreground: 0 0% 4%;
+    --background: var(--omnia-ivoire);
+    --foreground: var(--omnia-obsidienne);
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 4%;
-    --primary: 0 0% 4%;
-    --primary-foreground: 45 15% 96%;
-    --muted: 45 10% 92%;
-    --muted-foreground: 0 0% 45%;
-    --border: 0 0% 0% / 0.08;
+    --card-foreground: var(--omnia-obsidienne);
+    --primary: var(--omnia-champagne-muted);
+    --primary-foreground: var(--omnia-ivoire);
+    --muted: var(--omnia-ivoire-soft);
+    --muted-foreground: 0 0% 40%;
+    --border: 0 0% 0% / 0.06;
   }
 }
 
