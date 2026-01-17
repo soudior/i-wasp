@@ -1,6 +1,6 @@
 /**
  * Web Studio Pricing Page
- * Premium pricing page with animations
+ * Premium pricing page with animations and billing toggle
  */
 
 import { useState, useEffect } from 'react';
@@ -19,9 +19,10 @@ import {
   Clock,
   HeadphonesIcon,
   Globe,
-  Star
+  Star,
+  Percent
 } from 'lucide-react';
-import { WEB_STUDIO_PACKAGES, WEB_MAINTENANCE, WebStudioPackageKey } from '@/lib/webStudioPackages';
+import { WEB_STUDIO_PACKAGES, WEB_MAINTENANCE, WebStudioPackageKey, ANNUAL_DISCOUNT_PERCENT } from '@/lib/webStudioPackages';
 
 const COLORS = {
   noir: "#050505",
@@ -94,6 +95,15 @@ export default function WebStudioPricing() {
   const navigate = useNavigate();
   const [hoveredPackage, setHoveredPackage] = useState<WebStudioPackageKey | null>(null);
   const [showComparison, setShowComparison] = useState(false);
+  const [isYearly, setIsYearly] = useState(false);
+
+  // Calculate annual price with discount
+  const getDisplayPrice = (monthlyPrice: number) => {
+    if (isYearly) {
+      return Math.round(monthlyPrice * 12 * (1 - ANNUAL_DISCOUNT_PERCENT / 100));
+    }
+    return monthlyPrice;
+  };
 
   const handleSelectPackage = (packageKey: WebStudioPackageKey) => {
     sessionStorage.setItem('selectedWebStudioPackage', packageKey);
@@ -210,6 +220,65 @@ export default function WebStudioPricing() {
               </div>
             ))}
           </motion.div>
+
+          {/* Billing Toggle */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="flex justify-center items-center gap-4 mb-12"
+          >
+            <span 
+              className={`text-sm font-medium transition-colors cursor-pointer ${!isYearly ? 'opacity-100' : 'opacity-50'}`}
+              style={{ color: COLORS.ivoire }}
+              onClick={() => setIsYearly(false)}
+            >
+              Mensuel
+            </span>
+            
+            <motion.button
+              onClick={() => setIsYearly(!isYearly)}
+              className="relative w-16 h-8 rounded-full p-1 transition-colors"
+              style={{ 
+                backgroundColor: isYearly ? COLORS.or : COLORS.border,
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <motion.div
+                className="w-6 h-6 rounded-full bg-white shadow-lg"
+                animate={{ x: isYearly ? 32 : 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            </motion.button>
+            
+            <div className="flex items-center gap-2">
+              <span 
+                className={`text-sm font-medium transition-colors cursor-pointer ${isYearly ? 'opacity-100' : 'opacity-50'}`}
+                style={{ color: COLORS.ivoire }}
+                onClick={() => setIsYearly(true)}
+              >
+                Annuel
+              </span>
+              
+              <AnimatePresence>
+                {isYearly && (
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.8, x: -10 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, x: -10 }}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold"
+                    style={{ 
+                      backgroundColor: `${COLORS.emerald}20`,
+                      color: COLORS.emerald,
+                    }}
+                  >
+                    <Percent size={10} />
+                    -{ANNUAL_DISCOUNT_PERCENT}%
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
         </motion.div>
       </section>
 
@@ -289,21 +358,58 @@ export default function WebStudioPricing() {
 
                     {/* Price */}
                     <div className="mb-6">
-                      <div className="flex items-baseline gap-1">
-                        <span 
-                          className="text-4xl font-bold"
-                          style={{ color: COLORS.ivoire }}
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={isYearly ? 'yearly-price' : 'monthly-price'}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
                         >
-                          {pkg.priceMad}
-                        </span>
-                        <span style={{ color: COLORS.gris }}>MAD</span>
-                      </div>
-                      <p 
-                        className="text-sm mt-1"
-                        style={{ color: COLORS.gris }}
-                      >
-                        ≈ {pkg.priceEur}€ • Paiement unique
-                      </p>
+                          {isYearly && (
+                            <p 
+                              className="text-sm line-through"
+                              style={{ color: COLORS.gris }}
+                            >
+                              {pkg.priceMad} MAD
+                            </p>
+                          )}
+                          <div className="flex items-baseline gap-1">
+                            <span 
+                              className="text-4xl font-bold"
+                              style={{ color: COLORS.ivoire }}
+                            >
+                              {isYearly 
+                                ? Math.round(pkg.priceMad * (1 - ANNUAL_DISCOUNT_PERCENT / 100))
+                                : pkg.priceMad
+                              }
+                            </span>
+                            <span style={{ color: COLORS.gris }}>MAD</span>
+                            {isYearly && (
+                              <motion.span
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="ml-2 px-2 py-0.5 rounded text-xs font-semibold"
+                                style={{ 
+                                  backgroundColor: `${COLORS.emerald}20`,
+                                  color: COLORS.emerald,
+                                }}
+                              >
+                                -{ANNUAL_DISCOUNT_PERCENT}%
+                              </motion.span>
+                            )}
+                          </div>
+                          <p 
+                            className="text-sm mt-1"
+                            style={{ color: COLORS.gris }}
+                          >
+                            ≈ {isYearly 
+                              ? Math.round(pkg.priceEur * (1 - ANNUAL_DISCOUNT_PERCENT / 100))
+                              : pkg.priceEur
+                            }€ • Paiement unique
+                          </p>
+                        </motion.div>
+                      </AnimatePresence>
                     </div>
 
                     {/* Delivery time */}
@@ -410,24 +516,41 @@ export default function WebStudioPricing() {
           >
             <div className="flex flex-col md:flex-row md:items-center gap-8">
               <div className="flex-1">
-                <div 
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
-                  style={{ backgroundColor: `${COLORS.or}15` }}
-                >
-                  <HeadphonesIcon size={14} style={{ color: COLORS.or }} />
-                  <span 
-                    className="text-xs uppercase tracking-widest"
-                    style={{ color: COLORS.or }}
+                <div className="flex items-center gap-3 mb-4">
+                  <div 
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+                    style={{ backgroundColor: `${COLORS.or}15` }}
                   >
-                    Option recommandée
-                  </span>
+                    <HeadphonesIcon size={14} style={{ color: COLORS.or }} />
+                    <span 
+                      className="text-xs uppercase tracking-widest"
+                      style={{ color: COLORS.or }}
+                    >
+                      Option recommandée
+                    </span>
+                  </div>
+                  
+                  {isYearly && (
+                    <motion.span
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
+                      style={{ 
+                        backgroundColor: `${COLORS.emerald}20`,
+                        color: COLORS.emerald,
+                      }}
+                    >
+                      <Sparkles size={10} />
+                      {WEB_MAINTENANCE.yearly.discount}
+                    </motion.span>
+                  )}
                 </div>
                 
                 <h3 
                   className="text-2xl font-semibold mb-3"
                   style={{ color: COLORS.ivoire }}
                 >
-                  {WEB_MAINTENANCE.name}
+                  {isYearly ? WEB_MAINTENANCE.yearly.name : WEB_MAINTENANCE.monthly.name}
                 </h3>
                 
                 <ul className="space-y-2 mb-6 md:mb-0">
@@ -446,21 +569,49 @@ export default function WebStudioPricing() {
               </div>
               
               <div className="text-center md:text-right">
-                <div className="flex items-baseline gap-1 justify-center md:justify-end">
-                  <span 
-                    className="text-4xl font-bold"
-                    style={{ color: COLORS.or }}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={isYearly ? 'yearly' : 'monthly'}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    {WEB_MAINTENANCE.priceMad}
-                  </span>
-                  <span style={{ color: COLORS.gris }}>MAD/mois</span>
-                </div>
-                <p 
-                  className="text-sm mt-1"
-                  style={{ color: COLORS.gris }}
-                >
-                  ≈ {WEB_MAINTENANCE.priceEur}€/mois
-                </p>
+                    {isYearly && (
+                      <p 
+                        className="text-sm line-through mb-1"
+                        style={{ color: COLORS.gris }}
+                      >
+                        {WEB_MAINTENANCE.monthly.priceMad * 12} MAD/an
+                      </p>
+                    )}
+                    <div className="flex items-baseline gap-1 justify-center md:justify-end">
+                      <span 
+                        className="text-4xl font-bold"
+                        style={{ color: COLORS.or }}
+                      >
+                        {isYearly ? WEB_MAINTENANCE.yearly.priceMad : WEB_MAINTENANCE.monthly.priceMad}
+                      </span>
+                      <span style={{ color: COLORS.gris }}>
+                        MAD{isYearly ? '/an' : '/mois'}
+                      </span>
+                    </div>
+                    <p 
+                      className="text-sm mt-1"
+                      style={{ color: COLORS.gris }}
+                    >
+                      ≈ {isYearly ? WEB_MAINTENANCE.yearly.priceEur : WEB_MAINTENANCE.monthly.priceEur}€{isYearly ? '/an' : '/mois'}
+                    </p>
+                    {isYearly && (
+                      <p 
+                        className="text-xs mt-2 font-medium"
+                        style={{ color: COLORS.emerald }}
+                      >
+                        Soit {Math.round(WEB_MAINTENANCE.yearly.priceMad / 12)} MAD/mois
+                      </p>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
           </div>

@@ -98,9 +98,18 @@ export const WEB_STUDIO_PACKAGES = {
 
 // Maintenance mensuelle optionnelle
 export const WEB_MAINTENANCE = {
-  priceMad: 500,
-  priceEur: 50,
-  name: 'Maintenance mensuelle',
+  monthly: {
+    priceMad: 500,
+    priceEur: 50,
+    name: 'Maintenance mensuelle',
+  },
+  yearly: {
+    priceMad: 5000, // 2 mois gratuits (10 mois au lieu de 12)
+    priceEur: 500,
+    name: 'Maintenance annuelle',
+    discount: '2 mois offerts',
+    discountPercent: 17,
+  },
   features: [
     'Mises à jour de sécurité',
     'Corrections de bugs',
@@ -109,6 +118,13 @@ export const WEB_MAINTENANCE = {
     'Sauvegardes mensuelles',
   ],
 };
+
+// Annual discount for packages (20% off)
+export const ANNUAL_DISCOUNT_PERCENT = 20;
+
+export function getAnnualPrice(monthlyPrice: number): number {
+  return Math.round(monthlyPrice * 12 * (1 - ANNUAL_DISCOUNT_PERCENT / 100));
+}
 
 export type WebStudioPackageKey = keyof typeof WEB_STUDIO_PACKAGES;
 export type WebStudioPackage = typeof WEB_STUDIO_PACKAGES[WebStudioPackageKey];
