@@ -4,13 +4,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { SaaSPlanId, getSaaSPlan } from '@/lib/saasPlans';
 
 interface SaaSSubscriptionFeatures {
-  nfcCardsPerMonth: number;
-  sitePages: number;
-  iwaspCredits: number | 'unlimited';
-  logoOnCard: boolean;
-  ecommerce: boolean;
-  analytics: string;
-  support: string;
+  vcard: boolean;
+  qrCode: boolean;
+  nfc: boolean;
+  sitePersonnalise: boolean;
+  collections: boolean;
+  stories: boolean;
+  pushNotifications: boolean;
+  analyticsIA: boolean;
+  whiteLabel: boolean;
+  api: boolean;
 }
 
 interface SaaSSubscription {
@@ -30,11 +33,9 @@ interface UseSaaSSubscriptionReturn {
   isLoading: boolean;
   error: string | null;
   isSubscribed: boolean;
-  isIdentity: boolean;
-  isProfessional: boolean;
-  isEnterprise: boolean;
+  isPro: boolean;
+  isBusiness: boolean;
   isPremium: boolean;
-  hasUnlimitedCredits: boolean;
   planDetails: ReturnType<typeof getSaaSPlan> | null;
   refresh: () => Promise<void>;
 }
@@ -49,13 +50,16 @@ const DEFAULT_SUBSCRIPTION: SaaSSubscription = {
   subscription_end: null,
   cancel_at_period_end: false,
   features: {
-    nfcCardsPerMonth: 0,
-    sitePages: 0,
-    iwaspCredits: 0,
-    logoOnCard: false,
-    ecommerce: false,
-    analytics: 'none',
-    support: 'email',
+    vcard: true,
+    qrCode: true,
+    nfc: true,
+    sitePersonnalise: false,
+    collections: false,
+    stories: false,
+    pushNotifications: false,
+    analyticsIA: false,
+    whiteLabel: false,
+    api: false,
   },
 };
 
@@ -72,77 +76,78 @@ export function useSaaSSubscription(): UseSaaSSubscriptionReturn {
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-
     try {
-      const { data, error: fnError } = await supabase.functions.invoke('check-saas-subscription');
+      setIsLoading(true);
+      setError(null);
 
-      if (fnError) {
-        throw new Error(fnError.message);
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        setSubscription(DEFAULT_SUBSCRIPTION);
+        return;
       }
 
-      if (data?.error) {
-        throw new Error(data.error);
+      const { data, error: funcError } = await supabase.functions.invoke('check-saas-subscription');
+
+      if (funcError) {
+        console.error('Error checking subscription:', funcError);
+        setSubscription(DEFAULT_SUBSCRIPTION);
+        return;
       }
 
-      // Map 'gold' plan to 'professional' for backward compatibility
-      const normalizedPlan = data.plan === 'gold' ? 'professional' : data.plan;
-      
-      setSubscription({
-        ...data,
-        plan: normalizedPlan as SaaSPlanId,
-      });
+      if (data) {
+        const planId = data.plan as SaaSPlanId || 'free';
+        const planDetails = getSaaSPlan(planId);
+        
+        setSubscription({
+          subscribed: data.subscribed || false,
+          plan: planId,
+          plan_tier: planId === 'business' ? 2 : planId === 'pro' ? 1 : 0,
+          product_id: data.product_id || null,
+          price_id: data.price_id || null,
+          subscription_id: data.subscription_id || null,
+          subscription_end: data.subscription_end || null,
+          cancel_at_period_end: data.cancel_at_period_end || false,
+          features: planDetails.features as SaaSSubscriptionFeatures,
+        });
+      } else {
+        setSubscription(DEFAULT_SUBSCRIPTION);
+      }
     } catch (err) {
-      console.error('Error checking SaaS subscription:', err);
-      setError(err instanceof Error ? err.message : 'Failed to check subscription');
+      console.error('Subscription check error:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
       setSubscription(DEFAULT_SUBSCRIPTION);
     } finally {
       setIsLoading(false);
     }
   }, [user]);
 
-  // Initial check and user change
+  // Check on mount and auth change
   useEffect(() => {
     checkSubscription();
   }, [checkSubscription]);
 
-  // Periodic refresh (every 60 seconds)
+  // Auto-refresh every 5 minutes
   useEffect(() => {
     if (!user) return;
-    
-    const interval = setInterval(checkSubscription, 60000);
+
+    const interval = setInterval(checkSubscription, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [user, checkSubscription]);
 
-  // Refresh on window focus
+  // Refresh after checkout redirect
   useEffect(() => {
-    if (!user) return;
-
-    const handleFocus = () => {
-      checkSubscription();
-    };
-
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [user, checkSubscription]);
-
-  // Check for success query param (after checkout)
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('subscription') === 'success') {
-      // Small delay to allow Stripe webhook to process
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('subscription_success') === 'true') {
+      // Wait a bit for Stripe webhook to process
       setTimeout(checkSubscription, 2000);
     }
   }, [checkSubscription]);
 
   const plan = subscription?.plan || 'free';
   const isSubscribed = subscription?.subscribed || false;
-  const isIdentity = plan === 'identity';
-  const isProfessional = plan === 'professional';
-  const isEnterprise = plan === 'enterprise';
-  const isPremium = isProfessional || isEnterprise;
-  const hasUnlimitedCredits = isEnterprise;
+  const isPro = plan === 'pro';
+  const isBusiness = plan === 'business';
+  const isPremium = isPro || isBusiness;
   const planDetails = getSaaSPlan(plan);
 
   return {
@@ -150,11 +155,9 @@ export function useSaaSSubscription(): UseSaaSSubscriptionReturn {
     isLoading,
     error,
     isSubscribed,
-    isIdentity,
-    isProfessional,
-    isEnterprise,
+    isPro,
+    isBusiness,
     isPremium,
-    hasUnlimitedCredits,
     planDetails,
     refresh: checkSubscription,
   };
