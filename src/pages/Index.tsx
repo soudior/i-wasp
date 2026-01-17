@@ -6,7 +6,7 @@
  */
 
 import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles, Shield, Zap, Globe, Check } from "lucide-react";
+import { ArrowRight, Sparkles, Shield, Zap, Globe, Check, Linkedin, Instagram, Mail, Phone, Globe2, MessageCircle } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
@@ -540,6 +540,282 @@ const Index = () => {
                 className="flex justify-center"
               >
                 <PremiumCard3D name={previewName || "VOTRE NOM"} />
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════
+            L'AURA — Mockup Téléphone avec Profil Magnifique
+            ═══════════════════════════════════════════════════════════════ */}
+        <section id="laura" className="relative py-32 px-6 overflow-hidden">
+          {/* Glow de fond */}
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(220, 199, 176, 0.06) 0%, transparent 70%)",
+            }}
+          />
+          
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              className="text-center mb-20"
+            >
+              <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#DCC7B0]/50 mb-6">
+                VOTRE IDENTITÉ DIGITALE
+              </p>
+              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[0.04em] text-[#FDFCFB] mb-6">
+                L'Aura <span className="italic text-[#DCC7B0]">Premium</span>
+              </h2>
+              <p className="font-body text-base font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto">
+                Votre site personnel, généré par nos experts. Une présence digitale qui transcende.
+              </p>
+            </motion.div>
+            
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              {/* Mockup Téléphone */}
+              <motion.div
+                initial={{ opacity: 0, x: -40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="flex justify-center"
+              >
+                <div className="relative">
+                  {/* Glow derrière le téléphone */}
+                  <motion.div
+                    className="absolute inset-0 -z-10"
+                    animate={{
+                      boxShadow: [
+                        "0 0 80px rgba(220, 199, 176, 0.15), 0 0 160px rgba(220, 199, 176, 0.08)",
+                        "0 0 100px rgba(220, 199, 176, 0.2), 0 0 200px rgba(220, 199, 176, 0.1)",
+                        "0 0 80px rgba(220, 199, 176, 0.15), 0 0 160px rgba(220, 199, 176, 0.08)",
+                      ],
+                    }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ borderRadius: "3rem" }}
+                  />
+                  
+                  {/* Frame du téléphone */}
+                  <div 
+                    className="relative w-[280px] sm:w-[320px] h-[580px] sm:h-[660px] rounded-[3rem] p-3"
+                    style={{
+                      background: "linear-gradient(145deg, #1A1A1A 0%, #0A0A0A 100%)",
+                      boxShadow: "0 50px 100px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+                    }}
+                  >
+                    {/* Notch */}
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full z-20" />
+                    
+                    {/* Écran */}
+                    <div 
+                      className="w-full h-full rounded-[2.25rem] overflow-hidden relative"
+                      style={{
+                        background: "linear-gradient(180deg, #0A0A0A 0%, #050505 100%)",
+                      }}
+                    >
+                      {/* Contenu du profil */}
+                      <div className="relative h-full flex flex-col items-center px-6 pt-16 pb-8">
+                        
+                        {/* Photo de profil avec bordure lumineuse */}
+                        <motion.div
+                          className="relative mb-6"
+                          animate={{
+                            boxShadow: [
+                              "0 0 30px rgba(220, 199, 176, 0.2)",
+                              "0 0 50px rgba(220, 199, 176, 0.3)",
+                              "0 0 30px rgba(220, 199, 176, 0.2)",
+                            ],
+                          }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                          style={{ borderRadius: "50%" }}
+                        >
+                          <div 
+                            className="w-28 h-28 sm:w-32 sm:h-32 rounded-full p-[3px]"
+                            style={{
+                              background: "linear-gradient(135deg, rgba(220, 199, 176, 0.8) 0%, rgba(220, 199, 176, 0.2) 50%, rgba(220, 199, 176, 0.6) 100%)",
+                            }}
+                          >
+                            <div 
+                              className="w-full h-full rounded-full overflow-hidden"
+                              style={{
+                                filter: "grayscale(100%) contrast(1.1)",
+                              }}
+                            >
+                              <div 
+                                className="w-full h-full"
+                                style={{
+                                  background: "linear-gradient(135deg, #3A3A3A 0%, #1A1A1A 100%)",
+                                }}
+                              />
+                            </div>
+                          </div>
+                          
+                          {/* Badge vérifié */}
+                          <motion.div
+                            className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center"
+                            style={{
+                              background: "linear-gradient(135deg, #DCC7B0 0%, #E8D9C7 100%)",
+                              boxShadow: "0 4px 12px rgba(220, 199, 176, 0.4)",
+                            }}
+                            animate={{ scale: [1, 1.05, 1] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                          >
+                            <Check className="w-4 h-4 text-[#030303]" />
+                          </motion.div>
+                        </motion.div>
+                        
+                        {/* Nom */}
+                        <h3 className="font-display text-xl sm:text-2xl tracking-[0.08em] text-[#FDFCFB] text-center mb-1">
+                          {previewName || "VOTRE NOM"}
+                        </h3>
+                        
+                        {/* Titre */}
+                        <p className="font-mono text-[9px] sm:text-[10px] tracking-[0.25em] uppercase text-[#DCC7B0]/70 mb-2">
+                          FONDATEUR · I-WASP
+                        </p>
+                        
+                        {/* Tagline */}
+                        <p className="font-body text-xs font-extralight text-[#FDFCFB]/40 text-center mb-8 px-4">
+                          L'excellence digitale à portée de main
+                        </p>
+                        
+                        {/* Protocoles sociaux - Boutons glassmorphism */}
+                        <div className="w-full space-y-3 flex-1">
+                          {[
+                            { icon: Linkedin, label: "LinkedIn Protocol", color: "#0A66C2" },
+                            { icon: Instagram, label: "Instagram Protocol", color: "#E4405F" },
+                            { icon: Mail, label: "Email Protocol", color: "#DCC7B0" },
+                            { icon: Phone, label: "Call Protocol", color: "#00FF66" },
+                          ].map((item, i) => (
+                            <motion.div
+                              key={item.label}
+                              initial={{ opacity: 0, x: -20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 0.6, delay: 0.4 + i * 0.1 }}
+                              whileHover={{ scale: 1.02, x: 4 }}
+                              className="relative overflow-hidden rounded-2xl cursor-pointer group"
+                              style={{
+                                background: "rgba(255, 255, 255, 0.03)",
+                                backdropFilter: "blur(20px)",
+                                border: "1px solid rgba(255, 255, 255, 0.06)",
+                              }}
+                            >
+                              {/* Glow au hover */}
+                              <motion.div
+                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                style={{
+                                  background: `radial-gradient(circle at left, ${item.color}15 0%, transparent 70%)`,
+                                }}
+                              />
+                              
+                              <div className="relative flex items-center gap-4 px-4 py-3.5">
+                                <motion.div
+                                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                                  style={{
+                                    background: `linear-gradient(135deg, ${item.color}20 0%, ${item.color}10 100%)`,
+                                    border: `1px solid ${item.color}30`,
+                                  }}
+                                  animate={{
+                                    boxShadow: [
+                                      `0 0 10px ${item.color}20`,
+                                      `0 0 20px ${item.color}30`,
+                                      `0 0 10px ${item.color}20`,
+                                    ],
+                                  }}
+                                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                                >
+                                  <item.icon className="w-5 h-5" style={{ color: item.color }} />
+                                </motion.div>
+                                
+                                <span className="font-mono text-[9px] tracking-[0.15em] uppercase text-[#FDFCFB]/60 group-hover:text-[#FDFCFB]/90 transition-colors">
+                                  {item.label}
+                                </span>
+                                
+                                <ArrowRight className="w-4 h-4 text-[#FDFCFB]/30 ml-auto group-hover:text-[#FDFCFB]/60 transition-colors" />
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                        
+                        {/* Footer du profil */}
+                        <div className="mt-auto pt-6">
+                          <p className="font-mono text-[8px] tracking-[0.3em] uppercase text-[#FDFCFB]/20">
+                            POWERED BY I-WASP
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+              
+              {/* Texte descriptif */}
+              <motion.div
+                initial={{ opacity: 0, x: 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="space-y-10"
+              >
+                <div>
+                  <h3 className="font-display text-2xl sm:text-3xl tracking-[0.04em] text-[#FDFCFB] mb-4">
+                    Un Profil qui <span className="italic text-[#DCC7B0]">Transcende</span>
+                  </h3>
+                  <p className="font-body text-base font-extralight text-[#FDFCFB]/50 leading-relaxed">
+                    Chaque élément est pensé pour impressionner. Photo en noir et blanc haute définition, 
+                    boutons lumineux en verre de saphir, animations fluides — votre présence digitale 
+                    devient une expérience immersive.
+                  </p>
+                </div>
+                
+                {/* Features */}
+                <div className="space-y-6">
+                  {[
+                    { title: "Photo Signature", desc: "Filtre N&B avec bordure lumineuse diffuse" },
+                    { title: "Protocoles Sociaux", desc: "Boutons glassmorphism avec effet lumineux" },
+                    { title: "Badge Vérifié", desc: "Certification d'authenticité i-wasp" },
+                    { title: "Design Mobile-First", desc: "Optimisé pour une expérience parfaite" },
+                  ].map((feature, i) => (
+                    <motion.div
+                      key={feature.title}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.5 + i * 0.1 }}
+                      className="flex items-start gap-4"
+                    >
+                      <div 
+                        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{
+                          background: "rgba(220, 199, 176, 0.08)",
+                          border: "1px solid rgba(220, 199, 176, 0.15)",
+                        }}
+                      >
+                        <Check className="w-4 h-4 text-[#DCC7B0]" />
+                      </div>
+                      <div>
+                        <h4 className="font-display text-sm tracking-[0.08em] text-[#FDFCFB] mb-1">
+                          {feature.title}
+                        </h4>
+                        <p className="font-body text-xs font-extralight text-[#FDFCFB]/40">
+                          {feature.desc}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+                
+                <div className="pt-4">
+                  <LuxuryButton href="/order/offre" variant="primary">
+                    Créer mon Aura
+                  </LuxuryButton>
+                </div>
               </motion.div>
             </div>
           </div>
