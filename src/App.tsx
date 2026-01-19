@@ -322,9 +322,6 @@ const App = () => {
                               <Route path="/coming-soon" element={<ComingSoon />} />
                               <Route path="/bientot" element={<ComingSoon />} />
                               
-                              {/* Nour Prestige Wi-Fi Landing */}
-                              <Route path="/wifi/nour-prestige" element={<NourPrestigeWifi />} />
-                              
                               {/* Public website display - Short URL */}
                               <Route path="/s/:slug" element={<PublicWebsite />} />
                               
