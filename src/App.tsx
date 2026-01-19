@@ -133,6 +133,7 @@ const KechExcluCard = lazy(() => import("./pages/KechExcluCard"));
 const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
 const LaMaisonCupcakeCard = lazy(() => import("./pages/LaMaisonCupcakeCard"));
 const KhokhaSignatureCard = lazy(() => import("./pages/KhokhaSignatureCard"));
+const NourPrestigeWifi = lazy(() => import("./pages/NourPrestigeWifi"));
 const Services = lazy(() => import("./pages/Services"));
 const CartesNFC = lazy(() => import("./pages/CartesNFC"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
@@ -319,6 +320,9 @@ const App = () => {
                               <Route path="/cartes-nfc" element={<CartesNFC />} />
                               <Route path="/coming-soon" element={<ComingSoon />} />
                               <Route path="/bientot" element={<ComingSoon />} />
+                              
+                              {/* Nour Prestige Wi-Fi Landing */}
+                              <Route path="/wifi/nour-prestige" element={<NourPrestigeWifi />} />
                               
                               {/* Public website display - Short URL */}
                               <Route path="/s/:slug" element={<PublicWebsite />} />
