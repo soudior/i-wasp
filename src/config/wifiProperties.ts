@@ -21,6 +21,7 @@ export interface PropertyConfig {
   subtitle: string;
   footerText: string;
   footerTagline: string;
+  whatsappNumber?: string;
   networks: WifiNetwork[];
 }
 
@@ -31,6 +32,7 @@ export const WIFI_PROPERTIES: Record<string, PropertyConfig> = {
     subtitle: "Appartement Officiel – Accès Wi-Fi Privé",
     footerText: "Merci de séjourner chez Nour Prestige",
     footerTagline: "Résidences de Luxe",
+    whatsappNumber: "+212600000000",
     networks: [
       {
         ssid: "HUAWEI-5G-DxH5",
@@ -57,6 +59,7 @@ export const WIFI_PROPERTIES: Record<string, PropertyConfig> = {
     subtitle: "Appartement Officiel – Accès Wi-Fi Privé",
     footerText: "Merci de séjourner chez Abiir",
     footerTagline: "Résidences de Luxe",
+    whatsappNumber: "+212600000000",
     networks: [
       {
         ssid: "Souhail",
