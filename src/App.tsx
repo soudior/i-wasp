@@ -134,6 +134,7 @@ const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
 const LaMaisonCupcakeCard = lazy(() => import("./pages/LaMaisonCupcakeCard"));
 const KhokhaSignatureCard = lazy(() => import("./pages/KhokhaSignatureCard"));
 const NourPrestigeWifi = lazy(() => import("./pages/NourPrestigeWifi"));
+const LuxuryWifiPage = lazy(() => import("./pages/LuxuryWifiPage"));
 const Services = lazy(() => import("./pages/Services"));
 const CartesNFC = lazy(() => import("./pages/CartesNFC"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
@@ -359,6 +360,10 @@ const App = () => {
                               <Route path="/admin/web-studio-ia" element={<AdminWebStudioIA />} />
                               <Route path="/web-studio-legacy" element={<WebStudioLegacy />} />
                               <Route path="/rental-demo" element={<RentalDemo />} />
+                              
+                              {/* Luxury Wi-Fi Pages */}
+                              <Route path="/wifi/:propertySlug" element={<LuxuryWifiPage />} />
+                              <Route path="/wifi/nour-prestige-legacy" element={<NourPrestigeWifi />} />
                               <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
                               <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
                               <Route path="/demo/studio" element={<DemoStudio />} />
