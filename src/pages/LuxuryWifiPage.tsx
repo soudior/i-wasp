@@ -1,8 +1,9 @@
 import { useParams, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Wifi, Smartphone } from "lucide-react";
+import { Wifi, Smartphone, MessageCircle } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { getPropertyBySlug, WifiNetwork } from "@/config/wifiProperties";
+import { handleWhatsAppTap } from "@/lib/smartActions";
 
 /**
  * Luxury Wi-Fi Access Page
@@ -156,6 +157,24 @@ export default function LuxuryWifiPage() {
             />
           ))}
         </div>
+
+        {/* WhatsApp Concierge Button */}
+        {property.whatsappNumber && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="mb-8"
+          >
+            <button
+              onClick={() => handleWhatsAppTap(property.whatsappNumber!)}
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-[#25D366]/20 to-[#25D366]/10 border border-[#25D366]/30 text-[#FDFBF7] transition-all duration-300 hover:border-[#25D366]/50 hover:shadow-[0_0_30px_rgba(37,211,102,0.15)] active:scale-[0.98]"
+            >
+              <MessageCircle className="w-5 h-5 text-[#25D366]" />
+              <span className="text-sm font-medium tracking-wide">Contacter le Concierge</span>
+            </button>
+          </motion.div>
+        )}
 
         {/* Instruction text */}
         <motion.div
