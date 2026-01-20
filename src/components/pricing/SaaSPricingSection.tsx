@@ -60,7 +60,7 @@ export function SaaSPricingSection() {
         <div className="grid md:grid-cols-3 gap-6 items-start mb-20">
           <SaaSPricingCard planId="free" isCurrentPlan={currentPlan === 'free'} />
           <SaaSPricingCard planId="pro" isCurrentPlan={currentPlan === 'pro'} />
-          <SaaSPricingCard planId="business" isCurrentPlan={currentPlan === 'business'} />
+          <SaaSPricingCard planId="max" isCurrentPlan={currentPlan === 'max' || currentPlan === 'business'} />
         </div>
 
         {/* Feature Comparison Table */}
@@ -89,13 +89,13 @@ export function SaaSPricingSection() {
                     Fonctionnalité
                   </th>
                   <th className="text-center p-4 font-medium text-sm" style={{ color: COLORS.gris }}>
-                    Free
+                    Start
                   </th>
                   <th className="text-center p-4 font-medium text-sm" style={{ color: COLORS.or }}>
                     Pro
                   </th>
                   <th className="text-center p-4 font-medium text-sm" style={{ color: COLORS.gris }}>
-                    Business
+                    Max
                   </th>
                 </tr>
               </thead>

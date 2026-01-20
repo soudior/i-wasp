@@ -27,7 +27,9 @@ const COLORS = {
 
 const planIcons = {
   free: Zap,
+  start: Zap,
   pro: Star,
+  max: Crown,
   business: Crown,
 };
 
@@ -233,7 +235,7 @@ export function SaaSPricingCard({ planId, isCurrentPlan = false }: SaaSPricingCa
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin mr-2" />
             ) : null}
-            {isFree ? 'Créer mon profil gratuit' : planId === 'business' ? 'Parler à un expert' : 'Passer en Pro'}
+            {isFree ? 'Créer mon profil gratuit' : (planId === 'max' || planId === 'business') ? 'Parler à un expert' : 'Passer en Pro'}
           </Button>
         )}
         
