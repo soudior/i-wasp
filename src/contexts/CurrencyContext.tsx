@@ -1,11 +1,11 @@
 /**
  * CurrencyContext - Global Currency Management with Geolocation Auto-Detection
- * Supports EUR (Europe), USD (Americas), GBP (UK) - International focus
+ * Supports EUR (Europe), MAD (Morocco), USD (Americas), GBP (UK)
  */
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-export type Currency = "EUR" | "USD" | "GBP";
+export type Currency = "EUR" | "MAD" | "USD" | "GBP";
 
 interface CurrencyContextType {
   currency: Currency;
@@ -13,10 +13,12 @@ interface CurrencyContextType {
   toggleCurrency: () => void;
   formatPrice: (amountCents: number) => string;
   formatAmount: (amount: number) => string;
+  formatDualPrice: (eurAmount: number, madAmount: number) => string;
   region: string;
   regionLabel: string;
   currencySymbol: string;
   isAutoDetected: boolean;
+  isMAD: boolean;
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
@@ -24,14 +26,16 @@ const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined
 // Conversion rates (base: EUR)
 const CONVERSION_RATES: Record<Currency, number> = {
   EUR: 1,
-  USD: 1.08,  // 1 EUR = 1.08 USD
-  GBP: 0.85,  // 1 EUR = 0.85 GBP
+  MAD: 11,     // 1 EUR ≈ 11 MAD
+  USD: 1.08,   // 1 EUR = 1.08 USD
+  GBP: 0.85,   // 1 EUR = 0.85 GBP
 };
 
-const CURRENCY_CONFIG: Record<Currency, { symbol: string; locale: string; region: string; label: string }> = {
-  EUR: { symbol: "€", locale: "en-GB", region: "EU", label: "Europe" },
-  USD: { symbol: "$", locale: "en-US", region: "US", label: "Americas" },
-  GBP: { symbol: "£", locale: "en-GB", region: "UK", label: "United Kingdom" },
+const CURRENCY_CONFIG: Record<Currency, { symbol: string; locale: string; region: string; label: string; position: "before" | "after" }> = {
+  EUR: { symbol: "€", locale: "fr-FR", region: "EU", label: "Europe", position: "after" },
+  MAD: { symbol: "DH", locale: "fr-MA", region: "MA", label: "Maroc", position: "after" },
+  USD: { symbol: "$", locale: "en-US", region: "US", label: "Americas", position: "before" },
+  GBP: { symbol: "£", locale: "en-GB", region: "UK", label: "United Kingdom", position: "before" },
 };
 
 interface CurrencyProviderProps {
@@ -41,10 +45,10 @@ interface CurrencyProviderProps {
 export function CurrencyProvider({ children }: CurrencyProviderProps) {
   const [currency, setCurrencyState] = useState<Currency>(() => {
     const saved = localStorage.getItem("iwasp-currency");
-    if (saved && ["EUR", "USD", "GBP"].includes(saved)) {
+    if (saved && ["EUR", "MAD", "USD", "GBP"].includes(saved)) {
       return saved as Currency;
     }
-    return "EUR"; // Default to EUR for international
+    return "EUR"; // Default to EUR
   });
   const [isAutoDetected, setIsAutoDetected] = useState(false);
 
@@ -64,11 +68,15 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
         const data = await response.json();
         const countryCode = data.country_code;
         
-        // Map country to currency - International focus
+        // Map country to currency
         let detectedCurrency: Currency = "EUR"; // Default
         
+        // Morocco and North Africa
+        if (["MA", "DZ", "TN", "MR", "LY"].includes(countryCode)) {
+          detectedCurrency = "MAD";
+        }
         // UK
-        if (countryCode === "GB") {
+        else if (countryCode === "GB") {
           detectedCurrency = "GBP";
         }
         // Americas
@@ -100,7 +108,7 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
   };
 
   const toggleCurrency = () => {
-    const currencies: Currency[] = ["EUR", "USD", "GBP"];
+    const currencies: Currency[] = ["EUR", "MAD", "USD", "GBP"];
     const currentIndex = currencies.indexOf(currency);
     const nextIndex = (currentIndex + 1) % currencies.length;
     setCurrency(currencies[nextIndex]);
@@ -117,6 +125,10 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
     const amount = convertFromEUR(eurAmount, currency);
     const config = CURRENCY_CONFIG[currency];
     
+    if (currency === "MAD") {
+      return `${amount.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} DH`;
+    }
+    
     return new Intl.NumberFormat(config.locale, {
       style: "currency",
       currency: currency,
@@ -130,15 +142,28 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
     const amount = convertFromEUR(eurAmount, currency);
     const config = CURRENCY_CONFIG[currency];
     
+    if (currency === "MAD") {
+      return `${amount.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} DH`;
+    }
+    
     return new Intl.NumberFormat(config.locale, {
       style: "currency",
       currency: currency,
-      minimumFractionDigits: 0,
+      minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
   };
 
+  // Format dual price (show EUR or MAD based on detection)
+  const formatDualPrice = (eurAmount: number, madAmount: number): string => {
+    if (currency === "MAD") {
+      return `${madAmount.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} DH`;
+    }
+    return `${eurAmount.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+  };
+
   const config = CURRENCY_CONFIG[currency];
+  const isMAD = currency === "MAD";
 
   return (
     <CurrencyContext.Provider
@@ -148,10 +173,12 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
         toggleCurrency,
         formatPrice,
         formatAmount,
+        formatDualPrice,
         region: config.region,
         regionLabel: config.label,
         currencySymbol: config.symbol,
         isAutoDetected,
+        isMAD,
       }}
     >
       {children}
