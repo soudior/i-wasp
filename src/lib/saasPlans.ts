@@ -1,11 +1,11 @@
 /**
  * IWASP SaaS Plans Configuration
- * New tiered pricing: FREE (0€), PRO (12€/mois), BUSINESS (39€/mois)
- * Currency: EUR primary, MAD secondary (11 DH = 1€)
+ * Pricing: Start (0€), Pro (12€/mois), Max (39€/mois)
+ * Currency: Dual pricing EUR + DH (11 DH = 1€)
+ * Style: Apple-like short names
  */
 
 // Stripe Product and Price IDs - SaaS Monthly Subscriptions
-// Note: These need to be created in Stripe Dashboard
 export const SAAS_STRIPE_PRODUCTS = {
   PRO_MONTHLY: {
     product_id: 'prod_pro_monthly',
@@ -24,26 +24,26 @@ export const SAAS_STRIPE_PRODUCTS = {
     priceMad: 118800, // centimes (1188 DH)
     currency: 'eur',
     interval: 'year' as const,
-    savingsPercent: 25, // 2 mois offerts
+    savingsPercent: 25,
   },
-  BUSINESS_MONTHLY: {
-    product_id: 'prod_business_monthly',
-    price_id: 'price_business_monthly', // TODO: Replace with actual Stripe price ID
-    name: 'IWASP Business - Mensuel',
+  MAX_MONTHLY: {
+    product_id: 'prod_max_monthly',
+    price_id: 'price_max_monthly', // TODO: Replace with actual Stripe price ID
+    name: 'IWASP Max - Mensuel',
     priceEur: 3900, // cents (39€)
     priceMad: 42900, // centimes (429 DH)
     currency: 'eur',
     interval: 'month' as const,
   },
-  BUSINESS_ANNUAL: {
-    product_id: 'prod_business_annual',
-    price_id: 'price_business_annual', // TODO: Replace with actual Stripe price ID
-    name: 'IWASP Business - Annuel',
-    priceEur: 35100, // cents (351€)
-    priceMad: 386100, // centimes (3861 DH)
+  MAX_ANNUAL: {
+    product_id: 'prod_max_annual',
+    price_id: 'price_max_annual', // TODO: Replace with actual Stripe price ID
+    name: 'IWASP Max - Annuel',
+    priceEur: 37440, // cents (312€ = 26€/mois)
+    priceMad: 411840, // centimes (3432 DH)
     currency: 'eur',
     interval: 'year' as const,
-    savingsPercent: 25, // 3 mois offerts
+    savingsPercent: 20,
   },
 } as const;
 
@@ -53,7 +53,7 @@ export const LEGACY_STRIPE_PRODUCTS = {
     product_id: 'prod_TkashOgkZlDDzm',
     price_id: 'price_1Sn5gvIvyaABH94uT3RkeEbz',
     name: 'IWASP Gold - Mensuel',
-    price: 290, // cents (2.90€)
+    price: 290,
     currency: 'eur',
     interval: 'month' as const,
   },
@@ -61,20 +61,23 @@ export const LEGACY_STRIPE_PRODUCTS = {
     product_id: 'prod_TkasPk75rM1k69',
     price_id: 'price_1Sn5h7IvyaABH94uTfkCq0zL',
     name: 'IWASP Gold - Annuel',
-    price: 2300, // cents (23€)
+    price: 2300,
     currency: 'eur',
     interval: 'year' as const,
   },
+  // Map old Business to new Max
+  BUSINESS_MONTHLY: SAAS_STRIPE_PRODUCTS.MAX_MONTHLY,
+  BUSINESS_ANNUAL: SAAS_STRIPE_PRODUCTS.MAX_ANNUAL,
 } as const;
 
 // SaaS Plan Types
-export type SaaSPlanId = 'free' | 'pro' | 'business';
+export type SaaSPlanId = 'free' | 'start' | 'pro' | 'max' | 'business'; // business = alias for max
 
 // Plan configuration with features and limits
 export const SAAS_PLANS = {
   FREE: {
     id: 'free' as SaaSPlanId,
-    name: 'Free',
+    name: 'Start',
     tagline: 'Lancer',
     description: 'Idéal pour tester votre première identité digitale et commencer à partager votre profil en quelques minutes.',
     priceEur: 0,
@@ -186,20 +189,20 @@ export const SAAS_PLANS = {
     },
   },
   
-  BUSINESS: {
-    id: 'business' as SaaSPlanId,
-    name: 'Business',
-    tagline: 'Équipe & Agence',
+  MAX: {
+    id: 'max' as SaaSPlanId,
+    name: 'Max',
+    tagline: 'Équipes & Agences',
     description: 'Centralisez et pilotez l\'identité digitale de toute votre équipe au même endroit.',
     priceEur: 39,
     priceMad: 429,
-    priceEurAnnual: 374, // ~32€/mois équivalent (384€/an)
-    priceMadAnnual: 4114,
+    priceEurAnnual: 312, // 26€/mois équivalent
+    priceMadAnnual: 3432,
     interval: 'month' as const,
     isPopular: false,
     stripe: {
-      monthly: SAAS_STRIPE_PRODUCTS.BUSINESS_MONTHLY,
-      annual: SAAS_STRIPE_PRODUCTS.BUSINESS_ANNUAL,
+      monthly: SAAS_STRIPE_PRODUCTS.MAX_MONTHLY,
+      annual: SAAS_STRIPE_PRODUCTS.MAX_ANNUAL,
     },
     
     included: [
@@ -213,6 +216,7 @@ export const SAAS_PLANS = {
       'Support prioritaire & onboarding',
       'White-label complet',
       'API complète',
+      'Multi-langue IA',
     ],
     
     excluded: [],
@@ -233,16 +237,51 @@ export const SAAS_PLANS = {
       templatesPremium: true,
       domainePersonnalise: true,
       equipe: true,
+      multiLangueIA: true,
     },
     
     limits: {
-      vcards: -1, // illimité
-      visites: -1, // illimité
-      stories: -1, // illimité
-      pushNotifications: -1, // illimité
-      socialLinks: -1, // illimité
-      teamMembers: 5, // inclus
+      vcards: -1,
+      visites: -1,
+      stories: -1,
+      pushNotifications: -1,
+      socialLinks: -1,
+      teamMembers: 5,
     },
+  },
+  
+  // Alias for backward compatibility
+  BUSINESS: {
+    id: 'business' as SaaSPlanId,
+    name: 'Max',
+    tagline: 'Équipes & Agences',
+    description: 'Centralisez et pilotez l\'identité digitale de toute votre équipe au même endroit.',
+    priceEur: 39,
+    priceMad: 429,
+    priceEurAnnual: 312,
+    priceMadAnnual: 3432,
+    interval: 'month' as const,
+    isPopular: false,
+    stripe: {
+      monthly: SAAS_STRIPE_PRODUCTS.MAX_MONTHLY,
+      annual: SAAS_STRIPE_PRODUCTS.MAX_ANNUAL,
+    },
+    included: [
+      'Tout ce qui est inclus dans Pro',
+      'Jusqu\'à 5 comptes utilisateurs',
+      'Gestion d\'équipe (rôles, droits)',
+      'White-label complet',
+      'API complète',
+      'Multi-langue IA',
+    ],
+    excluded: [],
+    features: {
+      vcard: true, qrCode: true, nfc: true, sitePersonnalise: true,
+      collections: true, stories: true, pushNotifications: true, analyticsIA: true,
+      whiteLabel: true, api: true, visitesIllimitees: true, templatesStandard: true,
+      templatesPremium: true, domainePersonnalise: true, equipe: true, multiLangueIA: true,
+    },
+    limits: { vcards: -1, visites: -1, stories: -1, pushNotifications: -1, socialLinks: -1, teamMembers: 5 },
   },
 } as const;
 
@@ -253,8 +292,11 @@ export const getSaaSPlan = (planId: SaaSPlanId): SaaSPlan => {
   switch (planId) {
     case 'pro':
       return SAAS_PLANS.PRO;
-    case 'business':
-      return SAAS_PLANS.BUSINESS;
+    case 'max':
+    case 'business': // alias
+      return SAAS_PLANS.MAX;
+    case 'start':
+    case 'free':
     default:
       return SAAS_PLANS.FREE;
   }
@@ -265,9 +307,9 @@ export const getSaaSPlanByProductId = (productId: string): SaaSPlan | null => {
       productId === SAAS_STRIPE_PRODUCTS.PRO_ANNUAL.product_id) {
     return SAAS_PLANS.PRO;
   }
-  if (productId === SAAS_STRIPE_PRODUCTS.BUSINESS_MONTHLY.product_id ||
-      productId === SAAS_STRIPE_PRODUCTS.BUSINESS_ANNUAL.product_id) {
-    return SAAS_PLANS.BUSINESS;
+  if (productId === SAAS_STRIPE_PRODUCTS.MAX_MONTHLY.product_id ||
+      productId === SAAS_STRIPE_PRODUCTS.MAX_ANNUAL.product_id) {
+    return SAAS_PLANS.MAX;
   }
   // Legacy Gold plans map to Pro
   if (productId === LEGACY_STRIPE_PRODUCTS.GOLD_MONTHLY.product_id ||
@@ -283,10 +325,11 @@ export const getSaaSPriceId = (planId: SaaSPlanId, annual: boolean = false): str
       return annual 
         ? SAAS_STRIPE_PRODUCTS.PRO_ANNUAL.price_id 
         : SAAS_STRIPE_PRODUCTS.PRO_MONTHLY.price_id;
-    case 'business':
+    case 'max':
+    case 'business': // alias
       return annual 
-        ? SAAS_STRIPE_PRODUCTS.BUSINESS_ANNUAL.price_id 
-        : SAAS_STRIPE_PRODUCTS.BUSINESS_MONTHLY.price_id;
+        ? SAAS_STRIPE_PRODUCTS.MAX_ANNUAL.price_id 
+        : SAAS_STRIPE_PRODUCTS.MAX_MONTHLY.price_id;
     default:
       return null;
   }
