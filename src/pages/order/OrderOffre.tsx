@@ -19,6 +19,7 @@ interface OfferDetail {
   id: OfferType;
   title: string;
   subtitle: string;
+  priceEUR: number;
   priceMAD: number;
   features: string[];
   isSignature?: boolean;
@@ -29,7 +30,8 @@ const offers: OfferDetail[] = [
     id: "essentiel",
     title: "Essentiel",
     subtitle: "Découverte",
-    priceMAD: 277,
+    priceEUR: 277,
+    priceMAD: 2770,
     features: [
       "1 carte NFC standard",
       "Profil numérique simple",
@@ -40,7 +42,8 @@ const offers: OfferDetail[] = [
     id: "signature",
     title: "Signature",
     subtitle: "Tout débloqué",
-    priceMAD: 555,
+    priceEUR: 555,
+    priceMAD: 5550,
     isSignature: true,
     features: [
       "Carte NFC premium",
@@ -53,7 +56,8 @@ const offers: OfferDetail[] = [
     id: "alliance",
     title: "Alliance",
     subtitle: "Équipes",
-    priceMAD: 925,
+    priceEUR: 925,
+    priceMAD: 9250,
     features: [
       "Pack cartes premium",
       "Admin centralisé",
@@ -258,7 +262,7 @@ function OrderOffreContent() {
                         className="text-2xl font-light tabular-nums"
                         style={{ color: isSelected ? COUTURE.gold : COUTURE.silk }}
                       >
-                        {formatAmount(offer.priceMAD)}
+                        €{offer.priceEUR}
                       </span>
                       
                       {isSelected && (
