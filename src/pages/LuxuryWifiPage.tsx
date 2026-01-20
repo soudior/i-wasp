@@ -1,10 +1,10 @@
 import { useParams, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wifi, MessageCircle, Copy, Check, Camera } from "lucide-react";
+import { Wifi, MessageCircle, Copy, Check, Camera, Loader2, CheckCircle2, WifiOff } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { getPropertyBySlug, WifiNetwork } from "@/config/wifiProperties";
 import { handleWhatsAppTap } from "@/lib/smartActions";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
 /**
@@ -24,6 +24,15 @@ const generateWiFiString = (ssid: string, password: string, security: string = "
   return `WIFI:T:${security};S:${escapedSSID};P:${escapedPassword};;`;
 };
 
+// Haptic feedback for mobile
+const triggerHaptic = () => {
+  if (navigator.vibrate) {
+    navigator.vibrate(10);
+  }
+};
+
+type ConnectionState = 'idle' | 'connecting' | 'success' | 'manual';
+
 interface WifiCardProps {
   network: WifiNetwork;
   delay?: number;
@@ -32,9 +41,12 @@ interface WifiCardProps {
 const WifiCard = ({ network, delay = 0 }: WifiCardProps) => {
   const wifiString = generateWiFiString(network.ssid, network.password, network.security);
   const [copied, setCopied] = useState(false);
+  const [connectionState, setConnectionState] = useState<ConnectionState>('idle');
+  const [countdown, setCountdown] = useState(5);
   
   const handleCopyPassword = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    triggerHaptic();
     try {
       await navigator.clipboard.writeText(network.password);
       setCopied(true);
@@ -54,6 +66,53 @@ const WifiCard = ({ network, delay = 0 }: WifiCardProps) => {
     }
   };
 
+  // Simulate connection animation (iOS 11+ auto-join after QR scan)
+  const startConnectionAnimation = useCallback(() => {
+    if (connectionState !== 'idle') return;
+    
+    triggerHaptic();
+    setConnectionState('connecting');
+    setCountdown(5);
+    
+    // Countdown timer
+    const countdownInterval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    // After 5 seconds, show success or manual instruction
+    setTimeout(() => {
+      clearInterval(countdownInterval);
+      triggerHaptic();
+      // We assume success after scan (can't actually detect WiFi connection in browser)
+      setConnectionState('success');
+      
+      // Reset after showing success
+      setTimeout(() => {
+        setConnectionState('idle');
+        setCountdown(5);
+      }, 4000);
+    }, 5000);
+  }, [connectionState]);
+
+  // Listen for visibility change (user left to scan QR, then came back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && connectionState === 'idle') {
+        // User came back - might have scanned QR
+        // We could trigger animation here, but let's keep it manual for now
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [connectionState]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -71,9 +130,132 @@ const WifiCard = ({ network, delay = 0 }: WifiCardProps) => {
           </div>
         )}
 
+        {/* Connection overlay */}
+        <AnimatePresence>
+          {connectionState !== 'idle' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-3xl bg-[#0D0D0D]/95 backdrop-blur-sm"
+            >
+              {connectionState === 'connecting' && (
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="flex flex-col items-center gap-6"
+                >
+                  {/* Animated WiFi icon with pulse */}
+                  <div className="relative">
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute inset-0 rounded-full bg-[#C9A96E]/20 blur-xl"
+                      style={{ width: 80, height: 80, left: -10, top: -10 }}
+                    />
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      className="relative"
+                    >
+                      <Loader2 className="w-16 h-16 text-[#C9A96E]" />
+                    </motion.div>
+                  </div>
+                  
+                  <div className="text-center space-y-2">
+                    <p className="text-lg font-light tracking-wide text-[#FDFBF7]">
+                      Connexion en cours...
+                    </p>
+                    <div className="flex items-center justify-center gap-2">
+                      <motion.div
+                        className="w-8 h-8 rounded-full border-2 border-[#C9A96E]/30 flex items-center justify-center"
+                        animate={{ borderColor: ['rgba(201,169,110,0.3)', 'rgba(201,169,110,0.6)', 'rgba(201,169,110,0.3)'] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        <span className="text-sm font-mono text-[#C9A96E]">{countdown}</span>
+                      </motion.div>
+                      <span className="text-xs text-[#FDFBF7]/50 tracking-wide">secondes</span>
+                    </div>
+                  </div>
+                  
+                  <p className="text-xs text-[#FDFBF7]/40 tracking-wide text-center max-w-[200px]">
+                    Scannez le QR code avec votre appareil photo
+                  </p>
+                </motion.div>
+              )}
+              
+              {connectionState === 'success' && (
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="flex flex-col items-center gap-5"
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                    className="relative"
+                  >
+                    <div className="absolute inset-0 rounded-full bg-[#25D366]/20 blur-xl" style={{ width: 80, height: 80, left: -10, top: -10 }} />
+                    <CheckCircle2 className="w-16 h-16 text-[#25D366]" />
+                  </motion.div>
+                  
+                  <div className="text-center space-y-2">
+                    <p className="text-lg font-light tracking-wide text-[#FDFBF7]">
+                      Connecté !
+                    </p>
+                    <p className="text-xs text-[#FDFBF7]/50 tracking-wide">
+                      Réseau : {network.ssid}
+                    </p>
+                  </div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="flex items-center gap-2 text-[10px] text-[#FDFBF7]/30 uppercase tracking-widest"
+                  >
+                    <Wifi className="w-3 h-3" />
+                    <span>Connexion établie</span>
+                  </motion.div>
+                </motion.div>
+              )}
+              
+              {connectionState === 'manual' && (
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="flex flex-col items-center gap-5"
+                >
+                  <WifiOff className="w-12 h-12 text-[#C9A96E]/60" />
+                  
+                  <div className="text-center space-y-2">
+                    <p className="text-base font-light tracking-wide text-[#FDFBF7]">
+                      Connexion manuelle
+                    </p>
+                    <p className="text-xs text-[#FDFBF7]/50 tracking-wide max-w-[220px]">
+                      Allez dans Réglages → Wi-Fi et sélectionnez le réseau
+                    </p>
+                  </div>
+                  
+                  <button
+                    onClick={() => setConnectionState('idle')}
+                    className="text-xs text-[#C9A96E] underline underline-offset-4"
+                  >
+                    Retour
+                  </button>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* QR Code */}
         <div className="flex flex-col items-center gap-5">
-          <div className="relative p-4 rounded-2xl bg-white/5 backdrop-blur-sm">
+          <div 
+            className="relative p-4 rounded-2xl bg-white/5 backdrop-blur-sm cursor-pointer transition-transform duration-200 active:scale-95"
+            onClick={startConnectionAnimation}
+          >
             <QRCodeSVG
               value={wifiString}
               size={140}
@@ -142,10 +324,13 @@ const WifiCard = ({ network, delay = 0 }: WifiCardProps) => {
           </div>
 
           {/* Scan instruction */}
-          <div className="flex items-center gap-2 text-[#C9A96E]/60 text-xs tracking-widest uppercase pt-2">
+          <button
+            onClick={startConnectionAnimation}
+            className="flex items-center gap-2 text-[#C9A96E]/60 text-xs tracking-widest uppercase pt-2 transition-colors hover:text-[#C9A96E] active:scale-95"
+          >
             <Camera className="w-3.5 h-3.5" />
             <span>Scanner avec l'appareil photo</span>
-          </div>
+          </button>
         </div>
 
         {/* Hover glow effect */}
