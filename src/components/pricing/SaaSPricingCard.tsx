@@ -161,14 +161,9 @@ export function SaaSPricingCard({ planId, isCurrentPlan = false }: SaaSPricingCa
             </>
           )}
         </div>
-        {!isFree && 'priceMad' in plan && (
-          <p className="text-sm mt-1" style={{ color: COLORS.gris }}>
-            ou {plan.priceMad} DH/mois
-          </p>
-        )}
         {!isFree && 'priceEurAnnual' in plan && (
-          <p className="text-xs mt-2" style={{ color: COLORS.or }}>
-            {plan.priceEurAnnual}€/an (-25%)
+          <p className="text-sm mt-2" style={{ color: COLORS.or }}>
+            ou {Math.round((plan.priceEurAnnual as number) / 12)}€/mois en annuel
           </p>
         )}
       </div>
@@ -238,8 +233,17 @@ export function SaaSPricingCard({ planId, isCurrentPlan = false }: SaaSPricingCa
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin mr-2" />
             ) : null}
-            {isFree ? 'Commencer gratuitement' : 'Souscrire'}
+            {isFree ? 'Créer mon profil gratuit' : planId === 'business' ? 'Parler à un expert' : 'Passer en Pro'}
           </Button>
+        )}
+        
+        {/* Subtext */}
+        {!isCurrentPlan && !isFree && (
+          <p className="text-xs text-center mt-3" style={{ color: COLORS.gris }}>
+            {planId === 'pro' 
+              ? 'Recommandé pour freelances, créateurs et consultants.'
+              : 'Parfait pour agences, équipes commerciales et entreprises.'}
+          </p>
         )}
       </div>
     </motion.div>
