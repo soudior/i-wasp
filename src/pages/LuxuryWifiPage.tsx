@@ -1,9 +1,11 @@
 import { useParams, Navigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Wifi, Smartphone, MessageCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Wifi, MessageCircle, Copy, Check, Camera } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { getPropertyBySlug, WifiNetwork } from "@/config/wifiProperties";
 import { handleWhatsAppTap } from "@/lib/smartActions";
+import { useState } from "react";
+import { toast } from "sonner";
 
 /**
  * Luxury Wi-Fi Access Page
@@ -29,11 +31,27 @@ interface WifiCardProps {
 
 const WifiCard = ({ network, delay = 0 }: WifiCardProps) => {
   const wifiString = generateWiFiString(network.ssid, network.password, network.security);
+  const [copied, setCopied] = useState(false);
   
-  const handleConnect = () => {
-    const link = document.createElement('a');
-    link.href = wifiString;
-    link.click();
+  const handleCopyPassword = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(network.password);
+      setCopied(true);
+      toast.success("Mot de passe copié !");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = network.password;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setCopied(true);
+      toast.success("Mot de passe copié !");
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
@@ -43,10 +61,7 @@ const WifiCard = ({ network, delay = 0 }: WifiCardProps) => {
       transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
       className="relative group"
     >
-      <div 
-        onClick={handleConnect}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0D0D0D] to-[#1A1A1A] border border-[#C9A96E]/20 p-6 cursor-pointer transition-all duration-500 hover:border-[#C9A96E]/40 hover:shadow-[0_0_40px_rgba(201,169,110,0.15)]"
-      >
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0D0D0D] to-[#1A1A1A] border border-[#C9A96E]/20 p-6 transition-all duration-500 hover:border-[#C9A96E]/40 hover:shadow-[0_0_40px_rgba(201,169,110,0.15)]">
         {/* Recommended badge */}
         {network.recommended && (
           <div className="absolute top-4 right-4">
@@ -83,10 +98,53 @@ const WifiCard = ({ network, delay = 0 }: WifiCardProps) => {
             </p>
           </div>
 
-          {/* Touch indicator */}
-          <div className="flex items-center gap-2 text-[#C9A96E]/60 text-xs tracking-widest uppercase">
-            <Smartphone className="w-3.5 h-3.5" />
-            <span>Toucher pour connecter</span>
+          {/* Network credentials */}
+          <div className="w-full space-y-3 pt-2">
+            {/* SSID */}
+            <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-[#FDFBF7]/40 mb-1">Réseau</p>
+                <p className="text-sm text-[#FDFBF7] font-mono">{network.ssid}</p>
+              </div>
+            </div>
+            
+            {/* Password with copy button */}
+            <button
+              onClick={handleCopyPassword}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-[#C9A96E]/10 border border-[#C9A96E]/30 transition-all duration-300 hover:bg-[#C9A96E]/15 hover:border-[#C9A96E]/50 active:scale-[0.98]"
+            >
+              <div className="text-left">
+                <p className="text-[10px] uppercase tracking-wider text-[#C9A96E]/60 mb-1">Mot de passe</p>
+                <p className="text-sm text-[#FDFBF7] font-mono">{network.password}</p>
+              </div>
+              <AnimatePresence mode="wait">
+                {copied ? (
+                  <motion.div
+                    key="check"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                  >
+                    <Check className="w-5 h-5 text-[#25D366]" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="copy"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                  >
+                    <Copy className="w-5 h-5 text-[#C9A96E]" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </button>
+          </div>
+
+          {/* Scan instruction */}
+          <div className="flex items-center gap-2 text-[#C9A96E]/60 text-xs tracking-widest uppercase pt-2">
+            <Camera className="w-3.5 h-3.5" />
+            <span>Scanner avec l'appareil photo</span>
           </div>
         </div>
 
@@ -184,7 +242,7 @@ export default function LuxuryWifiPage() {
           className="text-center mb-10"
         >
           <p className="text-xs text-[#FDFBF7]/40 tracking-wide leading-relaxed max-w-xs mx-auto">
-            Approchez votre téléphone ou scannez le QR code pour vous connecter automatiquement.
+            Ouvrez l'appareil photo de votre téléphone et scannez le QR code, ou copiez le mot de passe.
           </p>
         </motion.div>
 
