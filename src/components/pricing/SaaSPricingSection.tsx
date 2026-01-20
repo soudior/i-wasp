@@ -41,17 +41,17 @@ export function SaaSPricingSection() {
             >
               <Sparkles size={14} style={{ color: COLORS.or }} />
               <span className="text-xs uppercase tracking-widest" style={{ color: COLORS.or }}>
-                Plans SaaS
+                Tarifs
               </span>
             </div>
             
             <h2 className="font-display text-3xl md:text-5xl font-light tracking-tight mb-6" style={{ color: COLORS.ivoire }}>
-              Choisissez votre{" "}
-              <span style={{ color: COLORS.or }}>formule</span>
+              Des plans simples, conçus pour{" "}
+              <span style={{ color: COLORS.or }}>grandir avec vous</span>
             </h2>
             
             <p className="text-lg font-light max-w-2xl mx-auto" style={{ color: COLORS.gris }}>
-              De la carte NFC au site complet, nous avons une solution pour chaque étape de votre croissance.
+              Commencez gratuitement. Passez au niveau supérieur uniquement quand votre activité accélère.
             </p>
           </motion.div>
         </div>

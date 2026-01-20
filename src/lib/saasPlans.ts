@@ -75,8 +75,8 @@ export const SAAS_PLANS = {
   FREE: {
     id: 'free' as SaaSPlanId,
     name: 'Free',
-    tagline: 'Essai gratuit',
-    description: 'Découvrez IWASP sans engagement',
+    tagline: 'Lancer',
+    description: 'Idéal pour tester votre première identité digitale et commencer à partager votre profil en quelques minutes.',
     priceEur: 0,
     priceMad: 0,
     priceEurAnnual: 0,
@@ -85,20 +85,21 @@ export const SAAS_PLANS = {
     isPopular: false,
     
     included: [
-      'Profil digital basique',
-      'QR Code partageable',
-      'vCard + QR + NFC',
-      'Branding IWASP visible',
+      '1 vCard digitale professionnelle',
+      '1 mini-site auto-généré',
+      '100 visites / mois',
+      'QR code automatique',
+      'Liens réseaux sociaux (limités)',
+      'Analytics basiques',
     ],
     
     excluded: [
-      'Site web personnalisé',
-      'Collections',
+      'Générateur IA',
       'Stories',
-      'Push notifications',
-      'Analytics IA',
+      'Collections',
+      'Notifications push',
+      'Domaine personnalisé',
       'White-label',
-      'API',
     ],
     
     features: {
@@ -112,37 +113,52 @@ export const SAAS_PLANS = {
       analyticsIA: false,
       whiteLabel: false,
       api: false,
+      visitesIllimitees: false,
+      templatesStandard: true,
+      templatesPremium: false,
+    },
+    
+    limits: {
+      vcards: 1,
+      visites: 100,
+      stories: 0,
+      pushNotifications: 0,
+      socialLinks: 3,
     },
   },
   
   PRO: {
     id: 'pro' as SaaSPlanId,
     name: 'Pro',
-    tagline: 'Freelancers & PME',
-    description: 'L\'essentiel pour votre présence digitale',
+    tagline: 'Professionnel',
+    description: 'Pour les pros qui veulent une identité digitale complète, élégante et optimisée par l\'IA.',
     priceEur: 12,
     priceMad: 132,
-    priceEurAnnual: 108,
+    priceEurAnnual: 108, // 9€/mois équivalent
     priceMadAnnual: 1188,
     interval: 'month' as const,
-    isPopular: true, // ⭐ PLUS POPULAIRE
+    isPopular: true, // ⭐ LE PLUS POPULAIRE
     stripe: {
       monthly: SAAS_STRIPE_PRODUCTS.PRO_MONTHLY,
       annual: SAAS_STRIPE_PRODUCTS.PRO_ANNUAL,
     },
     
     included: [
-      'vCard + QR + NFC',
-      'Site web personnalisé',
-      'Collections',
-      'Stories',
-      'Push notifications',
-      'Analytics IA',
+      'vCards et mini-sites illimités',
+      'Visites illimitées',
+      'Générateur IA (bio, pitch, contenus)',
+      'Templates premium & personnalisation',
+      'Collections & Stories dynamiques',
+      'Notifications push (1 000/mois)',
+      'Analytics avancés (origine, clics, conversion)',
+      'Branding quasi-invisible',
+      'Support prioritaire par email',
     ],
     
     excluded: [
-      'White-label',
-      'API',
+      'White-label complet',
+      'API complète',
+      'Domaine personnalisé',
     ],
     
     features: {
@@ -156,18 +172,29 @@ export const SAAS_PLANS = {
       analyticsIA: true,
       whiteLabel: false,
       api: false,
+      visitesIllimitees: true,
+      templatesStandard: true,
+      templatesPremium: true,
+    },
+    
+    limits: {
+      vcards: -1, // illimité
+      visites: -1, // illimité
+      stories: 20,
+      pushNotifications: 1000,
+      socialLinks: -1, // illimité
     },
   },
   
   BUSINESS: {
     id: 'business' as SaaSPlanId,
     name: 'Business',
-    tagline: 'Agences & Entreprises',
-    description: 'Solution complète pour les professionnels',
+    tagline: 'Équipe & Agence',
+    description: 'Centralisez et pilotez l\'identité digitale de toute votre équipe au même endroit.',
     priceEur: 39,
     priceMad: 429,
-    priceEurAnnual: 351,
-    priceMadAnnual: 3861,
+    priceEurAnnual: 374, // ~32€/mois équivalent (384€/an)
+    priceMadAnnual: 4114,
     interval: 'month' as const,
     isPopular: false,
     stripe: {
@@ -176,13 +203,15 @@ export const SAAS_PLANS = {
     },
     
     included: [
-      'vCard + QR + NFC',
-      'Site web personnalisé',
-      'Collections',
-      'Stories',
-      'Push notifications',
-      'Analytics IA',
-      'White-label (sans branding IWASP)',
+      'Tout ce qui est inclus dans Pro',
+      'Jusqu\'à 5 comptes utilisateurs',
+      'Gestion d\'équipe (rôles, droits)',
+      'Templates & ressources partagées',
+      'Stories & notifications illimitées',
+      'Domaines personnalisés',
+      'Reporting avancé par équipe',
+      'Support prioritaire & onboarding',
+      'White-label complet',
       'API complète',
     ],
     
@@ -199,6 +228,20 @@ export const SAAS_PLANS = {
       analyticsIA: true,
       whiteLabel: true,
       api: true,
+      visitesIllimitees: true,
+      templatesStandard: true,
+      templatesPremium: true,
+      domainePersonnalise: true,
+      equipe: true,
+    },
+    
+    limits: {
+      vcards: -1, // illimité
+      visites: -1, // illimité
+      stories: -1, // illimité
+      pushNotifications: -1, // illimité
+      socialLinks: -1, // illimité
+      teamMembers: 5, // inclus
     },
   },
 } as const;
@@ -270,31 +313,66 @@ export const SAAS_FEATURE_COMPARISON = [
   {
     category: 'Profil Digital',
     features: [
-      { name: 'vCard complète', free: true, pro: true, business: true },
-      { name: 'QR Code partageable', free: true, pro: true, business: true },
+      { name: 'vCard digitale professionnelle', free: '1', pro: 'Illimité', business: 'Illimité' },
+      { name: 'Mini-site auto-généré', free: '1', pro: 'Illimité', business: 'Illimité' },
+      { name: 'QR Code automatique', free: true, pro: true, business: true },
       { name: 'Technologie NFC', free: true, pro: true, business: true },
+      { name: 'Visites / mois', free: '100', pro: 'Illimité', business: 'Illimité' },
     ],
   },
   {
-    category: 'Site Web & Contenu',
+    category: 'IA & Personnalisation',
     features: [
-      { name: 'Site web personnalisé', free: false, pro: true, business: true },
-      { name: 'Collections', free: false, pro: true, business: true },
-      { name: 'Stories', free: false, pro: true, business: true },
+      { name: 'Générateur IA (bio, pitch)', free: false, pro: true, business: true },
+      { name: 'Templates premium', free: false, pro: true, business: true },
+      { name: 'Personnalisation couleurs & typos', free: false, pro: true, business: true },
     ],
   },
   {
-    category: 'Marketing & Analytics',
+    category: 'Contenu Dynamique',
     features: [
-      { name: 'Push notifications', free: false, pro: true, business: true },
-      { name: 'Analytics IA', free: false, pro: true, business: true },
+      { name: 'Collections (services, produits)', free: false, pro: 'Illimité', business: 'Illimité' },
+      { name: 'Stories dynamiques', free: false, pro: '20 actives', business: 'Illimité' },
+      { name: 'Notifications push / mois', free: false, pro: '1 000', business: 'Illimité' },
     ],
   },
   {
-    category: 'Business',
+    category: 'Analytics',
     features: [
+      { name: 'Analytics basiques', free: true, pro: true, business: true },
+      { name: 'Origine visiteurs & clics', free: false, pro: true, business: true },
+      { name: 'Taux de conversion', free: false, pro: true, business: true },
+      { name: 'Reporting par équipe', free: false, pro: false, business: true },
+    ],
+  },
+  {
+    category: 'Équipe & Entreprise',
+    features: [
+      { name: 'Comptes utilisateurs', free: '1', pro: '1', business: '5 inclus' },
+      { name: 'Gestion d\'équipe (rôles, droits)', free: false, pro: false, business: true },
+      { name: 'Domaines personnalisés', free: false, pro: false, business: true },
       { name: 'White-label (sans branding)', free: false, pro: false, business: true },
       { name: 'API complète', free: false, pro: false, business: true },
     ],
   },
+  {
+    category: 'Support',
+    features: [
+      { name: 'Centre d\'aide', free: true, pro: true, business: true },
+      { name: 'Email standard', free: true, pro: false, business: false },
+      { name: 'Support prioritaire', free: false, pro: true, business: true },
+      { name: 'Onboarding assisté', free: false, pro: false, business: true },
+    ],
+  },
 ];
+
+// Upsell messages for in-app limits
+export const SAAS_UPSELL_MESSAGES = {
+  visitesLimit: "Vous avez atteint la limite de 100 visites / mois. Passez en Pro pour débloquer les visites illimitées.",
+  iaLocked: "Activez l'IA pour générer une bio professionnelle en 10 secondes – disponible dans le plan Pro.",
+  storiesLocked: "Les stories sont une fonctionnalité Pro. Débloquez-les dès maintenant pour dynamiser votre profil.",
+  pushLocked: "Les notifications push sont réservées aux comptes Pro. Convertissez vos visiteurs au bon moment.",
+  collectionsLocked: "Les collections sont disponibles avec le plan Pro. Organisez vos services et produits.",
+  whitelabelLocked: "Supprimez le branding avec le plan Business pour une identité 100% personnalisée.",
+  teamLocked: "Gérez plusieurs profils avec le plan Business. Parfait pour les équipes et agences.",
+};
