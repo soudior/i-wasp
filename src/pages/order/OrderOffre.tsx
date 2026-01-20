@@ -28,41 +28,41 @@ interface OfferDetail {
 const offers: OfferDetail[] = [
   {
     id: "essentiel",
-    title: "Essentiel",
+    title: "Essentielle",
     subtitle: "Découverte",
-    priceEUR: 277,
-    priceMAD: 2770,
+    priceEUR: 29.90,
+    priceMAD: 329,
     features: [
       "1 carte NFC standard",
       "Profil numérique simple",
-      "Jusqu'à 5 liens",
+      "QR code personnalisé",
     ],
   },
   {
     id: "signature",
-    title: "Signature",
-    subtitle: "Tout débloqué",
-    priceEUR: 555,
-    priceMAD: 5550,
+    title: "Professionnelle",
+    subtitle: "Recommandé",
+    priceEUR: 49.90,
+    priceMAD: 549,
     isSignature: true,
     features: [
       "Carte NFC premium",
-      "Stories 24h & galerie",
-      "CRM & analytics",
-      "Notifications push",
+      "Design personnalisé",
+      "Analytics avancés",
+      "Support prioritaire",
     ],
   },
   {
     id: "alliance",
-    title: "Alliance",
-    subtitle: "Équipes",
-    priceEUR: 925,
-    priceMAD: 9250,
+    title: "Prestige",
+    subtitle: "Premium",
+    priceEUR: 89.90,
+    priceMAD: 989,
     features: [
-      "Pack cartes premium",
-      "Admin centralisé",
-      "Dashboard équipe",
-      "Support dédié",
+      "Carte NFC luxe",
+      "Personnalisation totale",
+      "Analytics & CRM",
+      "Support VIP dédié",
     ],
   },
 ];
@@ -70,7 +70,7 @@ const offers: OfferDetail[] = [
 function OrderOffreContent() {
   const navigate = useNavigate();
   const { state, setSelectedOffer, nextStep } = useOrderFunnel();
-  const { formatAmount } = useCurrency();
+  const { formatDualPrice } = useCurrency();
   const [isNavigating, setIsNavigating] = useState(false);
   
   // Tracking conversions
@@ -262,7 +262,7 @@ function OrderOffreContent() {
                         className="text-2xl font-light tabular-nums"
                         style={{ color: isSelected ? COUTURE.gold : COUTURE.silk }}
                       >
-                        €{offer.priceEUR}
+                        {formatDualPrice(offer.priceEUR, offer.priceMAD)}
                       </span>
                       
                       {isSelected && (
