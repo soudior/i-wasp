@@ -16,6 +16,7 @@ import { Download, Printer, Loader2, Eye, Check, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import iwaspLogo from "@/assets/iwasp-logo.png";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SPÉCIFICATIONS CR80 - 600 DPI EXACTES
@@ -31,6 +32,50 @@ const SPEC = {
   SAFE_MARGIN_MM: 3, // Aucun élément critique à moins de 3mm des bords
   CORNER_RADIUS_PX: 75, // ~3.18mm en 600 DPI
 };
+
+// Logo (référence utilisateur) : largeur exacte 3.5 cm = 827 px @ 600 DPI
+const LOGO_PLACEMENT = {
+  widthPx: 827,
+  offsetXPx: 0,
+  offsetYPx: 0,
+};
+
+async function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Impossible de charger l'image: ${src}`));
+    img.src = src;
+  });
+}
+
+function drawLogoFromAsset(
+  ctx: CanvasRenderingContext2D,
+  centerX: number,
+  centerY: number,
+  img: HTMLImageElement
+) {
+  const destW = LOGO_PLACEMENT.widthPx;
+  const aspect = (img.naturalHeight || img.height) / (img.naturalWidth || img.width);
+  const destH = Math.round(destW * aspect);
+
+  const x = Math.round(centerX - destW / 2 + LOGO_PLACEMENT.offsetXPx);
+  const y = Math.round(centerY - destH / 2 + LOGO_PLACEMENT.offsetYPx);
+
+  // Rendu net, sans lissage excessif
+  ctx.save();
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(
+    img,
+    x,
+    y,
+    destW,
+    destH
+  );
+  ctx.restore();
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // COMPOSANT PRINCIPAL
@@ -69,8 +114,14 @@ export default function EvolisCardTemplate() {
       // 3. DÉGRADÉ DE PROFONDEUR - Subtil (Calque 2)
       drawDepthGradient(rectoCtx, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
 
-      // 4. LOGO i-Wasp CENTRÉ (Calque 4)
-      drawIWaspLogoWithNFC(rectoCtx, SPEC.WIDTH_PX / 2, SPEC.HEIGHT_PX / 2);
+       // 4. LOGO i-Wasp (Calque 4)
+       try {
+         const logoImg = await loadImage(iwaspLogo);
+         drawLogoFromAsset(rectoCtx, SPEC.WIDTH_PX / 2, SPEC.HEIGHT_PX / 2, logoImg);
+       } catch {
+         // Fallback: ancien rendu vectoriel si l'image ne charge pas
+         drawIWaspLogoWithNFC(rectoCtx, SPEC.WIDTH_PX / 2, SPEC.HEIGHT_PX / 2);
+       }
 
       const rectoDataUrl = rectoCanvas.toDataURL("image/png", 1.0);
 
