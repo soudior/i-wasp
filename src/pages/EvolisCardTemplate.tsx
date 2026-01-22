@@ -8,15 +8,16 @@
  * Dimensions: 85.60 × 53.98 mm → 2025 × 1275 px @ 600 DPI
  * Technologie: Evolis Avansia (Retransfer)
  * 
- * Critère: Visuellement INDISCERNABLE des images de référence
+ * Utilise les images de référence stockées dans Cloud Storage
  */
 
-import { useState, useCallback } from "react";
-import { Download, Printer, Loader2, Eye, Check, Layers } from "lucide-react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { Download, Printer, Loader2, Eye, Check, Layers, Upload, Image as ImageIcon, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import iwaspLogo from "@/assets/iwasp-logo.png";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SPÉCIFICATIONS CR80 - 600 DPI EXACTES
@@ -29,15 +30,15 @@ const SPEC = {
   DPI: 600,
   WIDTH_PX: 2025,
   HEIGHT_PX: 1275,
-  SAFE_MARGIN_MM: 3, // Aucun élément critique à moins de 3mm des bords
-  CORNER_RADIUS_PX: 75, // ~3.18mm en 600 DPI
+  SAFE_MARGIN_MM: 3,
+  CORNER_RADIUS_PX: 75,
 };
 
-// Logo (référence utilisateur) : largeur exacte 3.5 cm = 827 px @ 600 DPI
-const LOGO_PLACEMENT = {
-  widthPx: 827,
-  offsetXPx: 0,
-  offsetYPx: 0,
+// Chemins des images de référence dans Cloud Storage
+const STORAGE_PATHS = {
+  RECTO: "evolis-templates/recto-reference.png",
+  VERSO: "evolis-templates/verso-reference.png",
+  LOGO: "evolis-templates/logo-measured.png",
 };
 
 async function loadImage(src: string): Promise<HTMLImageElement> {
@@ -50,31 +51,9 @@ async function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function drawLogoFromAsset(
-  ctx: CanvasRenderingContext2D,
-  centerX: number,
-  centerY: number,
-  img: HTMLImageElement
-) {
-  const destW = LOGO_PLACEMENT.widthPx;
-  const aspect = (img.naturalHeight || img.height) / (img.naturalWidth || img.width);
-  const destH = Math.round(destW * aspect);
-
-  const x = Math.round(centerX - destW / 2 + LOGO_PLACEMENT.offsetXPx);
-  const y = Math.round(centerY - destH / 2 + LOGO_PLACEMENT.offsetYPx);
-
-  // Rendu net, sans lissage excessif
-  ctx.save();
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(
-    img,
-    x,
-    y,
-    destW,
-    destH
-  );
-  ctx.restore();
+function getStorageUrl(path: string): string {
+  const { data } = supabase.storage.from("card-assets").getPublicUrl(path);
+  return data.publicUrl;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -88,77 +67,158 @@ export default function EvolisCardTemplate() {
     recto?: string;
     verso?: string;
   }>({});
+  
+  // État pour les images de référence
+  const [referenceImages, setReferenceImages] = useState<{
+    recto: string | null;
+    verso: string | null;
+    logo: string | null;
+  }>({ recto: null, verso: null, logo: null });
+  const [isUploading, setIsUploading] = useState<string | null>(null);
+  const [showUploadSection, setShowUploadSection] = useState(false);
+
+  const rectoInputRef = useRef<HTMLInputElement>(null);
+  const versoInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  // Charger les URLs des images de référence au démarrage
+  useEffect(() => {
+    const loadReferenceUrls = async () => {
+      const rectoUrl = getStorageUrl(STORAGE_PATHS.RECTO);
+      const versoUrl = getStorageUrl(STORAGE_PATHS.VERSO);
+      const logoUrl = getStorageUrl(STORAGE_PATHS.LOGO);
+      
+      // Vérifier si les images existent
+      const checkImage = async (url: string): Promise<string | null> => {
+        try {
+          const response = await fetch(url, { method: "HEAD" });
+          return response.ok ? url : null;
+        } catch {
+          return null;
+        }
+      };
+      
+      const [recto, verso, logo] = await Promise.all([
+        checkImage(rectoUrl),
+        checkImage(versoUrl),
+        checkImage(logoUrl),
+      ]);
+      
+      setReferenceImages({ recto, verso, logo });
+    };
+    
+    loadReferenceUrls();
+  }, []);
+
+  // Upload d'une image vers Cloud Storage
+  const uploadImage = async (file: File, type: "recto" | "verso" | "logo") => {
+    setIsUploading(type);
+    
+    try {
+      const path = type === "recto" 
+        ? STORAGE_PATHS.RECTO 
+        : type === "verso" 
+          ? STORAGE_PATHS.VERSO 
+          : STORAGE_PATHS.LOGO;
+      
+      // Supprimer l'ancienne image si elle existe
+      await supabase.storage.from("card-assets").remove([path]);
+      
+      // Uploader la nouvelle image
+      const { error } = await supabase.storage
+        .from("card-assets")
+        .upload(path, file, { 
+          cacheControl: "3600",
+          upsert: true 
+        });
+      
+      if (error) throw error;
+      
+      // Mettre à jour l'URL
+      const url = getStorageUrl(path);
+      setReferenceImages(prev => ({ ...prev, [type]: url + "?t=" + Date.now() }));
+      
+      toast.success(`Image ${type.toUpperCase()} uploadée avec succès`);
+    } catch (error) {
+      console.error("Erreur upload:", error);
+      toast.error(`Erreur lors de l'upload de l'image ${type}`);
+    } finally {
+      setIsUploading(null);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "recto" | "verso" | "logo") => {
+    const file = e.target.files?.[0];
+    if (file) {
+      uploadImage(file, type);
+    }
+  };
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // GÉNÉRATION DES TEMPLATES 600 DPI - FIDÉLITÉ ABSOLUE
+  // GÉNÉRATION DES TEMPLATES - UTILISE LES IMAGES DE RÉFÉRENCE
   // ═══════════════════════════════════════════════════════════════════════════
 
   const generateTemplates = useCallback(async () => {
+    if (!referenceImages.recto || !referenceImages.verso) {
+      toast.error("Veuillez d'abord uploader les images de référence (recto et verso)");
+      setShowUploadSection(true);
+      return;
+    }
+    
     setIsGenerating(true);
 
     try {
       // ═══════════════════════════════════════════════════════════════════════
-      // RECTO - Logo i-Wasp centré avec ondes NFC
+      // RECTO - Utiliser directement l'image de référence
       // ═══════════════════════════════════════════════════════════════════════
       const rectoCanvas = document.createElement("canvas");
       rectoCanvas.width = SPEC.WIDTH_PX;
       rectoCanvas.height = SPEC.HEIGHT_PX;
       const rectoCtx = rectoCanvas.getContext("2d", { alpha: false })!;
 
-      // 1. FOND NOIR PROFOND (Calque 1)
-      rectoCtx.fillStyle = "#0a0a0a";
-      rectoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
-
-      // 2. PAS DE HONEYCOMB SUR LE RECTO - Fond noir uni premium
-
-      // 3. DÉGRADÉ DE PROFONDEUR - Subtil (Calque 2)
-      drawDepthGradient(rectoCtx, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
-
-       // 4. LOGO i-Wasp (Calque 4)
-       try {
-         const logoImg = await loadImage(iwaspLogo);
-         drawLogoFromAsset(rectoCtx, SPEC.WIDTH_PX / 2, SPEC.HEIGHT_PX / 2, logoImg);
-       } catch {
-         // Fallback: ancien rendu vectoriel si l'image ne charge pas
-         drawIWaspLogoWithNFC(rectoCtx, SPEC.WIDTH_PX / 2, SPEC.HEIGHT_PX / 2);
-       }
+      try {
+        const rectoImg = await loadImage(referenceImages.recto);
+        // Dessiner l'image de référence redimensionnée au format exact 600 DPI
+        rectoCtx.drawImage(rectoImg, 0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
+      } catch (error) {
+        console.error("Erreur chargement recto:", error);
+        // Fallback: fond noir
+        rectoCtx.fillStyle = "#0a0a0a";
+        rectoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
+      }
 
       const rectoDataUrl = rectoCanvas.toDataURL("image/png", 1.0);
 
       // ═══════════════════════════════════════════════════════════════════════
-      // VERSO - Honeycomb visible + petit logo NFC bas droite
+      // VERSO - Utiliser directement l'image de référence
       // ═══════════════════════════════════════════════════════════════════════
       const versoCanvas = document.createElement("canvas");
       versoCanvas.width = SPEC.WIDTH_PX;
       versoCanvas.height = SPEC.HEIGHT_PX;
       const versoCtx = versoCanvas.getContext("2d", { alpha: false })!;
 
-      // 1. FOND NOIR PROFOND
-      versoCtx.fillStyle = "#0a0a0a";
-      versoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
-
-      // 2. MOTIF NID D'ABEILLE - Plus visible sur verso pour effet marqué
-      drawHoneycombPattern(versoCtx, SPEC.WIDTH_PX, SPEC.HEIGHT_PX, {
-        opacity: 0.075,
-        hexSize: 48,
-        strokeWidth: 1.4,
-      });
-
-      // 3. DÉGRADÉ DE PROFONDEUR
-      drawDepthGradient(versoCtx, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
-
-      // 4. PETIT ICÔNE NFC - Bas droite (comme sur l'image de référence)
-      drawSmallNFCWaves(versoCtx, SPEC.WIDTH_PX - 130, SPEC.HEIGHT_PX - 110);
+      try {
+        const versoImg = await loadImage(referenceImages.verso);
+        // Dessiner l'image de référence redimensionnée au format exact 600 DPI
+        versoCtx.drawImage(versoImg, 0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
+      } catch (error) {
+        console.error("Erreur chargement verso:", error);
+        // Fallback: fond noir
+        versoCtx.fillStyle = "#0a0a0a";
+        versoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
+      }
 
       const versoDataUrl = versoCanvas.toDataURL("image/png", 1.0);
 
       setGeneratedImages({ recto: rectoDataUrl, verso: versoDataUrl });
+      toast.success("Templates générés avec succès !");
     } catch (error) {
       console.error("Erreur génération:", error);
+      toast.error("Erreur lors de la génération");
     } finally {
       setIsGenerating(false);
     }
-  }, []);
+  }, [referenceImages]);
 
   // Télécharger une image
   const downloadImage = (dataUrl: string, filename: string) => {
@@ -183,6 +243,7 @@ export default function EvolisCardTemplate() {
   };
 
   const currentPreview = previewMode === "recto" ? generatedImages.recto : generatedImages.verso;
+  const hasAllReferences = referenceImages.recto && referenceImages.verso;
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white p-4 md:p-8">
@@ -198,7 +259,7 @@ export default function EvolisCardTemplate() {
             Template Carte NFC PVC
           </h1>
           <p className="text-neutral-400 max-w-xl mx-auto text-sm">
-            Reproduction fidèle à l'identique • CR80 ISO 7810 • Prêt pour impression industrielle
+            Reproduction fidèle pixel à pixel • CR80 ISO 7810 • Prêt pour impression industrielle
           </p>
         </div>
 
@@ -222,13 +283,168 @@ export default function EvolisCardTemplate() {
           ))}
         </div>
 
+        {/* Section Upload des images de référence */}
+        <Card className="bg-neutral-900 border-neutral-800">
+          <CardHeader className="pb-3">
+            <CardTitle 
+              className="flex items-center justify-between text-white cursor-pointer"
+              onClick={() => setShowUploadSection(!showUploadSection)}
+            >
+              <div className="flex items-center gap-2">
+                <Upload className="w-5 h-5" />
+                <span>Images de référence</span>
+              </div>
+              <Badge 
+                variant="outline" 
+                className={hasAllReferences 
+                  ? "border-emerald-500/50 text-emerald-400" 
+                  : "border-amber-500/50 text-amber-400"
+                }
+              >
+                {hasAllReferences ? "✓ Prêt" : "À configurer"}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          
+          {(showUploadSection || !hasAllReferences) && (
+            <CardContent className="space-y-4">
+              <p className="text-neutral-400 text-sm">
+                Uploadez vos images de référence pour un rendu 100% identique pixel à pixel.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* RECTO */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-neutral-300">RECTO (avec logo)</label>
+                  <input
+                    ref={rectoInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg"
+                    className="hidden"
+                    onChange={(e) => handleFileChange(e, "recto")}
+                  />
+                  <button
+                    onClick={() => rectoInputRef.current?.click()}
+                    disabled={isUploading === "recto"}
+                    className={`w-full aspect-[1.588] rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-all ${
+                      referenceImages.recto 
+                        ? "border-emerald-500/50 bg-emerald-950/20" 
+                        : "border-neutral-700 hover:border-neutral-600 bg-neutral-800/50"
+                    }`}
+                  >
+                    {isUploading === "recto" ? (
+                      <Loader2 className="w-6 h-6 animate-spin text-neutral-400" />
+                    ) : referenceImages.recto ? (
+                      <>
+                        <img 
+                          src={referenceImages.recto} 
+                          alt="Recto" 
+                          className="w-full h-full object-contain rounded-lg"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <ImageIcon className="w-8 h-8 text-neutral-500" />
+                        <span className="text-xs text-neutral-500">Uploader RECTO</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* VERSO */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-neutral-300">VERSO (honeycomb)</label>
+                  <input
+                    ref={versoInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg"
+                    className="hidden"
+                    onChange={(e) => handleFileChange(e, "verso")}
+                  />
+                  <button
+                    onClick={() => versoInputRef.current?.click()}
+                    disabled={isUploading === "verso"}
+                    className={`w-full aspect-[1.588] rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-all ${
+                      referenceImages.verso 
+                        ? "border-emerald-500/50 bg-emerald-950/20" 
+                        : "border-neutral-700 hover:border-neutral-600 bg-neutral-800/50"
+                    }`}
+                  >
+                    {isUploading === "verso" ? (
+                      <Loader2 className="w-6 h-6 animate-spin text-neutral-400" />
+                    ) : referenceImages.verso ? (
+                      <>
+                        <img 
+                          src={referenceImages.verso} 
+                          alt="Verso" 
+                          className="w-full h-full object-contain rounded-lg"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <ImageIcon className="w-8 h-8 text-neutral-500" />
+                        <span className="text-xs text-neutral-500">Uploader VERSO</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* LOGO (optionnel) */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-neutral-300">Logo 3.5cm (optionnel)</label>
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg"
+                    className="hidden"
+                    onChange={(e) => handleFileChange(e, "logo")}
+                  />
+                  <button
+                    onClick={() => logoInputRef.current?.click()}
+                    disabled={isUploading === "logo"}
+                    className={`w-full aspect-[1.588] rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-all ${
+                      referenceImages.logo 
+                        ? "border-emerald-500/50 bg-emerald-950/20" 
+                        : "border-neutral-700 hover:border-neutral-600 bg-neutral-800/50"
+                    }`}
+                  >
+                    {isUploading === "logo" ? (
+                      <Loader2 className="w-6 h-6 animate-spin text-neutral-400" />
+                    ) : referenceImages.logo ? (
+                      <>
+                        <img 
+                          src={referenceImages.logo} 
+                          alt="Logo" 
+                          className="w-full h-full object-contain rounded-lg"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <ImageIcon className="w-8 h-8 text-neutral-500" />
+                        <span className="text-xs text-neutral-500">Uploader LOGO</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {!hasAllReferences && (
+                <div className="flex items-start gap-2 text-amber-400 text-sm bg-amber-950/30 border border-amber-800/50 rounded-lg p-3">
+                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  <span>Uploadez au minimum le RECTO et le VERSO pour générer les templates.</span>
+                </div>
+              )}
+            </CardContent>
+          )}
+        </Card>
+
         {/* Bouton Génération */}
         <div className="flex justify-center">
           <Button
             size="lg"
             onClick={generateTemplates}
-            disabled={isGenerating}
-            className="gap-3 px-8 py-6 text-lg bg-white text-black hover:bg-neutral-200"
+            disabled={isGenerating || !hasAllReferences}
+            className="gap-3 px-8 py-6 text-lg bg-white text-black hover:bg-neutral-200 disabled:opacity-50"
           >
             {isGenerating ? (
               <>
@@ -348,259 +564,4 @@ export default function EvolisCardTemplate() {
       </div>
     </div>
   );
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// MOTIF NID D'ABEILLE (HONEYCOMB)
-// Régulier, homogène, très subtil, ton sur ton noir
-// ═══════════════════════════════════════════════════════════════════════════
-
-interface HoneycombOptions {
-  opacity: number;
-  hexSize: number;
-  strokeWidth: number;
-}
-
-function drawHoneycombPattern(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  options: HoneycombOptions
-) {
-  const { opacity, hexSize, strokeWidth } = options;
-
-  const hexWidth = hexSize * 2;
-  const hexHeight = Math.sqrt(3) * hexSize;
-  const horizontalSpacing = hexWidth * 0.75;
-  const verticalSpacing = hexHeight;
-
-  ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
-  ctx.lineWidth = strokeWidth;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-
-  // Grille hexagonale régulière
-  const cols = Math.ceil(width / horizontalSpacing) + 2;
-  const rows = Math.ceil(height / verticalSpacing) + 2;
-
-  for (let row = -1; row < rows; row++) {
-    for (let col = -1; col < cols; col++) {
-      const offsetY = col % 2 === 0 ? 0 : hexHeight / 2;
-      const cx = col * horizontalSpacing;
-      const cy = row * verticalSpacing + offsetY;
-
-      ctx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const angle = (Math.PI / 3) * i - Math.PI / 6;
-        const x = cx + hexSize * Math.cos(angle);
-        const y = cy + hexSize * Math.sin(angle);
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
-      }
-      ctx.closePath();
-      ctx.stroke();
-    }
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// DÉGRADÉ DE PROFONDEUR
-// Léger, sobre, pas de reflets agressifs
-// ═══════════════════════════════════════════════════════════════════════════
-
-function drawDepthGradient(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number
-) {
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const maxRadius = Math.sqrt(width * width + height * height) / 2;
-
-  // Vignette subtile
-  const gradient = ctx.createRadialGradient(
-    centerX, centerY * 0.8, 0,
-    centerX, centerY, maxRadius
-  );
-  gradient.addColorStop(0, "rgba(25, 25, 25, 0.1)");
-  gradient.addColorStop(0.4, "transparent");
-  gradient.addColorStop(1, "rgba(0, 0, 0, 0.15)");
-
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, width, height);
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// LOGO i-Wasp AVEC ONDES NFC - REPRODUCTION FIDÈLE À 100%
-// Basé sur l'image de référence : taille 3.5 cm = 827 px @ 600 DPI
-// ═══════════════════════════════════════════════════════════════════════════
-
-function drawIWaspLogoWithNFC(
-  ctx: CanvasRenderingContext2D,
-  centerX: number,
-  centerY: number
-) {
-  // Taille réduite : 2.8 cm = 661 px @ 600 DPI (au lieu de 3.5 cm)
-  const logoWidth = 661;
-  const scale = logoWidth / 400; // Facteur d'échelle basé sur design de base 400px
-  
-  // Position décalée vers le haut et vers la droite
-  const baseX = centerX - 50 * scale; // Décalage droite (+30 par rapport à avant)
-  const baseY = centerY - 40 * scale; // Décalage vers le haut
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // DÉGRADÉ MÉTALLISÉ ARGENTÉ (fidèle à la référence)
-  // ═══════════════════════════════════════════════════════════════════════
-  const metalGradient = ctx.createLinearGradient(
-    centerX - logoWidth / 2, centerY - 60 * scale,
-    centerX + logoWidth / 2, centerY + 60 * scale
-  );
-  
-  metalGradient.addColorStop(0, "#5a5a5a");
-  metalGradient.addColorStop(0.15, "#7a7a7a");
-  metalGradient.addColorStop(0.3, "#a8a8a8");
-  metalGradient.addColorStop(0.45, "#c8c8c8");
-  metalGradient.addColorStop(0.5, "#e0e0e0");
-  metalGradient.addColorStop(0.55, "#d0d0d0");
-  metalGradient.addColorStop(0.7, "#a0a0a0");
-  metalGradient.addColorStop(0.85, "#707070");
-  metalGradient.addColorStop(1, "#505050");
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // ICÔNE WIFI/NFC AU-DESSUS DU "i" (3 petits arcs)
-  // ═══════════════════════════════════════════════════════════════════════
-  const wifiX = baseX - 145 * scale;
-  const wifiY = baseY - 35 * scale;
-  
-  ctx.save();
-  ctx.strokeStyle = metalGradient;
-  ctx.lineCap = "round";
-  ctx.lineWidth = 4 * scale;
-  
-  // Ombre pour les arcs WiFi
-  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-  ctx.shadowBlur = 4 * scale;
-  ctx.shadowOffsetX = 1 * scale;
-  ctx.shadowOffsetY = 2 * scale;
-  
-  // Arc 1 (le plus petit, en bas)
-  ctx.globalAlpha = 1;
-  ctx.beginPath();
-  ctx.arc(wifiX, wifiY + 18 * scale, 8 * scale, -Math.PI * 0.8, -Math.PI * 0.2);
-  ctx.stroke();
-  
-  // Arc 2 (moyen)
-  ctx.globalAlpha = 0.85;
-  ctx.beginPath();
-  ctx.arc(wifiX, wifiY + 18 * scale, 16 * scale, -Math.PI * 0.8, -Math.PI * 0.2);
-  ctx.stroke();
-  
-  // Arc 3 (le plus grand, en haut)
-  ctx.globalAlpha = 0.7;
-  ctx.beginPath();
-  ctx.arc(wifiX, wifiY + 18 * scale, 24 * scale, -Math.PI * 0.8, -Math.PI * 0.2);
-  ctx.stroke();
-  
-  ctx.globalAlpha = 1;
-  ctx.restore();
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // TEXTE "i-Wasp" - Police et taille fidèles
-  // ═══════════════════════════════════════════════════════════════════════
-  ctx.save();
-  
-  // Ombre portée pour relief
-  ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
-  ctx.shadowBlur = 8 * scale;
-  ctx.shadowOffsetX = 2 * scale;
-  ctx.shadowOffsetY = 4 * scale;
-  
-  // Police - taille proportionnelle à 3.5 cm
-  const fontSize = 72 * scale;
-  ctx.font = `600 ${fontSize}px 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillStyle = metalGradient;
-  
-  ctx.fillText("i-Wasp", baseX, baseY);
-  
-  ctx.restore();
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // ONDES NFC À DROITE (3 grands arcs courbés)
-  // Position et forme exactes comme sur la référence
-  // ═══════════════════════════════════════════════════════════════════════
-  const waveX = baseX + 155 * scale;
-  const waveY = baseY;
-  
-  ctx.save();
-  ctx.strokeStyle = metalGradient;
-  ctx.lineCap = "round";
-  ctx.lineWidth = 8 * scale;
-  
-  // Ombre pour les ondes
-  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-  ctx.shadowBlur = 6 * scale;
-  ctx.shadowOffsetX = 2 * scale;
-  ctx.shadowOffsetY = 3 * scale;
-  
-  // Arc 1 - Le plus proche (pleine opacité)
-  ctx.globalAlpha = 1;
-  ctx.beginPath();
-  ctx.arc(waveX, waveY, 35 * scale, -Math.PI * 0.38, Math.PI * 0.38);
-  ctx.stroke();
-  
-  // Arc 2 - Moyen
-  ctx.globalAlpha = 0.75;
-  ctx.beginPath();
-  ctx.arc(waveX, waveY, 60 * scale, -Math.PI * 0.38, Math.PI * 0.38);
-  ctx.stroke();
-  
-  // Arc 3 - Le plus éloigné
-  ctx.globalAlpha = 0.5;
-  ctx.beginPath();
-  ctx.arc(waveX, waveY, 85 * scale, -Math.PI * 0.38, Math.PI * 0.38);
-  ctx.stroke();
-  
-  ctx.globalAlpha = 1;
-  ctx.restore();
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// PETIT ICÔNE NFC POUR LE VERSO
-// Bas droite, discret
-// ═══════════════════════════════════════════════════════════════════════════
-
-function drawSmallNFCWaves(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number
-) {
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
-  ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
-  ctx.lineCap = "round";
-  ctx.lineWidth = 2.5;
-
-  // Arc externe
-  ctx.beginPath();
-  ctx.arc(x, y, 35, -Math.PI * 0.5, Math.PI * 0.5);
-  ctx.stroke();
-
-  // Arc moyen
-  ctx.beginPath();
-  ctx.arc(x, y, 24, -Math.PI * 0.5, Math.PI * 0.5);
-  ctx.stroke();
-
-  // Arc interne
-  ctx.beginPath();
-  ctx.arc(x, y, 13, -Math.PI * 0.5, Math.PI * 0.5);
-  ctx.stroke();
-
-  // Point central
-  ctx.beginPath();
-  ctx.arc(x, y, 4, 0, Math.PI * 2);
-  ctx.fill();
 }
