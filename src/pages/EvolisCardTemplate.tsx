@@ -383,8 +383,8 @@ function drawDepthGradient(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// LOGO i-Wasp AVEC ONDES NFC
-// Argenté/métallisé, centré, fidèle à la référence
+// LOGO i-Wasp AVEC ONDES NFC - REPRODUCTION FIDÈLE À 100%
+// Basé sur l'image de référence : taille 3.5 cm = 827 px @ 600 DPI
 // ═══════════════════════════════════════════════════════════════════════════
 
 function drawIWaspLogoWithNFC(
@@ -392,164 +392,130 @@ function drawIWaspLogoWithNFC(
   centerX: number,
   centerY: number
 ) {
-  // ═══════════════════════════════════════════════════════════════════════
-  // DÉGRADÉ ARGENTÉ MÉTALLISÉ RÉALISTE
-  // Simulation d'un métal brossé/poli avec reflets
-  // ═══════════════════════════════════════════════════════════════════════
+  // Taille exacte : 3.5 cm = 827 px @ 600 DPI
+  const logoWidth = 827;
+  const scale = logoWidth / 400; // Facteur d'échelle basé sur design de base 400px
   
+  // Position centrale
+  const baseX = centerX - 80 * scale;
+  const baseY = centerY;
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // DÉGRADÉ MÉTALLISÉ ARGENTÉ (fidèle à la référence)
+  // ═══════════════════════════════════════════════════════════════════════
   const metalGradient = ctx.createLinearGradient(
-    centerX - 280, centerY - 50,
-    centerX + 280, centerY + 50
+    centerX - logoWidth / 2, centerY - 60 * scale,
+    centerX + logoWidth / 2, centerY + 60 * scale
   );
   
-  // Dégradé métal argenté réaliste avec reflets
-  metalGradient.addColorStop(0, "#6b6b6b");
-  metalGradient.addColorStop(0.12, "#8e8e8e");
-  metalGradient.addColorStop(0.25, "#b8b8b8");
-  metalGradient.addColorStop(0.38, "#d0d0d0");
-  metalGradient.addColorStop(0.5, "#e8e8e8");
-  metalGradient.addColorStop(0.62, "#c8c8c8");
-  metalGradient.addColorStop(0.75, "#a0a0a0");
-  metalGradient.addColorStop(0.88, "#787878");
-  metalGradient.addColorStop(1, "#5a5a5a");
-
-  // Position du texte (légèrement à gauche pour les ondes)
-  const textX = centerX - 60;
-  const textY = centerY;
+  metalGradient.addColorStop(0, "#5a5a5a");
+  metalGradient.addColorStop(0.15, "#7a7a7a");
+  metalGradient.addColorStop(0.3, "#a8a8a8");
+  metalGradient.addColorStop(0.45, "#c8c8c8");
+  metalGradient.addColorStop(0.5, "#e0e0e0");
+  metalGradient.addColorStop(0.55, "#d0d0d0");
+  metalGradient.addColorStop(0.7, "#a0a0a0");
+  metalGradient.addColorStop(0.85, "#707070");
+  metalGradient.addColorStop(1, "#505050");
 
   // ═══════════════════════════════════════════════════════════════════════
-  // ÉTAPE 1: Dessiner le texte de base avec ombre
+  // ICÔNE WIFI/NFC AU-DESSUS DU "i" (3 petits arcs)
+  // ═══════════════════════════════════════════════════════════════════════
+  const wifiX = baseX - 145 * scale;
+  const wifiY = baseY - 35 * scale;
+  
+  ctx.save();
+  ctx.strokeStyle = metalGradient;
+  ctx.lineCap = "round";
+  ctx.lineWidth = 4 * scale;
+  
+  // Ombre pour les arcs WiFi
+  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+  ctx.shadowBlur = 4 * scale;
+  ctx.shadowOffsetX = 1 * scale;
+  ctx.shadowOffsetY = 2 * scale;
+  
+  // Arc 1 (le plus petit, en bas)
+  ctx.globalAlpha = 1;
+  ctx.beginPath();
+  ctx.arc(wifiX, wifiY + 18 * scale, 8 * scale, -Math.PI * 0.8, -Math.PI * 0.2);
+  ctx.stroke();
+  
+  // Arc 2 (moyen)
+  ctx.globalAlpha = 0.85;
+  ctx.beginPath();
+  ctx.arc(wifiX, wifiY + 18 * scale, 16 * scale, -Math.PI * 0.8, -Math.PI * 0.2);
+  ctx.stroke();
+  
+  // Arc 3 (le plus grand, en haut)
+  ctx.globalAlpha = 0.7;
+  ctx.beginPath();
+  ctx.arc(wifiX, wifiY + 18 * scale, 24 * scale, -Math.PI * 0.8, -Math.PI * 0.2);
+  ctx.stroke();
+  
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // TEXTE "i-Wasp" - Police et taille fidèles
   // ═══════════════════════════════════════════════════════════════════════
   ctx.save();
   
-  // Ombre portée pour effet relief/gravure
-  ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
-  ctx.shadowBlur = 10;
-  ctx.shadowOffsetX = 3;
-  ctx.shadowOffsetY = 5;
-
-  ctx.font = "bold 88px 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif";
+  // Ombre portée pour relief
+  ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+  ctx.shadowBlur = 8 * scale;
+  ctx.shadowOffsetX = 2 * scale;
+  ctx.shadowOffsetY = 4 * scale;
+  
+  // Police - taille proportionnelle à 3.5 cm
+  const fontSize = 72 * scale;
+  ctx.font = `600 ${fontSize}px 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillStyle = metalGradient;
-  ctx.fillText("i-Wasp", textX, textY);
+  
+  ctx.fillText("i-Wasp", baseX, baseY);
   
   ctx.restore();
 
   // ═══════════════════════════════════════════════════════════════════════
-  // ÉTAPE 2: Micro-texture métal brossé (lignes horizontales très fines)
+  // ONDES NFC À DROITE (3 grands arcs courbés)
+  // Position et forme exactes comme sur la référence
   // ═══════════════════════════════════════════════════════════════════════
+  const waveX = baseX + 155 * scale;
+  const waveY = baseY;
+  
   ctx.save();
-  
-  // Créer un masque avec le texte
-  ctx.font = "bold 88px 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  
-  // Utiliser le texte comme clip path
-  ctx.beginPath();
-  // On doit dessiner le texte comme path - on va utiliser une approche alternative
-  // Dessiner des lignes de brossage par-dessus avec globalCompositeOperation
-  
-  ctx.globalCompositeOperation = "source-atop";
-  
-  // Lignes de brossage horizontales ultra-fines
-  const brushLineSpacing = 1.5; // Espacement entre les lignes
-  const textBounds = {
-    left: textX - 220,
-    right: textX + 220,
-    top: textY - 55,
-    bottom: textY + 55
-  };
-  
-  for (let y = textBounds.top; y < textBounds.bottom; y += brushLineSpacing) {
-    // Variation subtile de l'opacité pour simuler le brossage irrégulier
-    const variation = Math.random() * 0.03 + 0.02;
-    ctx.strokeStyle = `rgba(255, 255, 255, ${variation})`;
-    ctx.lineWidth = 0.5;
-    
-    ctx.beginPath();
-    ctx.moveTo(textBounds.left, y);
-    ctx.lineTo(textBounds.right, y);
-    ctx.stroke();
-  }
-  
-  // Quelques lignes légèrement plus marquées pour le réalisme
-  for (let y = textBounds.top; y < textBounds.bottom; y += brushLineSpacing * 4) {
-    const variation = Math.random() * 0.02 + 0.01;
-    ctx.strokeStyle = `rgba(0, 0, 0, ${variation})`;
-    ctx.lineWidth = 0.3;
-    
-    ctx.beginPath();
-    ctx.moveTo(textBounds.left, y + 0.5);
-    ctx.lineTo(textBounds.right, y + 0.5);
-    ctx.stroke();
-  }
-  
-  ctx.restore();
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // ÉTAPE 3: Reflet supérieur subtil (highlight)
-  // ═══════════════════════════════════════════════════════════════════════
-  ctx.save();
-  
-  const highlightGradient = ctx.createLinearGradient(
-    textX, textY - 50,
-    textX, textY + 20
-  );
-  highlightGradient.addColorStop(0, "rgba(255, 255, 255, 0.15)");
-  highlightGradient.addColorStop(0.4, "rgba(255, 255, 255, 0.05)");
-  highlightGradient.addColorStop(1, "transparent");
-  
-  ctx.font = "bold 88px 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.globalCompositeOperation = "source-atop";
-  ctx.fillStyle = highlightGradient;
-  ctx.fillText("i-Wasp", textX, textY);
-  
-  ctx.restore();
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // ONDES NFC (3 arcs à droite du texte) - Style métallisé cohérent
-  // ═══════════════════════════════════════════════════════════════════════
-  const waveX = textX + 180;
-  const waveY = centerY;
-
-  // Dégradé pour les ondes - même style métal brossé
-  const waveGradient = ctx.createLinearGradient(
-    waveX - 50, waveY - 80,
-    waveX + 100, waveY + 80
-  );
-  waveGradient.addColorStop(0, "#7a7a7a");
-  waveGradient.addColorStop(0.3, "#a8a8a8");
-  waveGradient.addColorStop(0.5, "#d0d0d0");
-  waveGradient.addColorStop(0.7, "#b0b0b0");
-  waveGradient.addColorStop(1, "#6a6a6a");
-
-  ctx.strokeStyle = waveGradient;
+  ctx.strokeStyle = metalGradient;
   ctx.lineCap = "round";
-  ctx.lineWidth = 7;
-
+  ctx.lineWidth = 8 * scale;
+  
+  // Ombre pour les ondes
+  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+  ctx.shadowBlur = 6 * scale;
+  ctx.shadowOffsetX = 2 * scale;
+  ctx.shadowOffsetY = 3 * scale;
+  
   // Arc 1 - Le plus proche (pleine opacité)
   ctx.globalAlpha = 1;
   ctx.beginPath();
-  ctx.arc(waveX, waveY, 34, -Math.PI * 0.4, Math.PI * 0.4);
+  ctx.arc(waveX, waveY, 35 * scale, -Math.PI * 0.38, Math.PI * 0.38);
   ctx.stroke();
-
+  
   // Arc 2 - Moyen
-  ctx.globalAlpha = 0.78;
+  ctx.globalAlpha = 0.75;
   ctx.beginPath();
-  ctx.arc(waveX, waveY, 60, -Math.PI * 0.4, Math.PI * 0.4);
+  ctx.arc(waveX, waveY, 60 * scale, -Math.PI * 0.38, Math.PI * 0.38);
   ctx.stroke();
-
+  
   // Arc 3 - Le plus éloigné
-  ctx.globalAlpha = 0.55;
+  ctx.globalAlpha = 0.5;
   ctx.beginPath();
-  ctx.arc(waveX, waveY, 86, -Math.PI * 0.4, Math.PI * 0.4);
+  ctx.arc(waveX, waveY, 85 * scale, -Math.PI * 0.38, Math.PI * 0.38);
   ctx.stroke();
-
+  
   ctx.globalAlpha = 1;
+  ctx.restore();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
