@@ -95,6 +95,7 @@ const MaisonBOpticCard = lazy(() => import("./pages/MaisonBOpticCard"));
 const AdminCardEditor = lazy(() => import("./pages/AdminCardEditor"));
 const AdminCardGenerator = lazy(() => import("./pages/AdminCardGenerator"));
 const EvolisTemplateGenerator = lazy(() => import("./pages/admin/EvolisTemplateGenerator"));
+const EvolisCardTemplate = lazy(() => import("./pages/EvolisCardTemplate"));
 
 // NEW Order funnel pages - 7 steps strict flow
 const OrderType = lazy(() => import("./pages/order/OrderType"));
@@ -344,6 +345,10 @@ const App = () => {
                               <Route path="/sovereign" element={<SovereignDashboard />} />
                               <Route path="/legacy-map" element={<LegacyMap />} />
                               <Route path="/alliance" element={<LegacyMap />} />
+                              
+                              {/* Evolis Card Template Generator - PUBLIC ACCESS */}
+                              <Route path="/evolis" element={<EvolisCardTemplate />} />
+                              <Route path="/evolis-template" element={<EvolisCardTemplate />} />
                               
                               {/* Public order tracking */}
                               <Route path="/track" element={<TrackOrder />} />
