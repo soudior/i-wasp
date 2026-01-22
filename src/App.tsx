@@ -94,6 +94,7 @@ const DemoStudio = lazy(() => import("./pages/DemoStudio"));
 const MaisonBOpticCard = lazy(() => import("./pages/MaisonBOpticCard"));
 const AdminCardEditor = lazy(() => import("./pages/AdminCardEditor"));
 const AdminCardGenerator = lazy(() => import("./pages/AdminCardGenerator"));
+const EvolisTemplateGenerator = lazy(() => import("./pages/admin/EvolisTemplateGenerator"));
 
 // NEW Order funnel pages - 7 steps strict flow
 const OrderType = lazy(() => import("./pages/order/OrderType"));
@@ -437,6 +438,7 @@ const App = () => {
                               <Route path="/admin/generated-websites" element={<AdminGuard><AdminGeneratedWebsites /></AdminGuard>} />
                               <Route path="/admin/analytics" element={<AdminGuard><ConversionDashboard /></AdminGuard>} />
                               <Route path="/admin/conversions" element={<AdminGuard><ConversionDashboard /></AdminGuard>} />
+                              <Route path="/admin/evolis-template" element={<AdminGuard><EvolisTemplateGenerator /></AdminGuard>} />
                               
                               {/* 404 */}
                               <Route path="*" element={<NotFound />} />
