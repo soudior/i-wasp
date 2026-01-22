@@ -64,14 +64,9 @@ export default function EvolisCardTemplate() {
       rectoCtx.fillStyle = "#0a0a0a";
       rectoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
 
-      // 2. MOTIF NID D'ABEILLE - Extrêmement subtil, ton sur ton (Calque 2)
-      drawHoneycombPattern(rectoCtx, SPEC.WIDTH_PX, SPEC.HEIGHT_PX, {
-        opacity: 0.028,
-        hexSize: 48,
-        strokeWidth: 0.8,
-      });
+      // 2. PAS DE HONEYCOMB SUR LE RECTO - Fond noir uni premium
 
-      // 3. DÉGRADÉ DE PROFONDEUR - Subtil (Calque 3)
+      // 3. DÉGRADÉ DE PROFONDEUR - Subtil (Calque 2)
       drawDepthGradient(rectoCtx, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
 
       // 4. LOGO i-Wasp CENTRÉ (Calque 4)
