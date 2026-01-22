@@ -64,11 +64,11 @@ export default function EvolisCardTemplate() {
       rectoCtx.fillStyle = "#0a0a0a";
       rectoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
 
-      // 2. MOTIF NID D'ABEILLE - Très subtil, ton sur ton (Calque 2)
+      // 2. MOTIF NID D'ABEILLE - Extrêmement subtil, ton sur ton (Calque 2)
       drawHoneycombPattern(rectoCtx, SPEC.WIDTH_PX, SPEC.HEIGHT_PX, {
-        opacity: 0.045,
-        hexSize: 42,
-        strokeWidth: 1.2,
+        opacity: 0.028,
+        hexSize: 48,
+        strokeWidth: 0.8,
       });
 
       // 3. DÉGRADÉ DE PROFONDEUR - Subtil (Calque 3)
@@ -91,11 +91,11 @@ export default function EvolisCardTemplate() {
       versoCtx.fillStyle = "#0a0a0a";
       versoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
 
-      // 2. MOTIF NID D'ABEILLE - Plus visible sur verso
+      // 2. MOTIF NID D'ABEILLE - Légèrement plus visible sur verso (comme référence)
       drawHoneycombPattern(versoCtx, SPEC.WIDTH_PX, SPEC.HEIGHT_PX, {
-        opacity: 0.08,
-        hexSize: 42,
-        strokeWidth: 1.5,
+        opacity: 0.045,
+        hexSize: 48,
+        strokeWidth: 1.0,
       });
 
       // 3. DÉGRADÉ DE PROFONDEUR
