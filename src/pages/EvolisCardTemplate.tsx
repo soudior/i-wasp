@@ -392,13 +392,13 @@ function drawIWaspLogoWithNFC(
   centerX: number,
   centerY: number
 ) {
-  // Taille exacte : 3.5 cm = 827 px @ 600 DPI
-  const logoWidth = 827;
+  // Taille réduite : 2.8 cm = 661 px @ 600 DPI (au lieu de 3.5 cm)
+  const logoWidth = 661;
   const scale = logoWidth / 400; // Facteur d'échelle basé sur design de base 400px
   
-  // Position centrale
-  const baseX = centerX - 80 * scale;
-  const baseY = centerY;
+  // Position décalée vers le haut et vers la droite
+  const baseX = centerX - 50 * scale; // Décalage droite (+30 par rapport à avant)
+  const baseY = centerY - 40 * scale; // Décalage vers le haut
 
   // ═══════════════════════════════════════════════════════════════════════
   // DÉGRADÉ MÉTALLISÉ ARGENTÉ (fidèle à la référence)
