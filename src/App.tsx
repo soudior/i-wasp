@@ -191,29 +191,8 @@ function OrderRedirect() {
 }
 
 const App = () => {
-  const [showSplash, setShowSplash] = useState(() => {
-    const path = window.location.pathname || "/";
-    const isCardRoute = path.startsWith("/card/") || path.startsWith("/c/");
-    if (isCardRoute) return false;
-
-    const splashShown = sessionStorage.getItem("splash-shown");
-    return !splashShown;
-  });
-
-  useEffect(() => {
-    const path = window.location.pathname || "/";
-    const isCardRoute = path.startsWith("/card/") || path.startsWith("/c/");
-    if (isCardRoute) {
-      sessionStorage.setItem("splash-shown", "true");
-    }
-  }, []);
-
-
-
-  const handleSplashComplete = () => {
-    setShowSplash(false);
-    sessionStorage.setItem('splash-shown', 'true');
-  };
+  // Splash screen désactivé - accès direct à la page d'accueil
+  const showSplash = false;
 
   return (
     <ErrorBoundary>
@@ -227,9 +206,6 @@ const App = () => {
                   <CheckoutProvider>
                   <TooltipProvider>
                   <FeatureValidationProvider showOverlay={true}>
-                    {showSplash && (
-                      <SplashScreen onComplete={handleSplashComplete} minDuration={800} />
-                    )}
                     <Toaster />
                     <Sonner />
                     <BrowserRouter>
