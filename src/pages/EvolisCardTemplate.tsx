@@ -86,11 +86,11 @@ export default function EvolisCardTemplate() {
       versoCtx.fillStyle = "#0a0a0a";
       versoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
 
-      // 2. MOTIF NID D'ABEILLE - Légèrement plus visible sur verso (comme référence)
+      // 2. MOTIF NID D'ABEILLE - Plus visible sur verso pour effet marqué
       drawHoneycombPattern(versoCtx, SPEC.WIDTH_PX, SPEC.HEIGHT_PX, {
-        opacity: 0.045,
+        opacity: 0.075,
         hexSize: 48,
-        strokeWidth: 1.0,
+        strokeWidth: 1.4,
       });
 
       // 3. DÉGRADÉ DE PROFONDEUR
