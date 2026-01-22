@@ -397,31 +397,41 @@ function drawIWaspLogoWithNFC(
   centerX: number,
   centerY: number
 ) {
-  // Dégradé argenté métallisé
+  // ═══════════════════════════════════════════════════════════════════════
+  // DÉGRADÉ ARGENTÉ MÉTALLISÉ RÉALISTE
+  // Simulation d'un métal brossé/poli avec reflets
+  // ═══════════════════════════════════════════════════════════════════════
+  
   const metalGradient = ctx.createLinearGradient(
-    centerX - 250, centerY - 40,
-    centerX + 250, centerY + 40
+    centerX - 280, centerY - 50,
+    centerX + 280, centerY + 50
   );
-  metalGradient.addColorStop(0, "#8a8a8a");
-  metalGradient.addColorStop(0.25, "#b0b0b0");
-  metalGradient.addColorStop(0.5, "#d8d8d8");
-  metalGradient.addColorStop(0.75, "#b8b8b8");
-  metalGradient.addColorStop(1, "#909090");
+  
+  // Dégradé métal argenté réaliste avec reflets
+  metalGradient.addColorStop(0, "#6b6b6b");      // Ombre gauche
+  metalGradient.addColorStop(0.12, "#8e8e8e");   // Transition
+  metalGradient.addColorStop(0.25, "#b8b8b8");   // Montée vers reflet
+  metalGradient.addColorStop(0.38, "#d0d0d0");   // Reflet principal
+  metalGradient.addColorStop(0.5, "#e8e8e8");    // Point lumineux central
+  metalGradient.addColorStop(0.62, "#c8c8c8");   // Descente
+  metalGradient.addColorStop(0.75, "#a0a0a0");   // Zone médiane
+  metalGradient.addColorStop(0.88, "#787878");   // Transition ombre
+  metalGradient.addColorStop(1, "#5a5a5a");      // Ombre droite
 
-  // Ombre subtile pour effet relief
-  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-  ctx.shadowBlur = 6;
+  // Ombre portée pour effet relief/gravure
+  ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+  ctx.shadowBlur = 8;
   ctx.shadowOffsetX = 2;
-  ctx.shadowOffsetY = 3;
+  ctx.shadowOffsetY = 4;
 
   // Texte "i-Wasp"
-  ctx.font = "bold 85px 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif";
+  ctx.font = "bold 88px 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillStyle = metalGradient;
 
   // Position du texte (légèrement à gauche pour les ondes)
-  const textX = centerX - 55;
+  const textX = centerX - 60;
   ctx.fillText("i-Wasp", textX, centerY);
 
   // Reset shadow pour les ondes
@@ -431,31 +441,42 @@ function drawIWaspLogoWithNFC(
   ctx.shadowOffsetY = 0;
 
   // ═══════════════════════════════════════════════════════════════════════
-  // ONDES NFC (3 arcs à droite du texte)
+  // ONDES NFC (3 arcs à droite du texte) - Style métallisé cohérent
   // ═══════════════════════════════════════════════════════════════════════
-  const waveX = textX + 175;
+  const waveX = textX + 180;
   const waveY = centerY;
 
-  ctx.strokeStyle = metalGradient;
-  ctx.lineCap = "round";
-  ctx.lineWidth = 6;
+  // Dégradé pour les ondes - même style métal
+  const waveGradient = ctx.createLinearGradient(
+    waveX - 50, waveY - 80,
+    waveX + 100, waveY + 80
+  );
+  waveGradient.addColorStop(0, "#7a7a7a");
+  waveGradient.addColorStop(0.3, "#a8a8a8");
+  waveGradient.addColorStop(0.5, "#d0d0d0");
+  waveGradient.addColorStop(0.7, "#b0b0b0");
+  waveGradient.addColorStop(1, "#6a6a6a");
 
-  // Arc 1 - Le plus proche
+  ctx.strokeStyle = waveGradient;
+  ctx.lineCap = "round";
+  ctx.lineWidth = 7;
+
+  // Arc 1 - Le plus proche (pleine opacité)
   ctx.globalAlpha = 1;
   ctx.beginPath();
-  ctx.arc(waveX, waveY, 32, -Math.PI * 0.42, Math.PI * 0.42);
+  ctx.arc(waveX, waveY, 34, -Math.PI * 0.4, Math.PI * 0.4);
   ctx.stroke();
 
   // Arc 2 - Moyen
-  ctx.globalAlpha = 0.82;
+  ctx.globalAlpha = 0.78;
   ctx.beginPath();
-  ctx.arc(waveX, waveY, 58, -Math.PI * 0.42, Math.PI * 0.42);
+  ctx.arc(waveX, waveY, 60, -Math.PI * 0.4, Math.PI * 0.4);
   ctx.stroke();
 
   // Arc 3 - Le plus éloigné
-  ctx.globalAlpha = 0.62;
+  ctx.globalAlpha = 0.55;
   ctx.beginPath();
-  ctx.arc(waveX, waveY, 84, -Math.PI * 0.42, Math.PI * 0.42);
+  ctx.arc(waveX, waveY, 86, -Math.PI * 0.4, Math.PI * 0.4);
   ctx.stroke();
 
   ctx.globalAlpha = 1;
