@@ -504,7 +504,7 @@ export default function LondonBarberCard() {
           <div className="px-5 pb-6">
             <div className="text-center pt-5 border-t border-[#E8E8E8]">
               <p className="text-[11px] text-[#8E8E93] tracking-widest uppercase font-medium">
-                i-wasp.co
+                i-wasp.com
               </p>
             </div>
           </div>
