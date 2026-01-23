@@ -501,10 +501,10 @@ export default function LondonBarberCard() {
           </div>
 
           {/* Footer */}
-          <div className="px-5 pb-5">
-            <div className="text-center pt-4 border-t border-[#E8E8E8]">
-              <p className="text-[10px] text-[#8E8E93] tracking-wide">
-                Powered by <span className="font-semibold text-[#007AFF]">IWASP</span>
+          <div className="px-5 pb-6">
+            <div className="text-center pt-5 border-t border-[#E8E8E8]">
+              <p className="text-[11px] text-[#8E8E93] tracking-widest uppercase font-medium">
+                i-wasp.co <span className="text-[#6B6B6B]">Corporation</span>
               </p>
             </div>
           </div>

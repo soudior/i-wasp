@@ -141,18 +141,20 @@ export function GalleryCarousel({ brandColors }: GalleryCarouselProps) {
             </motion.div>
           </AnimatePresence>
 
-          {/* Navigation Arrows */}
+          {/* Navigation Arrows - Centered vertically */}
           <button
             onClick={() => paginate(-1)}
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-lg transition-transform hover:scale-110 z-10"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg transition-transform hover:scale-110 z-10"
+            aria-label="Previous"
           >
-            <ChevronLeft size={18} className="text-gray-800" />
+            <ChevronLeft size={20} className="text-gray-800" />
           </button>
           <button
             onClick={() => paginate(1)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-lg transition-transform hover:scale-110 z-10"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg transition-transform hover:scale-110 z-10"
+            aria-label="Next"
           >
-            <ChevronRight size={18} className="text-gray-800" />
+            <ChevronRight size={20} className="text-gray-800" />
           </button>
         </div>
 
