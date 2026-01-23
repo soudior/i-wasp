@@ -16,14 +16,14 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
-// IWASP Apple-like Colors (from custom knowledge)
+// OMNIA Design System Colors
 const COLORS = {
-  background: "#F5F5F7",
-  card: "#FFFFFF",
-  primary: "#1D1D1F",
-  secondary: "#8E8E93",
-  accent: "#007AFF",
-  navBg: "rgba(255, 255, 255, 0.85)",
+  background: "#030303",
+  card: "#111111",
+  primary: "#FDFCFB",
+  secondary: "rgba(253, 252, 251, 0.6)",
+  accent: "#DCC7B0", // Champagne sablé - OMNIA accent
+  navBg: "rgba(10, 10, 10, 0.92)",
 };
 
 interface NavItem {
@@ -145,7 +145,7 @@ export function MobileBottomNav() {
                         <Icon 
                           className="h-6 w-6" 
                           strokeWidth={2.5}
-                          style={{ color: "#FFFFFF" }}
+                          style={{ color: "#030303" }}
                         />
                       </motion.div>
                       <span 
