@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.17c6de152d8546a1a7d8e5c478c6f024',
+  appId: 'app.iwasp.digital',
   appName: 'IWASP',
   webDir: 'dist',
   // Production mode: use local dist folder for Xcode export
