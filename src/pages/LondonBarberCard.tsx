@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import storefrontImage from "@/assets/london-barber-storefront.jpeg";
 import londonBarberLogo from "@/assets/london-barber-logo.png";
+import { GalleryCarousel } from "@/components/london-barber/GalleryCarousel";
 
 // London Barber Brand Colors - Warm wood & classic barber
 const BRAND_COLORS = {
@@ -460,6 +461,9 @@ export default function LondonBarberCard() {
               sublabel={barberData.phone}
               href={`tel:${barberData.phone}`}
             />
+            
+            {/* Gallery */}
+            <GalleryCarousel brandColors={BRAND_COLORS} />
             
             {/* Location Section */}
             <div className="space-y-3 pt-2">
