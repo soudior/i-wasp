@@ -22,6 +22,7 @@ import { downloadVCard } from "@/lib/vcard";
 import { toast } from "sonner";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import storefrontImage from "@/assets/london-barber-storefront.jpeg";
+import londonBarberLogo from "@/assets/london-barber-logo.png";
 
 // London Barber Brand Colors - Warm wood & classic barber
 const BRAND_COLORS = {
@@ -349,13 +350,16 @@ export default function LondonBarberCard() {
           <div className="p-6 text-center border-b border-[#E8E8E8]">
             {/* Logo Badge */}
             <motion.div 
-              className="w-20 h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center shadow-lg"
-              style={{ backgroundColor: BRAND_COLORS.primary }}
+              className="w-20 h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden bg-white"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             >
-              <Scissors size={36} className="text-white" />
+              <img 
+                src={londonBarberLogo} 
+                alt="London Barber Logo" 
+                className="w-16 h-16 object-contain"
+              />
             </motion.div>
             
             {/* Name */}
