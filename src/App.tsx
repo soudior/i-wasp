@@ -54,6 +54,7 @@ const Demo = lazy(() => import("./pages/Demo"));
 const Cart = lazy(() => import("./pages/Cart"));
 const HerbalismCard = lazy(() => import("./pages/HerbalismCard"));
 const LondonBarberCard = lazy(() => import("./pages/LondonBarberCard"));
+const MenuisierMarrakechCard = lazy(() => import("./pages/MenuisierMarrakechCard"));
 const CardSuccess = lazy(() => import("./pages/CardSuccess"));
 const UserGuide = lazy(() => import("./pages/UserGuide"));
 const Templates = lazy(() => import("./pages/Templates"));
@@ -246,6 +247,7 @@ const App = () => {
                               <Route path="/card/medina-travertin/*" element={<DualBrandShowcase />} />
                               <Route path="/card/herbalism-marrakech" element={<HerbalismCard />} />
                               <Route path="/card/london-barber" element={<LondonBarberCard />} />
+                              <Route path="/card/menuisier-marrakech" element={<MenuisierMarrakechCard />} />
                               <Route path="/card/maison-b-optic" element={<MaisonBOpticCard />} />
                               <Route path="/card/charles-lazimi" element={<CharlesLazimiCard />} />
                               <Route path="/card/kech-exclu" element={<KechExcluCard />} />
