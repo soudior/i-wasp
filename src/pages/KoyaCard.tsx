@@ -94,7 +94,7 @@ function GoldenArchPattern() {
   );
 }
 
-// Action Button Component
+// Action Button Component - Optimized for instant link opening
 function ActionButton({ 
   icon, 
   label, 
@@ -112,7 +112,7 @@ function ActionButton({
   variant?: "default" | "primary" | "whatsapp" | "gold";
   gradient?: string;
 }) {
-  const baseStyles = "group relative flex items-center w-full p-4 rounded-2xl transition-all duration-300 overflow-hidden";
+  const baseStyles = "group relative flex items-center w-full p-4 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform duration-100";
   
   const variants = {
     default: {
@@ -142,29 +142,27 @@ function ActionButton({
   };
 
   const v = variants[variant];
+
+  // FAST: Direct navigation without animation delays
+  const handleFastClick = (e: React.MouseEvent) => {
+    if (href) {
+      e.preventDefault();
+      // Use location.href for same-tab or window.open for new tab - both are instant
+      window.open(href, "_blank", "noopener,noreferrer");
+    } else if (onClick) {
+      onClick();
+    }
+  };
   
-  const content = (
-    <motion.div
-      className={baseStyles}
+  return (
+    <button 
+      onClick={handleFastClick}
+      className={`w-full text-left ${baseStyles}`}
       style={{
         background: gradient || v.bg,
         border: `1px solid ${v.border}`,
       }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
     >
-      {/* Shimmer effect */}
-      <motion.div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-        initial={{ x: "-100%" }}
-        whileHover={{ x: "100%" }}
-        transition={{ duration: 0.6, ease: "easeInOut" }}
-        style={{
-          background: `linear-gradient(90deg, transparent 0%, ${KOYA_COLORS.gold}20 50%, transparent 100%)`,
-          width: "50%",
-        }}
-      />
-      
       <div 
         className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
         style={{ background: v.iconBg }}
@@ -177,21 +175,7 @@ function ActionButton({
           <p className="text-sm" style={{ color: KOYA_COLORS.textMuted }}>{sublabel}</p>
         )}
       </div>
-      <ExternalLink size={18} className="text-white/30 group-hover:text-white/60 transition-colors" />
-    </motion.div>
-  );
-
-  if (href) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className="block">
-        {content}
-      </a>
-    );
-  }
-
-  return (
-    <button onClick={onClick} className="w-full text-left">
-      {content}
+      <ExternalLink size={18} className="text-white/30" />
     </button>
   );
 }
