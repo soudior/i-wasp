@@ -44,6 +44,77 @@ const KOYA_COLORS = {
   textMuted: "rgba(255,255,255,0.5)",
 };
 
+// Opening hours by day (0 = Sunday, 1 = Monday, etc.)
+type DaySchedule = { open: string; close: string } | null;
+const OPENING_HOURS: Record<number, DaySchedule> = {
+  0: { open: "19:00", close: "02:00" }, // Dimanche
+  1: { open: "19:00", close: "02:00" }, // Lundi
+  2: null, // Mardi - Fermé
+  3: { open: "19:00", close: "02:00" }, // Mercredi
+  4: { open: "19:00", close: "02:00" }, // Jeudi
+  5: { open: "19:00", close: "03:00" }, // Vendredi
+  6: { open: "19:00", close: "03:00" }, // Samedi
+};
+
+const DAY_NAMES = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+
+// Get real-time status
+function getRestaurantStatus(): { isOpen: boolean; statusText: string; nextEvent: string } {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const currentTime = now.getHours() * 60 + now.getMinutes();
+  
+  const todaySchedule = OPENING_HOURS[dayOfWeek];
+  
+  if (!todaySchedule) {
+    // Find next open day
+    for (let i = 1; i <= 7; i++) {
+      const nextDay = (dayOfWeek + i) % 7;
+      if (OPENING_HOURS[nextDay]) {
+        return {
+          isOpen: false,
+          statusText: "Fermé",
+          nextEvent: `Ouvre ${DAY_NAMES[nextDay]} à ${OPENING_HOURS[nextDay]!.open}`
+        };
+      }
+    }
+    return { isOpen: false, statusText: "Fermé", nextEvent: "" };
+  }
+  
+  const [openH, openM] = todaySchedule.open.split(":").map(Number);
+  const [closeH, closeM] = todaySchedule.close.split(":").map(Number);
+  const openTime = openH * 60 + openM;
+  // Handle after-midnight closing (e.g., 02:00 or 03:00)
+  const closeTime = closeH < openH ? (closeH + 24) * 60 + closeM : closeH * 60 + closeM;
+  const adjustedCurrentTime = currentTime < openTime && closeH < openH ? currentTime + 24 * 60 : currentTime;
+  
+  if (adjustedCurrentTime >= openTime && adjustedCurrentTime < closeTime) {
+    const minsUntilClose = closeTime - adjustedCurrentTime;
+    if (minsUntilClose <= 60) {
+      return { isOpen: true, statusText: "Ouvert", nextEvent: `Ferme dans ${minsUntilClose} min` };
+    }
+    return { isOpen: true, statusText: "Ouvert", nextEvent: `Jusqu'à ${todaySchedule.close}` };
+  }
+  
+  if (currentTime < openTime) {
+    return { isOpen: false, statusText: "Fermé", nextEvent: `Ouvre à ${todaySchedule.open}` };
+  }
+  
+  // After closing, find next open
+  for (let i = 1; i <= 7; i++) {
+    const nextDay = (dayOfWeek + i) % 7;
+    if (OPENING_HOURS[nextDay]) {
+      return {
+        isOpen: false,
+        statusText: "Fermé",
+        nextEvent: i === 1 ? `Ouvre demain à ${OPENING_HOURS[nextDay]!.open}` : `Ouvre ${DAY_NAMES[nextDay]} à ${OPENING_HOURS[nextDay]!.open}`
+      };
+    }
+  }
+  
+  return { isOpen: false, statusText: "Fermé", nextEvent: "" };
+}
+
 // Restaurant Data
 const koyaData = {
   name: "KÔYA",
@@ -52,7 +123,6 @@ const koyaData = {
   reviewCount: "1.4k",
   priceRange: "+ 500 MAD",
   cuisine: "Asian Fusion · Lounge & Bar",
-  status: "Ouvert",
   features: ["Réservation obligatoire", "Terrasse", "Rooftop Bar", "DJ Sets"],
   phone: "+212662622452",
   whatsapp: "+212662622452",
@@ -64,7 +134,6 @@ const koyaData = {
   tripadvisor: "https://www.tripadvisor.com/Restaurant_Review-g293734-d25010867-Reviews-IKoya-Marrakech_Marrakech_Safi.html",
   googleReviews: "https://g.co/kgs/Y8K5Kkz",
   address: "Avenue Echouhada, Hivernage, Marrakech",
-  openingHours: "19:00 - 02:00",
   latitude: 31.6226,
   longitude: -8.0159,
 };
@@ -323,23 +392,30 @@ export default function KoyaCard() {
             {koyaData.cuisine} · {koyaData.priceRange}
           </p>
 
-          {/* Status Badge */}
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full"
-            style={{
-              background: "rgba(34,197,94,0.15)",
-              border: "1px solid rgba(34,197,94,0.3)",
-            }}
-          >
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-sm text-green-400 font-medium">{koyaData.status}</span>
-            <span className="text-white/40">•</span>
-            <Clock size={14} className="text-white/50" />
-            <span className="text-sm text-white/60">{koyaData.openingHours}</span>
-          </motion.div>
+          {/* Real-time Status Badge */}
+          {(() => {
+            const status = getRestaurantStatus();
+            return (
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full"
+                style={{
+                  background: status.isOpen ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)",
+                  border: `1px solid ${status.isOpen ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}`,
+                }}
+              >
+                <span className={`w-2 h-2 rounded-full ${status.isOpen ? "bg-green-400" : "bg-red-400"} animate-pulse`} />
+                <span className={`text-sm font-medium ${status.isOpen ? "text-green-400" : "text-red-400"}`}>
+                  {status.statusText}
+                </span>
+                <span className="text-white/40">•</span>
+                <Clock size={14} className="text-white/50" />
+                <span className="text-sm text-white/60">{status.nextEvent}</span>
+              </motion.div>
+            );
+          })()}
 
           {/* Features Tags */}
           <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
@@ -470,6 +546,64 @@ export default function KoyaCard() {
             sublabel="ikoyamarrakech.com"
             href={koyaData.website}
           />
+        </motion.section>
+
+        {/* === Opening Hours === */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.58 }}
+          className="mb-8"
+        >
+          <h2 
+            className="text-xs uppercase tracking-[0.2em] mb-3 px-1"
+            style={{ color: KOYA_COLORS.textMuted }}
+          >
+            Horaires
+          </h2>
+          
+          <div 
+            className="rounded-2xl p-4"
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+          >
+            {DAY_NAMES.map((dayName, index) => {
+              const schedule = OPENING_HOURS[index];
+              const today = new Date().getDay();
+              const isToday = index === today;
+              
+              return (
+                <div 
+                  key={index}
+                  className={`flex items-center justify-between py-2.5 ${index < 6 ? "border-b border-white/5" : ""}`}
+                  style={{
+                    background: isToday ? `${KOYA_COLORS.gold}08` : "transparent",
+                    marginLeft: isToday ? "-1rem" : 0,
+                    marginRight: isToday ? "-1rem" : 0,
+                    paddingLeft: isToday ? "1rem" : 0,
+                    paddingRight: isToday ? "1rem" : 0,
+                    borderRadius: isToday ? "8px" : 0,
+                  }}
+                >
+                  <span 
+                    className={`text-sm ${isToday ? "font-semibold" : "font-normal"}`}
+                    style={{ color: isToday ? KOYA_COLORS.gold : KOYA_COLORS.textSecondary }}
+                  >
+                    {dayName}
+                    {isToday && <span className="ml-2 text-xs opacity-60">(Aujourd'hui)</span>}
+                  </span>
+                  <span 
+                    className={`text-sm ${schedule ? "" : "italic"}`}
+                    style={{ color: schedule ? KOYA_COLORS.text : KOYA_COLORS.textMuted }}
+                  >
+                    {schedule ? `${schedule.open} - ${schedule.close}` : "Fermé"}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </motion.section>
 
         {/* === Location === */}
