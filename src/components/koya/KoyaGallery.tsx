@@ -7,17 +7,19 @@ import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 
-// Import gallery images
-import gallery1 from "@/assets/koya/gallery-1.jpg";
-import gallery2 from "@/assets/koya/gallery-2.jpg";
-import gallery3 from "@/assets/koya/gallery-3.jpg";
-import gallery4 from "@/assets/koya/gallery-4.jpg";
+// Import official KÔYA gallery images
+import gallery1 from "@/assets/koya/gallery-1.webp";
+import gallery2 from "@/assets/koya/gallery-2.webp";
+import gallery3 from "@/assets/koya/gallery-3.webp";
+import gallery4 from "@/assets/koya/gallery-4.webp";
+import gallery5 from "@/assets/koya/gallery-5.webp";
 
 const GALLERY_IMAGES = [
-  { src: gallery1, title: "Salle Principale", description: "Ambiance chaleureuse et raffinée" },
-  { src: gallery2, title: "Rooftop Bar", description: "Vue panoramique sur Marrakech" },
-  { src: gallery3, title: "Cuisine Fusion", description: "Sushis & créations signatures" },
-  { src: gallery4, title: "Espace VIP", description: "Intimité et élégance" },
+  { src: gallery1, title: "The Show", description: "Live entertainment & ambiance unique" },
+  { src: gallery2, title: "À la Carte", description: "Cuisine fusion d'exception" },
+  { src: gallery3, title: "Secret Recipe", description: "Créations signatures du Chef" },
+  { src: gallery4, title: "L'Espace Lounge", description: "Décor raffiné & intime" },
+  { src: gallery5, title: "Cocktails Bar", description: "Mixologie & spiritueux premium" },
 ];
 
 // KÔYA Brand Colors
