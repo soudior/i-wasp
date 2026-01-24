@@ -20,7 +20,11 @@ import {
   ExternalLink,
   CalendarCheck,
   Sparkles,
-  User
+  User,
+  Facebook,
+  Music2,
+  Navigation,
+  Award
 } from "lucide-react";
 import { downloadVCard, VCardData } from "@/lib/vcard";
 import { toast } from "sonner";
@@ -44,20 +48,25 @@ const KOYA_COLORS = {
 const koyaData = {
   name: "KÔYA",
   subtitle: "Restaurant Lounge",
-  rating: 4.6,
-  reviewCount: "4.1k",
+  rating: 4.9,
+  reviewCount: "1.4k",
   priceRange: "+ 500 MAD",
-  cuisine: "Gastronomie Fusion · Lounge",
+  cuisine: "Asian Fusion · Lounge & Bar",
   status: "Ouvert",
-  features: ["Réservation obligatoire", "Terrasse", "Excellents cocktails"],
-  phone: "+212524433424",
-  whatsapp: "+212661234567",
-  website: "https://koyamarrakech.com",
+  features: ["Réservation obligatoire", "Terrasse", "Rooftop Bar", "DJ Sets"],
+  phone: "+212662622452",
+  whatsapp: "+212662622452",
+  website: "https://ikoyamarrakech.com",
+  reservationUrl: "https://ikoyamarrakech.com/reservation/",
   instagram: "koyamarrakech",
-  address: "Route de l'Ourika, Marrakech",
+  facebook: "koyamarrakech",
+  tiktok: "@koyamarrakech",
+  tripadvisor: "https://www.tripadvisor.com/Restaurant_Review-g293734-d25010867-Reviews-IKoya-Marrakech_Marrakech_Safi.html",
+  googleReviews: "https://g.co/kgs/Y8K5Kkz",
+  address: "Avenue Echouhada, Hivernage, Marrakech",
   openingHours: "19:00 - 02:00",
-  latitude: 31.6105,
-  longitude: -7.9936,
+  latitude: 31.6226,
+  longitude: -8.0159,
 };
 
 // Animated background pattern component
@@ -383,17 +392,69 @@ export default function KoyaCard() {
           <ActionButton
             icon={<CalendarCheck size={22} />}
             label="Réserver une Table"
-            sublabel="Réservation obligatoire"
+            sublabel="Réservation en ligne"
             variant="gold"
-            href={koyaData.website}
+            href={koyaData.reservationUrl}
           />
           
           <ActionButton
             icon={<MessageCircle size={22} />}
             label="WhatsApp"
-            sublabel="Réponse rapide"
+            sublabel={koyaData.whatsapp}
             variant="whatsapp"
             onClick={handleWhatsApp}
+          />
+        </motion.section>
+
+        {/* === Social Media & Reviews === */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="space-y-3 mb-8"
+        >
+          <h2 
+            className="text-xs uppercase tracking-[0.2em] mb-3 px-1"
+            style={{ color: KOYA_COLORS.textMuted }}
+          >
+            Réseaux & Avis
+          </h2>
+
+          <ActionButton
+            icon={<Instagram size={22} />}
+            label="Instagram"
+            sublabel={`@${koyaData.instagram}`}
+            variant="primary"
+            href={`https://instagram.com/${koyaData.instagram}`}
+          />
+
+          <ActionButton
+            icon={<Facebook size={22} />}
+            label="Facebook"
+            sublabel="KÔYA Marrakech"
+            href={`https://facebook.com/${koyaData.facebook}`}
+          />
+
+          <ActionButton
+            icon={<Music2 size={22} />}
+            label="TikTok"
+            sublabel={koyaData.tiktok}
+            href={`https://tiktok.com/${koyaData.tiktok}`}
+          />
+
+          <ActionButton
+            icon={<Star size={22} />}
+            label="Google Reviews"
+            sublabel="4.9 ★ · 1.4k avis"
+            variant="gold"
+            href={koyaData.googleReviews}
+          />
+
+          <ActionButton
+            icon={<Award size={22} />}
+            label="TripAdvisor"
+            sublabel="Top Restaurant Hivernage"
+            href={koyaData.tripadvisor}
           />
         </motion.section>
 
@@ -401,7 +462,7 @@ export default function KoyaCard() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.55 }}
           className="space-y-3 mb-8"
         >
           <h2 
@@ -414,23 +475,16 @@ export default function KoyaCard() {
           <ActionButton
             icon={<Utensils size={22} />}
             label="Menu & Carte"
-            sublabel="Spécialités & Cocktails"
+            sublabel="Asian Fusion & Cocktails"
             variant="primary"
             href={koyaData.website}
           />
 
           <ActionButton
             icon={<Globe size={22} />}
-            label="Site Web"
-            sublabel="koyamarrakech.com"
+            label="Site Officiel"
+            sublabel="ikoyamarrakech.com"
             href={koyaData.website}
-          />
-
-          <ActionButton
-            icon={<Instagram size={22} />}
-            label="Instagram"
-            sublabel={`@${koyaData.instagram}`}
-            href={`https://instagram.com/${koyaData.instagram}`}
           />
         </motion.section>
 
