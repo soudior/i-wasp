@@ -71,6 +71,32 @@ export const WIFI_PROPERTIES: Record<string, PropertyConfig> = {
       }
     ]
   },
+  "nour-prestige-legacy": {
+    slug: "nour-prestige-legacy",
+    brandName: "Nour Prestige",
+    subtitle: "Appartement Officiel – Accès Wi-Fi Privé",
+    footerText: "Merci de séjourner chez Nour Prestige",
+    footerTagline: "Résidences de Luxe",
+    whatsappNumber: "+212600000000",
+    networks: [
+      {
+        ssid: "HUAWEI-5G-DxH5",
+        password: "NR3ea9N3",
+        security: "WPA",
+        label: "Connexion Wi-Fi 5G",
+        recommended: true,
+        description: "Recommandé – Vitesse maximale"
+      },
+      {
+        ssid: "HUAWEI-2.4G-DxH5",
+        password: "NR3ea9N3",
+        security: "WPA",
+        label: "Connexion Wi-Fi 2.4G",
+        recommended: false,
+        description: "Compatible tous appareils"
+      }
+    ]
+  },
   // Template for adding new properties:
   // "property-slug": {
   //   slug: "property-slug",
