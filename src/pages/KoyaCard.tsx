@@ -25,6 +25,7 @@ import {
 import { downloadVCard, VCardData } from "@/lib/vcard";
 import { toast } from "sonner";
 import { useState } from "react";
+import koyaLogo from "@/assets/koya-logo.png";
 
 // KÔYA Brand Colors
 const KOYA_COLORS = {
@@ -257,34 +258,25 @@ export default function KoyaCard() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="relative w-28 h-28 mx-auto mb-6"
+            className="relative mx-auto mb-6"
           >
             {/* Outer glow ring */}
             <div 
-              className="absolute inset-0 rounded-full animate-pulse"
+              className="absolute inset-0 rounded-2xl animate-pulse"
               style={{
                 background: `radial-gradient(circle, ${KOYA_COLORS.gold}30 0%, transparent 70%)`,
+                transform: "scale(1.2)",
               }}
             />
-            {/* Logo container */}
-            <div 
-              className="relative w-full h-full rounded-full flex items-center justify-center"
+            {/* Logo Image */}
+            <img 
+              src={koyaLogo}
+              alt="KÔYA Restaurant Lounge"
+              className="relative h-24 w-auto mx-auto object-contain"
               style={{
-                background: `linear-gradient(135deg, ${KOYA_COLORS.cardBg} 0%, #0f0906 100%)`,
-                border: `2px solid ${KOYA_COLORS.gold}60`,
-                boxShadow: `0 0 40px ${KOYA_COLORS.gold}25, inset 0 0 30px rgba(0,0,0,0.5)`,
+                filter: `drop-shadow(0 0 30px ${KOYA_COLORS.gold}40)`,
               }}
-            >
-              <span 
-                className="text-4xl font-serif font-bold tracking-tight"
-                style={{ 
-                  color: KOYA_COLORS.gold,
-                  textShadow: `0 0 20px ${KOYA_COLORS.gold}50`,
-                }}
-              >
-                K
-              </span>
-            </div>
+            />
           </motion.div>
 
           {/* Restaurant Name */}
