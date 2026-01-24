@@ -1,7 +1,7 @@
 /**
  * IWASP SIGNATURE CARD GENERATOR
  * 
- * Génération automatique du design signature IWASP
+ * Génération à partir des vrais templates IWASP
  * ═══════════════════════════════════════════════════════════════
  * 
  * Format: CR80 – ISO 7810
@@ -15,6 +15,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+
+// Import des vrais templates IWASP
+import cardRectoTemplate from "@/assets/cards/card-base-front.png";
+import cardVersoTemplate from "@/assets/cards/card-base-back.png";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SPÉCIFICATIONS CR80 - 600 DPI EXACTES
@@ -31,138 +35,17 @@ const SPEC = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FONCTIONS DE DESSIN
+// FONCTIONS UTILITAIRES
 // ═══════════════════════════════════════════════════════════════════════════
 
-function drawHoneycombPattern(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  opacity: number = 0.08
-) {
-  const hexSize = 40;
-  const hexHeight = hexSize * Math.sqrt(3);
-  const hexWidth = hexSize * 2;
-
-  ctx.save();
-  ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
-  ctx.lineWidth = 1.5;
-
-  for (let row = -1; row < height / hexHeight + 1; row++) {
-    for (let col = -1; col < width / hexWidth + 1; col++) {
-      const x = col * hexWidth * 0.75 + (row % 2 === 0 ? 0 : hexWidth * 0.375);
-      const y = row * hexHeight * 0.5;
-      drawHexagon(ctx, x, y, hexSize);
-    }
-  }
-
-  ctx.restore();
-}
-
-function drawHexagon(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
-  ctx.beginPath();
-  for (let i = 0; i < 6; i++) {
-    const angle = (Math.PI / 3) * i - Math.PI / 6;
-    const px = x + size * Math.cos(angle);
-    const py = y + size * Math.sin(angle);
-    if (i === 0) {
-      ctx.moveTo(px, py);
-    } else {
-      ctx.lineTo(px, py);
-    }
-  }
-  ctx.closePath();
-  ctx.stroke();
-}
-
-function drawIwaspLogo(
-  ctx: CanvasRenderingContext2D,
-  centerX: number,
-  centerY: number,
-  scale: number = 1
-) {
-  ctx.save();
-  ctx.translate(centerX, centerY);
-  ctx.scale(scale, scale);
-
-  // Créer le gradient métallisé
-  const gradient = ctx.createLinearGradient(-150, -80, 150, 80);
-  gradient.addColorStop(0, "#8B7355");
-  gradient.addColorStop(0.15, "#C9B896");
-  gradient.addColorStop(0.3, "#E8DCC8");
-  gradient.addColorStop(0.45, "#F5EDE0");
-  gradient.addColorStop(0.5, "#FFFFFF");
-  gradient.addColorStop(0.55, "#F5EDE0");
-  gradient.addColorStop(0.7, "#E8DCC8");
-  gradient.addColorStop(0.85, "#C9B896");
-  gradient.addColorStop(1, "#8B7355");
-
-  // Ombre portée subtile
-  ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
-  ctx.shadowBlur = 15;
-  ctx.shadowOffsetX = 3;
-  ctx.shadowOffsetY = 3;
-
-  // Texte "i-WASP"
-  ctx.fillStyle = gradient;
-  ctx.font = "bold 120px 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("i-WASP", 0, 0);
-
-  // Ondes NFC
-  ctx.shadowBlur = 0;
-  ctx.shadowOffsetX = 0;
-  ctx.shadowOffsetY = 0;
-  ctx.strokeStyle = gradient;
-  ctx.lineWidth = 3;
-
-  const nfcX = 180;
-  const nfcY = -30;
-
-  for (let i = 0; i < 3; i++) {
-    const radius = 18 + i * 14;
-    ctx.beginPath();
-    ctx.arc(nfcX, nfcY, radius, -Math.PI / 4, Math.PI / 4);
-    ctx.stroke();
-  }
-
-  ctx.restore();
-}
-
-function drawNfcIcon(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number = 60
-) {
-  ctx.save();
-  ctx.translate(x, y);
-
-  const gradient = ctx.createLinearGradient(-size / 2, -size / 2, size / 2, size / 2);
-  gradient.addColorStop(0, "rgba(255, 255, 255, 0.3)");
-  gradient.addColorStop(0.5, "rgba(255, 255, 255, 0.5)");
-  gradient.addColorStop(1, "rgba(255, 255, 255, 0.3)");
-
-  ctx.strokeStyle = gradient;
-  ctx.lineWidth = 3;
-  ctx.lineCap = "round";
-
-  // Trois arcs NFC
-  for (let i = 0; i < 3; i++) {
-    const radius = size * 0.25 + i * size * 0.2;
-    ctx.beginPath();
-    ctx.arc(0, 0, radius, -Math.PI / 3.5, Math.PI / 3.5);
-    ctx.stroke();
-  }
-
-  // Point central
-  ctx.fillStyle = gradient;
-  ctx.beginPath();
-  ctx.arc(0, 0, size * 0.08, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.restore();
+async function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Impossible de charger l'image: ${src}`));
+    img.src = src;
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -182,73 +65,49 @@ export default function IwaspCardGenerator() {
 
     try {
       // ═══════════════════════════════════════════════════════════════════════
-      // RECTO - Design signature noir + logo métallisé
+      // RECTO - Template réel avec logo i-Wasp métallisé
       // ═══════════════════════════════════════════════════════════════════════
       const rectoCanvas = document.createElement("canvas");
       rectoCanvas.width = SPEC.WIDTH_PX;
       rectoCanvas.height = SPEC.HEIGHT_PX;
       const rectoCtx = rectoCanvas.getContext("2d", { alpha: false })!;
 
-      // Fond noir premium avec léger gradient
-      const bgGradient = rectoCtx.createRadialGradient(
-        SPEC.WIDTH_PX / 2,
-        SPEC.HEIGHT_PX / 2,
-        0,
-        SPEC.WIDTH_PX / 2,
-        SPEC.HEIGHT_PX / 2,
-        SPEC.WIDTH_PX * 0.7
-      );
-      bgGradient.addColorStop(0, "#0a0a0a");
-      bgGradient.addColorStop(0.5, "#050505");
-      bgGradient.addColorStop(1, "#000000");
-      rectoCtx.fillStyle = bgGradient;
-      rectoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
-
-      // Logo i-WASP centré avec effet métallisé
-      drawIwaspLogo(rectoCtx, SPEC.WIDTH_PX / 2, SPEC.HEIGHT_PX / 2, 2.5);
+      // Charger et dessiner le template recto
+      try {
+        const rectoImg = await loadImage(cardRectoTemplate);
+        rectoCtx.drawImage(rectoImg, 0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
+      } catch (error) {
+        console.error("Erreur chargement recto:", error);
+        // Fallback: fond noir
+        rectoCtx.fillStyle = "#0a0a0a";
+        rectoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
+      }
 
       const rectoDataUrl = rectoCanvas.toDataURL("image/png", 1.0);
 
       // ═══════════════════════════════════════════════════════════════════════
-      // VERSO - Honeycomb + NFC icon discret
+      // VERSO - Template réel avec honeycomb
       // ═══════════════════════════════════════════════════════════════════════
       const versoCanvas = document.createElement("canvas");
       versoCanvas.width = SPEC.WIDTH_PX;
       versoCanvas.height = SPEC.HEIGHT_PX;
       const versoCtx = versoCanvas.getContext("2d", { alpha: false })!;
 
-      // Fond noir premium
-      const versoBgGradient = versoCtx.createRadialGradient(
-        SPEC.WIDTH_PX / 2,
-        SPEC.HEIGHT_PX / 2,
-        0,
-        SPEC.WIDTH_PX / 2,
-        SPEC.HEIGHT_PX / 2,
-        SPEC.WIDTH_PX * 0.7
-      );
-      versoBgGradient.addColorStop(0, "#0a0a0a");
-      versoBgGradient.addColorStop(0.5, "#050505");
-      versoBgGradient.addColorStop(1, "#000000");
-      versoCtx.fillStyle = versoBgGradient;
-      versoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
-
-      // Motif honeycomb subtil
-      drawHoneycombPattern(versoCtx, SPEC.WIDTH_PX, SPEC.HEIGHT_PX, 0.075);
-
-      // Icône NFC en bas à droite
-      drawNfcIcon(versoCtx, SPEC.WIDTH_PX - 120, SPEC.HEIGHT_PX - 100, 80);
-
-      // Tagline discret en bas
-      versoCtx.fillStyle = "rgba(255, 255, 255, 0.25)";
-      versoCtx.font = "24px 'SF Pro Display', -apple-system, sans-serif";
-      versoCtx.textAlign = "center";
-      versoCtx.textBaseline = "bottom";
-      versoCtx.fillText("Tap. Connect. Empower.", SPEC.WIDTH_PX / 2, SPEC.HEIGHT_PX - 60);
+      // Charger et dessiner le template verso
+      try {
+        const versoImg = await loadImage(cardVersoTemplate);
+        versoCtx.drawImage(versoImg, 0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
+      } catch (error) {
+        console.error("Erreur chargement verso:", error);
+        // Fallback: fond noir
+        versoCtx.fillStyle = "#0a0a0a";
+        versoCtx.fillRect(0, 0, SPEC.WIDTH_PX, SPEC.HEIGHT_PX);
+      }
 
       const versoDataUrl = versoCanvas.toDataURL("image/png", 1.0);
 
       setGeneratedImages({ recto: rectoDataUrl, verso: versoDataUrl });
-      toast.success("Design signature IWASP généré avec succès !");
+      toast.success("Templates IWASP générés en 600 DPI !");
     } catch (error) {
       console.error("Erreur génération:", error);
       toast.error("Erreur lors de la génération");
@@ -268,11 +127,11 @@ export default function IwaspCardGenerator() {
 
   const downloadBoth = () => {
     if (generatedImages.recto) {
-      downloadImage(generatedImages.recto, "IWASP-SIGNATURE-RECTO-600DPI.png");
+      downloadImage(generatedImages.recto, "IWASP-RECTO-600DPI-CR80.png");
     }
     setTimeout(() => {
       if (generatedImages.verso) {
-        downloadImage(generatedImages.verso, "IWASP-SIGNATURE-VERSO-600DPI.png");
+        downloadImage(generatedImages.verso, "IWASP-VERSO-600DPI-CR80.png");
       }
     }, 300);
   };
@@ -293,7 +152,7 @@ export default function IwaspCardGenerator() {
             Carte IWASP Signature
           </h1>
           <p className="text-neutral-400 max-w-xl mx-auto text-sm">
-            Génération automatique du design premium • Noir mat + Logo métallisé + Honeycomb
+            Export haute résolution de ton design réel • Noir mat + Logo métallisé + Honeycomb
           </p>
         </div>
 
@@ -317,36 +176,47 @@ export default function IwaspCardGenerator() {
           ))}
         </div>
 
-        {/* Design Preview Card */}
+        {/* Preview des templates source */}
         <Card className="bg-neutral-900 border-neutral-800">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-white">
               <Layers className="w-5 h-5" />
-              <span>Design Signature IWASP</span>
+              <span>Design Original IWASP</span>
               <Badge variant="outline" className="ml-auto border-amber-500/50 text-amber-400">
-                Premium
+                Signature
               </Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4 text-sm text-neutral-400">
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Aperçu Recto */}
               <div className="space-y-2">
-                <p className="text-white font-medium">RECTO</p>
-                <ul className="space-y-1 text-xs">
-                  <li>• Fond noir premium avec gradient radial</li>
-                  <li>• Logo "i-WASP" avec effet métallisé 9 stops</li>
-                  <li>• Ondes NFC intégrées au logo</li>
-                  <li>• Ombre portée subtile</li>
-                </ul>
+                <p className="text-sm font-medium text-neutral-300">RECTO</p>
+                <div className="aspect-[1.588] rounded-lg overflow-hidden border border-neutral-700 bg-black">
+                  <img 
+                    src={cardRectoTemplate} 
+                    alt="Template Recto" 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <p className="text-xs text-neutral-500">
+                  Noir + Honeycomb + Logo i-Wasp)) métallisé
+                </p>
               </div>
+              
+              {/* Aperçu Verso */}
               <div className="space-y-2">
-                <p className="text-white font-medium">VERSO</p>
-                <ul className="space-y-1 text-xs">
-                  <li>• Fond noir assorti</li>
-                  <li>• Motif honeycomb subtil (7.5% opacité)</li>
-                  <li>• Icône NFC discrète en bas à droite</li>
-                  <li>• Tagline "Tap. Connect. Empower."</li>
-                </ul>
+                <p className="text-sm font-medium text-neutral-300">VERSO</p>
+                <div className="aspect-[1.588] rounded-lg overflow-hidden border border-neutral-700 bg-black">
+                  <img 
+                    src={cardVersoTemplate} 
+                    alt="Template Verso" 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <p className="text-xs text-neutral-500">
+                  Noir + Honeycomb subtil
+                </p>
               </div>
             </div>
           </CardContent>
@@ -368,7 +238,7 @@ export default function IwaspCardGenerator() {
             ) : (
               <>
                 <Printer className="w-5 h-5" />
-                Générer Design Signature
+                Générer en 600 DPI
               </>
             )}
           </Button>
@@ -407,9 +277,9 @@ export default function IwaspCardGenerator() {
             <Card className="bg-neutral-900 border-neutral-800">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center justify-between text-white">
-                  <span>{previewMode === "recto" ? "RECTO" : "VERSO"}</span>
+                  <span>{previewMode === "recto" ? "RECTO" : "VERSO"} - Export 600 DPI</span>
                   <Badge variant="outline" className="border-amber-500/50 text-amber-400">
-                    PNG • 600 DPI • Sans compression
+                    PNG • {SPEC.WIDTH_PX} × {SPEC.HEIGHT_PX}
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -429,7 +299,7 @@ export default function IwaspCardGenerator() {
             {/* Boutons de téléchargement */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <Button
-                onClick={() => generatedImages.recto && downloadImage(generatedImages.recto, "IWASP-SIGNATURE-RECTO-600DPI.png")}
+                onClick={() => generatedImages.recto && downloadImage(generatedImages.recto, "IWASP-RECTO-600DPI-CR80.png")}
                 variant="outline"
                 className="gap-2 border-neutral-700 text-white hover:bg-neutral-800"
                 disabled={!generatedImages.recto}
@@ -438,7 +308,7 @@ export default function IwaspCardGenerator() {
                 Télécharger Recto
               </Button>
               <Button
-                onClick={() => generatedImages.verso && downloadImage(generatedImages.verso, "IWASP-SIGNATURE-VERSO-600DPI.png")}
+                onClick={() => generatedImages.verso && downloadImage(generatedImages.verso, "IWASP-VERSO-600DPI-CR80.png")}
                 variant="outline"
                 className="gap-2 border-neutral-700 text-white hover:bg-neutral-800"
                 disabled={!generatedImages.verso}
@@ -462,7 +332,7 @@ export default function IwaspCardGenerator() {
                 <div className="text-sm space-y-1">
                   <p className="text-emerald-300 font-medium">Fichiers prêts pour impression</p>
                   <p className="text-emerald-400/70">
-                    2025 × 1275 px @ 600 DPI • PNG sans compression • Compatible Evolis, Zebra, Fargo
+                    {SPEC.WIDTH_PX} × {SPEC.HEIGHT_PX} px @ {SPEC.DPI} DPI • PNG sans compression • Compatible Evolis, Zebra, Fargo
                   </p>
                 </div>
               </div>
