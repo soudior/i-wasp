@@ -342,7 +342,6 @@ const App = () => {
                               
                               {/* Luxury Wi-Fi Pages */}
                               <Route path="/wifi/:propertySlug" element={<LuxuryWifiPage />} />
-                              <Route path="/wifi/nour-prestige-legacy" element={<NourPrestigeWifi />} />
                               <Route path="/demo/ultra-luxe" element={<UltraLuxeDemo />} />
                               <Route path="/demo/vcard-airbnb-booking" element={<VCardAirbnbBookingDemo />} />
                               <Route path="/demo/studio" element={<DemoStudio />} />
