@@ -30,6 +30,7 @@ import { downloadVCard, VCardData } from "@/lib/vcard";
 import { toast } from "sonner";
 import { useState } from "react";
 import koyaLogo from "@/assets/koya-logo.png";
+import { KoyaGallery } from "@/components/koya/KoyaGallery";
 
 // KÔYA Brand Colors
 const KOYA_COLORS = {
@@ -434,6 +435,16 @@ export default function KoyaCard() {
             ))}
           </div>
         </motion.header>
+
+        {/* === Photo Gallery === */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="mb-8"
+        >
+          <KoyaGallery autoPlayInterval={5000} />
+        </motion.section>
 
         {/* === Primary Actions === */}
         <motion.section
