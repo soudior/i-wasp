@@ -137,6 +137,7 @@ const KechExcluCard = lazy(() => import("./pages/KechExcluCard"));
 const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
 const LaMaisonCupcakeCard = lazy(() => import("./pages/LaMaisonCupcakeCard"));
 const KhokhaSignatureCard = lazy(() => import("./pages/KhokhaSignatureCard"));
+const IwaspCardGenerator = lazy(() => import("./pages/IwaspCardGenerator"));
 
 const LuxuryWifiPage = lazy(() => import("./pages/LuxuryWifiPage"));
 const Services = lazy(() => import("./pages/Services"));
@@ -352,6 +353,8 @@ const App = () => {
                               {/* Evolis Card Template Generator - PUBLIC ACCESS */}
                               <Route path="/evolis" element={<EvolisCardTemplate />} />
                               <Route path="/evolis-template" element={<EvolisCardTemplate />} />
+                              <Route path="/iwasp-card" element={<IwaspCardGenerator />} />
+                              <Route path="/card-generator" element={<IwaspCardGenerator />} />
                               
                               {/* Public order tracking */}
                               <Route path="/track" element={<TrackOrder />} />
