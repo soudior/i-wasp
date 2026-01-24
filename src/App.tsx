@@ -138,6 +138,7 @@ const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
 const LaMaisonCupcakeCard = lazy(() => import("./pages/LaMaisonCupcakeCard"));
 const KhokhaSignatureCard = lazy(() => import("./pages/KhokhaSignatureCard"));
 const IwaspCardGenerator = lazy(() => import("./pages/IwaspCardGenerator"));
+const KoyaCard = lazy(() => import("./pages/KoyaCard"));
 
 const LuxuryWifiPage = lazy(() => import("./pages/LuxuryWifiPage"));
 const Services = lazy(() => import("./pages/Services"));
@@ -255,6 +256,7 @@ const App = () => {
                               <Route path="/card/luxe-prestige" element={<LuxePrestigeCard />} />
                               <Route path="/card/la-maison-cupcake" element={<LaMaisonCupcakeCard />} />
                               <Route path="/card/khokha-signature" element={<KhokhaSignatureCard />} />
+                              <Route path="/card/koya" element={<KoyaCard />} />
                               <Route path="/card/:slug" element={<PublicCard />} />
                               {/* Auth */}
                               <Route path="/login" element={<Login />} />
