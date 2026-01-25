@@ -24,6 +24,7 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 import storefrontImage from "@/assets/london-barber-storefront.jpeg";
 import londonBarberLogo from "@/assets/london-barber-logo.png";
 import { GalleryCarousel } from "@/components/london-barber/GalleryCarousel";
+import { WifiSection } from "@/components/london-barber/WifiSection";
 
 // London Barber Brand Colors - Warm wood & classic barber
 const BRAND_COLORS = {
@@ -465,6 +466,8 @@ export default function LondonBarberCard() {
             {/* Gallery */}
             <GalleryCarousel brandColors={BRAND_COLORS} />
             
+            {/* Wi-Fi Section */}
+            <WifiSection brandColors={BRAND_COLORS} />
             {/* Location Section */}
             <div className="space-y-3 pt-2">
               <div className="flex items-center gap-2 px-1">
