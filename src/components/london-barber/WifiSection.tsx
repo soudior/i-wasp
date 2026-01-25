@@ -25,8 +25,8 @@ interface WifiSectionProps {
 
 // Wi-Fi credentials for London Barber
 const WIFI_CONFIG = {
-  ssid: "London Barber",
-  password: "londonbarber2024",
+  ssid: "TP-Link_6858",
+  password: "37243883",
   security: "WPA",
 };
 
