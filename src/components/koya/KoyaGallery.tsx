@@ -1,11 +1,12 @@
 /**
  * KÔYA Restaurant Gallery Carousel
- * Premium swipeable gallery with touch gestures
+ * Premium swipeable gallery with touch gestures & optimized loading
  */
 
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 // Import official KÔYA gallery images
 import gallery1 from "@/assets/koya/gallery-1.webp";
@@ -27,6 +28,7 @@ const KOYA_COLORS = {
   gold: "#d4a574",
   goldDark: "#b8860b",
   textMuted: "rgba(255,255,255,0.5)",
+  blurBg: "rgba(15, 9, 6, 0.9)",
 };
 
 interface KoyaGalleryProps {
@@ -36,6 +38,26 @@ interface KoyaGalleryProps {
 export function KoyaGallery({ autoPlayInterval = 4000 }: KoyaGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [imagesLoaded, setImagesLoaded] = useState<Set<number>>(new Set([0]));
+
+  // Preload adjacent images
+  useEffect(() => {
+    const preloadIndexes = [
+      currentIndex,
+      (currentIndex + 1) % GALLERY_IMAGES.length,
+      (currentIndex - 1 + GALLERY_IMAGES.length) % GALLERY_IMAGES.length,
+    ];
+    
+    preloadIndexes.forEach(idx => {
+      if (!imagesLoaded.has(idx)) {
+        const img = new Image();
+        img.src = GALLERY_IMAGES[idx].src;
+        img.onload = () => {
+          setImagesLoaded(prev => new Set([...prev, idx]));
+        };
+      }
+    });
+  }, [currentIndex, imagesLoaded]);
 
   const slideVariants = {
     enter: (direction: number) => ({
@@ -124,11 +146,12 @@ export function KoyaGallery({ autoPlayInterval = 4000 }: KoyaGalleryProps) {
               }}
               className="absolute inset-0"
             >
-              <img
+              <OptimizedImage
                 src={GALLERY_IMAGES[currentIndex].src}
                 alt={GALLERY_IMAGES[currentIndex].title}
-                className="w-full h-full object-cover"
-                loading="lazy"
+                className="w-full h-full"
+                aspectRatio="16/10"
+                blurColor={KOYA_COLORS.blurBg}
               />
               
               {/* Gradient Overlay */}
