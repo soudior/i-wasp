@@ -124,19 +124,19 @@ export default defineConfig(({ mode }) => ({
             }
           },
           {
-            // Cache NFC card pages for offline access
+            // Cache NFC card pages - always fetch fresh content first
             urlPattern: /\/card\/.*/i,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'nfc-cards-cache',
+              cacheName: 'nfc-cards-cache-v2',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 1 week
+                maxAgeSeconds: 60 * 60 * 24 // 1 day only
               },
               cacheableResponse: {
                 statuses: [0, 200]
               },
-              networkTimeoutSeconds: 3
+              networkTimeoutSeconds: 2
             }
           },
           {
@@ -156,14 +156,14 @@ export default defineConfig(({ mode }) => ({
             }
           },
           {
-            // Cache images
+            // Cache images - StaleWhileRevalidate for faster updates
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
-            handler: 'CacheFirst',
+            handler: 'StaleWhileRevalidate',
             options: {
-              cacheName: 'images-cache',
+              cacheName: 'images-cache-v2',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
               },
               cacheableResponse: {
                 statuses: [0, 200]
