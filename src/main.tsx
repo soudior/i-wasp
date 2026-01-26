@@ -4,7 +4,19 @@ import { ThemeProvider } from "next-themes";
 import App from "./App.tsx";
 import "./index.css";
 import "./i18n";
-import { checkAndClearStaleCache } from "./utils/cacheVersion";
+import { checkAndClearStaleCache, forceRefresh } from "./utils/cacheVersion";
+
+// Check for secret URL parameter to force cache refresh
+const urlParams = new URLSearchParams(window.location.search);
+const forceRefreshParam = urlParams.get('refresh') === '1';
+
+if (forceRefreshParam) {
+  // Remove the parameter from URL before refresh
+  urlParams.delete('refresh');
+  const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+  window.history.replaceState({}, '', newUrl);
+  forceRefresh();
+}
 
 // Check for stale cache BEFORE rendering
 // This forces external users with old cached versions to refresh
