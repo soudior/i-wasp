@@ -5,21 +5,71 @@
 
 // INCREMENT THIS VERSION when deploying critical updates
 // This will force all users to get fresh content
-const CACHE_VERSION = "2025-01-25-v3";
+const CACHE_VERSION = "2026-01-28-v1";
 const VERSION_KEY = "iwasp:cache_version";
+const REFRESH_ATTEMPT_KEY = "iwasp:cache_refresh_attempted";
+
+function safeGetLocal(key: string): string | null {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeSetLocal(key: string, value: string): void {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // ignore (private mode / blocked storage)
+  }
+}
+
+function safeRemoveLocal(key: string): void {
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // ignore
+  }
+}
+
+function safeGetSession(key: string): string | null {
+  try {
+    return window.sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeSetSession(key: string, value: string): void {
+  try {
+    window.sessionStorage.setItem(key, value);
+  } catch {
+    // ignore
+  }
+}
 
 export function checkAndClearStaleCache(): boolean {
   try {
-    const storedVersion = localStorage.getItem(VERSION_KEY);
+    const storedVersion = safeGetLocal(VERSION_KEY);
+    const alreadyAttemptedThisSession = safeGetSession(REFRESH_ATTEMPT_KEY) === "1";
     
     if (storedVersion !== CACHE_VERSION) {
       console.log(`[CacheVersion] Stale cache detected: ${storedVersion} → ${CACHE_VERSION}`);
+
+      // Anti-boucle: si le stockage local est indisponible (Safari/private mode),
+      // on évite de reloader en boucle et on laisse l'app essayer de démarrer.
+      if (alreadyAttemptedThisSession) {
+        safeSetLocal(VERSION_KEY, CACHE_VERSION);
+        return false;
+      }
+      safeSetSession(REFRESH_ATTEMPT_KEY, "1");
       
       // Clear all caches and service workers
-      clearAllCachesSync();
+      void clearAllCachesSync();
       
       // Store new version
-      localStorage.setItem(VERSION_KEY, CACHE_VERSION);
+      safeSetLocal(VERSION_KEY, CACHE_VERSION);
       
       return true; // Cache was stale
     }
@@ -31,7 +81,7 @@ export function checkAndClearStaleCache(): boolean {
   }
 }
 
-async function clearAllCachesSync(): Promise<void> {
+async function clearAllCachesSync(options?: { reload?: boolean }): Promise<void> {
   try {
     // 1. Unregister all service workers
     if ("serviceWorker" in navigator) {
@@ -52,9 +102,11 @@ async function clearAllCachesSync(): Promise<void> {
     }
 
     // 3. Force reload to get fresh content
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
+    if (options?.reload !== false) {
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }
     
   } catch (error) {
     console.error("[CacheVersion] Error clearing caches:", error);
@@ -62,6 +114,6 @@ async function clearAllCachesSync(): Promise<void> {
 }
 
 export function forceRefresh(): void {
-  localStorage.removeItem(VERSION_KEY);
-  clearAllCachesSync();
+  safeRemoveLocal(VERSION_KEY);
+  void clearAllCachesSync();
 }

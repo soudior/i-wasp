@@ -6,6 +6,34 @@ import "./index.css";
 import "./i18n";
 import { checkAndClearStaleCache, forceRefresh } from "./utils/cacheVersion";
 
+function isLikelyStaleBuildError(message: unknown) {
+  const m = String(message ?? "").toLowerCase();
+  return (
+    m.includes("chunkloaderror") ||
+    m.includes("loading chunk") ||
+    m.includes("failed to fetch dynamically imported module") ||
+    m.includes("dynamically imported module") ||
+    m.includes("importing a module script failed") ||
+    m.includes("unexpected token '<'")
+  );
+}
+
+function safeSessionGet(key: string): string | null {
+  try {
+    return window.sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeSessionSet(key: string, value: string): void {
+  try {
+    window.sessionStorage.setItem(key, value);
+  } catch {
+    // ignore
+  }
+}
+
 // Check for secret URL parameter to force cache refresh
 const urlParams = new URLSearchParams(window.location.search);
 const forceRefreshParam = urlParams.get('refresh') === '1';
@@ -29,12 +57,33 @@ if (cacheWasStale) {
 } else {
   // Global error handler to prevent white screen
   window.addEventListener("error", (event) => {
-    console.error("Global error:", event.error);
+    console.error("Global error:", event.error ?? event.message);
+
+    // If a stale cached build is trying to load missing chunks, force-refresh once.
+    const msg = (event as ErrorEvent).error?.message ?? (event as ErrorEvent).message;
+    if (isLikelyStaleBuildError(msg)) {
+      const key = `iwasp:global-force-refresh:${window.location.pathname}`;
+      if (safeSessionGet(key) !== "1") {
+        safeSessionSet(key, "1");
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui;color:#666;">Mise à jour en cours...</div>';
+        forceRefresh();
+      }
+    }
     event.preventDefault();
   });
 
   window.addEventListener("unhandledrejection", (event) => {
     console.error("Unhandled promise rejection:", event.reason);
+
+    const msg = (event as PromiseRejectionEvent).reason?.message ?? (event as PromiseRejectionEvent).reason;
+    if (isLikelyStaleBuildError(msg)) {
+      const key = `iwasp:global-force-refresh:${window.location.pathname}`;
+      if (safeSessionGet(key) !== "1") {
+        safeSessionSet(key, "1");
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui;color:#666;">Mise à jour en cours...</div>';
+        forceRefresh();
+      }
+    }
     event.preventDefault();
   });
 
