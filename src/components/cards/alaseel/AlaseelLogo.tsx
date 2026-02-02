@@ -13,14 +13,15 @@ export function AlaseelLogo({ size = 'md' }: AlaseelLogoProps) {
   const sizeClasses = {
     sm: 'w-20 h-20',
     md: 'w-28 h-28',
-    lg: 'w-36 h-36',
+    lg: 'w-32 h-32',
   };
 
   return (
     <motion.div
-      className={`${sizeClasses[size]} rounded-full bg-white flex items-center justify-center relative`}
+      className={`${sizeClasses[size]} rounded-full flex items-center justify-center relative`}
       style={{
-        boxShadow: '0 8px 32px rgba(61, 43, 31, 0.25), 0 0 0 3px #D97706',
+        background: 'linear-gradient(145deg, #FFFFFF 0%, #F8F4EF 100%)',
+        boxShadow: '0 10px 40px rgba(61, 43, 31, 0.3), 0 0 0 2.5px #D97706, 0 0 0 4px rgba(217, 119, 6, 0.2)',
       }}
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
@@ -29,20 +30,25 @@ export function AlaseelLogo({ size = 'md' }: AlaseelLogoProps) {
       {/* Coffee Cup Icon with Steam */}
       <div className="flex flex-col items-center">
         {/* Steam Animation */}
-        <div className="flex gap-1 mb-1">
+        <div className="flex gap-1 mb-0.5">
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              className="w-0.5 h-3 rounded-full"
-              style={{ backgroundColor: '#D97706' }}
+              className="rounded-full"
+              style={{ 
+                backgroundColor: '#D97706',
+                width: size === 'sm' ? 1.5 : 2,
+                height: size === 'sm' ? 8 : size === 'md' ? 10 : 12,
+              }}
               animate={{
-                y: [0, -4, 0],
-                opacity: [0.4, 1, 0.4],
+                y: [0, -3, 0],
+                opacity: [0.3, 0.9, 0.3],
+                scaleY: [1, 1.1, 1],
               }}
               transition={{
-                duration: 1.5,
+                duration: 1.8,
                 repeat: Infinity,
-                delay: i * 0.2,
+                delay: i * 0.25,
                 ease: 'easeInOut',
               }}
             />
@@ -53,7 +59,7 @@ export function AlaseelLogo({ size = 'md' }: AlaseelLogoProps) {
         <svg
           viewBox="0 0 24 24"
           fill="none"
-          className={size === 'sm' ? 'w-8 h-8' : size === 'md' ? 'w-10 h-10' : 'w-12 h-12'}
+          className={size === 'sm' ? 'w-7 h-7' : size === 'md' ? 'w-9 h-9' : 'w-10 h-10'}
         >
           {/* Cup body */}
           <path
@@ -72,23 +78,23 @@ export function AlaseelLogo({ size = 'md' }: AlaseelLogoProps) {
         </svg>
         
         {/* Brand Text */}
-        <div className="text-center mt-1">
+        <div className="text-center mt-0.5">
           <p
-            className="font-serif font-bold tracking-wide"
+            className="font-serif font-bold"
             style={{
-              fontSize: size === 'sm' ? '0.5rem' : size === 'md' ? '0.625rem' : '0.75rem',
+              fontSize: size === 'sm' ? '0.5rem' : size === 'md' ? '0.6rem' : '0.7rem',
               color: '#3D2B1F',
-              letterSpacing: '0.1em',
+              letterSpacing: '0.12em',
             }}
           >
             Alaseel
           </p>
           <p
-            className="uppercase tracking-widest"
+            className="uppercase font-semibold"
             style={{
-              fontSize: size === 'sm' ? '0.35rem' : size === 'md' ? '0.4rem' : '0.5rem',
+              fontSize: size === 'sm' ? '0.3rem' : size === 'md' ? '0.35rem' : '0.4rem',
               color: '#D97706',
-              letterSpacing: '0.2em',
+              letterSpacing: '0.18em',
             }}
           >
             Coffee · Tea
