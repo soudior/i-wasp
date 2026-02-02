@@ -93,22 +93,23 @@ export function AlaseelMenu() {
   return (
     <div className="w-full">
       {/* Category Tabs - Horizontal Scrollable */}
-      <div className="overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+      <div className="overflow-x-auto pb-3 -mx-5 px-5 scrollbar-hide">
         <div className="flex gap-2 min-w-max">
           {menuData.map((category) => (
             <motion.button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-full whitespace-nowrap transition-all duration-300"
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-full whitespace-nowrap transition-all duration-300 active:scale-95"
               style={{
-                backgroundColor: activeCategory === category.id ? '#3D2B1F' : 'rgba(61, 43, 31, 0.08)',
+                backgroundColor: activeCategory === category.id ? '#3D2B1F' : 'rgba(61, 43, 31, 0.06)',
                 color: activeCategory === category.id ? '#FDF5E6' : '#3D2B1F',
                 fontWeight: activeCategory === category.id ? 600 : 500,
+                boxShadow: activeCategory === category.id ? '0 4px 15px rgba(61, 43, 31, 0.25)' : 'none',
               }}
               whileTap={{ scale: 0.95 }}
             >
               {category.icon}
-              <span className="text-sm">{category.label}</span>
+              <span className="text-[0.8rem]">{category.label}</span>
             </motion.button>
           ))}
         </div>
@@ -116,22 +117,23 @@ export function AlaseelMenu() {
 
       {/* Menu Card */}
       <motion.div
-        className="mt-4 rounded-3xl overflow-hidden"
+        className="mt-3 rounded-[1.5rem] overflow-hidden"
         style={{
           backgroundColor: '#ffffff',
-          border: '1px solid rgba(217, 119, 6, 0.2)',
-          boxShadow: '0 10px 40px rgba(61, 43, 31, 0.1)',
+          border: '1px solid rgba(217, 119, 6, 0.15)',
+          boxShadow: '0 12px 40px rgba(61, 43, 31, 0.08)',
         }}
+        layout
       >
         {/* Header */}
         <div
-          className="px-5 py-4 text-center"
+          className="px-5 py-3.5 text-center"
           style={{
             background: 'linear-gradient(135deg, #3D2B1F 0%, #2A1F16 100%)',
           }}
         >
           <h3
-            className="font-serif text-lg font-semibold"
+            className="font-serif text-base font-semibold tracking-wide"
             style={{ color: '#D97706' }}
           >
             {activeMenu?.label}
@@ -142,23 +144,23 @@ export function AlaseelMenu() {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="p-5 space-y-3"
+            className="p-4 space-y-2.5"
           >
             {activeMenu?.items.map((item, index) => (
               <motion.div
                 key={item.name}
                 className="flex items-center gap-2"
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.03 }}
+                transition={{ delay: index * 0.025 }}
               >
                 {/* Item Name */}
                 <span
-                  className="font-medium"
+                  className="text-[0.9rem] font-medium"
                   style={{ color: '#3D2B1F' }}
                 >
                   {item.name}
@@ -166,16 +168,16 @@ export function AlaseelMenu() {
                 
                 {/* Dotted Line */}
                 <div
-                  className="flex-1 border-b-2 border-dotted mx-2"
-                  style={{ borderColor: 'rgba(61, 43, 31, 0.2)' }}
+                  className="flex-1 border-b-[1.5px] border-dotted mx-1.5"
+                  style={{ borderColor: 'rgba(61, 43, 31, 0.15)' }}
                 />
                 
                 {/* Price Badge */}
                 <span
-                  className="px-3 py-1 rounded-full text-sm font-semibold"
+                  className="px-2.5 py-1 rounded-full text-[0.75rem] font-bold tracking-tight"
                   style={{
-                    backgroundColor: 'rgba(217, 119, 6, 0.15)',
-                    color: '#D97706',
+                    backgroundColor: 'rgba(217, 119, 6, 0.12)',
+                    color: '#B45309',
                   }}
                 >
                   {item.price}

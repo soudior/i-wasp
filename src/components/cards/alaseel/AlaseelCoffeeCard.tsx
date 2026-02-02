@@ -62,21 +62,21 @@ export function AlaseelCoffeeCard() {
 
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-[100dvh] flex flex-col overflow-x-hidden"
       style={{ backgroundColor: '#FDF5E6' }}
     >
       {/* Header with Gradient and Pattern */}
       <div
-        className="relative pt-12 pb-20 px-4"
+        className="relative pt-10 pb-24 px-5"
         style={{
-          background: 'linear-gradient(180deg, #3D2B1F 0%, #2A1F16 60%, #1A120D 100%)',
+          background: 'linear-gradient(180deg, #3D2B1F 0%, #2A1F16 50%, #1A120D 100%)',
         }}
       >
         {/* Coffee Beans Pattern Overlay */}
         <div
-          className="absolute inset-0 opacity-10 pointer-events-none"
+          className="absolute inset-0 opacity-[0.07] pointer-events-none"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5c-3 0-5 4-5 10s2 10 5 10 5-4 5-10-2-10-5-10zm-15 20c-3 0-5 4-5 10s2 10 5 10 5-4 5-10-2-10-5-10zm30 0c-3 0-5 4-5 10s2 10 5 10 5-4 5-10-2-10-5-10z' fill='%23D97706' fill-opacity='0.3'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5c-3 0-5 4-5 10s2 10 5 10 5-4 5-10-2-10-5-10zm-15 20c-3 0-5 4-5 10s2 10 5 10 5-4 5-10-2-10-5-10zm30 0c-3 0-5 4-5 10s2 10 5 10 5-4 5-10-2-10-5-10z' fill='%23D97706' fill-opacity='0.4'/%3E%3C/svg%3E")`,
             backgroundSize: '60px 60px',
           }}
         />
@@ -86,65 +86,70 @@ export function AlaseelCoffeeCard() {
           className="flex justify-center relative z-10"
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
           <AlaseelLogo size="lg" />
         </motion.div>
 
         {/* Welcome Text */}
         <motion.div
-          className="text-center mt-6 relative z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
+          className="text-center mt-5 relative z-10"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
         >
           <h1
-            className="font-serif text-2xl font-bold"
+            className="font-serif text-[1.5rem] font-bold tracking-tight"
             style={{ color: '#FDF5E6' }}
           >
             Bienvenue chez Alaseel
           </h1>
-          <div
-            className="flex items-center justify-center gap-2 mt-2"
+          <motion.div
+            className="flex items-center justify-center gap-1.5 mt-2"
             style={{ color: '#D97706' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
           >
-            <MapPin size={16} />
-            <span className="text-sm font-medium">Marrakech, Maroc</span>
-          </div>
+            <MapPin size={14} strokeWidth={2.5} />
+            <span className="text-[0.8rem] font-medium tracking-wide">Marrakech, Maroc</span>
+          </motion.div>
         </motion.div>
       </div>
 
       {/* Main Content */}
       <div
-        className="flex-1 -mt-8 rounded-t-[2rem] px-4 pt-6 pb-8"
-        style={{ backgroundColor: '#FDF5E6' }}
+        className="flex-1 -mt-10 rounded-t-[2.5rem] px-5 pt-6 pb-10 relative z-10"
+        style={{ 
+          backgroundColor: '#FDF5E6',
+          boxShadow: '0 -8px 30px rgba(61, 43, 31, 0.15)',
+        }}
       >
         {/* Social Links */}
         <motion.div
-          className="grid grid-cols-4 gap-3 mb-8"
+          className="grid grid-cols-4 gap-2.5 mb-7"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
         >
           {socialLinks.map((social, index) => (
             <motion.button
               key={social.id}
               onClick={() => handleSocialClick(social.url)}
-              className="flex flex-col items-center gap-2 p-3 rounded-2xl"
+              className="flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl active:scale-95 transition-transform"
               style={{
                 background: social.bg || social.gradient,
-                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.15)',
+                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
               }}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, y: 20 }}
+              whileTap={{ scale: 0.92 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 + index * 0.1 }}
+              transition={{ delay: 0.45 + index * 0.08 }}
             >
               <span style={{ color: '#ffffff' }}>{social.icon}</span>
               <span
-                className="text-[10px] font-medium"
-                style={{ color: '#ffffff' }}
+                className="text-[0.65rem] font-semibold tracking-wide"
+                style={{ color: 'rgba(255,255,255,0.95)' }}
               >
                 {social.label}
               </span>
@@ -156,10 +161,10 @@ export function AlaseelCoffeeCard() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
         >
           <h2
-            className="font-serif text-xl font-bold text-center mb-4"
+            className="font-serif text-lg font-bold text-center mb-4 tracking-tight"
             style={{ color: '#3D2B1F' }}
           >
             Notre Menu
@@ -170,36 +175,35 @@ export function AlaseelCoffeeCard() {
         {/* Map Button */}
         <motion.button
           onClick={handleMapClick}
-          className="w-full mt-8 flex items-center justify-center gap-3 py-4 rounded-2xl"
+          className="w-full mt-7 flex items-center justify-center gap-2.5 py-4 rounded-2xl active:scale-[0.98] transition-transform"
           style={{
             background: 'linear-gradient(135deg, #D97706 0%, #B45309 100%)',
             color: '#ffffff',
             fontWeight: 600,
-            boxShadow: '0 8px 30px rgba(217, 119, 6, 0.35)',
+            fontSize: '0.95rem',
+            letterSpacing: '0.01em',
+            boxShadow: '0 8px 30px rgba(217, 119, 6, 0.4)',
           }}
-          whileHover={{
-            boxShadow: '0 12px 40px rgba(217, 119, 6, 0.45)',
-          }}
-          whileTap={{ scale: 0.98 }}
+          whileTap={{ scale: 0.97 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
         >
-          <MapPin size={20} />
+          <MapPin size={18} strokeWidth={2.5} />
           Nous trouver sur la carte
         </motion.button>
 
         {/* Footer */}
         <motion.div
-          className="text-center mt-8 pt-6"
-          style={{ borderTop: '1px solid rgba(61, 43, 31, 0.1)' }}
+          className="text-center mt-8 pt-5"
+          style={{ borderTop: '1px solid rgba(61, 43, 31, 0.08)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
         >
           <p
-            className="text-xs"
-            style={{ color: 'rgba(61, 43, 31, 0.5)' }}
+            className="text-[0.7rem] tracking-wide"
+            style={{ color: 'rgba(61, 43, 31, 0.4)' }}
           >
             Powered by{' '}
             <a
