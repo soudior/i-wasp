@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Instagram, Facebook, MessageCircle } from 'lucide-react';
 import { AlaseelLogo } from './AlaseelLogo';
 import { AlaseelMenu } from './AlaseelMenu';
+import { AlaseelOpeningStatus } from './AlaseelOpeningStatus';
 
 // TikTok custom icon (not in lucide)
 const TikTokIcon = ({ size = 20 }: { size?: number }) => (
@@ -113,6 +114,16 @@ export function AlaseelCoffeeCard() {
           >
             <MapPin size={14} strokeWidth={2.5} />
             <span className="text-[0.8rem] font-medium tracking-wide">Marrakech, Maroc</span>
+          </motion.div>
+
+          {/* Opening Status Badge */}
+          <motion.div
+            className="flex justify-center mt-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <AlaseelOpeningStatus />
           </motion.div>
         </motion.div>
       </div>
