@@ -101,10 +101,10 @@ export function AlaseelMenu() {
               onClick={() => setActiveCategory(category.id)}
               className="flex items-center gap-1.5 px-4 py-2.5 rounded-full whitespace-nowrap transition-all duration-300 active:scale-95"
               style={{
-                backgroundColor: activeCategory === category.id ? '#3D2B1F' : 'rgba(61, 43, 31, 0.06)',
-                color: activeCategory === category.id ? '#FDF5E6' : '#3D2B1F',
+                backgroundColor: activeCategory === category.id ? '#5D4037' : 'rgba(93, 64, 55, 0.08)',
+                color: activeCategory === category.id ? '#F5E6D3' : '#5D4037',
                 fontWeight: activeCategory === category.id ? 600 : 500,
-                boxShadow: activeCategory === category.id ? '0 4px 15px rgba(61, 43, 31, 0.25)' : 'none',
+                boxShadow: activeCategory === category.id ? '0 4px 15px rgba(93, 64, 55, 0.25)' : 'none',
               }}
               whileTap={{ scale: 0.95 }}
             >
@@ -120,8 +120,8 @@ export function AlaseelMenu() {
         className="mt-3 rounded-[1.5rem] overflow-hidden"
         style={{
           backgroundColor: '#ffffff',
-          border: '1px solid rgba(217, 119, 6, 0.15)',
-          boxShadow: '0 12px 40px rgba(61, 43, 31, 0.08)',
+          border: '1px solid rgba(93, 64, 55, 0.15)',
+          boxShadow: '0 12px 40px rgba(93, 64, 55, 0.08)',
         }}
         layout
       >
@@ -129,12 +129,12 @@ export function AlaseelMenu() {
         <div
           className="px-5 py-3.5 text-center"
           style={{
-            background: 'linear-gradient(135deg, #3D2B1F 0%, #2A1F16 100%)',
+            background: 'linear-gradient(135deg, #5D4037 0%, #4E342E 100%)',
           }}
         >
           <h3
             className="font-serif text-base font-semibold tracking-wide"
-            style={{ color: '#D97706' }}
+            style={{ color: '#F5E6D3' }}
           >
             {activeMenu?.label}
           </h3>
@@ -161,7 +161,7 @@ export function AlaseelMenu() {
                 {/* Item Name */}
                 <span
                   className="text-[0.9rem] font-medium"
-                  style={{ color: '#3D2B1F' }}
+                  style={{ color: '#5D4037' }}
                 >
                   {item.name}
                 </span>
@@ -169,15 +169,15 @@ export function AlaseelMenu() {
                 {/* Dotted Line */}
                 <div
                   className="flex-1 border-b-[1.5px] border-dotted mx-1.5"
-                  style={{ borderColor: 'rgba(61, 43, 31, 0.15)' }}
+                  style={{ borderColor: 'rgba(93, 64, 55, 0.15)' }}
                 />
                 
                 {/* Price Badge */}
                 <span
                   className="px-2.5 py-1 rounded-full text-[0.75rem] font-bold tracking-tight"
                   style={{
-                    backgroundColor: 'rgba(217, 119, 6, 0.12)',
-                    color: '#B45309',
+                    backgroundColor: 'rgba(93, 64, 55, 0.12)',
+                    color: '#5D4037',
                   }}
                 >
                   {item.price}
