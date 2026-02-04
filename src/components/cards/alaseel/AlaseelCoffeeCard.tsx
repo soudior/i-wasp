@@ -8,6 +8,7 @@ import { MapPin, Instagram, Facebook, MessageCircle } from 'lucide-react';
 import { AlaseelLogo } from './AlaseelLogo';
 import { AlaseelMenu } from './AlaseelMenu';
 import { AlaseelOpeningStatus } from './AlaseelOpeningStatus';
+import { AlaseelGallery } from './AlaseelGallery';
 
 // TikTok custom icon (not in lucide)
 const TikTokIcon = ({ size = 20 }: { size?: number }) => (
@@ -182,6 +183,11 @@ export function AlaseelCoffeeCard() {
           </h2>
           <AlaseelMenu />
         </motion.div>
+
+        {/* Gallery Section */}
+        <div className="mt-7">
+          <AlaseelGallery />
+        </div>
 
         {/* Map Button */}
         <motion.button
