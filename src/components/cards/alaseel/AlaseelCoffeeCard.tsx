@@ -55,7 +55,7 @@ export function AlaseelCoffeeCard() {
 
   const handleMapClick = () => {
     window.open(
-      'https://maps.google.com/?q=Alaseel+Coffee+Tea+Marrakech',
+      'https://maps.app.goo.gl/c22RmQiNSL1K7w4z7',
       '_blank',
       'noopener,noreferrer'
     );
@@ -64,13 +64,13 @@ export function AlaseelCoffeeCard() {
   return (
     <div
       className="min-h-[100dvh] flex flex-col overflow-x-hidden"
-      style={{ backgroundColor: '#FDF5E6' }}
+      style={{ backgroundColor: '#F5E6D3' }}
     >
       {/* Header with Gradient and Pattern */}
       <div
         className="relative pt-10 pb-24 px-5"
         style={{
-          background: 'linear-gradient(180deg, #3D2B1F 0%, #2A1F16 50%, #1A120D 100%)',
+          background: 'linear-gradient(180deg, #5D4037 0%, #4E342E 50%, #3E2723 100%)',
         }}
       >
         {/* Coffee Beans Pattern Overlay */}
@@ -101,13 +101,13 @@ export function AlaseelCoffeeCard() {
         >
           <h1
             className="font-serif text-[1.5rem] font-bold tracking-tight"
-            style={{ color: '#FDF5E6' }}
+            style={{ color: '#F5E6D3' }}
           >
             Bienvenue chez Alaseel
           </h1>
           <motion.div
             className="flex items-center justify-center gap-1.5 mt-2"
-            style={{ color: '#D97706' }}
+            style={{ color: '#BCAAA4' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -132,8 +132,8 @@ export function AlaseelCoffeeCard() {
       <div
         className="flex-1 -mt-10 rounded-t-[2.5rem] px-5 pt-6 pb-10 relative z-10"
         style={{ 
-          backgroundColor: '#FDF5E6',
-          boxShadow: '0 -8px 30px rgba(61, 43, 31, 0.15)',
+          backgroundColor: '#F5E6D3',
+          boxShadow: '0 -8px 30px rgba(93, 64, 55, 0.15)',
         }}
       >
         {/* Social Links */}
@@ -176,7 +176,7 @@ export function AlaseelCoffeeCard() {
         >
           <h2
             className="font-serif text-lg font-bold text-center mb-4 tracking-tight"
-            style={{ color: '#3D2B1F' }}
+            style={{ color: '#5D4037' }}
           >
             Notre Menu
           </h2>
@@ -188,12 +188,12 @@ export function AlaseelCoffeeCard() {
           onClick={handleMapClick}
           className="w-full mt-7 flex items-center justify-center gap-2.5 py-4 rounded-2xl active:scale-[0.98] transition-transform"
           style={{
-            background: 'linear-gradient(135deg, #D97706 0%, #B45309 100%)',
-            color: '#ffffff',
+            background: 'linear-gradient(135deg, #5D4037 0%, #4E342E 100%)',
+            color: '#F5E6D3',
             fontWeight: 600,
             fontSize: '0.95rem',
             letterSpacing: '0.01em',
-            boxShadow: '0 8px 30px rgba(217, 119, 6, 0.4)',
+            boxShadow: '0 8px 30px rgba(93, 64, 55, 0.35)',
           }}
           whileTap={{ scale: 0.97 }}
           initial={{ opacity: 0, y: 20 }}
@@ -207,14 +207,14 @@ export function AlaseelCoffeeCard() {
         {/* Footer */}
         <motion.div
           className="text-center mt-8 pt-5"
-          style={{ borderTop: '1px solid rgba(61, 43, 31, 0.08)' }}
+          style={{ borderTop: '1px solid rgba(93, 64, 55, 0.08)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
         >
           <p
             className="text-[0.7rem] tracking-wide"
-            style={{ color: 'rgba(61, 43, 31, 0.4)' }}
+            style={{ color: 'rgba(93, 64, 55, 0.4)' }}
           >
             Powered by{' '}
             <a
@@ -222,7 +222,7 @@ export function AlaseelCoffeeCard() {
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold"
-              style={{ color: '#D97706' }}
+              style={{ color: '#5D4037' }}
             >
               I-WASP
             </a>

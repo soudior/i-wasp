@@ -104,15 +104,15 @@ export function AlaseelOpeningStatus() {
       </span>
       
       {/* Separator */}
-      <span style={{ color: "rgba(61, 43, 31, 0.3)" }}>•</span>
+      <span style={{ color: "rgba(93, 64, 55, 0.3)" }}>•</span>
       
       {/* Clock icon */}
-      <Clock size={14} style={{ color: "rgba(61, 43, 31, 0.5)" }} />
+      <Clock size={14} style={{ color: "rgba(93, 64, 55, 0.5)" }} />
       
       {/* Next event */}
       <span
         className="text-sm"
-        style={{ color: "rgba(61, 43, 31, 0.6)" }}
+        style={{ color: "rgba(93, 64, 55, 0.6)" }}
       >
         {status.nextEvent}
       </span>
