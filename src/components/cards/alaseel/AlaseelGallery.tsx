@@ -1,6 +1,6 @@
 /**
- * AlaseelGallery - Premium swipeable photo gallery carousel
- * Optimized for mobile with touch gestures and smooth animations
+  * AlaseelGallery - Modern chic swipeable photo gallery
+  * Glassmorphism design with premium animations
  */
 
 import { useState, useCallback, useEffect } from 'react';
@@ -65,11 +65,14 @@ export function AlaseelGallery() {
       className="w-full"
     >
       {/* Section Header */}
-      <div className="flex items-center justify-center gap-2 mb-4">
-        <Camera size={18} style={{ color: '#5D4037' }} />
+      <div className="flex items-center justify-center gap-2.5 mb-5">
+        <Camera size={17} strokeWidth={2} style={{ color: '#D4A574' }} />
         <h2
-          className="font-serif text-lg font-bold tracking-tight"
-          style={{ color: '#5D4037' }}
+          className="text-lg font-semibold tracking-[-0.01em]"
+          style={{ 
+            color: '#3D2C22',
+            fontFamily: "'Playfair Display', serif",
+          }}
         >
           Notre Galerie
         </h2>
@@ -80,9 +83,9 @@ export function AlaseelGallery() {
         {/* Embla Viewport */}
         <div
           ref={emblaRef}
-          className="overflow-hidden rounded-[1.5rem]"
+          className="overflow-hidden rounded-[1.75rem]"
           style={{
-            boxShadow: '0 12px 40px rgba(93, 64, 55, 0.15)',
+            boxShadow: '0 20px 50px rgba(61, 44, 34, 0.12), 0 8px 20px rgba(61, 44, 34, 0.08)',
           }}
         >
           <div className="flex">
@@ -91,11 +94,14 @@ export function AlaseelGallery() {
                 key={index}
                 className="flex-[0_0_100%] min-w-0 relative"
               >
-                <div className="relative aspect-[4/3] overflow-hidden">
+                <div className="relative aspect-[4/3] overflow-hidden bg-[#EDE4D8]">
                   <img
                     src={image.src}
                     alt={image.alt}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-700"
+                    style={{
+                      transform: selectedIndex === index ? 'scale(1)' : 'scale(1.05)',
+                    }}
                     loading={index === 0 ? 'eager' : 'lazy'}
                   />
                   
@@ -103,7 +109,7 @@ export function AlaseelGallery() {
                   <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
-                      background: 'linear-gradient(to top, rgba(62, 39, 35, 0.7) 0%, transparent 50%)',
+                      background: 'linear-gradient(to top, rgba(46, 33, 26, 0.85) 0%, rgba(46, 33, 26, 0.2) 35%, transparent 60%)',
                     }}
                   />
                   
@@ -114,11 +120,16 @@ export function AlaseelGallery() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute bottom-4 left-4 right-4"
+                        transition={{ duration: 0.3 }}
+                        className="absolute bottom-5 left-5 right-5"
                       >
                         <p
-                          className="text-lg font-serif font-bold"
-                          style={{ color: '#F5E6D3' }}
+                          className="text-[1.1rem] font-medium tracking-wide"
+                          style={{ 
+                            color: '#FAF6F1',
+                            fontFamily: "'Playfair Display', serif",
+                            textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                          }}
                         >
                           {image.caption}
                         </p>
@@ -131,42 +142,47 @@ export function AlaseelGallery() {
           </div>
         </div>
 
-        {/* Navigation Arrows - Only show on larger touch targets */}
+        {/* Navigation Arrows */}
         <button
           onClick={scrollPrev}
-          className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center active:scale-90 transition-transform"
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all duration-200 backdrop-blur-md"
           style={{
-            backgroundColor: 'rgba(245, 230, 211, 0.9)',
-            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.15)',
+            background: 'rgba(250, 246, 241, 0.85)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.12)',
+            border: '1px solid rgba(255,255,255,0.3)',
           }}
           aria-label="Image précédente"
         >
-          <ChevronLeft size={20} style={{ color: '#5D4037' }} />
+          <ChevronLeft size={20} strokeWidth={2} style={{ color: '#3D2C22' }} />
         </button>
         
         <button
           onClick={scrollNext}
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center active:scale-90 transition-transform"
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all duration-200 backdrop-blur-md"
           style={{
-            backgroundColor: 'rgba(245, 230, 211, 0.9)',
-            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.15)',
+            background: 'rgba(250, 246, 241, 0.85)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.12)',
+            border: '1px solid rgba(255,255,255,0.3)',
           }}
           aria-label="Image suivante"
         >
-          <ChevronRight size={20} style={{ color: '#5D4037' }} />
+          <ChevronRight size={20} strokeWidth={2} style={{ color: '#3D2C22' }} />
         </button>
       </div>
 
       {/* Dots Indicator */}
-      <div className="flex justify-center gap-2 mt-4">
+      <div className="flex justify-center gap-2.5 mt-5">
         {galleryImages.map((_, index) => (
           <button
             key={index}
             onClick={() => emblaApi?.scrollTo(index)}
-            className="w-2 h-2 rounded-full transition-all duration-300"
+            className="rounded-full transition-all duration-300"
             style={{
-              backgroundColor: selectedIndex === index ? '#5D4037' : 'rgba(93, 64, 55, 0.2)',
-              transform: selectedIndex === index ? 'scale(1.3)' : 'scale(1)',
+              width: selectedIndex === index ? '24px' : '8px',
+              height: '8px',
+              background: selectedIndex === index 
+                ? 'linear-gradient(90deg, #D4A574 0%, #4A3728 100%)' 
+                : 'rgba(61, 44, 34, 0.15)',
             }}
             aria-label={`Aller à l'image ${index + 1}`}
           />
