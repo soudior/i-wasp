@@ -1,6 +1,6 @@
 /**
- * AlaseelMenu - Interactive tabbed menu component
- * Premium coffee shop menu with categories
+  * AlaseelMenu - Modern chic tabbed menu component
+  * Ultra-premium coffee shop menu with glassmorphism
  */
 
 import { useState } from 'react';
@@ -94,22 +94,27 @@ export function AlaseelMenu() {
     <div className="w-full">
       {/* Category Tabs - Horizontal Scrollable */}
       <div className="overflow-x-auto pb-3 -mx-5 px-5 scrollbar-hide">
-        <div className="flex gap-2 min-w-max">
+        <div className="flex gap-2.5 min-w-max">
           {menuData.map((category) => (
             <motion.button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-full whitespace-nowrap transition-all duration-300 active:scale-95"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full whitespace-nowrap transition-all duration-300 active:scale-95"
               style={{
-                backgroundColor: activeCategory === category.id ? '#5D4037' : 'rgba(93, 64, 55, 0.08)',
-                color: activeCategory === category.id ? '#F5E6D3' : '#5D4037',
-                fontWeight: activeCategory === category.id ? 600 : 500,
-                boxShadow: activeCategory === category.id ? '0 4px 15px rgba(93, 64, 55, 0.25)' : 'none',
+                background: activeCategory === category.id 
+                  ? 'linear-gradient(145deg, #4A3728 0%, #3D2C22 100%)' 
+                  : 'rgba(61, 44, 34, 0.04)',
+                color: activeCategory === category.id ? '#FAF6F1' : '#5D4037',
+                fontWeight: activeCategory === category.id ? 500 : 400,
+                boxShadow: activeCategory === category.id 
+                  ? '0 6px 20px rgba(61, 44, 34, 0.2), inset 0 1px 0 rgba(255,255,255,0.08)' 
+                  : 'inset 0 0 0 1px rgba(61, 44, 34, 0.08)',
+                letterSpacing: '0.02em',
               }}
               whileTap={{ scale: 0.95 }}
             >
               {category.icon}
-              <span className="text-[0.8rem]">{category.label}</span>
+              <span className="text-[0.78rem]">{category.label}</span>
             </motion.button>
           ))}
         </div>
@@ -117,24 +122,31 @@ export function AlaseelMenu() {
 
       {/* Menu Card */}
       <motion.div
-        className="mt-3 rounded-[1.5rem] overflow-hidden"
+        className="mt-4 rounded-[1.75rem] overflow-hidden"
         style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid rgba(93, 64, 55, 0.15)',
-          boxShadow: '0 12px 40px rgba(93, 64, 55, 0.08)',
+          background: 'linear-gradient(180deg, #ffffff 0%, #FDFBF9 100%)',
+          border: '1px solid rgba(61, 44, 34, 0.06)',
+          boxShadow: '0 20px 50px rgba(61, 44, 34, 0.06), 0 8px 16px rgba(61, 44, 34, 0.04)',
         }}
         layout
       >
         {/* Header */}
         <div
-          className="px-5 py-3.5 text-center"
+          className="px-6 py-4 text-center relative overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, #5D4037 0%, #4E342E 100%)',
+            background: 'linear-gradient(145deg, #4A3728 0%, #3D2C22 100%)',
           }}
         >
+          {/* Subtle shimmer */}
+          <div 
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%)',
+            }}
+          />
           <h3
-            className="font-serif text-base font-semibold tracking-wide"
-            style={{ color: '#F5E6D3' }}
+            className="text-[0.95rem] font-medium tracking-[0.08em] uppercase relative z-10"
+            style={{ color: '#FAF6F1' }}
           >
             {activeMenu?.label}
           </h3>
@@ -148,36 +160,37 @@ export function AlaseelMenu() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="p-4 space-y-2.5"
+            className="p-5 space-y-3"
           >
             {activeMenu?.items.map((item, index) => (
               <motion.div
                 key={item.name}
-                className="flex items-center gap-2"
+                className="flex items-center gap-3"
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.025 }}
               >
                 {/* Item Name */}
                 <span
-                  className="text-[0.9rem] font-medium"
-                  style={{ color: '#5D4037' }}
+                  className="text-[0.88rem] font-normal"
+                  style={{ color: '#3D2C22' }}
                 >
                   {item.name}
                 </span>
                 
                 {/* Dotted Line */}
                 <div
-                  className="flex-1 border-b-[1.5px] border-dotted mx-1.5"
-                  style={{ borderColor: 'rgba(93, 64, 55, 0.15)' }}
+                  className="flex-1 border-b border-dashed mx-2"
+                  style={{ borderColor: 'rgba(61, 44, 34, 0.1)' }}
                 />
                 
                 {/* Price Badge */}
                 <span
-                  className="px-2.5 py-1 rounded-full text-[0.75rem] font-bold tracking-tight"
+                  className="px-3 py-1.5 rounded-xl text-[0.72rem] font-semibold tracking-wide"
                   style={{
-                    backgroundColor: 'rgba(93, 64, 55, 0.12)',
-                    color: '#5D4037',
+                    background: 'linear-gradient(145deg, rgba(212, 165, 116, 0.15) 0%, rgba(212, 165, 116, 0.08) 100%)',
+                    color: '#4A3728',
+                    border: '1px solid rgba(212, 165, 116, 0.2)',
                   }}
                 >
                   {item.price}
