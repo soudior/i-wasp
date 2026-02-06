@@ -8,11 +8,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 
-// Gallery images
-import galleryInterior from '@/assets/alaseel/gallery-interior.jpg';
-import galleryLatte from '@/assets/alaseel/gallery-latte.jpg';
-import galleryTea from '@/assets/alaseel/gallery-tea.jpg';
-import galleryTerrace from '@/assets/alaseel/gallery-terrace.jpg';
+// Gallery images - Real photos from Alaseel Coffee
+import galleryLogo from '@/assets/alaseel/gallery-logo.jpg';
+import galleryCoffee from '@/assets/alaseel/gallery-coffee.jpg';
+import galleryFacade from '@/assets/alaseel/gallery-facade.jpg';
+import galleryAmbiance from '@/assets/alaseel/gallery-ambiance.jpg';
 
 interface GalleryImage {
   src: string;
@@ -21,10 +21,10 @@ interface GalleryImage {
 }
 
 const galleryImages: GalleryImage[] = [
-  { src: galleryInterior, alt: 'Intérieur du café', caption: 'Notre Espace' },
-  { src: galleryLatte, alt: 'Latte art', caption: 'Latte Art' },
-  { src: galleryTea, alt: 'Thé à la menthe', caption: 'Thé Marocain' },
-  { src: galleryTerrace, alt: 'Terrasse', caption: 'Notre Terrasse' },
+  { src: galleryFacade, alt: 'Entrée du café Alaseel', caption: 'Thé Shop' },
+  { src: galleryCoffee, alt: 'Cappuccino Alaseel', caption: 'Nos Cafés' },
+  { src: galleryAmbiance, alt: 'Ambiance du café', caption: "L'Ambiance" },
+  { src: galleryLogo, alt: 'Logo Alaseel', caption: 'Notre Marque' },
 ];
 
 export function AlaseelGallery() {
