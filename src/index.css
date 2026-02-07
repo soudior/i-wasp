@@ -1054,6 +1054,20 @@
     background: #AF8E56;
     color: #FBFBFA;
   }
+
+  /* Alaseel Shimmer Animation */
+  @keyframes shimmer {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  .alaseel-shimmer {
+    animation: shimmer 15s ease-in-out infinite;
+  }
 }
 
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
