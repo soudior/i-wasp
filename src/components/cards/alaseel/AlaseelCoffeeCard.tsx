@@ -68,36 +68,69 @@ export function AlaseelCoffeeCard() {
         background: 'linear-gradient(180deg, #FAF6F1 0%, #F5EDE4 50%, #EDE4D8 100%)',
       }}
     >
-      {/* Header with Gradient and Pattern */}
+      {/* Luxury Header with Multi-layer Design */}
       <div
-        className="relative pt-12 pb-28 px-6"
+        className="relative pt-14 pb-32 px-6 overflow-hidden"
         style={{
-          background: 'linear-gradient(175deg, #4A3728 0%, #3D2C22 40%, #2E211A 100%)',
+          background: 'linear-gradient(175deg, #2C1810 0%, #1A0F0A 50%, #0D0705 100%)',
         }}
       >
-        {/* Elegant Pattern Overlay */}
+        {/* Animated Gold Shimmer Effect */}
         <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='40' cy='40' r='30' stroke='%23D4A574' stroke-width='0.5' fill='none'/%3E%3Ccircle cx='40' cy='40' r='20' stroke='%23D4A574' stroke-width='0.3' fill='none'/%3E%3C/svg%3E")`,
-            backgroundSize: '80px 80px',
+            background: 'linear-gradient(135deg, transparent 0%, rgba(212, 175, 116, 0.03) 25%, transparent 50%, rgba(212, 175, 116, 0.05) 75%, transparent 100%)',
+            backgroundSize: '400% 400%',
+            animation: 'shimmer 15s ease-in-out infinite',
           }}
         />
         
-        {/* Top Glow Effect */}
+        {/* Premium Art Deco Pattern */}
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[200px] pointer-events-none"
+          className="absolute inset-0 opacity-[0.06] pointer-events-none"
           style={{
-            background: 'radial-gradient(ellipse at center, rgba(212, 165, 116, 0.15) 0%, transparent 70%)',
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z' stroke='%23D4A574' stroke-width='0.5' fill='none'/%3E%3Ccircle cx='30' cy='30' r='15' stroke='%23D4A574' stroke-width='0.3' fill='none'/%3E%3Ccircle cx='30' cy='30' r='8' stroke='%23D4A574' stroke-width='0.2' fill='none'/%3E%3C/svg%3E")`,
+            backgroundSize: '60px 60px',
+          }}
+        />
+        
+        {/* Top Gold Radiance */}
+        <div
+          className="absolute -top-20 left-1/2 -translate-x-1/2 w-[500px] h-[300px] pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(212, 165, 116, 0.12) 0%, rgba(180, 140, 90, 0.05) 40%, transparent 70%)',
+            filter: 'blur(40px)',
+          }}
+        />
+        
+        {/* Side Gold Accents */}
+        <div
+          className="absolute top-0 left-0 w-32 h-full pointer-events-none"
+          style={{
+            background: 'linear-gradient(90deg, rgba(212, 165, 116, 0.04) 0%, transparent 100%)',
+          }}
+        />
+        <div
+          className="absolute top-0 right-0 w-32 h-full pointer-events-none"
+          style={{
+            background: 'linear-gradient(-90deg, rgba(212, 165, 116, 0.04) 0%, transparent 100%)',
+          }}
+        />
+        
+        {/* Vignette Effect */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.3) 100%)',
           }}
         />
 
         {/* Logo */}
         <motion.div
           className="flex justify-center relative z-10"
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ y: -20, opacity: 0, scale: 0.95 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
           <AlaseelLogo size="lg" />
         </motion.div>
@@ -148,14 +181,18 @@ export function AlaseelCoffeeCard() {
 
       {/* Main Content */}
       <div
-        className="flex-1 -mt-14 rounded-t-[2.5rem] px-5 pt-7 pb-12 relative z-10"
+        className="flex-1 -mt-16 rounded-t-[2.5rem] px-5 pt-8 pb-12 relative z-10"
         style={{ 
-          background: 'linear-gradient(180deg, #FAF6F1 0%, #F5EDE4 100%)',
-          boxShadow: '0 -12px 40px rgba(62, 44, 34, 0.12)',
+          background: 'linear-gradient(180deg, #FFFDFB 0%, #FAF6F1 30%, #F5EDE4 100%)',
+          boxShadow: '0 -20px 60px rgba(45, 30, 20, 0.15), 0 -4px 20px rgba(212, 165, 116, 0.08)',
         }}
       >
-        {/* Decorative line */}
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-[#D4A574]/30" />
+        {/* Premium Decorative Handle */}
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-2">
+          <div className="w-6 h-0.5 rounded-full bg-gradient-to-r from-transparent via-[#D4A574]/40 to-transparent" />
+          <div className="w-10 h-1 rounded-full bg-gradient-to-r from-[#D4A574]/30 via-[#D4A574]/50 to-[#D4A574]/30" />
+          <div className="w-6 h-0.5 rounded-full bg-gradient-to-r from-transparent via-[#D4A574]/40 to-transparent" />
+        </div>
         
         {/* Social Links */}
         <motion.div
