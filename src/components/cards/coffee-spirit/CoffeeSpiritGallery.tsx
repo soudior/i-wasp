@@ -16,7 +16,6 @@ import layeredLatteImage from '@/assets/coffee-spirit/layered-latte.jpg';
 import icedCoffeeImage from '@/assets/coffee-spirit/iced-coffee.jpg';
 import mojitoImage from '@/assets/coffee-spirit/mojito.jpg';
 import latteArt1Image from '@/assets/coffee-spirit/latte-art-1.jpg';
-import latteArt2Image from '@/assets/coffee-spirit/latte-art-2.jpg';
 import americanoImage from '@/assets/coffee-spirit/americano.jpg';
 import pinkLattePourImage from '@/assets/coffee-spirit/pink-latte-pour.jpg';
 
@@ -35,7 +34,6 @@ const galleryImages: GalleryImage[] = [
   { src: icedCoffeeImage, alt: 'Iced Coffee', caption: 'Iced Coffee' },
   { src: pinkFrappeImage, alt: 'Pink Frappé', caption: 'Pink Frappé' },
   { src: layeredLatteImage, alt: 'Layered Latte', caption: 'Layered Latte' },
-  { src: latteArt2Image, alt: 'Cappuccino Art', caption: 'Cappuccino Art' },
   { src: americanoImage, alt: 'Americano', caption: 'Americano' },
 ];
 
@@ -110,6 +108,7 @@ export function CoffeeSpiritGallery() {
                     alt={image.alt}
                     className="w-full h-full object-cover vcard-image"
                     style={{
+                      objectPosition: 'center center',
                       WebkitTransform: selectedIndex === index ? 'scale(1) translateZ(0)' : 'scale(1.05) translateZ(0)',
                       transform: selectedIndex === index ? 'scale(1) translateZ(0)' : 'scale(1.05) translateZ(0)',
                       transition: 'transform 0.7s ease',
