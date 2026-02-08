@@ -9,10 +9,16 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 
 // Gallery images
-import baristaImage from '@/assets/coffee-spirit/barista.jpg';
-import coffeeCupImage from '@/assets/coffee-spirit/coffee-cup.jpg';
-import pinkLatteImage from '@/assets/coffee-spirit/pink-latte.jpg';
-import blueMojitoImage from '@/assets/coffee-spirit/blue-mojito.jpg';
+import icedLatteImage from '@/assets/coffee-spirit/iced-latte.jpg';
+import strawberryShakeImage from '@/assets/coffee-spirit/strawberry-shake.jpg';
+import pinkFrappeImage from '@/assets/coffee-spirit/pink-frappe.jpg';
+import layeredLatteImage from '@/assets/coffee-spirit/layered-latte.jpg';
+import icedCoffeeImage from '@/assets/coffee-spirit/iced-coffee.jpg';
+import mojitoImage from '@/assets/coffee-spirit/mojito.jpg';
+import latteArt1Image from '@/assets/coffee-spirit/latte-art-1.jpg';
+import latteArt2Image from '@/assets/coffee-spirit/latte-art-2.jpg';
+import americanoImage from '@/assets/coffee-spirit/americano.jpg';
+import pinkLattePourImage from '@/assets/coffee-spirit/pink-latte-pour.jpg';
 
 interface GalleryImage {
   src: string;
@@ -21,10 +27,16 @@ interface GalleryImage {
 }
 
 const galleryImages: GalleryImage[] = [
-  { src: baristaImage, alt: 'Notre Barista', caption: 'Le Barista' },
-  { src: coffeeCupImage, alt: 'Coffee Spirit Cup', caption: 'Notre Café' },
-  { src: pinkLatteImage, alt: 'Pink Latte', caption: 'Pink Latte' },
-  { src: blueMojitoImage, alt: 'Blue Mojito', caption: 'Blue Mojito' },
+  { src: latteArt1Image, alt: 'Latte Art', caption: 'Latte Art' },
+  { src: pinkLattePourImage, alt: 'Pink Latte', caption: 'Pink Latte' },
+  { src: icedLatteImage, alt: 'Iced Latte', caption: 'Iced Latte' },
+  { src: strawberryShakeImage, alt: 'Strawberry Shake', caption: 'Strawberry Shake' },
+  { src: mojitoImage, alt: 'Mojito Frais', caption: 'Mojito Frais' },
+  { src: icedCoffeeImage, alt: 'Iced Coffee', caption: 'Iced Coffee' },
+  { src: pinkFrappeImage, alt: 'Pink Frappé', caption: 'Pink Frappé' },
+  { src: layeredLatteImage, alt: 'Layered Latte', caption: 'Layered Latte' },
+  { src: latteArt2Image, alt: 'Cappuccino Art', caption: 'Cappuccino Art' },
+  { src: americanoImage, alt: 'Americano', caption: 'Americano' },
 ];
 
 export function CoffeeSpiritGallery() {
