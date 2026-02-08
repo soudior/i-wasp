@@ -29,7 +29,7 @@ const actionButtons = [
     id: 'whatsapp',
     icon: <WhatsAppIcon size={20} />,
     label: 'WhatsApp',
-    url: 'https://wa.me/212600000000?text=Bonjour%20Coffee%20Spirit%20!',
+    url: 'https://wa.me/212628358807?text=Bonjour%20Coffee%20Spirit%20!',
     gradient: 'linear-gradient(145deg, #25D366 0%, #128C7E 100%)',
   },
   {
