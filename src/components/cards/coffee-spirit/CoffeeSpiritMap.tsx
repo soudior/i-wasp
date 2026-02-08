@@ -24,7 +24,7 @@ export function CoffeeSpiritMap() {
       className="w-full"
     >
       {/* Section Header */}
-      <div className="flex items-center justify-center gap-2.5 mb-5">
+      <div className="flex-safe items-center-safe justify-center-safe gap-2.5 mb-5">
         <MapPin size={17} strokeWidth={2} style={{ color: '#C9A66B' }} />
         <h2
           className="text-lg font-semibold tracking-[-0.01em]"
@@ -46,7 +46,7 @@ export function CoffeeSpiritMap() {
         }}
       >
         {/* Map Iframe */}
-        <div className="aspect-[4/3] w-full">
+        <div style={{ aspectRatio: '4/3', width: '100%' }}>
           <iframe
             src={GOOGLE_MAPS_EMBED_URL}
             width="100%"
@@ -54,6 +54,7 @@ export function CoffeeSpiritMap() {
             style={{ 
               border: 0,
               filter: 'grayscale(30%) contrast(1.1)',
+              WebkitFilter: 'grayscale(30%) contrast(1.1)',
             }}
             allowFullScreen
             loading="lazy"
@@ -72,18 +73,20 @@ export function CoffeeSpiritMap() {
 
         {/* Location Info Card */}
         <motion.div
-          className="absolute bottom-4 left-4 right-4 p-4 rounded-xl backdrop-blur-md"
+          className="absolute bottom-4 left-4 right-4 p-4 rounded-xl backdrop-blur-safe"
           style={{
             background: 'rgba(26, 20, 18, 0.9)',
             border: '1px solid rgba(201, 166, 107, 0.2)',
             boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+            WebkitBackdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(12px)',
           }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1">
+          <div className="flex-safe items-start gap-3" style={{ justifyContent: 'space-between' }}>
+            <div style={{ flex: 1 }}>
               <h3
                 className="text-[0.95rem] font-semibold mb-1"
                 style={{ 
@@ -104,12 +107,13 @@ export function CoffeeSpiritMap() {
             {/* Directions Button */}
             <motion.button
               onClick={handleDirectionsClick}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl active:scale-95 transition-all"
+              className="vcard-button flex-safe items-center-safe gap-2 px-4 py-2.5 rounded-xl active:scale-95"
               style={{
                 background: 'linear-gradient(145deg, #4285F4 0%, #3367D6 100%)',
                 boxShadow: '0 4px 12px rgba(66, 133, 244, 0.3)',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)',
               }}
-              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               <Navigation size={16} style={{ color: '#ffffff' }} />
@@ -129,7 +133,8 @@ export function CoffeeSpiritMap() {
         href={GOOGLE_MAPS_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-center gap-2 mt-4 py-2 transition-opacity hover:opacity-80"
+        className="flex-safe items-center-safe justify-center-safe gap-2 mt-4 py-2 vcard-button"
+        style={{ opacity: 0.9 }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.9 }}

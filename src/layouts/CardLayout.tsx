@@ -21,7 +21,7 @@ interface CardLayoutProps {
 
 export function CardLayout({ children }: CardLayoutProps) {
   return (
-    <div className="min-h-dvh bg-background">
+    <div className="vcard-container bg-background no-overscroll">
       {children}
     </div>
   );

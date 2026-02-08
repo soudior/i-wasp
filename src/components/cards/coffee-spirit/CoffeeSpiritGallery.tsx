@@ -91,26 +91,31 @@ export function CoffeeSpiritGallery() {
         {/* Embla Viewport */}
         <div
           ref={emblaRef}
-          className="overflow-hidden rounded-[1.75rem]"
+          className="overflow-hidden rounded-[1.75rem] embla-container"
           style={{
             boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3)',
+            WebkitOverflowScrolling: 'touch',
           }}
         >
-          <div className="flex">
+          <div className="flex-safe">
             {galleryImages.map((image, index) => (
               <div
                 key={index}
-                className="flex-[0_0_100%] min-w-0 relative"
+                className="embla-slide"
+                style={{ flex: '0 0 100%', minWidth: 0 }}
               >
-                <div className="relative aspect-[4/3] overflow-hidden bg-[#1A1412]">
+                <div className="relative overflow-hidden bg-[#1A1412]" style={{ aspectRatio: '4/3' }}>
                   <img
                     src={image.src}
                     alt={image.alt}
-                    className="w-full h-full object-cover transition-transform duration-700"
+                    className="w-full h-full object-cover vcard-image"
                     style={{
-                      transform: selectedIndex === index ? 'scale(1)' : 'scale(1.05)',
+                      WebkitTransform: selectedIndex === index ? 'scale(1) translateZ(0)' : 'scale(1.05) translateZ(0)',
+                      transform: selectedIndex === index ? 'scale(1) translateZ(0)' : 'scale(1.05) translateZ(0)',
+                      transition: 'transform 0.7s ease',
                     }}
                     loading={index === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
                   />
                   
                   {/* Gradient Overlay */}
@@ -153,11 +158,15 @@ export function CoffeeSpiritGallery() {
         {/* Navigation Arrows */}
         <button
           onClick={scrollPrev}
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all duration-200 backdrop-blur-md"
+          className="vcard-button absolute left-3 top-1/2 w-10 h-10 rounded-full flex-safe items-center-safe justify-center-safe active:scale-90 backdrop-blur-safe"
           style={{
+            WebkitTransform: 'translateY(-50%)',
+            transform: 'translateY(-50%)',
             background: 'rgba(26, 20, 18, 0.85)',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
             border: '1px solid rgba(201, 166, 107, 0.2)',
+            WebkitBackdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(12px)',
           }}
           aria-label="Image précédente"
         >
@@ -166,11 +175,15 @@ export function CoffeeSpiritGallery() {
         
         <button
           onClick={scrollNext}
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all duration-200 backdrop-blur-md"
+          className="vcard-button absolute right-3 top-1/2 w-10 h-10 rounded-full flex-safe items-center-safe justify-center-safe active:scale-90 backdrop-blur-safe"
           style={{
+            WebkitTransform: 'translateY(-50%)',
+            transform: 'translateY(-50%)',
             background: 'rgba(26, 20, 18, 0.85)',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
             border: '1px solid rgba(201, 166, 107, 0.2)',
+            WebkitBackdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(12px)',
           }}
           aria-label="Image suivante"
         >
@@ -179,18 +192,21 @@ export function CoffeeSpiritGallery() {
       </div>
 
       {/* Dots Indicator */}
-      <div className="flex justify-center gap-2.5 mt-5">
+      <div className="flex-safe justify-center-safe gap-2.5 mt-5">
         {galleryImages.map((_, index) => (
           <button
             key={index}
             onClick={() => emblaApi?.scrollTo(index)}
-            className="rounded-full transition-all duration-300"
+            className="vcard-button rounded-full"
             style={{
               width: selectedIndex === index ? '24px' : '8px',
               height: '8px',
+              minWidth: '8px',
+              minHeight: '8px',
               background: selectedIndex === index 
                 ? 'linear-gradient(90deg, #C9A66B 0%, #8B6914 100%)' 
                 : 'rgba(250, 246, 241, 0.2)',
+              transition: 'width 0.3s ease, background 0.3s ease',
             }}
             aria-label={`Aller à l'image ${index + 1}`}
           />
