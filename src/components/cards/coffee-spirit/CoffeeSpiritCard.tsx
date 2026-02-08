@@ -8,6 +8,7 @@ import { MapPin, Instagram, Star, Navigation, MessageSquare } from 'lucide-react
 import { CoffeeSpiritLogo } from './CoffeeSpiritLogo';
 import { CoffeeSpiritOpeningStatus } from './CoffeeSpiritOpeningStatus';
 import { CoffeeSpiritGallery } from './CoffeeSpiritGallery';
+import { CoffeeSpiritMap } from './CoffeeSpiritMap';
 
 // TikTok custom icon
 const TikTokIcon = ({ size = 20 }: { size?: number }) => (
@@ -238,6 +239,11 @@ export function CoffeeSpiritCard() {
         {/* Gallery Section */}
         <div className="mt-6">
           <CoffeeSpiritGallery />
+        </div>
+
+        {/* Map Section */}
+        <div className="mt-8">
+          <CoffeeSpiritMap />
         </div>
 
         {/* Info Section */}
