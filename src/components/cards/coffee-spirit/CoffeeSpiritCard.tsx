@@ -69,7 +69,7 @@ export function CoffeeSpiritCard() {
 
   return (
     <div
-      className="min-h-[100dvh] flex flex-col overflow-x-hidden antialiased"
+      className="vcard-container flex-safe flex-col-safe overflow-x-hidden antialiased"
       style={{ 
         background: 'linear-gradient(180deg, #0D0A08 0%, #1A1512 50%, #0D0A08 100%)',
       }}
@@ -226,12 +226,13 @@ export function CoffeeSpiritCard() {
             <motion.button
               key={action.id}
               onClick={() => handleActionClick(action.url)}
-              className="group flex flex-col items-center gap-2 py-4 px-3 rounded-2xl active:scale-95 transition-all duration-300"
+              className="vcard-button group flex-safe flex-col-safe items-center-safe gap-2 py-4 px-3 rounded-2xl active:scale-95"
               style={{
                 background: action.gradient,
                 boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)',
               }}
-              whileHover={{ y: -2, boxShadow: '0 12px 28px rgba(0, 0, 0, 0.4)' }}
               whileTap={{ scale: 0.94 }}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
