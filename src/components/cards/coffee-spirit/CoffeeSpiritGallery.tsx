@@ -1,10 +1,14 @@
 /**
- * CoffeeSpiritGallery - Premium gallery for Coffee Spirit
+ * CoffeeSpiritGallery - Premium swipeable carousel gallery
+ * Dark luxury design with glassmorphism
  */
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import useEmblaCarousel from 'embla-carousel-react';
+import { ChevronLeft, ChevronRight, Camera } from 'lucide-react';
+
+// Gallery images
 import baristaImage from '@/assets/coffee-spirit/barista.jpg';
 import coffeeCupImage from '@/assets/coffee-spirit/coffee-cup.jpg';
 import pinkLatteImage from '@/assets/coffee-spirit/pink-latte.jpg';
@@ -24,29 +28,43 @@ const galleryImages: GalleryImage[] = [
 ];
 
 export function CoffeeSpiritGallery() {
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: 'center',
+  });
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const handlePrev = () => {
-    if (selectedIndex !== null) {
-      setSelectedIndex(selectedIndex === 0 ? galleryImages.length - 1 : selectedIndex - 1);
-    }
-  };
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
-  const handleNext = () => {
-    if (selectedIndex !== null) {
-      setSelectedIndex(selectedIndex === galleryImages.length - 1 ? 0 : selectedIndex + 1);
-    }
-  };
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+    return () => {
+      emblaApi.off('select', onSelect);
+      emblaApi.off('reInit', onSelect);
+    };
+  }, [emblaApi, onSelect]);
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.5 }}
-      >
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5, duration: 0.5 }}
+      className="w-full"
+    >
+      {/* Section Header */}
+      <div className="flex items-center justify-center gap-2.5 mb-5">
+        <Camera size={17} strokeWidth={2} style={{ color: '#C9A66B' }} />
         <h2
-          className="text-lg font-semibold text-center mb-5 tracking-[-0.01em]"
+          className="text-lg font-semibold tracking-[-0.01em]"
           style={{ 
             color: '#FAF6F1',
             fontFamily: "'Playfair Display', serif",
@@ -54,94 +72,119 @@ export function CoffeeSpiritGallery() {
         >
           Notre Univers
         </h2>
-        
-        <div className="grid grid-cols-2 gap-3">
-          {galleryImages.map((image, index) => (
-            <motion.button
-              key={index}
-              onClick={() => setSelectedIndex(index)}
-              className="relative aspect-square rounded-2xl overflow-hidden group"
-              style={{
-                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
-              }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + index * 0.1 }}
-            >
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div 
-                className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"
-              />
-              <span 
-                className="absolute bottom-3 left-3 text-[0.75rem] font-medium text-white/90"
-                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+      </div>
+
+      {/* Carousel Container */}
+      <div className="relative">
+        {/* Embla Viewport */}
+        <div
+          ref={emblaRef}
+          className="overflow-hidden rounded-[1.75rem]"
+          style={{
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3)',
+          }}
+        >
+          <div className="flex">
+            {galleryImages.map((image, index) => (
+              <div
+                key={index}
+                className="flex-[0_0_100%] min-w-0 relative"
               >
-                {image.caption}
-              </span>
-            </motion.button>
-          ))}
+                <div className="relative aspect-[4/3] overflow-hidden bg-[#1A1412]">
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-full object-cover transition-transform duration-700"
+                    style={{
+                      transform: selectedIndex === index ? 'scale(1)' : 'scale(1.05)',
+                    }}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                  />
+                  
+                  {/* Gradient Overlay */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(to top, rgba(10, 8, 6, 0.9) 0%, rgba(10, 8, 6, 0.3) 35%, transparent 60%)',
+                    }}
+                  />
+                  
+                  {/* Caption */}
+                  <AnimatePresence>
+                    {selectedIndex === index && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute bottom-5 left-5 right-5"
+                      >
+                        <p
+                          className="text-[1.1rem] font-medium tracking-wide"
+                          style={{ 
+                            color: '#FAF6F1',
+                            fontFamily: "'Playfair Display', serif",
+                            textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                          }}
+                        >
+                          {image.caption}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </motion.div>
 
-      {/* Lightbox */}
-      <AnimatePresence>
-        {selectedIndex !== null && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedIndex(null)}
-          >
-            <motion.button
-              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <X size={24} />
-            </motion.button>
+        {/* Navigation Arrows */}
+        <button
+          onClick={scrollPrev}
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all duration-200 backdrop-blur-md"
+          style={{
+            background: 'rgba(26, 20, 18, 0.85)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+            border: '1px solid rgba(201, 166, 107, 0.2)',
+          }}
+          aria-label="Image précédente"
+        >
+          <ChevronLeft size={20} strokeWidth={2} style={{ color: '#C9A66B' }} />
+        </button>
+        
+        <button
+          onClick={scrollNext}
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-all duration-200 backdrop-blur-md"
+          style={{
+            background: 'rgba(26, 20, 18, 0.85)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+            border: '1px solid rgba(201, 166, 107, 0.2)',
+          }}
+          aria-label="Image suivante"
+        >
+          <ChevronRight size={20} strokeWidth={2} style={{ color: '#C9A66B' }} />
+        </button>
+      </div>
 
-            <button
-              onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-              className="absolute left-4 p-2 rounded-full bg-white/10 text-white"
-            >
-              <ChevronLeft size={24} />
-            </button>
-
-            <motion.img
-              key={selectedIndex}
-              src={galleryImages[selectedIndex].src}
-              alt={galleryImages[selectedIndex].alt}
-              className="max-w-[90vw] max-h-[80vh] object-contain rounded-lg"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              onClick={(e) => e.stopPropagation()}
-            />
-
-            <button
-              onClick={(e) => { e.stopPropagation(); handleNext(); }}
-              className="absolute right-4 p-2 rounded-full bg-white/10 text-white"
-            >
-              <ChevronRight size={24} />
-            </button>
-
-            <div className="absolute bottom-6 text-center text-white">
-              <p className="text-lg font-medium">{galleryImages[selectedIndex].caption}</p>
-              <p className="text-sm text-white/60 mt-1">
-                {selectedIndex + 1} / {galleryImages.length}
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+      {/* Dots Indicator */}
+      <div className="flex justify-center gap-2.5 mt-5">
+        {galleryImages.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => emblaApi?.scrollTo(index)}
+            className="rounded-full transition-all duration-300"
+            style={{
+              width: selectedIndex === index ? '24px' : '8px',
+              height: '8px',
+              background: selectedIndex === index 
+                ? 'linear-gradient(90deg, #C9A66B 0%, #8B6914 100%)' 
+                : 'rgba(250, 246, 241, 0.2)',
+            }}
+            aria-label={`Aller à l'image ${index + 1}`}
+          />
+        ))}
+      </div>
+    </motion.div>
   );
 }
 
