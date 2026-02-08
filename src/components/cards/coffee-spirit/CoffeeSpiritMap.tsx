@@ -6,8 +6,10 @@
 import { motion } from 'framer-motion';
 import { MapPin, Navigation, ExternalLink } from 'lucide-react';
 
-const GOOGLE_MAPS_EMBED_URL = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3396.8!2d-8.0!3d31.63!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sCoffee%20Spirit!5e0!3m2!1sfr!2sma!4v1699000000000!5m2!1sfr!2sma";
-const GOOGLE_MAPS_DIRECTIONS_URL = "https://www.google.com/maps/dir/?api=1&destination=Coffee+Spirit+Jnan+Awraad+Marrakech";
+// Coffee Spirit - Jnan Awraad, Marrakech (Approximate coordinates: 31.6475, -8.0150)
+const GOOGLE_MAPS_EMBED_URL = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3396.5!2d-8.015!3d31.6475!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDM4JzUxLjAiTiA4wrAwMCc1NC4wIlc!5e0!3m2!1sfr!2sma!4v1699000000000!5m2!1sfr!2sma";
+const GOOGLE_MAPS_URL = "https://www.google.com/maps/search/Coffee+Spirit+Jnan+Awraad+Marrakech/@31.6475,-8.015,16z";
+const GOOGLE_MAPS_DIRECTIONS_URL = "https://www.google.com/maps/dir/?api=1&destination=31.6475,-8.015&destination_place_id=Coffee+Spirit+Jnan+Awraad+Marrakech";
 
 export function CoffeeSpiritMap() {
   const handleDirectionsClick = () => {
@@ -124,7 +126,7 @@ export function CoffeeSpiritMap() {
 
       {/* Open in Maps Link */}
       <motion.a
-        href={GOOGLE_MAPS_DIRECTIONS_URL}
+        href={GOOGLE_MAPS_URL}
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center justify-center gap-2 mt-4 py-2 transition-opacity hover:opacity-80"
