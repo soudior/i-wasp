@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import baristaImage from '@/assets/coffee-spirit/barista.jpg';
 import coffeeCupImage from '@/assets/coffee-spirit/coffee-cup.jpg';
+import pinkLatteImage from '@/assets/coffee-spirit/pink-latte.jpg';
+import blueMojitoImage from '@/assets/coffee-spirit/blue-mojito.jpg';
 
 interface GalleryImage {
   src: string;
@@ -17,6 +19,8 @@ interface GalleryImage {
 const galleryImages: GalleryImage[] = [
   { src: baristaImage, alt: 'Notre Barista', caption: 'Le Barista' },
   { src: coffeeCupImage, alt: 'Coffee Spirit Cup', caption: 'Notre Café' },
+  { src: pinkLatteImage, alt: 'Pink Latte', caption: 'Pink Latte' },
+  { src: blueMojitoImage, alt: 'Blue Mojito', caption: 'Blue Mojito' },
 ];
 
 export function CoffeeSpiritGallery() {
