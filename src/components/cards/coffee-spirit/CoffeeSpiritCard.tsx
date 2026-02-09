@@ -36,7 +36,7 @@ const actionButtons = [
     id: 'directions',
     icon: <Navigation size={20} />,
     label: 'Itinéraire',
-    url: 'https://maps.google.com/?q=Coffee+Spirit+Marrakech+Jnan+Awraad',
+    url: 'https://www.google.com/maps/dir/?api=1&destination=31.659279,-8.020561',
     gradient: 'linear-gradient(145deg, #4285F4 0%, #3367D6 100%)',
   },
   {
