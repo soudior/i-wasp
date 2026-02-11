@@ -64,7 +64,7 @@ export function usePushNotifications(cardId: string | undefined) {
     try {
       const registration = await navigator.serviceWorker.getRegistration('/sw-push.js');
       if (registration) {
-        const subscription = await registration.pushManager.getSubscription();
+        const subscription = await (registration as any).pushManager.getSubscription();
         if (subscription) {
           setState(prev => ({ ...prev, isSubscribed: true }));
         }
@@ -105,7 +105,7 @@ export function usePushNotifications(cardId: string | undefined) {
 
       // Subscribe to push notifications
       const applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-      const subscription = await registration.pushManager.subscribe({
+      const subscription = await (registration as any).pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: applicationServerKey.buffer as ArrayBuffer,
       });
@@ -166,7 +166,7 @@ export function usePushNotifications(cardId: string | undefined) {
     try {
       const registration = await navigator.serviceWorker.getRegistration('/sw-push.js');
       if (registration) {
-        const subscription = await registration.pushManager.getSubscription();
+        const subscription = await (registration as any).pushManager.getSubscription();
         if (subscription) {
           await subscription.unsubscribe();
         }
