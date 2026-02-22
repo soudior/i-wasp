@@ -141,6 +141,7 @@ const IwaspCardGenerator = lazy(() => import("./pages/IwaspCardGenerator"));
 const KoyaCard = lazy(() => import("./pages/KoyaCard"));
 const AlaseelCoffeeCard = lazy(() => import("./pages/AlaseelCoffeeCard"));
 const CoffeeSpiritCard = lazy(() => import("./pages/CoffeeSpiritCard"));
+const LifestyleGroupCard = lazy(() => import("./pages/LifestyleGroupCard"));
 
 const LuxuryWifiPage = lazy(() => import("./pages/LuxuryWifiPage"));
 const Services = lazy(() => import("./pages/Services"));
@@ -261,6 +262,7 @@ const App = () => {
                               <Route path="/card/koya" element={<KoyaCard />} />
                               <Route path="/card/alaseel" element={<AlaseelCoffeeCard />} />
                               <Route path="/card/coffee-spirit" element={<CoffeeSpiritCard />} />
+                              <Route path="/card/lifestyle-group" element={<LifestyleGroupCard />} />
                               <Route path="/card/:slug" element={<PublicCard />} />
                               {/* Auth */}
                               <Route path="/login" element={<Login />} />
