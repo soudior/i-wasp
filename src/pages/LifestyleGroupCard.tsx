@@ -2,8 +2,8 @@
  * Nommos Group – Ultra-Premium Multi-Venue Digital Card
  * Route: /card/lifestyle-group
  * 
- * Design: Contemporary luxury (LVMH / Kering / Hermès aesthetic)
- * Typography: Refined serif + clean sans-serif pairing
+ * Design: Contemporary luxury — clean, organized, intuitive
+ * Typography: Playfair Display (serif) + Inter (sans-serif)
  * Palette: Deep obsidian, champagne gold, warm ivory
  */
 
@@ -11,7 +11,7 @@ import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Globe, Instagram, MapPin, Phone, Mail, Download,
-  ChevronRight, QrCode, Share2, MessageCircle,
+  QrCode, Share2, MessageCircle,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { CardLayout } from "@/layouts/CardLayout";
@@ -68,105 +68,82 @@ type CityFilter = "all" | "Marrakech" | "Tanger";
 
 // ─── Design Tokens ───────────────────────────────────────────
 const T = {
-  // Core palette
   bg: "#060608",
-  surface: "rgba(255,255,255,0.025)",
-  surfaceBorder: "rgba(255,255,255,0.05)",
-  surfaceHover: "rgba(255,255,255,0.04)",
-  // Typography
+  surface: "rgba(255,255,255,0.035)",
+  surfaceBorder: "rgba(255,255,255,0.06)",
   ivory: "#F5F0EA",
   ivoryMid: "rgba(245,240,234,0.55)",
-  ivoryDim: "rgba(245,240,234,0.2)",
-  // Accent
+  ivoryDim: "rgba(245,240,234,0.22)",
   gold: "#C9A96E",
   goldSoft: "rgba(201,169,110,0.1)",
   goldBorder: "rgba(201,169,110,0.18)",
-  // Divider
-  line: "rgba(255,255,255,0.035)",
+  line: "rgba(255,255,255,0.04)",
 } as const;
 
-// ─── Venue Row ───────────────────────────────────────────────
-function VenueRow({ venue, index }: { venue: Venue; index: number }) {
-  const [open, setOpen] = useState(false);
+const serif = "'Playfair Display', 'Georgia', serif";
+const sans = "'Inter', 'SF Pro Display', -apple-system, sans-serif";
 
+// ─── Venue Card ──────────────────────────────────────────────
+function VenueCard({ venue, index }: { venue: Venue; index: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -4 }}
-      transition={{ delay: 0.025 * index, duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ delay: 0.03 * index, duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+      className="rounded-[16px] overflow-hidden"
+      style={{
+        background: T.surface,
+        border: `1px solid ${T.surfaceBorder}`,
+      }}
     >
-      <button onClick={() => setOpen(!open)} className="w-full text-left group">
-        <div className="flex items-center gap-4 py-4 px-1">
-          {/* Logo */}
-          <div
-            className="w-11 h-11 rounded-[12px] overflow-hidden flex-shrink-0"
-            style={{ border: `1px solid ${T.surfaceBorder}` }}
-          >
-            <img src={venue.logo} alt={venue.name} className="w-11 h-11 object-cover" loading="lazy" />
-          </div>
-
-          {/* Text */}
-          <div className="flex-1 min-w-0">
-            <p
-              className="text-[13.5px] font-medium tracking-[-0.01em] truncate"
-              style={{ color: T.ivory, fontFamily: "'Playfair Display', 'Georgia', serif" }}
-            >
-              {venue.name}
-            </p>
-            <p
-              className="text-[10.5px] mt-0.5 tracking-[0.06em] uppercase"
-              style={{ color: T.ivoryDim }}
-            >
-              {venue.subtitle}
-            </p>
-          </div>
-
-          {/* Chevron */}
-          <motion.div
-            animate={{ rotate: open ? 90 : 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-          >
-            <ChevronRight size={13} style={{ color: T.ivoryDim }} />
-          </motion.div>
+      {/* Top: Logo + info */}
+      <div className="flex items-center gap-3.5 px-4 py-3.5">
+        <div
+          className="w-12 h-12 rounded-[12px] overflow-hidden flex-shrink-0"
+          style={{ border: `1px solid ${T.surfaceBorder}` }}
+        >
+          <img src={venue.logo} alt={venue.name} className="w-12 h-12 object-cover" loading="lazy" />
         </div>
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-            className="overflow-hidden"
+        <div className="flex-1 min-w-0">
+          <p
+            className="text-[14px] font-medium tracking-[-0.01em] truncate"
+            style={{ color: T.ivory, fontFamily: serif }}
           >
-            <div className="flex gap-2 pb-4 px-1">
-              {[
-                { href: venue.website, icon: Globe, label: "Site" },
-                { href: venue.instagram, icon: Instagram, label: "Instagram" },
-                { href: venue.googleMaps, icon: MapPin, label: "Maps" },
-              ].map(({ href, icon: Icon, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-[10px] text-[9.5px] font-semibold tracking-[0.1em] uppercase transition-all duration-300"
-                  style={{
-                    background: T.goldSoft,
-                    color: T.gold,
-                    border: `1px solid ${T.goldBorder}`,
-                  }}
-                >
-                  <Icon size={11} strokeWidth={2} />
-                  {label}
-                </a>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {venue.name}
+          </p>
+          <p
+            className="text-[10px] mt-0.5 tracking-[0.04em] uppercase"
+            style={{ color: T.ivoryDim }}
+          >
+            {venue.subtitle} · {venue.city}
+          </p>
+        </div>
+      </div>
+
+      {/* Bottom: Quick links */}
+      <div className="flex border-t" style={{ borderColor: T.line }}>
+        {[
+          { href: venue.website, icon: Globe, label: "Site" },
+          { href: venue.instagram, icon: Instagram, label: "Insta" },
+          { href: venue.googleMaps, icon: MapPin, label: "Maps" },
+        ].map(({ href, icon: Icon, label }, i) => (
+          <a
+            key={label}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[9px] font-semibold tracking-[0.08em] uppercase transition-colors duration-200"
+            style={{
+              color: T.gold,
+              borderRight: i < 2 ? `1px solid ${T.line}` : "none",
+            }}
+          >
+            <Icon size={11} strokeWidth={2} />
+            {label}
+          </a>
+        ))}
+      </div>
     </motion.div>
   );
 }
@@ -197,7 +174,7 @@ function QRModal({ open, onClose }: { open: boolean; onClose: () => void }) {
             <QRCodeSVG value={PAGE_URL} size={160} level="H" className="mx-auto" bgColor="transparent" fgColor={T.ivory} />
             <p
               className="mt-6 text-[9px] tracking-[0.25em] uppercase font-medium"
-              style={{ color: T.ivoryMid, fontFamily: "'Inter', sans-serif" }}
+              style={{ color: T.ivoryMid, fontFamily: sans }}
             >
               Scan to connect
             </p>
@@ -212,6 +189,21 @@ function QRModal({ open, onClose }: { open: boolean; onClose: () => void }) {
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+// ─── Section Label ───────────────────────────────────────────
+function SectionLabel({ children, delay = 0 }: { children: string; delay?: number }) {
+  return (
+    <motion.p
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay, duration: 0.4 }}
+      className="text-[8.5px] tracking-[0.3em] uppercase font-semibold mb-4"
+      style={{ color: T.ivoryDim }}
+    >
+      {children}
+    </motion.p>
   );
 }
 
@@ -256,326 +248,246 @@ export default function LifestyleGroupCard() {
         className="min-h-screen"
         style={{
           background: `linear-gradient(180deg, ${T.bg} 0%, #08080C 50%, ${T.bg} 100%)`,
-          fontFamily: "'Inter', 'SF Pro Display', -apple-system, sans-serif",
+          fontFamily: sans,
         }}
       >
         {/* ── Intro overlay ── */}
         <AnimatePresence>
           {!introComplete && (
             <motion.div
-              className="fixed inset-0 z-50 flex items-center justify-center"
+              className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6"
               style={{ background: T.bg }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              {/* Gold ring reveal */}
+              {/* Logo reveal */}
               <motion.div
-                className="relative flex items-center justify-center"
-                initial={{ scale: 0.6, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="w-20 h-20 rounded-[18px] overflow-hidden"
+                style={{ border: `1px solid ${T.goldBorder}` }}
+                initial={{ scale: 0.7, opacity: 0, filter: "blur(12px)" }}
+                animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               >
-                {/* Glow */}
-                <motion.div
-                  className="absolute rounded-full"
-                  style={{
-                    width: 120, height: 120,
-                    background: `radial-gradient(circle, rgba(201,169,110,0.15) 0%, transparent 70%)`,
-                  }}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 2.5, opacity: [0, 0.8, 0] }}
-                  transition={{ duration: 1.8, delay: 0.3, ease: "easeOut" }}
-                />
-                {/* Spinning ring */}
-                <motion.div
-                  className="absolute rounded-full"
-                  style={{
-                    width: 96, height: 96,
-                    border: `1.5px solid transparent`,
-                    borderTopColor: T.gold,
-                    borderRightColor: "rgba(201,169,110,0.3)",
-                  }}
-                  initial={{ rotate: 0, opacity: 0 }}
-                  animate={{ rotate: 360, opacity: [0, 1, 1, 0] }}
-                  transition={{ duration: 1.6, delay: 0.1, ease: "linear" }}
-                />
-                {/* Logo */}
-                <motion.div
-                  className="w-[72px] h-[72px] rounded-[16px] overflow-hidden"
-                  style={{ border: `1px solid ${T.goldBorder}` }}
-                  initial={{ scale: 0.5, opacity: 0, filter: "blur(10px)" }}
-                  animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
-                  transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <img src={nommosGroupLogo} alt="N" className="w-full h-full object-cover" />
-                </motion.div>
+                <img src={nommosGroupLogo} alt="N" className="w-full h-full object-cover" />
               </motion.div>
 
-              {/* Brand text reveal */}
-              <motion.div
-                className="absolute text-center"
-                style={{ top: "calc(50% + 64px)" }}
-                initial={{ opacity: 0, y: 12 }}
+              {/* Brand */}
+              <motion.p
+                className="text-[20px] font-normal tracking-[0.05em]"
+                style={{ color: T.ivory, fontFamily: serif }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+                transition={{ duration: 0.4, delay: 0.3 }}
               >
-                <p
-                  className="text-[18px] font-normal tracking-[0.06em]"
-                  style={{ color: T.ivory, fontFamily: "'Playfair Display', 'Georgia', serif" }}
-                >
-                  Nommos Group
-                </p>
-                <motion.div
-                  className="w-8 h-px mx-auto mt-4"
-                  style={{ background: T.gold }}
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.6, delay: 1.0, ease: [0.25, 0.1, 0.25, 1] }}
-                />
-              </motion.div>
+                Nommos Group
+              </motion.p>
 
-              {/* Gold particles */}
-              {[...Array(18)].map((_, i) => {
-                const angle = (i / 18) * Math.PI * 2;
-                const radius = 90 + Math.random() * 80;
-                const size = 2 + Math.random() * 3;
-                const delay = 0.2 + Math.random() * 0.6;
-                return (
-                  <motion.div
-                    key={`p-${i}`}
-                    className="absolute rounded-full"
-                    style={{
-                      width: size,
-                      height: size,
-                      background: i % 3 === 0
-                        ? "radial-gradient(circle, #C9A96E, transparent)"
-                        : `rgba(201,169,110,${0.4 + Math.random() * 0.5})`,
-                      left: "50%",
-                      top: "50%",
-                      boxShadow: `0 0 ${4 + size}px rgba(201,169,110,0.4)`,
-                    }}
-                    initial={{ x: 0, y: 0, opacity: 0, scale: 0 }}
-                    animate={{
-                      x: [0, Math.cos(angle) * radius * 0.5, Math.cos(angle) * radius],
-                      y: [0, Math.sin(angle) * radius * 0.5 - 20, Math.sin(angle) * radius - 40],
-                      opacity: [0, 1, 0],
-                      scale: [0, 1.2, 0],
-                    }}
-                    transition={{
-                      duration: 1.2 + Math.random() * 0.4,
-                      delay,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                  />
-                );
-              })}
+              {/* Gold line */}
+              <motion.div
+                className="w-8 h-px"
+                style={{ background: T.gold }}
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              />
 
               {/* Auto-dismiss */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0 }}
-                transition={{ delay: 1.8 }}
+                transition={{ delay: 1.4 }}
                 onAnimationComplete={() => setIntroComplete(true)}
               />
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="max-w-[420px] mx-auto px-6 pt-16 pb-14">
-
-          {/* ── Decorative line ── */}
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={introComplete ? { scaleX: 1 } : { scaleX: 0 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-            className="w-8 h-px mx-auto mb-10 origin-center"
-            style={{ background: T.gold }}
-          />
+        <div className="max-w-[420px] mx-auto px-5 pt-14 pb-12">
 
           {/* ── Header ── */}
           <motion.header
-            initial={{ opacity: 0, y: -12 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={introComplete ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
-            className="text-center mb-12"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-center mb-10"
           >
-            {/* Logo */}
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={introComplete ? { scale: 1, opacity: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="w-[72px] h-[72px] mx-auto mb-7 rounded-[16px] overflow-hidden"
+            <div
+              className="w-16 h-16 mx-auto mb-5 rounded-[14px] overflow-hidden"
               style={{ border: `1px solid ${T.surfaceBorder}` }}
             >
-              <img src={nommosGroupLogo} alt="Nommos Group" className="w-[72px] h-[72px] object-cover" />
-            </motion.div>
-
-            {/* Brand name */}
+              <img src={nommosGroupLogo} alt="Nommos Group" className="w-16 h-16 object-cover" />
+            </div>
             <h1
-              className="text-[22px] font-normal tracking-[0.04em]"
-              style={{ color: T.ivory, fontFamily: "'Playfair Display', 'Georgia', serif" }}
+              className="text-[20px] font-normal tracking-[0.03em]"
+              style={{ color: T.ivory, fontFamily: serif }}
             >
               Nommos Group
             </h1>
-
-            {/* Tagline */}
             <p
-              className="mt-3 text-[9px] tracking-[0.35em] uppercase font-light"
+              className="mt-2 text-[10px] tracking-[0.2em] uppercase font-light"
               style={{ color: T.ivoryDim }}
             >
               Marrakech · Tanger
             </p>
           </motion.header>
 
-          {/* ── City filter ── */}
-          <motion.div
+          {/* ── Quick Contact ── */}
+          <motion.section
             initial={{ opacity: 0, y: 8 }}
             animate={introComplete ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.3, duration: 0.4 }}
-            className="flex gap-1.5 justify-center mb-10"
+            transition={{ delay: 0.15, duration: 0.4 }}
+            className="mb-10"
           >
-            {pills.map(({ label, value }) => (
-              <button
-                key={value}
-                onClick={() => setCity(value)}
-                className="relative px-5 py-2 rounded-full text-[9px] font-semibold tracking-[0.12em] uppercase transition-all duration-300"
-                style={{
-                  background: city === value ? T.goldSoft : "transparent",
-                  color: city === value ? T.gold : T.ivoryDim,
-                  border: `1px solid ${city === value ? T.goldBorder : "transparent"}`,
-                }}
-              >
-                {label}
-              </button>
-            ))}
-          </motion.div>
+            <SectionLabel delay={0.2}>Contact</SectionLabel>
 
-          {/* ── Venues ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={introComplete ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.4, duration: 0.4 }}
-            className="rounded-[20px] overflow-hidden"
-            style={{
-              background: T.surface,
-              border: `1px solid ${T.surfaceBorder}`,
-              boxShadow: "0 2px 40px rgba(0,0,0,0.3)",
-            }}
-          >
-            <div className="px-4">
-              <AnimatePresence mode="popLayout">
-                {filtered.map((venue, i) => (
-                  <div
-                    key={venue.id}
-                    style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${T.line}` : "none" }}
-                  >
-                    <VenueRow venue={venue} index={i} />
-                  </div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </motion.div>
-
-          {/* ── Count ── */}
-          <motion.p
-            key={city}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="text-center mt-5 mb-10 text-[9px] tracking-[0.25em] uppercase font-light"
-            style={{ color: T.ivoryDim }}
-          >
-            {filtered.length} établissement{filtered.length > 1 ? "s" : ""}
-          </motion.p>
-
-          {/* ── Decorative divider ── */}
-          <div className="w-6 h-px mx-auto mb-8" style={{ background: T.goldBorder }} />
-
-          {/* ── Actions ── */}
-          <div className="space-y-3">
-            {/* Primary CTA — Gold gradient */}
+            {/* Primary CTA */}
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={handleVCard}
-              className="w-full flex items-center justify-center gap-3 py-4 rounded-[14px] text-[11px] font-bold tracking-[0.08em] uppercase transition-all duration-300"
+              className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-[12px] text-[11px] font-bold tracking-[0.06em] uppercase mb-3"
               style={{
                 background: `linear-gradient(135deg, ${T.gold} 0%, #B8964E 100%)`,
                 color: T.bg,
-                boxShadow: "0 4px 24px rgba(201,169,110,0.2)",
+                boxShadow: "0 4px 20px rgba(201,169,110,0.18)",
               }}
             >
               <Download size={14} strokeWidth={2.5} />
               Enregistrer le contact
             </motion.button>
 
-            {/* Secondary actions */}
-            <div className="grid grid-cols-3 gap-2">
+            {/* Contact grid */}
+            <div className="grid grid-cols-4 gap-2">
               {[
                 { href: `tel:${GROUP_PHONE.replace(/\s/g, "")}`, icon: Phone, label: "Appeler" },
                 { href: `https://wa.me/${GROUP_WHATSAPP}`, icon: MessageCircle, label: "WhatsApp", external: true },
                 { href: `mailto:${GROUP_EMAIL}`, icon: Mail, label: "Email" },
-              ].map(({ href, icon: Icon, label, external }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target={external ? "_blank" : undefined}
-                  rel={external ? "noopener noreferrer" : undefined}
-                  className="flex flex-col items-center gap-2 py-4 rounded-[14px] transition-all duration-300"
-                  style={{
-                    background: T.surface,
-                    border: `1px solid ${T.surfaceBorder}`,
-                  }}
-                >
-                  <Icon size={16} strokeWidth={1.8} style={{ color: T.ivoryMid }} />
-                  <span
-                    className="text-[8.5px] font-semibold tracking-[0.1em] uppercase"
-                    style={{ color: T.ivoryDim }}
+                { onClick: handleShare, icon: Share2, label: "Partager" },
+              ].map(({ href, onClick, icon: Icon, label, external }: any) => {
+                const style = {
+                  background: T.surface,
+                  border: `1px solid ${T.surfaceBorder}`,
+                };
+                const inner = (
+                  <>
+                    <Icon size={16} strokeWidth={1.8} style={{ color: T.ivoryMid }} />
+                    <span className="text-[7.5px] font-semibold tracking-[0.08em] uppercase" style={{ color: T.ivoryDim }}>
+                      {label}
+                    </span>
+                  </>
+                );
+
+                if (onClick) {
+                  return (
+                    <button
+                      key={label}
+                      onClick={onClick}
+                      className="flex flex-col items-center gap-1.5 py-3 rounded-[12px] transition-colors duration-200"
+                      style={style}
+                    >
+                      {inner}
+                    </button>
+                  );
+                }
+                return (
+                  <a
+                    key={label}
+                    href={href}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noopener noreferrer" : undefined}
+                    className="flex flex-col items-center gap-1.5 py-3 rounded-[12px] transition-colors duration-200"
+                    style={style}
+                  >
+                    {inner}
+                  </a>
+                );
+              })}
+            </div>
+          </motion.section>
+
+          {/* ── Venues ── */}
+          <motion.section
+            initial={{ opacity: 0, y: 8 }}
+            animate={introComplete ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.25, duration: 0.4 }}
+          >
+            {/* Section label + filter pills on same row */}
+            <div className="flex items-center justify-between mb-4">
+              <p
+                className="text-[8.5px] tracking-[0.3em] uppercase font-semibold"
+                style={{ color: T.ivoryDim }}
+              >
+                Nos adresses
+              </p>
+              <div className="flex gap-1">
+                {pills.map(({ label, value }) => (
+                  <button
+                    key={value}
+                    onClick={() => setCity(value)}
+                    className="px-3 py-1 rounded-full text-[8px] font-semibold tracking-[0.1em] uppercase transition-all duration-200"
+                    style={{
+                      background: city === value ? T.goldSoft : "transparent",
+                      color: city === value ? T.gold : T.ivoryDim,
+                      border: `1px solid ${city === value ? T.goldBorder : "transparent"}`,
+                    }}
                   >
                     {label}
-                  </span>
-                </a>
-              ))}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Tertiary actions */}
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { onClick: () => setQrOpen(true), icon: QrCode, label: "QR Code" },
-                { onClick: handleShare, icon: Share2, label: "Partager" },
-              ].map(({ onClick, icon: Icon, label }) => (
-                <motion.button
-                  key={label}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={onClick}
-                  className="flex items-center justify-center gap-2.5 py-3 rounded-[12px] text-[10px] font-medium tracking-[0.06em] transition-all duration-300"
-                  style={{
-                    background: T.surface,
-                    border: `1px solid ${T.surfaceBorder}`,
-                    color: T.ivoryMid,
-                  }}
-                >
-                  <Icon size={13} strokeWidth={1.8} />
-                  {label}
-                </motion.button>
-              ))}
+            {/* Venue cards grid */}
+            <div className="space-y-2.5">
+              <AnimatePresence mode="popLayout">
+                {filtered.map((venue, i) => (
+                  <VenueCard key={venue.id} venue={venue} index={i} />
+                ))}
+              </AnimatePresence>
             </div>
-          </div>
+
+            {/* Count */}
+            <motion.p
+              key={city}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center mt-4 text-[9px] tracking-[0.15em] uppercase"
+              style={{ color: T.ivoryDim }}
+            >
+              {filtered.length} établissement{filtered.length > 1 ? "s" : ""}
+            </motion.p>
+          </motion.section>
+
+          {/* ── QR Code ── */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={introComplete ? { opacity: 1 } : {}}
+            transition={{ delay: 0.35, duration: 0.4 }}
+            className="mt-8 flex justify-center"
+          >
+            <button
+              onClick={() => setQrOpen(true)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-[10px] text-[9px] font-medium tracking-[0.06em] transition-all duration-200"
+              style={{
+                background: T.surface,
+                border: `1px solid ${T.surfaceBorder}`,
+                color: T.ivoryMid,
+              }}
+            >
+              <QrCode size={13} strokeWidth={1.8} />
+              Afficher le QR Code
+            </button>
+          </motion.div>
 
           {/* ── Footer ── */}
-          <motion.footer
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
-            className="text-center mt-16"
-          >
-            <div className="w-4 h-px mx-auto mb-5" style={{ background: T.line }} />
+          <footer className="text-center mt-14">
+            <div className="w-4 h-px mx-auto mb-4" style={{ background: T.line }} />
             <p
-              className="text-[7.5px] tracking-[0.4em] uppercase font-medium"
+              className="text-[7px] tracking-[0.35em] uppercase font-medium"
               style={{ color: T.ivoryDim }}
             >
               Powered by IWASP
             </p>
-          </motion.footer>
+          </footer>
         </div>
 
         <QRModal open={qrOpen} onClose={() => setQrOpen(false)} />
