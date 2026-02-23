@@ -29,6 +29,9 @@ import secretRoomLogo from "@/assets/lifestyle/secret-room-logo.jpeg";
 import sky5MarinaBayLogo from "@/assets/lifestyle/sky5-marina-bay-logo.jpeg";
 import sky5RooftopLogo from "@/assets/lifestyle/sky5-rooftop-logo.jpeg";
 import lalalaLogo from "@/assets/lifestyle/lalala-restaurant-logo.jpeg";
+import famousBeachLogo from "@/assets/lifestyle/famous-beach-logo.jpeg";
+import sensesLogo from "@/assets/lifestyle/senses-logo.jpeg";
+import lePetitVersaillesLogo from "@/assets/lifestyle/le-petit-versailles-logo.jpeg";
 
 // ─── Types ───────────────────────────────────────────────────
 interface Venue {
@@ -139,6 +142,36 @@ const VENUES: Venue[] = [
     instagram: "https://www.instagram.com/sky5marrakech",
     googleMaps: "https://maps.app.goo.gl/sky5marrakech",
     gradient: "from-violet-900/80 to-purple-800/60",
+  },
+  {
+    id: "famous-beach",
+    name: "Famous Beach",
+    subtitle: "Pool · Day Club · Restaurant",
+    logo: famousBeachLogo,
+    website: "https://www.famousbeach.ma",
+    instagram: "https://www.instagram.com/famousbeach",
+    googleMaps: "https://maps.app.goo.gl/famousbeach",
+    gradient: "from-sky-800/80 to-teal-700/60",
+  },
+  {
+    id: "senses",
+    name: "Senses",
+    subtitle: "Café · Restaurant",
+    logo: sensesLogo,
+    website: "https://www.sensesmarrakech.com",
+    instagram: "https://www.instagram.com/sensesmarrakech",
+    googleMaps: "https://maps.app.goo.gl/sensesmarrakech",
+    gradient: "from-stone-800/80 to-neutral-700/60",
+  },
+  {
+    id: "le-petit-versailles",
+    name: "Le Petit Versailles",
+    subtitle: "Restaurant",
+    logo: lePetitVersaillesLogo,
+    website: "https://www.leptiversailles.com",
+    instagram: "https://www.instagram.com/leptiversailles",
+    googleMaps: "https://maps.app.goo.gl/leptiversailles",
+    gradient: "from-emerald-900/80 to-green-800/60",
   },
 ];
 
@@ -292,7 +325,7 @@ export default function LifestyleGroupCard() {
       email: GROUP_EMAIL,
       website: GROUP_WEBSITE,
       nfcPageUrl: PAGE_URL,
-      note: "Nommos Beach · Nommos Marrakech · Nommos Marina Bay · Lalala Restaurant · 555 Marrakech · 555 Tanger · Secret Room · Sky5 Tanger · Sky5 Marrakech",
+      note: "Nommos Beach · Nommos Marrakech · Nommos Marina Bay · Lalala · 555 Marrakech · 555 Tanger · Secret Room · Sky5 Tanger · Sky5 Marrakech · Famous Beach · Senses · Le Petit Versailles",
     });
   };
 
