@@ -30,6 +30,19 @@ import sensesLogo from "@/assets/lifestyle/senses-logo.png";
 import lePetitVersaillesLogo from "@/assets/lifestyle/le-petit-versailles-logo.jpeg";
 import nommosGroupLogo from "@/assets/lifestyle/nommos-group-logo.png";
 
+// Cover images
+import coverNommosBeach from "@/assets/lifestyle/covers/nommos-beach.png";
+import coverNommosMarrakech from "@/assets/lifestyle/covers/nommos-marrakech.jpg";
+import coverNommosMarinaBay from "@/assets/lifestyle/covers/nommos-marina-bay.jpeg";
+import cover555Marrakech from "@/assets/lifestyle/covers/555-marrakech.png";
+import cover555Tanger from "@/assets/lifestyle/covers/555-tanger.png";
+import coverSecretRoom from "@/assets/lifestyle/covers/secret-room.png";
+import coverSky5Tanger from "@/assets/lifestyle/covers/sky5-tanger.png";
+import coverSky5Marrakech from "@/assets/lifestyle/covers/sky5-marrakech.png";
+import coverFamousBeach from "@/assets/lifestyle/covers/famous-beach.png";
+import coverSenses from "@/assets/lifestyle/covers/senses.png";
+import coverLePetitVersailles from "@/assets/lifestyle/covers/le-petit-versailles.png";
+
 // ─── Types ───────────────────────────────────────────────────
 interface Venue {
   id: string;
@@ -37,6 +50,7 @@ interface Venue {
   subtitle: string;
   city: "Marrakech" | "Tanger";
   logo: string;
+  cover?: string;
   website: string;
   instagram: string;
   googleMaps: string;
@@ -50,18 +64,18 @@ const GROUP_WEBSITE = "https://www.nommos.ma";
 const PAGE_URL = "https://i-wasp.lovable.app/card/lifestyle-group";
 
 const VENUES: Venue[] = [
-  { id: "nommos-beach", name: "Nommos Beach", subtitle: "Resort & Pool Club", city: "Marrakech", logo: nommosBeachLogo, website: "https://www.nommosbeachresort.com", instagram: "https://www.instagram.com/nommosbeach", googleMaps: "https://maps.app.goo.gl/nommosbeach" },
-  { id: "nommos-marrakech", name: "Nommos Marrakech", subtitle: "Restaurant & Lounge", city: "Marrakech", logo: nommosMarrakechLogo, website: "https://www.nommos.ma", instagram: "https://www.instagram.com/nommosmarrakech", googleMaps: "https://maps.app.goo.gl/nommosmarrakech" },
-  { id: "nommos-marina-bay", name: "Nommos Marina Bay", subtitle: "Restaurant & Lounge", city: "Tanger", logo: nommosMarinaBayLogo, website: "https://www.nommostanger.com", instagram: "https://www.instagram.com/nommostanger", googleMaps: "https://maps.app.goo.gl/nommostanger" },
+  { id: "nommos-beach", name: "Nommos Beach", subtitle: "Resort & Pool Club", city: "Marrakech", logo: nommosBeachLogo, cover: coverNommosBeach, website: "https://www.nommosbeachresort.com", instagram: "https://www.instagram.com/nommosbeach", googleMaps: "https://maps.app.goo.gl/nommosbeach" },
+  { id: "nommos-marrakech", name: "Nommos Marrakech", subtitle: "Restaurant & Lounge", city: "Marrakech", logo: nommosMarrakechLogo, cover: coverNommosMarrakech, website: "https://www.nommos.ma", instagram: "https://www.instagram.com/nommosmarrakech", googleMaps: "https://maps.app.goo.gl/nommosmarrakech" },
+  { id: "nommos-marina-bay", name: "Nommos Marina Bay", subtitle: "Restaurant & Lounge", city: "Tanger", logo: nommosMarinaBayLogo, cover: coverNommosMarinaBay, website: "https://www.nommostanger.com", instagram: "https://www.instagram.com/nommostanger", googleMaps: "https://maps.app.goo.gl/nommostanger" },
   { id: "lalala", name: "Lalala", subtitle: "Restaurant", city: "Marrakech", logo: lalalaLogo, website: "https://www.lalalarestaurant.com", instagram: "https://www.instagram.com/lalalarestaurant", googleMaps: "https://maps.app.goo.gl/lalala" },
-  { id: "555marrakech", name: "555 Marrakech", subtitle: "Hotel Clubbing", city: "Marrakech", logo: club555MrkLogo, website: "https://www.555marrakech.com", instagram: "https://www.instagram.com/555marrakech", googleMaps: "https://maps.app.goo.gl/555marrakech" },
-  { id: "555tanger", name: "555 Tanger", subtitle: "Marina Bay", city: "Tanger", logo: club555TngLogo, website: "https://www.555tanger.com", instagram: "https://www.instagram.com/555tanger", googleMaps: "https://maps.app.goo.gl/555tanger" },
-  { id: "secretroom", name: "Secret Room", subtitle: "Nightlife", city: "Marrakech", logo: secretRoomLogo, website: "https://www.secretroommarrakech.com", instagram: "https://www.instagram.com/secretroommarrakech", googleMaps: "https://maps.app.goo.gl/secretroom" },
-  { id: "sky5-tanger", name: "Sky5 Tanger", subtitle: "Marina Bay", city: "Tanger", logo: sky5Logo, website: "https://www.skyfivetanger.com", instagram: "https://www.instagram.com/sky5tanger", googleMaps: "https://maps.app.goo.gl/sky5tanger" },
-  { id: "sky5-marrakech", name: "Sky5 Marrakech", subtitle: "Rooftop & Lounge", city: "Marrakech", logo: sky5Logo, website: "https://www.skyfivemarrakech.com", instagram: "https://www.instagram.com/sky5marrakech", googleMaps: "https://maps.app.goo.gl/sky5marrakech" },
-  { id: "famous-beach", name: "Famous Beach", subtitle: "Pool · Day Club", city: "Marrakech", logo: famousBeachLogo, website: "https://famousbeachmarrakech.com", instagram: "https://www.instagram.com/famousbeachmarrakech", googleMaps: "https://maps.app.goo.gl/Your1stRealLink" },
-  { id: "senses", name: "Senses", subtitle: "Café · Restaurant", city: "Marrakech", logo: sensesLogo, website: "https://www.sensesmarrakech.com", instagram: "https://www.instagram.com/sensesmarrakech", googleMaps: "https://maps.app.goo.gl/YourSensesLink" },
-  { id: "le-petit-versailles", name: "Le Petit Versailles", subtitle: "Restaurant festif", city: "Tanger", logo: lePetitVersaillesLogo, website: "https://leptiversailles.com", instagram: "https://www.instagram.com/lepetittanger", googleMaps: "https://maps.app.goo.gl/YourLPVLink" },
+  { id: "555marrakech", name: "555 Marrakech", subtitle: "Hotel Clubbing", city: "Marrakech", logo: club555MrkLogo, cover: cover555Marrakech, website: "https://www.555marrakech.com", instagram: "https://www.instagram.com/555marrakech", googleMaps: "https://maps.app.goo.gl/555marrakech" },
+  { id: "555tanger", name: "555 Tanger", subtitle: "Marina Bay", city: "Tanger", logo: club555TngLogo, cover: cover555Tanger, website: "https://www.555tanger.com", instagram: "https://www.instagram.com/555tanger", googleMaps: "https://maps.app.goo.gl/555tanger" },
+  { id: "secretroom", name: "Secret Room", subtitle: "Nightlife", city: "Marrakech", logo: secretRoomLogo, cover: coverSecretRoom, website: "https://www.secretroommarrakech.com", instagram: "https://www.instagram.com/secretroommarrakech", googleMaps: "https://maps.app.goo.gl/secretroom" },
+  { id: "sky5-tanger", name: "Sky5 Tanger", subtitle: "Marina Bay", city: "Tanger", logo: sky5Logo, cover: coverSky5Tanger, website: "https://www.skyfivetanger.com", instagram: "https://www.instagram.com/sky5tanger", googleMaps: "https://maps.app.goo.gl/sky5tanger" },
+  { id: "sky5-marrakech", name: "Sky5 Marrakech", subtitle: "Rooftop & Lounge", city: "Marrakech", logo: sky5Logo, cover: coverSky5Marrakech, website: "https://www.skyfivemarrakech.com", instagram: "https://www.instagram.com/sky5marrakech", googleMaps: "https://maps.app.goo.gl/sky5marrakech" },
+  { id: "famous-beach", name: "Famous Beach", subtitle: "Pool · Day Club", city: "Marrakech", logo: famousBeachLogo, cover: coverFamousBeach, website: "https://famousbeachmarrakech.com", instagram: "https://www.instagram.com/famousbeachmarrakech", googleMaps: "https://maps.app.goo.gl/Your1stRealLink" },
+  { id: "senses", name: "Senses", subtitle: "Café · Restaurant", city: "Marrakech", logo: sensesLogo, cover: coverSenses, website: "https://www.sensesmarrakech.com", instagram: "https://www.instagram.com/sensesmarrakech", googleMaps: "https://maps.app.goo.gl/YourSensesLink" },
+  { id: "le-petit-versailles", name: "Le Petit Versailles", subtitle: "Restaurant festif", city: "Tanger", logo: lePetitVersaillesLogo, cover: coverLePetitVersailles, website: "https://leptiversailles.com", instagram: "https://www.instagram.com/lepetittanger", googleMaps: "https://maps.app.goo.gl/YourLPVLink" },
 ];
 
 type CityFilter = "all" | "Marrakech" | "Tanger";
@@ -97,13 +111,34 @@ function VenueCard({ venue, index }: { venue: Venue; index: number }) {
         border: `1px solid ${T.surfaceBorder}`,
       }}
     >
-      {/* Top: Logo + info */}
-      <div className="flex items-center gap-3.5 px-4 py-3.5">
+      {/* Cover image */}
+      {venue.cover && (
+        <div className="relative w-full h-[120px] overflow-hidden">
+          <img
+            src={venue.cover}
+            alt={venue.name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(180deg, transparent 40%, ${T.bg} 100%)`,
+            }}
+          />
+        </div>
+      )}
+
+      {/* Logo + info */}
+      <div
+        className="flex items-center gap-3.5 px-4 py-3.5"
+        style={{ marginTop: venue.cover ? "-20px" : "0", position: "relative", zIndex: 1 }}
+      >
         <div
-          className="w-12 h-12 rounded-[12px] overflow-hidden flex-shrink-0"
-          style={{ border: `1px solid ${T.surfaceBorder}` }}
+          className="w-11 h-11 rounded-[10px] overflow-hidden flex-shrink-0"
+          style={{ border: `1px solid ${T.surfaceBorder}`, background: T.bg }}
         >
-          <img src={venue.logo} alt={venue.name} className="w-12 h-12 object-cover" loading="lazy" />
+          <img src={venue.logo} alt={venue.name} className="w-11 h-11 object-cover" loading="lazy" />
         </div>
         <div className="flex-1 min-w-0">
           <p
@@ -121,7 +156,7 @@ function VenueCard({ venue, index }: { venue: Venue; index: number }) {
         </div>
       </div>
 
-      {/* Bottom: Quick links */}
+      {/* Quick links */}
       <div className="flex border-t" style={{ borderColor: T.line }}>
         {[
           { href: venue.website, icon: Globe, label: "Site" },
