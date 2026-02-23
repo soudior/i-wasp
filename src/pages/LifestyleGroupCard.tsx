@@ -1,8 +1,10 @@
 /**
- * Nommos Group – Premium Multi-Venue Digital Card
+ * Nommos Group – Ultra-Premium Multi-Venue Digital Card
  * Route: /card/lifestyle-group
  * 
- * Design: Ultra-refined corporate luxury (LVMH / Kering aesthetic)
+ * Design: Contemporary luxury (LVMH / Kering / Hermès aesthetic)
+ * Typography: Refined serif + clean sans-serif pairing
+ * Palette: Deep obsidian, champagne gold, warm ivory
  */
 
 import { useState, useMemo } from "react";
@@ -64,18 +66,23 @@ const VENUES: Venue[] = [
 
 type CityFilter = "all" | "Marrakech" | "Tanger";
 
-// ─── Styles ──────────────────────────────────────────────────
-const S = {
-  bg: "#0B0B0F",
-  card: "rgba(255,255,255,0.03)",
-  cardBorder: "rgba(255,255,255,0.06)",
-  cardHoverBorder: "rgba(255,255,255,0.12)",
-  text: "#F0EDE8",
-  textSec: "rgba(240,237,232,0.45)",
-  textMuted: "rgba(240,237,232,0.25)",
-  gold: "#C6A96C",
-  goldMuted: "rgba(198,169,108,0.12)",
-  divider: "rgba(255,255,255,0.04)",
+// ─── Design Tokens ───────────────────────────────────────────
+const T = {
+  // Core palette
+  bg: "#060608",
+  surface: "rgba(255,255,255,0.025)",
+  surfaceBorder: "rgba(255,255,255,0.05)",
+  surfaceHover: "rgba(255,255,255,0.04)",
+  // Typography
+  ivory: "#F5F0EA",
+  ivoryMid: "rgba(245,240,234,0.55)",
+  ivoryDim: "rgba(245,240,234,0.2)",
+  // Accent
+  gold: "#C9A96E",
+  goldSoft: "rgba(201,169,110,0.1)",
+  goldBorder: "rgba(201,169,110,0.18)",
+  // Divider
+  line: "rgba(255,255,255,0.035)",
 } as const;
 
 // ─── Venue Row ───────────────────────────────────────────────
@@ -84,22 +91,43 @@ function VenueRow({ venue, index }: { venue: Venue; index: number }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
-      transition={{ delay: 0.03 * index, duration: 0.3 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ delay: 0.025 * index, duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
     >
       <button onClick={() => setOpen(!open)} className="w-full text-left group">
-        <div className="flex items-center gap-3 py-3 px-1">
-          <div className="w-10 h-10 rounded-[10px] overflow-hidden flex-shrink-0 ring-1 ring-white/[0.06]">
-            <img src={venue.logo} alt={venue.name} className="w-10 h-10 object-cover" loading="lazy" />
+        <div className="flex items-center gap-4 py-4 px-1">
+          {/* Logo */}
+          <div
+            className="w-11 h-11 rounded-[12px] overflow-hidden flex-shrink-0"
+            style={{ border: `1px solid ${T.surfaceBorder}` }}
+          >
+            <img src={venue.logo} alt={venue.name} className="w-11 h-11 object-cover" loading="lazy" />
           </div>
+
+          {/* Text */}
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-medium tracking-[-0.01em] truncate" style={{ color: S.text }}>{venue.name}</p>
-            <p className="text-[11px] mt-0.5 tracking-wide" style={{ color: S.textMuted }}>{venue.subtitle}</p>
+            <p
+              className="text-[13.5px] font-medium tracking-[-0.01em] truncate"
+              style={{ color: T.ivory, fontFamily: "'Playfair Display', 'Georgia', serif" }}
+            >
+              {venue.name}
+            </p>
+            <p
+              className="text-[10.5px] mt-0.5 tracking-[0.06em] uppercase"
+              style={{ color: T.ivoryDim }}
+            >
+              {venue.subtitle}
+            </p>
           </div>
-          <motion.div animate={{ rotate: open ? 90 : 0 }} transition={{ duration: 0.15 }}>
-            <ChevronRight size={14} style={{ color: S.textMuted }} />
+
+          {/* Chevron */}
+          <motion.div
+            animate={{ rotate: open ? 90 : 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <ChevronRight size={13} style={{ color: T.ivoryDim }} />
           </motion.div>
         </div>
       </button>
@@ -110,10 +138,10 @@ function VenueRow({ venue, index }: { venue: Venue; index: number }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
             className="overflow-hidden"
           >
-            <div className="flex gap-1.5 pb-3 px-1">
+            <div className="flex gap-2 pb-4 px-1">
               {[
                 { href: venue.website, icon: Globe, label: "Site" },
                 { href: venue.instagram, icon: Instagram, label: "Instagram" },
@@ -124,10 +152,14 @@ function VenueRow({ venue, index }: { venue: Venue; index: number }) {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-medium tracking-wide uppercase transition-all duration-200"
-                  style={{ background: S.goldMuted, color: S.gold }}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-[10px] text-[9.5px] font-semibold tracking-[0.1em] uppercase transition-all duration-300"
+                  style={{
+                    background: T.goldSoft,
+                    color: T.gold,
+                    border: `1px solid ${T.goldBorder}`,
+                  }}
                 >
-                  <Icon size={12} />
+                  <Icon size={11} strokeWidth={2} />
                   {label}
                 </a>
               ))}
@@ -148,21 +180,33 @@ function QRModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xl p-6"
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-6"
+          style={{ background: "rgba(0,0,0,0.88)", backdropFilter: "blur(40px)" }}
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
+            initial={{ scale: 0.92, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
+            exit={{ scale: 0.92, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="rounded-2xl p-8 max-w-[260px] w-full text-center"
-            style={{ background: "#141418" , border: `1px solid ${S.cardBorder}` }}
+            className="rounded-[20px] p-10 max-w-[280px] w-full text-center"
+            style={{ background: "#0E0E12", border: `1px solid ${T.surfaceBorder}` }}
           >
-            <QRCodeSVG value={PAGE_URL} size={160} level="H" className="mx-auto" bgColor="transparent" fgColor={S.text} />
-            <p className="mt-5 text-[11px] tracking-[0.15em] uppercase font-medium" style={{ color: S.textSec }}>Scan to connect</p>
-            <button onClick={onClose} className="mt-5 w-full py-2.5 rounded-lg text-[12px] font-medium tracking-wide transition-colors" style={{ background: S.goldMuted, color: S.gold }}>
-              Close
+            <QRCodeSVG value={PAGE_URL} size={160} level="H" className="mx-auto" bgColor="transparent" fgColor={T.ivory} />
+            <p
+              className="mt-6 text-[9px] tracking-[0.25em] uppercase font-medium"
+              style={{ color: T.ivoryMid, fontFamily: "'Inter', sans-serif" }}
+            >
+              Scan to connect
+            </p>
+            <button
+              onClick={onClose}
+              className="mt-6 w-full py-2.5 rounded-[10px] text-[11px] font-semibold tracking-[0.08em] uppercase transition-all duration-300"
+              style={{ background: T.goldSoft, color: T.gold, border: `1px solid ${T.goldBorder}` }}
+            >
+              Fermer
             </button>
           </motion.div>
         </motion.div>
@@ -207,31 +251,54 @@ export default function LifestyleGroupCard() {
 
   return (
     <CardLayout>
-      <div className="min-h-screen" style={{ background: S.bg, fontFamily: "'Inter', 'SF Pro Display', -apple-system, sans-serif" }}>
-        <div className="max-w-[400px] mx-auto px-5 py-12">
+      <div
+        className="min-h-screen"
+        style={{
+          background: `linear-gradient(180deg, ${T.bg} 0%, #08080C 50%, ${T.bg} 100%)`,
+          fontFamily: "'Inter', 'SF Pro Display', -apple-system, sans-serif",
+        }}
+      >
+        <div className="max-w-[420px] mx-auto px-6 pt-16 pb-14">
+
+          {/* ── Decorative line ── */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            className="w-8 h-px mx-auto mb-10 origin-center"
+            style={{ background: T.gold }}
+          />
 
           {/* ── Header ── */}
           <motion.header
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-10"
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            className="text-center mb-12"
           >
-            <div
-              className="w-16 h-16 mx-auto mb-5 rounded-xl overflow-hidden"
-              style={{ border: `1px solid ${S.cardBorder}` }}
+            {/* Logo */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="w-[72px] h-[72px] mx-auto mb-7 rounded-[16px] overflow-hidden"
+              style={{ border: `1px solid ${T.surfaceBorder}` }}
             >
-              <img src={nommosGroupLogo} alt="Nommos Group" className="w-16 h-16 object-cover" />
-            </div>
+              <img src={nommosGroupLogo} alt="Nommos Group" className="w-[72px] h-[72px] object-cover" />
+            </motion.div>
+
+            {/* Brand name — serif */}
             <h1
-              className="text-[20px] font-semibold tracking-[-0.025em]"
-              style={{ color: S.text }}
+              className="text-[22px] font-normal tracking-[0.04em]"
+              style={{ color: T.ivory, fontFamily: "'Playfair Display', 'Georgia', serif" }}
             >
               Nommos Group
             </h1>
+
+            {/* Tagline */}
             <p
-              className="text-[10px] mt-2 tracking-[0.3em] uppercase font-light"
-              style={{ color: S.textMuted }}
+              className="mt-3 text-[9px] tracking-[0.35em] uppercase font-light"
+              style={{ color: T.ivoryDim }}
             >
               Marrakech · Tanger
             </p>
@@ -241,18 +308,18 @@ export default function LifestyleGroupCard() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.15 }}
-            className="flex gap-1 justify-center mb-8"
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="flex gap-1.5 justify-center mb-10"
           >
             {pills.map(({ label, value }) => (
               <button
                 key={value}
                 onClick={() => setCity(value)}
-                className="relative px-4 py-1.5 rounded-full text-[10px] font-medium tracking-[0.08em] uppercase transition-all duration-200"
+                className="relative px-5 py-2 rounded-full text-[9px] font-semibold tracking-[0.12em] uppercase transition-all duration-300"
                 style={{
-                  background: city === value ? S.goldMuted : "transparent",
-                  color: city === value ? S.gold : S.textMuted,
-                  border: `1px solid ${city === value ? "rgba(198,169,108,0.2)" : "transparent"}`,
+                  background: city === value ? T.goldSoft : "transparent",
+                  color: city === value ? T.gold : T.ivoryDim,
+                  border: `1px solid ${city === value ? T.goldBorder : "transparent"}`,
                 }}
               >
                 {label}
@@ -261,47 +328,65 @@ export default function LifestyleGroupCard() {
           </motion.div>
 
           {/* ── Venues ── */}
-          <div
-            className="rounded-2xl overflow-hidden divide-y"
-            style={{ background: S.card, border: `1px solid ${S.cardBorder}` }}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.4 }}
+            className="rounded-[20px] overflow-hidden"
+            style={{
+              background: T.surface,
+              border: `1px solid ${T.surfaceBorder}`,
+              boxShadow: "0 2px 40px rgba(0,0,0,0.3)",
+            }}
           >
-            <div className="divide-y" style={{ "--tw-divide-opacity": "1", borderColor: S.divider } as React.CSSProperties}>
+            <div className="px-4">
               <AnimatePresence mode="popLayout">
                 {filtered.map((venue, i) => (
-                  <div key={venue.id} style={{ borderColor: S.divider }} className="border-b last:border-b-0">
+                  <div
+                    key={venue.id}
+                    style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${T.line}` : "none" }}
+                  >
                     <VenueRow venue={venue} index={i} />
                   </div>
                 ))}
               </AnimatePresence>
             </div>
-          </div>
+          </motion.div>
 
           {/* ── Count ── */}
           <motion.p
             key={city}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center mt-4 mb-8 text-[10px] tracking-[0.2em] uppercase font-light"
-            style={{ color: S.textMuted }}
+            transition={{ duration: 0.3 }}
+            className="text-center mt-5 mb-10 text-[9px] tracking-[0.25em] uppercase font-light"
+            style={{ color: T.ivoryDim }}
           >
             {filtered.length} établissement{filtered.length > 1 ? "s" : ""}
           </motion.p>
 
+          {/* ── Decorative divider ── */}
+          <div className="w-6 h-px mx-auto mb-8" style={{ background: T.goldBorder }} />
+
           {/* ── Actions ── */}
-          <div className="space-y-2">
-            {/* Save contact — primary CTA */}
+          <div className="space-y-3">
+            {/* Primary CTA — Gold gradient */}
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={handleVCard}
-              className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl text-[12px] font-semibold tracking-[0.04em] uppercase transition-all duration-200"
-              style={{ background: S.gold, color: S.bg }}
+              className="w-full flex items-center justify-center gap-3 py-4 rounded-[14px] text-[11px] font-bold tracking-[0.08em] uppercase transition-all duration-300"
+              style={{
+                background: `linear-gradient(135deg, ${T.gold} 0%, #B8964E 100%)`,
+                color: T.bg,
+                boxShadow: "0 4px 24px rgba(201,169,110,0.2)",
+              }}
             >
-              <Download size={14} />
+              <Download size={14} strokeWidth={2.5} />
               Enregistrer le contact
             </motion.button>
 
-            {/* Secondary row */}
-            <div className="grid grid-cols-3 gap-1.5">
+            {/* Secondary actions */}
+            <div className="grid grid-cols-3 gap-2">
               {[
                 { href: `tel:${GROUP_PHONE.replace(/\s/g, "")}`, icon: Phone, label: "Appeler" },
                 { href: `https://wa.me/${GROUP_WHATSAPP}`, icon: MessageCircle, label: "WhatsApp", external: true },
@@ -312,17 +397,25 @@ export default function LifestyleGroupCard() {
                   href={href}
                   target={external ? "_blank" : undefined}
                   rel={external ? "noopener noreferrer" : undefined}
-                  className="flex flex-col items-center gap-1.5 py-3 rounded-xl transition-all duration-200"
-                  style={{ background: S.card, border: `1px solid ${S.cardBorder}` }}
+                  className="flex flex-col items-center gap-2 py-4 rounded-[14px] transition-all duration-300"
+                  style={{
+                    background: T.surface,
+                    border: `1px solid ${T.surfaceBorder}`,
+                  }}
                 >
-                  <Icon size={15} style={{ color: S.textSec }} />
-                  <span className="text-[9px] font-medium tracking-[0.06em] uppercase" style={{ color: S.textMuted }}>{label}</span>
+                  <Icon size={16} strokeWidth={1.8} style={{ color: T.ivoryMid }} />
+                  <span
+                    className="text-[8.5px] font-semibold tracking-[0.1em] uppercase"
+                    style={{ color: T.ivoryDim }}
+                  >
+                    {label}
+                  </span>
                 </a>
               ))}
             </div>
 
-            {/* Tertiary row */}
-            <div className="grid grid-cols-2 gap-1.5">
+            {/* Tertiary actions */}
+            <div className="grid grid-cols-2 gap-2">
               {[
                 { onClick: () => setQrOpen(true), icon: QrCode, label: "QR Code" },
                 { onClick: handleShare, icon: Share2, label: "Partager" },
@@ -331,10 +424,14 @@ export default function LifestyleGroupCard() {
                   key={label}
                   whileTap={{ scale: 0.98 }}
                   onClick={onClick}
-                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-medium tracking-wide transition-all duration-200"
-                  style={{ background: S.card, border: `1px solid ${S.cardBorder}`, color: S.textSec }}
+                  className="flex items-center justify-center gap-2.5 py-3 rounded-[12px] text-[10px] font-medium tracking-[0.06em] transition-all duration-300"
+                  style={{
+                    background: T.surface,
+                    border: `1px solid ${T.surfaceBorder}`,
+                    color: T.ivoryMid,
+                  }}
                 >
-                  <Icon size={14} />
+                  <Icon size={13} strokeWidth={1.8} />
                   {label}
                 </motion.button>
               ))}
@@ -342,15 +439,20 @@ export default function LifestyleGroupCard() {
           </div>
 
           {/* ── Footer ── */}
-          <motion.p
+          <motion.footer
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="text-center mt-12 text-[8px] tracking-[0.35em] uppercase font-light"
-            style={{ color: S.textMuted }}
+            transition={{ delay: 0.7, duration: 0.5 }}
+            className="text-center mt-16"
           >
-            Powered by IWASP
-          </motion.p>
+            <div className="w-4 h-px mx-auto mb-5" style={{ background: T.line }} />
+            <p
+              className="text-[7.5px] tracking-[0.4em] uppercase font-medium"
+              style={{ color: T.ivoryDim }}
+            >
+              Powered by IWASP
+            </p>
+          </motion.footer>
         </div>
 
         <QRModal open={qrOpen} onClose={() => setQrOpen(false)} />
