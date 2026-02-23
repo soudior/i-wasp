@@ -26,6 +26,7 @@ import lalalaLogo from "@/assets/lifestyle/lalala-restaurant-logo.jpeg";
 import famousBeachLogo from "@/assets/lifestyle/famous-beach-logo.jpeg";
 import sensesLogo from "@/assets/lifestyle/senses-logo.png";
 import lePetitVersaillesLogo from "@/assets/lifestyle/le-petit-versailles-logo.jpeg";
+import nommosGroupLogo from "@/assets/lifestyle/nommos-group-logo.png";
 
 // ─── Types ───────────────────────────────────────────────────
 interface Venue {
@@ -217,10 +218,10 @@ export default function LifestyleGroupCard() {
             className="text-center mb-10"
           >
             <div
-              className="w-14 h-14 mx-auto mb-5 rounded-xl flex items-center justify-center"
-              style={{ border: `1px solid ${S.cardBorder}`, background: S.card }}
+              className="w-16 h-16 mx-auto mb-5 rounded-xl overflow-hidden"
+              style={{ border: `1px solid ${S.cardBorder}` }}
             >
-              <span className="text-[18px] font-semibold tracking-[-0.03em]" style={{ color: S.gold }}>N</span>
+              <img src={nommosGroupLogo} alt="Nommos Group" className="w-16 h-16 object-cover" />
             </div>
             <h1
               className="text-[20px] font-semibold tracking-[-0.025em]"
