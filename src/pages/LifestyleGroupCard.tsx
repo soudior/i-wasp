@@ -15,17 +15,17 @@ import { QRCodeSVG } from "qrcode.react";
 import { CardLayout } from "@/layouts/CardLayout";
 import { downloadVCard } from "@/lib/vcard";
 
-import nommosBeachLogo from "@/assets/lifestyle/nommos-beach-logo.jpeg";
-import nommosMarrakechLogo from "@/assets/lifestyle/nommos-marrakech-logo.jpeg";
+import nommosBeachLogo from "@/assets/lifestyle/nommos-beach-logo.png";
+import nommosMarrakechLogo from "@/assets/lifestyle/nommos-marrakech-logo.png";
 import nommosMarinaBayLogo from "@/assets/lifestyle/nommos-marina-bay-logo.jpeg";
 import club555MrkLogo from "@/assets/lifestyle/555-marrakech-logo.jpeg";
 import club555TngLogo from "@/assets/lifestyle/555-tanger-logo.jpeg";
 import secretRoomLogo from "@/assets/lifestyle/secret-room-logo.jpeg";
-import sky5MarinaBayLogo from "@/assets/lifestyle/sky5-marina-bay-logo.jpeg";
-import sky5RooftopLogo from "@/assets/lifestyle/sky5-rooftop-logo.jpeg";
+import sky5MarinaBayLogo from "@/assets/lifestyle/sky5-logo.gif";
+import sky5RooftopLogo from "@/assets/lifestyle/sky5-logo.gif";
 import lalalaLogo from "@/assets/lifestyle/lalala-restaurant-logo.jpeg";
 import famousBeachLogo from "@/assets/lifestyle/famous-beach-logo.jpeg";
-import sensesLogo from "@/assets/lifestyle/senses-logo.jpeg";
+import sensesLogo from "@/assets/lifestyle/senses-logo.png";
 import lePetitVersaillesLogo from "@/assets/lifestyle/le-petit-versailles-logo.jpeg";
 
 // ─── Types ───────────────────────────────────────────────────
@@ -211,13 +211,13 @@ function VenueCard({ venue, index }: { venue: Venue; index: number }) {
         >
           <div className="flex items-center gap-3.5 p-3.5">
             <div
-              className="w-13 h-13 rounded-xl overflow-hidden flex-shrink-0"
+              className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0"
               style={{ boxShadow: `0 0 0 1px ${venue.accent}25` }}
             >
               <img
                 src={venue.logo}
                 alt={venue.name}
-                className="w-full h-full object-cover"
+                className="w-12 h-12 object-cover"
                 loading="lazy"
               />
             </div>
