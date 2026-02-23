@@ -20,10 +20,15 @@ import { QRCodeSVG } from "qrcode.react";
 import { CardLayout } from "@/layouts/CardLayout";
 import { downloadVCard } from "@/lib/vcard";
 
-import nommosLogo from "@/assets/lifestyle/nommos-beach-logo.jpeg";
+import nommosBeachLogo from "@/assets/lifestyle/nommos-beach-logo.jpeg";
+import nommosMarrakechLogo from "@/assets/lifestyle/nommos-marrakech-logo.jpeg";
+import nommosMarinaBayLogo from "@/assets/lifestyle/nommos-marina-bay-logo.jpeg";
 import club555MrkLogo from "@/assets/lifestyle/555-marrakech-logo.jpeg";
 import club555TngLogo from "@/assets/lifestyle/555-tanger-logo.jpeg";
 import secretRoomLogo from "@/assets/lifestyle/secret-room-logo.jpeg";
+import sky5MarinaBayLogo from "@/assets/lifestyle/sky5-marina-bay-logo.jpeg";
+import sky5RooftopLogo from "@/assets/lifestyle/sky5-rooftop-logo.jpeg";
+import lalalaLogo from "@/assets/lifestyle/lalala-restaurant-logo.jpeg";
 
 // ─── Types ───────────────────────────────────────────────────
 interface Venue {
@@ -38,22 +43,52 @@ interface Venue {
 }
 
 // ─── Data ────────────────────────────────────────────────────
-const GROUP_NAME = "Lifestyle Group";
+const GROUP_NAME = "Nommos Group";
 const GROUP_TAGLINE = "Marrakech & Tanger";
 const GROUP_PHONE = "+212 5 00 00 00 00";
-const GROUP_EMAIL = "contact@lifestylegroup.ma";
-const GROUP_WEBSITE = "https://www.nommosbeachresort.com";
+const GROUP_EMAIL = "contact@nommos.ma";
+const GROUP_WEBSITE = "https://www.nommos.ma";
 
 const VENUES: Venue[] = [
   {
-    id: "nommos",
+    id: "nommos-beach",
     name: "Nommos Beach",
     subtitle: "Resort & Pool Club Restaurant",
-    logo: nommosLogo,
+    logo: nommosBeachLogo,
     website: "https://www.nommosbeachresort.com",
     instagram: "https://www.instagram.com/nommosbeach",
     googleMaps: "https://maps.app.goo.gl/nommosbeach",
     gradient: "from-sky-900/80 to-cyan-800/60",
+  },
+  {
+    id: "nommos-marrakech",
+    name: "Nommos Marrakech",
+    subtitle: "Restaurant & Lounge",
+    logo: nommosMarrakechLogo,
+    website: "https://www.nommos.ma",
+    instagram: "https://www.instagram.com/nommosmarrakech",
+    googleMaps: "https://maps.app.goo.gl/nommosmarrakech",
+    gradient: "from-stone-900/80 to-neutral-800/60",
+  },
+  {
+    id: "nommos-marina-bay",
+    name: "Nommos Marina Bay",
+    subtitle: "Tanger",
+    logo: nommosMarinaBayLogo,
+    website: "https://www.nommostanger.com",
+    instagram: "https://www.instagram.com/nommostanger",
+    googleMaps: "https://maps.app.goo.gl/nommostanger",
+    gradient: "from-teal-900/80 to-emerald-800/60",
+  },
+  {
+    id: "lalala",
+    name: "Lalala",
+    subtitle: "Restaurant",
+    logo: lalalaLogo,
+    website: "https://www.lalalarestaurant.com",
+    instagram: "https://www.instagram.com/lalalarestaurant",
+    googleMaps: "https://maps.app.goo.gl/lalala",
+    gradient: "from-rose-900/80 to-pink-800/60",
   },
   {
     id: "555marrakech",
@@ -86,14 +121,24 @@ const VENUES: Venue[] = [
     gradient: "from-neutral-900/80 to-zinc-800/60",
   },
   {
-    id: "sky5",
+    id: "sky5-tanger",
     name: "Sky5 Tanger",
     subtitle: "Marina Bay",
-    logo: club555TngLogo, // reuse 555 tanger logo style
+    logo: sky5MarinaBayLogo,
     website: "https://www.skyfivetanger.com",
     instagram: "https://www.instagram.com/sky5tanger",
     googleMaps: "https://maps.app.goo.gl/sky5tanger",
     gradient: "from-amber-900/80 to-orange-800/60",
+  },
+  {
+    id: "sky5-marrakech",
+    name: "Sky5 Marrakech",
+    subtitle: "Rooftop & Lounge",
+    logo: sky5RooftopLogo,
+    website: "https://www.skyfivemarrakech.com",
+    instagram: "https://www.instagram.com/sky5marrakech",
+    googleMaps: "https://maps.app.goo.gl/sky5marrakech",
+    gradient: "from-violet-900/80 to-purple-800/60",
   },
 ];
 
@@ -240,14 +285,14 @@ export default function LifestyleGroupCard() {
 
   const handleDownloadVCard = () => {
     downloadVCard({
-      firstName: "Lifestyle",
+      firstName: "Nommos",
       lastName: "Group",
-      company: "Lifestyle Group Marrakech & Tanger",
+      company: "Nommos Group – Marrakech & Tanger",
       phone: GROUP_PHONE,
       email: GROUP_EMAIL,
       website: GROUP_WEBSITE,
       nfcPageUrl: PAGE_URL,
-      note: "Nommos Beach · 555 Marrakech · 555 Tanger · Secret Room · Sky5 Tanger",
+      note: "Nommos Beach · Nommos Marrakech · Nommos Marina Bay · Lalala Restaurant · 555 Marrakech · 555 Tanger · Secret Room · Sky5 Tanger · Sky5 Marrakech",
     });
   };
 
@@ -267,7 +312,7 @@ export default function LifestyleGroupCard() {
           >
             {/* Group icon */}
             <div className="w-20 h-20 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center backdrop-blur-xl">
-              <span className="text-2xl font-bold text-white tracking-tighter">LG</span>
+              <span className="text-2xl font-bold text-white tracking-tighter">N</span>
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">
               {GROUP_NAME}
