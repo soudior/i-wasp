@@ -219,6 +219,7 @@ function QRModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 export default function LifestyleGroupCard() {
   const [qrOpen, setQrOpen] = useState(false);
   const [city, setCity] = useState<CityFilter>("all");
+  const [introComplete, setIntroComplete] = useState(false);
 
   const filtered = useMemo(
     () => city === "all" ? VENUES : VENUES.filter((v) => v.city === city),
@@ -258,13 +259,99 @@ export default function LifestyleGroupCard() {
           fontFamily: "'Inter', 'SF Pro Display', -apple-system, sans-serif",
         }}
       >
+        {/* ── Intro overlay ── */}
+        <AnimatePresence>
+          {!introComplete && (
+            <motion.div
+              className="fixed inset-0 z-50 flex items-center justify-center"
+              style={{ background: T.bg }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              {/* Gold ring reveal */}
+              <motion.div
+                className="relative flex items-center justify-center"
+                initial={{ scale: 0.6, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {/* Glow */}
+                <motion.div
+                  className="absolute rounded-full"
+                  style={{
+                    width: 120, height: 120,
+                    background: `radial-gradient(circle, rgba(201,169,110,0.15) 0%, transparent 70%)`,
+                  }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 2.5, opacity: [0, 0.8, 0] }}
+                  transition={{ duration: 1.8, delay: 0.3, ease: "easeOut" }}
+                />
+                {/* Spinning ring */}
+                <motion.div
+                  className="absolute rounded-full"
+                  style={{
+                    width: 96, height: 96,
+                    border: `1.5px solid transparent`,
+                    borderTopColor: T.gold,
+                    borderRightColor: "rgba(201,169,110,0.3)",
+                  }}
+                  initial={{ rotate: 0, opacity: 0 }}
+                  animate={{ rotate: 360, opacity: [0, 1, 1, 0] }}
+                  transition={{ duration: 1.6, delay: 0.1, ease: "linear" }}
+                />
+                {/* Logo */}
+                <motion.div
+                  className="w-[72px] h-[72px] rounded-[16px] overflow-hidden"
+                  style={{ border: `1px solid ${T.goldBorder}` }}
+                  initial={{ scale: 0.5, opacity: 0, filter: "blur(10px)" }}
+                  animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
+                  transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <img src={nommosGroupLogo} alt="N" className="w-full h-full object-cover" />
+                </motion.div>
+              </motion.div>
+
+              {/* Brand text reveal */}
+              <motion.div
+                className="absolute text-center"
+                style={{ top: "calc(50% + 64px)" }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                <p
+                  className="text-[18px] font-normal tracking-[0.06em]"
+                  style={{ color: T.ivory, fontFamily: "'Playfair Display', 'Georgia', serif" }}
+                >
+                  Nommos Group
+                </p>
+                <motion.div
+                  className="w-8 h-px mx-auto mt-4"
+                  style={{ background: T.gold }}
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.6, delay: 1.0, ease: [0.25, 0.1, 0.25, 1] }}
+                />
+              </motion.div>
+
+              {/* Auto-dismiss */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0 }}
+                transition={{ delay: 1.8 }}
+                onAnimationComplete={() => setIntroComplete(true)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="max-w-[420px] mx-auto px-6 pt-16 pb-14">
 
           {/* ── Decorative line ── */}
           <motion.div
             initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            animate={introComplete ? { scaleX: 1 } : { scaleX: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
             className="w-8 h-px mx-auto mb-10 origin-center"
             style={{ background: T.gold }}
           />
@@ -272,22 +359,22 @@ export default function LifestyleGroupCard() {
           {/* ── Header ── */}
           <motion.header
             initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            animate={introComplete ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-center mb-12"
           >
             {/* Logo */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              animate={introComplete ? { scale: 1, opacity: 1 } : {}}
+              transition={{ duration: 0.5, delay: 0.2 }}
               className="w-[72px] h-[72px] mx-auto mb-7 rounded-[16px] overflow-hidden"
               style={{ border: `1px solid ${T.surfaceBorder}` }}
             >
               <img src={nommosGroupLogo} alt="Nommos Group" className="w-[72px] h-[72px] object-cover" />
             </motion.div>
 
-            {/* Brand name — serif */}
+            {/* Brand name */}
             <h1
               className="text-[22px] font-normal tracking-[0.04em]"
               style={{ color: T.ivory, fontFamily: "'Playfair Display', 'Georgia', serif" }}
@@ -306,9 +393,9 @@ export default function LifestyleGroupCard() {
 
           {/* ── City filter ── */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={introComplete ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.3, duration: 0.4 }}
             className="flex gap-1.5 justify-center mb-10"
           >
             {pills.map(({ label, value }) => (
@@ -330,8 +417,8 @@ export default function LifestyleGroupCard() {
           {/* ── Venues ── */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.4 }}
+            animate={introComplete ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.4, duration: 0.4 }}
             className="rounded-[20px] overflow-hidden"
             style={{
               background: T.surface,
