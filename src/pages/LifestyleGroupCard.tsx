@@ -1,20 +1,15 @@
 /**
- * Lifestyle Group NFC Card - Premium "Link in Bio" for multi-venue property
+ * Nommos Group NFC Card – Premium "Link in Bio" for multi-venue property
  * Route: /card/lifestyle-group
  * 
- * Venues:
- * - Nommos Beach – Resort & Pool Club Restaurant
- * - 555 Marrakech – Famous Club
- * - 555 Tanger – Marina Bay
- * - Secret Room Marrakech
- * - Sky5 Tanger – Marina Bay
+ * Features: City filter, WhatsApp, Share, vCard, QR Code
  */
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Globe, Instagram, MapPin, Phone, Mail, Download, 
-  ChevronRight, ExternalLink, QrCode, X
+  ChevronRight, QrCode, X, Share2, MessageCircle, Filter
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { CardLayout } from "@/layouts/CardLayout";
@@ -38,17 +33,19 @@ interface Venue {
   id: string;
   name: string;
   subtitle: string;
+  city: "Marrakech" | "Tanger";
   logo: string;
   website: string;
   instagram: string;
   googleMaps: string;
-  gradient: string;
+  accent: string;
 }
 
 // ─── Data ────────────────────────────────────────────────────
 const GROUP_NAME = "Nommos Group";
-const GROUP_TAGLINE = "Marrakech & Tanger";
+const GROUP_TAGLINE = "Marrakech · Tanger";
 const GROUP_PHONE = "+212 5 00 00 00 00";
+const GROUP_WHATSAPP = "+212600000000";
 const GROUP_EMAIL = "contact@nommos.ma";
 const GROUP_WEBSITE = "https://www.nommos.ma";
 
@@ -57,125 +54,139 @@ const VENUES: Venue[] = [
     id: "nommos-beach",
     name: "Nommos Beach",
     subtitle: "Resort & Pool Club Restaurant",
+    city: "Marrakech",
     logo: nommosBeachLogo,
     website: "https://www.nommosbeachresort.com",
     instagram: "https://www.instagram.com/nommosbeach",
     googleMaps: "https://maps.app.goo.gl/nommosbeach",
-    gradient: "from-sky-900/80 to-cyan-800/60",
+    accent: "#38bdf8",
   },
   {
     id: "nommos-marrakech",
     name: "Nommos Marrakech",
     subtitle: "Restaurant & Lounge",
+    city: "Marrakech",
     logo: nommosMarrakechLogo,
     website: "https://www.nommos.ma",
     instagram: "https://www.instagram.com/nommosmarrakech",
     googleMaps: "https://maps.app.goo.gl/nommosmarrakech",
-    gradient: "from-stone-900/80 to-neutral-800/60",
+    accent: "#a8a29e",
   },
   {
     id: "nommos-marina-bay",
     name: "Nommos Marina Bay",
     subtitle: "Tanger",
+    city: "Tanger",
     logo: nommosMarinaBayLogo,
     website: "https://www.nommostanger.com",
     instagram: "https://www.instagram.com/nommostanger",
     googleMaps: "https://maps.app.goo.gl/nommostanger",
-    gradient: "from-teal-900/80 to-emerald-800/60",
+    accent: "#2dd4bf",
   },
   {
     id: "lalala",
     name: "Lalala",
     subtitle: "Restaurant",
+    city: "Marrakech",
     logo: lalalaLogo,
     website: "https://www.lalalarestaurant.com",
     instagram: "https://www.instagram.com/lalalarestaurant",
     googleMaps: "https://maps.app.goo.gl/lalala",
-    gradient: "from-rose-900/80 to-pink-800/60",
+    accent: "#fb7185",
   },
   {
     id: "555marrakech",
     name: "555 Marrakech",
     subtitle: "Famous Club",
+    city: "Marrakech",
     logo: club555MrkLogo,
     website: "https://www.555marrakech.com",
     instagram: "https://www.instagram.com/555marrakech",
     googleMaps: "https://maps.app.goo.gl/555marrakech",
-    gradient: "from-purple-900/80 to-fuchsia-800/60",
+    accent: "#c084fc",
   },
   {
     id: "555tanger",
     name: "555 Tanger",
     subtitle: "Marina Bay",
+    city: "Tanger",
     logo: club555TngLogo,
     website: "https://www.555tanger.com",
     instagram: "https://www.instagram.com/555tanger",
     googleMaps: "https://maps.app.goo.gl/555tanger",
-    gradient: "from-blue-900/80 to-indigo-800/60",
+    accent: "#818cf8",
   },
   {
     id: "secretroom",
     name: "Secret Room",
     subtitle: "Marrakech",
+    city: "Marrakech",
     logo: secretRoomLogo,
     website: "https://www.secretroommarrakech.com",
     instagram: "https://www.instagram.com/secretroommarrakech",
     googleMaps: "https://maps.app.goo.gl/secretroom",
-    gradient: "from-neutral-900/80 to-zinc-800/60",
+    accent: "#a1a1aa",
   },
   {
     id: "sky5-tanger",
     name: "Sky5 Tanger",
     subtitle: "Marina Bay",
+    city: "Tanger",
     logo: sky5MarinaBayLogo,
     website: "https://www.skyfivetanger.com",
     instagram: "https://www.instagram.com/sky5tanger",
     googleMaps: "https://maps.app.goo.gl/sky5tanger",
-    gradient: "from-amber-900/80 to-orange-800/60",
+    accent: "#fb923c",
   },
   {
     id: "sky5-marrakech",
     name: "Sky5 Marrakech",
     subtitle: "Rooftop & Lounge",
+    city: "Marrakech",
     logo: sky5RooftopLogo,
     website: "https://www.skyfivemarrakech.com",
     instagram: "https://www.instagram.com/sky5marrakech",
     googleMaps: "https://maps.app.goo.gl/sky5marrakech",
-    gradient: "from-violet-900/80 to-purple-800/60",
+    accent: "#a78bfa",
   },
   {
     id: "famous-beach",
     name: "Famous Beach",
     subtitle: "Pool · Day Club · Restaurant",
+    city: "Marrakech",
     logo: famousBeachLogo,
     website: "https://famousbeachmarrakech.com",
     instagram: "https://www.instagram.com/famousbeachmarrakech",
     googleMaps: "https://maps.app.goo.gl/Your1stRealLink",
-    gradient: "from-sky-800/80 to-teal-700/60",
+    accent: "#22d3ee",
   },
   {
     id: "senses",
     name: "Senses",
     subtitle: "Café · Restaurant",
+    city: "Marrakech",
     logo: sensesLogo,
     website: "https://www.sensesmarrakech.com",
     instagram: "https://www.instagram.com/sensesmarrakech",
     googleMaps: "https://maps.app.goo.gl/YourSensesLink",
-    gradient: "from-stone-800/80 to-neutral-700/60",
+    accent: "#d6d3d1",
   },
   {
     id: "le-petit-versailles",
     name: "Le Petit Versailles",
     subtitle: "Restaurant festif · Tanger",
+    city: "Tanger",
     logo: lePetitVersaillesLogo,
     website: "https://leptiversailles.com",
     instagram: "https://www.instagram.com/lepetittanger",
     googleMaps: "https://maps.app.goo.gl/YourLPVLink",
-    gradient: "from-emerald-900/80 to-green-800/60",
+    accent: "#34d399",
   },
 ];
 
 const PAGE_URL = "https://i-wasp.lovable.app/card/lifestyle-group";
+
+type CityFilter = "all" | "Marrakech" | "Tanger";
 
 // ─── Venue Card ──────────────────────────────────────────────
 function VenueCard({ venue, index }: { venue: Venue; index: number }) {
@@ -183,47 +194,49 @@ function VenueCard({ venue, index }: { venue: Venue; index: number }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 * index, duration: 0.4 }}
+      transition={{ delay: 0.05 * index, duration: 0.35, ease: "easeOut" }}
     >
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full text-left"
       >
-        <div className={`
-          relative overflow-hidden rounded-2xl border border-white/10 
-          bg-gradient-to-br ${venue.gradient}
-          backdrop-blur-xl transition-all duration-300
-          ${expanded ? "ring-1 ring-white/20" : "hover:ring-1 hover:ring-white/10"}
-        `}>
-          {/* Main row */}
-          <div className="flex items-center gap-4 p-4">
-            <div className="w-14 h-14 rounded-xl overflow-hidden bg-white/5 border border-white/10 flex-shrink-0">
-              <img 
-                src={venue.logo} 
-                alt={venue.name} 
+        <div
+          className="relative overflow-hidden rounded-2xl border transition-all duration-300"
+          style={{
+            background: `linear-gradient(135deg, ${venue.accent}12 0%, ${venue.accent}06 100%)`,
+            borderColor: expanded ? `${venue.accent}30` : `${venue.accent}15`,
+          }}
+        >
+          <div className="flex items-center gap-3.5 p-3.5">
+            <div
+              className="w-13 h-13 rounded-xl overflow-hidden flex-shrink-0"
+              style={{ boxShadow: `0 0 0 1px ${venue.accent}25` }}
+            >
+              <img
+                src={venue.logo}
+                alt={venue.name}
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-white font-semibold text-base tracking-tight truncate">
+              <h3 className="text-white/95 font-semibold text-[15px] tracking-tight truncate">
                 {venue.name}
               </h3>
-              <p className="text-white/50 text-xs mt-0.5">{venue.subtitle}</p>
+              <p className="text-white/40 text-xs mt-0.5 font-light">{venue.subtitle}</p>
             </div>
             <motion.div
               animate={{ rotate: expanded ? 90 : 0 }}
               transition={{ duration: 0.2 }}
             >
-              <ChevronRight size={18} className="text-white/40" />
+              <ChevronRight size={16} className="text-white/25" />
             </motion.div>
           </div>
         </div>
       </button>
 
-      {/* Expanded links */}
       <AnimatePresence>
         {expanded && (
           <motion.div
@@ -233,34 +246,27 @@ function VenueCard({ venue, index }: { venue: Venue; index: number }) {
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="flex gap-2 px-2 pt-2 pb-1">
-              <a
-                href={venue.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-medium transition-colors"
-              >
-                <Globe size={14} />
-                Site
-              </a>
-              <a
-                href={venue.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-medium transition-colors"
-              >
-                <Instagram size={14} />
-                Instagram
-              </a>
-              <a
-                href={venue.googleMaps}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-medium transition-colors"
-              >
-                <MapPin size={14} />
-                Maps
-              </a>
+            <div className="flex gap-2 px-1 pt-2 pb-1">
+              {[
+                { href: venue.website, icon: Globe, label: "Site" },
+                { href: venue.instagram, icon: Instagram, label: "Insta" },
+                { href: venue.googleMaps, icon: MapPin, label: "Maps" },
+              ].map(({ href, icon: Icon, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 hover:scale-[1.02]"
+                  style={{
+                    background: `${venue.accent}15`,
+                    color: venue.accent,
+                  }}
+                >
+                  <Icon size={13} />
+                  {label}
+                </a>
+              ))}
             </div>
           </motion.div>
         )}
@@ -278,32 +284,32 @@ function QRModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-6"
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.9 }}
+            initial={{ scale: 0.92, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.92, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-3xl p-8 max-w-xs w-full text-center"
+            className="bg-white rounded-3xl p-8 max-w-[280px] w-full text-center shadow-2xl"
           >
             <QRCodeSVG
               value={PAGE_URL}
-              size={200}
+              size={180}
               level="H"
               className="mx-auto"
               bgColor="#ffffff"
-              fgColor="#1a1a1a"
+              fgColor="#0a0a0a"
             />
             <p className="mt-4 text-sm text-neutral-500 font-medium">
-              Scannez pour accéder
+              Scan to connect
             </p>
             <button
               onClick={onClose}
               className="mt-4 w-full py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-sm font-medium transition-colors"
             >
-              Fermer
+              Close
             </button>
           </motion.div>
         </motion.div>
@@ -312,9 +318,69 @@ function QRModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
+// ─── City Filter Pill ────────────────────────────────────────
+function CityFilterPills({ active, onChange }: { active: CityFilter; onChange: (c: CityFilter) => void }) {
+  const pills: { label: string; value: CityFilter }[] = [
+    { label: "All", value: "all" },
+    { label: "Marrakech", value: "Marrakech" },
+    { label: "Tanger", value: "Tanger" },
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.15 }}
+      className="flex gap-2 justify-center mb-6"
+    >
+      {pills.map(({ label, value }) => (
+        <button
+          key={value}
+          onClick={() => onChange(value)}
+          className="relative px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200"
+          style={{
+            background: active === value ? "rgba(255,255,255,0.12)" : "transparent",
+            color: active === value ? "#fff" : "rgba(255,255,255,0.35)",
+            border: `1px solid ${active === value ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.06)"}`,
+          }}
+        >
+          {label}
+          {active === value && (
+            <motion.div
+              layoutId="city-filter-active"
+              className="absolute inset-0 rounded-full border border-white/20"
+              transition={{ duration: 0.25 }}
+            />
+          )}
+        </button>
+      ))}
+    </motion.div>
+  );
+}
+
 // ─── Main Page ───────────────────────────────────────────────
 export default function LifestyleGroupCard() {
   const [qrOpen, setQrOpen] = useState(false);
+  const [cityFilter, setCityFilter] = useState<CityFilter>("all");
+
+  const filteredVenues = useMemo(
+    () => cityFilter === "all" ? VENUES : VENUES.filter((v) => v.city === cityFilter),
+    [cityFilter]
+  );
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Nommos Group – Marrakech & Tanger",
+          text: "Discover the best venues in Marrakech & Tanger",
+          url: PAGE_URL,
+        });
+      } catch {}
+    } else {
+      await navigator.clipboard.writeText(PAGE_URL);
+    }
+  };
 
   const handleDownloadVCard = () => {
     downloadVCard({
@@ -331,87 +397,134 @@ export default function LifestyleGroupCard() {
 
   return (
     <CardLayout>
-      <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
-        {/* Ambient glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-radial from-purple-500/8 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-gradient-radial from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
+      <div className="min-h-screen relative overflow-hidden" style={{ background: "#06060a" }}>
+        {/* Ambient glows */}
+        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(168,130,255,0.06) 0%, transparent 70%)" }} />
+        <div className="absolute bottom-[-100px] right-[-100px] w-[350px] h-[350px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(56,189,248,0.04) 0%, transparent 70%)" }} />
 
         <div className="relative z-10 max-w-md mx-auto px-5 py-10">
           {/* Header */}
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-10"
+            transition={{ duration: 0.5 }}
+            className="text-center mb-8"
           >
-            {/* Group icon */}
-            <div className="w-20 h-20 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center backdrop-blur-xl">
-              <span className="text-2xl font-bold text-white tracking-tighter">N</span>
+            <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-2xl flex items-center justify-center" style={{
+              background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              backdropFilter: "blur(20px)",
+            }}>
+              <span className="text-[22px] font-bold text-white/90 tracking-tighter">N</span>
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-[22px] font-bold text-white tracking-tight">
               {GROUP_NAME}
             </h1>
-            <p className="text-white/40 text-sm mt-1 tracking-widest uppercase">
+            <p className="text-white/30 text-xs mt-1.5 tracking-[0.2em] uppercase font-light">
               {GROUP_TAGLINE}
             </p>
           </motion.div>
 
+          {/* City Filter */}
+          <CityFilterPills active={cityFilter} onChange={setCityFilter} />
+
+          {/* Venues count */}
+          <motion.p
+            key={cityFilter}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-white/20 text-[10px] uppercase tracking-widest text-center mb-4 font-light"
+          >
+            {filteredVenues.length} venue{filteredVenues.length > 1 ? "s" : ""}
+          </motion.p>
+
           {/* Venues */}
-          <div className="space-y-3">
-            {VENUES.map((venue, i) => (
-              <VenueCard key={venue.id} venue={venue} index={i} />
-            ))}
+          <div className="space-y-2.5">
+            <AnimatePresence mode="popLayout">
+              {filteredVenues.map((venue, i) => (
+                <VenueCard key={venue.id} venue={venue} index={i} />
+              ))}
+            </AnimatePresence>
           </div>
 
           {/* Divider */}
-          <div className="my-8 border-t border-white/5" />
+          <div className="my-8 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)" }} />
 
-          {/* Actions */}
-          <div className="space-y-3">
-            {/* Contact quick actions */}
-            <div className="grid grid-cols-2 gap-3">
-              <a
-                href={`tel:${GROUP_PHONE.replace(/\s/g, "")}`}
-                className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-medium transition-colors"
-              >
-                <Phone size={16} className="text-white/60" />
-                Appeler
-              </a>
-              <a
-                href={`mailto:${GROUP_EMAIL}`}
-                className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-medium transition-colors"
-              >
-                <Mail size={16} className="text-white/60" />
-                Email
-              </a>
+          {/* Quick Actions */}
+          <div className="space-y-2.5">
+            {/* Row 1: Call · WhatsApp · Email */}
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { href: `tel:${GROUP_PHONE.replace(/\s/g, "")}`, icon: Phone, label: "Call", color: "#34d399" },
+                { href: `https://wa.me/${GROUP_WHATSAPP}`, icon: MessageCircle, label: "WhatsApp", color: "#25D366" },
+                { href: `mailto:${GROUP_EMAIL}`, icon: Mail, label: "Email", color: "#818cf8" },
+              ].map(({ href, icon: Icon, label, color }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target={label === "WhatsApp" ? "_blank" : undefined}
+                  rel={label === "WhatsApp" ? "noopener noreferrer" : undefined}
+                  className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all duration-200 hover:scale-[1.02]"
+                  style={{
+                    background: `${color}08`,
+                    border: `1px solid ${color}15`,
+                  }}
+                >
+                  <Icon size={18} style={{ color: `${color}cc` }} />
+                  <span className="text-white/50 text-[10px] font-medium">{label}</span>
+                </a>
+              ))}
             </div>
 
-            {/* vCard download */}
+            {/* vCard */}
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={handleDownloadVCard}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white text-[#0a0a0a] text-sm font-semibold hover:bg-white/90 transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-200"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)",
+                color: "#06060a",
+              }}
             >
               <Download size={16} />
-              Ajouter au contact
+              Save Contact
             </motion.button>
 
-            {/* QR Code */}
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setQrOpen(true)}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-medium transition-colors"
-            >
-              <QrCode size={16} className="text-white/60" />
-              QR Code
-            </motion.button>
+            {/* Row 2: QR · Share */}
+            <div className="grid grid-cols-2 gap-2">
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setQrOpen(true)}
+                className="flex items-center justify-center gap-2 py-3 rounded-2xl text-white/60 text-sm font-medium transition-all duration-200"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                <QrCode size={16} />
+                QR Code
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={handleShare}
+                className="flex items-center justify-center gap-2 py-3 rounded-2xl text-white/60 text-sm font-medium transition-all duration-200"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                <Share2 size={16} />
+                Share
+              </motion.button>
+            </div>
           </div>
 
           {/* Footer */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="text-center text-[10px] text-white/20 mt-10 tracking-widest uppercase"
+            transition={{ delay: 0.6 }}
+            className="text-center text-[9px] text-white/15 mt-10 tracking-[0.25em] uppercase font-light"
           >
             Powered by IWASP
           </motion.p>
