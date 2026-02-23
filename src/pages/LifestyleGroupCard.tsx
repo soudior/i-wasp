@@ -334,6 +334,42 @@ export default function LifestyleGroupCard() {
                 />
               </motion.div>
 
+              {/* Gold particles */}
+              {[...Array(18)].map((_, i) => {
+                const angle = (i / 18) * Math.PI * 2;
+                const radius = 90 + Math.random() * 80;
+                const size = 2 + Math.random() * 3;
+                const delay = 0.2 + Math.random() * 0.6;
+                return (
+                  <motion.div
+                    key={`p-${i}`}
+                    className="absolute rounded-full"
+                    style={{
+                      width: size,
+                      height: size,
+                      background: i % 3 === 0
+                        ? "radial-gradient(circle, #C9A96E, transparent)"
+                        : `rgba(201,169,110,${0.4 + Math.random() * 0.5})`,
+                      left: "50%",
+                      top: "50%",
+                      boxShadow: `0 0 ${4 + size}px rgba(201,169,110,0.4)`,
+                    }}
+                    initial={{ x: 0, y: 0, opacity: 0, scale: 0 }}
+                    animate={{
+                      x: [0, Math.cos(angle) * radius * 0.5, Math.cos(angle) * radius],
+                      y: [0, Math.sin(angle) * radius * 0.5 - 20, Math.sin(angle) * radius - 40],
+                      opacity: [0, 1, 0],
+                      scale: [0, 1.2, 0],
+                    }}
+                    transition={{
+                      duration: 1.2 + Math.random() * 0.4,
+                      delay,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                  />
+                );
+              })}
+
               {/* Auto-dismiss */}
               <motion.div
                 initial={{ opacity: 0 }}
