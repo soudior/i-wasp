@@ -59,7 +59,7 @@ const VENUES: Venue[] = [
     website: "https://www.nommosbeachresort.com",
     instagram: "https://www.instagram.com/nommosbeach",
     googleMaps: "https://maps.app.goo.gl/nommosbeach",
-    accent: "#38bdf8",
+    accent: "#d4a0c0",
   },
   {
     id: "nommos-marrakech",
@@ -70,7 +70,7 @@ const VENUES: Venue[] = [
     website: "https://www.nommos.ma",
     instagram: "https://www.instagram.com/nommosmarrakech",
     googleMaps: "https://maps.app.goo.gl/nommosmarrakech",
-    accent: "#a8a29e",
+    accent: "#c78daa",
   },
   {
     id: "nommos-marina-bay",
@@ -81,7 +81,7 @@ const VENUES: Venue[] = [
     website: "https://www.nommostanger.com",
     instagram: "https://www.instagram.com/nommostanger",
     googleMaps: "https://maps.app.goo.gl/nommostanger",
-    accent: "#2dd4bf",
+    accent: "#b894c0",
   },
   {
     id: "lalala",
@@ -92,18 +92,18 @@ const VENUES: Venue[] = [
     website: "https://www.lalalarestaurant.com",
     instagram: "https://www.instagram.com/lalalarestaurant",
     googleMaps: "https://maps.app.goo.gl/lalala",
-    accent: "#fb7185",
+    accent: "#e8a87c",
   },
   {
     id: "555marrakech",
     name: "555 Marrakech",
-    subtitle: "Famous Club",
+    subtitle: "Hotel Clubbing",
     city: "Marrakech",
     logo: club555MrkLogo,
     website: "https://www.555marrakech.com",
     instagram: "https://www.instagram.com/555marrakech",
     googleMaps: "https://maps.app.goo.gl/555marrakech",
-    accent: "#c084fc",
+    accent: "#FFD700",
   },
   {
     id: "555tanger",
@@ -114,7 +114,7 @@ const VENUES: Venue[] = [
     website: "https://www.555tanger.com",
     instagram: "https://www.instagram.com/555tanger",
     googleMaps: "https://maps.app.goo.gl/555tanger",
-    accent: "#818cf8",
+    accent: "#FFD700",
   },
   {
     id: "secretroom",
@@ -125,7 +125,7 @@ const VENUES: Venue[] = [
     website: "https://www.secretroommarrakech.com",
     instagram: "https://www.instagram.com/secretroommarrakech",
     googleMaps: "https://maps.app.goo.gl/secretroom",
-    accent: "#a1a1aa",
+    accent: "#8B2252",
   },
   {
     id: "sky5-tanger",
@@ -136,7 +136,7 @@ const VENUES: Venue[] = [
     website: "https://www.skyfivetanger.com",
     instagram: "https://www.instagram.com/sky5tanger",
     googleMaps: "https://maps.app.goo.gl/sky5tanger",
-    accent: "#fb923c",
+    accent: "#F5A623",
   },
   {
     id: "sky5-marrakech",
@@ -147,7 +147,7 @@ const VENUES: Venue[] = [
     website: "https://www.skyfivemarrakech.com",
     instagram: "https://www.instagram.com/sky5marrakech",
     googleMaps: "https://maps.app.goo.gl/sky5marrakech",
-    accent: "#a78bfa",
+    accent: "#F5A623",
   },
   {
     id: "famous-beach",
@@ -158,7 +158,7 @@ const VENUES: Venue[] = [
     website: "https://famousbeachmarrakech.com",
     instagram: "https://www.instagram.com/famousbeachmarrakech",
     googleMaps: "https://maps.app.goo.gl/Your1stRealLink",
-    accent: "#22d3ee",
+    accent: "#FFD700",
   },
   {
     id: "senses",
@@ -169,7 +169,7 @@ const VENUES: Venue[] = [
     website: "https://www.sensesmarrakech.com",
     instagram: "https://www.instagram.com/sensesmarrakech",
     googleMaps: "https://maps.app.goo.gl/YourSensesLink",
-    accent: "#d6d3d1",
+    accent: "#4A7FB5",
   },
   {
     id: "le-petit-versailles",
@@ -180,7 +180,7 @@ const VENUES: Venue[] = [
     website: "https://leptiversailles.com",
     instagram: "https://www.instagram.com/lepetittanger",
     googleMaps: "https://maps.app.goo.gl/YourLPVLink",
-    accent: "#34d399",
+    accent: "#C9A96E",
   },
 ];
 
