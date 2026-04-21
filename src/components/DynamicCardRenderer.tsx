@@ -1029,7 +1029,7 @@ function ActionRenderer({
 }) {
   const data = block.data;
   const isDark = theme === "dark";
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPress = useRef(false);
 
   const getIcon = () => {

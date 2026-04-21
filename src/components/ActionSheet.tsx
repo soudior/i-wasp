@@ -230,7 +230,7 @@ export function useLongPress(
   callback: () => void,
   { delay = 400 }: { delay?: number } = {}
 ) {
-  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+  const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [isLongPress, setIsLongPress] = useState(false);
 
   const start = () => {
