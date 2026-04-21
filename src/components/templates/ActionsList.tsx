@@ -151,7 +151,7 @@ export function ActionsList({
   const [sheetLabel, setSheetLabel] = useState("");
   
   // Long press timer ref
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPress = useRef(false);
 
   const openActionSheet = (type: ActionSheetType, value: string, label: string) => {

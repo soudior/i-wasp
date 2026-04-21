@@ -136,7 +136,7 @@ function ModuleItem({
 }: ModuleItemProps) {
   const [isLongPressing, setIsLongPressing] = useState(false);
   const [dragReady, setDragReady] = useState(false);
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   
   const Icon = getBlockIcon(block);

@@ -136,7 +136,7 @@ function PremiumActionItem({
   item: ActionItemData;
   onLongPress: (type: ActionSheetType, value: string, label: string) => void;
 }) {
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPress = useRef(false);
 
   const handleLongPressStart = () => {

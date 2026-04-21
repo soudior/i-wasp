@@ -60,7 +60,7 @@ export function MultiStoryViewer({
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
   const storyStartTime = useRef<number>(Date.now());
-  const progressInterval = useRef<NodeJS.Timeout | null>(null);
+  const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   
   const { trackEvent } = useStoryAnalytics();
   const { shouldReduceMotion, durationMultiplier } = useReducedMotion();

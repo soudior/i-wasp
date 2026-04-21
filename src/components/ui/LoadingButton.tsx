@@ -42,7 +42,7 @@ export const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonPr
     ref
   ) => {
     const [isClicked, setIsClicked] = React.useState(false);
-    const timeoutRef = React.useRef<NodeJS.Timeout>();
+    const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>();
 
     // Cleanup timeout on unmount
     React.useEffect(() => {

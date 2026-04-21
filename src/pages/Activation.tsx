@@ -49,7 +49,7 @@ const Activation = () => {
   const [showScanAnimation, setShowScanAnimation] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Pre-fill serial code from URL parameter (QR scan)
   useEffect(() => {
