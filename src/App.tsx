@@ -177,6 +177,7 @@ const PublicWebsite = lazy(() => import("./pages/web-studio/PublicWebsite"));
 const AdminWebStudioIA = lazy(() => import("./pages/admin/AdminWebStudioIA"));
 const AdminGeneratedWebsites = lazy(() => import("./pages/admin/AdminGeneratedWebsites"));
 const ConversionDashboard = lazy(() => import("./pages/admin/ConversionDashboard"));
+const AdminWifiSettings = lazy(() => import("./pages/admin/AdminWifiSettings"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -458,6 +459,8 @@ const App = () => {
                               <Route path="/admin/analytics" element={<AdminGuard><ConversionDashboard /></AdminGuard>} />
                               <Route path="/admin/conversions" element={<AdminGuard><ConversionDashboard /></AdminGuard>} />
                               <Route path="/admin/evolis-template" element={<AdminGuard><EvolisTemplateGenerator /></AdminGuard>} />
+                              <Route path="/admin/wifi" element={<AdminGuard><AdminWifiSettings /></AdminGuard>} />
+                              <Route path="/admin/wifi-settings" element={<AdminGuard><AdminWifiSettings /></AdminGuard>} />
                               
                               {/* 404 */}
                               <Route path="*" element={<NotFound />} />

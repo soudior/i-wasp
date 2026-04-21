@@ -2,7 +2,8 @@ import { useParams, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wifi, MessageCircle, Copy, Check, Camera, Loader2, CheckCircle2, WifiOff } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-import { getPropertyBySlug, WifiNetwork } from "@/config/wifiProperties";
+import { WifiNetwork } from "@/config/wifiProperties";
+import { useWifiConfig } from "@/hooks/useWifiConfig";
 import { handleWhatsAppTap } from "@/lib/smartActions";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
@@ -342,10 +343,17 @@ const WifiCard = ({ network, delay = 0 }: WifiCardProps) => {
 
 export default function LuxuryWifiPage() {
   const { propertySlug } = useParams<{ propertySlug: string }>();
-  
-  const property = propertySlug ? getPropertyBySlug(propertySlug) : undefined;
-  
-  // Redirect to 404 or home if property not found
+  const { config: property, loading } = useWifiConfig(propertySlug);
+
+  if (loading && !property) {
+    return (
+      <div className="min-h-screen bg-[#030303] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-[#C9A96E] animate-spin" />
+      </div>
+    );
+  }
+
+  // Redirect to home if property not found
   if (!property) {
     return <Navigate to="/" replace />;
   }

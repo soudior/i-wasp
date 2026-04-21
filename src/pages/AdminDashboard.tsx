@@ -18,6 +18,7 @@ import {
   Package,
   Users,
   FileImage,
+  Wifi,
   Settings,
   TrendingUp,
   Clock,
@@ -165,6 +166,15 @@ const quickActions: QuickAction[] = [
     path: "/brand-assets",
     color: OMNIA.warning,
     colorMuted: OMNIA.warningMuted,
+  },
+  {
+    id: 'wifi',
+    title: "Réglages Wi-Fi",
+    description: "SSID & mot de passe",
+    icon: Wifi,
+    path: "/admin/wifi",
+    color: OMNIA.info,
+    colorMuted: OMNIA.infoMuted,
   },
 ];
 
