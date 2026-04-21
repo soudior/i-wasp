@@ -1659,6 +1659,48 @@ export type Database = {
           },
         ]
       }
+      wifi_configs: {
+        Row: {
+          brand_name: string
+          created_at: string
+          footer_tagline: string
+          footer_text: string
+          id: string
+          networks: Json
+          slug: string
+          subtitle: string
+          suite_name: string | null
+          updated_at: string
+          whatsapp_number: string | null
+        }
+        Insert: {
+          brand_name: string
+          created_at?: string
+          footer_tagline?: string
+          footer_text?: string
+          id?: string
+          networks?: Json
+          slug: string
+          subtitle?: string
+          suite_name?: string | null
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Update: {
+          brand_name?: string
+          created_at?: string
+          footer_tagline?: string
+          footer_text?: string
+          id?: string
+          networks?: Json
+          slug?: string
+          subtitle?: string
+          suite_name?: string | null
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       public_cards: {
