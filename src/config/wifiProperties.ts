@@ -80,20 +80,12 @@ export const WIFI_PROPERTIES: Record<string, PropertyConfig> = {
     whatsappNumber: "+212600000000",
     networks: [
       {
-        ssid: "HUAWEI-5G-DxH5",
-        password: "NR3ea9N3",
+        ssid: "maison",
+        password: "wifi_salon",
         security: "WPA",
-        label: "Connexion Wi-Fi 5G",
+        label: "Connexion Wi-Fi",
         recommended: true,
-        description: "Recommandé – Vitesse maximale"
-      },
-      {
-        ssid: "HUAWEI-2.4G-DxH5",
-        password: "NR3ea9N3",
-        security: "WPA",
-        label: "Connexion Wi-Fi 2.4G",
-        recommended: false,
-        description: "Compatible tous appareils"
+        description: "Réseau principal"
       }
     ]
   },
