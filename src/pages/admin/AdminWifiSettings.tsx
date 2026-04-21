@@ -166,7 +166,7 @@ export default function AdminWifiSettings() {
         footer_text: cfg.footerText,
         footer_tagline: cfg.footerTagline,
         whatsapp_number: cfg.whatsappNumber ?? null,
-        networks: cfg.networks as unknown as object,
+        networks: cfg.networks as unknown as never,
       })
       .eq("slug", slug);
 
