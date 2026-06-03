@@ -38,6 +38,51 @@ export type Database = {
         }
         Relationships: []
       }
+      amg_leads: {
+        Row: {
+          budget: string | null
+          created_at: string
+          email: string | null
+          id: string
+          message: string | null
+          name: string
+          objective: string | null
+          phone: string
+          property_type: string | null
+          source: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          budget?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string | null
+          name: string
+          objective?: string | null
+          phone: string
+          property_type?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          budget?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string | null
+          name?: string
+          objective?: string | null
+          phone?: string
+          property_type?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           created_at: string
