@@ -75,6 +75,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const About = lazy(() => import("./pages/About"));
 const Maison = lazy(() => import("./pages/Maison"));
 const Maman = lazy(() => import("./pages/Maman"));
+const AmgBuilding = lazy(() => import("./pages/AmgBuilding"));
 const Vision = lazy(() => import("./pages/Vision"));
 const Features = lazy(() => import("./pages/Features"));
 const Pricing = lazy(() => import("./pages/Pricing"));
@@ -300,6 +301,8 @@ const App = () => {
                               <Route path="/a-propos" element={<About />} />
                               <Route path="/maison" element={<Maison />} />
                               <Route path="/maman" element={<Maman />} />
+                              <Route path="/amg" element={<AmgBuilding />} />
+                              <Route path="/amg-building" element={<AmgBuilding />} />
                               <Route path="/vision" element={<Vision />} />
                               <Route path="/features" element={<Features />} />
                               <Route path="/fonctionnalites" element={<Features />} />
