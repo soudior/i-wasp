@@ -301,6 +301,8 @@ const App = () => {
                               <Route path="/a-propos" element={<About />} />
                               <Route path="/maison" element={<Maison />} />
                               <Route path="/maman" element={<Maman />} />
+                              <Route path="/amg" element={<AmgBuilding />} />
+                              <Route path="/amg-building" element={<AmgBuilding />} />
                               <Route path="/vision" element={<Vision />} />
                               <Route path="/features" element={<Features />} />
                               <Route path="/fonctionnalites" element={<Features />} />
