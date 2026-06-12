@@ -240,6 +240,24 @@ export default function AdventuresWheels() {
 
   const trustIcons = useMemo(() => [Users, Shield, Award, Star], []);
 
+  useEffect(() => {
+    document.title = "Randonnée quad Marrakech · Adventures Wheels";
+    const setMeta = (name: string, content: string) => {
+      let m = document.querySelector(`meta[name="${name}"]`);
+      if (!m) {
+        m = document.createElement("meta");
+        m.setAttribute("name", name);
+        document.head.appendChild(m);
+      }
+      m.setAttribute("content", content);
+    };
+    setMeta(
+      "description",
+      "Randonnée quad, moto enduro et mobylette à Marrakech, désert d'Agafay et Atlas. Réservation directe sur WhatsApp.",
+    );
+    setMeta("theme-color", "#0D0D0D");
+  }, []);
+
   const buildBookMessage = (exp: string) =>
     `https://wa.me/212667038588?text=${encodeURIComponent(
       `Bonjour, je souhaite réserver une randonnée ${exp}.`,
@@ -251,15 +269,7 @@ export default function AdventuresWheels() {
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-[#F5F1EA] font-sans antialiased">
-      <Helmet>
-        <title>Randonnée quad Marrakech · Adventures Wheels</title>
-        <meta
-          name="description"
-          content="Randonnée quad, moto enduro et mobylette à Marrakech, désert d'Agafay et Atlas. Réservation directe sur WhatsApp."
-        />
-        <meta name="theme-color" content="#0D0D0D" />
-        <link rel="preload" as="image" href={heroQuad} />
-      </Helmet>
+
 
       {/* ─── Language Switcher ─── */}
       <div className="fixed top-4 right-4 z-50 flex items-center gap-1 bg-black/50 backdrop-blur-md rounded-full px-2 py-1 border border-white/10">
