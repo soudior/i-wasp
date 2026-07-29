@@ -26,6 +26,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return <CardLayout>{children}</CardLayout>;
   }
 
+  // Full-screen immersive experiences (no nav, no footer)
+  if (path.startsWith("/anniversaire")) {
+    return <div className="min-h-dvh bg-black">{children}</div>;
+  }
+
   // Dashboard routes
   if (
     path === "/dashboard" ||

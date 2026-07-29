@@ -77,6 +77,7 @@ const Maison = lazy(() => import("./pages/Maison"));
 const Maman = lazy(() => import("./pages/Maman"));
 const AmgBuilding = lazy(() => import("./pages/AmgBuilding"));
 const AdventuresWheels = lazy(() => import("./pages/AdventuresWheels"));
+const Anniversaire = lazy(() => import("./pages/Anniversaire"));
 const Vision = lazy(() => import("./pages/Vision"));
 const Features = lazy(() => import("./pages/Features"));
 const Pricing = lazy(() => import("./pages/Pricing"));
@@ -306,6 +307,8 @@ const App = () => {
                               <Route path="/amg-building" element={<AmgBuilding />} />
                               <Route path="/adventures" element={<AdventuresWheels />} />
                               <Route path="/adventures-wheels" element={<AdventuresWheels />} />
+                              <Route path="/anniversaire" element={<Anniversaire />} />
+                              <Route path="/anniversaire/:id" element={<Anniversaire />} />
                               <Route path="/vision" element={<Vision />} />
                               <Route path="/features" element={<Features />} />
                               <Route path="/fonctionnalites" element={<Features />} />
