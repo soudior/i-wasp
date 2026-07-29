@@ -77,6 +77,7 @@ const Maison = lazy(() => import("./pages/Maison"));
 const Maman = lazy(() => import("./pages/Maman"));
 const AmgBuilding = lazy(() => import("./pages/AmgBuilding"));
 const AdventuresWheels = lazy(() => import("./pages/AdventuresWheels"));
+const Anniversaire = lazy(() => import("./pages/Anniversaire"));
 const Vision = lazy(() => import("./pages/Vision"));
 const Features = lazy(() => import("./pages/Features"));
 const Pricing = lazy(() => import("./pages/Pricing"));
