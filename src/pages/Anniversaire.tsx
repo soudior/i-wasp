@@ -416,16 +416,13 @@ export default function Anniversaire() {
     setTimeout(() => setStarted(true), 100);
   };
 
+  useEffect(() => {
+    document.title = `Joyeux Anniversaire ${data.name} — I-WASP`;
+  }, [data.name]);
+
   return (
     <>
-      <Helmet>
-        <title>Joyeux Anniversaire {data.name} — I-WASP</title>
-        <meta
-          name="description"
-          content={`Un souvenir digital pour ${data.name}. Une expérience émouvante offerte par I-WASP.`}
-        />
-        <meta name="theme-color" content="#000000" />
-      </Helmet>
+
 
       <div className="relative min-h-dvh w-full overflow-x-hidden bg-black text-white font-sans">
         {data.music && (
