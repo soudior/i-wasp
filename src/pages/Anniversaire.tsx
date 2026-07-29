@@ -19,7 +19,7 @@ import {
   Cake,
   RotateCcw,
 } from "lucide-react";
-import { Helmet } from "react-helmet-async";
+
 
 // ─────────────────────────────────────────────────────────────
 // PLACEHOLDER DATA — sera remplacé par les données du dashboard
