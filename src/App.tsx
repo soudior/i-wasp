@@ -307,6 +307,8 @@ const App = () => {
                               <Route path="/amg-building" element={<AmgBuilding />} />
                               <Route path="/adventures" element={<AdventuresWheels />} />
                               <Route path="/adventures-wheels" element={<AdventuresWheels />} />
+                              <Route path="/anniversaire" element={<Anniversaire />} />
+                              <Route path="/anniversaire/:id" element={<Anniversaire />} />
                               <Route path="/vision" element={<Vision />} />
                               <Route path="/features" element={<Features />} />
                               <Route path="/fonctionnalites" element={<Features />} />
