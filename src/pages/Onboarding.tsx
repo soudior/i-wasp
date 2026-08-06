@@ -19,7 +19,7 @@ import {
   Phone, Link2, Check, Sparkles, Crown, Target,
   Laptop, Camera, Building2, HelpCircle, Mail, MessageCircle,
   Instagram, Linkedin, Lock, Eye, Star, BarChart3, Palette, 
-  BadgeCheck, Infinity, Globe
+  BadgeCheck, Infinity as InfinityIcon, Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OnboardingPhotoUpload } from "@/components/onboarding/OnboardingPhotoUpload";
@@ -154,7 +154,7 @@ const formSteps = [
 ];
 
 const eliteFeatures = [
-  { icon: Infinity, label: "Liens illimités", description: "Ajoute autant de liens que tu veux" },
+  { icon: InfinityIcon, label: "Liens illimités", description: "Ajoute autant de liens que tu veux" },
   { icon: Palette, label: "Templates premium", description: "Designs exclusifs et personnalisables" },
   { icon: BarChart3, label: "Statistiques détaillées", description: "Analyse tes scans et visiteurs" },
   { icon: Star, label: "Personnalisation complète", description: "Couleurs, polices, mise en page" },

@@ -257,7 +257,7 @@ export default function LifestyleGroupCard() {
 
   const handleShare = async () => {
     if (navigator.share) {
-      try { await navigator.share({ title: "Nommos Group", url: PAGE_URL }); } catch {}
+      try { await navigator.share({ title: "Nommos Group", url: PAGE_URL }); } catch { /* partage annulé par l'utilisateur */ }
     } else {
       await navigator.clipboard.writeText(PAGE_URL);
     }

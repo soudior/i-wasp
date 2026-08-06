@@ -73,7 +73,7 @@ export function PricingSection() {
   const calculatePrice = () => {
     if (isCustomQuote) return { unit: 0, customization: 0, total: 0, isCustom: true };
 
-    let unitPrice = config.cardType === "standard" ? STANDARD_PRICE : PERSONALIZED_PRICE;
+    const unitPrice = config.cardType === "standard" ? STANDARD_PRICE : PERSONALIZED_PRICE;
     let customizationCost = 0;
 
     // B2B personalization extra

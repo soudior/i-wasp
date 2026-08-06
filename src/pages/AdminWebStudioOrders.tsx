@@ -542,7 +542,7 @@ function AdminWebStudioOrdersContent() {
       currentHistory: StatusHistoryEntry[];
       noteToAdd?: string;
     }) => {
-      let updatedHistory = [...currentHistory];
+      const updatedHistory = [...currentHistory];
       
       if (noteToAdd && noteToAdd.trim()) {
         updatedHistory.push({

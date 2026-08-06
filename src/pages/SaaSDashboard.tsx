@@ -31,8 +31,7 @@ import {
   Loader2,
   ArrowUpRight,
   Package,
-  Calendar,
-  Infinity
+  Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

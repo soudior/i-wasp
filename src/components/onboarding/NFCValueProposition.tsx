@@ -2,12 +2,12 @@
  * NFCValueProposition - Benefits of physical NFC card before CTA
  */
 
-import { Infinity, TreePine, RefreshCw } from "lucide-react";
+import { Infinity as InfinityIcon, TreePine, RefreshCw } from "lucide-react";
 import nfcCardImage from "@/assets/cards/card-black-matte.webp";
 
 const benefits = [
   {
-    icon: Infinity,
+    icon: InfinityIcon,
     text: "Partage illimité",
   },
   {

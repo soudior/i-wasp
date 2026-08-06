@@ -259,12 +259,13 @@ export function CardWizard({ editId, initialData, onComplete }: CardWizardProps)
         return "Ajoutez une photo ou un logo pour continuer";
       case "design":
         return "Choisissez un template pour votre carte";
-      case "preview":
+      case "preview": {
         const errors = publicationValidation.criticalErrors;
         if (errors.length > 0) {
           return `${errors.length} élément(s) requis: ${errors.map(e => e.label).join(", ")}`;
         }
         return "Complétez tous les champs requis";
+      }
       default:
         return "Complétez cette étape pour continuer";
     }
