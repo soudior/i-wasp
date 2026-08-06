@@ -4,20 +4,17 @@
 
 import { motion } from "framer-motion";
 import { CreditCard, Globe, QrCode, Contact, BarChart3, RefreshCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { HOME, reveal, staggerParent } from "./theme";
 
-const ITEMS = [
-  { icon: CreditCard, title: "La carte NFC physique", desc: "Carte premium avec puce NFC intégrée, à votre nom et à vos couleurs." },
-  { icon: Globe, title: "Un profil digital", desc: "Une page personnelle toujours à jour : coordonnées, réseaux, portfolio, services." },
-  { icon: QrCode, title: "Un QR code de secours", desc: "Identique à votre lien NFC, pour les téléphones sans NFC actif." },
-  { icon: Contact, title: "La fiche contact (vCard)", desc: "Enregistrement en un geste dans le carnet d'adresses, iOS et Android." },
-  { icon: BarChart3, title: "Des statistiques utiles", desc: "Vues du profil, contacts enregistrés — de quoi mesurer l'impact." },
-  { icon: RefreshCw, title: "Mises à jour illimitées", desc: "Modifiez votre profil quand vous voulez, sans reprogrammer la carte." },
-];
+const ICONS = [CreditCard, Globe, QrCode, Contact, BarChart3, RefreshCw];
 
 export function IncludedSection() {
   const { shouldReduceMotion } = useReducedMotion();
+  const { t } = useTranslation();
+  const items = t("homepage.included.items", { returnObjects: true }) as { title: string; desc: string }[];
+  const ITEMS = items.map((it, i) => ({ ...it, icon: ICONS[i] }));
 
   return (
     <section className="relative py-24 sm:py-28 px-6" style={{ background: HOME.bgElevated }}>
@@ -30,10 +27,10 @@ export function IncludedSection() {
         >
           <motion.div variants={reveal(shouldReduceMotion)} className="text-center mb-14 sm:mb-16">
             <p className="font-mono text-[10px] tracking-[0.4em] uppercase mb-5" style={{ color: HOME.accent, opacity: 0.7 }}>
-              L'offre, sans zone d'ombre
+              {t("homepage.included.eyebrow")}
             </p>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight" style={{ color: HOME.text }}>
-              Tout ce qui est inclus
+              {t("homepage.included.title")}
             </h2>
           </motion.div>
 

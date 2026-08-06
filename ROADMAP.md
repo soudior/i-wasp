@@ -28,7 +28,7 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 |---|-------|-----------|--------|
 | 1.1 | **Hero de l'accueil `Index.tsx`** : promesse claire (« La carte de visite NFC qui transforme chaque rencontre en opportunité » + « aucune application requise »), CTA « Créer ma carte » / « Voir la démonstration » | P0-1 | ✅ |
 | 1.2 | **Accueil complet — 13 sections** dans une identité unique luxe sombre (hero, démo NFC 3 étapes, inclus, modèles, personnalisation, profil, avantages, comparaison, tarifs, confiance, FAQ, CTA final). Nouveaux composants `src/components/home/*` + design system `theme.ts`. Clair utilisé en contraste éditorial (panneau ivoire de comparaison). Vérifié visuellement à 320/375/768/1280 (aucun débordement). | P0-1 | ✅ |
-| 1.3 | Brancher l'accueil sur l'i18n (`home.*`) — actuellement FR en dur (langue primaire) ; extraction i18n = étape suivante | P1-I18N | 🔄 |
+| 1.3 | **Accueil entièrement bilingue (FR/EN)** : toutes les chaînes des 13 sections + hero/nav/configurateur/profil/CTA externalisées dans `homepage.fr.json`/`homepage.en.json`. Vérifié au navigateur (FR et EN, aucun français résiduel en EN). | P1-I18N | ✅ |
 | 1.4 | Respecter `prefers-reduced-motion` dans l'accueil (via `useReducedMotion`) — cartes 3D + toutes les nouvelles sections (reveal léger/fondu selon la préférence) | P1-MOTION | ✅ (sections home) / 🔄 (boucles ambiantes héritées) |
 | 1.5 | Jargon (« Aura », « Calibre », « Protocol ») rétrogradé : nav + CTA + libellés réseaux clarifiés ; titres de section décoratifs conservés en secondaire | Étape 2 énoncé | ✅ |
 

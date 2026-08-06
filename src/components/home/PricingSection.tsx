@@ -5,19 +5,33 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { NFC_PRICING, formatPriceEur, formatPriceMad } from "@/lib/nfcPricing";
 import { HOME, reveal, staggerParent } from "./theme";
 
-const TIERS = [
-  { ...NFC_PRICING.cards.ESSENTIELLE, highlighted: false },
-  { ...NFC_PRICING.cards.PROFESSIONNELLE, highlighted: true },
-  { ...NFC_PRICING.cards.PRESTIGE, highlighted: false },
-];
+// Ordre + prix depuis le catalogue (nfcPricing) ; textes traduits via i18n.
+const TIER_DEFS = [
+  { key: "essentielle", card: NFC_PRICING.cards.ESSENTIELLE, highlighted: false },
+  { key: "professionnelle", card: NFC_PRICING.cards.PROFESSIONNELLE, highlighted: true },
+  { key: "prestige", card: NFC_PRICING.cards.PRESTIGE, highlighted: false },
+] as const;
 
 export function PricingSection() {
   const { shouldReduceMotion } = useReducedMotion();
+  const { t } = useTranslation();
   const team = NFC_PRICING.cards.PACK_TEAM;
+
+  const TIERS = TIER_DEFS.map((def) => ({
+    id: def.card.id,
+    highlighted: def.highlighted,
+    priceEur: def.card.priceEur,
+    priceMad: def.card.priceMad,
+    name: t(`homepage.pricing.tiers.${def.key}.name`),
+    subtitle: t(`homepage.pricing.tiers.${def.key}.subtitle`),
+    badge: t(`homepage.pricing.tiers.${def.key}.badge`, { defaultValue: "" }),
+    features: t(`homepage.pricing.tiers.${def.key}.features`, { returnObjects: true }) as string[],
+  }));
 
   return (
     <section id="tarifs" className="relative py-24 sm:py-28 px-6" style={{ background: HOME.bgElevated }}>
@@ -30,13 +44,13 @@ export function PricingSection() {
         >
           <motion.div variants={reveal(shouldReduceMotion)} className="text-center mb-14 sm:mb-16">
             <p className="font-mono text-[10px] tracking-[0.4em] uppercase mb-5" style={{ color: HOME.accent, opacity: 0.7 }}>
-              Tarifs
+              {t("homepage.pricing.eyebrow")}
             </p>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight" style={{ color: HOME.text }}>
-              Un prix clair, tout inclus
+              {t("homepage.pricing.title")}
             </h2>
             <p className="mt-4 font-body text-base sm:text-lg font-light max-w-xl mx-auto" style={{ color: HOME.textMuted }}>
-              Carte physique, profil digital, QR code et mises à jour compris. Sans abonnement obligatoire.
+              {t("homepage.pricing.subtitle")}
             </p>
           </motion.div>
 
@@ -87,7 +101,7 @@ export function PricingSection() {
                       : { background: "transparent", color: HOME.accent, border: `1px solid ${HOME.accentBorder}` }
                   }
                 >
-                  Choisir {tier.name}
+                  {t("homepage.pricing.choose")} {tier.name}
                 </Link>
               </motion.div>
             ))}
@@ -100,9 +114,13 @@ export function PricingSection() {
             style={{ background: HOME.bgCard, border: `1px solid ${HOME.border}` }}
           >
             <div className="text-center sm:text-left">
-              <h3 className="font-display text-lg" style={{ color: HOME.text }}>{team.name} — équipes & entreprises</h3>
+              <h3 className="font-display text-lg" style={{ color: HOME.text }}>{t("homepage.pricing.teamTitle")}</h3>
               <p className="font-body text-sm font-light mt-1" style={{ color: HOME.textMuted }}>
-                {team.quantity} cartes à {formatPriceEur(team.priceEur)} · {team.savings}% d'économie vs tarif unitaire.
+                {t("homepage.pricing.teamDesc", {
+                  count: team.quantity,
+                  price: formatPriceEur(team.priceEur),
+                  savings: team.savings,
+                })}
               </p>
             </div>
             <Link
@@ -110,7 +128,7 @@ export function PricingSection() {
               className="shrink-0 rounded-full px-6 py-3 font-mono text-[11px] tracking-[0.15em] uppercase"
               style={{ color: HOME.accent, border: `1px solid ${HOME.accentBorder}` }}
             >
-              Solutions entreprises
+              {t("homepage.pricing.teamCta")}
             </Link>
           </motion.div>
         </motion.div>

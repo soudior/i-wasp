@@ -6,21 +6,27 @@
 
 import { motion } from "framer-motion";
 import { Check, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { HOME, reveal } from "./theme";
 
-const ROWS = [
-  { label: "Toujours à jour", paper: false, iwasp: true },
-  { label: "Partage en un geste (NFC)", paper: false, iwasp: true },
-  { label: "Enregistrement direct du contact", paper: false, iwasp: true },
-  { label: "Réseaux, portfolio & services", paper: false, iwasp: true },
-  { label: "Statistiques de partage", paper: false, iwasp: true },
-  { label: "Réutilisable à l'infini", paper: false, iwasp: true },
-  { label: "Impression à refaire à chaque changement", paper: true, iwasp: false },
+// L'ordre correspond à homepage.comparison.rows ; seule la dernière ligne
+// est un avantage « papier ».
+const FLAGS = [
+  { paper: false, iwasp: true },
+  { paper: false, iwasp: true },
+  { paper: false, iwasp: true },
+  { paper: false, iwasp: true },
+  { paper: false, iwasp: true },
+  { paper: false, iwasp: true },
+  { paper: true, iwasp: false },
 ];
 
 export function ComparisonSection() {
   const { shouldReduceMotion } = useReducedMotion();
+  const { t } = useTranslation();
+  const labels = t("homepage.comparison.rows", { returnObjects: true }) as string[];
+  const ROWS = labels.map((label, i) => ({ label, ...FLAGS[i] }));
 
   return (
     <section className="relative py-24 sm:py-28 px-6">
@@ -33,10 +39,10 @@ export function ComparisonSection() {
         >
           <div className="text-center mb-12">
             <p className="font-mono text-[10px] tracking-[0.4em] uppercase mb-5" style={{ color: HOME.accent, opacity: 0.7 }}>
-              Papier vs i-wasp
+              {t("homepage.comparison.eyebrow")}
             </p>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight" style={{ color: HOME.text }}>
-              La carte de visite, en mieux
+              {t("homepage.comparison.title")}
             </h2>
           </div>
 
@@ -49,10 +55,10 @@ export function ComparisonSection() {
               {/* En-tête */}
               <div className="p-5 sm:p-6" />
               <div className="p-5 sm:p-6 text-center font-mono text-[10px] sm:text-xs tracking-[0.2em] uppercase" style={{ color: HOME.ivoryMuted }}>
-                Papier
+                {t("homepage.comparison.paper")}
               </div>
               <div className="p-5 sm:p-6 text-center font-display text-sm sm:text-base" style={{ color: HOME.ivoryText }}>
-                i-wasp
+                {t("homepage.comparison.iwasp")}
               </div>
 
               {ROWS.map((row, i) => (

@@ -3,6 +3,7 @@
  */
 
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { HOME, reveal, staggerParent } from "./theme";
 
@@ -12,16 +13,13 @@ import navyExecutive from "@/assets/cards/card-navy-executive.png";
 import whiteMinimal from "@/assets/cards/card-white-minimal.png";
 import ultraLuxe from "@/assets/cards/card-ultra-luxe.png";
 
-const MODELS = [
-  { img: blackMatte, name: "Noir mat", finish: "PVC finition mate anti-traces" },
-  { img: goldAccent, name: "Accent or", finish: "Détails dorés, contraste premium" },
-  { img: navyExecutive, name: "Bleu executive", finish: "Sobre et corporate" },
-  { img: whiteMinimal, name: "Blanc minimal", finish: "Épuré, éditorial" },
-  { img: ultraLuxe, name: "Métal ultra-luxe", finish: "Métal brossé, gravure laser" },
-];
+const IMAGES = [blackMatte, goldAccent, navyExecutive, whiteMinimal, ultraLuxe];
 
 export function ModelsSection() {
   const { shouldReduceMotion } = useReducedMotion();
+  const { t } = useTranslation();
+  const items = t("homepage.models.items", { returnObjects: true }) as { name: string; finish: string }[];
+  const MODELS = items.map((it, i) => ({ ...it, img: IMAGES[i] }));
 
   return (
     <section id="modeles" className="relative py-24 sm:py-28 px-6" style={{ background: HOME.bgElevated }}>
@@ -34,13 +32,13 @@ export function ModelsSection() {
         >
           <motion.div variants={reveal(shouldReduceMotion)} className="text-center mb-14 sm:mb-16">
             <p className="font-mono text-[10px] tracking-[0.4em] uppercase mb-5" style={{ color: HOME.accent, opacity: 0.7 }}>
-              Modèles & finitions
+              {t("homepage.models.eyebrow")}
             </p>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight" style={{ color: HOME.text }}>
-              Une carte à votre image
+              {t("homepage.models.title")}
             </h2>
             <p className="mt-4 font-body text-base sm:text-lg font-light max-w-xl mx-auto" style={{ color: HOME.textMuted }}>
-              Du PVC mat au métal gravé — chaque finition est personnalisable à vos couleurs et votre logo.
+              {t("homepage.models.subtitle")}
             </p>
           </motion.div>
 

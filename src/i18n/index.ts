@@ -9,10 +9,12 @@ import it from './locales/it.json';
 import nl from './locales/nl.json';
 import de from './locales/de.json';
 import ar from './locales/ar.json';
+import homepageFr from './locales/homepage.fr.json';
+import homepageEn from './locales/homepage.en.json';
 
 const resources = {
-  fr: { translation: fr },
-  en: { translation: en },
+  fr: { translation: { ...fr, ...homepageFr } },
+  en: { translation: { ...en, ...homepageEn } },
   es: { translation: es },
   it: { translation: it },
   nl: { translation: nl },

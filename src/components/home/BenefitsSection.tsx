@@ -3,18 +3,14 @@
  */
 
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { HOME, reveal, staggerParent } from "./theme";
 
-const STATS = [
-  { value: "3 s", label: "pour partager tout votre profil" },
-  { value: "0", label: "application à installer côté destinataire" },
-  { value: "∞", label: "mises à jour sans reprogrammer la carte" },
-  { value: "iOS · Android", label: "compatibilité NFC & QR" },
-];
-
 export function BenefitsSection() {
   const { shouldReduceMotion } = useReducedMotion();
+  const { t } = useTranslation();
+  const STATS = t("homepage.benefits.items", { returnObjects: true }) as { value: string; label: string }[];
 
   return (
     <section className="relative py-24 sm:py-28 px-6">
@@ -27,10 +23,10 @@ export function BenefitsSection() {
         >
           <motion.div variants={reveal(shouldReduceMotion)} className="text-center mb-14 sm:mb-16">
             <p className="font-mono text-[10px] tracking-[0.4em] uppercase mb-5" style={{ color: HOME.accent, opacity: 0.7 }}>
-              Des avantages concrets
+              {t("homepage.benefits.eyebrow")}
             </p>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight" style={{ color: HOME.text }}>
-              Ce que ça change, en chiffres
+              {t("homepage.benefits.title")}
             </h2>
           </motion.div>
 

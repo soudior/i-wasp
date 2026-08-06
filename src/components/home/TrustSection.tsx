@@ -7,21 +7,20 @@
 
 import { motion } from "framer-motion";
 import { ShieldCheck, Truck, Lock, Headset } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { HOME, reveal, staggerParent } from "./theme";
 
-const GUARANTEES = [
-  { icon: ShieldCheck, title: "Paiement sécurisé", desc: "Transactions traitées par Stripe, standard bancaire." },
-  { icon: Lock, title: "Vos données protégées", desc: "Aucune donnée personnelle stockée dans la puce NFC." },
-  { icon: Truck, title: "Livraison suivie", desc: "Expédition au Maroc, en France et en Europe." },
-  { icon: Headset, title: "Accompagnement", desc: "Activation guidée et support à chaque étape." },
-];
+const ICONS = [ShieldCheck, Lock, Truck, Headset];
 
 // À remplir avec de vrais retours clients (nom, rôle, citation) — jamais inventés.
 const REAL_TESTIMONIALS: { name: string; role: string; quote: string }[] = [];
 
 export function TrustSection() {
   const { shouldReduceMotion } = useReducedMotion();
+  const { t } = useTranslation();
+  const items = t("homepage.trust.items", { returnObjects: true }) as { title: string; desc: string }[];
+  const GUARANTEES = items.map((it, i) => ({ ...it, icon: ICONS[i] }));
 
   return (
     <section className="relative py-24 sm:py-28 px-6">
@@ -34,10 +33,10 @@ export function TrustSection() {
         >
           <motion.div variants={reveal(shouldReduceMotion)} className="text-center mb-14 sm:mb-16">
             <p className="font-mono text-[10px] tracking-[0.4em] uppercase mb-5" style={{ color: HOME.accent, opacity: 0.7 }}>
-              Preuves de confiance
+              {t("homepage.trust.eyebrow")}
             </p>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight" style={{ color: HOME.text }}>
-              Commandez l'esprit tranquille
+              {t("homepage.trust.title")}
             </h2>
           </motion.div>
 

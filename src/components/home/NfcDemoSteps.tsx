@@ -5,32 +5,22 @@
 
 import { motion } from "framer-motion";
 import { Nfc, Smartphone, UserCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { HOME, reveal, staggerParent } from "./theme";
 
-const STEPS = [
-  {
-    n: "01",
-    icon: Nfc,
-    title: "Approchez la carte",
-    desc: "Posez votre carte i-wasp contre un smartphone. La technologie NFC fait le reste — sans contact, sans application.",
-  },
-  {
-    n: "02",
-    icon: Smartphone,
-    title: "Le profil s'ouvre",
-    desc: "Votre identité digitale s'affiche instantanément : coordonnées, réseaux, portfolio et services, toujours à jour.",
-  },
-  {
-    n: "03",
-    icon: UserCheck,
-    title: "Le contact est enregistré",
-    desc: "Un geste suffit pour enregistrer votre fiche dans le téléphone, vous appeler, vous écrire ou vous suivre.",
-  },
-];
+const ICONS = [Nfc, Smartphone, UserCheck];
 
 export function NfcDemoSteps() {
   const { shouldReduceMotion } = useReducedMotion();
+  const { t } = useTranslation();
+
+  const STEPS = ICONS.map((icon, i) => ({
+    n: `0${i + 1}`,
+    icon,
+    title: t(`homepage.demo.step${i + 1}Title`),
+    desc: t(`homepage.demo.step${i + 1}Desc`),
+  }));
 
   return (
     <section id="demo" className="relative py-24 sm:py-28 px-6">
@@ -46,19 +36,19 @@ export function NfcDemoSteps() {
               className="font-mono text-[10px] tracking-[0.4em] uppercase mb-5"
               style={{ color: HOME.accent, opacity: 0.7 }}
             >
-              Comment ça marche
+              {t("homepage.demo.eyebrow")}
             </p>
             <h2
               className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight"
               style={{ color: HOME.text }}
             >
-              Un contact. Trois secondes.
+              {t("homepage.demo.title")}
             </h2>
             <p
               className="mt-4 font-body text-base sm:text-lg font-light max-w-xl mx-auto"
               style={{ color: HOME.textMuted }}
             >
-              Aucune application requise pour la personne qui reçoit votre carte.
+              {t("homepage.demo.subtitle")}
             </p>
           </motion.div>
 

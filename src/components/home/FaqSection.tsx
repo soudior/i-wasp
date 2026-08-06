@@ -3,6 +3,7 @@
  */
 
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   Accordion,
   AccordionContent,
@@ -12,6 +13,8 @@ import {
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { HOME, reveal } from "./theme";
 
+// Source statique (français) — utilisée pour le schéma JSON-LD FAQPage (SEO en
+// langue primaire). L'affichage, lui, est traduit via i18n (voir plus bas).
 export const FAQS = [
   {
     q: "Faut-il une application pour utiliser ma carte ?",
@@ -41,6 +44,8 @@ export const FAQS = [
 
 export function FaqSection() {
   const { shouldReduceMotion } = useReducedMotion();
+  const { t } = useTranslation();
+  const items = t("homepage.faq.items", { returnObjects: true }) as { q: string; a: string }[];
 
   return (
     <section id="faq" className="relative py-24 sm:py-28 px-6">
@@ -53,15 +58,15 @@ export function FaqSection() {
         >
           <div className="text-center mb-12">
             <p className="font-mono text-[10px] tracking-[0.4em] uppercase mb-5" style={{ color: HOME.accent, opacity: 0.7 }}>
-              Questions fréquentes
+              {t("homepage.faq.eyebrow")}
             </p>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight" style={{ color: HOME.text }}>
-              Tout ce qu'il faut savoir
+              {t("homepage.faq.title")}
             </h2>
           </div>
 
           <Accordion type="single" collapsible className="w-full">
-            {FAQS.map((item, i) => (
+            {items.map((item, i) => (
               <AccordionItem
                 key={i}
                 value={`item-${i}`}
