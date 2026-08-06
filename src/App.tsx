@@ -356,8 +356,7 @@ const App = () => {
                                 <Route path="recapitulatif" element={<StepRecapitulatif />} />
                               </Route>
                               
-                              {/* Admin Web Studio IA */}
-                              <Route path="/admin/web-studio-ia" element={<AdminWebStudioIA />} />
+                              {/* Admin Web Studio IA — la route protégée est définie plus bas (/admin/web-studio-ia avec AdminGuard) */}
                               <Route path="/web-studio-legacy" element={<WebStudioLegacy />} />
                               <Route path="/rental-demo" element={<RentalDemo />} />
                               
@@ -388,7 +387,7 @@ const App = () => {
                               
                               {/* Dashboard */}
                               <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
-                              <Route path="/elite" element={<DashboardGuard><EliteDashboard /></DashboardGuard>} />
+                              <Route path="/elite-dashboard" element={<DashboardGuard><EliteDashboard /></DashboardGuard>} />
                               <Route path="/settings" element={<DashboardGuard><Settings /></DashboardGuard>} />
                               <Route path="/subscription" element={<DashboardGuard><Subscription /></DashboardGuard>} />
                               <Route path="/orders" element={<DashboardGuard><Orders /></DashboardGuard>} />

@@ -88,64 +88,64 @@ export function SEOHead({
   return null;
 }
 
-// Predefined SEO configs for common pages
+// Predefined SEO configs for common pages (français — langue primaire)
 export const SEO_CONFIGS = {
   home: {
-    title: "IWASP — Premium NFC Business Cards | Digital Identity",
-    description: "Premium NFC business cards for professionals worldwide. Share your contact info with a single tap. Ships globally from Europe.",
+    title: "i-wasp — Carte de visite NFC premium & identité digitale",
+    description: "La carte de visite NFC qui transforme chaque rencontre en opportunité. Partagez vos coordonnées, réseaux et portfolio d'un simple geste. Aucune application requise pour votre interlocuteur.",
     canonical: "/",
-    image: "https://i-wasp.lovable.app/og-home.png",
+    image: `${BASE_URL}/og-image.png`,
   },
   products: {
-    title: "NFC Cards & Products | IWASP",
-    description: "Discover our premium NFC business cards collection. Minimalist design, noble materials, cutting-edge technology. Free worldwide shipping.",
+    title: "Cartes & produits NFC | i-wasp",
+    description: "Découvrez notre collection de cartes de visite NFC premium. Design minimaliste, matières nobles, technologie de pointe. Livraison dans le monde entier.",
     canonical: "/produits",
   },
   nails: {
-    title: "NFC Nails — Connected Beauty | IWASP",
-    description: "The world's first NFC connected nails. Share your information with a simple touch. Beauty innovation meets technology.",
+    title: "Ongles NFC — Beauté connectée | i-wasp",
+    description: "Les premiers ongles NFC connectés. Partagez vos informations d'un simple contact. Quand l'innovation beauté rencontre la technologie.",
     canonical: "/nails",
   },
   contact: {
-    title: "Contact Us | IWASP",
-    description: "Contact the IWASP team for your premium NFC business card projects or to become a partner. Worldwide support.",
+    title: "Nous contacter | i-wasp",
+    description: "Contactez l'équipe i-wasp pour vos projets de cartes de visite NFC premium ou pour devenir partenaire. Support international.",
     canonical: "/contact",
   },
   pricing: {
-    title: "Pricing Plans | IWASP",
-    description: "Simple and transparent pricing for IWASP premium NFC business cards. Solutions for individuals and enterprises worldwide.",
+    title: "Tarifs | i-wasp",
+    description: "Des tarifs simples et transparents pour les cartes de visite NFC premium i-wasp. Des solutions pour les particuliers et les entreprises.",
     canonical: "/pricing",
   },
   faq: {
-    title: "FAQ — Frequently Asked Questions | IWASP",
-    description: "Find answers to your questions about IWASP NFC business cards. How it works, compatibility, worldwide delivery.",
+    title: "FAQ — Questions fréquentes | i-wasp",
+    description: "Trouvez les réponses à vos questions sur les cartes de visite NFC i-wasp : fonctionnement, compatibilité, livraison.",
     canonical: "/faq",
   },
   about: {
-    title: "About Us | IWASP",
-    description: "Discover the story and vision of IWASP, the premium digital professional identity house. Based in Morocco, serving worldwide.",
+    title: "À propos | i-wasp",
+    description: "Découvrez l'histoire et la vision d'i-wasp, la maison de l'identité professionnelle digitale premium.",
     canonical: "/about",
   },
   enterprise: {
-    title: "Enterprise Solutions | IWASP",
-    description: "Custom NFC solutions for businesses. Connected business cards, badges, access control. Contact us for a quote.",
+    title: "Solutions entreprises | i-wasp",
+    description: "Solutions NFC sur mesure pour les entreprises : cartes de visite connectées, badges, contrôle d'accès. Contactez-nous pour un devis.",
     canonical: "/enterprise",
   },
   order: {
-    title: "Order Your NFC Card | IWASP",
-    description: "Choose your premium NFC business card. Multiple designs available. Free worldwide shipping. 48h express delivery.",
+    title: "Commander votre carte NFC | i-wasp",
+    description: "Choisissez votre carte de visite NFC premium. Plusieurs designs disponibles. Livraison rapide et suivie.",
     canonical: "/order/offre",
-    image: "https://i-wasp.lovable.app/og-order.png",
+    image: `${BASE_URL}/og-order.png`,
   },
   webStudio: {
-    title: "Web Studio — AI Website Builder | IWASP",
-    description: "Create your professional website with AI. Turnkey solution: design, hosting, domain included. Launch in 48 hours.",
+    title: "Web Studio — Créateur de site par IA | i-wasp",
+    description: "Créez votre site web professionnel avec l'IA. Solution clé en main : design, hébergement, domaine inclus. En ligne en 48 heures.",
     canonical: "/web-studio",
-    image: "https://i-wasp.lovable.app/og-webstudio.png",
+    image: `${BASE_URL}/og-webstudio.png`,
   },
   dashboard: {
-    title: "Dashboard | IWASP",
-    description: "Manage your digital business cards, track analytics, and capture leads from your IWASP dashboard.",
+    title: "Tableau de bord | i-wasp",
+    description: "Gérez vos cartes de visite digitales, suivez vos statistiques et capturez vos contacts depuis votre tableau de bord i-wasp.",
     canonical: "/dashboard",
   },
 } as const;
@@ -163,10 +163,10 @@ export function getPublicCardSEO(card: {
   const role = card.title ? `${card.title}${card.company ? ` at ${card.company}` : ''}` : card.company || '';
   
   return {
-    title: `${fullName}${role ? ` — ${role}` : ''} | IWASP`,
-    description: `Connect with ${fullName}${role ? `, ${role}` : ''}. Tap to get contact info, save to phone, and connect on social media.`,
+    title: `${fullName}${role ? ` — ${role}` : ''} | i-wasp`,
+    description: `Entrez en contact avec ${fullName}${role ? `, ${role}` : ''}. Un geste suffit pour enregistrer ses coordonnées et accéder à ses réseaux.`,
     canonical: `/c/${card.slug}`,
-    image: card.photo_url || "https://i-wasp.lovable.app/og-card.png",
+    image: card.photo_url || `${BASE_URL}/og-image.png`,
     type: "profile" as const,
   };
 }

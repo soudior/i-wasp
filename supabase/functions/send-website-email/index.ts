@@ -68,7 +68,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const businessName = proposal.form_data?.businessName || "Votre entreprise";
     const recipientEmail = customEmail || proposal.form_data?.contactEmail;
-    const siteUrl = website.preview_url || `https://i-wasp.lovable.app/s/${website.slug}`;
+    const siteUrl = website.preview_url || `https://i-wasp.com/s/${website.slug}`;
 
     if (!recipientEmail) {
       console.error("send-website-email: No email address");

@@ -68,7 +68,7 @@ async function createGoogleWalletJWT(
   const claims = {
     iss: serviceAccount.client_email,
     aud: 'google',
-    origins: ['https://i-wasp.lovable.app', 'https://lovable.dev'],
+    origins: ['https://i-wasp.com', 'https://lovable.dev'],
     typ: 'savetowallet',
     iat: now,
     payload: payload
@@ -164,7 +164,7 @@ serve(async (req) => {
     const issuerId = serviceAccount.issuer_id || serviceAccount.issuerId || '3388000000022319245';
 
     // Construct the public URL for the card
-    const publicUrl = `https://i-wasp.lovable.app/c/${cardData.slug}`;
+    const publicUrl = `https://i-wasp.com/c/${cardData.slug}`;
 
     // Create safe ID by removing special characters
     const safeCardId = cardData.id.replace(/[^a-zA-Z0-9_]/g, '_');
