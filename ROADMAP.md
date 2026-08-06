@@ -38,8 +38,9 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 |---|-------|-----------|--------|
 | 2.1 | Supprimer la route `/admin/web-studio-ia` non protégée (ligne 360) | P1-ADMIN | ✅ |
 | 2.2 | Corriger le doublon `/elite` (dashboard → `/elite-dashboard`) | P1-ELITE | ✅ |
-| 2.3 | Choisir la home canonique et retirer les variantes concurrentes (🔒 décision produit) | P1-HOME | 🔒 |
-| 2.4 | Retirer les imports morts (`AriellaCard`, `GuestCardCreator`, `OrderType`) | P2-DEADCODE | ☐ |
+| 2.3 | Choisir la home canonique et retirer les variantes concurrentes (fait pendant la refonte accueil) | P1-HOME | 🔄 (différé phase refonte) |
+| 2.4 | Retirer les imports morts confirmés (`GuestCardCreator`, `OrderType`) | P2-DEADCODE | ✅ |
+| 2.4b | `AriellaCard` : importé mais non routé ET protégé (`clientCardProtection`). Non modifié. À confirmer avec le client : restaurer la route `/card/ariella-khiat-cohen` ou retirer. | PROTECTED | 🔒 (décision client) |
 | 2.5 | Retirer les pages de démo/vanité avant lancement (🔒 confirmer lesquelles garder) | P3-DEMO | 🔒 |
 
 ## Phase 3 — SEO & internationalisation (P1, sans secret)

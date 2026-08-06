@@ -44,7 +44,6 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const OnboardingSuccess = lazy(() => import("./pages/OnboardingSuccess"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const EliteDashboard = lazy(() => import("./pages/EliteDashboard"));
-const GuestCardCreator = lazy(() => import("./pages/GuestCardCreator"));
 const FinalizeCard = lazy(() => import("./pages/FinalizeCard"));
 const HomeSaaS = lazy(() => import("./pages/HomeSaaS"));
 const HomeLuxeMax = lazy(() => import("./pages/HomeLuxeMax"));
@@ -104,7 +103,6 @@ const EvolisTemplateGenerator = lazy(() => import("./pages/admin/EvolisTemplateG
 const EvolisCardTemplate = lazy(() => import("./pages/EvolisCardTemplate"));
 
 // NEW Order funnel pages - 7 steps strict flow
-const OrderType = lazy(() => import("./pages/order/OrderType"));
 const OrderOffre = lazy(() => import("./pages/order/OrderOffre"));
 const OrderTemplate = lazy(() => import("./pages/order/OrderTemplate"));
 const OrderIdentite = lazy(() => import("./pages/order/OrderIdentite"));
