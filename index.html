@@ -52,13 +52,10 @@
     <link rel="alternate" href="android-app://com.iwasp.app/https/i-wasp.com" />
     <link rel="alternate" href="ios-app://YOUR_APP_ID/https/i-wasp.com" />
     
-    <!-- Preconnect pour la seule police externe restante (Tenor Sans, chargée via CSS) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!--
-      Note perf/autonomie : Inter est auto-hébergé (@fontsource), Plus Jakarta Sans
-      et JetBrains Mono aussi. Le <link> CDN Cinzel/Cormorant/Inter (render-blocking,
-      hérité de Lovable) a été retiré car redondant/inutilisé.
+      Perf/autonomie : toutes les polices sont auto-hébergées via @fontsource
+      (Inter, Plus Jakarta Sans, JetBrains Mono, Tenor Sans). Aucune requête de
+      police externe (Google Fonts) — plus rien à précharger côté CDN.
     -->
 
     <!-- Haute Couture Digitale styles -->

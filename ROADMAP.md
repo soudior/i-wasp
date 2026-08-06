@@ -124,7 +124,7 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 |--------|--------|
 | Retrait du `<link>` CDN de polices render-blocking (Cinzel/Cormorant/Inter, hérité Lovable) — Inter déjà auto-hébergé (@fontsource), Cinzel/Cormorant inutilisés | ✅ |
 | Images de l'accueil en `loading="lazy"` (ModelsSection) | ✅ |
-| Auto-héberger **Tenor Sans** (encore chargé via `@import` Google Fonts dans index.css) pour autonomie + perf | ☐ |
+| Auto-héberger **Tenor Sans** via `@fontsource/tenor-sans` — plus AUCUNE requête de police externe (Google Fonts totalement retiré) | ✅ |
 | Mesure Lighthouse | 🔒 (non mesurable dans ce sandbox réseau ; à lancer en environnement réel) |
 
 ## Plan par étapes — réactivation TypeScript strict (7.1)

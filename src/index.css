@@ -5,6 +5,7 @@
 @import "@fontsource/plus-jakarta-sans/300.css";
 @import "@fontsource/plus-jakarta-sans/400.css";
 @import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/tenor-sans/400.css";
 
 /* Mobile compatibility layer */
 @import "./styles/mobile-compat.css";
@@ -30,8 +31,7 @@
    - Technique: JetBrains Mono (Données)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Tenor Sans from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Tenor+Sans&display=swap');
+/* Tenor Sans est désormais auto-hébergé via @fontsource (voir en-tête de fichier). */
 
 @layer base {
   :root {
