@@ -99,7 +99,7 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 | 7.2 | Réduire les erreurs ESLint (221→0) ; `no-unused-vars` à réactiver avec TS strict | P2-LINT | ✅ (erreurs 0 ; 272 warnings restants) |
 | 7.3 | Ne plus avaler toutes les erreurs dans `main.tsx` | P2-ERRORS | ☐ |
 | 7.4 | Page 404 sans auto-redirection (soft-404) ; ErrorBoundary tient le rôle de page 500 | P2-404 | ✅ |
-| 7.5 | Tests des parcours critiques (auth, commande, carte publique, paiement) | AUDIT (tests) | 🔄 (baseline: vCard + pricing) |
+| 7.5 | Tests des parcours critiques | AUDIT (tests) | 🔄 (40 tests : vCard, pricing, validation commande, sanitization, catalogue NFC) |
 | 7.6 | Retirer les `console.log` de debug en prod | P3-LOG | 🔄 (PublicCard fait) |
 | 7.7 | Consolider les 4 palettes en un design system unique | P2-PALETTE | ☐ |
 
