@@ -108,7 +108,7 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 | # | Tâche | Réf. AUDIT | Statut |
 |---|-------|-----------|--------|
 | S.1 | Nettoyer `index.html` (boilerplate Lovable → i-wasp-studio, `lang="fr"`, og:url) | P1-STU-SEO | ✅ |
-| S.2 | **Retirer la collecte de clé secrète Stripe** du `DeploymentWizard` | P1-STU-STRIPE | ☐ |
+| S.2 | **Retirer la collecte de clé secrète Stripe** du `DeploymentWizard` | P1-STU-STRIPE | ✅ (champ sk_ retiré, note de sécurité ; seule la clé pk_ publique reste) |
 | S.3 | `.env` hors git + `.env.example` | P1-STU-ENV | ✅ |
 | S.4 | Corriger le numéro WhatsApp `212600000000` → `33626424394` | P2-STU-WHATSAPP | ✅ |
 | S.5 | Pages légales `/mentions-legales` `/confidentialite` (liens morts) | P2-STU-LEGAL | ☐ |
@@ -150,3 +150,15 @@ Stratégie : activer les flags à coût nul d'abord (fait), puis les petits lots
   - PWA : manifest unique (statique) + chemins d'icônes corrigés ; plugin PWA en `manifest:false`.
   - Studio : numéro WhatsApp corrigé (`33626424394`).
   - Vérifs : `tsc` ✅ et `build` ✅ sur les deux dépôts.
+- **2026-08-06** — Phase « Nettoyage & qualité » : baseline tests (vitest, 21 tests),
+  ESLint 221→0 erreur (+ 2 bugs `rules-of-hooks` corrigés), page 404 sans soft-redirect,
+  imports morts retirés, TypeScript strict progressif (3 flags à coût nul).
+- **2026-08-06** — Sécurité : migration RLS blog-tokens + migration serial_code
+  aléatoire + `SECURITY_NOTES.md` (drafts avec mises en garde).
+- **2026-08-06** — Accueil premium sombre complet (13 sections, design system
+  `home/theme.ts`, 8 composants), vérifié visuellement 320→1280. Accessibilité
+  `prefers-reduced-motion`.
+- **2026-08-06** — Prep non-secret : webhook Stripe signé (fail-closed), AASA sur
+  `app.iwasp.digital` (+ `.well-known/`), Capacitor nettoyé, `MANUAL_ACTIONS.md`.
+- **2026-08-06** — SEO : JSON-LD (Organization/WebSite/Product/FAQPage) sur l'accueil.
+  i18n : sélecteur limité aux langues complètes (FR/EN).
