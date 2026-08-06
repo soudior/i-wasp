@@ -70,16 +70,16 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 | # | Tâche | Réf. AUDIT | Statut |
 |---|-------|-----------|--------|
 | 5.1 | **Vérifier la signature du webhook Stripe** (`constructEventAsync`) | P0-2 | 🔒 (requiert `STRIPE_WEBHOOK_SECRET`) |
-| 5.2 | Corriger la RLS `website_blog_tokens`/`posts` (`TO service_role` / drop) | P1-RLS | ☐ |
-| 5.3 | Générer un `serial_code` aléatoire indépendant de l'UUID + cesser d'exposer l'UUID via `get_public_card` | P1-ACT | ☐ |
-| 5.4 | Activation liant réellement la carte au compte (`user_id`) | P2 (P1-ACT) | ☐ |
+| 5.2 | Corriger la RLS `website_blog_tokens`/`posts` (`TO service_role` / drop) | P1-RLS | ✅ migration écrite (`20260806000000`) — à appliquer |
+| 5.3 | Générer un `serial_code` aléatoire indépendant de l'UUID + cesser d'exposer l'UUID via `get_public_card` | P1-ACT | 📝 draft + mises en garde dans `SECURITY_NOTES.md` |
+| 5.4 | Activation liant réellement la carte au compte (`user_id`) | P2 (P1-ACT) | 📝 orientation dans `SECURITY_NOTES.md` |
 | 5.5 | Valider les prix `extras` côté serveur (catalogue) | P2-PRICE | ☐ |
-| 5.6 | Retirer/garder derrière auth `test-email` | P2-EMAIL-RELAY | ☐ |
-| 5.7 | Durcir le storage : scoping owner + limites MIME/taille buckets | P2-STORAGE | ☐ |
-| 5.8 | Restreindre la lecture publique de `wifi_configs`/`rental_properties` | P2-WIFI | ☐ |
-| 5.9 | Auth/rate-limit sur les fonctions IA (anti-drain de crédits) | P1-AI (sécu) | ☐ |
+| 5.6 | Retirer/garder derrière auth `test-email` | P2-EMAIL-RELAY | 📝 orientation dans `SECURITY_NOTES.md` |
+| 5.7 | Durcir le storage : scoping owner + limites MIME/taille buckets | P2-STORAGE | 📝 draft + mises en garde dans `SECURITY_NOTES.md` |
+| 5.8 | Restreindre la lecture publique de `wifi_configs`/`rental_properties` | P2-WIFI | 📝 orientation dans `SECURITY_NOTES.md` |
+| 5.9 | Auth/rate-limit sur les fonctions IA (anti-drain de crédits) | P1-AI (sécu) | 📝 orientation dans `SECURITY_NOTES.md` |
 
-> Les migrations SQL peuvent être **préparées** en dépôt sans secret ; leur **application** sur la base de production nécessite un accès Supabase (décision/credentials).
+> Les migrations SQL sont **préparées** en dépôt sans secret. Leur **application** sur la base de production nécessite un accès Supabase (décision/credentials). Voir `SECURITY_NOTES.md` pour les drafts et les mises en garde (cartes déjà imprimées, dépendances frontend).
 
 ## Phase 6 — NFC & cycle de vie (P2)
 
@@ -129,12 +129,13 @@ Impact mesuré de chaque flag sur le code actuel (via `tsc -p tsconfig.app.json 
 | `strictBindCallApply` | 0 | ✅ **Activé** |
 | `useUnknownInCatchVariables` | 0 | ⏳ à activer avec `strictNullChecks` (change la sémantique des `catch`) |
 | `strictFunctionTypes` | 3 | ⏳ prochaine étape rapide (corriger 3 sites) |
+| `strictFunctionTypes` | 3 | ⏳ prochaine étape rapide |
+| `strictNullChecks` | 38 | ⏳ tractable — cœur de `strict`, à corriger par lot |
 | `noImplicitReturns` | 39 | ⏳ étape suivante |
+| `noImplicitAny` | 53 | ⏳ tractable — à corriger par lot |
 | `noUnusedLocals` | 503 | 🔒 gros chantier (code mort Lovable) — après nettoyage progressif |
-| `noImplicitAny` | à mesurer (plusieurs centaines) | 🔒 gros chantier — par domaine |
-| `strictNullChecks` | à mesurer (plusieurs centaines) | 🔒 gros chantier — cœur de `strict`, par domaine |
 
-Stratégie : activer les flags à coût nul d'abord (fait), puis les petits lots (`strictFunctionTypes`, `noImplicitReturns`), puis attaquer `strictNullChecks`/`noImplicitAny`/`noUnusedLocals` **par répertoire** (`src/lib` puis `src/hooks`, etc.) pour garder le typecheck vert à chaque étape.
+Stratégie : activer les flags à coût nul d'abord (fait), puis les petits lots (`strictFunctionTypes` 3, `strictNullChecks` 38, `noImplicitReturns` 39, `noImplicitAny` 53) en corrigeant les sites concernés, en gardant le typecheck vert à chaque étape. `noUnusedLocals` (503, code mort Lovable) en dernier, par répertoire.
 
 ## Journal des modifications
 
