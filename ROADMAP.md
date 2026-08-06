@@ -26,11 +26,11 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 
 | # | Tâche | Réf. AUDIT | Statut |
 |---|-------|-----------|--------|
-| 1.1 | **Refonte de l'accueil `Index.tsx`** : hero clair (« La carte de visite NFC qui transforme chaque rencontre en opportunité » + sous-titre « aucune application requise »), CTA « Créer ma carte » / « Voir la démonstration » | P0-1 | ☐ |
-| 1.2 | Assembler la home autour des sections existantes `src/components/landing/*` (HowItWorks, NFCDemo, Pricing, Comparison, SocialProof, FAQ) | P0-1, ARCHITECTURE §7 | ☐ |
-| 1.3 | Brancher l'accueil sur l'i18n (`home.*` de `fr.json`/`en.json`) | P1-I18N | ☐ |
-| 1.4 | Respecter `prefers-reduced-motion` dans l'accueil (via `useReducedMotion`) | P1-MOTION | ☐ |
-| 1.5 | Conserver le jargon (« Aura », « Calibre », « Protocole ») uniquement comme éléments de marque secondaires, jamais en explication principale | Étape 2 énoncé | ☐ |
+| 1.1 | **Hero de l'accueil `Index.tsx`** : promesse claire (« La carte de visite NFC qui transforme chaque rencontre en opportunité » + « aucune application requise »), CTA « Créer ma carte » / « Voir la démonstration » | P0-1 | ✅ |
+| 1.2 | Assembler la home autour des sections `src/components/landing/*` (HowItWorks, NFCDemo, Pricing, Comparison, SocialProof, FAQ) — **nécessite décision d'esthétique** (les sections sont en thème clair Apple ; l'accueil est premium sombre) | P0-1, ARCHITECTURE §7 | 🔒 (décision design) |
+| 1.3 | Brancher l'accueil sur l'i18n (`home.*` de `fr.json`/`en.json`) | P1-I18N | 🔄 (à faire avec 1.2) |
+| 1.4 | Respecter `prefers-reduced-motion` dans l'accueil (via `useReducedMotion`) | P1-MOTION | 🔄 (cartes 3D gardées ; reste des boucles à couvrir) |
+| 1.5 | Jargon (« Aura », « Calibre », « Protocol ») rétrogradé : nav + CTA + libellés réseaux clarifiés ; titres de section décoratifs conservés en secondaire | Étape 2 énoncé | ✅ |
 
 ## Phase 2 — Nettoyage des routes & code mort (P1/P2, sans secret)
 

@@ -11,6 +11,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import mehdiProfileImg from "@/assets/mehdi-profile.jpg";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -46,14 +47,14 @@ const scaleIn = {
 // CARTE 3D PREMIUM AVEC NOM PERSONNALISÉ
 // ═══════════════════════════════════════════════════════════════════════════
 
-function PremiumCard3D({ name = "VOTRE NOM" }: { name?: string }) {
+function PremiumCard3D({ name = "VOTRE NOM", animate = true }: { name?: string; animate?: boolean }) {
   return (
     <motion.div
       initial={{ rotateY: -15, rotateX: 5, opacity: 0 }}
       animate={{ rotateY: 0, rotateX: 0, opacity: 1 }}
       transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ 
-        rotateY: -8, 
+      whileHover={{
+        rotateY: -8,
         rotateX: 3,
         scale: 1.02,
         transition: { duration: 0.8 }
@@ -64,14 +65,14 @@ function PremiumCard3D({ name = "VOTRE NOM" }: { name?: string }) {
       {/* Glow derrière la carte */}
       <motion.div
         className="absolute inset-0 -z-10"
-        animate={{
+        animate={animate ? {
           boxShadow: [
             "0 0 60px rgba(220, 199, 176, 0.15), 0 0 120px rgba(220, 199, 176, 0.08)",
             "0 0 80px rgba(220, 199, 176, 0.2), 0 0 160px rgba(220, 199, 176, 0.1)",
             "0 0 60px rgba(220, 199, 176, 0.15), 0 0 120px rgba(220, 199, 176, 0.08)",
           ],
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        } : undefined}
+        transition={animate ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : undefined}
         style={{ borderRadius: "1.5rem" }}
       />
       
@@ -89,10 +90,10 @@ function PremiumCard3D({ name = "VOTRE NOM" }: { name?: string }) {
           style={{
             background: "linear-gradient(135deg, transparent 30%, rgba(220, 199, 176, 0.08) 50%, transparent 70%)",
           }}
-          animate={{
+          animate={animate ? {
             opacity: [0.5, 0.8, 0.5],
-          }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          } : undefined}
+          transition={animate ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : undefined}
         />
         
         {/* Logo W */}
@@ -142,13 +143,13 @@ function PremiumCard3D({ name = "VOTRE NOM" }: { name?: string }) {
               background: "rgba(220, 199, 176, 0.08)",
               border: "1px solid rgba(220, 199, 176, 0.15)",
             }}
-            animate={{
+            animate={animate ? {
               boxShadow: [
                 "0 0 0 0 rgba(220, 199, 176, 0.2)",
                 "0 0 0 8px rgba(220, 199, 176, 0)",
               ],
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
+            } : undefined}
+            transition={animate ? { duration: 2, repeat: Infinity } : undefined}
           >
             <Zap className="w-4 h-4 text-[#DCC7B0]/80" />
           </motion.div>
@@ -226,9 +227,11 @@ function LuxuryButton({ children, href, variant = "primary" }: {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const Index = () => {
-  const [previewName, setPreviewName] = useState("MEHDI EL ALAMI");
+  const [previewName, setPreviewName] = useState("VOTRE NOM");
   const { scrollYProgress } = useScroll();
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  // Accessibilité : respecte prefers-reduced-motion et les appareils peu puissants
+  const { allowInfiniteAnimations } = useReducedMotion();
 
   return (
     <>
@@ -285,22 +288,26 @@ const Index = () => {
             
             {/* Navigation centrale - Desktop */}
             <div className="hidden md:flex items-center gap-10">
-              {["MANIFESTE", "ACTIVATION", "L'AURA"].map((item) => (
-                <a 
-                  key={item}
-                  href={`#${item.toLowerCase().replace("'", "")}`}
-                  className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#FDFCFB]/40 hover:text-[#DCC7B0] transition-colors duration-500"
+              {[
+                { label: "Personnaliser", href: "#configurateur" },
+                { label: "Le profil", href: "#laura" },
+                { label: "Tarifs", href: "/pricing" },
+              ].map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#FDFCFB]/50 hover:text-[#DCC7B0] transition-colors duration-500"
                 >
-                  {item}
+                  {item.label}
                 </a>
               ))}
             </div>
-            
+
             {/* Actions */}
             <div className="flex items-center gap-4">
               <LanguageSelector />
               <Link
-                to="/admin"
+                to="/login"
                 className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full font-mono text-[10px] tracking-[0.2em] uppercase text-[#FDFCFB]/70 hover:text-[#DCC7B0] transition-colors duration-500"
                 style={{
                   background: "rgba(220, 199, 176, 0.08)",
@@ -308,7 +315,7 @@ const Index = () => {
                 }}
               >
                 <Sparkles className="w-3 h-3" />
-                L'ATELIER
+                Se connecter
               </Link>
             </div>
           </div>
@@ -328,34 +335,36 @@ const Index = () => {
                   initial="hidden"
                   animate="visible"
                   variants={fadeUp}
-                  className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#DCC7B0]/50 mb-6"
+                  className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#DCC7B0]/60 mb-6"
                 >
-                  ACQUÉRIR STANDARD
+                  Carte de visite NFC premium
                 </motion.p>
-                
+
                 <motion.h1
                   custom={1}
                   initial="hidden"
                   animate="visible"
                   variants={fadeUp}
-                  className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-normal tracking-[0.04em] leading-[0.95] text-[#FDFCFB] mb-6"
+                  className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal tracking-[0.02em] leading-[1.02] text-[#FDFCFB] mb-6"
                 >
-                  Dominez
-                  <br />
-                  <span className="italic text-[#DCC7B0]">L'Invisible</span>
+                  La carte de visite NFC qui transforme
+                  <br className="hidden sm:block" />
+                  {" "}chaque rencontre en <span className="italic text-[#DCC7B0]">opportunité</span>.
                 </motion.h1>
-                
+
                 <motion.p
                   custom={2}
                   initial="hidden"
                   animate="visible"
                   variants={fadeUp}
-                  className="font-display text-lg sm:text-xl italic text-[#FDFCFB]/40 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-10"
+                  className="font-body text-base sm:text-lg font-light text-[#FDFCFB]/60 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-10"
                 >
-                  "L'exclusivité d'une Hypercar. La précision d'un Calibre. 
-                  Votre héritage i-wasp."
+                  Partagez vos coordonnées, réseaux, portfolio et services en approchant
+                  simplement votre carte d'un smartphone.{" "}
+                  <span className="text-[#FDFCFB]/90">Aucune application requise</span> pour
+                  la personne qui la reçoit.
                 </motion.p>
-                
+
                 {/* CTAs */}
                 <motion.div
                   custom={3}
@@ -365,11 +374,11 @@ const Index = () => {
                   className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
                 >
                   <LuxuryButton href="/order/offre" variant="primary">
-                    Acquérir mon Aura
+                    Créer ma carte
                   </LuxuryButton>
-                  
-                  <LuxuryButton href="#configurateur" variant="secondary">
-                    Découvrir le Rendu
+
+                  <LuxuryButton href="/demo" variant="secondary">
+                    Voir la démonstration
                   </LuxuryButton>
                 </motion.div>
               </div>
@@ -382,7 +391,7 @@ const Index = () => {
                 variants={scaleIn}
                 className="flex justify-center lg:justify-end order-1 lg:order-2"
               >
-                <PremiumCard3D name={previewName} />
+                <PremiumCard3D name={previewName} animate={allowInfiniteAnimations} />
               </motion.div>
             </div>
           </div>
@@ -541,7 +550,7 @@ const Index = () => {
                 transition={{ duration: 1, delay: 0.4 }}
                 className="flex justify-center"
               >
-                <PremiumCard3D name={previewName || "VOTRE NOM"} />
+                <PremiumCard3D name={previewName || "VOTRE NOM"} animate={allowInfiniteAnimations} />
               </motion.div>
             </div>
           </div>
@@ -685,13 +694,13 @@ const Index = () => {
                           L'excellence digitale à portée de main
                         </p>
                         
-                        {/* Protocoles sociaux - Boutons glassmorphism */}
+                        {/* Réseaux & contact */}
                         <div className="w-full space-y-3 flex-1">
                           {[
-                            { icon: Linkedin, label: "LinkedIn Protocol", color: "#0A66C2" },
-                            { icon: Instagram, label: "Instagram Protocol", color: "#E4405F" },
-                            { icon: Mail, label: "Email Protocol", color: "#DCC7B0" },
-                            { icon: Phone, label: "Call Protocol", color: "#00FF66" },
+                            { icon: Linkedin, label: "LinkedIn", color: "#0A66C2" },
+                            { icon: Instagram, label: "Instagram", color: "#E4405F" },
+                            { icon: Mail, label: "Email", color: "#DCC7B0" },
+                            { icon: Phone, label: "Appeler", color: "#00FF66" },
                           ].map((item, i) => (
                             <motion.div
                               key={item.label}
@@ -779,7 +788,7 @@ const Index = () => {
                 <div className="space-y-6">
                   {[
                     { title: "Photo Signature", desc: "Filtre N&B avec bordure lumineuse diffuse" },
-                    { title: "Protocoles Sociaux", desc: "Boutons glassmorphism avec effet lumineux" },
+                    { title: "Réseaux & contact", desc: "Boutons glassmorphism avec effet lumineux" },
                     { title: "Badge Vérifié", desc: "Certification d'authenticité i-wasp" },
                     { title: "Design Mobile-First", desc: "Optimisé pour une expérience parfaite" },
                   ].map((feature, i) => (
@@ -814,7 +823,7 @@ const Index = () => {
                 
                 <div className="pt-4">
                   <LuxuryButton href="/order/offre" variant="primary">
-                    Créer mon Aura
+                    Créer ma carte
                   </LuxuryButton>
                 </div>
               </motion.div>
@@ -845,7 +854,7 @@ const Index = () => {
             </p>
             
             <LuxuryButton href="/order/offre" variant="primary">
-              Obtenir mon Aura
+              Commander ma carte
             </LuxuryButton>
           </motion.div>
         </section>
