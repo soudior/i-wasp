@@ -15,11 +15,16 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    // Réactivation progressive de la rigueur TypeScript (voir ROADMAP phase 7 / TS strict).
+    // Flags activés = 0 erreur mesurée. Les plus coûteux (strictNullChecks, noImplicitAny,
+    // noUnusedLocals) restent désactivés et sont traités par étapes ultérieures.
     "strict": false,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitAny": false,
-    "noFallthroughCasesInSwitch": false,
+    "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/*": [
         "./src/*"

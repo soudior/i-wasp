@@ -95,7 +95,7 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 
 | # | Tâche | Réf. AUDIT | Statut |
 |---|-------|-----------|--------|
-| 7.1 | Réactiver progressivement la sécurité de type TS (`strictNullChecks`…) | P1-TS | ☐ |
+| 7.1 | Réactiver progressivement la sécurité de type TS | P1-TS | 🔄 (voir plan par étapes ci-dessous) |
 | 7.2 | Réduire les erreurs ESLint (221→0) ; `no-unused-vars` à réactiver avec TS strict | P2-LINT | ✅ (erreurs 0 ; 272 warnings restants) |
 | 7.3 | Ne plus avaler toutes les erreurs dans `main.tsx` | P2-ERRORS | ☐ |
 | 7.4 | Page 404 sans auto-redirection (soft-404) ; ErrorBoundary tient le rôle de page 500 | P2-404 | ✅ |
@@ -117,6 +117,24 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 | S.8 | Code-splitting (bundle 1,4 Mo) | P2-STU-BUNDLE | ☐ |
 
 ---
+
+## Plan par étapes — réactivation TypeScript strict (7.1)
+
+Impact mesuré de chaque flag sur le code actuel (via `tsc -p tsconfig.app.json --<flag>`) :
+
+| Flag | Erreurs | Décision |
+|------|---------|----------|
+| `noFallthroughCasesInSwitch` | 0 | ✅ **Activé** |
+| `noImplicitThis` | 0 | ✅ **Activé** |
+| `strictBindCallApply` | 0 | ✅ **Activé** |
+| `useUnknownInCatchVariables` | 0 | ⏳ à activer avec `strictNullChecks` (change la sémantique des `catch`) |
+| `strictFunctionTypes` | 3 | ⏳ prochaine étape rapide (corriger 3 sites) |
+| `noImplicitReturns` | 39 | ⏳ étape suivante |
+| `noUnusedLocals` | 503 | 🔒 gros chantier (code mort Lovable) — après nettoyage progressif |
+| `noImplicitAny` | à mesurer (plusieurs centaines) | 🔒 gros chantier — par domaine |
+| `strictNullChecks` | à mesurer (plusieurs centaines) | 🔒 gros chantier — cœur de `strict`, par domaine |
+
+Stratégie : activer les flags à coût nul d'abord (fait), puis les petits lots (`strictFunctionTypes`, `noImplicitReturns`), puis attaquer `strictNullChecks`/`noImplicitAny`/`noUnusedLocals` **par répertoire** (`src/lib` puis `src/hooks`, etc.) pour garder le typecheck vert à chaque étape.
 
 ## Journal des modifications
 
