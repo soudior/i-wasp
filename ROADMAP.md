@@ -27,9 +27,9 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 | # | Tâche | Réf. AUDIT | Statut |
 |---|-------|-----------|--------|
 | 1.1 | **Hero de l'accueil `Index.tsx`** : promesse claire (« La carte de visite NFC qui transforme chaque rencontre en opportunité » + « aucune application requise »), CTA « Créer ma carte » / « Voir la démonstration » | P0-1 | ✅ |
-| 1.2 | Assembler la home autour des sections `src/components/landing/*` (HowItWorks, NFCDemo, Pricing, Comparison, SocialProof, FAQ) — **nécessite décision d'esthétique** (les sections sont en thème clair Apple ; l'accueil est premium sombre) | P0-1, ARCHITECTURE §7 | 🔒 (décision design) |
-| 1.3 | Brancher l'accueil sur l'i18n (`home.*` de `fr.json`/`en.json`) | P1-I18N | 🔄 (à faire avec 1.2) |
-| 1.4 | Respecter `prefers-reduced-motion` dans l'accueil (via `useReducedMotion`) | P1-MOTION | 🔄 (cartes 3D gardées ; reste des boucles à couvrir) |
+| 1.2 | **Accueil complet — 13 sections** dans une identité unique luxe sombre (hero, démo NFC 3 étapes, inclus, modèles, personnalisation, profil, avantages, comparaison, tarifs, confiance, FAQ, CTA final). Nouveaux composants `src/components/home/*` + design system `theme.ts`. Clair utilisé en contraste éditorial (panneau ivoire de comparaison). Vérifié visuellement à 320/375/768/1280 (aucun débordement). | P0-1 | ✅ |
+| 1.3 | Brancher l'accueil sur l'i18n (`home.*`) — actuellement FR en dur (langue primaire) ; extraction i18n = étape suivante | P1-I18N | 🔄 |
+| 1.4 | Respecter `prefers-reduced-motion` dans l'accueil (via `useReducedMotion`) — cartes 3D + toutes les nouvelles sections (reveal léger/fondu selon la préférence) | P1-MOTION | ✅ (sections home) / 🔄 (boucles ambiantes héritées) |
 | 1.5 | Jargon (« Aura », « Calibre », « Protocol ») rétrogradé : nav + CTA + libellés réseaux clarifiés ; titres de section décoratifs conservés en secondaire | Étape 2 énoncé | ✅ |
 
 ## Phase 2 — Nettoyage des routes & code mort (P1/P2, sans secret)

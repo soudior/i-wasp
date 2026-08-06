@@ -12,6 +12,14 @@ import { useState } from "react";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { NfcDemoSteps } from "@/components/home/NfcDemoSteps";
+import { IncludedSection } from "@/components/home/IncludedSection";
+import { ModelsSection } from "@/components/home/ModelsSection";
+import { BenefitsSection } from "@/components/home/BenefitsSection";
+import { ComparisonSection } from "@/components/home/ComparisonSection";
+import { PricingSection } from "@/components/home/PricingSection";
+import { TrustSection } from "@/components/home/TrustSection";
+import { FaqSection } from "@/components/home/FaqSection";
 import mehdiProfileImg from "@/assets/mehdi-profile.jpg";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -463,8 +471,17 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Démonstration NFC en 3 étapes */}
+        <NfcDemoSteps />
+
+        {/* Ce qui est inclus */}
+        <IncludedSection />
+
+        {/* Modèles & finitions */}
+        <ModelsSection />
+
         {/* ═══════════════════════════════════════════════════════════════
-            CONFIGURATEUR — Le "Joujou" interactif
+            CONFIGURATEUR — Personnalisation en temps réel
             ═══════════════════════════════════════════════════════════════ */}
         <section id="configurateur" className="relative py-32 px-6">
           <div className="max-w-5xl mx-auto">
@@ -479,7 +496,7 @@ const Index = () => {
                 PERSONNALISATION
               </p>
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[0.04em] text-[#FDFCFB] mb-6">
-                Votre Calibre, <span className="italic text-[#DCC7B0]">Votre Signature</span>
+Personnalisez <span className="italic text-[#DCC7B0]">en un instant</span>
               </h2>
               <p className="font-body text-base font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto">
                 Visualisez votre carte en temps réel. Chaque détail compte.
@@ -580,7 +597,7 @@ const Index = () => {
                 VOTRE IDENTITÉ DIGITALE
               </p>
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[0.04em] text-[#FDFCFB] mb-6">
-                L'Aura <span className="italic text-[#DCC7B0]">Premium</span>
+Votre profil <span className="italic text-[#DCC7B0]">digital</span>
               </h2>
               <p className="font-body text-base font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto">
                 Votre site personnel, généré par nos experts. Une présence digitale qui transcende.
@@ -830,6 +847,21 @@ const Index = () => {
             </div>
           </div>
         </section>
+
+        {/* Avantages mesurables */}
+        <BenefitsSection />
+
+        {/* Comparaison carte papier vs i-wasp (contraste éditorial ivoire) */}
+        <ComparisonSection />
+
+        {/* Tarifs sans ambiguïté */}
+        <PricingSection />
+
+        {/* Preuves de confiance */}
+        <TrustSection />
+
+        {/* FAQ */}
+        <FaqSection />
 
         {/* ═══════════════════════════════════════════════════════════════
             CTA FINAL — Imposant
