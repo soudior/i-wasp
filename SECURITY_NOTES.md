@@ -50,20 +50,26 @@
 - **Draft d'orientation :** créer une RPC `claim_card(p_serial, p_user)` en `SECURITY DEFINER` qui, sur code valide, écrit `digital_cards.user_id = auth.uid()` si la carte n'est pas déjà revendiquée, et journalise l'activation. Adapter `Activation.tsx` pour appeler cette RPC (utilisateur authentifié requis).
 
 ### P2-STORAGE — Écriture non scoping-owner sur `card-assets`
-- La migration `20260112050519` a introduit un `INSERT/UPDATE` avec seulement `WITH CHECK (bucket_id = 'card-assets')`.
-- **Draft :**
+- **✅ Durcissement sûr appliqué (migration `20260806000002`)** : `file_size_limit` (10 Mo)
+  + `allowed_mime_types` (images) sur les buckets `card-assets` et `stories`. Ne touche
+  ni aux chemins ni à la RLS → aucun flux cassé.
+- **🔒 Scoping owner NON appliqué — bloqué par des chemins d'upload hétérogènes.**
+  Audit des 13 écrivains de `card-assets` : les chemins ne sont pas tous préfixés
+  par `{user.id}/` :
+  - ✅ `PhotoUpload`, `StepMedia`, `OnboardingPhotoUpload` → `${user.id}/…`
+  - ❌ `order/OrderIdentite` → `order-photos/…` (flux commande, parfois invité)
+  - ❌ `ClientForm` → `form-photos/…` (invité)
+  - ❌ `AdminCreator`, `AdminInstantCard`, `AdminCardGenerator` → `admin-uploads/…` (admin agissant pour un client)
+  - Appliquer `auth.uid()::text = (storage.foldername(name))[1]` **casserait** ces flux.
+- **Pré-requis avant scoping owner :** unifier les chemins (ex. `{user.id}/…` pour les
+  utilisateurs authentifiés ; un bucket/préfixe dédié + policy adaptée pour les uploads
+  invités du tunnel de commande), puis appliquer :
   ```sql
-  DROP POLICY IF EXISTS "card-assets insert" ON storage.objects; -- adapter au nom réel
   CREATE POLICY "card-assets owner insert" ON storage.objects
     FOR INSERT TO authenticated
-    WITH CHECK (
-      bucket_id = 'card-assets'
-      AND auth.uid()::text = (storage.foldername(name))[1]
-    );
-  -- idem pour UPDATE
+    WITH CHECK (bucket_id = 'card-assets' AND auth.uid()::text = (storage.foldername(name))[1]);
+  -- + policy distincte pour les préfixes invités/admin
   ```
-- **⚠️ Mise en garde :** vérifier que TOUS les écrivains de `card-assets` (PhotoUpload, LogoUploadValidator, OnboardingPhotoUpload, éditeurs admin) écrivent bien sous le préfixe `{user.id}/...`. Un uploader admin agissant pour un autre utilisateur casserait avec cette policy.
-- **Bonus (buckets) :** définir `file_size_limit` et `allowed_mime_types` (images) au niveau des buckets.
 
 ### P2-WIFI — Lecture publique de tous les mots de passe wifi
 - `wifi_configs` (`USING(true)`) et `rental_properties` (`USING(is_active=true)`) exposent tous les SSID/mots de passe.

@@ -42,6 +42,7 @@ vérifie désormais la signature Stripe et **refuse** tout événement non sign�
 2. ☐ Revoir puis appliquer :
    - `20260806000000_fix_blog_tokens_rls_lockdown.sql` — referme l'accès public aux tokens d'édition de blog.
    - `20260806000001_random_serial_code.sql` — code d'activation aléatoire pour les **nouvelles** cartes (aucun impact sur les cartes déjà imprimées).
+   - `20260806000002_storage_bucket_limits.sql` — limites MIME/taille sur les buckets d'images (`card-assets`, `stories`). Sûr, sans effet de bord.
    - Commande : `supabase db push` (ou coller le SQL dans **Supabase → SQL Editor**).
 3. ✅ **Vérifier (blog tokens) :** avec la clé anon, `select * from website_blog_tokens`
    doit renvoyer **0 ligne** ; l'édition de blog (service-role) doit toujours fonctionner.

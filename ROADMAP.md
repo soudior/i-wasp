@@ -75,7 +75,7 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 | 5.4 | Activation liant réellement la carte au compte (`user_id`) | P2 (P1-ACT) | 📝 orientation dans `SECURITY_NOTES.md` |
 | 5.5 | Valider les prix `extras` côté serveur (catalogue) | P2-PRICE | ☐ |
 | 5.6 | Retirer/garder derrière auth `test-email` | P2-EMAIL-RELAY | 📝 orientation dans `SECURITY_NOTES.md` |
-| 5.7 | Durcir le storage : scoping owner + limites MIME/taille buckets | P2-STORAGE | 📝 draft + mises en garde dans `SECURITY_NOTES.md` |
+| 5.7 | Durcir le storage : limites MIME/taille buckets ✅ (migration `20260806000002`) ; scoping owner 🔒 bloqué par des chemins d'upload hétérogènes (voir SECURITY_NOTES) | P2-STORAGE | ✅ (limites) / 🔒 (scoping) |
 | 5.8 | Restreindre la lecture publique de `wifi_configs`/`rental_properties` | P2-WIFI | 📝 orientation dans `SECURITY_NOTES.md` |
 | 5.9 | Auth/rate-limit sur les fonctions IA (anti-drain de crédits) | P1-AI (sécu) | 📝 orientation dans `SECURITY_NOTES.md` |
 
