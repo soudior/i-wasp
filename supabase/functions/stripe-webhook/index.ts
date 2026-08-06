@@ -37,10 +37,21 @@ serve(async (req) => {
     logStep("Webhook received");
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY not configured");
+    // Fail-closed : sans secret de webhook, on refuse (on ne peut pas prouver
+    // que l'événement vient bien de Stripe). Configurer STRIPE_WEBHOOK_SECRET
+    // dans Supabase → Edge Functions → Secrets (voir MANUAL_ACTIONS.md).
+    if (!webhookSecret) {
+      logStep("ERROR: STRIPE_WEBHOOK_SECRET not configured");
+      return new Response(
+        JSON.stringify({ error: "Webhook secret not configured" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       throw new Error("Supabase configuration missing");
     }
@@ -48,20 +59,28 @@ serve(async (req) => {
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Get raw body for signature verification
+    // Get raw body + signature header for verification
     const body = await req.text();
     const signature = req.headers.get("stripe-signature");
 
-    // Note: In production, you should verify the webhook signature
-    // For now, we'll parse the event directly
-    let event: Stripe.Event;
-    
-    try {
-      event = JSON.parse(body) as Stripe.Event;
-    } catch (err) {
-      logStep("ERROR: Invalid JSON body");
+    if (!signature) {
+      logStep("ERROR: Missing stripe-signature header");
       return new Response(
-        JSON.stringify({ error: "Invalid request body" }),
+        JSON.stringify({ error: "Missing signature" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Vérifie la signature : garantit que l'événement provient réellement de Stripe
+    // et n'a pas été falsifié. Empêche l'injection de fausses commandes « payées ».
+    let event: Stripe.Event;
+    try {
+      event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logStep("ERROR: Signature verification failed", { message: msg });
+      return new Response(
+        JSON.stringify({ error: "Invalid signature" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

@@ -4,14 +4,8 @@ const config: CapacitorConfig = {
   appId: 'app.iwasp.digital',
   appName: 'IWASP',
   webDir: 'dist',
-  // Production mode: use local dist folder for Xcode export
-  // Comment out server block for App Store build
-  /*
-  server: {
-    url: 'https://17c6de15-2d85-46a1-a7d8-e5c478c6f024.lovableproject.com?forceHideBadge=true',
-    cleartext: true
-  },
-  */
+  // Build de production : on sert le dossier dist local (export Xcode).
+  // Ne PAS ajouter de bloc `server.url` distant pour un build App Store.
   ios: {
     contentInset: 'automatic',
     preferredContentMode: 'mobile',

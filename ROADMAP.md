@@ -20,7 +20,7 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 | 0.3 | Remplacer `i-wasp.lovable.app` → `i-wasp.com` dans `SEOHead.tsx`, exports admin, `LifestyleGroupCard`, fallbacks `origin` des edge functions | P1-DOMAIN | ✅ |
 | 0.4 | Nettoyer `index.html` de `i-wasp-studio` (boilerplate Lovable, `lang`, og) | P1-STU-SEO | ✅ |
 | 0.5 | Retirer `.env` du suivi git + `.gitignore` + créer `.env.example` (noms seuls) | P3-ENV, P1-STU-ENV | ✅ (2 dépôts) |
-| 0.6 | Supprimer la référence commentée `lovableproject.com` de `capacitor.config.ts` | P3-CAP-URL | ☐ |
+| 0.6 | Supprimer la référence commentée `lovableproject.com` de `capacitor.config.ts` | P3-CAP-URL | ✅ |
 
 ## Phase 1 — Positionnement & clarté produit (P0/P1, sans secret)
 
@@ -58,8 +58,8 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 | # | Tâche | Réf. AUDIT | Statut |
 |---|-------|-----------|--------|
 | 4.1 | Manifest PWA unique + icônes correctes (`public/icons/*`) | P0-3 | ✅ |
-| 4.2 | Unifier le bundle id dans l'AASA sur `app.iwasp.digital` (Team ID à insérer plus tard) | P0-4 | ☐ |
-| 4.3 | Unifier le scheme deep-link (`iwasp://`) | P2-SCHEME | ☐ |
+| 4.2 | Unifier le bundle id dans l'AASA sur `app.iwasp.digital` (+ copie `.well-known/`, chemins `/n/*`) ; Team ID = action manuelle (MANUAL_ACTIONS §3) | P0-4 | ✅ (code) / 🔑 Team ID |
+| 4.3 | Scheme deep-link `iwasp://` conservé ; scheme interne Capacitor `IWASP` laissé tel quel (distinct — documenté) | P2-SCHEME | ✅ (clarifié) |
 | 4.4 | Restreindre l'ATS (`NSAllowsArbitraryLoads`) | P2 | ☐ |
 | 4.5 | Autoriser le zoom (retirer `user-scalable=no`) | P2-ZOOM | ☐ |
 | 4.6 | Implémenter la suppression de compte in-app | APP_STORE §5 | ☐ |
@@ -69,9 +69,9 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 
 | # | Tâche | Réf. AUDIT | Statut |
 |---|-------|-----------|--------|
-| 5.1 | **Vérifier la signature du webhook Stripe** (`constructEventAsync`) | P0-2 | 🔒 (requiert `STRIPE_WEBHOOK_SECRET`) |
+| 5.1 | **Vérifier la signature du webhook Stripe** (`constructEventAsync`, fail-closed) | P0-2 | ✅ (code) / 🔑 requiert `STRIPE_WEBHOOK_SECRET` (MANUAL_ACTIONS §1) |
 | 5.2 | Corriger la RLS `website_blog_tokens`/`posts` (`TO service_role` / drop) | P1-RLS | ✅ migration écrite (`20260806000000`) — à appliquer |
-| 5.3 | Générer un `serial_code` aléatoire indépendant de l'UUID + cesser d'exposer l'UUID via `get_public_card` | P1-ACT | 📝 draft + mises en garde dans `SECURITY_NOTES.md` |
+| 5.3 | Générer un `serial_code` aléatoire indépendant de l'UUID (nouvelles cartes) | P1-ACT | ✅ migration écrite (`20260806000001`) — à appliquer. (Cesser d'exposer l'UUID via `get_public_card` = étape frontend, voir SECURITY_NOTES) |
 | 5.4 | Activation liant réellement la carte au compte (`user_id`) | P2 (P1-ACT) | 📝 orientation dans `SECURITY_NOTES.md` |
 | 5.5 | Valider les prix `extras` côté serveur (catalogue) | P2-PRICE | ☐ |
 | 5.6 | Retirer/garder derrière auth `test-email` | P2-EMAIL-RELAY | 📝 orientation dans `SECURITY_NOTES.md` |
