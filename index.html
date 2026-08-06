@@ -52,13 +52,15 @@
     <link rel="alternate" href="android-app://com.iwasp.app/https/i-wasp.com" />
     <link rel="alternate" href="ios-app://YOUR_APP_ID/https/i-wasp.com" />
     
-    <!-- Preconnect to critical origins -->
+    <!-- Preconnect pour la seule police externe restante (Tenor Sans, chargée via CSS) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- Typography Haute Couture - Editorial New style (Cormorant) + Neue Montreal style (Inter) + Cinzel for luxury titles -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-    
+    <!--
+      Note perf/autonomie : Inter est auto-hébergé (@fontsource), Plus Jakarta Sans
+      et JetBrains Mono aussi. Le <link> CDN Cinzel/Cormorant/Inter (render-blocking,
+      hérité de Lovable) a été retiré car redondant/inutilisé.
+    -->
+
     <!-- Haute Couture Digitale styles -->
     <style>
       html {

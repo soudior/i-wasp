@@ -118,6 +118,15 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 
 ---
 
+## Performance (accueil)
+
+| Action | Statut |
+|--------|--------|
+| Retrait du `<link>` CDN de polices render-blocking (Cinzel/Cormorant/Inter, hérité Lovable) — Inter déjà auto-hébergé (@fontsource), Cinzel/Cormorant inutilisés | ✅ |
+| Images de l'accueil en `loading="lazy"` (ModelsSection) | ✅ |
+| Auto-héberger **Tenor Sans** (encore chargé via `@import` Google Fonts dans index.css) pour autonomie + perf | ☐ |
+| Mesure Lighthouse | 🔒 (non mesurable dans ce sandbox réseau ; à lancer en environnement réel) |
+
 ## Plan par étapes — réactivation TypeScript strict (7.1)
 
 Impact mesuré de chaque flag sur le code actuel (via `tsc -p tsconfig.app.json --<flag>`) :
