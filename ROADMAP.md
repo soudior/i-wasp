@@ -49,8 +49,8 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 |---|-------|-----------|--------|
 | 3.1 | Générer `public/sitemap.xml` (routes publiques) | P1-SITEMAP | ✅ |
 | 3.2 | Corriger `SEOHead` : og:image → `i-wasp.com`, image existante, configs FR (langue primaire) | P1-SEO | ✅ (JSON-LD/hreflang restants) |
-| 3.3 | Ajouter données structurées JSON-LD (Organization, Product, FAQ) + `hreflang` | P1-SITEMAP | ☐ |
-| 3.4 | Compléter les 5 locales stubs OU retirer les langues non finies du sélecteur | P1-I18N | ☐ |
+| 3.3 | Données structurées JSON-LD (Organization + WebSite + Product + FAQPage) sur l'accueil | P1-SITEMAP | ✅ (JSON-LD) · `hreflang` = 🔒 (nécessite des routes localisées `/en/…`) |
+| 3.4 | Sélecteur de langue limité aux langues complètes (FR/EN) — plus de traduction partielle exposée ; les 5 stubs restent chargées pour un fallback propre, à finaliser avant réexposition | P1-I18N | ✅ |
 | 3.5 | Cohérence meta/UI (lang) | P2 | ☐ |
 
 ## Phase 4 — PWA & mobile (P0/P1, sans secret pour l'essentiel)

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { languages, type LanguageCode } from "@/i18n";
+import { languages, completeLanguages, type LanguageCode } from "@/i18n";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,7 +36,7 @@ export function LanguageSelector() {
         align="end" 
         className="w-44 bg-background/95 backdrop-blur-xl border-border/50 z-[100]"
       >
-        {languages.map((lang) => (
+        {completeLanguages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}

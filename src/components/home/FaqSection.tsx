@@ -12,7 +12,7 @@ import {
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { HOME, reveal } from "./theme";
 
-const FAQS = [
+export const FAQS = [
   {
     q: "Faut-il une application pour utiliser ma carte ?",
     a: "Non. La personne qui reçoit votre carte n'a rien à installer : votre profil s'ouvre directement dans son navigateur en approchant la carte de son téléphone, ou en scannant le QR code.",

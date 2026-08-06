@@ -19,8 +19,29 @@ import { BenefitsSection } from "@/components/home/BenefitsSection";
 import { ComparisonSection } from "@/components/home/ComparisonSection";
 import { PricingSection } from "@/components/home/PricingSection";
 import { TrustSection } from "@/components/home/TrustSection";
-import { FaqSection } from "@/components/home/FaqSection";
+import { FaqSection, FAQS } from "@/components/home/FaqSection";
+import {
+  StructuredData,
+  organizationSchema,
+  websiteSchema,
+  productSchema,
+  faqSchema,
+} from "@/components/StructuredData";
 import mehdiProfileImg from "@/assets/mehdi-profile.jpg";
+
+const HOME_STRUCTURED_DATA = [
+  organizationSchema,
+  websiteSchema,
+  productSchema({
+    name: "Carte de visite NFC i-wasp",
+    description:
+      "Carte de visite NFC premium avec profil digital toujours à jour. Un contact suffit pour partager toutes vos informations, sans application requise.",
+    image: "https://i-wasp.com/og-image.png",
+    lowPrice: 29.9,
+    highPrice: 89.9,
+  }),
+  faqSchema(FAQS),
+];
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ANIMATIONS — Liquid & Ethereal
@@ -244,6 +265,7 @@ const Index = () => {
   return (
     <>
       <SEOHead {...SEO_CONFIGS.home} />
+      <StructuredData id="home" schema={HOME_STRUCTURED_DATA} />
       
       <div className="min-h-screen bg-[#030303] relative overflow-hidden">
         
