@@ -33,8 +33,8 @@ const DEMO_PROPERTY: RentalPropertyData = {
   // Note: These iCal URLs would be real export links from Airbnb/Booking in production
   // Example Airbnb: https://www.airbnb.com/calendar/ical/12345.ics?s=abc123
   // Example Booking: https://admin.booking.com/hotel/hoteladmin/ical.html?t=xyz789
-  airbnbIcalUrl: null, // Add your Airbnb iCal export URL here
-  bookingIcalUrl: null, // Add your Booking.com iCal export URL here
+  airbnbIcalUrl: undefined, // Add your Airbnb iCal export URL here
+  bookingIcalUrl: undefined, // Add your Booking.com iCal export URL here
   whatsappNumber: "+212600000000",
   hostName: "Mohamed",
   amenities: ["Piscine", "WiFi", "Climatisation", "Petit-déjeuner", "Terrasse", "Parking"],

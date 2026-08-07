@@ -121,7 +121,7 @@ export function ClientEditModal({ open, onClose, clientId, clientType }: ClientE
             .single();
 
           if (error) throw error;
-          setWebsiteData(data);
+          setWebsiteData(data as WebsiteData);
         }
       } catch (error: any) {
         console.error('Error loading client:', error);

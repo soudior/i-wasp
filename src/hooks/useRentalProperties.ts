@@ -81,7 +81,7 @@ export function useRentalProperties() {
 
       if (fetchError) throw fetchError;
 
-      setProperties(data || []);
+      setProperties((data || []) as RentalProperty[]);
       setError(null);
     } catch (err) {
       console.error("Error fetching properties:", err);
@@ -124,9 +124,9 @@ export function useRentalProperties() {
 
       if (insertError) throw insertError;
 
-      setProperties(prev => [data, ...prev]);
+      setProperties(prev => [data as RentalProperty, ...prev]);
       toast.success("Propriété créée avec succès");
-      return data;
+      return data as RentalProperty;
     } catch (err) {
       console.error("Error creating property:", err);
       toast.error("Erreur lors de la création");
@@ -158,11 +158,11 @@ export function useRentalProperties() {
 
       if (updateError) throw updateError;
 
-      setProperties(prev => 
-        prev.map(p => p.id === id ? data : p)
+      setProperties(prev =>
+        prev.map(p => p.id === id ? (data as RentalProperty) : p)
       );
       toast.success("Propriété mise à jour");
-      return data;
+      return data as RentalProperty;
     } catch (err) {
       console.error("Error updating property:", err);
       toast.error("Erreur lors de la mise à jour");
@@ -236,7 +236,7 @@ export function usePublicProperty(propertyId: string | undefined) {
 
         if (fetchError) throw fetchError;
 
-        setProperty(data);
+        setProperty(data as RentalProperty);
         setError(null);
       } catch (err) {
         console.error("Error fetching property:", err);

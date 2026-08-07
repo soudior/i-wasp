@@ -105,7 +105,7 @@ const SHADOWS = {
   cardHover: `0 20px 40px rgba(0,0,0,0.5), 0 0 0 1px ${COLORS.borderHover}`,
 };
 
-const planIcons = {
+const planIcons: Record<string, typeof Zap> = {
   free: Zap,
   identity: Rocket,
   professional: Star,

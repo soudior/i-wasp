@@ -297,8 +297,8 @@ const PublicCard = () => {
           has_whatsapp: card.has_whatsapp,
           has_email: card.has_email,
           has_instagram: card.has_instagram,
-          social_links: card.social_links,
-          blocks: card.blocks,
+          social_links: card.social_links ?? undefined,
+          blocks: card.blocks ?? undefined,
           custom_styles: card.custom_styles,
         }}
       />

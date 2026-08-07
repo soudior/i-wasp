@@ -190,7 +190,7 @@ export function GlobalSearchModal({ open, onClose }: GlobalSearchModalProps) {
             color: '#D4A853',
             path: `/admin/webstudio?id=${p.id}`,
             createdAt: new Date(p.created_at),
-          };
+          } as SearchResult;
         }));
       }
 

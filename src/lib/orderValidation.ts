@@ -318,15 +318,15 @@ export function validatePersonalInfo(
   const schema = customerType === "entreprise" || customerType === "professionnel"
     ? professionalInfoSchema
     : personalInfoSchema;
-    
-  return validateWithSchema(schema, data);
+
+  return validateWithSchema(schema, data) as ValidationResult<ValidatedPersonalInfo>;
 }
 
 /**
  * Validate location
  */
 export function validateLocation(data: unknown): ValidationResult<ValidatedLocation> {
-  return validateWithSchema(locationSchema, data);
+  return validateWithSchema(locationSchema, data) as ValidationResult<ValidatedLocation>;
 }
 
 /**
@@ -340,7 +340,7 @@ export function validateDesignConfig(data: unknown): ValidationResult<ValidatedD
  * Validate order options
  */
 export function validateOrderOptions(data: unknown): ValidationResult<ValidatedOrderOptions> {
-  return validateWithSchema(orderOptionsSchema, data);
+  return validateWithSchema(orderOptionsSchema, data) as ValidationResult<ValidatedOrderOptions>;
 }
 
 // ════════════════════════════════════════════════════════════════

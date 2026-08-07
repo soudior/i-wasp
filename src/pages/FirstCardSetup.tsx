@@ -69,7 +69,7 @@ export default function FirstCardSetup() {
           ...data,
           user_id: user?.id,
           slug,
-        })
+        } as import("@/integrations/supabase/types").TablesInsert<"digital_cards">)
         .select("slug")
         .single();
 

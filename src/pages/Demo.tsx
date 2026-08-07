@@ -204,8 +204,8 @@ export default function Demo() {
   // Handle vCard download
   const handleDownloadVCard = () => {
     downloadVCard({
-      firstName: demoCardData.firstName,
-      lastName: demoCardData.lastName,
+      firstName: demoCardData.firstName || '',
+      lastName: demoCardData.lastName || '',
       title: demoCardData.title,
       company: demoCardData.company,
       email: demoCardData.email,

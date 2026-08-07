@@ -482,9 +482,9 @@ export function PricingSection() {
                       <span className="text-3xl font-display font-bold text-foreground">
                         {pricing.total.toFixed(0)}€
                       </span>
-                      {pricing.discount > 0 && (
+                      {(pricing.discount ?? 0) > 0 && (
                         <span className="text-sm text-primary font-medium">
-                          -{pricing.discount}%
+                          -{pricing.discount ?? 0}%
                         </span>
                       )}
                     </div>

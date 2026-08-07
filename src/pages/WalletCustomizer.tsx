@@ -70,7 +70,7 @@ export default function WalletCustomizer() {
       const { data, error } = await supabase
         .from("digital_cards")
         .select("*")
-        .eq("user_id", user?.id)
+        .eq("user_id", user?.id ?? "")
         .eq("is_active", true)
         .single();
 

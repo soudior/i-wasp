@@ -116,7 +116,7 @@ export default function CardStudio() {
             twitter: existingCard.twitter,
             socialLinks: existingCard.social_links,
           };
-          setBlocks(convertLegacyToBlocks(legacyData));
+          setBlocks(convertLegacyToBlocks(legacyData as Parameters<typeof convertLegacyToBlocks>[0]));
         }
       }
     } else if (!cardId && cards.length === 0 && !cardsLoading) {

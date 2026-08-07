@@ -62,7 +62,7 @@ const planIcons = {
   business: Crown,
 };
 
-const planColors = {
+const planColors: Record<string, string> = {
   free: COLORS.gris,
   pro: COLORS.or,
   business: COLORS.orLight,

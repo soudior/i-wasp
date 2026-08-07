@@ -81,8 +81,8 @@ export function LuxuryProfile({
   
   const handleDownloadVCard = () => {
     const vcardData: VCardData = {
-      firstName: data.firstName,
-      lastName: data.lastName,
+      firstName: data.firstName || '',
+      lastName: data.lastName || '',
       title: data.title,
       company: data.company,
       email: data.email,

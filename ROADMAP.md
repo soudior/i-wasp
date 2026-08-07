@@ -95,7 +95,7 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 
 | # | Tâche | Réf. AUDIT | Statut |
 |---|-------|-----------|--------|
-| 7.1 | Réactiver progressivement la sécurité de type TS | P1-TS | 🔄 (voir plan par étapes ci-dessous) |
+| 7.1 | Sécurité de type TS : `strictNullChecks` + `noImplicitAny` + `strictFunctionTypes` (+ noImplicitThis/strictBindCallApply/noFallthroughCasesInSwitch) **activés**, 0 erreur. Reste optionnel : `noUnusedLocals` (code mort). | P1-TS | ✅ (null-safety + typage explicite) |
 | 7.2 | Réduire les erreurs ESLint (221→0) ; `no-unused-vars` à réactiver avec TS strict | P2-LINT | ✅ (erreurs 0 ; 272 warnings restants) |
 | 7.3 | Ne plus avaler toutes les erreurs dans `main.tsx` | P2-ERRORS | ☐ |
 | 7.4 | Page 404 sans auto-redirection (soft-404) ; ErrorBoundary tient le rôle de page 500 | P2-404 | ✅ |
@@ -138,13 +138,13 @@ Impact mesuré de chaque flag sur le code actuel (via `tsc -p tsconfig.app.json 
 | `strictBindCallApply` | 0 | ✅ **Activé** |
 | `useUnknownInCatchVariables` | 0 | ⏳ à activer avec `strictNullChecks` (change la sémantique des `catch`) |
 | `strictFunctionTypes` | 3 | ⏳ prochaine étape rapide (corriger 3 sites) |
-| `strictFunctionTypes` | 3 | ⏳ prochaine étape rapide |
-| `strictNullChecks` | 38 | ⏳ tractable — cœur de `strict`, à corriger par lot |
-| `noImplicitReturns` | 39 | ⏳ étape suivante |
-| `noImplicitAny` | 53 | ⏳ tractable — à corriger par lot |
-| `noUnusedLocals` | 503 | 🔒 gros chantier (code mort Lovable) — après nettoyage progressif |
+| `strictFunctionTypes` | 3 | ✅ **Activé** (0 erreur) |
+| `strictNullChecks` | 38 | ✅ **Activé** (corrigé : null→undefined, casts Supabase, gardes) |
+| `noImplicitAny` | 53 | ✅ **Activé** (types confetti installés, `Record<string,…>`, casts ciblés) |
+| `noImplicitReturns` | 39 | ⏳ optionnel (motif `useEffect` bénin, faible valeur) |
+| `noUnusedLocals` | 503 | 🔒 gros chantier (code mort Lovable) — dernier, par répertoire |
 
-Stratégie : activer les flags à coût nul d'abord (fait), puis les petits lots (`strictFunctionTypes` 3, `strictNullChecks` 38, `noImplicitReturns` 39, `noImplicitAny` 53) en corrigeant les sites concernés, en gardant le typecheck vert à chaque étape. `noUnusedLocals` (503, code mort Lovable) en dernier, par répertoire.
+**Bilan** : `strictNullChecks` + `noImplicitAny` + `strictFunctionTypes` sont **actifs**, typecheck à 0 erreur, 40 tests verts, build OK. Le socle de sécurité de type est en place. Restent optionnels `noImplicitReturns` (churn faible valeur) et `noUnusedLocals` (nettoyage du code mort Lovable).
 
 ## Journal des modifications
 

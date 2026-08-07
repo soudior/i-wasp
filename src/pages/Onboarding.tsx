@@ -194,7 +194,7 @@ export default function Onboarding() {
           photo_url: data.photo_url || null,
           user_id: user?.id,
           slug,
-        })
+        } as import("@/integrations/supabase/types").TablesInsert<"digital_cards">)
         .select("slug, first_name, last_name")
         .single();
 
