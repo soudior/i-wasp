@@ -32,10 +32,6 @@ const config: CapacitorConfig = {
       splashFullScreen: true,
       splashImmersive: true
     },
-    StatusBar: {
-      style: 'LIGHT',
-      backgroundColor: '#000000'
-    },
     Haptics: {
       enabled: true
     }
