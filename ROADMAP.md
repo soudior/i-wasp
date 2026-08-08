@@ -63,7 +63,7 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 | 4.4 | Restreindre l'ATS (`NSAllowsArbitraryLoads`) | P2 | ☐ |
 | 4.5 | Autoriser le zoom (retirer `user-scalable=no`) | P2-ZOOM | ☐ |
 | 4.6 | Implémenter la suppression de compte in-app | APP_STORE §5 | ☐ |
-| 4.7 | Remplacer les placeholders `YOUR_APP_ID` / `TEAM_ID` | 🔒 (compte Apple) | 🔒 |
+| 4.7 | Remplacer les placeholders Apple | 🔒 (compte Apple) | ✅ Team ID `Y4JV4X2DJ6`, App ID `6799452085`, bundle `app.iwasp.digital` — 0 placeholder restant. Génération `ios/` + build = Mac requis (APP_STORE_CHECKLIST §8). |
 
 ## Phase 5 — Sécurité serveur (P0/P1)
 

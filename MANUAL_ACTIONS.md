@@ -105,10 +105,8 @@ Voir aussi `APP_STORE_CHECKLIST.md`.
 ### App Store Connect
 7. ☐ Créer l'app dans **App Store Connect** (https://appstoreconnect.apple.com)
    avec le bundle id `app.iwasp.digital`.
-8. ☐ Récupérer l'**App ID numérique** (Apple ID de l'app, ex. `6740000000`).
-   *(Non secret.)*
-9. ☐ Remplacer le placeholder `YOUR_APP_ID` dans `index.html` (2 occurrences :
-   `apple-itunes-app` et `ios-app://YOUR_APP_ID`) par cet identifiant numérique.
+8. ✅ **App ID numérique récupéré : `6799452085`** (fiche App Store Connect créée, SKU `IWASP-IOS-001`).
+9. ✅ **Renseigné dans `index.html`** (`apple-itunes-app` + `ios-app://6799452085`). Plus aucun placeholder Apple dans le code.
 10. ☐ Renseigner la **App Privacy** (données collectées : scans, emails, leads,
     analytics) et lier la **politique de confidentialité** (page `/privacy`).
 11. ☐ **Obligatoire si création de compte in-app :** ajouter une **suppression de

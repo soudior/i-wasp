@@ -10,19 +10,19 @@
 |------|--------|--------|
 | Bundle identifier iOS/Android définitif | ✅ | **`app.iwasp.digital`** — unifié partout : `capacitor.config.ts`, AASA (+ `.well-known/`), `CFBundleURLName` (Info.plist), meta Android (`index.html`), `id` du manifest PWA, et toute la doc. Aucune référence `com.iwasp.app` ni Lovable restante. |
 | Team ID Apple | ✅ | `Y4JV4X2DJ6` renseigné dans l'AASA (`Y4JV4X2DJ6.app.iwasp.digital`). Compte inscrit au Apple Developer Program. |
-| App ID numérique App Store | ☐ | `index.html:50,53` contient `YOUR_APP_ID` → remplacer par l'ID numérique **uniquement une fois l'app créée dans App Store Connect**. |
+| App ID numérique App Store | ✅ | **`6799452085`** renseigné dans `index.html` (`apple-itunes-app` + `ios-app://`). Fiche créée dans App Store Connect (SKU `IWASP-IOS-001`). |
 | Nom d'affichage | ✅ | `IWASP` (`capacitor.config.ts`). |
-| Numéro de version / build | ☐ | À gérer proprement (versionName/versionCode Android, CFBundleShortVersionString/CFBundleVersion iOS). |
+| Numéro de version / build | ⚠️ | Cible **version 1.0** / build 1. À définir dans Xcode (`CFBundleShortVersionString = 1.0`, `CFBundleVersion = 1`) lors de la génération du projet. |
 
 ## 2. Deep links & Universal Links
 
 | Item | Statut | Détail |
 |------|--------|--------|
-| Scheme deep-link cohérent | ⚠️ | Incohérence `iwasp://` (Info.plist) vs `IWASP` (Capacitor) vs `web+iwasp` (manifest). **Unifier sur `iwasp://`** (AUDIT P2-SCHEME). |
-| Associated Domains (iOS) | ⚠️ | Info.plist déclare `applinks:i-wasp.com` / `www.i-wasp.com` ✅, mais l'AASA est invalide (bundle Lovable + `TEAM_ID`). |
-| `apple-app-site-association` | ⚠️ | Corriger `appID` → `<TEAM_ID>.app.iwasp.digital` ; servir en `application/json` sans redirection sur `https://i-wasp.com/.well-known/apple-app-site-association`. |
-| `assetlinks.json` (Android) | ☐ | À générer (`android-config/` est documentaire ; pas de projet `android/` en dépôt). |
-| Universal Links testés | ☐ | À valider sur appareil réel une fois l'AASA corrigé. |
+| Scheme deep-link `iwasp://` | ✅ | Déclaré dans `Info.plist.template`. Le `scheme:'IWASP'` de Capacitor est le schéma **interne** du serveur WKWebView (distinct, à ne pas confondre). |
+| Associated Domains (iOS) | ✅ | Déclarés (`applinks:i-wasp.com` / `www.i-wasp.com`) dans `Info.plist.template` + fichier d'entitlements prêt (`ios-config/App.entitlements`). À activer dans Xcode (capability). |
+| `apple-app-site-association` | ✅ | `appID = Y4JV4X2DJ6.app.iwasp.digital`, présent en racine **et** `.well-known/`. Reste : le servir en `application/json` sans redirection à la mise en ligne. |
+| `assetlinks.json` (Android) | ☐ | À générer avec le SHA-256 de la clé de signature (voir MANUAL_ACTIONS §3), package `app.iwasp.digital`. |
+| Universal Links testés | ☐ | À valider sur appareil réel **après déploiement** du site (AASA servi) + build iOS. |
 
 ## 3. Icônes & écrans
 
@@ -31,7 +31,7 @@
 | Icône app 1024×1024 | ✅ | `public/app-icon-1024.png`. |
 | Jeu d'icônes iOS/Android complet | ☐ | À générer depuis la source 1024 (Capacitor assets). |
 | Launch screen / SplashScreen | ✅ | Configuré (`capacitor.config.ts`), fond `#000000`. |
-| Icônes PWA (web) | ⚠️ | Références 404 (`/icon-192.png`…) — vrais fichiers dans `public/icons/*x*.png`. À corriger (AUDIT P0-3). |
+| Icônes PWA (web) | ✅ | Corrigé : manifest pointe vers `public/icons/*x*.png` (AUDIT P0-3 résolu). |
 
 ## 4. Permissions (iOS) — textes explicatifs
 
@@ -55,21 +55,63 @@
 
 | Item | Statut | Détail |
 |------|--------|--------|
-| Bloc `server` Capacitor commenté pour le build store | ✅ | Déjà commenté (`capacitor.config.ts:9-14`) — supprimer la référence Lovable avant soumission. |
-| Compilation Release sans erreur | ☐ | À exécuter (`npm run build` web ✅ ; `npx cap sync` puis build Xcode/Gradle). |
-| Archive Xcode distribuable | ☐ | À produire. |
-| Test sur appareil réel | ☐ | Obligatoire (NFC, deep links, wallet). |
+| Bloc `server` Capacitor distant | ✅ | Aucun (référence Lovable supprimée) — le build sert `dist` local. |
+| Build web | ✅ | `npm run build` OK. |
+| Génération projet `ios/` + Compilation Release | ☐ | **Mac requis** — voir §8 (séquence exacte). |
+| Archive Xcode distribuable | ☐ | **Mac requis** — §8. |
+| Test sur appareil réel | ☐ | Via TestFlight (NFC, deep links, wallet). |
 | TestFlight | ☐ | Distribution beta avant soumission. |
 
-## 7. Remplacements de placeholders (récapitulatif)
+## 7. Identité Apple — valeurs finales (toutes renseignées)
 
-À faire dès que les valeurs réelles existent (⚠️ certaines nécessitent un compte Apple Developer / App Store Connect) :
+| Clé | Valeur |
+|-----|--------|
+| Bundle ID | `app.iwasp.digital` |
+| Team ID | `Y4JV4X2DJ6` |
+| App ID numérique (App Store) | `6799452085` |
+| Version initiale | `1.0` (build `1`) |
+| SKU | `IWASP-IOS-001` |
 
-- `index.html:50` → `apple-itunes-app` : remplacer `YOUR_APP_ID` par l'App ID numérique (**seul placeholder restant**, à faire après création dans App Store Connect).
-- `index.html:53` → `ios-app://YOUR_APP_ID` : idem.
-- ~~AASA / bundle id / Team ID~~ ✅ **faits** : `Y4JV4X2DJ6.app.iwasp.digital` partout.
+✅ **Aucun placeholder Apple ne subsiste dans le code** (`YOUR_APP_ID`, `TEAM_ID`, `com.iwasp.app`, bundle Lovable : tous remplacés).
 
-> **Ne remplacer l'App ID que lorsqu'il existe réellement** (règle de l'énoncé). Tant qu'il n'existe pas, laisser un placeholder documenté plutôt qu'un faux ID.
+## 8. PROCHAINE ACTION MANUELLE — génération & build iOS (⚠️ Mac + Xcode requis)
+
+> Le dossier `ios/` **n'est pas** dans le dépôt (généré par Capacitor). Il **doit** être
+> créé sur un **Mac avec Xcode + CocoaPods** — impossible sur Linux/CI sans Xcode.
+> Séquence exacte à exécuter sur le Mac, dans le dossier du dépôt `i-wasp` :
+
+```sh
+# 1. Dépendances + build web
+npm install
+npm run build
+
+# 2. Générer le projet natif iOS (crée le dossier ios/)
+npx cap add ios
+npx cap sync ios
+
+# 3. Générer icônes + launch screen depuis public/app-icon-1024.png
+npx @capacitor/assets generate --ios
+
+# 4. Ouvrir dans Xcode
+npx cap open ios
+```
+
+**Dans Xcode :**
+1. Cible **App** → **Signing & Capabilities** :
+   - **Team** : sélectionner l'équipe `Y4JV4X2DJ6`.
+   - **Bundle Identifier** : vérifier `app.iwasp.digital` (doit correspondre à `capacitor.config.ts`).
+   - **＋ Capability → Associated Domains** → ajouter `applinks:i-wasp.com` et `applinks:www.i-wasp.com`
+     (ou copier `ios-config/App.entitlements` dans `ios/App/App/App.entitlements`).
+   - (optionnel) **＋ Capability → Near Field Communication Tag Reading** si lecture NFC.
+2. **General** → **Version** `1.0`, **Build** `1`.
+3. Reporter les clés de `ios-config/Info.plist.template` dans `ios/App/App/Info.plist`
+   (permissions FR, URL scheme `iwasp`, ATS restreint).
+4. **Product → Scheme → Edit Scheme → Run → Build Configuration : Release**, puis **Product → Build** (⌘B).
+5. **Product → Archive** → **Distribute App → TestFlight (& App Store)** → upload.
+6. Tester sur appareil réel via **TestFlight** (NFC, deep links, wallet).
+
+> Version/build, entitlements et Info.plist sont préparés en dépôt comme références ;
+> leur application se fait dans Xcode (aucune simulation de compilation possible ici).
 
 ## Éléments prêts à préparer sans compte externe
 
