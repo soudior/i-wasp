@@ -8,7 +8,7 @@
 
 | Item | Statut | Détail |
 |------|--------|--------|
-| Bundle identifier iOS/Android définitif | ⚠️ | `capacitor.config.ts` = `app.iwasp.digital`. **Mais** `public/apple-app-site-association` utilise encore `app.lovable.17c6de…` → **à unifier sur `app.iwasp.digital`**. |
+| Bundle identifier iOS/Android définitif | ✅ | **`app.iwasp.digital`** — unifié partout : `capacitor.config.ts`, AASA (+ `.well-known/`), `CFBundleURLName` (Info.plist), meta Android (`index.html`), `id` du manifest PWA, et toute la doc. Aucune référence `com.iwasp.app` ni Lovable restante. |
 | Team ID Apple | ✅ | `Y4JV4X2DJ6` renseigné dans l'AASA (`Y4JV4X2DJ6.app.iwasp.digital`). Compte inscrit au Apple Developer Program. |
 | App ID numérique App Store | ☐ | `index.html:50,53` contient `YOUR_APP_ID` → remplacer par l'ID numérique **uniquement une fois l'app créée dans App Store Connect**. |
 | Nom d'affichage | ✅ | `IWASP` (`capacitor.config.ts`). |
@@ -65,10 +65,9 @@
 
 À faire dès que les valeurs réelles existent (⚠️ certaines nécessitent un compte Apple Developer / App Store Connect) :
 
-- `index.html:50` → `apple-itunes-app` : remplacer `YOUR_APP_ID` par l'App ID numérique.
+- `index.html:50` → `apple-itunes-app` : remplacer `YOUR_APP_ID` par l'App ID numérique (**seul placeholder restant**, à faire après création dans App Store Connect).
 - `index.html:53` → `ios-app://YOUR_APP_ID` : idem.
-- `public/apple-app-site-association` → remplacer `TEAM_ID.app.lovable.17c6de…` par `<TEAM_ID_REEL>.app.iwasp.digital`.
-- `STORE_DEPLOYMENT_GUIDE.md`, `ios-config/README.md`, `android-config/README.md` → remplacer les références `app.lovable.17c6de…`.
+- ~~AASA / bundle id / Team ID~~ ✅ **faits** : `Y4JV4X2DJ6.app.iwasp.digital` partout.
 
 > **Ne remplacer l'App ID que lorsqu'il existe réellement** (règle de l'énoncé). Tant qu'il n'existe pas, laisser un placeholder documenté plutôt qu'un faux ID.
 

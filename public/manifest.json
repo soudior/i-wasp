@@ -8,7 +8,7 @@
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
-  "id": "com.iwasp.app",
+  "id": "app.iwasp.digital",
   "lang": "fr",
   "dir": "ltr",
   "categories": ["business", "productivity", "social", "lifestyle"],

@@ -101,7 +101,7 @@ Pour personnaliser le splash :
 
 ```gradle
 android {
-    namespace "app.lovable._17c6de152d8546a1a7d8e5c478c6f024"
+    namespace "app.iwasp.digital"
     
     defaultConfig {
         applicationId "app.iwasp.digital"
