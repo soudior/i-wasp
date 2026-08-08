@@ -97,7 +97,32 @@ serve(async (req) => {
         metadata: session.metadata,
       });
 
-      // Only process webstudio_direct payments
+      // Commandes de cartes NFC : la commande a été créée en `pending` par le
+      // tunnel AVANT le paiement — on la passe en `paid` (source de vérité :
+      // l'événement signé Stripe, idempotent, indépendant du retour navigateur).
+      if (session.metadata?.type === 'nfc_order') {
+        const orderId = session.metadata?.order_id;
+        if (orderId && session.payment_status === 'paid') {
+          const { error: nfcUpdateError } = await supabase
+            .from('orders')
+            .update({ status: 'paid', paid_at: new Date().toISOString(), payment_method: 'stripe' })
+            .eq('id', orderId)
+            .neq('status', 'paid');
+          if (nfcUpdateError) {
+            logStep("NFC order update FAILED", { orderId, error: nfcUpdateError.message });
+          } else {
+            logStep("NFC order marked paid", { orderId });
+          }
+        } else {
+          logStep("NFC payment without order_id or not paid", { orderId, paymentStatus: session.payment_status });
+        }
+        return new Response(
+          JSON.stringify({ received: true }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Only process webstudio_direct payments beyond this point
       if (session.metadata?.type !== 'webstudio_direct') {
         logStep("Skipping non-webstudio payment");
         return new Response(
