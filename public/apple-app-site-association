@@ -3,7 +3,7 @@
     "apps": [],
     "details": [
       {
-        "appID": "TEAM_ID.app.iwasp.digital",
+        "appID": "Y4JV4X2DJ6.app.iwasp.digital",
         "paths": [
           "/c/*",
           "/card/*",
@@ -14,7 +14,7 @@
   },
   "webcredentials": {
     "apps": [
-      "TEAM_ID.app.iwasp.digital"
+      "Y4JV4X2DJ6.app.iwasp.digital"
     ]
   }
 }

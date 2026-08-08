@@ -9,7 +9,7 @@
 | Item | Statut | Détail |
 |------|--------|--------|
 | Bundle identifier iOS/Android définitif | ⚠️ | `capacitor.config.ts` = `app.iwasp.digital`. **Mais** `public/apple-app-site-association` utilise encore `app.lovable.17c6de…` → **à unifier sur `app.iwasp.digital`**. |
-| Team ID Apple | ☐ | Placeholder `TEAM_ID` dans l'AASA → remplacer par le vrai Team ID (Apple Developer). *Nécessite un compte Apple Developer.* |
+| Team ID Apple | ✅ | `Y4JV4X2DJ6` renseigné dans l'AASA (`Y4JV4X2DJ6.app.iwasp.digital`). Compte inscrit au Apple Developer Program. |
 | App ID numérique App Store | ☐ | `index.html:50,53` contient `YOUR_APP_ID` → remplacer par l'ID numérique **uniquement une fois l'app créée dans App Store Connect**. |
 | Nom d'affichage | ✅ | `IWASP` (`capacitor.config.ts`). |
 | Numéro de version / build | ☐ | À gérer proprement (versionName/versionCode Android, CFBundleShortVersionString/CFBundleVersion iOS). |

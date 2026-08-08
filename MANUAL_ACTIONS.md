@@ -62,10 +62,8 @@ dépendances frontend ou des données de production.
 `public/.well-known/apple-app-site-association`) utilise désormais le bon
 bundle id `app.iwasp.digital`. Il reste **une** valeur à insérer : votre **Team ID** Apple.
 
-1. ☐ Récupérer le **Team ID** dans **Apple Developer → Membership**
-   (https://developer.apple.com/account) — chaîne de 10 caractères (ex. `A1B2C3D4E5`).
-   *(Ce n'est pas un secret, mais c'est propre à votre compte.)*
-2. ☐ Remplacer les deux occurrences de `TEAM_ID` par cette valeur dans :
+1. ✅ **Team ID récupéré : `Y4JV4X2DJ6`** (Apple Developer → Membership).
+2. ✅ **Renseigné dans l'AASA** (`Y4JV4X2DJ6.app.iwasp.digital`) :
    - `public/apple-app-site-association`
    - `public/.well-known/apple-app-site-association`
 3. ☐ Déployer le site et **vérifier** que l'AASA est servi :

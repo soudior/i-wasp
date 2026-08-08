@@ -90,7 +90,7 @@ ios/App/App/Assets.xcassets/AppIcon.appiconset/
 2. Onglet **Signing & Capabilities**
 3. Activez **Automatically manage signing**
 4. Sélectionnez votre Team (Apple Developer)
-5. Bundle ID : `app.lovable.17c6de152d8546a1a7d8e5c478c6f024`
+5. Bundle ID : `app.iwasp.digital`
 
 ### 2. Ajouter les Capabilities
 
@@ -147,7 +147,7 @@ Vérifiez que ces clés sont présentes :
 
 1. Allez sur https://appstoreconnect.apple.com
 2. **My Apps → (+) New App**
-3. Bundle ID: `app.lovable.17c6de152d8546a1a7d8e5c478c6f024`
+3. Bundle ID: `app.iwasp.digital`
 4. Remplissez les métadonnées
 
 ### 4. Métadonnées requises

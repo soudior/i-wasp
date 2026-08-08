@@ -104,7 +104,7 @@ android {
     namespace "app.lovable._17c6de152d8546a1a7d8e5c478c6f024"
     
     defaultConfig {
-        applicationId "app.lovable.17c6de152d8546a1a7d8e5c478c6f024"
+        applicationId "app.iwasp.digital"
         minSdkVersion 22
         targetSdkVersion 34
         versionCode 1
