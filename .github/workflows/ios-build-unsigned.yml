@@ -10,13 +10,11 @@
 name: iOS Build (unsigned validation)
 
 on:
+  # Compilation validée sur macos-26 (flux OAuth mobile inclus) → déclenchement
+  # MANUEL uniquement : aucune minute macOS consommée automatiquement.
+  # NB : workflow_dispatch apparaît dans l'onglet Actions une fois ce fichier
+  # sur la branche par défaut (à la fusion de la PR).
   workflow_dispatch:
-  # Déclencheur push TEMPORAIRE (branche de dev uniquement) réactivé pour valider
-  # la compilation des nouveaux plugins du flux OAuth mobile (@capacitor/app,
-  # @capacitor/browser patché). À retirer après le prochain run vert.
-  push:
-    branches:
-      - claude/iwasp-audit-restructure-uzfv2l
 
 concurrency:
   group: ios-unsigned-${{ github.ref }}
