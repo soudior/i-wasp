@@ -20,18 +20,12 @@ const config: CapacitorConfig = {
     webContentsDebuggingEnabled: false,
   },
   plugins: {
-    SplashScreen: {
-      // Désactivé : on utilise notre propre loader web
-      launchShowDuration: 0,
-      launchAutoHide: true,
-      launchFadeOutDuration: 0,
-      backgroundColor: '#000000',
-      androidSplashResourceName: 'splash',
-      androidScaleType: 'CENTER_CROP',
-      showSpinner: false,
-      splashFullScreen: true,
-      splashImmersive: true
-    },
+    // NB : le plugin natif @capacitor/splash-screen a été retiré (sa source 8.0.x
+    // n'est pas compatible avec le core Swift capacitor-swift-pm 8.5.x — API
+    // getString/color(fromHex:) supprimée). Le splash est de toute façon géré côté
+    // web (src/components/SplashScreen.tsx) et l'écran de lancement natif reste
+    // fourni par le storyboard iOS. À réintroduire quand une version compatible
+    // Cap 8.5 sera publiée.
     Haptics: {
       enabled: true
     }
