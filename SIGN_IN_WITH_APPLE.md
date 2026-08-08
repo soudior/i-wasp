@@ -38,13 +38,19 @@ auth enfermée dans la WebView :
    fermé, `error=access_denied`, timeout 5 min) gérée sans erreur bloquante ;
    **aucun token ni URL de callback dans les logs**.
 
-> Note plugin : `@capacitor/browser@8.0.4` a une ligne incompatible avec le core
-> Swift 8.5 (`color(fromHex:)`, uniquement pour l'option `toolbarColor`, inutilisée) —
-> neutralisée par `scripts/patch-capacitor-browser.mjs` (postinstall, échoue si la
-> version change). `@capacitor/app@8.1.1` est nativement compatible.
-> `@capacitor-community/apple-sign-in` (feuille native) reste retiré : pas de version
-> Capacitor 8 ; les utilitaires de nonce (`src/lib/appleAuth.ts`) sont prêts pour le
-> réactiver (`signInWithIdToken`) dès qu'une version compatible existera.
+> Note toolchain (cause racine des échecs Swift en CI, diagnostiquée sur les
+> `.swiftinterface` du binaire) : `capacitor-swift-pm` 8.x est compilé avec
+> **Swift 6.2 (Xcode 26)** et une partie de son API publique (`call.reject`,
+> `getString` à 1 argument, `bridge.viewController`, `color(fromHex:)`) est émise
+> derrière `#if compiler(>=5.3) && $NonescapableTypes` — **invisible** pour un
+> compilateur plus ancien. Les runners `macos-14` (Xcode 16.2) échouaient donc sur
+> quasiment tous les plugins. **Correctif : runners `macos-26` (Xcode 26)** dans les
+> deux workflows. Conséquences : `@capacitor/app@8.1.1` et `@capacitor/browser@8.0.4`
+> compilent **sans patch** ; `status-bar`/`splash-screen` (retirés plus tôt sur la
+> base d'un diagnostic devenu obsolète) sont **réintégrables** plus tard si besoin.
+> `@capacitor-community/apple-sign-in` (feuille native) reste lui réellement
+> incompatible (épingle `capacitor-swift-pm` 7.x → conflit SPM) ; les utilitaires de
+> nonce (`src/lib/appleAuth.ts`) restent prêts pour le réactiver.
 
 ### URLs exactes à enregistrer (mobile + web)
 

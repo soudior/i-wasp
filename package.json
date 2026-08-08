@@ -11,8 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preview": "vite preview",
-    "postinstall": "node scripts/patch-capacitor-browser.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@capacitor/android": "8.5.0",
