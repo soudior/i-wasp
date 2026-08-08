@@ -1,0 +1,159 @@
+# Build iOS SIGNÉ → archive → (optionnel) TestFlight.
+#
+# 🔒 Aucune valeur secrète dans ce fichier : tout vient de « Settings → Secrets and
+#    variables → Actions ». Voir IOS_CLOUD_BUILD.md pour la liste exacte et où placer
+#    chaque secret.
+#
+# ⚠️ Déclenchement MANUEL uniquement. L'envoi vers Apple/TestFlight ne se produit
+#    QUE si vous saisissez explicitement le mot de confirmation dans le champ
+#    « confirm_upload » au lancement. Sinon, le workflow s'arrête après l'archive et
+#    publie l'IPA comme artefact (aucun envoi Apple).
+name: iOS TestFlight (signed)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_upload:
+        description: "Taper UPLOAD-TO-TESTFLIGHT pour envoyer à Apple. Vide = archive seulement, aucun envoi."
+        required: false
+        default: ""
+
+concurrency:
+  group: ios-testflight-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # Valeur NON secrète (Team ID Apple). Surchargée par la variable de dépôt si définie.
+  APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID || 'Y4JV4X2DJ6' }}
+  APPLE_BUNDLE_ID: app.iwasp.digital
+
+jobs:
+  build-signed:
+    runs-on: macos-14
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode (latest stable)
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Build web assets (dist/)
+        run: npm run build
+
+      - name: Generate native iOS project
+        run: |
+          if [ ! -d ios ]; then npx cap add ios; fi
+          npx cap sync ios
+
+      - name: Apply entitlements (Associated Domains + Sign in with Apple)
+        run: |
+          if [ -f ios-config/App.entitlements ]; then
+            cp ios-config/App.entitlements ios/App/App/App.entitlements
+            echo "Entitlements copiés. (Les capabilities doivent être activées sur l'App ID Apple — voir IOS_CLOUD_BUILD.md)"
+          fi
+
+      - name: Install CocoaPods
+        working-directory: ios/App
+        run: pod install --repo-update
+
+      - name: Import signing certificate (.p12)
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+          p12-password: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+
+      - name: Install App Store Connect API key
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_KEY_B64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          mkdir -p "$HOME/private_keys"
+          echo "$ASC_KEY_B64" | base64 --decode > "$HOME/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+          echo "ASC_KEY_PATH=$HOME/private_keys/AuthKey_${ASC_KEY_ID}.p8" >> "$GITHUB_ENV"
+
+      - name: Archive (Release, automatic signing via API key)
+        working-directory: ios/App
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: |
+          xcodebuild \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            PRODUCT_BUNDLE_IDENTIFIER="$APPLE_BUNDLE_ID" \
+            CODE_SIGN_STYLE=Automatic \
+            clean archive
+
+      - name: Write ExportOptions.plist
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>teamID</key><string>${APPLE_TEAM_ID}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>destination</key><string>export</string>
+            <key>uploadSymbols</key><true/>
+          </dict>
+          </plist>
+          PLIST
+
+      - name: Export IPA
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+      - name: Upload IPA as build artifact (no Apple upload)
+        uses: actions/upload-artifact@v4
+        with:
+          name: iwasp-ios-ipa
+          path: ${{ runner.temp }}/export/*.ipa
+          if-no-files-found: error
+
+      - name: Upload to TestFlight (ONLY if explicitly confirmed)
+        if: ${{ inputs.confirm_upload == 'UPLOAD-TO-TESTFLIGHT' }}
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: |
+          IPA=$(ls "$RUNNER_TEMP/export/"*.ipa | head -1)
+          echo "Envoi vers TestFlight : $IPA"
+          xcrun altool --upload-app -f "$IPA" -t ios \
+            --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
+
+      - name: Note if upload was skipped
+        if: ${{ inputs.confirm_upload != 'UPLOAD-TO-TESTFLIGHT' }}
+        run: |
+          echo "Aucun envoi Apple. IPA archive comme artefact. Pour envoyer, relancez en saisissant UPLOAD-TO-TESTFLIGHT dans confirm_upload."

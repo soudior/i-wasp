@@ -156,6 +156,7 @@ Deno.serve(async (req) => {
     //    ⚠️ order_items (JSON) peut contenir le nom/titre imprimé sur la carte, les
     //    URLs de fichiers peuvent encoder un nom, admin_notes peut citer le client :
     //    tout est donc effacé.
+    //    Contrat miroir (testé) : src/lib/accountDeletion.ts → anonymizedOrderPatch().
     const DELETED_SENTINEL = "00000000-0000-0000-0000-000000000000";
     await attempt("orders (anonymisation)", () =>
       admin.from("orders").update({
