@@ -143,3 +143,9 @@ verify_jwt = false
 
 [functions.verify-activation-code]
 verify_jwt = false
+
+# Suppression définitive du compte (App Store 5.1.1(v)). La fonction revérifie
+# elle-même le JWT via admin.auth.getUser(token) ; verify_jwt=true ajoute une
+# barrière au niveau de la passerelle (rejet des appels non authentifiés).
+[functions.delete-account]
+verify_jwt = true

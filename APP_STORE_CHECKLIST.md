@@ -46,9 +46,12 @@
 | Item | Statut | Détail |
 |------|--------|--------|
 | Politique de confidentialité accessible | ⚠️ | Page `/privacy` existe → publier une URL stable et la lier dans la fiche store. |
-| Déclaration des données collectées (App Privacy) | ☐ | Remplir dans App Store Connect (scans, emails, leads, analytics). |
-| Suppression de compte **dans l'app** | ☐ | **Obligatoire** si un compte peut être créé (Guideline 5.1.1(v)). À implémenter (bouton + edge function de suppression). |
-| Sign in with Apple | ☐ | **Obligatoire** si Google OAuth est proposé (Guideline 4.8). Ajouter SIWA ou retirer les connexions sociales tierces des builds store. |
+| Déclaration des données collectées (App Privacy) | ✅ | Réponses prêtes dans `APP_STORE_LISTING.md` §4 → reste à recopier dans App Store Connect. |
+| Contenu de la fiche (description, mots-clés, âge, catégorie) | ✅ | Prêt à copier-coller : `APP_STORE_LISTING.md` §3. |
+| Compte de démo App Review + notes reviewer | ✅ | Modèle prêt : `APP_STORE_LISTING.md` §5 & §7 (créer le compte démo côté Supabase). |
+| Statut trader UE (DSA) | ☐ | À déclarer dans App Store Connect → Business : `APP_STORE_LISTING.md` §6. |
+| Suppression de compte **dans l'app** | ✅ | Implémentée : bouton « Supprimer définitivement mon compte » (Settings.tsx, confirmation typée « SUPPRIMER ») + edge function `delete-account` (service-role, suppression réelle côté serveur, anonymisation des commandes, révocation des sessions). Reste : `supabase functions deploy delete-account`. Détail : `APP_STORE_LISTING.md` §2. |
+| Sign in with Apple | ✅ | **Non requis** (Guideline 4.8) : l'app fournit une auth first-party email/mot de passe → Google n'est pas le mécanisme exclusif. Décision + plan de repli documentés dans `APP_STORE_LISTING.md` §1. |
 | Pas de clé privée dans le bundle | ✅ | Aucun secret dans le frontend (vérifié). Confirmer qu'aucun `.env` secret n'est embarqué au build. |
 
 ## 6. Build & distribution
