@@ -27,8 +27,8 @@ workflows:
         script: |
           [ -d ios ] || npx cap add ios
           npx cap sync ios
-      - name: CocoaPods
-        script: cd ios/App && pod install
+      - name: CocoaPods (only if a Podfile exists)
+        script: cd ios/App && ([ -f Podfile ] && pod install || echo 'Pas de Podfile (SPM Capacitor 8) — ignore.')
       - name: Compile (unsigned)
         script: |
           cd ios/App
@@ -65,8 +65,8 @@ workflows:
           npx cap sync ios
       - name: Apply entitlements
         script: '[ -f ios-config/App.entitlements ] && cp ios-config/App.entitlements ios/App/App/App.entitlements || true'
-      - name: CocoaPods
-        script: cd ios/App && pod install
+      - name: CocoaPods (only if a Podfile exists)
+        script: cd ios/App && ([ -f Podfile ] && pod install || echo 'Pas de Podfile (SPM Capacitor 8) — ignore.')
       - name: Set up code signing
         script: xcode-project use-profiles
       - name: Build IPA

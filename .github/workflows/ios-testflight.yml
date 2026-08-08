@@ -65,9 +65,15 @@ jobs:
             echo "Entitlements copiés. (Les capabilities doivent être activées sur l'App ID Apple — voir IOS_CLOUD_BUILD.md)"
           fi
 
-      - name: Install CocoaPods
+      # Capacitor 8 = Swift Package Manager (Package.swift), pas de Podfile.
+      - name: Install CocoaPods (only if a Podfile exists)
         working-directory: ios/App
-        run: pod install --repo-update
+        run: |
+          if [ -f Podfile ]; then
+            pod install --repo-update
+          else
+            echo "Pas de Podfile (projet SPM Capacitor 8) — étape ignorée."
+          fi
 
       - name: Import signing certificate (.p12)
         uses: apple-actions/import-codesign-certs@v3
@@ -90,8 +96,13 @@ jobs:
           ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
         run: |
-          xcodebuild \
-            -workspace App.xcworkspace \
+          if [ -f App.xcworkspace/contents.xcworkspacedata ]; then
+            CONTAINER=(-workspace App.xcworkspace)
+          else
+            CONTAINER=(-project App.xcodeproj)
+          fi
+          echo "Archiving with: ${CONTAINER[*]}"
+          xcodebuild "${CONTAINER[@]}" \
             -scheme App \
             -configuration Release \
             -sdk iphoneos \
