@@ -11,6 +11,13 @@ name: iOS Build (unsigned validation)
 
 on:
   workflow_dispatch:
+  # Déclencheur limité à CETTE branche de dev uniquement (jamais main, jamais la
+  # prod) : permet d'exécuter la validation sans que le workflow soit sur la branche
+  # par défaut (limite plateforme de workflow_dispatch). À retirer une fois la
+  # compilation validée pour ne pas consommer de minutes macOS à chaque push.
+  push:
+    branches:
+      - claude/iwasp-audit-restructure-uzfv2l
 
 concurrency:
   group: ios-unsigned-${{ github.ref }}
