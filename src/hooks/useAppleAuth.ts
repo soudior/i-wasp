@@ -23,8 +23,10 @@
  */
 
 import { useCallback, useState } from "react";
+import { Capacitor } from "@capacitor/core";
 import { supabase } from "@/integrations/supabase/client";
 import { classifyAppleError, appleErrorMessage } from "@/lib/appleAuth";
+import { signInWithProviderNative } from "@/lib/nativeOAuth";
 import { toast } from "sonner";
 
 interface UseAppleAuthOptions {
@@ -54,12 +56,21 @@ export function useAppleAuth(options: UseAppleAuthOptions = {}) {
     if (loading) return false;
     setLoading(true);
     try {
+      if (Capacitor.isNativePlatform()) {
+        // iOS/Android : flux OAuth mobile COMPLET — navigateur système
+        // (@capacitor/browser), retour par deep link iwasp://auth/callback
+        // (appUrlOpen), échange PKCE code↔session, fermeture du navigateur.
+        // Jamais une auth enfermée dans la WebView.
+        const result = await signInWithProviderNative("apple");
+        if (result === "error") toast.error(appleErrorMessage("unknown"));
+        return result === "success";
+      }
+      // Web : redirection navigateur classique gérée par Supabase (inchangé).
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "apple",
         options: { redirectTo: resolveRedirectTo() },
       });
       if (error) throw error;
-      // La navigation redirige vers Apple : rien de plus à faire ici.
       return true;
     } catch (error) {
       handleError(error);

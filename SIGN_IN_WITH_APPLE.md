@@ -20,18 +20,52 @@
 | Liaison à un compte existant (anti-doublon) | `useAppleAuth().linkAppleIdentity()` |
 | Révocation des jetons Apple à la suppression de compte (best-effort, gated) | `supabase/functions/delete-account/index.ts` |
 
-**Web et iOS → flux OAuth Supabase** (`signInWithOAuth({ provider: 'apple' })`).
-- **Web** : redirection navigateur gérée par Supabase.
-- **iOS Capacitor** : même redirection (WebView / navigateur système) ; retour vers
-  `redirectTo` (URL de l'app configurée dans Supabase → URL Configuration + deep link).
+**Web → flux OAuth Supabase classique** (`signInWithOAuth`, redirection navigateur,
+échange `?code=` automatique via PKCE/`detectSessionInUrl` — parcours inchangé).
 
-> ⚠️ **Feuille native Apple (non activée)** : le plugin communautaire
-> `@capacitor-community/apple-sign-in` n'a **pas** de version compatible **Capacitor 8**
-> (son `Package.swift` épingle `capacitor-swift-pm` 7.x → conflit SPM avec les plugins
-> core 8.x, ce qui **casse la compilation iOS**). Il a donc été retiré ; on utilise le
-> flux OAuth (compatible partout). Les utilitaires de nonce (`src/lib/appleAuth.ts`,
-> `generateRawNonce` / `sha256Hex`) restent prêts pour réactiver la feuille native
-> (`signInWithIdToken`) dès qu'un plugin compatible Cap 8 sera disponible.
+**iOS Capacitor → flux OAuth mobile COMPLET** (`src/lib/nativeOAuth.ts`) — pas une
+auth enfermée dans la WebView :
+1. `signInWithOAuth({ skipBrowserRedirect: true })` → URL d'autorisation (PKCE,
+   `code_verifier` stocké par supabase-js) ;
+2. ouverture dans le **navigateur système** (`@capacitor/browser`, SFSafariViewController) ;
+3. Apple → callback Supabase (state vérifié côté Supabase) → redirection **deep link**
+   `iwasp://auth/callback?code=…` ;
+4. iOS rouvre l'app → écoute **`appUrlOpen`** (`@capacitor/app`) → **validation
+   stricte** de l'URL (`isNativeOAuthCallback`, testée) ;
+5. **`exchangeCodeForSession(code)`** — n'aboutit que si le `code_verifier` PKCE
+   local correspond (un code intercepté est inutilisable) ;
+6. **fermeture du navigateur** + retrait des listeners ; **annulation** (navigateur
+   fermé, `error=access_denied`, timeout 5 min) gérée sans erreur bloquante ;
+   **aucun token ni URL de callback dans les logs**.
+
+> Note plugin : `@capacitor/browser@8.0.4` a une ligne incompatible avec le core
+> Swift 8.5 (`color(fromHex:)`, uniquement pour l'option `toolbarColor`, inutilisée) —
+> neutralisée par `scripts/patch-capacitor-browser.mjs` (postinstall, échoue si la
+> version change). `@capacitor/app@8.1.1` est nativement compatible.
+> `@capacitor-community/apple-sign-in` (feuille native) reste retiré : pas de version
+> Capacitor 8 ; les utilitaires de nonce (`src/lib/appleAuth.ts`) sont prêts pour le
+> réactiver (`signInWithIdToken`) dès qu'une version compatible existera.
+
+### URLs exactes à enregistrer (mobile + web)
+
+| Où | Champ | Valeur exacte |
+|----|-------|---------------|
+| Apple Developer → Services ID → Sign In with Apple → **Return URLs** | Return URL | `https://<PROJECT_REF>.supabase.co/auth/v1/callback` |
+| Apple Developer → Services ID → **Domains** | Domain | `<PROJECT_REF>.supabase.co` et `i-wasp.com` |
+| Supabase → Authentication → **URL Configuration → Redirect URLs** | Redirect URL | `iwasp://auth/callback` (mobile) |
+| Supabase → Redirect URLs (web, déjà requis) | Redirect URL | `https://i-wasp.com/**` et `https://www.i-wasp.com/**` |
+| Info.plist (déjà dans `ios-config/Info.plist.template`) | URL scheme | `iwasp` |
+
+⚠️ Sans `iwasp://auth/callback` dans les Redirect URLs Supabase, le retour mobile
+échouera silencieusement (Supabase refuse la redirection).
+
+### Statut de vérification — à ne pas confondre
+
+- ✅ **Compilation** : le flux (plugins inclus) compile en CI (workflow non signé).
+- ✅ **Logique testée** : validation d'URL / extraction code / erreurs (tests unitaires).
+- ☐ **Connexion réelle sur iPhone** : NON testée — nécessite build signé + appareil
+  + provider Apple configuré dans Supabase. À faire via TestFlight (checklist
+  `APP_STORE_CHECKLIST.md` §7ter) avant toute soumission.
 
 ---
 
