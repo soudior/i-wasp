@@ -24,6 +24,9 @@ export default defineConfig(() => ({
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tooltip'],
+          motion: ['framer-motion'],
+          supabase: ['@supabase/supabase-js'],
+          i18n: ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
         },
       },
     },
@@ -38,37 +41,16 @@ export default defineConfig(() => ({
       manifest: false,
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icons/icon-192x192.png', 'icons/icon-512x512.png'],
       workbox: {
-        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8 MB for large bundles
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,jpg,jpeg,webp}'],
+        // Précache = APP SHELL uniquement (code, styles, polices auto-hébergées,
+        // icônes). Les images (photos produits, visuels marketing…) ne sont PAS
+        // précachées : elles pesaient ~68 Mo téléchargés d'office à la 1ère visite.
+        // Elles passent par le runtime cache « images-cache-v2 » ci-dessous,
+        // rempli à la demande, page par page.
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        globPatterns: ['**/*.{js,css,html,ico,woff2}'],
         runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'gstatic-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
+          // NB : plus de règles fonts.googleapis/gstatic — toutes les polices sont
+          // auto-hébergées (@fontsource) et précachées via woff2.
           {
             // Cache NFC card pages - always fetch fresh content first
             urlPattern: /\/card\/.*/i,
