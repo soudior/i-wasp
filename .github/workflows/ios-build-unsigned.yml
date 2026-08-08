@@ -10,14 +10,12 @@
 name: iOS Build (unsigned validation)
 
 on:
+  # Compilation validée (run vert + artefact) → retour au déclenchement MANUEL
+  # uniquement : plus aucune minute macOS consommée automatiquement à chaque push.
+  # Le déclencheur push temporaire (branche de dev) a été retiré.
+  # NB : workflow_dispatch requiert que ce fichier soit sur la branche par défaut
+  # pour apparaître dans l'onglet Actions ; il le sera à la fusion de la PR.
   workflow_dispatch:
-  # Déclencheur limité à CETTE branche de dev uniquement (jamais main, jamais la
-  # prod) : permet d'exécuter la validation sans que le workflow soit sur la branche
-  # par défaut (limite plateforme de workflow_dispatch). À retirer une fois la
-  # compilation validée pour ne pas consommer de minutes macOS à chaque push.
-  push:
-    branches:
-      - claude/iwasp-audit-restructure-uzfv2l
 
 concurrency:
   group: ios-unsigned-${{ github.ref }}
