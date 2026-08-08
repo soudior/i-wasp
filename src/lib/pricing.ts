@@ -6,10 +6,12 @@ export const PRICING = {
   currencySymbol: "€",
   
   // B2C Pricing (TTC - includes VAT)
+  // Grille CANONIQUE (cf. nfcPricing.ts + serveur create-nfc-payment) :
+  // Essentielle 29,90 € · Professionnelle 49,90 € · Prestige 89,90 €.
   b2c: {
-    single: 4900, // 49€ for 1 card
-    double: 8900, // 89€ for 2 cards (44.50€ each)
-    premiumPlus: 6900, // 69€ Premium+ single
+    single: 2990, // 29,90€ — Essentielle
+    double: 5980, // 2 × 29,90€
+    premiumPlus: 4990, // 49,90€ — Professionnelle
   },
   
   // B2B Pricing (HT - excludes VAT)

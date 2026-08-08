@@ -720,7 +720,7 @@ function PricingContent() {
                     <p className="text-sm mb-6 font-light" style={{ color: COLORS.gris }}>Votre entrée dans la conciergerie</p>
                     
                     <div className="mb-6">
-                      <span className="text-4xl font-light">{currency === "MAD" ? "290" : "29"}</span>
+                      <span className="text-4xl font-light">{currency === "MAD" ? "329" : "29,90"}</span>
                       <span className="text-lg ml-2" style={{ color: COLORS.gris }}>{currency === "MAD" ? "DH" : "€"}</span>
                       <p className="text-sm mt-1" style={{ color: COLORS.gris }}>mise en service</p>
                     </div>
@@ -795,7 +795,7 @@ function PricingContent() {
                         style={{ backgroundColor: `${COLORS.noirCard}80`, border: `1px solid ${COLORS.border}` }}
                       >
                         <div className="flex items-baseline gap-2">
-                          <span className="text-3xl font-light">{currency === "MAD" ? "490" : "49"}</span>
+                          <span className="text-3xl font-light">{currency === "MAD" ? "549" : "49,90"}</span>
                           <span style={{ color: COLORS.gris }}>{currency === "MAD" ? "DH" : "€"}/an</span>
                         </div>
                         <p className="text-sm mt-1" style={{ color: COLORS.gris }}>

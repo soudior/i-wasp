@@ -97,8 +97,8 @@ interface MaterialOption {
 }
 
 const materialOptions: MaterialOption[] = [
-  { id: "pvc", name: "PVC Premium", priceLabel: "À partir de 49 €", basePrice: 4900 },
-  { id: "metal", name: "Métal", priceLabel: "À partir de 89 €", basePrice: 8900 }
+  { id: "pvc", name: "PVC Premium", priceLabel: "À partir de 29,90 €", basePrice: 2990 },
+  { id: "metal", name: "Métal", priceLabel: "À partir de 89,90 €", basePrice: 8990 }
 ];
 
 interface ProductSpec {

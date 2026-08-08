@@ -50,7 +50,7 @@ const products: Product[] = [
     id: "classique",
     name: "Classique",
     subtitle: "PVC Premium",
-    price: "249",
+    price: "329",
     currency: "MAD",
     color: "Noir mat + Or",
     features: [
@@ -66,7 +66,7 @@ const products: Product[] = [
     id: "premium",
     name: "Premium",
     subtitle: "PVC Luxe",
-    price: "349",
+    price: "549",
     currency: "MAD",
     color: "Blanc nacré + Argent",
     features: [
@@ -83,7 +83,7 @@ const products: Product[] = [
     id: "metal",
     name: "Métal",
     subtitle: "Acier brossé",
-    price: "599",
+    price: "989",
     currency: "MAD",
     color: "Or brossé",
     features: [
