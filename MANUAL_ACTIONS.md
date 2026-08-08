@@ -69,7 +69,10 @@ bundle id `app.iwasp.digital`. Il reste **une** valeur à insérer : votre **Tea
 3. ☐ Déployer le site et **vérifier** que l'AASA est servi :
    - `https://i-wasp.com/.well-known/apple-app-site-association`
    - en `Content-Type: application/json`, **sans redirection** (HTTP 200 direct).
-     (Le `_redirects` sert les fichiers statiques en priorité ; vérifier tout de même.)
+   - `Content-Type` forcé via `public/_headers` (Netlify/Cloudflare Pages). Si
+     l'hébergeur diffère, voir `VERIFICATIONS.md` §1 pour l'équivalent.
+   - Chemins déclarés : `/c/*`, `/card/*` (le `/n/*` sans route a été retiré ;
+     le rajouter seulement après avoir créé la route `/n/:publicId`).
 4. ☐ **Android :** générer `assetlinks.json` avec l'empreinte SHA-256 de votre clé
    de signature (`keytool -list -v -keystore <votre.keystore>`), le placer à
    `https://i-wasp.com/.well-known/assetlinks.json` avec le package `app.iwasp.digital`.

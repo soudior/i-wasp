@@ -20,7 +20,7 @@
 |------|--------|--------|
 | Scheme deep-link `iwasp://` | ✅ | Déclaré dans `Info.plist.template`. Le `scheme:'IWASP'` de Capacitor est le schéma **interne** du serveur WKWebView (distinct, à ne pas confondre). |
 | Associated Domains (iOS) | ✅ | Déclarés (`applinks:i-wasp.com` / `www.i-wasp.com`) dans `Info.plist.template` + fichier d'entitlements prêt (`ios-config/App.entitlements`). À activer dans Xcode (capability). |
-| `apple-app-site-association` | ✅ | `appID = Y4JV4X2DJ6.app.iwasp.digital`, présent en racine **et** `.well-known/`. Reste : le servir en `application/json` sans redirection à la mise en ligne. |
+| `apple-app-site-association` | ✅ | `appID = Y4JV4X2DJ6.app.iwasp.digital`, présent en racine **et** `.well-known/`. Chemins **alignés sur les vraies routes** : `/c/*`, `/card/*` (le `/n/*` sans route a été retiré — voir `VERIFICATIONS.md` §2). `Content-Type: application/json` forcé via `public/_headers`. Reste : confirmer le service en prod (200, sans redirection). |
 | `assetlinks.json` (Android) | ☐ | À générer avec le SHA-256 de la clé de signature (voir MANUAL_ACTIONS §3), package `app.iwasp.digital`. |
 | Universal Links testés | ☐ | À valider sur appareil réel **après déploiement** du site (AASA servi) + build iOS. |
 
@@ -51,7 +51,7 @@
 | Compte de démo App Review + notes reviewer | ✅ | Modèle prêt : `APP_STORE_LISTING.md` §5 & §7 (créer le compte démo côté Supabase). |
 | Statut trader UE (DSA) | ☐ | À déclarer dans App Store Connect → Business : `APP_STORE_LISTING.md` §6. |
 | Suppression de compte **dans l'app** | ✅ | Implémentée : bouton « Supprimer définitivement mon compte » (Settings.tsx, confirmation typée « SUPPRIMER ») + edge function `delete-account` (service-role, suppression réelle côté serveur, anonymisation des commandes, révocation des sessions). Reste : `supabase functions deploy delete-account`. Détail : `APP_STORE_LISTING.md` §2. |
-| Sign in with Apple | ✅ | **Non requis** (Guideline 4.8) : l'app fournit une auth first-party email/mot de passe → Google n'est pas le mécanisme exclusif. Décision + plan de repli documentés dans `APP_STORE_LISTING.md` §1. |
+| Sign in with Apple | ✅ | **Requis** (Guideline 4.8, car Google OAuth est proposé) et **implémenté** : bouton conforme HIG (web + iOS), nonce/state, gestion d'erreurs, liaison de compte, e-mail masqué. Reste : activer le provider Apple (Supabase) + clé `.p8`. Détail : `SIGN_IN_WITH_APPLE.md`. |
 | Pas de clé privée dans le bundle | ✅ | Aucun secret dans le frontend (vérifié). Confirmer qu'aucun `.env` secret n'est embarqué au build. |
 
 ## 6. Build & distribution

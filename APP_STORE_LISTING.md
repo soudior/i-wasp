@@ -13,42 +13,35 @@
 
 | Méthode | Où | Type |
 |---------|-----|------|
-| Email + mot de passe | `AuthContext.signUp` / `signInWithPassword` (Login, Signup, SaaSPricing, IWASPElite, AdminCreator) | **Compte first-party i-wasp** |
-| Google OAuth | `useGoogleAuth` + `signInWithOAuth({provider:'google'})` (Login, IWASPElite) | Social login tiers |
-| Sign in with Apple | — | **Absent** |
+| Email + mot de passe | `AuthContext.signUp` / `signInWithPassword` (Login, Signup, SaaSPricing, IWASPElite, AdminCreator) | Compte first-party i-wasp |
+| Google OAuth | `useGoogleAuth` + `signInWithOAuth({provider:'google'})` (Login, IWASPElite) | **Social login tiers** |
+| Sign in with Apple | `useAppleAuth` + `AppleSignInButton` (Login, Signup) | ✅ **Ajouté** |
 
-**Règle Apple 4.8 :** Sign in with Apple n'est obligatoire que si l'app utilise
-**exclusivement** un service de connexion social/tiers pour créer ou authentifier
-le compte principal.
+**Règle Apple 4.8 (correcte) :** dès qu'une app propose un login social/tiers
+(Google, Facebook…) pour **créer ou authentifier le compte principal**, elle
+**doit** offrir une option de connexion équivalente respectueuse de la vie privée —
+Sign in with Apple remplit ce rôle. L'exemption « compte propriétaire » ne
+s'applique que si l'app utilise **exclusivement** son propre système de compte.
 
-**Conclusion : Sign in with Apple n'est PAS strictement obligatoire pour i-wasp**,
-car l'app fournit sa **propre** authentification email/mot de passe (compte
-first-party) en plus de Google. La connexion Google est une option, pas le seul
-mécanisme. La condition d'exclusivité de 4.8 n'est donc pas remplie.
+⚠️ **Correction d'une conclusion antérieure :** la simple présence d'une connexion
+email/mot de passe **n'exempte pas** l'app tant que **Google OAuth** est proposé
+pour le compte principal. La condition d'exclusivité n'est pas remplie → **Sign in
+with Apple est requis**.
 
-**Décision retenue (recommandée) — Option A :** conserver email/mot de passe +
-Google, **sans** ajouter SIWA. Aucun secret ni Mac requis. Documenter ce
-raisonnement dans les notes de revue (§7 ci-dessous) pour couper court à toute
-question du reviewer.
+**Décision produit retenue : conserver Google ET ajouter Sign in with Apple.**
+Implémentation faite dans le dépôt (bouton conforme HIG, web + iOS Capacitor,
+nonce/state, gestion d'erreurs, liaison de compte, cas e-mail masqué). Les étapes
+Apple Developer + Supabase (avec **secrets à placer dans les dashboards**, jamais
+ici) sont détaillées dans **`SIGN_IN_WITH_APPLE.md`**.
 
-**Plan de repli — Option B (uniquement si App Review l'exige explicitement) :**
-ajouter Sign in with Apple. ⚠️ Nécessite des **secrets** (donc hors dépôt) :
-1. Apple Developer → Certificates, Identifiers & Profiles → activer **Sign In with
-   Apple** sur l'App ID `app.iwasp.digital`.
-2. Créer un **Services ID** + une **clé privée Sign in with Apple** (`.p8`).
-3. Supabase → Authentication → Providers → **Apple** : renseigner Services ID,
-   Team ID `Y4JV4X2DJ6`, Key ID et la clé `.p8` (secrets → dashboard Supabase, jamais ici).
-4. Frontend : ajouter un bouton `signInWithOAuth({ provider: 'apple' })` à côté de
-   Google (Login.tsx / Signup.tsx). Sur natif iOS, utiliser le plugin Capacitor
-   Sign in with Apple pour l'expérience native.
-
-> ❌ **Ne pas ajouter SIWA « au cas où ».** L'audit ci-dessus établit qu'il n'est
-> pas requis ; l'ajouter à l'aveugle introduirait une dépendance à des secrets et
-> une surface de connexion supplémentaire sans obligation réelle.
-
-**Alternative de dernier recours — Option C :** masquer la connexion Google dans
-le build store iOS (ne garder que email/mot de passe). Non recommandé : dégrade
-l'UX pour un bénéfice de conformité nul (Option A est déjà conforme).
+**Ce qui reste à faire (nécessite secrets/dashboards, hors dépôt) :**
+1. Apple Developer → activer **Sign In with Apple** sur l'App ID `app.iwasp.digital`,
+   créer un **Services ID** + une **clé `.p8`**.
+2. Supabase → Authentication → Providers → **Apple** : Services ID, Team ID
+   `Y4JV4X2DJ6`, Key ID, clé `.p8`.
+3. **Révocation des jetons Apple à la suppression de compte** (exigée par Apple) :
+   secrets `APPLE_*` dans Supabase → Edge Functions → Secrets. Voir
+   `SIGN_IN_WITH_APPLE.md` §Révocation.
 
 ---
 

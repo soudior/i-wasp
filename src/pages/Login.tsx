@@ -19,6 +19,8 @@ import { useGuestCard } from "@/contexts/GuestCardContext";
 import { toast } from "sonner";
 import { Loader2, ArrowLeft, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { AppleSignInButton } from "@/components/auth/AppleSignInButton";
+import { useAppleAuth } from "@/hooks/useAppleAuth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -34,6 +36,14 @@ export default function Login() {
 
   // Support both "returnTo" and "redirect" params
   const returnTo = searchParams.get("returnTo") || searchParams.get("redirect") || "/dashboard";
+
+  const { loading: isAppleLoading, signInWithApple } = useAppleAuth({ redirectPath: returnTo });
+
+  const handleAppleLogin = async () => {
+    if (isAppleLoading || isGoogleLoading || isLoading) return;
+    setErrorMessage(null);
+    await signInWithApple();
+  };
 
   // Show message if redirected from protected route
   useEffect(() => {
@@ -245,6 +255,15 @@ export default function Login() {
             </>
           )}
         </button>
+
+        {/* Sign in with Apple (Guideline 4.8) */}
+        <div className="mb-6">
+          <AppleSignInButton
+            onClick={handleAppleLogin}
+            loading={isAppleLoading}
+            disabled={isGoogleLoading || isLoading}
+          />
+        </div>
 
         {/* Divider */}
         <div className="flex items-center gap-4 mb-6">

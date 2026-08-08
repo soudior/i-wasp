@@ -6,14 +6,61 @@
  * - Supprime les données personnelles côté serveur (cartes, leads, scans, stories,
  *   profil, abonnement, push, etc.).
  * - ANONYMISE les commandes (conservées pour obligations comptables) au lieu de les
- *   supprimer, en détachant l'utilisateur et en effaçant les données personnelles.
+ *   supprimer, en détachant l'utilisateur et en effaçant TOUTE donnée directement
+ *   identifiante (y compris order_items, notes internes et URLs de fichiers).
+ * - Révoque les jetons Sign in with Apple si configuré (exigé par Apple lorsqu'une
+ *   app propose à la fois la création de compte ET Sign in with Apple).
  * - Supprime les fichiers de l'utilisateur dans le stockage (best-effort).
- * - Supprime le compte Auth (auth.users) via l'API admin → révoque toutes les sessions.
+ * - Supprime le compte Auth (auth.users) via l'API admin → supprime toutes les
+ *   identités (email, google, apple) et révoque toutes les sessions : reconnexion
+ *   impossible, un nouvel accès crée un compte neuf et vide.
  *
  * NB: nécessite SUPABASE_SERVICE_ROLE_KEY (jamais côté frontend).
+ *
+ * ⚠️ NE PAS DÉPLOYER AVANT REVUE COMPLÈTE. Déploiement uniquement après validation :
+ *    `supabase functions deploy delete-account` (voir APP_STORE_LISTING.md §2 & §8).
+ *    Tester d'abord sur un compte jetable et vérifier l'impossibilité de reconnexion.
  */
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.89.0";
+
+/**
+ * Construit le "client secret" Apple (JWT signé ES256 avec la clé .p8) nécessaire
+ * pour appeler l'endpoint de révocation. Toutes les valeurs proviennent de secrets
+ * d'environnement — aucune valeur en dur.
+ */
+async function buildAppleClientSecret(opts: {
+  clientId: string; teamId: string; keyId: string; privateKeyPem: string;
+}): Promise<string> {
+  const enc = (obj: unknown) =>
+    btoa(JSON.stringify(obj)).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+  const nowSec = Math.floor(Number(new Date()) / 1000);
+  const header = { alg: "ES256", kid: opts.keyId };
+  const payload = {
+    iss: opts.teamId,
+    iat: nowSec,
+    exp: nowSec + 300, // 5 min, largement suffisant pour l'appel de révocation
+    aud: "https://appleid.apple.com",
+    sub: opts.clientId,
+  };
+  const signingInput = `${enc(header)}.${enc(payload)}`;
+
+  // Importer la clé privée PKCS8 (.p8) → CryptoKey ECDSA P-256.
+  const pem = opts.privateKeyPem
+    .replace(/-----BEGIN PRIVATE KEY-----/g, "")
+    .replace(/-----END PRIVATE KEY-----/g, "")
+    .replace(/\s+/g, "");
+  const der = Uint8Array.from(atob(pem), (c) => c.charCodeAt(0));
+  const key = await crypto.subtle.importKey(
+    "pkcs8", der, { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"],
+  );
+  const sig = new Uint8Array(
+    await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, key, new TextEncoder().encode(signingInput)),
+  );
+  const sigB64 = btoa(String.fromCharCode(...sig))
+    .replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+  return `${signingInput}.${sigB64}`;
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -102,7 +149,13 @@ Deno.serve(async (req) => {
     // 5) ANONYMISER les commandes (conservation légale/comptable). La colonne
     //    orders.user_id est NOT NULL et sans clé étrangère vers auth.users : on la
     //    remplace par un UUID sentinelle (compte supprimé) au lieu de la mettre à
-    //    NULL, et on efface toutes les données personnelles réellement présentes.
+    //    NULL. On efface TOUTES les données permettant d'identifier directement la
+    //    personne. Ne subsistent que des colonnes comptables non identifiantes
+    //    (numéro de commande, quantités, montants, dates, statut, type/template).
+    //
+    //    ⚠️ order_items (JSON) peut contenir le nom/titre imprimé sur la carte, les
+    //    URLs de fichiers peuvent encoder un nom, admin_notes peut citer le client :
+    //    tout est donc effacé.
     const DELETED_SENTINEL = "00000000-0000-0000-0000-000000000000";
     await attempt("orders (anonymisation)", () =>
       admin.from("orders").update({
@@ -115,6 +168,12 @@ Deno.serve(async (req) => {
         shipping_postal_code: null,
         shipping_country: null,
         tracking_number: null,
+        // Données de personnalisation potentiellement identifiantes → effacées.
+        order_items: [],
+        admin_notes: null,
+        logo_url: null,
+        background_image_url: null,
+        print_file_url: null,
       }).eq("user_id", userId),
     );
 
@@ -129,7 +188,59 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 7) Supprimer le compte Auth → révoque toutes les sessions. ÉTAPE CRITIQUE.
+    // 6b) Révoquer les jetons Sign in with Apple (best-effort, non bloquant).
+    //     Exigé par Apple lorsqu'une app propose à la fois la création de compte et
+    //     Sign in with Apple. Activé UNIQUEMENT si les secrets Apple sont configurés
+    //     (Supabase → Edge Functions → Secrets) ET si un refresh token Apple a été
+    //     stocké pour l'utilisateur (table optionnelle `apple_auth_tokens`).
+    //     Voir SIGN_IN_WITH_APPLE.md pour la configuration exacte.
+    await attempt("apple: révocation des jetons", async () => {
+      const clientId = Deno.env.get("APPLE_REVOKE_CLIENT_ID");
+      const teamId = Deno.env.get("APPLE_TEAM_ID");
+      const keyId = Deno.env.get("APPLE_KEY_ID");
+      const privateKeyPem = Deno.env.get("APPLE_PRIVATE_KEY");
+      if (!clientId || !teamId || !keyId || !privateKeyPem) {
+        log("SKIP: révocation Apple (secrets non configurés)");
+        return;
+      }
+      let refreshTokens: string[] = [];
+      try {
+        const { data } = await admin
+          .from("apple_auth_tokens")
+          .select("refresh_token")
+          .eq("user_id", userId);
+        refreshTokens = (data ?? [])
+          .map((r: { refresh_token: string | null }) => r.refresh_token)
+          .filter((t): t is string => !!t);
+      } catch {
+        log("SKIP: table apple_auth_tokens absente");
+        return;
+      }
+      if (refreshTokens.length === 0) {
+        log("SKIP: aucun refresh token Apple stocké");
+        return;
+      }
+      const clientSecret = await buildAppleClientSecret({ clientId, teamId, keyId, privateKeyPem });
+      for (const token of refreshTokens) {
+        const body = new URLSearchParams({
+          client_id: clientId,
+          client_secret: clientSecret,
+          token,
+          token_type_hint: "refresh_token",
+        });
+        const res = await fetch("https://appleid.apple.com/auth/revoke", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body,
+        });
+        if (!res.ok) throw new Error(`Apple revoke HTTP ${res.status}`);
+      }
+      await admin.from("apple_auth_tokens").delete().eq("user_id", userId);
+      log("OK: jetons Apple révoqués", { count: refreshTokens.length });
+    });
+
+    // 7) Supprimer le compte Auth → supprime les identités (email/google/apple) et
+    //    révoque toutes les sessions → reconnexion impossible. ÉTAPE CRITIQUE.
     const { error: delErr } = await admin.auth.admin.deleteUser(userId);
     if (delErr) {
       log("ERREUR: suppression du compte Auth", { message: delErr.message });

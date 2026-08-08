@@ -10,6 +10,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Loader2, ArrowRight, Mail, Lock, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { AppleSignInButton } from "@/components/auth/AppleSignInButton";
+import { useAppleAuth } from "@/hooks/useAppleAuth";
 
 export default function Signup() {
   const [firstName, setFirstName] = useState("");
@@ -19,7 +21,13 @@ export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { signUp, user, loading } = useAuth();
+  const { loading: isAppleLoading, signInWithApple } = useAppleAuth({ redirectPath: "/onboarding" });
   const navigate = useNavigate();
+
+  const handleAppleSignup = async () => {
+    if (isAppleLoading || isGoogleLoading || isLoading) return;
+    await signInWithApple();
+  };
 
   useEffect(() => {
     if (!loading && user) {
@@ -153,6 +161,16 @@ export default function Signup() {
               </>
             )}
           </button>
+
+          {/* Sign in with Apple (Guideline 4.8) */}
+          <div className="mb-6">
+            <AppleSignInButton
+              onClick={handleAppleSignup}
+              loading={isAppleLoading}
+              disabled={isGoogleLoading || isLoading}
+              label="S'inscrire avec Apple"
+            />
+          </div>
 
           {/* Divider */}
           <div className="flex items-center gap-4 mb-6">

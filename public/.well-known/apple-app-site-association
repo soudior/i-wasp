@@ -6,8 +6,7 @@
         "appID": "Y4JV4X2DJ6.app.iwasp.digital",
         "paths": [
           "/c/*",
-          "/card/*",
-          "/n/*"
+          "/card/*"
         ]
       }
     ]
