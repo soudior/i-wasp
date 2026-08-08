@@ -15,7 +15,7 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 45
     environment:
-      node: 20
+      node: 22
       xcode: latest
       cocoapods: default
     scripts:
@@ -48,7 +48,7 @@ workflows:
       # ne PAS mettre la clé ici, seulement son nom.
       app_store_connect: IWASP_ASC_KEY
     environment:
-      node: 20
+      node: 22
       xcode: latest
       cocoapods: default
       ios_signing:
