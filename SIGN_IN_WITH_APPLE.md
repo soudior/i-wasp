@@ -19,12 +19,19 @@
 | Bouton intégré aux écrans Connexion & Inscription | `src/pages/Login.tsx`, `src/pages/Signup.tsx` |
 | Liaison à un compte existant (anti-doublon) | `useAppleAuth().linkAppleIdentity()` |
 | Révocation des jetons Apple à la suppression de compte (best-effort, gated) | `supabase/functions/delete-account/index.ts` |
-| Plugin natif iOS | `@capacitor-community/apple-sign-in` (dans `package.json`) |
 
-**Web vs iOS :**
-- **Web** → `supabase.auth.signInWithOAuth({ provider: 'apple' })` (redirect géré par Supabase).
-- **iOS natif** → feuille Apple native, puis `supabase.auth.signInWithIdToken({ provider:'apple', token, nonce })`.
-  Nonce : on envoie à Apple le **SHA-256** du nonce, et à Supabase le nonce **brut** (anti-rejeu).
+**Web et iOS → flux OAuth Supabase** (`signInWithOAuth({ provider: 'apple' })`).
+- **Web** : redirection navigateur gérée par Supabase.
+- **iOS Capacitor** : même redirection (WebView / navigateur système) ; retour vers
+  `redirectTo` (URL de l'app configurée dans Supabase → URL Configuration + deep link).
+
+> ⚠️ **Feuille native Apple (non activée)** : le plugin communautaire
+> `@capacitor-community/apple-sign-in` n'a **pas** de version compatible **Capacitor 8**
+> (son `Package.swift` épingle `capacitor-swift-pm` 7.x → conflit SPM avec les plugins
+> core 8.x, ce qui **casse la compilation iOS**). Il a donc été retiré ; on utilise le
+> flux OAuth (compatible partout). Les utilitaires de nonce (`src/lib/appleAuth.ts`,
+> `generateRawNonce` / `sha256Hex`) restent prêts pour réactiver la feuille native
+> (`signInWithIdToken`) dès qu'un plugin compatible Cap 8 sera disponible.
 
 ---
 

@@ -1,12 +1,18 @@
 /**
- * Hook Sign in with Apple — fonctionne en web et en natif iOS (Capacitor).
+ * Hook Sign in with Apple — fonctionne en web et en iOS Capacitor.
  *
- * - Web : `supabase.auth.signInWithOAuth({ provider: 'apple' })` (flux redirect
- *   géré par Supabase, nonce/state gérés côté Supabase).
- * - iOS natif : feuille native Apple via `@capacitor-community/apple-sign-in`,
- *   puis `supabase.auth.signInWithIdToken({ provider: 'apple', token, nonce })`
- *   avec un nonce haché (anti-rejeu). Le plugin natif n'est chargé qu'à la demande
- *   (import dynamique) pour ne pas alourdir le bundle web.
+ * Implémentation : flux OAuth Supabase `signInWithOAuth({ provider: 'apple' })`.
+ * - Web : redirection navigateur classique gérée par Supabase.
+ * - iOS Capacitor : la même redirection s'ouvre dans la WebView / le navigateur
+ *   système ; le retour se fait vers `redirectTo` (URL de l'app / deep link
+ *   configuré dans Supabase → URL Configuration).
+ *
+ * Note (feuille native) : le plugin communautaire `@capacitor-community/apple-sign-in`
+ * n'a pas encore de version compatible **Capacitor 8** (son Package.swift épingle
+ * `capacitor-swift-pm` 7.x, ce qui casse la résolution SPM face aux plugins core en
+ * 8.x). On utilise donc le flux OAuth, compatible et sans dépendance native. Les
+ * utilitaires de nonce (`src/lib/appleAuth.ts`) restent prêts pour réactiver la
+ * feuille native (`signInWithIdToken`) dès qu'un plugin compatible Cap 8 existe.
  *
  * Liaison de compte / pas de doublon :
  * - Supabase relie automatiquement une identité Apple à un utilisateur existant
@@ -17,18 +23,12 @@
  */
 
 import { useCallback, useState } from "react";
-import { Capacitor } from "@capacitor/core";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  generateRawNonce,
-  sha256Hex,
-  classifyAppleError,
-  appleErrorMessage,
-} from "@/lib/appleAuth";
+import { classifyAppleError, appleErrorMessage } from "@/lib/appleAuth";
 import { toast } from "sonner";
 
 interface UseAppleAuthOptions {
-  /** Chemin de retour après connexion web (ex. returnTo). Défaut: page courante. */
+  /** Chemin de retour après connexion (ex. returnTo). Défaut: page courante. */
   redirectPath?: string;
 }
 
@@ -44,45 +44,22 @@ export function useAppleAuth(options: UseAppleAuthOptions = {}) {
     return kind;
   }, []);
 
+  const resolveRedirectTo = useCallback(() => {
+    const path = options.redirectPath ?? `${window.location.pathname}${window.location.search}`;
+    return `${window.location.origin}${path}`;
+  }, [options.redirectPath]);
+
   /** Connexion Sign in with Apple (création ou connexion). */
   const signInWithApple = useCallback(async (): Promise<boolean> => {
     if (loading) return false;
     setLoading(true);
     try {
-      if (Capacitor.isNativePlatform()) {
-        // --- iOS natif : feuille Apple + signInWithIdToken ---
-        const { SignInWithApple } = await import("@capacitor-community/apple-sign-in");
-        const rawNonce = generateRawNonce();
-        const hashedNonce = await sha256Hex(rawNonce);
-
-        const result = await SignInWithApple.authorize({
-          clientId: "app.iwasp.digital",
-          redirectURI: "https://i-wasp.com/auth/callback",
-          scopes: "name email",
-          nonce: hashedNonce,
-        });
-
-        const idToken = result.response?.identityToken;
-        if (!idToken) throw new Error("invalid response: identityToken manquant");
-
-        const { error } = await supabase.auth.signInWithIdToken({
-          provider: "apple",
-          token: idToken,
-          nonce: rawNonce,
-        });
-        if (error) throw error;
-        return true;
-      }
-
-      // --- Web : flux OAuth redirect géré par Supabase ---
-      const path = options.redirectPath ?? `${window.location.pathname}${window.location.search}`;
-      const redirectTo = `${window.location.origin}${path}`;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "apple",
-        options: { redirectTo },
+        options: { redirectTo: resolveRedirectTo() },
       });
       if (error) throw error;
-      // En web, la navigation redirige vers Apple : rien de plus à faire ici.
+      // La navigation redirige vers Apple : rien de plus à faire ici.
       return true;
     } catch (error) {
       handleError(error);
@@ -90,7 +67,7 @@ export function useAppleAuth(options: UseAppleAuthOptions = {}) {
     } finally {
       setLoading(false);
     }
-  }, [loading, options.redirectPath, handleError]);
+  }, [loading, resolveRedirectTo, handleError]);
 
   /**
    * Lie une identité Apple au compte DÉJÀ connecté (évite les doublons, utile quand
@@ -100,10 +77,9 @@ export function useAppleAuth(options: UseAppleAuthOptions = {}) {
     if (loading) return false;
     setLoading(true);
     try {
-      const path = options.redirectPath ?? `${window.location.pathname}${window.location.search}`;
       const { error } = await supabase.auth.linkIdentity({
         provider: "apple",
-        options: { redirectTo: `${window.location.origin}${path}` },
+        options: { redirectTo: resolveRedirectTo() },
       });
       if (error) throw error;
       return true;
@@ -113,7 +89,7 @@ export function useAppleAuth(options: UseAppleAuthOptions = {}) {
     } finally {
       setLoading(false);
     }
-  }, [loading, options.redirectPath, handleError]);
+  }, [loading, resolveRedirectTo, handleError]);
 
   return { loading, signInWithApple, linkAppleIdentity };
 }
