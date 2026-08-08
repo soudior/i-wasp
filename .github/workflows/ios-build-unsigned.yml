@@ -54,6 +54,23 @@ jobs:
           if [ ! -d ios ]; then npx cap add ios; fi
           npx cap sync ios
 
+      # Garde anti-dérive Swift : @capacitor/ios (épinglé exact dans package.json)
+      # génère un CapApp-SPM/Package.swift qui épingle capacitor-swift-pm en
+      # `exact:`. On VÉRIFIE cette version exacte attendue ; toute dérive fait
+      # échouer le build au lieu de récupérer silencieusement une version Swift
+      # incompatible. Mettre à jour EXPECTED_SWIFT_PM en cas de bump volontaire.
+      - name: Verify pinned capacitor-swift-pm version (no silent drift)
+        run: |
+          EXPECTED_SWIFT_PM="8.5.0"
+          MANIFEST="ios/App/CapApp-SPM/Package.swift"
+          echo "Manifest capacitor-swift-pm line:"
+          grep -n "capacitor-swift-pm" "$MANIFEST" || true
+          if ! grep -q "capacitor-swift-pm.git\", exact: \"${EXPECTED_SWIFT_PM}\"" "$MANIFEST"; then
+            echo "::error::capacitor-swift-pm n'est pas épinglé à exact ${EXPECTED_SWIFT_PM} (dérive Swift détectée)."
+            exit 1
+          fi
+          echo "OK: capacitor-swift-pm épinglé à exact ${EXPECTED_SWIFT_PM}."
+
       # Capacitor 8 utilise Swift Package Manager par défaut (Package.swift),
       # pas CocoaPods → aucun `pod install`. On installe les Pods uniquement si un
       # Podfile existe (compat anciens projets), sinon on s'appuie sur SPM.
@@ -80,12 +97,51 @@ jobs:
             -configuration Release \
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             clean build
 
+      # Capture reproductible : le Package.resolved généré (versions Swift
+      # exactes résolues) est publié comme artefact pour comparaison entre builds.
+      - name: Collect resolved Swift package versions
+        if: always()
+        run: |
+          RESOLVED=$(find ios "$RUNNER_TEMP/DerivedData" -name "Package.resolved" 2>/dev/null | head -1)
+          mkdir -p "$RUNNER_TEMP/out"
+          if [ -n "$RESOLVED" ]; then
+            cp "$RESOLVED" "$RUNNER_TEMP/out/Package.resolved"
+            echo "Package.resolved capturé depuis: $RESOLVED"
+            cat "$RUNNER_TEMP/out/Package.resolved"
+          else
+            echo "Aucun Package.resolved trouvé." > "$RUNNER_TEMP/out/Package.resolved"
+          fi
+
+      - name: Package the unsigned .app
+        run: |
+          APP=$(find "$RUNNER_TEMP/DerivedData/Build/Products" -maxdepth 2 -name "App.app" -type d | head -1)
+          mkdir -p "$RUNNER_TEMP/out"
+          if [ -z "$APP" ]; then
+            echo "::error::App.app introuvable (build échoué ?)."; exit 1
+          fi
+          echo "Artefact .app: $APP"
+          ( cd "$(dirname "$APP")" && zip -ry "$RUNNER_TEMP/out/IWASP-unsigned-App.zip" "App.app" >/dev/null )
+          ls -la "$RUNNER_TEMP/out"
+
+      - name: Upload unsigned build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iwasp-ios-unsigned-app
+          path: |
+            ${{ runner.temp }}/out/IWASP-unsigned-App.zip
+            ${{ runner.temp }}/out/Package.resolved
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Summary
         if: success()
         run: |
-          echo "✅ Le projet iOS compile (non signe). Etape suivante = build signe + TestFlight (workflow separe, apres ajout des secrets)."
+          echo "✅ Le projet iOS compile (non signe)."
+          echo "Artefact publie: iwasp-ios-unsigned-app (App.app non signe + Package.resolved)."
+          echo "capacitor-swift-pm epingle exact 8.5.0 (garde anti-derive active)."

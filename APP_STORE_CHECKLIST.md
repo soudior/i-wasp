@@ -77,6 +77,45 @@
 
 ✅ **Aucun placeholder Apple ne subsiste dans le code** (`YOUR_APP_ID`, `TEAM_ID`, `com.iwasp.app`, bundle Lovable : tous remplacés).
 
+## 7bis. Build iOS cloud — état vérifié (sans Mac)
+
+| Item | Statut | Détail |
+|------|--------|--------|
+| Compilation iOS non signée (GitHub Actions macOS) | ✅ | **Réussie** (run « iOS Build (unsigned validation) »). ⚠️ « compile » ≠ « connexion testée sur iPhone » — voir §7ter. |
+| Versions Capacitor figées | ✅ | `@capacitor/{core,cli,ios,android}` = **exact `8.5.0`**, `@capacitor/haptics` = **exact `8.0.2`** (sans `^`). `@capacitor/ios` 8.5.0 génère un `CapApp-SPM/Package.swift` qui épingle **`capacitor-swift-pm` en `exact: "8.5.0"`** → résolution Swift déterministe. |
+| Garde anti-dérive Swift | ✅ | Le workflow **échoue** si `capacitor-swift-pm` n'est plus épinglé à `exact 8.5.0` (empêche de récupérer silencieusement une version Swift incompatible). |
+| Artefact | ✅ | `iwasp-ios-unsigned-app` : `App.app` **non signé** + `Package.resolved` (versions Swift résolues), rétention 30 j. |
+| Reproductibilité | ✅ | Versions npm épinglées + `Package.resolved` publié → deux builds propres résolvent les mêmes versions (comparer l'artefact `Package.resolved`). |
+
+**Impact du retrait de `@capacitor/status-bar` et `@capacitor/splash-screen` :**
+leurs dernières versions (8.0.x) ne compilent pas contre le core Swift
+`capacitor-swift-pm` 8.5.x (API `PluginConfig.getString` / `color(fromHex:)`
+supprimée). Ils étaient **config-only** (non importés dans `src/`) :
+- **SplashScreen** : le splash est géré côté web (`src/components/SplashScreen.tsx`)
+  et l'**écran de lancement natif** reste fourni par le **storyboard iOS** (`LaunchScreen`).
+  Aucune régression fonctionnelle attendue (le plugin était déjà désactivé :
+  `launchShowDuration: 0`).
+- **StatusBar** : la barre d'état iOS reprend le **comportement par défaut** (plus de
+  style/couleur forcés via le plugin). À vérifier visuellement (§7ter).
+- À **réintroduire** dès qu'une version compatible Cap 8.5 sera publiée.
+
+## 7ter. Checklist de test sur iPhone réel (après build signé / TestFlight)
+
+> ⚠️ À faire sur un **vrai iPhone** — la compilation CI ne prouve PAS que l'app
+> se lance ni que la connexion fonctionne.
+
+- ☐ **Safe area** : contenu non masqué par l'encoche / la Dynamic Island ni par
+  l'indicateur home ; `env(safe-area-inset-*)` respecté en haut et en bas.
+- ☐ **Barre d'état** : lisibilité des icônes système au-dessus du fond sombre de
+  l'app (fond `#000000`) — vérifier que le retrait du plugin StatusBar ne rend pas
+  les icônes illisibles ; sinon, définir le style via le storyboard / Info.plist
+  (`UIStatusBarStyle`) plutôt que réintroduire le plugin.
+- ☐ **Écran de lancement** : le storyboard s'affiche puis laisse place au splash web
+  sans écran noir prolongé.
+- ☐ **Rotation / notch** : pas de contenu coupé en paysage (si autorisé).
+- ☐ **Sign in with Apple** : flux OAuth complet (voir `SIGN_IN_WITH_APPLE.md`).
+- ☐ **Deep links / Universal Links**, **NFC**, **wallet**.
+
 ## 8. PROCHAINE ACTION MANUELLE — génération & build iOS (⚠️ Mac + Xcode requis)
 
 > Le dossier `ios/` **n'est pas** dans le dépôt (généré par Capacitor). Il **doit** être
