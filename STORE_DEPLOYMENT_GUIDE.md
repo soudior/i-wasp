@@ -54,7 +54,7 @@ npx cap open ios
 2. Onglet **Signing & Capabilities**
 3. Activez **Automatically manage signing**
 4. Sélectionnez votre Team (Apple Developer)
-5. Bundle ID: `app.lovable.17c6de152d8546a1a7d8e5c478c6f024`
+5. Bundle ID: `app.iwasp.digital`
 
 #### Capabilities à ajouter (+)
 - **Near Field Communication Tag Reading** (NFC)
@@ -89,7 +89,7 @@ ios/App/App/Assets.xcassets/AppIcon.appiconset/
 #### Créer l'app
 1. https://appstoreconnect.apple.com
 2. **My Apps → (+) New App**
-3. Bundle ID: `app.lovable.17c6de152d8546a1a7d8e5c478c6f024`
+3. Bundle ID: `app.iwasp.digital`
 
 #### Métadonnées
 
@@ -162,9 +162,9 @@ npx cap open android
 Vérifiez :
 ```gradle
 android {
-    namespace "app.lovable._17c6de152d8546a1a7d8e5c478c6f024"
+    namespace "app.iwasp.digital"
     defaultConfig {
-        applicationId "app.lovable.17c6de152d8546a1a7d8e5c478c6f024"
+        applicationId "app.iwasp.digital"
         minSdkVersion 22
         targetSdkVersion 34
         versionCode 1

@@ -1,10 +1,9 @@
 /**
  * NotFound - 404 Page
- * IWASP Premium Style - Haute Couture aesthetic
- * Auto-redirects to home after countdown
+ * Style premium i-wasp. Navigation manuelle (pas d'auto-redirection :
+ * une redirection automatique masquerait un vrai 404 en 200 côté SEO).
  */
 
-import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Home, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,23 +11,6 @@ import { motion } from "framer-motion";
 
 export default function NotFound() {
   const navigate = useNavigate();
-  const [countdown, setCountdown] = useState(5);
-
-  // Auto-redirect to home after countdown
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          navigate("/", { replace: true });
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [navigate]);
 
   const handleGoHome = () => {
     navigate("/", { replace: true });
@@ -87,45 +69,6 @@ export default function NotFound() {
             </p>
           </motion.div>
         </div>
-
-        {/* Auto redirect countdown */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="flex items-center justify-center"
-        >
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-muted/50 border border-border/50">
-            <div className="relative h-5 w-5">
-              <svg className="h-5 w-5 -rotate-90" viewBox="0 0 24 24">
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  className="stroke-muted-foreground/20"
-                  strokeWidth="2"
-                  fill="none"
-                />
-                <motion.circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  className="stroke-primary"
-                  strokeWidth="2"
-                  fill="none"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 1 }}
-                  animate={{ pathLength: countdown / 5 }}
-                  transition={{ duration: 1, ease: "linear" }}
-                  style={{ strokeDasharray: "1 1" }}
-                />
-              </svg>
-            </div>
-            <span className="text-sm text-muted-foreground">
-              Redirection dans <span className="font-medium text-foreground">{countdown}s</span>
-            </span>
-          </div>
-        </motion.div>
 
         {/* Action buttons */}
         <motion.div 

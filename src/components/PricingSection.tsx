@@ -73,7 +73,7 @@ export function PricingSection() {
   const calculatePrice = () => {
     if (isCustomQuote) return { unit: 0, customization: 0, total: 0, isCustom: true };
 
-    let unitPrice = config.cardType === "standard" ? STANDARD_PRICE : PERSONALIZED_PRICE;
+    const unitPrice = config.cardType === "standard" ? STANDARD_PRICE : PERSONALIZED_PRICE;
     let customizationCost = 0;
 
     // B2B personalization extra
@@ -482,9 +482,9 @@ export function PricingSection() {
                       <span className="text-3xl font-display font-bold text-foreground">
                         {pricing.total.toFixed(0)}€
                       </span>
-                      {pricing.discount > 0 && (
+                      {(pricing.discount ?? 0) > 0 && (
                         <span className="text-sm text-primary font-medium">
-                          -{pricing.discount}%
+                          -{pricing.discount ?? 0}%
                         </span>
                       )}
                     </div>

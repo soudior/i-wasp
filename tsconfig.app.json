@@ -15,11 +15,18 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    // Rigueur TypeScript réactivée par paliers (0 erreur mesurée à chaque étape).
+    // strictNullChecks + noImplicitAny désormais actifs (null-safety + typage explicite).
+    // Restent optionnels : noUnusedLocals/Parameters (nettoyage du code mort Lovable).
     "strict": false,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noImplicitAny": false,
-    "noFallthroughCasesInSwitch": false,
+    "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/*": [
         "./src/*"

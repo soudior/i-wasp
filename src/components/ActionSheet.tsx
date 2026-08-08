@@ -87,7 +87,7 @@ export function ActionSheet({ open, onClose, type, value, label }: ActionSheetPr
           },
         ];
 
-      case "location":
+      case "location": {
         const options: ActionSheetOption[] = [
           {
             id: "google",
@@ -117,6 +117,7 @@ export function ActionSheet({ open, onClose, type, value, label }: ActionSheetPr
           onClick: () => handleCopy(value, "Adresse"),
         });
         return options;
+      }
 
       case "website":
         return [

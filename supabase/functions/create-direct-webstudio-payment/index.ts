@@ -95,7 +95,7 @@ serve(async (req) => {
     }
 
     // Get origin for redirect URLs
-    const origin = req.headers.get("origin") || "https://i-wasp.lovable.app";
+    const origin = req.headers.get("origin") || "https://i-wasp.com";
 
     // Build line items for all cart items
     const currencyCode = currency === 'MAD' ? 'mad' : 'eur';

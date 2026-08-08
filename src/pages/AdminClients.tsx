@@ -152,7 +152,7 @@ export default function AdminClients() {
         whatsapp: data.whatsapp || null,
         user_id: user?.id,
         slug: `${data.first_name}-${data.last_name}`.toLowerCase().replace(/\s+/g, "-"),
-      });
+      } as import("@/integrations/supabase/types").TablesInsert<"digital_cards">);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -259,9 +259,9 @@ export default function AdminClients() {
     const sanitizedData = validation.data;
     
     if (editingClient) {
-      updateClient.mutate({ id: editingClient.id, data: sanitizedData });
+      updateClient.mutate({ id: editingClient.id, data: sanitizedData as ClientFormData });
     } else {
-      createClient.mutate(sanitizedData);
+      createClient.mutate(sanitizedData as ClientFormData);
     }
   };
 

@@ -4,14 +4,8 @@ const config: CapacitorConfig = {
   appId: 'app.iwasp.digital',
   appName: 'IWASP',
   webDir: 'dist',
-  // Production mode: use local dist folder for Xcode export
-  // Comment out server block for App Store build
-  /*
-  server: {
-    url: 'https://17c6de15-2d85-46a1-a7d8-e5c478c6f024.lovableproject.com?forceHideBadge=true',
-    cleartext: true
-  },
-  */
+  // Build de production : on sert le dossier dist local (export Xcode).
+  // Ne PAS ajouter de bloc `server.url` distant pour un build App Store.
   ios: {
     contentInset: 'automatic',
     preferredContentMode: 'mobile',
@@ -26,22 +20,12 @@ const config: CapacitorConfig = {
     webContentsDebuggingEnabled: false,
   },
   plugins: {
-    SplashScreen: {
-      // Désactivé : on utilise notre propre loader web
-      launchShowDuration: 0,
-      launchAutoHide: true,
-      launchFadeOutDuration: 0,
-      backgroundColor: '#000000',
-      androidSplashResourceName: 'splash',
-      androidScaleType: 'CENTER_CROP',
-      showSpinner: false,
-      splashFullScreen: true,
-      splashImmersive: true
-    },
-    StatusBar: {
-      style: 'LIGHT',
-      backgroundColor: '#000000'
-    },
+    // NB : le plugin natif @capacitor/splash-screen a été retiré (sa source 8.0.x
+    // n'est pas compatible avec le core Swift capacitor-swift-pm 8.5.x — API
+    // getString/color(fromHex:) supprimée). Le splash est de toute façon géré côté
+    // web (src/components/SplashScreen.tsx) et l'écran de lancement natif reste
+    // fourni par le storyboard iOS. À réintroduire quand une version compatible
+    // Cap 8.5 sera publiée.
     Haptics: {
       enabled: true
     }

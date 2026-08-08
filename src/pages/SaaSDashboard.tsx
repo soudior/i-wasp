@@ -31,8 +31,7 @@ import {
   Loader2,
   ArrowUpRight,
   Package,
-  Calendar,
-  Infinity
+  Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -63,7 +62,7 @@ const planIcons = {
   business: Crown,
 };
 
-const planColors = {
+const planColors: Record<string, string> = {
   free: COLORS.gris,
   pro: COLORS.or,
   business: COLORS.orLight,

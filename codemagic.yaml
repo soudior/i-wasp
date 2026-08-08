@@ -1,0 +1,80 @@
+# Alternative à GitHub Actions : build iOS dans le cloud via Codemagic.
+#
+# 🔒 Aucun secret ici. Les identifiants Apple se configurent dans l'interface
+#    Codemagic (Teams → Integrations → App Store Connect, et Code signing identities).
+#    Voir IOS_CLOUD_BUILD.md.
+#
+# ⚠️ Aucun « triggering » n'est défini → ces workflows ne se lancent PAS
+#    automatiquement. Vous les démarrez manuellement depuis l'interface Codemagic.
+#    Aucun bloc « publishing » n'est présent → AUCUN envoi vers Apple/TestFlight.
+#    Pour activer l'envoi (après votre accord), voir IOS_CLOUD_BUILD.md § Codemagic.
+
+workflows:
+  ios-unsigned:
+    name: iOS unsigned (validation de compilation)
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    environment:
+      node: 22
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install JS deps
+        script: npm ci
+      - name: Build web assets
+        script: npm run build
+      - name: Generate iOS project
+        script: |
+          [ -d ios ] || npx cap add ios
+          npx cap sync ios
+      - name: CocoaPods (only if a Podfile exists)
+        script: cd ios/App && ([ -f Podfile ] && pod install || echo 'Pas de Podfile (SPM Capacitor 8) — ignore.')
+      - name: Compile (unsigned)
+        script: |
+          cd ios/App
+          xcodebuild \
+            -workspace App.xcworkspace -scheme App \
+            -configuration Release -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            clean build
+
+  ios-signed:
+    name: iOS signed (archive IPA, sans envoi Apple)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      # Nom de l'intégration App Store Connect créée dans Codemagic (UI) —
+      # ne PAS mettre la clé ici, seulement son nom.
+      app_store_connect: IWASP_ASC_KEY
+    environment:
+      node: 22
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: app.iwasp.digital
+    scripts:
+      - name: Install JS deps
+        script: npm ci
+      - name: Build web assets
+        script: npm run build
+      - name: Generate iOS project
+        script: |
+          [ -d ios ] || npx cap add ios
+          npx cap sync ios
+      - name: Apply entitlements
+        script: '[ -f ios-config/App.entitlements ] && cp ios-config/App.entitlements ios/App/App/App.entitlements || true'
+      - name: CocoaPods (only if a Podfile exists)
+        script: cd ios/App && ([ -f Podfile ] && pod install || echo 'Pas de Podfile (SPM Capacitor 8) — ignore.')
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Build IPA
+        script: |
+          cd ios/App
+          xcode-project build-ipa --workspace App.xcworkspace --scheme App
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    # Pas de section « publishing » : l'IPA est produit comme artefact, aucun envoi
+    # vers TestFlight. Voir IOS_CLOUD_BUILD.md pour l'activer après votre accord.

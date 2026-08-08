@@ -139,7 +139,7 @@ function generateExpressAlertHtml(data: ExpressOrderAlert): string {
 
               <!-- CTA -->
               <div style="text-align: center; margin-top: 32px;">
-                <a href="https://i-wasp.lovable.app/admin/orders" 
+                <a href="https://i-wasp.com/admin/orders" 
                    style="display: inline-block; background: #007AFF; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px;">
                   Voir dans l'admin →
                 </a>
@@ -250,7 +250,7 @@ function generateWebStudioAlertHtml(data: WebStudioOrderAlert): string {
 
               <!-- CTA -->
               <div style="text-align: center; margin-top: 32px;">
-                <a href="https://i-wasp.lovable.app/admin/webstudio" 
+                <a href="https://i-wasp.com/admin/webstudio" 
                    style="display: inline-block; background: #8B5CF6; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px;">
                   Voir dans l'admin →
                 </a>

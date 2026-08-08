@@ -112,7 +112,7 @@ serve(async (req) => {
     }
 
     // Get origin for redirect URLs
-    const origin = req.headers.get("origin") || "https://i-wasp.lovable.app";
+    const origin = req.headers.get("origin") || "https://i-wasp.com";
 
     // Build line items
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [

@@ -1,0 +1,8 @@
+# Universal Links (iOS) : le fichier AASA doit être servi en application/json,
+# sans extension et sans redirection. Ces règles forcent le bon Content-Type
+# (Netlify / Cloudflare Pages). Les fichiers statiques existants sont servis
+# avant la règle SPA « /* /index.html 200 » de _redirects.
+/.well-known/apple-app-site-association
+  Content-Type: application/json
+/apple-app-site-association
+  Content-Type: application/json

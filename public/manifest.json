@@ -8,62 +8,41 @@
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
-  "id": "com.iwasp.app",
+  "id": "app.iwasp.digital",
   "lang": "fr",
   "dir": "ltr",
   "categories": ["business", "productivity", "social", "lifestyle"],
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "/favicon.png",
-      "sizes": "64x64",
-      "type": "image/png"
-    },
-    {
-      "src": "/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "apple touch icon"
-    },
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-maskable-192.png",
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     },
     {
-      "src": "/icon-maskable-512.png",
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/home-mobile.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Accueil i-wasp"
-    },
-    {
-      "src": "/screenshots/dashboard-mobile.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Dashboard personnel"
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [
@@ -72,21 +51,21 @@
       "short_name": "Dashboard",
       "description": "Accéder à mon tableau de bord",
       "url": "/dashboard",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
     },
     {
       "name": "Commander",
       "short_name": "Commander",
       "description": "Commander une carte NFC",
       "url": "/order/offre",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
     },
     {
       "name": "Produits",
       "short_name": "Produits",
       "description": "Découvrir nos produits NFC",
       "url": "/produits",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
     }
   ],
   "share_target": {

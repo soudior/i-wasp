@@ -125,7 +125,7 @@ serve(async (req) => {
     console.log('Using wallet styles:', styles);
 
     // Construct the public URL for the card
-    const publicUrl = `https://i-wasp.lovable.app/c/${cardData.slug}`;
+    const publicUrl = `https://i-wasp.com/c/${cardData.slug}`;
 
     // Build secondary fields based on visibility settings
     const secondaryFields: Array<{ key: string; value: string; label: string }> = [];

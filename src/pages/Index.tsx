@@ -9,9 +9,40 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Shield, Zap, Globe, Check, Linkedin, Instagram, Mail, Phone, Globe2, MessageCircle } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { NfcDemoSteps } from "@/components/home/NfcDemoSteps";
+import { IncludedSection } from "@/components/home/IncludedSection";
+import { ModelsSection } from "@/components/home/ModelsSection";
+import { BenefitsSection } from "@/components/home/BenefitsSection";
+import { ComparisonSection } from "@/components/home/ComparisonSection";
+import { PricingSection } from "@/components/home/PricingSection";
+import { TrustSection } from "@/components/home/TrustSection";
+import { FaqSection, FAQS } from "@/components/home/FaqSection";
+import {
+  StructuredData,
+  organizationSchema,
+  websiteSchema,
+  productSchema,
+  faqSchema,
+} from "@/components/StructuredData";
 import mehdiProfileImg from "@/assets/mehdi-profile.jpg";
+
+const HOME_STRUCTURED_DATA = [
+  organizationSchema,
+  websiteSchema,
+  productSchema({
+    name: "Carte de visite NFC i-wasp",
+    description:
+      "Carte de visite NFC premium avec profil digital toujours à jour. Un contact suffit pour partager toutes vos informations, sans application requise.",
+    image: "https://i-wasp.com/og-image.png",
+    lowPrice: 29.9,
+    highPrice: 89.9,
+  }),
+  faqSchema(FAQS),
+];
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ANIMATIONS — Liquid & Ethereal
@@ -46,14 +77,14 @@ const scaleIn = {
 // CARTE 3D PREMIUM AVEC NOM PERSONNALISÉ
 // ═══════════════════════════════════════════════════════════════════════════
 
-function PremiumCard3D({ name = "VOTRE NOM" }: { name?: string }) {
+function PremiumCard3D({ name = "VOTRE NOM", animate = true }: { name?: string; animate?: boolean }) {
   return (
     <motion.div
       initial={{ rotateY: -15, rotateX: 5, opacity: 0 }}
       animate={{ rotateY: 0, rotateX: 0, opacity: 1 }}
       transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ 
-        rotateY: -8, 
+      whileHover={{
+        rotateY: -8,
         rotateX: 3,
         scale: 1.02,
         transition: { duration: 0.8 }
@@ -64,14 +95,14 @@ function PremiumCard3D({ name = "VOTRE NOM" }: { name?: string }) {
       {/* Glow derrière la carte */}
       <motion.div
         className="absolute inset-0 -z-10"
-        animate={{
+        animate={animate ? {
           boxShadow: [
             "0 0 60px rgba(220, 199, 176, 0.15), 0 0 120px rgba(220, 199, 176, 0.08)",
             "0 0 80px rgba(220, 199, 176, 0.2), 0 0 160px rgba(220, 199, 176, 0.1)",
             "0 0 60px rgba(220, 199, 176, 0.15), 0 0 120px rgba(220, 199, 176, 0.08)",
           ],
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        } : undefined}
+        transition={animate ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : undefined}
         style={{ borderRadius: "1.5rem" }}
       />
       
@@ -89,10 +120,10 @@ function PremiumCard3D({ name = "VOTRE NOM" }: { name?: string }) {
           style={{
             background: "linear-gradient(135deg, transparent 30%, rgba(220, 199, 176, 0.08) 50%, transparent 70%)",
           }}
-          animate={{
+          animate={animate ? {
             opacity: [0.5, 0.8, 0.5],
-          }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          } : undefined}
+          transition={animate ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : undefined}
         />
         
         {/* Logo W */}
@@ -142,13 +173,13 @@ function PremiumCard3D({ name = "VOTRE NOM" }: { name?: string }) {
               background: "rgba(220, 199, 176, 0.08)",
               border: "1px solid rgba(220, 199, 176, 0.15)",
             }}
-            animate={{
+            animate={animate ? {
               boxShadow: [
                 "0 0 0 0 rgba(220, 199, 176, 0.2)",
                 "0 0 0 8px rgba(220, 199, 176, 0)",
               ],
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
+            } : undefined}
+            transition={animate ? { duration: 2, repeat: Infinity } : undefined}
           >
             <Zap className="w-4 h-4 text-[#DCC7B0]/80" />
           </motion.div>
@@ -226,13 +257,17 @@ function LuxuryButton({ children, href, variant = "primary" }: {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const Index = () => {
-  const [previewName, setPreviewName] = useState("MEHDI EL ALAMI");
+  const { t } = useTranslation();
+  const [previewName, setPreviewName] = useState(t("homepage.previewNameDefault"));
   const { scrollYProgress } = useScroll();
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  // Accessibilité : respecte prefers-reduced-motion et les appareils peu puissants
+  const { allowInfiniteAnimations } = useReducedMotion();
 
   return (
     <>
       <SEOHead {...SEO_CONFIGS.home} />
+      <StructuredData id="home" schema={HOME_STRUCTURED_DATA} />
       
       <div className="min-h-screen bg-[#030303] relative overflow-hidden">
         
@@ -285,22 +320,26 @@ const Index = () => {
             
             {/* Navigation centrale - Desktop */}
             <div className="hidden md:flex items-center gap-10">
-              {["MANIFESTE", "ACTIVATION", "L'AURA"].map((item) => (
-                <a 
-                  key={item}
-                  href={`#${item.toLowerCase().replace("'", "")}`}
-                  className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#FDFCFB]/40 hover:text-[#DCC7B0] transition-colors duration-500"
+              {[
+                { label: t("homepage.nav.personnaliser"), href: "#configurateur" },
+                { label: t("homepage.nav.profil"), href: "#laura" },
+                { label: t("homepage.nav.tarifs"), href: "/pricing" },
+              ].map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#FDFCFB]/50 hover:text-[#DCC7B0] transition-colors duration-500"
                 >
-                  {item}
+                  {item.label}
                 </a>
               ))}
             </div>
-            
+
             {/* Actions */}
             <div className="flex items-center gap-4">
               <LanguageSelector />
               <Link
-                to="/admin"
+                to="/login"
                 className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full font-mono text-[10px] tracking-[0.2em] uppercase text-[#FDFCFB]/70 hover:text-[#DCC7B0] transition-colors duration-500"
                 style={{
                   background: "rgba(220, 199, 176, 0.08)",
@@ -308,7 +347,7 @@ const Index = () => {
                 }}
               >
                 <Sparkles className="w-3 h-3" />
-                L'ATELIER
+                {t("homepage.nav.login")}
               </Link>
             </div>
           </div>
@@ -328,34 +367,35 @@ const Index = () => {
                   initial="hidden"
                   animate="visible"
                   variants={fadeUp}
-                  className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#DCC7B0]/50 mb-6"
+                  className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#DCC7B0]/60 mb-6"
                 >
-                  ACQUÉRIR STANDARD
+                  {t("homepage.hero.eyebrow")}
                 </motion.p>
-                
+
                 <motion.h1
                   custom={1}
                   initial="hidden"
                   animate="visible"
                   variants={fadeUp}
-                  className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-normal tracking-[0.04em] leading-[0.95] text-[#FDFCFB] mb-6"
+                  className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal tracking-[0.02em] leading-[1.02] text-[#FDFCFB] mb-6"
                 >
-                  Dominez
-                  <br />
-                  <span className="italic text-[#DCC7B0]">L'Invisible</span>
+                  {t("homepage.hero.titleLead")}
+                  <span className="italic text-[#DCC7B0]">{t("homepage.hero.titleAccent")}</span>
+                  {t("homepage.hero.titleTail")}
                 </motion.h1>
-                
+
                 <motion.p
                   custom={2}
                   initial="hidden"
                   animate="visible"
                   variants={fadeUp}
-                  className="font-display text-lg sm:text-xl italic text-[#FDFCFB]/40 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-10"
+                  className="font-body text-base sm:text-lg font-light text-[#FDFCFB]/60 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-10"
                 >
-                  "L'exclusivité d'une Hypercar. La précision d'un Calibre. 
-                  Votre héritage i-wasp."
+                  {t("homepage.hero.subtitleBefore")}
+                  <span className="text-[#FDFCFB]/90">{t("homepage.hero.subtitleHighlight")}</span>
+                  {t("homepage.hero.subtitleAfter")}
                 </motion.p>
-                
+
                 {/* CTAs */}
                 <motion.div
                   custom={3}
@@ -365,11 +405,11 @@ const Index = () => {
                   className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
                 >
                   <LuxuryButton href="/order/offre" variant="primary">
-                    Acquérir mon Aura
+                    {t("homepage.hero.ctaPrimary")}
                   </LuxuryButton>
-                  
-                  <LuxuryButton href="#configurateur" variant="secondary">
-                    Découvrir le Rendu
+
+                  <LuxuryButton href="/demo" variant="secondary">
+                    {t("homepage.hero.ctaSecondary")}
                   </LuxuryButton>
                 </motion.div>
               </div>
@@ -382,7 +422,7 @@ const Index = () => {
                 variants={scaleIn}
                 className="flex justify-center lg:justify-end order-1 lg:order-2"
               >
-                <PremiumCard3D name={previewName} />
+                <PremiumCard3D name={previewName} animate={allowInfiniteAnimations} />
               </motion.div>
             </div>
           </div>
@@ -395,8 +435,8 @@ const Index = () => {
             className="absolute bottom-12 left-1/2 -translate-x-1/2"
           >
             <motion.div
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              animate={allowInfiniteAnimations ? { y: [0, 12, 0] } : undefined}
+              transition={allowInfiniteAnimations ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" } : undefined}
               className="w-px h-16 bg-gradient-to-b from-[#DCC7B0]/50 to-transparent"
             />
           </motion.div>
@@ -415,11 +455,10 @@ const Index = () => {
               className="text-center mb-16"
             >
               <p className="font-body text-lg sm:text-xl font-extralight tracking-wide text-[#FDFCFB]/50">
-                Activé en <span className="text-[#DCC7B0]">30 secondes</span>. 
-                Partagé en <span className="text-[#DCC7B0]">un contact</span>.
+                {t("homepage.strip.tagline")}
               </p>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -428,9 +467,9 @@ const Index = () => {
               className="grid grid-cols-3 gap-6"
             >
               {[
-                { icon: Zap, label: "Liaison NFC", desc: "Instantanée" },
-                { icon: Shield, label: "Cloud Sécurisé", desc: "Chiffré" },
-                { icon: Sparkles, label: "IA Optimizer", desc: "Premium" },
+                { icon: Zap, label: t("homepage.strip.item1Label"), desc: t("homepage.strip.item1Desc") },
+                { icon: Shield, label: t("homepage.strip.item2Label"), desc: t("homepage.strip.item2Desc") },
+                { icon: Sparkles, label: t("homepage.strip.item3Label"), desc: t("homepage.strip.item3Desc") },
               ].map((item, i) => (
                 <motion.div
                   key={item.label}
@@ -454,8 +493,17 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Démonstration NFC en 3 étapes */}
+        <NfcDemoSteps />
+
+        {/* Ce qui est inclus */}
+        <IncludedSection />
+
+        {/* Modèles & finitions */}
+        <ModelsSection />
+
         {/* ═══════════════════════════════════════════════════════════════
-            CONFIGURATEUR — Le "Joujou" interactif
+            CONFIGURATEUR — Personnalisation en temps réel
             ═══════════════════════════════════════════════════════════════ */}
         <section id="configurateur" className="relative py-32 px-6">
           <div className="max-w-5xl mx-auto">
@@ -467,13 +515,13 @@ const Index = () => {
               className="text-center mb-16"
             >
               <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#DCC7B0]/50 mb-6">
-                PERSONNALISATION
+                {t("homepage.configurator.eyebrow")}
               </p>
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[0.04em] text-[#FDFCFB] mb-6">
-                Votre Calibre, <span className="italic text-[#DCC7B0]">Votre Signature</span>
+                {t("homepage.configurator.titleLead")}<span className="italic text-[#DCC7B0]">{t("homepage.configurator.titleAccent")}</span>
               </h2>
               <p className="font-body text-base font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto">
-                Visualisez votre carte en temps réel. Chaque détail compte.
+                {t("homepage.configurator.subtitle")}
               </p>
             </motion.div>
             
@@ -486,13 +534,13 @@ const Index = () => {
                 transition={{ duration: 1, delay: 0.2 }}
               >
                 <label className="block font-mono text-[10px] tracking-[0.25em] uppercase text-[#DCC7B0]/50 mb-4">
-                  Votre nom complet
+                  {t("homepage.configurator.nameLabel")}
                 </label>
                 <input
                   type="text"
                   value={previewName}
                   onChange={(e) => setPreviewName(e.target.value)}
-                  placeholder="ENTREZ VOTRE NOM"
+                  placeholder={t("homepage.configurator.namePlaceholder")}
                   className="w-full px-8 py-6 rounded-2xl font-display text-2xl tracking-[0.1em] uppercase text-[#FDFCFB] placeholder:text-[#FDFCFB]/20 focus:outline-none transition-all duration-500"
                   style={{
                     background: "rgba(255, 255, 255, 0.02)",
@@ -511,9 +559,9 @@ const Index = () => {
                 
                 <div className="mt-8 space-y-3">
                   {[
-                    "Gravure laser haute définition",
-                    "Finition mate anti-traces",
-                    "Puce NFC intégrée invisible",
+                    t("homepage.configurator.feature1"),
+                    t("homepage.configurator.feature2"),
+                    t("homepage.configurator.feature3"),
                   ].map((feature) => (
                     <div key={feature} className="flex items-center gap-3">
                       <div className="w-5 h-5 rounded-full flex items-center justify-center bg-[#00FF66]/10">
@@ -528,7 +576,7 @@ const Index = () => {
                 
                 <div className="mt-10">
                   <LuxuryButton href="/order/offre" variant="primary">
-                    Commander ma Carte
+                    {t("homepage.configurator.cta")}
                   </LuxuryButton>
                 </div>
               </motion.div>
@@ -541,7 +589,7 @@ const Index = () => {
                 transition={{ duration: 1, delay: 0.4 }}
                 className="flex justify-center"
               >
-                <PremiumCard3D name={previewName || "VOTRE NOM"} />
+                <PremiumCard3D name={previewName || t("homepage.previewNameDefault")} animate={allowInfiniteAnimations} />
               </motion.div>
             </div>
           </div>
@@ -568,13 +616,13 @@ const Index = () => {
               className="text-center mb-20"
             >
               <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#DCC7B0]/50 mb-6">
-                VOTRE IDENTITÉ DIGITALE
+                {t("homepage.profile.eyebrow")}
               </p>
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[0.04em] text-[#FDFCFB] mb-6">
-                L'Aura <span className="italic text-[#DCC7B0]">Premium</span>
+                {t("homepage.profile.titleLead")}<span className="italic text-[#DCC7B0]">{t("homepage.profile.titleAccent")}</span>
               </h2>
               <p className="font-body text-base font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto">
-                Votre site personnel, généré par nos experts. Une présence digitale qui transcende.
+                {t("homepage.profile.subtitle")}
               </p>
             </motion.div>
             
@@ -591,14 +639,14 @@ const Index = () => {
                   {/* Glow derrière le téléphone */}
                   <motion.div
                     className="absolute inset-0 -z-10"
-                    animate={{
+                    animate={allowInfiniteAnimations ? {
                       boxShadow: [
                         "0 0 80px rgba(220, 199, 176, 0.15), 0 0 160px rgba(220, 199, 176, 0.08)",
                         "0 0 100px rgba(220, 199, 176, 0.2), 0 0 200px rgba(220, 199, 176, 0.1)",
                         "0 0 80px rgba(220, 199, 176, 0.15), 0 0 160px rgba(220, 199, 176, 0.08)",
                       ],
-                    }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    } : undefined}
+                    transition={allowInfiniteAnimations ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : undefined}
                     style={{ borderRadius: "3rem" }}
                   />
                   
@@ -626,14 +674,14 @@ const Index = () => {
                         {/* Photo de profil avec bordure lumineuse */}
                         <motion.div
                           className="relative mb-6"
-                          animate={{
+                          animate={allowInfiniteAnimations ? {
                             boxShadow: [
                               "0 0 30px rgba(220, 199, 176, 0.2)",
                               "0 0 50px rgba(220, 199, 176, 0.3)",
                               "0 0 30px rgba(220, 199, 176, 0.2)",
                             ],
-                          }}
-                          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                          } : undefined}
+                          transition={allowInfiniteAnimations ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : undefined}
                           style={{ borderRadius: "50%" }}
                         >
                           <div 
@@ -663,8 +711,8 @@ const Index = () => {
                               background: "linear-gradient(135deg, #DCC7B0 0%, #E8D9C7 100%)",
                               boxShadow: "0 4px 12px rgba(220, 199, 176, 0.4)",
                             }}
-                            animate={{ scale: [1, 1.05, 1] }}
-                            transition={{ duration: 2, repeat: Infinity }}
+                            animate={allowInfiniteAnimations ? { scale: [1, 1.05, 1] } : undefined}
+                            transition={allowInfiniteAnimations ? { duration: 2, repeat: Infinity } : undefined}
                           >
                             <Check className="w-4 h-4 text-[#030303]" />
                           </motion.div>
@@ -672,26 +720,26 @@ const Index = () => {
                         
                         {/* Nom */}
                         <h3 className="font-display text-xl sm:text-2xl tracking-[0.08em] text-[#FDFCFB] text-center mb-1">
-                          {previewName || "VOTRE NOM"}
+                          {previewName || t("homepage.previewNameDefault")}
                         </h3>
                         
                         {/* Titre */}
                         <p className="font-mono text-[9px] sm:text-[10px] tracking-[0.25em] uppercase text-[#DCC7B0]/70 mb-2">
-                          FONDATEUR · I-WASP
+                          {t("homepage.profile.role")} · I-WASP
                         </p>
-                        
+
                         {/* Tagline */}
                         <p className="font-body text-xs font-extralight text-[#FDFCFB]/40 text-center mb-8 px-4">
-                          L'excellence digitale à portée de main
+                          {t("homepage.profile.tagline")}
                         </p>
-                        
-                        {/* Protocoles sociaux - Boutons glassmorphism */}
+
+                        {/* Réseaux & contact */}
                         <div className="w-full space-y-3 flex-1">
                           {[
-                            { icon: Linkedin, label: "LinkedIn Protocol", color: "#0A66C2" },
-                            { icon: Instagram, label: "Instagram Protocol", color: "#E4405F" },
-                            { icon: Mail, label: "Email Protocol", color: "#DCC7B0" },
-                            { icon: Phone, label: "Call Protocol", color: "#00FF66" },
+                            { icon: Linkedin, label: "LinkedIn", color: "#0A66C2" },
+                            { icon: Instagram, label: "Instagram", color: "#E4405F" },
+                            { icon: Mail, label: "Email", color: "#DCC7B0" },
+                            { icon: Phone, label: t("homepage.profile.callLabel"), color: "#00FF66" },
                           ].map((item, i) => (
                             <motion.div
                               key={item.label}
@@ -722,14 +770,14 @@ const Index = () => {
                                     background: `linear-gradient(135deg, ${item.color}20 0%, ${item.color}10 100%)`,
                                     border: `1px solid ${item.color}30`,
                                   }}
-                                  animate={{
+                                  animate={allowInfiniteAnimations ? {
                                     boxShadow: [
                                       `0 0 10px ${item.color}20`,
                                       `0 0 20px ${item.color}30`,
                                       `0 0 10px ${item.color}20`,
                                     ],
-                                  }}
-                                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                                  } : undefined}
+                                  transition={allowInfiniteAnimations ? { duration: 2, repeat: Infinity, delay: i * 0.3 } : undefined}
                                 >
                                   <item.icon className="w-5 h-5" style={{ color: item.color }} />
                                 </motion.div>
@@ -766,22 +814,20 @@ const Index = () => {
               >
                 <div>
                   <h3 className="font-display text-2xl sm:text-3xl tracking-[0.04em] text-[#FDFCFB] mb-4">
-                    Un Profil qui <span className="italic text-[#DCC7B0]">Transcende</span>
+                    {t("homepage.profile.calloutTitleLead")}<span className="italic text-[#DCC7B0]">{t("homepage.profile.calloutTitleAccent")}</span>
                   </h3>
                   <p className="font-body text-base font-extralight text-[#FDFCFB]/50 leading-relaxed">
-                    Chaque élément est pensé pour impressionner. Photo en noir et blanc haute définition, 
-                    boutons lumineux en verre de saphir, animations fluides — votre présence digitale 
-                    devient une expérience immersive.
+                    {t("homepage.profile.calloutDesc")}
                   </p>
                 </div>
-                
+
                 {/* Features */}
                 <div className="space-y-6">
                   {[
-                    { title: "Photo Signature", desc: "Filtre N&B avec bordure lumineuse diffuse" },
-                    { title: "Protocoles Sociaux", desc: "Boutons glassmorphism avec effet lumineux" },
-                    { title: "Badge Vérifié", desc: "Certification d'authenticité i-wasp" },
-                    { title: "Design Mobile-First", desc: "Optimisé pour une expérience parfaite" },
+                    { title: t("homepage.profile.f1Title"), desc: t("homepage.profile.f1Desc") },
+                    { title: t("homepage.profile.f2Title"), desc: t("homepage.profile.f2Desc") },
+                    { title: t("homepage.profile.f3Title"), desc: t("homepage.profile.f3Desc") },
+                    { title: t("homepage.profile.f4Title"), desc: t("homepage.profile.f4Desc") },
                   ].map((feature, i) => (
                     <motion.div
                       key={feature.title}
@@ -814,13 +860,28 @@ const Index = () => {
                 
                 <div className="pt-4">
                   <LuxuryButton href="/order/offre" variant="primary">
-                    Créer mon Aura
+                    {t("homepage.profile.cta")}
                   </LuxuryButton>
                 </div>
               </motion.div>
             </div>
           </div>
         </section>
+
+        {/* Avantages mesurables */}
+        <BenefitsSection />
+
+        {/* Comparaison carte papier vs i-wasp (contraste éditorial ivoire) */}
+        <ComparisonSection />
+
+        {/* Tarifs sans ambiguïté */}
+        <PricingSection />
+
+        {/* Preuves de confiance */}
+        <TrustSection />
+
+        {/* FAQ */}
+        <FaqSection />
 
         {/* ═══════════════════════════════════════════════════════════════
             CTA FINAL — Imposant
@@ -834,18 +895,17 @@ const Index = () => {
             className="max-w-4xl mx-auto text-center"
           >
             <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[0.04em] text-[#FDFCFB] mb-8">
-              Votre Succès a désormais
+              {t("homepage.finalCta.titleLead")}
               <br />
-              <span className="italic text-[#DCC7B0]">une Signature</span>
+              <span className="italic text-[#DCC7B0]">{t("homepage.finalCta.titleAccent")}</span>
             </h2>
-            
+
             <p className="font-body text-lg font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto mb-12">
-              Faites une impression inoubliable. Élargissez votre réseau. 
-              Le futur de votre image commence ici.
+              {t("homepage.finalCta.subtitle")}
             </p>
-            
+
             <LuxuryButton href="/order/offre" variant="primary">
-              Obtenir mon Aura
+              {t("homepage.finalCta.cta")}
             </LuxuryButton>
           </motion.div>
         </section>
@@ -871,7 +931,7 @@ const Index = () => {
             </div>
             
             <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#FDFCFB]/20">
-              L'Art de la Présence
+              {t("homepage.finalCta.footerTagline")}
             </p>
             
             <p className="font-body text-xs font-extralight text-[#FDFCFB]/20">

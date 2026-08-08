@@ -1,0 +1,170 @@
+{
+  "homepage": {
+    "previewNameDefault": "VOTRE NOM",
+    "nav": {
+      "personnaliser": "Personnaliser",
+      "profil": "Le profil",
+      "tarifs": "Tarifs",
+      "login": "Se connecter"
+    },
+    "hero": {
+      "eyebrow": "Carte de visite NFC premium",
+      "titleLead": "La carte de visite NFC qui transforme chaque rencontre en ",
+      "titleAccent": "opportunité",
+      "titleTail": ".",
+      "subtitleBefore": "Partagez vos coordonnées, réseaux, portfolio et services en approchant simplement votre carte d'un smartphone. ",
+      "subtitleHighlight": "Aucune application requise",
+      "subtitleAfter": " pour la personne qui la reçoit.",
+      "ctaPrimary": "Créer ma carte",
+      "ctaSecondary": "Voir la démonstration"
+    },
+    "demo": {
+      "eyebrow": "Comment ça marche",
+      "title": "Un contact. Trois secondes.",
+      "subtitle": "Aucune application requise pour la personne qui reçoit votre carte.",
+      "step1Title": "Approchez la carte",
+      "step1Desc": "Posez votre carte i-wasp contre un smartphone. La technologie NFC fait le reste — sans contact, sans application.",
+      "step2Title": "Le profil s'ouvre",
+      "step2Desc": "Votre identité digitale s'affiche instantanément : coordonnées, réseaux, portfolio et services, toujours à jour.",
+      "step3Title": "Le contact est enregistré",
+      "step3Desc": "Un geste suffit pour enregistrer votre fiche dans le téléphone, vous appeler, vous écrire ou vous suivre."
+    },
+    "included": {
+      "eyebrow": "L'offre, sans zone d'ombre",
+      "title": "Tout ce qui est inclus",
+      "items": [
+        { "title": "La carte NFC physique", "desc": "Carte premium avec puce NFC intégrée, à votre nom et à vos couleurs." },
+        { "title": "Un profil digital", "desc": "Une page personnelle toujours à jour : coordonnées, réseaux, portfolio, services." },
+        { "title": "Un QR code de secours", "desc": "Identique à votre lien NFC, pour les téléphones sans NFC actif." },
+        { "title": "La fiche contact (vCard)", "desc": "Enregistrement en un geste dans le carnet d'adresses, iOS et Android." },
+        { "title": "Des statistiques utiles", "desc": "Vues du profil, contacts enregistrés — de quoi mesurer l'impact." },
+        { "title": "Mises à jour illimitées", "desc": "Modifiez votre profil quand vous voulez, sans reprogrammer la carte." }
+      ]
+    },
+    "models": {
+      "eyebrow": "Modèles & finitions",
+      "title": "Une carte à votre image",
+      "subtitle": "Du PVC mat au métal gravé — chaque finition est personnalisable à vos couleurs et votre logo.",
+      "items": [
+        { "name": "Noir mat", "finish": "PVC finition mate anti-traces" },
+        { "name": "Accent or", "finish": "Détails dorés, contraste premium" },
+        { "name": "Bleu executive", "finish": "Sobre et corporate" },
+        { "name": "Blanc minimal", "finish": "Épuré, éditorial" },
+        { "name": "Métal ultra-luxe", "finish": "Métal brossé, gravure laser" }
+      ]
+    },
+    "benefits": {
+      "eyebrow": "Des avantages concrets",
+      "title": "Ce que ça change, en chiffres",
+      "items": [
+        { "value": "3 s", "label": "pour partager tout votre profil" },
+        { "value": "0", "label": "application à installer côté destinataire" },
+        { "value": "∞", "label": "mises à jour sans reprogrammer la carte" },
+        { "value": "iOS · Android", "label": "compatibilité NFC & QR" }
+      ]
+    },
+    "comparison": {
+      "eyebrow": "Papier vs i-wasp",
+      "title": "La carte de visite, en mieux",
+      "paper": "Papier",
+      "iwasp": "i-wasp",
+      "rows": [
+        "Toujours à jour",
+        "Partage en un geste (NFC)",
+        "Enregistrement direct du contact",
+        "Réseaux, portfolio & services",
+        "Statistiques de partage",
+        "Réutilisable à l'infini",
+        "Impression à refaire à chaque changement"
+      ]
+    },
+    "pricing": {
+      "eyebrow": "Tarifs",
+      "title": "Un prix clair, tout inclus",
+      "subtitle": "Carte physique, profil digital, QR code et mises à jour compris. Sans abonnement obligatoire.",
+      "choose": "Choisir",
+      "teamTitle": "Pack TEAM — équipes & entreprises",
+      "teamDesc": "{{count}} cartes à {{price}} · {{savings}}% d'économie vs tarif unitaire.",
+      "teamCta": "Solutions entreprises",
+      "tiers": {
+        "essentielle": {
+          "name": "Essentielle",
+          "subtitle": "Carte PVC classique",
+          "features": ["Carte PVC haute qualité", "Puce NFC intégrée", "Design personnalisé", "Profil digital inclus", "Livraison 5-7 jours"]
+        },
+        "professionnelle": {
+          "name": "Professionnelle",
+          "subtitle": "Carte PVC premium",
+          "badge": "Populaire",
+          "features": ["Tout Essentielle +", "Finition mate ou brillante", "Logo imprimé", "QR Code au dos", "Livraison 3-5 jours"]
+        },
+        "prestige": {
+          "name": "Prestige",
+          "subtitle": "Carte métal premium",
+          "badge": "Premium",
+          "features": ["Carte métal brossé", "Gravure laser", "Logo gravé", "Packaging premium", "Livraison express 2-3 jours", "Support prioritaire"]
+        }
+      }
+    },
+    "trust": {
+      "eyebrow": "Preuves de confiance",
+      "title": "Commandez l'esprit tranquille",
+      "items": [
+        { "title": "Paiement sécurisé", "desc": "Transactions traitées par Stripe, standard bancaire." },
+        { "title": "Vos données protégées", "desc": "Aucune donnée personnelle stockée dans la puce NFC." },
+        { "title": "Livraison suivie", "desc": "Expédition au Maroc, en France et en Europe." },
+        { "title": "Accompagnement", "desc": "Activation guidée et support à chaque étape." }
+      ]
+    },
+    "faq": {
+      "eyebrow": "Questions fréquentes",
+      "title": "Tout ce qu'il faut savoir",
+      "items": [
+        { "q": "Faut-il une application pour utiliser ma carte ?", "a": "Non. La personne qui reçoit votre carte n'a rien à installer : votre profil s'ouvre directement dans son navigateur en approchant la carte de son téléphone, ou en scannant le QR code." },
+        { "q": "La carte est-elle compatible avec tous les téléphones ?", "a": "Le NFC fonctionne sur la quasi-totalité des smartphones récents (iOS et Android). Pour les rares appareils sans NFC actif, le QR code au dos ouvre le même profil." },
+        { "q": "Puis-je modifier mes informations après l'achat ?", "a": "Oui, autant de fois que vous le souhaitez. Votre profil se met à jour en temps réel, sans jamais reprogrammer la carte physique." },
+        { "q": "Que se passe-t-il si je perds ma carte ?", "a": "Vous pouvez suspendre la carte depuis votre tableau de bord pour désactiver le partage, puis la remplacer sans perdre votre profil." },
+        { "q": "Mes données sont-elles en sécurité ?", "a": "Aucune donnée personnelle n'est stockée dans la puce : elle ne contient qu'un lien court vers votre profil, que vous contrôlez entièrement." },
+        { "q": "Quels sont les délais de livraison ?", "a": "Selon le modèle, comptez 2 à 7 jours ouvrés. Les cartes Prestige sont expédiées en express." }
+      ]
+    },
+    "strip": {
+      "tagline": "Activé en 30 secondes. Partagé en un contact.",
+      "item1Label": "Liaison NFC", "item1Desc": "Instantanée",
+      "item2Label": "Cloud sécurisé", "item2Desc": "Chiffré",
+      "item3Label": "Support", "item3Desc": "Premium"
+    },
+    "configurator": {
+      "eyebrow": "Personnalisation",
+      "titleLead": "Personnalisez ", "titleAccent": "en un instant",
+      "subtitle": "Visualisez votre carte en temps réel. Chaque détail compte.",
+      "nameLabel": "Votre nom complet",
+      "namePlaceholder": "ENTREZ VOTRE NOM",
+      "feature1": "Gravure laser haute définition",
+      "feature2": "Finition mate anti-traces",
+      "feature3": "Puce NFC intégrée invisible",
+      "cta": "Commander ma carte"
+    },
+    "profile": {
+      "eyebrow": "Votre identité digitale",
+      "titleLead": "Votre profil ", "titleAccent": "digital",
+      "subtitle": "Une présence digitale soignée, pensée pour impressionner.",
+      "role": "FONDATEUR",
+      "tagline": "L'excellence digitale à portée de main",
+      "calloutTitleLead": "Un profil qui ", "calloutTitleAccent": "impressionne",
+      "calloutDesc": "Chaque élément est pensé pour marquer les esprits : photo signature, boutons lumineux, animations fluides — votre présence digitale devient une expérience.",
+      "f1Title": "Photo signature", "f1Desc": "Filtre N&B avec bordure lumineuse diffuse",
+      "f2Title": "Réseaux & contact", "f2Desc": "Boutons élégants vers vos réseaux et actions",
+      "f3Title": "Badge vérifié", "f3Desc": "Certification d'authenticité i-wasp",
+      "f4Title": "Mobile-first", "f4Desc": "Optimisé pour une expérience parfaite",
+      "callLabel": "Appeler",
+      "cta": "Créer ma carte"
+    },
+    "finalCta": {
+      "titleLead": "Votre succès a désormais ", "titleAccent": "une signature",
+      "subtitle": "Faites une impression inoubliable. Élargissez votre réseau. Le futur de votre image commence ici.",
+      "cta": "Commander ma carte",
+      "footerTagline": "L'art de la présence"
+    }
+  }
+}

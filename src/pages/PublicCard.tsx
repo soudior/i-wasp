@@ -46,11 +46,6 @@ const PublicCard = () => {
     .replace(/^-|-$/g, "") // Remove leading/trailing hyphens
     .toLowerCase();
 
-  // Debug logging for NFC troubleshooting
-  console.log("[PublicCard] Raw slug:", JSON.stringify(slug));
-  console.log("[PublicCard] Cleaned slug:", JSON.stringify(cleanedSlug));
-  console.log("[PublicCard] Raw char codes:", slug?.split("").map(c => c.charCodeAt(0)));
-
   const { data: card, isLoading, error } = usePublicCard(cleanedSlug);
   const { story } = usePublicStory(card?.id || undefined);
   const recordScan = useRecordScan();
@@ -58,39 +53,13 @@ const PublicCard = () => {
   const incrementView = useIncrementCardView();
   const [scanRecorded, setScanRecorded] = useState(false);
 
-  // Special-case showcase cards that are not stored in the database
-  // Use includes/startsWith for more robust matching with potential NFC artifacts
-  if (cleanedSlug === "medina-travertin" || cleanedSlug.startsWith("medina-travertin")) {
-    return <DualBrandShowcase />;
-  }
-
-  // Special-case static client card (no DB dependency)
-  if (cleanedSlug === "maison-b-optic" || cleanedSlug.startsWith("maison-b-optic")) {
-    return <MaisonBOpticCard />;
-  }
-
-  // Special-case static showcase card (no DB dependency)
-  // Match various potential NFC artifacts - robust matching
-  const isKechExclu = cleanedSlug === "kech-exclu" || 
+  // Robust matching for showcase slugs (tolerates NFC-written artifacts)
+  const isKechExclu =
+    cleanedSlug === "kech-exclu" ||
     cleanedSlug === "kechexclu" ||
-    cleanedSlug.startsWith("kech-exclu") || 
+    cleanedSlug.startsWith("kech-exclu") ||
     cleanedSlug.startsWith("kechexclu") ||
-    cleanedSlug.includes("kech") && cleanedSlug.includes("exclu");
-    
-  if (isKechExclu) {
-    console.log("[PublicCard] Matched kech-exclu, rendering KechExcluCard");
-    return <KechExcluCard />;
-  }
-
-  // Special-case Luxe Prestige concierge card
-  if (cleanedSlug === "luxe-prestige" || cleanedSlug.startsWith("luxe-prestige") || cleanedSlug.includes("luxeprestige")) {
-    return <LuxePrestigeCard />;
-  }
-
-  // Special-case Khokha Signature fashion card
-  if (cleanedSlug === "khokha-signature" || cleanedSlug.startsWith("khokha-signature") || cleanedSlug.includes("khokhasignature")) {
-    return <KhokhaSignatureCard />;
-  }
+    (cleanedSlug.includes("kech") && cleanedSlug.includes("exclu"));
 
   // Record scan on first load
   useEffect(() => {
@@ -117,6 +86,25 @@ const PublicCard = () => {
     },
     [cleanedSlug, getActionUrl]
   );
+
+  // Special-case showcase / static client cards (rendus dédiés, sans dépendance DB).
+  // Placés APRÈS tous les hooks pour respecter les règles des hooks React ;
+  // le comportement de rendu est identique (mêmes slugs → mêmes composants).
+  if (cleanedSlug === "medina-travertin" || cleanedSlug.startsWith("medina-travertin")) {
+    return <DualBrandShowcase />;
+  }
+  if (cleanedSlug === "maison-b-optic" || cleanedSlug.startsWith("maison-b-optic")) {
+    return <MaisonBOpticCard />;
+  }
+  if (isKechExclu) {
+    return <KechExcluCard />;
+  }
+  if (cleanedSlug === "luxe-prestige" || cleanedSlug.startsWith("luxe-prestige") || cleanedSlug.includes("luxeprestige")) {
+    return <LuxePrestigeCard />;
+  }
+  if (cleanedSlug === "khokha-signature" || cleanedSlug.startsWith("khokha-signature") || cleanedSlug.includes("khokhasignature")) {
+    return <KhokhaSignatureCard />;
+  }
 
   const handleCall = () => handleAction("phone");
   const handleEmail = () => handleAction("email");
@@ -309,8 +297,8 @@ const PublicCard = () => {
           has_whatsapp: card.has_whatsapp,
           has_email: card.has_email,
           has_instagram: card.has_instagram,
-          social_links: card.social_links,
-          blocks: card.blocks,
+          social_links: card.social_links ?? undefined,
+          blocks: card.blocks ?? undefined,
           custom_styles: card.custom_styles,
         }}
       />

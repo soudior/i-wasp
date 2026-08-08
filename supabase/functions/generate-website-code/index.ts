@@ -760,7 +760,7 @@ serve(async (req) => {
     
     // Build the public preview URL - use the React app route, not the edge function directly
     // The edge function has Content-Security-Policy restrictions that prevent proper HTML rendering
-    const previewUrl = `https://i-wasp.lovable.app/s/${websiteSlug}`;
+    const previewUrl = `https://i-wasp.com/s/${websiteSlug}`;
     
     await admin
       .from("generated_websites")

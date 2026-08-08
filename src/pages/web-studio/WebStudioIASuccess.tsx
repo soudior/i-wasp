@@ -97,7 +97,7 @@ export default function WebStudioIASuccess() {
         const { data, error } = await supabase
           .from('generated_websites')
           .select('status, preview_url, slug')
-          .eq('proposal_id', proposalId)
+          .eq('proposal_id', proposalId ?? '')
           .single();
 
         if (error && error.code !== 'PGRST116') throw error;

@@ -44,7 +44,6 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const OnboardingSuccess = lazy(() => import("./pages/OnboardingSuccess"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const EliteDashboard = lazy(() => import("./pages/EliteDashboard"));
-const GuestCardCreator = lazy(() => import("./pages/GuestCardCreator"));
 const FinalizeCard = lazy(() => import("./pages/FinalizeCard"));
 const HomeSaaS = lazy(() => import("./pages/HomeSaaS"));
 const HomeLuxeMax = lazy(() => import("./pages/HomeLuxeMax"));
@@ -104,7 +103,6 @@ const EvolisTemplateGenerator = lazy(() => import("./pages/admin/EvolisTemplateG
 const EvolisCardTemplate = lazy(() => import("./pages/EvolisCardTemplate"));
 
 // NEW Order funnel pages - 7 steps strict flow
-const OrderType = lazy(() => import("./pages/order/OrderType"));
 const OrderOffre = lazy(() => import("./pages/order/OrderOffre"));
 const OrderTemplate = lazy(() => import("./pages/order/OrderTemplate"));
 const OrderIdentite = lazy(() => import("./pages/order/OrderIdentite"));
@@ -356,8 +354,7 @@ const App = () => {
                                 <Route path="recapitulatif" element={<StepRecapitulatif />} />
                               </Route>
                               
-                              {/* Admin Web Studio IA */}
-                              <Route path="/admin/web-studio-ia" element={<AdminWebStudioIA />} />
+                              {/* Admin Web Studio IA — la route protégée est définie plus bas (/admin/web-studio-ia avec AdminGuard) */}
                               <Route path="/web-studio-legacy" element={<WebStudioLegacy />} />
                               <Route path="/rental-demo" element={<RentalDemo />} />
                               
@@ -388,7 +385,7 @@ const App = () => {
                               
                               {/* Dashboard */}
                               <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
-                              <Route path="/elite" element={<DashboardGuard><EliteDashboard /></DashboardGuard>} />
+                              <Route path="/elite-dashboard" element={<DashboardGuard><EliteDashboard /></DashboardGuard>} />
                               <Route path="/settings" element={<DashboardGuard><Settings /></DashboardGuard>} />
                               <Route path="/subscription" element={<DashboardGuard><Subscription /></DashboardGuard>} />
                               <Route path="/orders" element={<DashboardGuard><Orders /></DashboardGuard>} />

@@ -62,7 +62,7 @@ const GROUP_PHONE = "+212 5 00 00 00 00";
 const GROUP_WHATSAPP = "+212600000000";
 const GROUP_EMAIL = "contact@nommos.ma";
 const GROUP_WEBSITE = "https://www.nommos.ma";
-const PAGE_URL = "https://i-wasp.lovable.app/card/lifestyle-group";
+const PAGE_URL = "https://i-wasp.com/card/lifestyle-group";
 
 const VENUES: Venue[] = [
   { id: "nommos-beach", name: "Nommos Beach", subtitle: "Resort & Pool Club", city: "Marrakech", logo: nommosBeachLogo, cover: coverNommosBeach, website: "https://www.nommosbeachresort.com", instagram: "https://www.instagram.com/nommosbeach", facebook: "https://www.facebook.com/nommosbeachresort", googleMaps: "https://maps.app.goo.gl/nommosbeach" },
@@ -257,7 +257,7 @@ export default function LifestyleGroupCard() {
 
   const handleShare = async () => {
     if (navigator.share) {
-      try { await navigator.share({ title: "Nommos Group", url: PAGE_URL }); } catch {}
+      try { await navigator.share({ title: "Nommos Group", url: PAGE_URL }); } catch { /* partage annulé par l'utilisateur */ }
     } else {
       await navigator.clipboard.writeText(PAGE_URL);
     }

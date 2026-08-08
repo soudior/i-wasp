@@ -77,7 +77,7 @@ export function useStoryAnalytics(): UseStoryAnalyticsReturn {
       const { error } = await supabase.rpc('track_story_event', {
         p_story_id: storyId,
         p_event_type: eventType,
-        p_duration_ms: durationMs || null,
+        p_duration_ms: durationMs ?? undefined,
         p_device_type: getDeviceType()
       });
 

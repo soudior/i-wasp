@@ -67,7 +67,7 @@ function generateStatusUpdateHtml(data: StatusUpdateRequest): string {
   };
 
   // Use the published Lovable domain
-  const trackingUrl = `https://i-wasp.lovable.app/web-studio/suivi?id=${data.orderId}`;
+  const trackingUrl = `https://i-wasp.com/web-studio/suivi?id=${data.orderId}`;
 
   return `
 <!DOCTYPE html>

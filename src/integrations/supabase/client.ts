@@ -13,5 +13,10 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    // PKCE : requis pour le flux OAuth mobile (navigateur système + deep link +
+    // exchangeCodeForSession). Sur le web, supabase-js échange automatiquement le
+    // `?code=` au retour (detectSessionInUrl) — le parcours web reste inchangé.
+    flowType: 'pkce',
+    detectSessionInUrl: true,
   }
 });

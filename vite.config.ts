@@ -1,11 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(() => ({
   server: {
     host: "::",
     port: 8080,
@@ -31,66 +30,13 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1000,
   },
   plugins: [
-    react(), 
-    mode === "development" && componentTagger(),
+    react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png'],
-      manifest: {
-        name: 'i-wasp - NFC Premium',
-        short_name: 'i-wasp',
-        description: 'Le futur du networking digital au Maroc. Cartes de visite NFC premium.',
-        theme_color: '#000000',
-        background_color: '#000000',
-        display: 'standalone',
-        orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
-        id: '/',
-        categories: ['business', 'productivity', 'social'],
-        icons: [
-          {
-            src: '/favicon.ico',
-            sizes: '64x64',
-            type: 'image/x-icon'
-          },
-          {
-            src: '/apple-touch-icon.png',
-            sizes: '180x180',
-            type: 'image/png',
-            purpose: 'apple touch icon'
-          },
-          {
-            src: '/icon-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable'
-          },
-          {
-            src: '/icon-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ],
-        screenshots: [],
-        shortcuts: [
-          {
-            name: 'Dashboard',
-            short_name: 'Dashboard',
-            description: 'Accéder à mon tableau de bord',
-            url: '/dashboard',
-            icons: [{ src: '/icon-192.png', sizes: '192x192' }]
-          },
-          {
-            name: 'Commander',
-            short_name: 'Commander',
-            description: 'Commander une carte NFC',
-            url: '/order/type',
-            icons: [{ src: '/icon-192.png', sizes: '192x192' }]
-          }
-        ]
-      },
+      // Manifest unique : on utilise public/manifest.json (lié dans index.html)
+      // pour éviter deux manifests concurrents. Le plugin ne gère que le service worker.
+      manifest: false,
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icons/icon-192x192.png', 'icons/icon-512x512.png'],
       workbox: {
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8 MB for large bundles
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,jpg,jpeg,webp}'],

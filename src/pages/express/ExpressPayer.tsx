@@ -129,7 +129,7 @@ export default function ExpressPayer() {
         customer_email: email,
         payment_method: state.paymentMethod,
         status: state.paymentMethod === "cod" ? "pending" : "pending",
-      }).select().single();
+      } as import("@/integrations/supabase/types").TablesInsert<"orders">).select().single();
 
       if (orderError) throw orderError;
 

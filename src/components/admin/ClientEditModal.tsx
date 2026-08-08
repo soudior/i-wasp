@@ -121,7 +121,7 @@ export function ClientEditModal({ open, onClose, clientId, clientType }: ClientE
             .single();
 
           if (error) throw error;
-          setWebsiteData(data);
+          setWebsiteData(data as WebsiteData);
         }
       } catch (error: any) {
         console.error('Error loading client:', error);
@@ -415,7 +415,7 @@ export function ClientEditModal({ open, onClose, clientId, clientType }: ClientE
                       className="flex items-center gap-2 p-2 rounded text-xs"
                       style={{ backgroundColor: GOTHAM.bg }}
                     >
-                      <span style={{ color: GOTHAM.textMuted }}>i-wasp.lovable.app/card/</span>
+                      <span style={{ color: GOTHAM.textMuted }}>i-wasp.com/card/</span>
                       <span style={{ color: GOTHAM.gold }}>{cardData.slug}</span>
                       <Button
                         variant="ghost"

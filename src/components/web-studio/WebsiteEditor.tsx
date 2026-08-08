@@ -496,7 +496,7 @@ export function WebsiteEditor({
         .limit(20);
 
       if (error) throw error;
-      setVersions(data || []);
+      setVersions((data || []).map(v => ({ ...v, is_auto_save: v.is_auto_save ?? false })));
     } catch (error) {
       console.error("Error fetching versions:", error);
       toast.error("Erreur lors du chargement des versions");

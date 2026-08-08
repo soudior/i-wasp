@@ -551,7 +551,7 @@ export function ClientDataExportImport() {
         'Ville': card.location || '',
         'Slogan': card.tagline || '',
         'Vues': card.view_count || 0,
-        'URL Carte': `https://i-wasp.lovable.app/card/${card.slug}`,
+        'URL Carte': `https://i-wasp.com/card/${card.slug}`,
         'Créé le': new Date(card.created_at).toLocaleDateString('fr-FR'),
       }));
       

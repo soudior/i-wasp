@@ -9,10 +9,12 @@ import it from './locales/it.json';
 import nl from './locales/nl.json';
 import de from './locales/de.json';
 import ar from './locales/ar.json';
+import homepageFr from './locales/homepage.fr.json';
+import homepageEn from './locales/homepage.en.json';
 
 const resources = {
-  fr: { translation: fr },
-  en: { translation: en },
+  fr: { translation: { ...fr, ...homepageFr } },
+  en: { translation: { ...en, ...homepageEn } },
   es: { translation: es },
   it: { translation: it },
   nl: { translation: nl },
@@ -51,16 +53,22 @@ if (typeof document !== 'undefined') {
 
 export default i18n;
 
+// `complete: true` = traduction complète. On n'expose au public que les langues
+// complètes (règle « aucune traduction partielle »). Les autres restent chargées
+// pour un fallback propre et pourront être exposées une fois finalisées.
 export const languages = [
-  { code: 'fr', name: 'Français', flag: '🇫🇷', rtl: false },
-  { code: 'en', name: 'English', flag: '🇬🇧', rtl: false },
-  { code: 'es', name: 'Español', flag: '🇪🇸', rtl: false },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹', rtl: false },
-  { code: 'nl', name: 'Nederlands', flag: '🇳🇱', rtl: false },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪', rtl: false },
-  { code: 'ar', name: 'العربية', flag: '🇲🇦', rtl: true },
+  { code: 'fr', name: 'Français', flag: '🇫🇷', rtl: false, complete: true },
+  { code: 'en', name: 'English', flag: '🇬🇧', rtl: false, complete: true },
+  { code: 'es', name: 'Español', flag: '🇪🇸', rtl: false, complete: false },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹', rtl: false, complete: false },
+  { code: 'nl', name: 'Nederlands', flag: '🇳🇱', rtl: false, complete: false },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪', rtl: false, complete: false },
+  { code: 'ar', name: 'العربية', flag: '🇲🇦', rtl: true, complete: false },
 ] as const;
 
 export type LanguageCode = typeof languages[number]['code'];
+
+/** Langues entièrement traduites, seules exposées à l'utilisateur. */
+export const completeLanguages = languages.filter((l) => l.complete);
 
 export const isRTL = (code: string) => code === 'ar';

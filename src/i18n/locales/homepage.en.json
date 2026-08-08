@@ -1,0 +1,170 @@
+{
+  "homepage": {
+    "previewNameDefault": "YOUR NAME",
+    "nav": {
+      "personnaliser": "Customize",
+      "profil": "The profile",
+      "tarifs": "Pricing",
+      "login": "Sign in"
+    },
+    "hero": {
+      "eyebrow": "Premium NFC business card",
+      "titleLead": "The NFC business card that turns every meeting into an ",
+      "titleAccent": "opportunity",
+      "titleTail": ".",
+      "subtitleBefore": "Share your contact details, social links, portfolio and services by simply tapping your card on a smartphone. ",
+      "subtitleHighlight": "No app required",
+      "subtitleAfter": " for the person receiving it.",
+      "ctaPrimary": "Create my card",
+      "ctaSecondary": "Watch the demo"
+    },
+    "demo": {
+      "eyebrow": "How it works",
+      "title": "One tap. Three seconds.",
+      "subtitle": "No app required for the person receiving your card.",
+      "step1Title": "Tap the card",
+      "step1Desc": "Hold your i-wasp card against a smartphone. NFC does the rest — contactless, no app.",
+      "step2Title": "The profile opens",
+      "step2Desc": "Your digital identity appears instantly: contact details, social links, portfolio and services, always up to date.",
+      "step3Title": "The contact is saved",
+      "step3Desc": "One tap to save your details to the phone, call you, message you or follow you."
+    },
+    "included": {
+      "eyebrow": "The offer, no fine print",
+      "title": "Everything included",
+      "items": [
+        { "title": "The physical NFC card", "desc": "Premium card with a built-in NFC chip, with your name and your colors." },
+        { "title": "A digital profile", "desc": "A personal page always up to date: contact details, social links, portfolio, services." },
+        { "title": "A backup QR code", "desc": "Identical to your NFC link, for phones without active NFC." },
+        { "title": "The contact file (vCard)", "desc": "One-tap saving to the address book, iOS and Android." },
+        { "title": "Useful analytics", "desc": "Profile views, saved contacts — enough to measure impact." },
+        { "title": "Unlimited updates", "desc": "Edit your profile whenever you want, without reprogramming the card." }
+      ]
+    },
+    "models": {
+      "eyebrow": "Models & finishes",
+      "title": "A card in your image",
+      "subtitle": "From matte PVC to engraved metal — every finish is customizable to your colors and logo.",
+      "items": [
+        { "name": "Matte black", "finish": "Matte anti-smudge PVC finish" },
+        { "name": "Gold accent", "finish": "Gold details, premium contrast" },
+        { "name": "Executive blue", "finish": "Understated and corporate" },
+        { "name": "Minimal white", "finish": "Clean, editorial" },
+        { "name": "Ultra-luxe metal", "finish": "Brushed metal, laser engraving" }
+      ]
+    },
+    "benefits": {
+      "eyebrow": "Concrete benefits",
+      "title": "What it changes, in numbers",
+      "items": [
+        { "value": "3 s", "label": "to share your whole profile" },
+        { "value": "0", "label": "app to install on the recipient's side" },
+        { "value": "∞", "label": "updates without reprogramming the card" },
+        { "value": "iOS · Android", "label": "NFC & QR compatibility" }
+      ]
+    },
+    "comparison": {
+      "eyebrow": "Paper vs i-wasp",
+      "title": "The business card, made better",
+      "paper": "Paper",
+      "iwasp": "i-wasp",
+      "rows": [
+        "Always up to date",
+        "One-tap sharing (NFC)",
+        "Direct contact saving",
+        "Social links, portfolio & services",
+        "Sharing analytics",
+        "Reusable forever",
+        "Reprint needed on every change"
+      ]
+    },
+    "pricing": {
+      "eyebrow": "Pricing",
+      "title": "One clear price, all included",
+      "subtitle": "Physical card, digital profile, QR code and updates included. No mandatory subscription.",
+      "choose": "Choose",
+      "teamTitle": "TEAM Pack — teams & businesses",
+      "teamDesc": "{{count}} cards at {{price}} · {{savings}}% off vs unit price.",
+      "teamCta": "Business solutions",
+      "tiers": {
+        "essentielle": {
+          "name": "Essential",
+          "subtitle": "Classic PVC card",
+          "features": ["High-quality PVC card", "Built-in NFC chip", "Custom design", "Digital profile included", "Delivery 5-7 days"]
+        },
+        "professionnelle": {
+          "name": "Professional",
+          "subtitle": "Premium PVC card",
+          "badge": "Popular",
+          "features": ["Everything in Essential +", "Matte or glossy finish", "Printed logo", "QR code on the back", "Delivery 3-5 days"]
+        },
+        "prestige": {
+          "name": "Prestige",
+          "subtitle": "Premium metal card",
+          "badge": "Premium",
+          "features": ["Brushed metal card", "Laser engraving", "Engraved logo", "Premium packaging", "Express delivery 2-3 days", "Priority support"]
+        }
+      }
+    },
+    "trust": {
+      "eyebrow": "Trust signals",
+      "title": "Order with peace of mind",
+      "items": [
+        { "title": "Secure payment", "desc": "Transactions handled by Stripe, banking standard." },
+        { "title": "Your data protected", "desc": "No personal data stored in the NFC chip." },
+        { "title": "Tracked delivery", "desc": "Shipping to Morocco, France and Europe." },
+        { "title": "Guidance", "desc": "Guided activation and support at every step." }
+      ]
+    },
+    "faq": {
+      "eyebrow": "Frequently asked questions",
+      "title": "Everything you need to know",
+      "items": [
+        { "q": "Does using my card require an app?", "a": "No. The person receiving your card has nothing to install: your profile opens directly in their browser when tapping the card on their phone, or by scanning the QR code." },
+        { "q": "Is the card compatible with all phones?", "a": "NFC works on nearly all recent smartphones (iOS and Android). For the rare devices without active NFC, the QR code on the back opens the same profile." },
+        { "q": "Can I edit my information after purchase?", "a": "Yes, as many times as you like. Your profile updates in real time, without ever reprogramming the physical card." },
+        { "q": "What happens if I lose my card?", "a": "You can suspend the card from your dashboard to disable sharing, then replace it without losing your profile." },
+        { "q": "Is my data safe?", "a": "No personal data is stored in the chip: it only holds a short link to your profile, which you fully control." },
+        { "q": "What are the delivery times?", "a": "Depending on the model, expect 2 to 7 business days. Prestige cards ship express." }
+      ]
+    },
+    "strip": {
+      "tagline": "Activated in 30 seconds. Shared in one tap.",
+      "item1Label": "NFC link", "item1Desc": "Instant",
+      "item2Label": "Secure cloud", "item2Desc": "Encrypted",
+      "item3Label": "Support", "item3Desc": "Premium"
+    },
+    "configurator": {
+      "eyebrow": "Personalization",
+      "titleLead": "Customize ", "titleAccent": "in an instant",
+      "subtitle": "See your card in real time. Every detail counts.",
+      "nameLabel": "Your full name",
+      "namePlaceholder": "ENTER YOUR NAME",
+      "feature1": "High-definition laser engraving",
+      "feature2": "Matte anti-smudge finish",
+      "feature3": "Invisible built-in NFC chip",
+      "cta": "Order my card"
+    },
+    "profile": {
+      "eyebrow": "Your digital identity",
+      "titleLead": "Your ", "titleAccent": "digital profile",
+      "subtitle": "A polished digital presence, designed to impress.",
+      "role": "FOUNDER",
+      "tagline": "Digital excellence at your fingertips",
+      "calloutTitleLead": "A profile that ", "calloutTitleAccent": "impresses",
+      "calloutDesc": "Every element is crafted to stand out: signature photo, glowing buttons, smooth animations — your digital presence becomes an experience.",
+      "f1Title": "Signature photo", "f1Desc": "B&W filter with a soft glowing border",
+      "f2Title": "Social & contact", "f2Desc": "Elegant buttons to your networks and actions",
+      "f3Title": "Verified badge", "f3Desc": "i-wasp authenticity certification",
+      "f4Title": "Mobile-first", "f4Desc": "Optimized for a flawless experience",
+      "callLabel": "Call",
+      "cta": "Create my card"
+    },
+    "finalCta": {
+      "titleLead": "Your success now has ", "titleAccent": "a signature",
+      "subtitle": "Make an unforgettable impression. Grow your network. The future of your image starts here.",
+      "cta": "Order my card",
+      "footerTagline": "The art of presence"
+    }
+  }
+}

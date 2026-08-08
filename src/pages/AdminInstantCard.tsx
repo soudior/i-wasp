@@ -975,7 +975,7 @@ function AdminInstantCardContent() {
 
                 {createdCard ? (
                   <StoryEditor
-                    cardId={createdCard.id}
+                    cardId={(createdCard as { id: string; slug: string }).id}
                     stories={stories}
                     onStoriesChange={setStories}
                     maxStories={10}

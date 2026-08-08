@@ -77,7 +77,7 @@ interface TemplateThumbnailProps {
 
 function TemplateThumbnail({ template, isSelected, onSelect }: TemplateThumbnailProps) {
   const colors = templateColors[template.id] || { bg: "#1A1A1A", accent: "#FFC700", text: "#FFFFFF" };
-  const info = templateInfo[template.id];
+  const info = templateInfo[template.id as keyof typeof templateInfo];
 
   return (
     <motion.button

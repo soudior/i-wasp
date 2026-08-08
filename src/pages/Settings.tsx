@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { isDeleteConfirmed } from "@/lib/accountDeletion";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -72,6 +73,7 @@ const Settings = () => {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   // Handle logo file selection
   const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,38 +198,37 @@ const Settings = () => {
     }
   };
 
-  // Delete account (Apple App Store requirement)
+  // Delete account (Apple App Store requirement, Guideline 5.1.1(v)).
+  // La suppression réelle est effectuée côté serveur par l'edge function
+  // `delete-account` (service-role) : elle supprime les données personnelles,
+  // anonymise les commandes (conservation comptable), efface les fichiers de
+  // stockage, puis supprime le compte Auth — ce qui révoque toutes les sessions.
+  // Jamais de « fausse suppression » uniquement côté interface.
   const handleDeleteAccount = async () => {
+    if (!isDeleteConfirmed(deleteConfirmText)) {
+      toast.error('Veuillez saisir « SUPPRIMER » pour confirmer.');
+      return;
+    }
     impactMedium();
     setDeletingAccount(true);
     try {
-      // Delete user data from database tables
-      if (user) {
-        // Delete user's cards
-        await supabase.from('digital_cards').delete().eq('user_id', user.id);
-        // Delete user's orders
-        await supabase.from('orders').delete().eq('user_id', user.id);
-        // Delete user's leads
-        const { data: cards } = await supabase.from('digital_cards').select('id').eq('user_id', user.id);
-        if (cards) {
-          for (const card of cards) {
-            await supabase.from('leads').delete().eq('card_id', card.id);
-          }
-        }
-        // Delete profile
-        await supabase.from('profiles').delete().eq('user_id', user.id);
-        // Delete subscription
-        await supabase.from('subscriptions').delete().eq('user_id', user.id);
+      const { data, error } = await supabase.functions.invoke("delete-account");
+      // L'edge function renvoie { success: true } ou { error: "..." }.
+      if (error) throw new Error(error.message);
+      if (data && (data as { error?: string }).error) {
+        throw new Error((data as { error?: string }).error);
       }
 
-      // Sign out and redirect
+      // Le compte Auth est supprimé côté serveur : on nettoie la session locale.
       await signOut();
       notificationSuccess();
-      toast.success("Votre compte a été supprimé avec succès.");
+      toast.success("Votre compte a été supprimé définitivement.");
       navigate("/");
     } catch (error: any) {
       notificationError();
-      toast.error("Erreur lors de la suppression du compte. Veuillez contacter le support.");
+      toast.error(
+        "Erreur lors de la suppression du compte. Veuillez réessayer ou contacter le support.",
+      );
       console.error("Delete account error:", error);
     } finally {
       setDeletingAccount(false);
@@ -740,15 +741,15 @@ const Settings = () => {
                 <div className="p-4 rounded-xl bg-red-900/10 border border-red-900/30">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                      <p className="text-sm font-medium text-red-300">Supprimer mon compte</p>
+                      <p className="text-sm font-medium text-red-300">Supprimer définitivement mon compte</p>
                       <p className="text-xs text-red-400/60 mt-1">
-                        Cette action supprimera définitivement votre compte et toutes vos données.
+                        Cette action supprime définitivement votre compte et vos données personnelles côté serveur. Elle est irréversible.
                       </p>
                     </div>
-                    <AlertDialog>
+                    <AlertDialog onOpenChange={(open) => { if (!open) setDeleteConfirmText(""); }}>
                       <AlertDialogTrigger asChild>
-                        <Button 
-                          variant="destructive" 
+                        <Button
+                          variant="destructive"
                           className="bg-red-600 hover:bg-red-700 text-white shrink-0"
                           disabled={deletingAccount}
                         >
@@ -760,37 +761,75 @@ const Settings = () => {
                           ) : (
                             <>
                               <Trash2 className="h-4 w-4 mr-2" />
-                              Supprimer mon compte
+                              Supprimer définitivement mon compte
                             </>
                           )}
                         </Button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+                      <AlertDialogContent className="bg-zinc-900 border-zinc-800 max-h-[90vh] overflow-y-auto">
                         <AlertDialogHeader>
                           <AlertDialogTitle className="text-white flex items-center gap-2">
                             <AlertTriangle className="h-5 w-5 text-red-500" />
                             Supprimer définitivement votre compte ?
                           </AlertDialogTitle>
-                          <AlertDialogDescription className="text-zinc-400">
-                            Cette action est <span className="text-red-400 font-medium">irréversible</span>. 
-                            Toutes vos données seront supprimées, y compris :
-                            <ul className="mt-3 space-y-1 text-sm">
-                              <li>• Vos cartes digitales</li>
-                              <li>• Vos contacts et leads</li>
-                              <li>• Vos commandes</li>
-                              <li>• Votre abonnement</li>
-                            </ul>
+                          <AlertDialogDescription asChild>
+                            <div className="text-zinc-400">
+                              <p>
+                                Cette action est <span className="text-red-400 font-medium">irréversible</span>.
+                                Les données suivantes seront <span className="font-medium">supprimées définitivement</span> :
+                              </p>
+                              <ul className="mt-3 space-y-1 text-sm">
+                                <li>• Vos cartes digitales et leur contenu</li>
+                                <li>• Vos contacts, leads et statistiques de scan</li>
+                                <li>• Votre profil, votre abonnement et vos notifications</li>
+                                <li>• Vos fichiers (logos, visuels, stories)</li>
+                              </ul>
+                              <p className="mt-3 text-sm">
+                                Pour des raisons comptables et légales, vos <span className="font-medium">commandes</span>{" "}
+                                sont conservées mais <span className="font-medium">anonymisées</span> (aucune donnée
+                                personnelle n'y reste rattachée).
+                              </p>
+                              <div className="mt-3 rounded-lg border border-amber-900/40 bg-amber-950/20 p-3 text-xs text-amber-300/90">
+                                <span className="font-medium">Cartes NFC physiques :</span> vos cartes cesseront de
+                                pointer vers un profil actif. Si vous souhaitez <span className="font-medium">transférer</span>{" "}
+                                une carte à une autre personne plutôt que la désactiver, contactez{" "}
+                                <span className="font-medium">support@i-wasp.com</span> <span className="font-medium">avant</span>{" "}
+                                de supprimer votre compte : nous rattacherons la puce au nouveau titulaire sans la réimprimer.
+                              </div>
+                              <p className="mt-4 text-sm text-zinc-300">
+                                Pour confirmer, saisissez <span className="font-mono font-semibold text-red-400">SUPPRIMER</span> ci-dessous :
+                              </p>
+                            </div>
                           </AlertDialogDescription>
                         </AlertDialogHeader>
+                        <div className="py-1">
+                          <Label htmlFor="delete-confirm" className="sr-only">Confirmation de suppression</Label>
+                          <Input
+                            id="delete-confirm"
+                            value={deleteConfirmText}
+                            onChange={(e) => setDeleteConfirmText(e.target.value)}
+                            placeholder="SUPPRIMER"
+                            autoComplete="off"
+                            className="bg-zinc-950 border-zinc-700 text-white"
+                          />
+                        </div>
                         <AlertDialogFooter>
                           <AlertDialogCancel className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
                             Annuler
                           </AlertDialogCancel>
-                          <AlertDialogAction 
-                            onClick={handleDeleteAccount}
-                            className="bg-red-600 hover:bg-red-700 text-white"
+                          <AlertDialogAction
+                            onClick={(e) => {
+                              if (!isDeleteConfirmed(deleteConfirmText)) {
+                                e.preventDefault();
+                                toast.error('Veuillez saisir « SUPPRIMER » pour confirmer.');
+                                return;
+                              }
+                              handleDeleteAccount();
+                            }}
+                            disabled={deletingAccount || !isDeleteConfirmed(deleteConfirmText)}
+                            className="bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"
                           >
-                            Oui, supprimer mon compte
+                            Oui, supprimer définitivement
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

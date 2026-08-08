@@ -83,7 +83,7 @@
     <array>
         <dict>
             <key>CFBundleURLName</key>
-            <string>com.iwasp.app</string>
+            <string>app.iwasp.digital</string>
             <key>CFBundleURLSchemes</key>
             <array>
                 <string>iwasp</string>

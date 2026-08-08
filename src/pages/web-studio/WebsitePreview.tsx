@@ -66,7 +66,7 @@ export default function WebsitePreview() {
         if (dbError) throw dbError;
         if (!data) throw new Error("Site non trouvé");
         
-        setWebsite(data);
+        setWebsite(data as WebsiteData);
       } catch (err: any) {
         setError(err.message || "Erreur lors du chargement");
       } finally {

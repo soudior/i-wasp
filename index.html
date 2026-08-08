@@ -47,18 +47,17 @@
     <meta name="twitter:image" content="https://i-wasp.com/og-image.png" />
     
     <!-- Deep Linking / Universal Links -->
-    <meta name="apple-itunes-app" content="app-id=YOUR_APP_ID, app-argument=iwasp://" />
-    <meta name="google-play-app" content="app-id=com.iwasp.app" />
-    <link rel="alternate" href="android-app://com.iwasp.app/https/i-wasp.com" />
-    <link rel="alternate" href="ios-app://YOUR_APP_ID/https/i-wasp.com" />
+    <meta name="apple-itunes-app" content="app-id=6799452085, app-argument=iwasp://" />
+    <meta name="google-play-app" content="app-id=app.iwasp.digital" />
+    <link rel="alternate" href="android-app://app.iwasp.digital/https/i-wasp.com" />
+    <link rel="alternate" href="ios-app://6799452085/https/i-wasp.com" />
     
-    <!-- Preconnect to critical origins -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- Typography Haute Couture - Editorial New style (Cormorant) + Neue Montreal style (Inter) + Cinzel for luxury titles -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-    
+    <!--
+      Perf/autonomie : toutes les polices sont auto-hébergées via @fontsource
+      (Inter, Plus Jakarta Sans, JetBrains Mono, Tenor Sans). Aucune requête de
+      police externe (Google Fonts) — plus rien à précharger côté CDN.
+    -->
+
     <!-- Haute Couture Digitale styles -->
     <style>
       html {

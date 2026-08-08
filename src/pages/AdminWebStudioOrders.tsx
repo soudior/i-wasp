@@ -542,7 +542,7 @@ function AdminWebStudioOrdersContent() {
       currentHistory: StatusHistoryEntry[];
       noteToAdd?: string;
     }) => {
-      let updatedHistory = [...currentHistory];
+      const updatedHistory = [...currentHistory];
       
       if (noteToAdd && noteToAdd.trim()) {
         updatedHistory.push({
@@ -604,7 +604,7 @@ function AdminWebStudioOrdersContent() {
         } else {
           // Also get colors from proposal
           const colors = order.proposal?.colorPalette || {};
-          setGeneratedSiteData(data ? { ...data, colors } : null);
+          setGeneratedSiteData(data ? ({ ...data, colors } as Parameters<typeof setGeneratedSiteData>[0]) : null);
         }
       } catch (err) {
         console.error("Exception fetching generated website:", err);
