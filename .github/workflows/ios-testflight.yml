@@ -26,6 +26,9 @@ env:
   # Valeur NON secrète (Team ID Apple). Surchargée par la variable de dépôt si définie.
   APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID || 'Y4JV4X2DJ6' }}
   APPLE_BUNDLE_ID: app.iwasp.digital
+  VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+  VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+  VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
 
 jobs:
   build-signed:
