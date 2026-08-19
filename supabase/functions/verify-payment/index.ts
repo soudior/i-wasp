@@ -43,7 +43,7 @@ serve(async (req) => {
       status: session.status,
       paymentStatus: session.payment_status,
       amountTotal: session.amount_total,
-      metadata: session.metadata,
+      orderId: session.metadata?.order_id ?? null,
     });
 
     const isSuccessful = session.payment_status === 'paid' && session.status === 'complete';
@@ -71,14 +71,18 @@ serve(async (req) => {
       }
     }
 
+    // CONFIDENTIALITÉ — cette fonction est publique (verify_jwt = false) : elle
+    // ne doit renvoyer AUCUNE donnée personnelle. Auparavant elle exposait
+    // `customerEmail` et les `metadata` brutes ⇒ toute personne connaissant (ou
+    // devinant) un session_id pouvait récupérer l'e-mail du client.
+    // On ne renvoie plus que la confirmation de paiement, seul champ réellement
+    // utilisé par les pages de succès.
     return new Response(JSON.stringify({
       verified: isSuccessful,
       status: session.status,
       paymentStatus: session.payment_status,
       amountTotal: session.amount_total,
       currency: session.currency,
-      customerEmail: session.customer_details?.email || null,
-      metadata: session.metadata,
       orderUpdated,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
