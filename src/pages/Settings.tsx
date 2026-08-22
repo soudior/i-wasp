@@ -226,9 +226,7 @@ const Settings = () => {
       navigate("/");
     } catch (error: any) {
       notificationError();
-      toast.error(
-        "Erreur lors de la suppression du compte. Veuillez réessayer ou contacter le support.",
-      );
+      toast.error(error?.message || "Erreur lors de la suppression du compte.");
       console.error("Delete account error:", error);
     } finally {
       setDeletingAccount(false);
