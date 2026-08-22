@@ -291,7 +291,7 @@ export function getMapUrl(address: string, app: "google" | "waze" | "apple" = "g
     case "waze":
       return `https://waze.com/ul?q=${encodedAddress}`;
     case "apple":
-      return `http://maps.apple.com/?q=${encodedAddress}`;
+      return `https://maps.apple.com/?q=${encodedAddress}`;
     default:
       return `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
   }

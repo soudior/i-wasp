@@ -39,7 +39,7 @@
 |------|--------|--------|
 | Descriptions d'usage (NFC, Camera, Photos, Contacts, Location) | ✅ | Présentes en FR dans `ios-config/Info.plist.template`. |
 | Permissions minimales | ⚠️ | Vérifier que chaque permission déclarée est réellement utilisée ; retirer les superflues. |
-| ATS (`NSAllowsArbitraryLoads`) | ⚠️ | Actuellement `true` → **App Review le questionnera**. Restreindre aux domaines nécessaires (AUDIT P2). |
+| ATS (`NSAllowsArbitraryLoads`) | ✅ | Retiré du template `Info.plist` ; les liens Maps et les appels web restent en HTTPS. |
 
 ## 5. Confidentialité & conformité App Store
 
