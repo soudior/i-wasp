@@ -51,13 +51,6 @@
     <key>UIRequiresFullScreen</key>
     <true/>
     
-    <!-- App Transport Security -->
-    <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <true/>
-    </dict>
-    
     <!-- Privacy Descriptions (Required for App Store) -->
     <key>NSCameraUsageDescription</key>
     <string>IWASP a besoin d'accéder à votre caméra pour scanner les cartes NFC et prendre des photos de profil.</string>

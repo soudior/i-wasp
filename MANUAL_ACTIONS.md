@@ -101,9 +101,8 @@ Voir aussi `APP_STORE_CHECKLIST.md`.
    (CFBundleVersion, ex. `1`).
 5. ☐ Générer le jeu d'icônes depuis `public/app-icon-1024.png`
    (`npx capacitor-assets generate` ou l'outil de votre choix).
-6. ☐ Restreindre l'ATS : dans `ios-config/Info.plist.template`, retirer
-   `NSAllowsArbitraryLoads=true` ou le limiter aux domaines nécessaires (App Review
-   le questionne systématiquement).
+6. ☑ ATS restreint : `NSAllowsArbitraryLoads` a été retiré de
+   `ios-config/Info.plist.template` et les liens Apple Maps utilisent HTTPS.
 
 ### App Store Connect
 7. ☐ Créer l'app dans **App Store Connect** (https://appstoreconnect.apple.com)

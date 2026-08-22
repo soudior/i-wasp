@@ -60,7 +60,7 @@ Petites étapes vérifiables. Pour chaque changement : expliquer le problème �
 | 4.1 | Manifest PWA unique + icônes correctes (`public/icons/*`) | P0-3 | ✅ |
 | 4.2 | Unifier le bundle id dans l'AASA sur `app.iwasp.digital` (+ copie `.well-known/`, chemins `/n/*`) ; Team ID = action manuelle (MANUAL_ACTIONS §3) | P0-4 | ✅ (code) / 🔑 Team ID |
 | 4.3 | Scheme deep-link `iwasp://` conservé ; scheme interne Capacitor `IWASP` laissé tel quel (distinct — documenté) | P2-SCHEME | ✅ (clarifié) |
-| 4.4 | Restreindre l'ATS (`NSAllowsArbitraryLoads`) | P2 | ☐ |
+| 4.4 | Restreindre l'ATS (`NSAllowsArbitraryLoads`) | P2 | ✅ |
 | 4.5 | Autoriser le zoom (retirer `user-scalable=no`) | P2-ZOOM | ☐ |
 | 4.6 | Implémenter la suppression de compte in-app | APP_STORE §5 | ☐ |
 | 4.7 | Remplacer les placeholders Apple | 🔒 (compte Apple) | ✅ Team ID `Y4JV4X2DJ6`, App ID `6799452085`, bundle `app.iwasp.digital` — 0 placeholder restant. Génération `ios/` + build = Mac requis (APP_STORE_CHECKLIST §8). |
