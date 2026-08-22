@@ -72,7 +72,7 @@ const cardProducts: CardProduct[] = [
     name: "Carte Signature",
     subtitle: "L'essentiel premium",
     description: "Une carte élégante qui partage ton profil digital en un tap. Design personnalisé, finition luxe.",
-    price: { EUR: "49€", MAD: "490 DH" },
+    price: { EUR: "29,90€", MAD: "329 DH" },
     features: [
       "Design sur mesure",
       "Finition mat ou brillant",
@@ -87,7 +87,7 @@ const cardProducts: CardProduct[] = [
     name: "Carte Executive",
     subtitle: "Pour les professionnels",
     description: "La carte business par excellence. Logo entreprise, personnalisation avancée, support prioritaire.",
-    price: { EUR: "79€", MAD: "790 DH" },
+    price: { EUR: "49,90€", MAD: "549 DH" },
     features: [
       "Logo entreprise gravé",
       "Personnalisation complète",
@@ -105,7 +105,7 @@ const cardProducts: CardProduct[] = [
     name: "Carte Luxury",
     subtitle: "L'excellence absolue",
     description: "Pour ceux qui ne font aucun compromis. Matériaux nobles, finitions exceptionnelles, service conciergerie.",
-    price: { EUR: "149€", MAD: "1 490 DH" },
+    price: { EUR: "89,90€", MAD: "989 DH" },
     features: [
       "Matériaux premium",
       "Gravure laser HD",
@@ -123,7 +123,7 @@ const cardProducts: CardProduct[] = [
     name: "Pack Team",
     subtitle: "Pour les équipes",
     description: "Équipez toute votre équipe. Tarifs dégressifs, gestion centralisée, design uniforme.",
-    price: { EUR: "39€/carte", MAD: "390 DH/carte" },
+    price: { EUR: "39,80€/carte", MAD: "438 DH/carte" },
     features: [
       "À partir de 5 cartes",
       "Design uniforme",

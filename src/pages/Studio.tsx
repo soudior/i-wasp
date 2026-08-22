@@ -132,7 +132,7 @@ const Studio = () => {
         description: "Redirection vers le paiement...",
         action: {
           label: "Payer",
-          onClick: () => navigate('/checkout')
+          onClick: () => navigate('/order/offre')
         }
       });
     } else {

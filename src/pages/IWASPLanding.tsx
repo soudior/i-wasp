@@ -228,11 +228,8 @@ export default function IWASPLanding() {
               {/* Price & CTA */}
               <motion.div variants={fadeUp} className="space-y-4">
                 <div className="flex items-baseline gap-3">
-                  <span className="font-display text-4xl text-foreground">149 DH</span>
-                  <span className="text-lg text-muted-foreground line-through">249 DH</span>
-                  <span className="px-2 py-1 bg-[hsl(0,70%,50%)]/20 text-[hsl(0,70%,60%)] text-xs font-medium">
-                    -40%
-                  </span>
+                  <span className="font-display text-4xl text-foreground">329 DH</span>
+                  <span className="text-lg text-muted-foreground">soit 29,90 €</span>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -685,12 +682,9 @@ export default function IWASPLanding() {
             variants={fadeUp}
             className="flex items-center justify-center gap-4 mb-8"
           >
-            <span className="font-display text-5xl text-foreground">149 DH</span>
+            <span className="font-display text-5xl text-foreground">329 DH</span>
             <div className="text-left">
-              <span className="text-xl text-muted-foreground line-through block">249 DH</span>
-              <span className="px-2 py-1 bg-[hsl(0,70%,50%)]/20 text-[hsl(0,70%,60%)] text-xs font-medium">
-                Économisez 100 DH
-              </span>
+              <span className="text-xl text-muted-foreground block">soit 29,90 €</span>
             </div>
           </motion.div>
 

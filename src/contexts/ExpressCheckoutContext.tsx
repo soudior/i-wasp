@@ -21,10 +21,12 @@ export interface ExpressOfferConfig {
   priceDisplay: string;
 }
 
+// Grille CANONIQUE (identique à nfcPricing.ts et au serveur create-nfc-payment) :
+// 329 / 549 / 989 DH ⇔ 29,90 / 49,90 / 89,90 €. Ne pas dériver d'autres montants.
 export const EXPRESS_OFFERS: ExpressOfferConfig[] = [
-  { id: "essentiel", name: "Essentiel", price: 27700, priceDisplay: "277 MAD" },
-  { id: "signature", name: "Signature", price: 55500, priceDisplay: "555 MAD" },
-  { id: "alliance", name: "Alliance", price: 92500, priceDisplay: "925 MAD" },
+  { id: "essentiel", name: "Essentielle", price: 32900, priceDisplay: "329 MAD" },
+  { id: "signature", name: "Professionnelle", price: 54900, priceDisplay: "549 MAD" },
+  { id: "alliance", name: "Prestige", price: 98900, priceDisplay: "989 MAD" },
 ];
 
 // Minimal customer info (fusionné identité + livraison)
