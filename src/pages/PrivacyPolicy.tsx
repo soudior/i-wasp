@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
       </header>
 
       <main className="container max-w-3xl mx-auto px-4 py-8 space-y-8">
-        <p className="text-muted-foreground text-sm">Dernière mise à jour : 21 août 2026</p>
+        <p className="text-muted-foreground text-sm">Dernière mise à jour : 22 août 2026</p>
 
         <section className="space-y-4">
           <h2 className="text-lg font-semibold">1. Objet de cette politique</h2>

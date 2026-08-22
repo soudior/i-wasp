@@ -7,13 +7,15 @@
 
 import { useState, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useOrderFunnel, DigitalIdentity, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { COUTURE } from "@/lib/hauteCouturePalette";
+import { buildOwnedOrderPhotoPath } from "@/lib/orderPhotoStorage";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   ArrowLeft, 
@@ -34,12 +36,15 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-async function uploadPhotoToStorage(dataUrl: string, fileName: string): Promise<string | null> {
+async function uploadPhotoToStorage(
+  dataUrl: string,
+  fileName: string,
+  userId: string,
+): Promise<string | null> {
   try {
     const response = await fetch(dataUrl);
     const blob = await response.blob();
-    const timestamp = Date.now();
-    const uniqueFileName = `order-photos/${timestamp}-${fileName}`;
+    const uniqueFileName = buildOwnedOrderPhotoPath(userId, fileName);
     
     const { data, error } = await supabase.storage
       .from("card-assets")
@@ -74,6 +79,8 @@ const validatePhone = (phone: string): boolean => {
 
 function OrderIdentiteContent() {
   const { state, setDigitalIdentity, nextStep, prevStep } = useOrderFunnel();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [isNavigating, setIsNavigating] = useState(false);
   const [mobileView, setMobileView] = useState<"form" | "preview">("form");
 
@@ -154,6 +161,13 @@ function OrderIdentiteContent() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    if (!user) {
+      event.target.value = "";
+      toast.error("Connectez-vous avant d’ajouter une photo.");
+      navigate(`/login?redirect=${encodeURIComponent("/order/identite")}`);
+      return;
+    }
+
     if (!file.type.startsWith("image/")) {
       toast.error("Veuillez sélectionner une image");
       return;
@@ -178,7 +192,7 @@ function OrderIdentiteContent() {
       setIsUploadingPhoto(false);
     };
     reader.readAsDataURL(file);
-  }, []);
+  }, [navigate, user]);
 
   const handleRemovePhoto = useCallback(() => {
     handleChange("photoUrl", "");
@@ -206,10 +220,17 @@ function OrderIdentiteContent() {
     let finalPhotoUrl = formData.photoUrl;
 
     if (formData.photoUrl && formData.photoUrl.startsWith("data:")) {
+      if (!user) {
+        toast.error("Connectez-vous avant d’ajouter une photo.");
+        navigate(`/login?redirect=${encodeURIComponent("/order/identite")}`);
+        setIsNavigating(false);
+        return;
+      }
+
       toast.loading("Upload de la photo...", { id: "photo-upload" });
       
       const fileName = `${formData.firstName}-${formData.lastName}`.toLowerCase().replace(/\s+/g, "-") + ".jpg";
-      const uploadedUrl = await uploadPhotoToStorage(formData.photoUrl, fileName);
+      const uploadedUrl = await uploadPhotoToStorage(formData.photoUrl, fileName, user.id);
       
       if (uploadedUrl) {
         finalPhotoUrl = uploadedUrl;

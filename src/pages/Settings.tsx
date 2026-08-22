@@ -2,7 +2,11 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { isDeleteConfirmed } from "@/lib/accountDeletion";
+import {
+  DELETE_ACCOUNT_FAILURE_MESSAGE,
+  isDeleteConfirmed,
+  requestAccountDeletion,
+} from "@/lib/accountDeletion";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -212,21 +216,16 @@ const Settings = () => {
     impactMedium();
     setDeletingAccount(true);
     try {
-      const { data, error } = await supabase.functions.invoke("delete-account");
-      // L'edge function renvoie { success: true } ou { error: "..." }.
-      if (error) throw new Error(error.message);
-      if (data && (data as { error?: string }).error) {
-        throw new Error((data as { error?: string }).error);
-      }
+      await requestAccountDeletion(() => supabase.functions.invoke("delete-account"));
 
       // Le compte Auth est supprimé côté serveur : on nettoie la session locale.
       await signOut();
       notificationSuccess();
       toast.success("Votre compte a été supprimé définitivement.");
       navigate("/");
-    } catch (error: any) {
+    } catch (error: unknown) {
       notificationError();
-      toast.error(error?.message || "Erreur lors de la suppression du compte.");
+      toast.error(error instanceof Error ? error.message : DELETE_ACCOUNT_FAILURE_MESSAGE);
       console.error("Delete account error:", error);
     } finally {
       setDeletingAccount(false);
