@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
+    "dev": "vite --config vite.config.cjs",
+    "build": "node scripts/build.mjs",
+    "build:dev": "node scripts/build.mjs --mode development",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "node scripts/test.mjs",
     "test:watch": "vitest",
-    "preview": "vite preview"
+    "preview": "vite preview --config vite.config.cjs"
   },
   "dependencies": {
     "@capacitor/android": "8.5.0",
