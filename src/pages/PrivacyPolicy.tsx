@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
       </header>
 
       <main className="container max-w-3xl mx-auto px-4 py-8 space-y-8">
-        <p className="text-muted-foreground text-sm">Dernière mise à jour : 21 août 2026</p>
+        <p className="text-muted-foreground text-sm">Dernière mise à jour : 22 août 2026</p>
 
         <section className="space-y-4">
           <h2 className="text-lg font-semibold">1. Objet de cette politique</h2>
@@ -46,7 +46,7 @@ export default function PrivacyPolicy() {
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
             <li><strong>Compte et identité :</strong> identifiant de compte, nom, prénom et informations d’authentification gérées par notre fournisseur d’identité.</li>
             <li><strong>Coordonnées et profil :</strong> e-mail, téléphone, adresse, entreprise, poste, liens sociaux et autres informations que vous choisissez d’ajouter.</li>
-            <li><strong>Contenu utilisateur :</strong> photos, logos, médias, messages et informations saisies dans les formulaires ou la messagerie.</li>
+            <li><strong>Contenu utilisateur :</strong> photos, logos, médias, messages, contenus de messagerie/chat et informations saisies dans les formulaires.</li>
             <li><strong>Commandes :</strong> produits commandés, montant, devise, état de paiement, références de commande et informations nécessaires à la facturation ou à la livraison.</li>
             <li><strong>Localisation :</strong> pays ou zone approximative déduite de l’adresse IP et, uniquement à votre demande, coordonnées précises pour remplir une adresse.</li>
             <li><strong>Utilisation et appareil :</strong> pages et fonctions utilisées, événements, scans, session ou référence de commande, navigateur, système, adresse IP et identifiants techniques.</li>
@@ -60,7 +60,7 @@ export default function PrivacyPolicy() {
             <li>Créer, sécuriser et administrer votre compte et vos cartes numériques.</li>
             <li>Afficher et partager le profil que vous avez choisi de rendre public.</li>
             <li>Traiter les commandes, paiements, abonnements, livraisons et demandes d’assistance.</li>
-            <li>Fournir la messagerie, la localisation demandée, les notifications push et les fonctions NFC ou QR.</li>
+            <li>Fournir la messagerie/chat, la localisation demandée, les notifications push et les fonctions NFC ou QR.</li>
             <li>Produire des statistiques internes de fonctionnement, de scans et d’utilisation afin d’améliorer et sécuriser le service.</li>
             <li>Prévenir les abus et respecter nos obligations comptables, fiscales et légales.</li>
           </ul>
