@@ -43,4 +43,5 @@ jobs:
             --skip_binary_upload true \
             --skip_metadata true \
             --skip_app_version_update true \
+            --run_precheck_before_submit false \
             --force true
