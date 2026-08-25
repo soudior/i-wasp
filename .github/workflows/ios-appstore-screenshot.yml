@@ -1,0 +1,40 @@
+name: iOS App Store screenshot (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  upload-screenshot:
+    runs-on: macos-14
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install App Store Connect API key
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_KEY_B64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          mkdir -p "$HOME/private_keys"
+          echo "$ASC_KEY_B64" | base64 --decode > "$HOME/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+          cat > "$RUNNER_TEMP/asc_api_key.json" <<JSON
+          {
+            "key_id": "${ASC_KEY_ID}",
+            "issuer_id": "${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}",
+            "key_filepath": "$HOME/private_keys/AuthKey_${ASC_KEY_ID}.p8",
+            "in_house": false
+          }
+          JSON
+
+      - name: Upload iPad 13-inch screenshot
+        run: |
+          fastlane deliver \
+            --api_key_path "$RUNNER_TEMP/asc_api_key.json" \
+            --app_identifier "app.iwasp.digital" \
+            --app_version "1.0" \
+            --screenshots_path "fastlane/screenshots" \
+            --skip_binary_upload true \
+            --skip_metadata true \
+            --skip_app_version_update true \
+            --force true
