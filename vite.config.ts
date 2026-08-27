@@ -11,8 +11,8 @@ export default defineConfig(() => ({
   },
   build: {
     // Optimized for Capacitor/Xcode export
-    target: 'es2020',
-    minify: 'terser',
+    target: 'es2020' as const,
+    minify: 'terser' as const,
     terserOptions: {
       compress: {
         drop_console: true,
