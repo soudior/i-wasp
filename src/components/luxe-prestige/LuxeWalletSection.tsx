@@ -187,7 +187,7 @@ export function LuxeWalletSection({
               </div>
               <div className="flex items-center gap-2 min-w-0">
                 <Mail size={13} style={{ color: C.gold }} className="flex-shrink-0" />
-                <span className="text-xs truncate" style={{ color: C.text }}>{email}</span>
+                <span className="text-[11px] break-all leading-tight" style={{ color: C.text }}>{email}</span>
               </div>
               <div className="flex items-center gap-2 min-w-0">
                 <MapPin size={13} style={{ color: C.gold }} className="flex-shrink-0" />
