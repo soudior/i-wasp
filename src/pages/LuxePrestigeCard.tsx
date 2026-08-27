@@ -9,6 +9,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Phone, MessageCircle, Mail, MapPin, Plane, Car, Home, Sparkles, ChevronLeft, ChevronRight, X, Camera, Star, Crown, Globe, Flame } from "lucide-react";
 import { useState, useCallback } from "react";
 import luxePrestigeLogo from "@/assets/luxe-prestige-logo.png";
+import { LuxeWalletSection } from "@/components/luxe-prestige/LuxeWalletSection";
+
 
 // Palette ultra-luxe noir et or
 const LUXE_COLORS = {
