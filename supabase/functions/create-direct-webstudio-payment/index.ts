@@ -43,15 +43,15 @@ serve(async (req) => {
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY not configured");
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) throw new Error("Backend configuration missing");
 
-    const { packageType, currency, email, options = [], totalAmount } = await req.json() as {
+    // NB: `totalAmount` n'est plus lu — le total est recalculé côté serveur.
+    const { packageType, currency, email, options = [] } = await req.json() as {
       packageType: PackageType;
       currency: Currency;
       email?: string;
       options?: CartItem[];
-      totalAmount?: number;
     };
 
-    logStep("Request received", { packageType, currency, email, optionsCount: options.length, totalAmount });
+    logStep("Request received", { packageType, currency, email, optionsCount: options.length });
 
     // Validate package type
     if (!packageType || !['BASIC', 'PRO', 'ENTERPRISE'].includes(packageType)) {
@@ -97,6 +97,20 @@ serve(async (req) => {
     // Get origin for redirect URLs
     const origin = req.headers.get("origin") || "https://i-wasp.com";
 
+    // ---- CATALOGUE SERVEUR DES OPTIONS (source de vérité des prix) ----
+    // Miroir de WEB_OPTIONS / MAINTENANCE_PLANS (src/contexts/PricingCartContext.tsx).
+    // Montants en centimes. Toute évolution tarifaire se fait ICI *et* côté client.
+    const WEB_OPTIONS_CATALOG: Record<string, { name: string; price: Record<Currency, number>; hasQuantity: boolean }> = {
+      extra_pages:         { name: "Page supplémentaire",   price: { MAD: 50000,  EUR: 5000  }, hasQuantity: true  },
+      ecommerce:           { name: "E-commerce",            price: { MAD: 100000, EUR: 10000 }, hasQuantity: false },
+      seo:                 { name: "SEO avancé",            price: { MAD: 50000,  EUR: 5000  }, hasQuantity: false },
+      branding:            { name: "Logo / Branding",       price: { MAD: 150000, EUR: 15000 }, hasQuantity: false },
+      multilingual:        { name: "Multilingue",           price: { MAD: 80000,  EUR: 8000  }, hasQuantity: false },
+      express:             { name: "Express 24-48h",        price: { MAD: 50000,  EUR: 5000  }, hasQuantity: false },
+      maintenance_monthly: { name: "Maintenance mensuelle", price: { MAD: 20000,  EUR: 2000  }, hasQuantity: false },
+      maintenance_yearly:  { name: "Maintenance annuelle",  price: { MAD: 200000, EUR: 20000 }, hasQuantity: false },
+    };
+
     // Build line items for all cart items
     const currencyCode = currency === 'MAD' ? 'mad' : 'eur';
     
@@ -129,20 +143,35 @@ serve(async (req) => {
       quantity: 1,
     });
 
-    // Add options if any
+    // Options : CATALOGUE SERVEUR uniquement. Le client n'envoie que des `id`
+    // (et éventuellement une quantité, plafonnée) ; le nom et le PRIX viennent
+    // TOUJOURS d'ici. Auparavant `option.price` et `option.quantity` venaient du
+    // corps de la requête → un client pouvait payer 0,01 € une prestation.
+    const catalogue = WEB_OPTIONS_CATALOG;
+    const acceptedOptions: Array<{ id: string; name: string; quantity: number }> = [];
+
     for (const option of options) {
-      if (option.price > 0 && option.quantity > 0) {
-        lineItems.push({
-          price_data: {
-            currency: currencyCode,
-            product_data: {
-              name: option.name,
-            },
-            unit_amount: Math.round(option.price * 100), // Convert to cents
-          },
-          quantity: option.quantity,
-        });
+      const entry = catalogue[option?.id as string];
+      if (!entry) {
+        logStep("Option inconnue ignorée", { id: option?.id });
+        continue;
       }
+      // Quantité : 1 par défaut, entier, uniquement pour les options qui en
+      // acceptent une, et bornée pour éviter les commandes aberrantes.
+      const requested = Number(option?.quantity);
+      const quantity = entry.hasQuantity
+        ? Math.min(Math.max(Number.isFinite(requested) ? Math.floor(requested) : 1, 1), 50)
+        : 1;
+
+      lineItems.push({
+        price_data: {
+          currency: currencyCode,
+          product_data: { name: entry.name },
+          unit_amount: entry.price[currency],
+        },
+        quantity,
+      });
+      acceptedOptions.push({ id: option.id, name: entry.name, quantity });
     }
 
     logStep("Line items prepared", { count: lineItems.length });
@@ -160,15 +189,19 @@ serve(async (req) => {
         currency: currency,
         type: 'webstudio_direct',
         source: 'pricing_page',
-        options_count: String(options.length),
-        total_amount: String(totalAmount || 0),
+        options_count: String(acceptedOptions.length),
+        // Total RECALCULÉ côté serveur à partir des line items (le `totalAmount`
+        // envoyé par le client n'est plus stocké : il n'était pas fiable).
+        total_amount: String(
+          lineItems.reduce((sum, li) => sum + (li.price_data?.unit_amount ?? 0) * (li.quantity ?? 1), 0),
+        ),
       },
       payment_intent_data: {
         metadata: {
           package_type: packageType,
           currency: currency,
           type: 'webstudio_direct',
-          options: JSON.stringify(options.map(o => ({ id: o.id, name: o.name, qty: o.quantity }))),
+          options: JSON.stringify(acceptedOptions),
         },
       },
       // Allow customer to enter email if not logged in

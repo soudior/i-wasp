@@ -31,21 +31,53 @@ const COLORS = {
 export default function NFCPaymentSuccess() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
-  const tier = searchParams.get("tier") || "single";
+  const tier = searchParams.get("tier") || "essentielle";
   const [copied, setCopied] = useState(false);
+  // Vérification serveur du paiement — la page ne confirme RIEN tant que
+  // verify-payment n'a pas relu la session côté Stripe (anti-falsification URL).
+  const [verifyState, setVerifyState] = useState<"loading" | "verified" | "failed">("loading");
 
-  // Tier info mapping (matches edge function tierId)
+  // Tier info mapping (ids canoniques du serveur create-nfc-payment)
   const TIER_INFO: Record<string, { name: string; description: string }> = {
-    single: { name: "Carte NFC Unitaire", description: "1 carte NFC premium" },
+    essentielle: { name: "Carte NFC Essentielle", description: "1 carte NFC premium" },
+    professionnelle: { name: "Carte NFC Professionnelle", description: "1 carte NFC premium PVC" },
+    prestige: { name: "Carte NFC Prestige", description: "1 carte NFC métal premium" },
+    pack_team: { name: "Pack TEAM", description: "5 cartes NFC pour votre équipe" },
+    // ids historiques (anciens liens)
+    single: { name: "Carte NFC Essentielle", description: "1 carte NFC premium" },
     pack_10: { name: "Pack Mini", description: "10 cartes NFC" },
     pack_50: { name: "Pack Standard", description: "50 cartes NFC" },
     pack_100: { name: "Pack Volume Pro", description: "100 cartes NFC" },
   };
 
-  const tierInfo = TIER_INFO[tier] || TIER_INFO.single;
+  const tierInfo = TIER_INFO[tier] || TIER_INFO.essentielle;
 
   useEffect(() => {
-    // Trigger confetti on mount
+    let cancelled = false;
+    (async () => {
+      if (!sessionId) {
+        setVerifyState("failed");
+        return;
+      }
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase.functions.invoke("verify-payment", {
+          body: { sessionId },
+        });
+        if (cancelled) return;
+        setVerifyState(!error && data?.verified ? "verified" : "failed");
+      } catch {
+        if (!cancelled) setVerifyState("failed");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (verifyState !== "verified") return;
+    // Trigger confetti once payment is confirmed server-side
     const duration = 2000;
     const end = Date.now() + duration;
 
@@ -71,7 +103,7 @@ export default function NFCPaymentSuccess() {
     };
 
     frame();
-  }, []);
+  }, [verifyState]);
 
   const handleCopyOrderId = () => {
     if (sessionId) {
@@ -81,8 +113,48 @@ export default function NFCPaymentSuccess() {
     }
   };
 
+  if (verifyState === "loading") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-4" style={{ backgroundColor: COLORS.noir }}>
+        <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: COLORS.or, borderTopColor: "transparent" }} />
+        <p className="text-sm" style={{ color: COLORS.gris }}>Vérification de votre paiement…</p>
+      </div>
+    );
+  }
+
+  if (verifyState === "failed") {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: COLORS.noir }}>
+        <Card className="max-w-lg w-full overflow-hidden border-0" style={{ backgroundColor: COLORS.noirCard }}>
+          <CardContent className="p-8 text-center space-y-4">
+            <h1 className="text-xl font-medium" style={{ color: COLORS.ivoire }}>
+              Paiement non confirmé
+            </h1>
+            <p className="text-sm" style={{ color: COLORS.gris }}>
+              Nous n'avons pas pu confirmer ce paiement. S'il a bien été débité,
+              contactez-nous avec votre référence — aucune commande n'est perdue.
+            </p>
+            {sessionId && (
+              <p className="text-xs break-all" style={{ color: COLORS.gris }}>Référence : {sessionId}</p>
+            )}
+            <div className="flex flex-col gap-3 pt-2">
+              <Button asChild style={{ backgroundColor: COLORS.success, color: "white" }}>
+                <a href="https://wa.me/212661928670?text=Bonjour%2C%20mon%20paiement%20NFC%20n'est%20pas%20confirm%C3%A9." target="_blank" rel="noopener noreferrer">
+                  <MessageCircle size={16} className="mr-2" /> Contacter le support
+                </a>
+              </Button>
+              <Link to="/order/offre" className="text-sm hover:opacity-80" style={{ color: COLORS.or }}>
+                Réessayer la commande
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
-    <div 
+    <div
       className="min-h-screen flex items-center justify-center p-4"
       style={{ backgroundColor: COLORS.noir }}
     >

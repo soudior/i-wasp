@@ -431,7 +431,7 @@ export default function Cart() {
                   <Button
                     size="lg"
                     className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-background font-semibold rounded-full"
-                    onClick={() => navigate("/checkout")}
+                    onClick={() => navigate("/order/offre")}
                   >
                     <CreditCard className="mr-2 h-5 w-5" />
                     Passer commande
@@ -456,7 +456,7 @@ export default function Cart() {
 
       {/* Mobile Sticky CTA */}
       <StickyBottomCTA
-        onClick={() => navigate("/checkout")}
+        onClick={() => navigate("/order/offre")}
         variant="chrome"
       >
         <CreditCard className="mr-2 h-5 w-5" />

@@ -161,12 +161,12 @@ function OrderRecapContent() {
       if (paymentMethod === "stripe" && order?.id) {
         toast.info("Redirection vers le paiement...");
         
+        // Le montant est fixé CÔTÉ SERVEUR à partir du tierId (grille canonique).
         const { data, error } = await supabase.functions.invoke('create-nfc-payment', {
-          body: { 
-            quantity: 1,
-            offerId: state.selectedOffer,
-            priceInCents: selectedOffer?.price || 59900,
+          body: {
+            tierId: state.selectedOffer,
             orderId: order.id,
+            email: (email || userEmail) || undefined,
           },
         });
 

@@ -45,9 +45,11 @@ export default function TarifsComplets() {
   const nfcTiers = getNfcTiersList();
   const promoPacks = getPromoPacksList();
 
+  // Taux UNIQUE eur↔mad = 11 (source : NFC_PRICING.currency.eurToMad) — ne pas
+  // utiliser un autre taux ailleurs, sinon deux prix € différents selon la page.
   const formatPrice = (mad: number) => {
     if (currency === 'EUR') {
-      return `€${Math.round(mad * 0.10)}`;
+      return `€${(mad / 11).toFixed(2).replace('.', ',')}`;
     }
     return `${mad.toLocaleString('fr-FR')} DH`;
   };
@@ -196,14 +198,14 @@ export default function TarifsComplets() {
               >
                 <Card className={cn(
                   "relative h-full flex flex-col transition-all hover:shadow-lg",
-                  tier.id === 'pack_50' && "border-primary ring-2 ring-primary/20"
+                  tier.id === 'professionnelle' && "border-primary ring-2 ring-primary/20"
                 )}>
                   {tier.badge && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                       <Badge className={cn(
                         "whitespace-nowrap",
                         tier.id === 'pack_100' && "bg-amber-500 hover:bg-amber-600",
-                        tier.id === 'pack_50' && "bg-primary"
+                        tier.id === 'professionnelle' && "bg-primary"
                       )}>
                         {tier.badge}
                       </Badge>
@@ -239,7 +241,7 @@ export default function TarifsComplets() {
                     </ul>
                     <Button 
                       className="w-full mt-6"
-                      variant={tier.id === 'pack_50' ? 'default' : 'outline'}
+                      variant={tier.id === 'professionnelle' ? 'default' : 'outline'}
                       onClick={() => handleNfcPayment(tier.id)}
                       disabled={loadingNfc === tier.id}
                     >
