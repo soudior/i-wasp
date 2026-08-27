@@ -760,7 +760,20 @@ END:VCARD`;
           </motion.button>
         </div>
 
+        {/* Wallet Card premium */}
+        <LuxeWalletSection
+          logo={luxePrestigeLogo}
+          name={CONTACT.name}
+          title={CONTACT.title}
+          tagline={CONTACT.tagline}
+          phone={CONTACT.phone}
+          email={CONTACT.email}
+          location={CONTACT.location}
+          onShare={handleShare}
+        />
+
         {/* Action Buttons */}
+
         <div 
           className="p-6 space-y-3 rounded-b-3xl"
           style={{ backgroundColor: LUXE_COLORS.card }}
