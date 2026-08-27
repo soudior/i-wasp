@@ -278,6 +278,21 @@ export default function LuxePrestigeCard() {
     window.location.href = `mailto:${CONTACT.email}?subject=Demande d'information - Luxe Prestige`;
   };
 
+  const handleShare = async () => {
+    const url = `${window.location.origin}/card/luxe-prestige`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: CONTACT.name, text: CONTACT.tagline, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+      }
+    } catch {
+      /* partage annulé */
+    }
+  };
+
+
+
   const handleAddContact = () => {
     const vcard = `BEGIN:VCARD
 VERSION:3.0
