@@ -1,7 +1,8 @@
-# Universal Links (iOS) : le fichier AASA doit être servi en application/json,
-# sans extension et sans redirection. Ces règles forcent le bon Content-Type
-# (Netlify / Cloudflare Pages). Les fichiers statiques existants sont servis
-# avant la règle SPA « /* /index.html 200 » de _redirects.
+# ⚠️ Ce fichier est une convention Netlify / Cloudflare Pages.
+# L'hébergeur de production est VERCEL, qui l'IGNORE totalement.
+# La règle qui compte réellement est dans `vercel.json` (bloc "headers"),
+# verrouillée par le test `src/config/vercel.test.ts`.
+# Conservé uniquement pour rester portable si l'hébergement change un jour.
 /.well-known/apple-app-site-association
   Content-Type: application/json
 /apple-app-site-association

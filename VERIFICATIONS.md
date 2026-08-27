@@ -5,35 +5,38 @@
 
 ---
 
-## 1. `public/_headers` est-il réellement supporté par l'hébergeur ? ⚠️🔧
+## 1. `public/_headers` est-il réellement supporté par l'hébergeur ? ✅ RÉSOLU 🔧
 
-**Rôle :** forcer `Content-Type: application/json` sur le fichier AASA (sans
-extension), sinon l'hébergeur le sert en `text/plain` et les Universal Links iOS
-échouent.
+**Réponse : NON — et c'était un vrai bug.** L'hébergeur de production est
+**Vercel** (présence de `vercel.json` avec les rewrites SPA). Or `public/_headers`
+est une convention **Netlify / Cloudflare Pages** : Vercel l'ignore purement et
+simplement. Le fichier AASA était donc servi **sans** `Content-Type:
+application/json` → **les Universal Links iOS ne pouvaient pas fonctionner**
+(un lien `i-wasp.com/card/...` ouvrait Safari au lieu de l'app).
 
-**Vérification :** `public/_headers` et `public/_redirects` utilisent la **même**
-convention (Netlify / Cloudflare Pages). Le site sert déjà correctement les routes
-profondes (`/card/:slug`) grâce à la règle SPA `/* /index.html 200` de `_redirects` :
-un hébergeur qui honore `_redirects` honore **aussi** `_headers` (c'est le cas de
-Netlify et Cloudflare Pages). **Donc si le routing SPA fonctionne en prod, `_headers`
-est pris en compte.**
+**Correction 🔧 :** la règle a été portée dans **`vercel.json`** :
 
-**⚠️ À confirmer** (impossible depuis ce conteneur — `i-wasp.com` n'est pas
-joignable ici) : identifier l'hébergeur réel et, s'il ne s'agit **pas** de
-Netlify/Cloudflare Pages, appliquer l'équivalent :
-- **Vercel** → `vercel.json` :
-  ```json
-  { "headers": [ { "source": "/(.well-known/)?apple-app-site-association",
-    "headers": [ { "key": "Content-Type", "value": "application/json" } ] } ] }
-  ```
-- **Firebase Hosting** → `firebase.json` (`headers` sur le même chemin).
-- **Nginx/Apache** → `location = /.well-known/apple-app-site-association { default_type application/json; }`.
+```json
+"headers": [
+  { "source": "/.well-known/apple-app-site-association",
+    "headers": [{ "key": "Content-Type", "value": "application/json" }] },
+  { "source": "/apple-app-site-association",
+    "headers": [{ "key": "Content-Type", "value": "application/json" }] }
+]
+```
 
-**Test de prod :**
-`curl -sI https://i-wasp.com/.well-known/apple-app-site-association` → attendu
-`HTTP/2 200` + `content-type: application/json`, **sans** redirection.
+Ordre de routage Vercel : `redirects` → `headers` → système de fichiers →
+`rewrites`. Le fichier statique est donc servi **avant** la règle SPA
+`/(.*) → /index.html`, avec le bon en-tête.
 
----
+**Verrouillé par un test** (`src/config/vercel.test.ts`) : plusieurs agents
+modifient ce dépôt, la règle ne peut plus disparaître silencieusement.
+`public/_headers` est conservé, annoté comme inerte sur Vercel, au cas où
+l'hébergement changerait.
+
+**Test de prod (à faire après déploiement) :**
+`curl -sI https://i-wasp.com/.well-known/apple-app-site-association`
+→ attendu `HTTP/2 200` + `content-type: application/json`, sans redirection.
 
 ## 2. Les chemins AASA correspondent-ils aux vraies URLs publiques ? ✅🔧
 

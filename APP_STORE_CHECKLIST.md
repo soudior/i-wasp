@@ -20,7 +20,7 @@
 |------|--------|--------|
 | Scheme deep-link `iwasp://` | ✅ | Déclaré dans `Info.plist.template`. Le `scheme:'IWASP'` de Capacitor est le schéma **interne** du serveur WKWebView (distinct, à ne pas confondre). |
 | Associated Domains (iOS) | ✅ | Déclarés (`applinks:i-wasp.com` / `www.i-wasp.com`) dans `Info.plist.template` + fichier d'entitlements prêt (`ios-config/App.entitlements`). À activer dans Xcode (capability). |
-| `apple-app-site-association` | ✅ | `appID = Y4JV4X2DJ6.app.iwasp.digital`, présent en racine **et** `.well-known/`. Chemins **alignés sur les vraies routes** : `/c/*`, `/card/*` (le `/n/*` sans route a été retiré — voir `VERIFICATIONS.md` §2). `Content-Type: application/json` forcé via `public/_headers`. Reste : confirmer le service en prod (200, sans redirection). |
+| `apple-app-site-association` | ✅ | `appID = Y4JV4X2DJ6.app.iwasp.digital`, présent en racine **et** `.well-known/`. Chemins **alignés sur les vraies routes** : `/c/*`, `/card/*` (le `/n/*` sans route a été retiré — voir `VERIFICATIONS.md` §2). `Content-Type: application/json` forcé via **`vercel.json`** (l'hébergeur est Vercel : `public/_headers` y est inerte — bug corrigé, cf. `VERIFICATIONS.md` §1), verrouillé par `src/config/vercel.test.ts`. Reste : confirmer le service en prod (200, sans redirection). |
 | `assetlinks.json` (Android) | ☐ | À générer avec le SHA-256 de la clé de signature (voir MANUAL_ACTIONS §3), package `app.iwasp.digital`. |
 | Universal Links testés | ☐ | À valider sur appareil réel **après déploiement** du site (AASA servi) + build iOS. |
 
