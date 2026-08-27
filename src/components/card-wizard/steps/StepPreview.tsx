@@ -77,8 +77,8 @@ export function StepPreview({ data, onChange, validation, onValidationChange }: 
   };
 
   // Sync WhatsApp to social links
-  const handleWhatsAppChange = (waData: typeof whatsappData) => {
-    setWhatsappData(waData);
+  const handleWhatsAppChange = (waData: { number: string; countryCode: string; message?: string }) => {
+    setWhatsappData({ ...waData, message: waData.message ?? "" });
     if (waData.number) {
       const fullNumber = waData.countryCode + waData.number;
       const existingLinks = (data.socialLinks || []).filter(l => l.networkId !== "whatsapp");
@@ -92,8 +92,8 @@ export function StepPreview({ data, onChange, validation, onValidationChange }: 
   };
 
   // Sync location
-  const handleLocationChange = (locData: typeof locationData) => {
-    setLocationData(locData);
+  const handleLocationChange = (locData: { address: string; latitude?: number; longitude?: number }) => {
+    setLocationData({ address: locData.address, latitude: locData.latitude, longitude: locData.longitude });
     onChange({ location: locData.address });
   };
 

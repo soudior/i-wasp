@@ -9,6 +9,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Phone, MessageCircle, Mail, MapPin, Plane, Car, Home, Sparkles, ChevronLeft, ChevronRight, X, Camera, Star, Crown, Globe, Flame } from "lucide-react";
 import { useState, useCallback } from "react";
 import luxePrestigeLogo from "@/assets/luxe-prestige-logo.png";
+import { LuxeWalletSection } from "@/components/luxe-prestige/LuxeWalletSection";
+
 
 // Palette ultra-luxe noir et or
 const LUXE_COLORS = {
@@ -275,6 +277,21 @@ export default function LuxePrestigeCard() {
   const handleEmail = () => {
     window.location.href = `mailto:${CONTACT.email}?subject=Demande d'information - Luxe Prestige`;
   };
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/card/luxe-prestige`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: CONTACT.name, text: CONTACT.tagline, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+      }
+    } catch {
+      /* partage annulé */
+    }
+  };
+
+
 
   const handleAddContact = () => {
     const vcard = `BEGIN:VCARD
@@ -760,7 +777,20 @@ END:VCARD`;
           </motion.button>
         </div>
 
+        {/* Wallet Card premium */}
+        <LuxeWalletSection
+          logo={luxePrestigeLogo}
+          name={CONTACT.name}
+          title={CONTACT.title}
+          tagline={CONTACT.tagline}
+          phone={CONTACT.phone}
+          email={CONTACT.email}
+          location={CONTACT.location}
+          onShare={handleShare}
+        />
+
         {/* Action Buttons */}
+
         <div 
           className="p-6 space-y-3 rounded-b-3xl"
           style={{ backgroundColor: LUXE_COLORS.card }}

@@ -6,7 +6,10 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   // Deno edge functions ont leur propre runtime/typage — hors périmètre du lint front.
-  { ignores: ["dist", "supabase/functions/**"] },
+  // Les worktrees et artefacts d'inspection présents dans le dossier racine
+  // ne font pas partie du projet publié et peuvent contenir leur propre
+  // configuration/outillage.
+  { ignores: ["dist", "supabase/functions/**", ".worktrees/**", ".codex-*/**"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

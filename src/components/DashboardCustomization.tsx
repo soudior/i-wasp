@@ -355,7 +355,7 @@ export function DashboardCustomization() {
                 <StoryEditor
                   cardId={primaryCard.id}
                   stories={stories}
-                  onStoriesChange={updateStories}
+                  onStoriesChange={(newStories) => updateStories(newStories as unknown as Parameters<typeof updateStories>[0])}
                 />
               </GoldFeatureCard>
 
