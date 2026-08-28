@@ -29,7 +29,7 @@ import { useQuery } from "@tanstack/react-query";
  */
 const RESOLVER_URL =
   import.meta.env.VITE_CARD_RESOLVER_URL ||
-  "https://vwlngxifajsziexhkafe.supabase.co/functions/v1/resolve-card";
+  "https://fyxiyevbbvidckzaequx.supabase.co/functions/v1/resolve-card";
 const SUPABASE_KEY =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
 

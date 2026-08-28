@@ -33,8 +33,21 @@ export function normalizeCardId(value: unknown) {
   return String(value ?? '').trim().toLowerCase();
 }
 
+/**
+ * Valide un identifiant de carte.
+ *
+ * La regle exigeait auparavant des segments separes par des tirets, ce qui
+ * refusait un tiret final. Or la production contient reellement `medina-mall-`
+ * — carte active, NFC et Wallet actives — qui etait donc declaree invalide : son
+ * pass n'aurait jamais pu etre signe. On accepte le tiret en fin de chaine sans
+ * jamais reecrire l'identifiant, car la recherche se fait sur la valeur exacte
+ * stockee.
+ *
+ * Les proprietes de securite sont inchangees : ni `/`, ni `.`, ni `:`, ni `%`,
+ * ni espace, ni majuscule ne passent — donc aucune URL ne peut etre injectee.
+ */
 export function isValidCardId(value: string) {
-  return value.length > 0 && value.length <= 80 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
+  return value.length > 0 && value.length <= 80 && /^[a-z0-9][a-z0-9-]*$/.test(value);
 }
 
 /** A successful upstream response must prove it owns the requested id. */

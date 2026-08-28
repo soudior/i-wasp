@@ -95,3 +95,25 @@ Deno.test("la casse de l'URL est normalisee, pas rejetee", () => {
     assert(!isValidCardId(normalizeCardId(bad)), `${bad} aurait du etre refuse`);
   }
 });
+
+Deno.test("les identifiants reels de production sont tous acceptes", () => {
+  // Slugs effectivement presents en base, dont un a tiret final.
+  for (const slug of [
+    "bornety-lacaisse-ma", "ariella-khiat-cohen", "ahmed-benali", "medina-mall-",
+    "ibrahim-benelfares", "herbalism-marrakech", "autoschluessel-aachen",
+  ]) {
+    assert(isValidCardId(normalizeCardId(slug)), `${slug} est une carte reelle et doit etre acceptee`);
+  }
+  // L'identifiant n'est jamais reecrit : la recherche porte sur la valeur exacte.
+  assertEquals(normalizeCardId("medina-mall-"), "medina-mall-");
+});
+
+Deno.test("l'assouplissement ne rouvre aucune faille", () => {
+  for (const bad of [
+    "", "-commence-par-tiret", "espace ici", "slash/injecte", "point.interdit",
+    "https://evil.example.com/x", "http://169.254.169.254/latest/meta-data",
+    "deux%2Fpoints", "a".repeat(81),
+  ]) {
+    assert(!isValidCardId(normalizeCardId(bad)), `${bad} aurait du etre refuse`);
+  }
+});

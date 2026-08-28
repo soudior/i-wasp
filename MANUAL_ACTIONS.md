@@ -140,3 +140,30 @@ App ID numérique App Store, empreinte SHA-256 de signature Android, `PROJECT_RE
 - ✅ AASA corrigé sur `app.iwasp.digital` (+ copie `.well-known/`), chemins `/c/*`, `/card/*`, `/n/*`.
 - ✅ Capacitor : bloc serveur Lovable retiré.
 - ✅ `ENVIRONMENT.md` : liste des noms de variables (sans valeurs).
+
+## Déployer `resolve-card` sur la base de production
+
+**Preuve que c'est nécessaire :** la base réellement utilisée par le site est
+`fyxiyevbbvidckzaequx` (7 cartes, 15 comptes). Le projet `vwlngxifajsziexhkafe`
+déclaré dans `supabase/config.toml` est vide (0 carte, 1 compte) : la migration
+annoncée par le commit `6e70917` n'a jamais été réalisée.
+
+La fonction est écrite, testée (10/10) et déployée sur `vwlngxifajsziexhkafe`,
+mais **cet accès ne couvre pas le projet de production**. Tant qu'elle n'y est
+pas déployée, le garde-fou refuse de signer tout pass — et l'annonce
+explicitement comme un problème de configuration, jamais comme une carte
+inexistante.
+
+Commande, depuis le dépôt :
+
+    supabase link --project-ref fyxiyevbbvidckzaequx
+    supabase functions deploy resolve-card --no-verify-jwt
+
+Vérification attendue ensuite :
+
+    curl -s -o /dev/null -w "%{http_code}\n" \
+      "https://fyxiyevbbvidckzaequx.supabase.co/functions/v1/resolve-card?id=medina-mall-"
+    # 200 attendu
+
+`medina-mall-` est le meilleur test : son tiret final était refusé par
+l'ancienne validation, ce qui rendait le pass de cette carte impossible à signer.
