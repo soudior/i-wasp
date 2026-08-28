@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { NFCValueProposition } from "./NFCValueProposition";
 import { NFCEducation } from "./NFCEducation";
 import { QRCodeSVG } from "qrcode.react";
+import { publicLegacyCardUrl } from "@/lib/publicUrl";
 
 interface CardCreationSuccessProps {
   cardSlug: string;
@@ -22,7 +23,7 @@ interface CardCreationSuccessProps {
 }
 
 export function CardCreationSuccess({ cardSlug, cardName }: CardCreationSuccessProps) {
-  const cardUrl = `${window.location.origin}/c/${cardSlug}`;
+  const cardUrl = publicLegacyCardUrl(cardSlug);
   const [showTestModal, setShowTestModal] = useState(false);
 
   const handleCopyLink = () => {

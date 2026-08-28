@@ -18,6 +18,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { toast } from "sonner";
+import { publicCardUrl } from "@/lib/publicUrl";
 
 interface StepCompleteProps {
   cardId: string | null;
@@ -31,7 +32,7 @@ export function StepComplete({ cardId, cardSlug, data }: StepCompleteProps) {
   const handleCopyLink = () => {
     if (cardSlug) {
       // Use slug for the public URL
-      const cardUrl = `${window.location.origin}/card/${cardSlug}`;
+      const cardUrl = publicCardUrl(cardSlug);
       navigator.clipboard.writeText(cardUrl);
       toast.success("Lien copié !");
     }

@@ -10,6 +10,7 @@ import { Phone, MessageCircle, Mail, MapPin, Plane, Car, Home, Sparkles, Chevron
 import { useState, useCallback } from "react";
 import luxePrestigeLogo from "@/assets/luxe-prestige-logo.png";
 import { LuxeWalletSection } from "@/components/luxe-prestige/LuxeWalletSection";
+import { PUBLIC_SITE_URL, publicCardUrl } from "@/lib/publicUrl";
 
 
 // Palette ultra-luxe noir et or
@@ -279,7 +280,8 @@ export default function LuxePrestigeCard() {
   };
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/card/luxe-prestige`;
+    // Lien partage : canonique, sinon on diffuse l'URL d'une preview.
+    const url = publicCardUrl("luxe-prestige");
     try {
       if (navigator.share) {
         await navigator.share({ title: CONTACT.name, text: CONTACT.tagline, url });
@@ -305,7 +307,7 @@ ADR;TYPE=WORK:;;${CONTACT.location}
 URL:https://luxeprestige.ma
 URL;TYPE=INSTAGRAM:https://instagram.com/luxeprestige.marrakech
 NOTE:${CONTACT.tagline} - Conciergerie de luxe à Marrakech. Véhicules premium, aviation privée, expériences exclusives.
-PHOTO;VALUE=URI:${window.location.origin}/assets/luxe-prestige-logo.png
+PHOTO;VALUE=URI:${PUBLIC_SITE_URL}/assets/luxe-prestige-logo.png
 END:VCARD`;
 
     const blob = new Blob([vcard], { type: "text/vcard" });

@@ -70,6 +70,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { publicLegacyCardUrl } from "@/lib/publicUrl";
 
 // Animation variants - slow, luxurious
 const fadeUp = {
@@ -128,7 +129,7 @@ const Dashboard = () => {
   };
 
   const handleCopyLink = (slug: string) => {
-    const url = `${window.location.origin}/c/${slug}`;
+    const url = publicLegacyCardUrl(slug);
     navigator.clipboard.writeText(url);
     toast.success("Lien copié !");
   };

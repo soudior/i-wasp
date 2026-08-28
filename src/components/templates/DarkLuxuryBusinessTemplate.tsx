@@ -32,6 +32,7 @@ import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import { downloadVCard, VCardData } from "@/lib/vcard";
 import { StoryRing } from "@/components/StoryRing";
 import { usePublicMultipleStories } from "@/hooks/useMultipleStories";
+import { publicCardUrl } from "@/lib/publicUrl";
 
 interface CustomStyles {
   backgroundColor?: string;
@@ -155,7 +156,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
       company: card.company || undefined,
       website: card.website || undefined,
       photoUrl: card.photo_url || card.logo_url || undefined,
-      nfcPageUrl: `${window.location.origin}/card/${card.slug}`,
+      nfcPageUrl: publicCardUrl(card.slug),
       address: card.location || undefined,
       // Social networks
       instagram: getSocialLink('instagram') || undefined,

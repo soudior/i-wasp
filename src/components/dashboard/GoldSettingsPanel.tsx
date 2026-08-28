@@ -35,6 +35,7 @@ import {
   RefreshCw,
   ExternalLink,
 } from "lucide-react";
+import { publicLegacyCardUrl } from "@/lib/publicUrl";
 
 interface GoldSettingsPanelProps {
   wifiEnabled?: boolean;
@@ -75,7 +76,7 @@ export function GoldSettingsPanel({
 
   const handleCopyLink = () => {
     if (!cardSlug) return;
-    navigator.clipboard.writeText(`${window.location.origin}/c/${cardSlug}`);
+    navigator.clipboard.writeText(publicLegacyCardUrl(cardSlug));
     toast.success("Lien copié !");
   };
 
@@ -193,7 +194,7 @@ export function GoldSettingsPanel({
                 <div>
                   <p className="font-medium text-foreground">Copier le lien</p>
                   <p className="text-xs text-muted-foreground truncate max-w-[200px]">
-                    {cardSlug ? `${window.location.origin}/c/${cardSlug}` : "Aucune carte"}
+                    {cardSlug ? publicLegacyCardUrl(cardSlug) : "Aucune carte"}
                   </p>
                 </div>
               </div>

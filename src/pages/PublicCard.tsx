@@ -31,6 +31,7 @@ import KhokhaSignatureCard from "./KhokhaSignatureCard";
 
 // Import local profile photo for Herbalism Marrakech
 import ibrahimPhoto from "@/assets/clients/ibrahim-herbalism.jpeg";
+import { publicCardUrl } from "@/lib/publicUrl";
 
 const PublicCard = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -146,7 +147,7 @@ const PublicCard = () => {
         vcardData.company ? `ORG:${vcardData.company}` : null,
         vcardData.email ? `EMAIL:${vcardData.email}` : null,
         vcardData.phone ? `TEL:${vcardData.phone}` : null,
-        `URL:${window.location.origin}/card/${vcardData.slug}`,
+        `URL:${publicCardUrl(vcardData.slug)}`,
         "END:VCARD",
       ]
         .filter(Boolean)

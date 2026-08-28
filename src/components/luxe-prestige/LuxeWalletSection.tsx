@@ -16,6 +16,7 @@ import {
   WalletCardData,
   WalletStyles,
 } from "@/lib/walletService";
+import { PUBLIC_SITE_URL, publicCardUrl } from "@/lib/publicUrl";
 
 const C = {
   background: "#0A0A0A",
@@ -67,7 +68,8 @@ export function LuxeWalletSection({
 }: LuxeWalletSectionProps) {
   const [loading, setLoading] = useState<"apple" | "google" | null>(null);
 
-  const pageUrl = typeof window !== "undefined" ? `${window.location.origin}/card/luxe-prestige` : "";
+  // URL canonique : jamais window.location, sinon une preview grave un lien mort.
+  const pageUrl = publicCardUrl("luxe-prestige");
 
   const isApple = supportsAppleWallet();
   const isAndroid = supportsGoogleWallet();
@@ -85,7 +87,9 @@ export function LuxeWalletSection({
       phone,
       website: pageUrl,
       location,
-      photoUrl: typeof window !== "undefined" ? `${window.location.origin}${logo}` : undefined,
+      // Image embarquee dans le pass Wallet : domaine canonique obligatoire,
+      // sinon un pass genere depuis une preview pointe vers une image ephemere.
+      photoUrl: `${PUBLIC_SITE_URL}${logo}`,
       tagline,
     }),
     [title, name, email, phone, pageUrl, location, logo, tagline]

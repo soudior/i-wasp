@@ -57,6 +57,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { QRCodeSVG } from "qrcode.react";
 import { downloadVCard } from "@/lib/vcard";
+import { publicCardUrl } from "@/lib/publicUrl";
 
 // OMNIA Design System Colors
 const OMNIA = {
@@ -332,7 +333,7 @@ function CardGeneratorContent() {
 
   const getCardUrl = () => {
     if (!createdCard) return "";
-    return `${window.location.origin}/card/${createdCard.slug}`;
+    return publicCardUrl(createdCard.slug);
   };
 
   const copyLink = async () => {

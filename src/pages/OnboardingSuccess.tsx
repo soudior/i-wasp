@@ -8,6 +8,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { CheckCircle2, ArrowRight, Share2, ExternalLink, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import { publicLegacyCardUrl } from "@/lib/publicUrl";
 
 // Stealth Luxury Colors
 const COLORS = {
@@ -29,7 +30,7 @@ export default function OnboardingSuccess() {
   const name = searchParams.get("name") || "Votre carte";
   const [countdown, setCountdown] = useState(5);
 
-  const cardUrl = slug ? `${window.location.origin}/c/${slug}` : "";
+  const cardUrl = slug ? publicLegacyCardUrl(slug) : "";
 
   // Trigger confetti on mount
   useEffect(() => {
