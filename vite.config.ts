@@ -41,6 +41,11 @@ export default defineConfig(() => ({
       manifest: false,
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icons/icon-192x192.png', 'icons/icon-512x512.png'],
       workbox: {
+        // Les fiches NFC sont des pages publiques vivantes : elles ne doivent
+        // jamais etre remplacees par un ancien app-shell mis en cache. Le
+        // serveur sait deja renvoyer index.html pour ces routes SPA.
+        navigateFallbackDenylist: [/^\/card\//],
+        cleanupOutdatedCaches: true,
         // Précache = APP SHELL uniquement (code, styles, polices auto-hébergées,
         // icônes). Les images (photos produits, visuels marketing…) ne sont PAS
         // précachées : elles pesaient ~68 Mo téléchargés d'office à la 1ère visite.
@@ -51,22 +56,6 @@ export default defineConfig(() => ({
         runtimeCaching: [
           // NB : plus de règles fonts.googleapis/gstatic — toutes les polices sont
           // auto-hébergées (@fontsource) et précachées via woff2.
-          {
-            // Cache NFC card pages - always fetch fresh content first
-            urlPattern: /\/card\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'nfc-cards-cache-v2',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 // 1 day only
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              },
-              networkTimeoutSeconds: 2
-            }
-          },
           {
             // Cache API responses for offline mode
             urlPattern: /\/rest\/v1\/.*/i,
