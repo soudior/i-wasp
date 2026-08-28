@@ -18,8 +18,18 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-const SUPABASE_URL =
-  import.meta.env.VITE_SUPABASE_URL || "https://fyxiyevbbvidckzaequx.supabase.co";
+/**
+ * Adresse du resolveur, explicite et non deduite.
+ *
+ * Elle etait auparavant construite a partir de VITE_SUPABASE_URL. Or le
+ * resolveur est un service a part : il peut vivre ailleurs que la base que
+ * l'application interroge, et c'est le cas aujourd'hui. Deduire son adresse
+ * faisait interroger un projet ou la fonction n'existe pas, ce qui renvoyait un
+ * 404 « carte inconnue » pour absolument toutes les cartes.
+ */
+const RESOLVER_URL =
+  import.meta.env.VITE_CARD_RESOLVER_URL ||
+  "https://vwlngxifajsziexhkafe.supabase.co/functions/v1/resolve-card";
 const SUPABASE_KEY =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
 
@@ -61,7 +71,7 @@ export function useResolvedCard(slug: string, enabled: boolean) {
       }
 
       const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/resolve-card?id=${encodeURIComponent(slug)}`,
+        `${RESOLVER_URL}?id=${encodeURIComponent(slug)}`,
         { headers },
       );
 
