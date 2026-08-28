@@ -67,7 +67,8 @@ async function lookupIwasp(id: string): Promise<LookupResult> {
 }
 
 async function lookupIwallet(id: string): Promise<LookupResult> {
-  if (!IWALLET_CARD_BASE_URL) return { kind: 'failure', status: 502, reason: 'iwallet-card resolver is not configured' };
+  // Absent de l'environnement = pas de magasin de repli ici, pas une panne.
+  if (!IWALLET_CARD_BASE_URL) return { kind: 'not_configured' };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
   try {

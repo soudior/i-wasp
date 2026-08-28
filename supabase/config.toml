@@ -149,3 +149,6 @@ verify_jwt = false
 # barrière au niveau de la passerelle (rejet des appels non authentifiés).
 [functions.delete-account]
 verify_jwt = true
+
+[functions.resolve-card]
+verify_jwt = false

@@ -70,18 +70,34 @@ Deno.test("3. identifiant inconnu : un vrai 404", async () => {
 });
 
 Deno.test("identifiant invalide : 400, jamais 404", async () => {
-  for (const bad of ["", "Majuscules", "espace ici", "slash/injecte", "a".repeat(200)]) {
+  for (const bad of ["", "espace ici", "slash/injecte", "a".repeat(200)]) {
     const { status } = await resolve(bad);
     assert(status === 400, `"${bad.slice(0, 20)}" devrait donner 400, a donné ${status}`);
   }
+});
+
+Deno.test("la casse est normalisée, pas rejetée", async () => {
+  // Une carte physique peut être saisie en majuscules. /card/Ajban-Al-Khair
+  // doit atteindre la même fiche : on normalise avant de valider, donc ce n'est
+  // ni un 400 ni un identifiant différent.
+  if (!IWASP_CARD_ID) {
+    console.warn("TEST_IWASP_CARD_ID absent — scénario non exécuté, donc non validé.");
+    return;
+  }
+  const { status, body } = await resolve(IWASP_CARD_ID.toUpperCase());
+  assert(status === 200, `attendu 200, reçu ${status}`);
+  assert(body?.card?.id === IWASP_CARD_ID, "la casse doit être ramenée à l'identifiant canonique");
 });
 
 Deno.test("aucune URL externe n'est acceptée depuis l'appelant (anti-SSRF)", async () => {
   // L'appelant ne choisit que l'identifiant ; l'hôte amont vient de
   // l'environnement serveur. Une tentative d'injection doit être rejetée à la
   // validation de format, avant tout appel réseau.
+  // Le rejet peut venir de la validation de format (400) ou, en production,
+  // du pare-feu applicatif en amont (403) qui bloque avant même la fonction.
+  // Les deux satisfont la propriété recherchée : l'URL n'est jamais appelée.
   for (const attempt of ["http://169.254.169.254/latest/meta-data", "https://evil.example.com/x"]) {
     const { status } = await resolve(attempt);
-    assert(status === 400, `l'URL injectée aurait dû être rejetée, statut ${status}`);
+    assert(status === 400 || status === 403, `l'URL injectée aurait dû être rejetée, statut ${status}`);
   }
 });
