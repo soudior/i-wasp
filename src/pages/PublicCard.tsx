@@ -10,6 +10,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { usePublicCard, useCardActionUrl, useIncrementCardView } from "@/hooks/usePublicCard";
+import { useResolvedCard } from "@/hooks/useResolvedCard";
+import { ResolvedCardFallback } from "@/components/ResolvedCardFallback";
 import { useRecordScan } from "@/hooks/useScans";
 import { usePublicStory } from "@/hooks/useStories";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,6 +50,11 @@ const PublicCard = () => {
     .toLowerCase();
 
   const { data: card, isLoading, error } = usePublicCard(cleanedSlug);
+  // Repli : la carte n'est pas dans la base i-wasp. Elle vit peut-etre dans
+  // iwallet-card — le resolveur tranche. On n'appelle qu'en dernier recours.
+  const localLookupEmpty = !isLoading && !card;
+  const { data: resolved, isLoading: resolving, error: resolveError } =
+    useResolvedCard(cleanedSlug, localLookupEmpty);
   const { story } = usePublicStory(card?.id || undefined);
   const recordScan = useRecordScan();
   const getActionUrl = useCardActionUrl();
@@ -180,6 +187,20 @@ const PublicCard = () => {
   }
 
   // Error state
+  // Le resolveur est encore en train de repondre : ne pas afficher un faux 404.
+  if (localLookupEmpty && resolving) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center p-6" style={{ backgroundColor: "#F5F5F7" }}>
+        <p className="text-sm" style={{ color: "#8E8E93" }}>Chargement de la carte…</p>
+      </div>
+    );
+  }
+
+  // Carte servie depuis iwallet-card, rendue sous i-wasp.com sans redirection.
+  if (localLookupEmpty && resolved?.card) {
+    return <ResolvedCardFallback card={resolved.card} />;
+  }
+
   if (error || !card) {
     return (
       <div 
