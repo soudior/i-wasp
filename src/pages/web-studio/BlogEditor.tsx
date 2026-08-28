@@ -55,7 +55,7 @@ interface BlogInfo {
   publishedPosts: number;
 }
 
-const API_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/blog-editor-api`;
+const API_BASE = `${import.meta.env.VITE_SUPABASE_URL || "https://fyxiyevbbvidckzaequx.supabase.co"}/functions/v1/blog-editor-api`;
 
 export default function BlogEditor() {
   const [searchParams] = useSearchParams();
