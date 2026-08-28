@@ -1,0 +1,7 @@
+interface:
+  display_name: "IWASP Client NFC"
+  short_description: "Crée et publie une expérience NFC et Wallet"
+  default_prompt: "Utilise $iwasp-nfc-client pour créer et publier la fiche NFC premium de ce client."
+
+policy:
+  allow_implicit_invocation: true
