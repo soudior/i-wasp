@@ -1,9 +1,9 @@
 import { useEffect } from "react";
+import { AjbanWalletSection } from "@/components/ajban-al-khair/AjbanWalletSection";
 import {
   ArrowUpRight,
   Clock3,
   Download,
-  Instagram,
   MapPin,
   MessageCircle,
   Navigation,
@@ -17,8 +17,9 @@ import {
 const PHONE = "+212661101311";
 const MAP_URL =
   "https://maps.google.co.ma/maps?um=1&ie=UTF-8&fb=1&gl=ma&sa=X&ftid=0xdafe9d49e1667f5:0x4fead0e13d9564cd";
-const REVIEW_URL =
-  "https://www.google.co.ma/searchviewer/10?output=search#lkt=LocalPoiReviews&lpg=cid:CgIgAQ%3D%3D";
+// Fiche Google du lieu, resolue par son CID (extrait du ftid de MAP_URL).
+// L'ancienne URL "searchviewer" renvoyait HTTP 400 : le bouton d'avis etait mort.
+const REVIEW_URL = "https://www.google.com/maps?cid=5758644739366020301";
 
 const products = [
   { name: "Fromages frais", note: "Délicats & crémeux", tone: "bg-[#f2dfba]" },
@@ -69,7 +70,10 @@ export default function AjbanAlKhairCard() {
       <div className="mx-auto min-h-screen max-w-md overflow-hidden bg-[#f8f3e8] shadow-2xl shadow-stone-900/10">
         <section className="relative h-[620px] overflow-hidden">
           <img
-            src="/images/ajban-al-khair/hero.png"
+            src="/images/ajban-al-khair/hero.webp"
+            width={1000}
+            height={1249}
+            fetchPriority="high"
             alt="Sélection de fromages artisanaux dans un décor marocain"
             className="absolute inset-0 h-full w-full object-cover"
           />
@@ -175,6 +179,8 @@ export default function AjbanAlKhairCard() {
           </div>
         </section>
 
+        <AjbanWalletSection phone={PHONE} address="Najma 24, Lot Sofia — Marrakech" />
+
         <footer className="bg-[#10261e] px-6 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-9 text-white">
           <div className="flex items-center justify-between">
             <div>
@@ -183,7 +189,6 @@ export default function AjbanAlKhairCard() {
             </div>
             <div className="flex gap-2">
               <button onClick={share} aria-label="Partager" className="grid h-10 w-10 place-items-center rounded-full border border-white/15"><Share2 size={17} /></button>
-              <span className="grid h-10 w-10 place-items-center rounded-full border border-white/15"><Instagram size={17} /></span>
             </div>
           </div>
           <p className="mt-8 border-t border-white/10 pt-5 text-[10px] uppercase tracking-[0.2em] text-white/30">Expérience digitale propulsée par iWasp</p>
