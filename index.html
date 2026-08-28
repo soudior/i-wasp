@@ -97,6 +97,51 @@
 
   <body>
     <div id="root"></div>
+
+    <!-- Garde-fou démarrage : jamais d'écran noir vide.
+         Si le bundle échoue avant le montage React (ex. configuration
+         backend absente au build), on affiche un message lisible. -->
+    <script>
+      (function () {
+        var shown = false;
+        function showBootFallback(reason) {
+          if (shown) return;
+          var root = document.getElementById("root");
+          if (!root || root.childElementCount > 0) return;
+          shown = true;
+          console.error("[i-wasp] Démarrage interrompu:", reason);
+          root.innerHTML =
+            '<div style="min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px;background:#0A0A0A;font-family:Inter,-apple-system,system-ui,sans-serif;">' +
+            '<div style="max-width:360px;text-align:center;">' +
+            '<p style="color:#8E8E93;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin:0 0 12px;">i-wasp</p>' +
+            '<h1 style="color:#FDFCFB;font-size:22px;font-weight:600;margin:0 0 10px;">Actualisation requise</h1>' +
+            '<p style="color:#8E8E93;font-size:14px;line-height:1.6;margin:0 0 24px;">Une erreur technique empêche le chargement de l\u2019application. Veuillez rafraîchir la page pour continuer.</p>' +
+            '<button onclick="window.location.reload()" style="background:#DCC7B0;color:#0A0A0A;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:600;cursor:pointer;">Rafraîchir</button>' +
+            "</div></div>";
+        }
+        window.addEventListener(
+          "error",
+          function (e) {
+            var msg = (e && (e.message || (e.error && e.error.message))) || "";
+            if (/supabaseUrl is required|VITE_SUPABASE|Failed to fetch dynamically imported module|Loading chunk|ChunkLoadError/i.test(msg)) {
+              showBootFallback(msg);
+            }
+          },
+          true
+        );
+        window.addEventListener("unhandledrejection", function (e) {
+          var msg = String((e && e.reason && (e.reason.message || e.reason)) || "");
+          if (/supabaseUrl is required|VITE_SUPABASE|Failed to fetch dynamically imported module|Loading chunk|ChunkLoadError/i.test(msg)) {
+            showBootFallback(msg);
+          }
+        });
+        // Si après 10s rien n'est monté, on signale proprement.
+        window.setTimeout(function () {
+          showBootFallback("timeout: application non montée");
+        }, 10000);
+      })();
+    </script>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
