@@ -46,7 +46,11 @@ const PublicCard = () => {
     .replace(/\s+/g, "") // Remove all whitespace
     .replace(/[–—]/g, "-") // Normalize dashes (en-dash, em-dash to hyphen)
     .replace(/-+/g, "-") // Collapse multiple hyphens
-    .replace(/^-|-$/g, "") // Remove leading/trailing hyphens
+    // A trailing hyphen is a valid card identifier (for example
+    // `medina-mall-`). Removing it made the page resolve a different card than
+    // the canonical URL encoded in Apple Wallet. Only a leading hyphen is
+    // invalid and may be stripped here.
+    .replace(/^-+/, "")
     .toLowerCase();
 
   const { data: card, isLoading, error } = usePublicCard(cleanedSlug);
