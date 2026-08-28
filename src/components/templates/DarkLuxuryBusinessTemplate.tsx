@@ -51,6 +51,7 @@ interface DarkLuxuryBusinessTemplateProps {
   card: {
     id: string;
     slug: string;
+    action_slug?: string;
     first_name: string;
     last_name: string;
     title?: string | null;
@@ -125,7 +126,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
   const appleWalletUrl = `https://walletcard.ssouhail-92.chatgpt.site/api/apple-wallet?slug=${encodeURIComponent(card.slug)}`;
 
   const handleAction = async (action: "phone" | "whatsapp" | "email") => {
-    const url = await getActionUrl(card.slug, action);
+    const url = await getActionUrl(card.action_slug || card.slug, action);
     if (url) {
       window.location.href = url;
     }

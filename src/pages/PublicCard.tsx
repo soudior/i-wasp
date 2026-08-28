@@ -77,10 +77,10 @@ const PublicCard = () => {
   useEffect(() => {
     if (card?.id && !scanRecorded) {
       recordScan.mutate(card.id);
-      incrementView(cleanedSlug);
+      incrementView(card.slug);
       setScanRecorded(true);
     }
-  }, [card?.id, scanRecorded, cleanedSlug, recordScan, incrementView]);
+  }, [card?.id, card?.slug, scanRecorded, recordScan, incrementView]);
 
   // Secure action handlers - get URLs from server, never expose raw data
   const handleAction = useCallback(
@@ -326,7 +326,10 @@ const PublicCard = () => {
       <DarkLuxuryBusinessTemplate
         card={{
           id: card.id,
-          slug: card.slug,
+          // L'URL NFC demeure canonique, meme lorsque la carte native a ete
+          // retrouvee via son ancien alias sans tiret final.
+          slug: cleanedSlug,
+          action_slug: card.slug,
           first_name: card.first_name,
           last_name: card.last_name,
           title: card.title,
