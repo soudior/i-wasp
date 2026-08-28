@@ -6,7 +6,7 @@
  */
 
 import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles, Shield, Zap, Globe, Check, Linkedin, Instagram, Mail, Phone, Globe2, MessageCircle } from "lucide-react";
+import { ArrowRight, Sparkles, Shield, Zap, Globe, Check, Linkedin, Instagram, Mail, Phone, Globe2, MessageCircle, QrCode, WalletCards, WandSparkles } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -323,6 +323,7 @@ const Index = () => {
               {[
                 { label: t("homepage.nav.personnaliser"), href: "#configurateur" },
                 { label: t("homepage.nav.profil"), href: "#laura" },
+                { label: "Studio NFC & Wallet", href: "/creer-ma-carte" },
                 { label: t("homepage.nav.tarifs"), href: "/pricing" },
               ].map((item) => (
                 <a
@@ -439,6 +440,65 @@ const Index = () => {
               transition={allowInfiniteAnimations ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" } : undefined}
               className="w-px h-16 bg-gradient-to-b from-[#DCC7B0]/50 to-transparent"
             />
+          </motion.div>
+        </section>
+
+        {/* Accès client — création NFC + Wallet */}
+        <section className="relative px-6 py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 36 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-[#DCC7B0]/15 bg-[#DCC7B0]/[0.04]"
+          >
+            <div className="grid gap-10 p-8 sm:p-12 lg:grid-cols-[1.15fr_0.85fr] lg:p-16">
+              <div>
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#DCC7B0]/20 bg-[#DCC7B0]/10 px-4 py-2">
+                  <WandSparkles className="h-4 w-4 text-[#DCC7B0]" />
+                  <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#DCC7B0]">
+                    Accessible à tous les clients
+                  </span>
+                </div>
+
+                <h2 className="font-display text-4xl leading-tight tracking-[0.03em] text-[#FDFCFB] sm:text-5xl">
+                  Confiez-nous votre image.
+                  <span className="block italic text-[#DCC7B0]">Recevez l’expérience complète.</span>
+                </h2>
+
+                <p className="mt-6 max-w-2xl font-body text-base font-extralight leading-relaxed text-[#FDFCFB]/50">
+                  Envoyez le nom de votre entreprise ou un lien Google. L’équipe i-Wasp recherche vos
+                  informations officielles et réalise une fiche premium avec QR canonique et véritable pass Apple Wallet.
+                </p>
+
+                <div className="mt-9">
+                  <LuxuryButton href="/creer-ma-carte" variant="primary">
+                    Créer ma carte NFC + Wallet
+                  </LuxuryButton>
+                </div>
+              </div>
+
+              <div className="grid gap-3 self-center">
+                {[
+                  { icon: Globe, title: "Votre lien NFC", text: "Une fiche publique premium sur i-wasp.com." },
+                  { icon: QrCode, title: "Un QR unique", text: "Le QR ouvre toujours votre fiche web, jamais un simple numéro." },
+                  { icon: WalletCards, title: "Apple Wallet", text: "Un véritable pass signé, prêt à être ajouté sur iPhone." },
+                ].map(({ icon: Icon, title, text }) => (
+                  <div
+                    key={title}
+                    className="flex gap-4 rounded-2xl border border-white/[0.06] bg-black/25 p-4"
+                  >
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#DCC7B0]/15 bg-[#DCC7B0]/10">
+                      <Icon className="h-5 w-5 text-[#DCC7B0]" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-sm tracking-[0.06em] text-[#FDFCFB]">{title}</h3>
+                      <p className="mt-1 font-body text-xs font-extralight leading-relaxed text-[#FDFCFB]/40">{text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </motion.div>
         </section>
 

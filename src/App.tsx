@@ -381,6 +381,7 @@ const App = () => {
                               {/* Client Form */}
                               <Route path="/form" element={<ClientForm />} />
                               <Route path="/formulaire" element={<ClientForm />} />
+                              <Route path="/creer-ma-carte" element={<ClientForm />} />
                               
                               {/* Finalize card after auth */}
                               <Route path="/onboarding/finalize" element={<FinalizeCard />} />
