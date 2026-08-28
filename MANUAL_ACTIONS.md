@@ -141,29 +141,32 @@ App ID numérique App Store, empreinte SHA-256 de signature Android, `PROJECT_RE
 - ✅ Capacitor : bloc serveur Lovable retiré.
 - ✅ `ENVIRONMENT.md` : liste des noms de variables (sans valeurs).
 
-## Déployer `resolve-card` sur la base de production
+## ~~Déployer `resolve-card` sur la base de production~~ — plus nécessaire
 
-**Preuve que c'est nécessaire :** la base réellement utilisée par le site est
-`fyxiyevbbvidckzaequx` (7 cartes, 15 comptes). Le projet `vwlngxifajsziexhkafe`
-déclaré dans `supabase/config.toml` est vide (0 carte, 1 compte) : la migration
-annoncée par le commit `6e70917` n'a jamais été réalisée.
+**Cette action a été supprimée : elle reposait sur une contrainte inexistante.**
 
-La fonction est écrite, testée (10/10) et déployée sur `vwlngxifajsziexhkafe`,
-mais **cet accès ne couvre pas le projet de production**. Tant qu'elle n'y est
-pas déployée, le garde-fou refuse de signer tout pass — et l'annonce
-explicitement comme un problème de configuration, jamais comme une carte
-inexistante.
+La fonction avait été écrite avec `SUPABASE_SERVICE_ROLE_KEY`, ce qui l'obligeait
+à vivre dans le projet Supabase de production — projet qui appartient à Lovable
+et n'est pas administrable depuis le compte du propriétaire.
 
-Commande, depuis le dépôt :
+Or le RPC `get_public_card` est `SECURITY DEFINER` et exécutable par le rôle
+`anon` : la clé **publique**, déjà livrée au navigateur de chaque visiteur,
+suffit à lire exactement les champs publics. Vérifié sur les 7 cartes réelles.
 
-    supabase link --project-ref fyxiyevbbvidckzaequx
-    supabase functions deploy resolve-card --no-verify-jwt
+La résolution est donc assurée par une **Pages Function** —
+`functions/api/resolve-card.ts` — servie par le site lui-même, sur la même
+origine. Aucun accès à la base de production n'est requis, aucune donnée n'est
+migrée, et le service survit à une sortie de Lovable.
 
-Vérification attendue ensuite :
+C'est aussi plus sûr : `service_role` contourne les règles RLS, la clé publique
+ne peut lire que ce que le RPC autorise déjà.
 
-    curl -s -o /dev/null -w "%{http_code}\n" \
-      "https://fyxiyevbbvidckzaequx.supabase.co/functions/v1/resolve-card?id=medina-mall-"
-    # 200 attendu
+Variables à définir sur l'environnement Pages (`wrangler pages secret put`) :
 
-`medina-mall-` est le meilleur test : son tiret final était refusé par
-l'ancienne validation, ce qui rendait le pass de cette carte impossible à signer.
+- `IWASP_SUPABASE_URL`
+- `IWASP_SUPABASE_ANON_KEY`
+- `IWALLET_CARD_BASE_URL` — facultative ; absente = déploiement à une seule
+  source, ce qui n'est pas traité comme une panne.
+
+Validé en préproduction : `medina-mall-` → 200, identifiant inconnu → 404.
+
