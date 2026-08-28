@@ -23,6 +23,7 @@ Fichier : `.env` (à la racine). Ces valeurs sont **publiques par conception** (
 | `SUPABASE_URL` | URL du projet (injectée automatiquement) | toutes |
 | `SUPABASE_ANON_KEY` | Clé anon (injectée automatiquement) | plusieurs |
 | `SUPABASE_SERVICE_ROLE_KEY` | Clé service-role (**contourne la RLS — ultra-sensible**) | fonctions à écriture privilégiée |
+| `IWALLET_CARD_BASE_URL` | Origine HTTPS publique de l’API iwallet-card utilisée en repli par `resolve-card` (jamais fournie par le navigateur) | `resolve-card` |
 | `STRIPE_SECRET_KEY` | Clé secrète Stripe (`sk_live_...`) | toutes les fonctions de paiement |
 | `STRIPE_WEBHOOK_SECRET` | **⚠️ MANQUANTE — requise pour sécuriser `stripe-webhook`** (voir AUDIT P0-2) | `stripe-webhook` |
 | `RESEND_API_KEY` | Clé API Resend (emails) | `send-*-email`, `send-admin-alert`, `send-webstudio-*` |

@@ -201,6 +201,23 @@ const PublicCard = () => {
     return <ResolvedCardFallback card={resolved.card} />;
   }
 
+  // A 502/504 means the resolver could not confirm either store. Do not tell a
+  // customer that their card is missing while an upstream service is down.
+  if (localLookupEmpty && resolveError instanceof Error && resolveError.message === 'upstream') {
+    return (
+      <div className="min-h-dvh flex items-center justify-center p-6" style={{ backgroundColor: "#F5F5F7" }}>
+        <div className="text-center">
+          <h1 className="text-xl font-semibold mb-2" style={{ color: "#1D1D1F" }}>
+            Carte temporairement indisponible
+          </h1>
+          <p className="text-sm" style={{ color: "#8E8E93" }}>
+            Le service de résolution est momentanément indisponible. Réessayez dans quelques instants.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (error || !card) {
     return (
       <div 
