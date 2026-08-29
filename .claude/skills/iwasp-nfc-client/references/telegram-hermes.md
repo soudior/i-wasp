@@ -11,9 +11,18 @@ Activer cette procédure pour toute formulation équivalente à :
 
 Le nom, l'URL ou la fiche Google fournie constitue le point de départ. Ne pas redemander à l'utilisateur de répéter les exigences de design, Wallet, QR, domaine et publication contenues dans le skill principal.
 
+## Commandes permanentes
+
+- /carte <nom ou URL> : rechercher les sources officielles, préremplir uniquement les données vérifiées, récupérer le logo PNG officiel lorsqu'il existe, préparer l'aperçu puis demander confirmation avant création.
+- /statut [id ou lien] : résoudre la carte dans les deux systèmes et afficher son état réel.
+- /qr [id ou lien] : vérifier que la carte existe, puis envoyer un QR encodant exactement le lien NFC canonique.
+- /wallet [id ou lien] : résoudre la carte puis envoyer le pass Apple Wallet signé dont le QR encode le même lien.
+
+Sans argument, les trois commandes de contrôle utilisent la dernière carte créée dans la conversation. Ne jamais produire de QR ou de pass pour un identifiant que le résolveur ne connaît pas.
+
 ## Dialogue
 
-Répondre d'abord par un accusé bref : commerçant identifié, recherche en cours, fiche NFC et Wallet prévus. Poser une question seulement si plusieurs entreprises portent le même nom ou si une information non publique est indispensable.
+Répondre d'abord par un accusé bref : commerçant identifié, recherche en cours, fiche NFC et Wallet prévus. Si une coordonnée manque sur l'accueil du site officiel, parcourir automatiquement les pages Contact, À propos et équivalentes du même domaine avant de poser une question. Poser une question seulement si plusieurs entreprises portent le même nom ou si une information reste réellement non publique après cette recherche.
 
 Pendant l'exécution, envoyer des jalons utiles :
 
