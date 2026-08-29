@@ -18,7 +18,7 @@ Le nom, l'URL ou la fiche Google fournie constitue le point de départ. Ne pas r
 - /qr [id ou lien] : vérifier que la carte existe, puis envoyer un QR encodant exactement le lien NFC canonique.
 - /wallet [id ou lien] : résoudre la carte puis envoyer le pass Apple Wallet signé dont le QR encode le même lien.
 
-Sans argument, les trois commandes de contrôle utilisent la dernière carte créée dans la conversation. Ne jamais produire de QR ou de pass pour un identifiant que le résolveur ne connaît pas.
+Sans argument, les trois commandes de contrôle utilisent la dernière carte créée dans la conversation. Chaque nouvelle commande `/carte` invalide le brouillon et les boutons précédents, puis efface toutes les données du client précédent avant la recherche ; seule la dernière carte réellement créée reste disponible pour les commandes de contrôle. Ne jamais produire de QR ou de pass pour un identifiant que le résolveur ne connaît pas.
 
 ## Dialogue
 
