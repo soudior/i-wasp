@@ -20,6 +20,15 @@ Le nom, l'URL ou la fiche Google fournie constitue le point de départ. Ne pas r
 
 Sans argument, les trois commandes de contrôle utilisent la dernière carte créée dans la conversation. Chaque nouvelle commande `/carte` invalide le brouillon et les boutons précédents, puis efface toutes les données du client précédent avant la recherche ; seule la dernière carte réellement créée reste disponible pour les commandes de contrôle. Ne jamais produire de QR ou de pass pour un identifiant que le résolveur ne connaît pas.
 
+## Garde-fous automatiques
+
+- Refuser une source dont le nom, le domaine et l'identité publiée ne correspondent pas au commerçant demandé ; demander alors l'URL officielle.
+- Accepter pour les QR uniquement l'URL exacte `https://i-wasp.com/card/<slug>`, sans autre domaine, paramètre ni fragment.
+- Après création, attendre que le résolveur confirme exactement le slug avant de livrer le lien, le QR ou le pass.
+- Réessayer seulement les lectures idempotentes lors d'un retard de propagation ; ne jamais répéter automatiquement la création POST.
+- Refuser un pass sans archive ZIP valide et sans MIME `application/vnd.apple.pkpass`.
+- Si le QR ou le pass n'est pas livré, annoncer une livraison incomplète et interdire impression et encodage NFC.
+
 ## Dialogue
 
 Répondre d'abord par un accusé bref : commerçant identifié, recherche en cours, fiche NFC et Wallet prévus. Si une coordonnée manque sur l'accueil du site officiel, parcourir automatiquement les pages Contact, À propos et équivalentes du même domaine avant de poser une question. Poser une question seulement si plusieurs entreprises portent le même nom ou si une information reste réellement non publique après cette recherche.
