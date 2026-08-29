@@ -40,7 +40,7 @@ import {
   ChevronRight, Settings, Zap, Loader2,
   Bell, Send, Mail, MessageSquare, Download,
   MousePointerClick, Link2, ArrowRight,
-  Sparkles, Crown, Clock, Calendar, X, LogOut
+  Sparkles, Crown, Clock, Calendar, X, LogOut, Radio
 } from "lucide-react";
 import {
   DashboardStatsSkeleton,
@@ -228,6 +228,11 @@ const Dashboard = () => {
             i-wasp
           </Link>
           <div className="flex items-center gap-4 sm:gap-8">
+            <Link to="/nfc-studio" aria-label="Atelier NFC natif">
+              <button className="text-muted-foreground hover:text-foreground transition-colors duration-500">
+                <Radio size={18} />
+              </button>
+            </Link>
             <Link to="/settings">
               <button className="text-muted-foreground hover:text-foreground transition-colors duration-500">
                 <Settings size={18} />

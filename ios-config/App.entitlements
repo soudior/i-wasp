@@ -15,12 +15,10 @@
         <string>applinks:www.i-wasp.com</string>
     </array>
 
-    <!-- Lecture de tags NFC (décommenter si l'app lit des puces NFC).
+    <!-- Lecture et programmation native de tags NFC NDEF. -->
     <key>com.apple.developer.nfc.readersession.formats</key>
     <array>
         <string>NDEF</string>
-        <string>TAG</string>
     </array>
-    -->
 </dict>
 </plist>

@@ -135,6 +135,7 @@ const TrackOrder = lazy(() => import("./pages/TrackOrder"));
 const WalletPassDownload = lazy(() => import("./pages/WalletPassDownload"));
 const WalletCustomizer = lazy(() => import("./pages/WalletCustomizer"));
 const AppStoreChecklist = lazy(() => import("./pages/AppStoreChecklist"));
+const NativeNfcStudio = lazy(() => import("./pages/NativeNfcStudio"));
 const CharlesLazimiCard = lazy(() => import("./pages/CharlesLazimiCard"));
 const KechExcluCard = lazy(() => import("./pages/KechExcluCard"));
 const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
@@ -390,6 +391,7 @@ const App = () => {
                               <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
                               <Route path="/elite-dashboard" element={<DashboardGuard><EliteDashboard /></DashboardGuard>} />
                               <Route path="/settings" element={<DashboardGuard><Settings /></DashboardGuard>} />
+                              <Route path="/nfc-studio" element={<DashboardGuard><NativeNfcStudio /></DashboardGuard>} />
                               <Route path="/subscription" element={<DashboardGuard><Subscription /></DashboardGuard>} />
                               <Route path="/orders" element={<DashboardGuard><Orders /></DashboardGuard>} />
                               <Route path="/orders/:orderId" element={<DashboardGuard><OrderDetails /></DashboardGuard>} />

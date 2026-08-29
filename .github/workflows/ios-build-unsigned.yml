@@ -56,6 +56,17 @@ jobs:
           if [ ! -d ios ]; then npx cap add ios; fi
           npx cap sync ios
 
+      - name: Generate branded i-WASP iOS icons
+        run: |
+          mkdir -p assets
+          cp public/app-icon-1024.png assets/icon-only.png
+          npx capacitor-assets generate --ios
+          test -f ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json
+          find ios/App/App/Assets.xcassets/AppIcon.appiconset -maxdepth 1 -type f -print
+
+      - name: Apply native iOS configuration (NFC + Universal Links)
+        run: node scripts/configure-ios-native.mjs
+
       # Garde anti-dérive Swift : @capacitor/ios (épinglé exact dans package.json)
       # génère un CapApp-SPM/Package.swift qui épingle capacitor-swift-pm en
       # `exact:`. On VÉRIFIE cette version exacte attendue ; toute dérive fait
@@ -147,3 +158,4 @@ jobs:
           echo "✅ Le projet iOS compile (non signe)."
           echo "Artefact publie: iwasp-ios-unsigned-app (App.app non signe + Package.resolved)."
           echo "capacitor-swift-pm epingle exact 8.5.0 (garde anti-derive active)."
+          echo "Icones iOS generees depuis public/app-icon-1024.png (aucun placeholder Capacitor)."

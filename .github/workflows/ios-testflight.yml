@@ -61,12 +61,16 @@ jobs:
           if [ ! -d ios ]; then npx cap add ios; fi
           npx cap sync ios
 
-      - name: Apply entitlements (Associated Domains + Sign in with Apple)
+      - name: Generate branded i-WASP iOS icons
         run: |
-          if [ -f ios-config/App.entitlements ]; then
-            cp ios-config/App.entitlements ios/App/App/App.entitlements
-            echo "Entitlements copiés. (Les capabilities doivent être activées sur l'App ID Apple — voir IOS_CLOUD_BUILD.md)"
-          fi
+          mkdir -p assets
+          cp public/app-icon-1024.png assets/icon-only.png
+          npx capacitor-assets generate --ios
+          test -f ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json
+          find ios/App/App/Assets.xcassets/AppIcon.appiconset -maxdepth 1 -type f -print
+
+      - name: Apply entitlements (Associated Domains + Sign in with Apple)
+        run: node scripts/configure-ios-native.mjs
 
       # Capacitor 8 = Swift Package Manager (Package.swift), pas de Podfile.
       - name: Install CocoaPods (only if a Podfile exists)
