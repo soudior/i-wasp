@@ -15,10 +15,10 @@
         <string>applinks:www.i-wasp.com</string>
     </array>
 
-    <!-- Lecture et programmation native de tags NFC NDEF. -->
+    <!-- Core NFC tag sessions. Xcode 26 / iOS 15+ rejects the legacy NDEF entitlement. -->
     <key>com.apple.developer.nfc.readersession.formats</key>
     <array>
-        <string>NDEF</string>
+        <string>TAG</string>
     </array>
 </dict>
 </plist>
