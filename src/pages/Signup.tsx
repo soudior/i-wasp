@@ -12,6 +12,7 @@ import { Loader2, ArrowRight, Mail, Lock, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppleSignInButton } from "@/components/auth/AppleSignInButton";
 import { useAppleAuth } from "@/hooks/useAppleAuth";
+import { signInWithGoogleCrossPlatform } from "@/lib/nativeOAuth";
 
 export default function Signup() {
   const [firstName, setFirstName] = useState("");
@@ -38,13 +39,8 @@ export default function Signup() {
   const handleGoogleSignup = async () => {
     setIsGoogleLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/onboarding`,
-        },
-      });
-      if (error) {
+      const result = await signInWithGoogleCrossPlatform(`${window.location.origin}/onboarding`);
+      if (result === "error") {
         toast.error("Erreur de connexion Google");
       }
     } catch {

@@ -7,6 +7,7 @@ import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { signInWithGoogleCrossPlatform } from "@/lib/nativeOAuth";
 
 export function useGoogleAuth() {
   const { user, session } = useAuth();
@@ -20,19 +21,9 @@ export function useGoogleAuth() {
       
       const redirectUrl = `${window.location.origin}${window.location.pathname}`;
       
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: redirectUrl,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
-      });
+      const result = await signInWithGoogleCrossPlatform(redirectUrl);
 
-      if (error) {
-        console.error("Google auth error:", error);
+      if (result === "error") {
         toast.error("Erreur de connexion Google");
         return false;
       }

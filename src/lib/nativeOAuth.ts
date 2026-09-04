@@ -23,6 +23,7 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import { Capacitor } from "@capacitor/core";
 
 /** Deep link de retour dans l'app (déclaré dans Info.plist, scheme `iwasp`). */
 export const NATIVE_OAUTH_REDIRECT = "iwasp://auth/callback";
@@ -142,4 +143,22 @@ export async function signInWithProviderNative(
       settle("error");
     });
   });
+}
+
+/** OAuth Google commun au web et aux apps Capacitor. */
+export async function signInWithGoogleCrossPlatform(
+  webRedirectTo: string,
+): Promise<NativeOAuthResult> {
+  if (Capacitor.isNativePlatform()) {
+    return signInWithProviderNative("google");
+  }
+
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: webRedirectTo,
+      queryParams: { access_type: "offline", prompt: "consent" },
+    },
+  });
+  return error ? "error" : "success";
 }

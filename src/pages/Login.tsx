@@ -21,6 +21,7 @@ import { Loader2, ArrowLeft, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppleSignInButton } from "@/components/auth/AppleSignInButton";
 import { useAppleAuth } from "@/hooks/useAppleAuth";
+import { signInWithGoogleCrossPlatform } from "@/lib/nativeOAuth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -78,24 +79,10 @@ export default function Login() {
       // Build redirect URL - use the current origin + returnTo path
       const redirectUrl = `${window.location.origin}${returnTo}`;
       
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectUrl,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          }
-        }
-      });
-      
-      if (error) {
-        console.error("Google OAuth error:", error);
-        if (error.message.includes("403")) {
-          setErrorMessage("Erreur 403 : Vérifiez la configuration Google OAuth");
-        } else {
-          setErrorMessage(`Erreur de connexion Google: ${error.message}`);
-        }
+      const result = await signInWithGoogleCrossPlatform(redirectUrl);
+
+      if (result === "error") {
+        setErrorMessage("Erreur de connexion Google. Veuillez réessayer.");
         toast.error("Erreur de connexion Google");
       }
     } catch (err) {
