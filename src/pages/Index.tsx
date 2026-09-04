@@ -14,6 +14,7 @@ import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { NfcCard3D } from "@/components/home/NfcCard3D";
+import { HeroProductVisual } from "@/components/home/HeroProductVisual";
 import { NfcDemoSteps } from "@/components/home/NfcDemoSteps";
 import { RealProductShowcase } from "@/components/home/RealProductShowcase";
 import { IncludedSection } from "@/components/home/IncludedSection";
@@ -303,7 +304,7 @@ const Index = () => {
                 variants={scaleIn}
                 className="flex justify-center lg:justify-end order-1 lg:order-2"
               >
-                <NfcCard3D name={previewName} animate={allowInfiniteAnimations} />
+                <HeroProductVisual />
               </motion.div>
             </div>
           </div>
