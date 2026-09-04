@@ -130,7 +130,7 @@ const Activation = () => {
       
       if (data?.success) {
         console.log("[Activation] Card found:", data.full_name);
-        setUserName(data.full_name || "MEMBRE OMNIA");
+        setUserName(data.full_name || "MEMBRE I-WASP");
         setIsRecognized(true);
         
         // Store card info for later use
@@ -162,7 +162,7 @@ const Activation = () => {
   return (
     <>
       <SEOHead 
-        title="Activation | i-wasp Omnia"
+        title="Activation | i-wasp"
         description="Activez votre carte i-wasp et accédez à votre identité digitale."
       />
       
@@ -297,7 +297,7 @@ const Activation = () => {
                 <span className="font-display text-sm text-[#DCC7B0]">W</span>
               </div>
               <span className="font-display text-xl tracking-[0.1em] text-[#FDFCFB]/90">
-                i-wasp <span className="text-[#DCC7B0]">Omnia</span>
+                i-wasp
               </span>
             </Link>
             

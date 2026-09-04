@@ -1,0 +1,15 @@
+# i-wasp
+
+> Cartes de visite NFC premium avec profil digital, QR canonique et Apple Wallet.
+
+## Pages principales
+
+- [Accueil](https://i-wasp.com/) : présentation de la solution i-wasp.
+- [Créer ma carte](https://i-wasp.com/creer-ma-carte) : création d'une carte digitale i-wasp.
+- [Tarifs](https://i-wasp.com/pricing) : offres disponibles.
+- [Entreprise](https://i-wasp.com/enterprise) : solution destinée aux équipes et entreprises.
+
+## Contrat NFC
+
+Les fiches publiques utilisent l'adresse canonique `https://i-wasp.com/card/<slug>`.
+Le QR code et le pass Apple Wallet doivent pointer vers cette même adresse.

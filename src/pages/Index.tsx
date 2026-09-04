@@ -193,7 +193,7 @@ const Index = () => {
                 <span className="font-display text-sm text-[#DCC7B0]">W</span>
               </div>
               <span className="font-display text-xl tracking-[0.1em] text-[#FDFCFB]/90">
-                i-wasp <span className="text-[#DCC7B0]">Omnia</span>
+                i-wasp
               </span>
             </Link>
             
@@ -874,7 +874,7 @@ const Index = () => {
                 <span className="font-display text-xs text-[#DCC7B0]">W</span>
               </div>
               <span className="font-display text-sm tracking-[0.1em] text-[#FDFCFB]/60">
-                i-wasp Omnia
+                i-wasp
               </span>
             </div>
             
