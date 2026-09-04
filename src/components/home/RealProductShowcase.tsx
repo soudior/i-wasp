@@ -23,7 +23,7 @@ export function RealProductShowcase() {
           <div className="relative min-h-[320px] overflow-hidden sm:min-h-[460px]">
             <img
               src={productLifestyle}
-              alt="Carte NFC i-wasp noire mate posée sur un smartphone"
+              alt="Carte NFC i-wasp noire mate à côté d’un smartphone sur un bureau exécutif"
               width={1920}
               height={1080}
               loading="lazy"
