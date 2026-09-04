@@ -10,8 +10,8 @@ import {
 
 describe("nfcPricing — accès catalogue", () => {
   it("getNfcCardById renvoie la carte ou null", () => {
-    expect(getNfcCardById("essentielle")?.priceEur).toBe(29.9);
-    expect(getNfcCardById("prestige")?.priceEur).toBe(89.9);
+    expect(getNfcCardById("essentielle")?.priceMad).toBe(199);
+    expect(getNfcCardById("prestige")?.priceMad).toBe(599);
     expect(getNfcCardById("inconnu")).toBeNull();
   });
 

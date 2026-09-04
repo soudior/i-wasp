@@ -94,7 +94,7 @@ export const STRIPE_PRODUCTS = {
     product_id: 'prod_TkashOgkZlDDzm',
     price_id: 'price_1Sn5gvIvyaABH94uT3RkeEbz',
     name: 'IWASP Gold - Mensuel',
-    price: 290, // cents
+    price: 499, // cents
     currency: 'eur',
     interval: 'month' as const,
   },
@@ -102,7 +102,7 @@ export const STRIPE_PRODUCTS = {
     product_id: 'prod_TkasPk75rM1k69',
     price_id: 'price_1Sn5h7IvyaABH94uTfkCq0zL',
     name: 'IWASP Gold - Annuel',
-    price: 2300, // cents
+    price: 4900, // cents
     currency: 'eur',
     interval: 'year' as const,
   },

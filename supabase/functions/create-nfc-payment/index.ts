@@ -26,10 +26,10 @@ const corsHeaders = {
 // Grille canonique — centimes de MAD (Stripe: devise à 2 décimales).
 // Équivalents EUR affichés côté client (taux 11) : 29,90 / 49,90 / 89,90 / 199 €.
 const NFC_TIERS: Record<string, { name: string; amountMadCents: number; quantity: number }> = {
-  essentielle:    { name: "Carte NFC Essentielle",    amountMadCents: 32900,  quantity: 1 },
-  professionnelle:{ name: "Carte NFC Professionnelle", amountMadCents: 54900,  quantity: 1 },
-  prestige:       { name: "Carte NFC Prestige",        amountMadCents: 98900,  quantity: 1 },
-  pack_team:      { name: "Pack TEAM (5 cartes)",      amountMadCents: 218900, quantity: 5 },
+  essentielle:    { name: "Carte NFC Essentielle + 3 mois Pro",    amountMadCents: 19900,  quantity: 1 },
+  professionnelle:{ name: "Carte NFC Professionnelle + 3 mois Pro", amountMadCents: 34900,  quantity: 1 },
+  prestige:       { name: "Carte NFC Prestige + 3 mois Pro",        amountMadCents: 59900,  quantity: 1 },
+  pack_team:      { name: "Pack TEAM (5 cartes) + 3 mois Pro",      amountMadCents: 129900, quantity: 5 },
 };
 
 // Alias acceptés (ids historiques des tunnels /order et /express).
@@ -156,6 +156,7 @@ serve(async (req) => {
       cancel_url: `${origin}/order/recapitulatif?cancelled=true`,
       metadata: {
         type: "nfc_order",
+        pro_trial_months: "3",
         tier_id: canonicalTierId,
         quantity: String(tier.quantity),
         extras: JSON.stringify(extraIds),
@@ -164,6 +165,7 @@ serve(async (req) => {
       payment_intent_data: {
         metadata: {
           type: "nfc_order",
+          pro_trial_months: "3",
           tier_id: canonicalTierId,
           ...(body.orderId ? { order_id: body.orderId } : {}),
         },

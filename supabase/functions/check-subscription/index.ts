@@ -86,7 +86,11 @@ serve(async (req) => {
       productId = subscription.items.data[0].price.product as string;
       
       // Determine plan type
-      if (productId === PRODUCT_IDS.GOLD_MONTHLY) {
+      if (subscription.metadata?.plan === 'pro_monthly') {
+        plan = 'gold_monthly';
+      } else if (subscription.metadata?.plan === 'pro_annual') {
+        plan = 'gold_annual';
+      } else if (productId === PRODUCT_IDS.GOLD_MONTHLY) {
         plan = 'gold_monthly';
       } else if (productId === PRODUCT_IDS.GOLD_ANNUAL) {
         plan = 'gold_annual';

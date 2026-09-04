@@ -8,7 +8,7 @@
  * Ces tests échouent si une source de prix (catalogue, tunnel /order,
  * tunnel /express) diverge. Le catalogue serveur
  * (supabase/functions/create-nfc-payment) doit refléter les mêmes centimes
- * MAD : 32900 / 54900 / 98900 / 218900 — toute modification doit être faite
+ * MAD : 19900 / 34900 / 59900 / 129900 — toute modification doit être faite
  * DES DEUX CÔTÉS.
  */
 import { describe, it, expect } from "vitest";
@@ -18,18 +18,18 @@ import { EXPRESS_OFFERS } from "@/contexts/ExpressCheckoutContext";
 
 // Centimes MAD canoniques (miroir du catalogue serveur create-nfc-payment).
 const CANONICAL_MAD_CENTS = {
-  essentielle: 32900,
-  professionnelle: 54900,
-  prestige: 98900,
-  pack_team: 218900,
+  essentielle: 19900,
+  professionnelle: 34900,
+  prestige: 59900,
+  pack_team: 129900,
 } as const;
 
 describe("grille canonique — catalogue nfcPricing", () => {
   it("expose les prix officiels EUR", () => {
-    expect(NFC_PRICING.cards.ESSENTIELLE.priceEur).toBe(29.9);
-    expect(NFC_PRICING.cards.PROFESSIONNELLE.priceEur).toBe(49.9);
-    expect(NFC_PRICING.cards.PRESTIGE.priceEur).toBe(89.9);
-    expect(NFC_PRICING.cards.PACK_TEAM.priceEur).toBe(199);
+    expect(NFC_PRICING.cards.ESSENTIELLE.priceEur).toBe(29);
+    expect(NFC_PRICING.cards.PROFESSIONNELLE.priceEur).toBe(49);
+    expect(NFC_PRICING.cards.PRESTIGE.priceEur).toBe(79);
+    expect(NFC_PRICING.cards.PACK_TEAM.priceEur).toBe(119);
   });
 
   it("expose les prix officiels MAD (cohérents avec le serveur)", () => {
@@ -39,17 +39,10 @@ describe("grille canonique — catalogue nfcPricing", () => {
     expect(NFC_PRICING.cards.PACK_TEAM.priceMad * 100).toBe(CANONICAL_MAD_CENTS.pack_team);
   });
 
-  it("utilise le taux unique 1 EUR = 11 MAD", () => {
-    expect(NFC_PRICING.currency.eurToMad).toBe(11);
-    for (const card of [
-      NFC_PRICING.cards.ESSENTIELLE,
-      NFC_PRICING.cards.PROFESSIONNELLE,
-      NFC_PRICING.cards.PRESTIGE,
-      NFC_PRICING.cards.PACK_TEAM,
-    ]) {
-      // arrondi commercial : écart max 1 DH entre priceMad et priceEur*11
-      expect(Math.abs(card.priceMad - card.priceEur * 11)).toBeLessThanOrEqual(1);
-    }
+  it("inclut trois mois Pro sur chaque carte individuelle", () => {
+    expect(NFC_PRICING.cards.ESSENTIELLE.proTrialMonths).toBe(3);
+    expect(NFC_PRICING.cards.PROFESSIONNELLE.proTrialMonths).toBe(3);
+    expect(NFC_PRICING.cards.PRESTIGE.proTrialMonths).toBe(3);
   });
 });
 

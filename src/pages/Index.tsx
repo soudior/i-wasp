@@ -41,8 +41,8 @@ const HOME_STRUCTURED_DATA = [
     description:
       "Carte de visite NFC premium avec profil digital toujours à jour. Un contact suffit pour partager toutes vos informations, sans application requise.",
     image: "https://i-wasp.com/og-image.png",
-    lowPrice: 29.9,
-    highPrice: 89.9,
+    lowPrice: 29,
+    highPrice: 79,
   }),
   faqSchema(FAQS),
 ];
