@@ -20,35 +20,31 @@ export function isDeleteConfirmed(input: string): boolean {
   return input.trim().toUpperCase() === DELETE_CONFIRM_WORD;
 }
 
-/** UUID sentinelle attribué aux commandes anonymisées (compte supprimé). */
-export const DELETED_USER_SENTINEL = "00000000-0000-0000-0000-000000000000";
+export const DELETE_ACCOUNT_FAILURE_MESSAGE =
+  "La suppression n’a pas pu être confirmée. Réessayez ou contactez support@i-wasp.com.";
 
-/**
- * Contrat d'anonymisation d'une commande lors de la suppression de compte.
- * Aucune donnée directement identifiante ne doit subsister ; seules les colonnes
- * comptables non identifiantes (numéro, quantités, montants, dates) sont conservées.
- *
- * ⚠️ Doit rester synchrone avec `supabase/functions/delete-account/index.ts`
- * (source de vérité côté serveur). Ce miroir testable protège contre les
- * régressions : si une colonne PII est ajoutée à `orders`, l'ajouter ici + au
- * serveur, sinon le test de contrat échoue.
- */
-export function anonymizedOrderPatch(): Record<string, unknown> {
-  return {
-    user_id: DELETED_USER_SENTINEL,
-    customer_email: "deleted@anonymized.local",
-    shipping_name: "Utilisateur supprimé",
-    shipping_phone: null,
-    shipping_address: null,
-    shipping_city: null,
-    shipping_postal_code: null,
-    shipping_country: null,
-    tracking_number: null,
-    // Personnalisation potentiellement identifiante → effacée.
-    order_items: [],
-    admin_notes: null,
-    logo_url: null,
-    background_image_url: null,
-    print_file_url: null,
-  };
+type DeleteAccountInvokeResult = {
+  data: unknown;
+  error: { message?: string } | null;
+};
+
+export async function requestAccountDeletion(
+  invoke: () => Promise<DeleteAccountInvokeResult>,
+): Promise<void> {
+  let result: DeleteAccountInvokeResult;
+  try {
+    result = await invoke();
+  } catch {
+    throw new Error(DELETE_ACCOUNT_FAILURE_MESSAGE);
+  }
+
+  const data = result.data as { success?: unknown } | null;
+  if (result.error || data?.success !== true) {
+    throw new Error(DELETE_ACCOUNT_FAILURE_MESSAGE);
+  }
 }
+
+export {
+  DELETED_USER_SENTINEL,
+  anonymizedOrderPatch,
+} from "../../supabase/functions/_shared/accountDeletion";
