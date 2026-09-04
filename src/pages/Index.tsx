@@ -373,7 +373,7 @@ const Index = () => {
                     </div>
                     <div>
                       <h3 className="font-display text-sm tracking-[0.06em] text-[#FDFCFB]">{title}</h3>
-                      <p className="mt-1 font-body text-xs font-extralight leading-relaxed text-[#FDFCFB]/40">{text}</p>
+                      <p className="mt-1 font-body text-xs font-extralight leading-relaxed text-[#FDFCFB]/60">{text}</p>
                     </div>
                   </div>
                 ))}
@@ -421,7 +421,7 @@ const Index = () => {
                   }}
                 >
                   <item.icon className="w-6 h-6 text-[#DCC7B0]/70 mx-auto mb-4" />
-                  <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-[#FDFCFB]/40 mb-1">
+                  <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-[#FDFCFB]/60 mb-1">
                     {item.label}
                   </p>
                   <p className="font-body text-sm font-extralight text-[#DCC7B0]">
@@ -463,7 +463,7 @@ const Index = () => {
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[0.04em] text-[#FDFCFB] mb-6">
                 {t("homepage.configurator.titleLead")}<span className="italic text-[#DCC7B0]">{t("homepage.configurator.titleAccent")}</span>
               </h2>
-              <p className="font-body text-base font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto">
+              <p className="font-body text-base font-extralight text-[#FDFCFB]/60 max-w-xl mx-auto">
                 {t("homepage.configurator.subtitle")}
               </p>
             </motion.div>
@@ -567,7 +567,7 @@ const Index = () => {
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[0.04em] text-[#FDFCFB] mb-6">
                 {t("homepage.profile.titleLead")}<span className="italic text-[#DCC7B0]">{t("homepage.profile.titleAccent")}</span>
               </h2>
-              <p className="font-body text-base font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto">
+              <p className="font-body text-base font-extralight text-[#FDFCFB]/60 max-w-xl mx-auto">
                 {t("homepage.profile.subtitle")}
               </p>
             </motion.div>
@@ -675,7 +675,7 @@ const Index = () => {
                         </p>
 
                         {/* Tagline */}
-                        <p className="font-body text-xs font-extralight text-[#FDFCFB]/40 text-center mb-8 px-4">
+                        <p className="font-body text-xs font-extralight text-[#FDFCFB]/60 text-center mb-8 px-4">
                           {t("homepage.profile.tagline")}
                         </p>
 
@@ -740,7 +740,7 @@ const Index = () => {
                         
                         {/* Footer du profil */}
                         <div className="mt-auto pt-6">
-                          <p className="font-mono text-[8px] tracking-[0.3em] uppercase text-[#FDFCFB]/20">
+                          <p className="font-mono text-[8px] tracking-[0.3em] uppercase text-[#FDFCFB]/55">
                             POWERED BY I-WASP
                           </p>
                         </div>
@@ -796,7 +796,7 @@ const Index = () => {
                         <h4 className="font-display text-sm tracking-[0.08em] text-[#FDFCFB] mb-1">
                           {feature.title}
                         </h4>
-                        <p className="font-body text-xs font-extralight text-[#FDFCFB]/40">
+                        <p className="font-body text-xs font-extralight text-[#FDFCFB]/60">
                           {feature.desc}
                         </p>
                       </div>
@@ -846,7 +846,7 @@ const Index = () => {
               <span className="italic text-[#DCC7B0]">{t("homepage.finalCta.titleAccent")}</span>
             </h2>
 
-            <p className="font-body text-lg font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto mb-12">
+            <p className="font-body text-lg font-extralight text-[#FDFCFB]/60 max-w-xl mx-auto mb-12">
               {t("homepage.finalCta.subtitle")}
             </p>
 

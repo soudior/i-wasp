@@ -243,7 +243,7 @@ export function NfcCard3D({
       </motion.button>
 
       {flippable && (
-        <p className="mt-5 text-center font-mono text-[9px] uppercase tracking-[0.3em] text-[#FDFCFB]/25">
+        <p className="mt-5 text-center font-mono text-[9px] uppercase tracking-[0.3em] text-[#FDFCFB]/55">
           {isFlipped ? "Verso" : "Recto"} · Cliquez pour retourner
         </p>
       )}
