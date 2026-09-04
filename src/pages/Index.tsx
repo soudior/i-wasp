@@ -13,7 +13,9 @@ import { useTranslation } from "react-i18next";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { NfcCard3D } from "@/components/home/NfcCard3D";
 import { NfcDemoSteps } from "@/components/home/NfcDemoSteps";
+import { RealProductShowcase } from "@/components/home/RealProductShowcase";
 import { IncludedSection } from "@/components/home/IncludedSection";
 import { ModelsSection } from "@/components/home/ModelsSection";
 import { BenefitsSection } from "@/components/home/BenefitsSection";
@@ -72,129 +74,6 @@ const scaleIn = {
     },
   },
 };
-
-// ═══════════════════════════════════════════════════════════════════════════
-// CARTE 3D PREMIUM AVEC NOM PERSONNALISÉ
-// ═══════════════════════════════════════════════════════════════════════════
-
-function PremiumCard3D({ name = "VOTRE NOM", animate = true }: { name?: string; animate?: boolean }) {
-  return (
-    <motion.div
-      initial={{ rotateY: -15, rotateX: 5, opacity: 0 }}
-      animate={{ rotateY: 0, rotateX: 0, opacity: 1 }}
-      transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{
-        rotateY: -8,
-        rotateX: 3,
-        scale: 1.02,
-        transition: { duration: 0.8 }
-      }}
-      className="relative w-[340px] h-[200px] sm:w-[400px] sm:h-[240px] perspective-1000"
-      style={{ transformStyle: "preserve-3d" }}
-    >
-      {/* Glow derrière la carte */}
-      <motion.div
-        className="absolute inset-0 -z-10"
-        animate={animate ? {
-          boxShadow: [
-            "0 0 60px rgba(220, 199, 176, 0.15), 0 0 120px rgba(220, 199, 176, 0.08)",
-            "0 0 80px rgba(220, 199, 176, 0.2), 0 0 160px rgba(220, 199, 176, 0.1)",
-            "0 0 60px rgba(220, 199, 176, 0.15), 0 0 120px rgba(220, 199, 176, 0.08)",
-          ],
-        } : undefined}
-        transition={animate ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : undefined}
-        style={{ borderRadius: "1.5rem" }}
-      />
-      
-      {/* Carte principale */}
-      <div 
-        className="relative w-full h-full rounded-3xl overflow-hidden"
-        style={{
-          background: "linear-gradient(145deg, #0A0A0A 0%, #1A1A1A 40%, #0A0A0A 100%)",
-          boxShadow: "0 30px 60px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
-        }}
-      >
-        {/* Reflet Champagne diagonal */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: "linear-gradient(135deg, transparent 30%, rgba(220, 199, 176, 0.08) 50%, transparent 70%)",
-          }}
-          animate={animate ? {
-            opacity: [0.5, 0.8, 0.5],
-          } : undefined}
-          transition={animate ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : undefined}
-        />
-        
-        {/* Logo W */}
-        <div className="absolute top-6 left-6">
-          <div 
-            className="w-12 h-12 rounded-full flex items-center justify-center"
-            style={{
-              background: "linear-gradient(135deg, rgba(220, 199, 176, 0.15) 0%, rgba(220, 199, 176, 0.05) 100%)",
-              border: "1px solid rgba(220, 199, 176, 0.2)",
-            }}
-          >
-            <span className="font-display text-lg text-[#DCC7B0]">W</span>
-          </div>
-        </div>
-        
-        {/* Badge édition */}
-        <div className="absolute top-6 right-6 text-right">
-          <p className="font-mono text-[8px] tracking-[0.3em] uppercase text-[#DCC7B0]/50">
-            PRIVATE_ASSET_V6
-          </p>
-          <p className="font-mono text-[8px] tracking-[0.2em] uppercase text-white/30 mt-1">
-            LIMITED EDITION
-          </p>
-        </div>
-        
-        {/* Nom du propriétaire */}
-        <div className="absolute top-1/2 left-6 right-6 -translate-y-1/2">
-          <motion.h3 
-            key={name}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="font-display text-2xl sm:text-3xl tracking-[0.15em] text-white/95"
-          >
-            {name.toUpperCase()}
-          </motion.h3>
-          <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#DCC7B0]/70 mt-2">
-            SUPREME OWNER
-          </p>
-        </div>
-        
-        {/* Icône NFC */}
-        <div className="absolute bottom-6 left-6">
-          <motion.div
-            className="w-10 h-10 rounded-full flex items-center justify-center"
-            style={{
-              background: "rgba(220, 199, 176, 0.08)",
-              border: "1px solid rgba(220, 199, 176, 0.15)",
-            }}
-            animate={animate ? {
-              boxShadow: [
-                "0 0 0 0 rgba(220, 199, 176, 0.2)",
-                "0 0 0 8px rgba(220, 199, 176, 0)",
-              ],
-            } : undefined}
-            transition={animate ? { duration: 2, repeat: Infinity } : undefined}
-          >
-            <Zap className="w-4 h-4 text-[#DCC7B0]/80" />
-          </motion.div>
-        </div>
-        
-        {/* Numéro de série */}
-        <div className="absolute bottom-6 right-6">
-          <p className="font-mono text-[9px] tracking-[0.2em] text-white/25">
-            SN-4820-ABS
-          </p>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // BOUTON CTA LUXUEUX
@@ -357,6 +236,7 @@ const Index = () => {
         {/* ═══════════════════════════════════════════════════════════════
             HERO SECTION — Le Choc Visuel
             ═══════════════════════════════════════════════════════════════ */}
+        <main>
         <section id="manifeste" className="relative min-h-screen flex items-center justify-center px-6 pt-32 pb-20">
           <div className="max-w-7xl mx-auto w-full">
             <div className="grid lg:grid-cols-2 gap-16 lg:gap-8 items-center">
@@ -378,7 +258,7 @@ const Index = () => {
                   initial="hidden"
                   animate="visible"
                   variants={fadeUp}
-                  className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal tracking-[0.02em] leading-[1.02] text-[#FDFCFB] mb-6"
+                  className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-normal tracking-[0.02em] leading-[1.02] text-[#FDFCFB] mb-6"
                 >
                   {t("homepage.hero.titleLead")}
                   <span className="italic text-[#DCC7B0]">{t("homepage.hero.titleAccent")}</span>
@@ -423,7 +303,7 @@ const Index = () => {
                 variants={scaleIn}
                 className="flex justify-center lg:justify-end order-1 lg:order-2"
               >
-                <PremiumCard3D name={previewName} animate={allowInfiniteAnimations} />
+                <NfcCard3D name={previewName} animate={allowInfiniteAnimations} />
               </motion.div>
             </div>
           </div>
@@ -556,6 +436,9 @@ const Index = () => {
         {/* Démonstration NFC en 3 étapes */}
         <NfcDemoSteps />
 
+        {/* Photographie produit réelle — chargée à la demande sous la ligne de flottaison */}
+        <RealProductShowcase />
+
         {/* Ce qui est inclus */}
         <IncludedSection />
 
@@ -649,7 +532,10 @@ const Index = () => {
                 transition={{ duration: 1, delay: 0.4 }}
                 className="flex justify-center"
               >
-                <PremiumCard3D name={previewName || t("homepage.previewNameDefault")} animate={allowInfiniteAnimations} />
+                <NfcCard3D
+                  name={previewName || t("homepage.previewNameDefault")}
+                  animate={allowInfiniteAnimations}
+                />
               </motion.div>
             </div>
           </div>
@@ -973,6 +859,8 @@ const Index = () => {
         {/* ═══════════════════════════════════════════════════════════════
             FOOTER MINIMAL
             ═══════════════════════════════════════════════════════════════ */}
+        </main>
+
         <footer className="relative py-16 px-6 border-t border-white/[0.03]">
           <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
@@ -990,11 +878,11 @@ const Index = () => {
               </span>
             </div>
             
-            <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#FDFCFB]/20">
+            <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#FDFCFB]/60">
               {t("homepage.finalCta.footerTagline")}
             </p>
             
-            <p className="font-body text-xs font-extralight text-[#FDFCFB]/20">
+            <p className="font-body text-xs font-extralight text-[#FDFCFB]/60">
               © {new Date().getFullYear()} IWASP
             </p>
           </div>

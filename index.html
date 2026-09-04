@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     
-    <!-- iOS/PWA optimized viewport - prevents zoom, enables safe areas -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <!-- Accessible viewport: keep pinch-to-zoom available on every device. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     
     <!-- App identity - i-wasp Haute Couture Digitale -->
     <title>i-wasp — Haute Couture Digitale</title>
@@ -45,6 +45,29 @@
     <meta name="twitter:title" content="i-wasp — Haute Couture Digitale" />
     <meta name="twitter:description" content="Maison d'identité professionnelle digitale." />
     <meta name="twitter:image" content="https://i-wasp.com/og-image.png" />
+
+    <!-- Machine-readable identity for search engines. Product/price data stays
+         on the dedicated pages where the canonical catalogue is rendered. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "i-wasp",
+        "url": "https://i-wasp.com/",
+        "logo": "https://i-wasp.com/app-icon-1024.png",
+        "description": "Cartes de visite NFC premium et profils digitaux professionnels",
+        "email": "contact@i-wasp.com"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "i-wasp",
+        "url": "https://i-wasp.com/",
+        "inLanguage": "fr-FR"
+      }
+    </script>
     
     <!-- Deep Linking / Universal Links -->
     <meta name="apple-itunes-app" content="app-id=6799452085, app-argument=iwasp://" />

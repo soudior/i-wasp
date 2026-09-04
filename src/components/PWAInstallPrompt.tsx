@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, Download, Smartphone, Share, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -11,12 +11,21 @@ interface BeforeInstallPromptEvent extends Event {
 
 export function PWAInstallPrompt() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [show, setShow] = useState(false);
   const [showIOSGuide, setShowIOSGuide] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
+  const isWorkspaceRoute = ["/dashboard", "/settings", "/studio", "/editor", "/card-studio"]
+    .some((route) => pathname.startsWith(route));
 
   useEffect(() => {
+    // The install prompt is useful inside the authenticated workspace, not on
+    // marketing, public-card or checkout pages where it competes with the CTA.
+    if (!isWorkspaceRoute) {
+      setShow(false);
+      return;
+    }
     // Detect iOS
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     setIsIOS(iOS);
@@ -53,7 +62,7 @@ export function PWAInstallPrompt() {
       clearTimeout(timer);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
-  }, []);
+  }, [isWorkspaceRoute]);
 
   const handleDismiss = () => {
     setShow(false);
@@ -76,7 +85,7 @@ export function PWAInstallPrompt() {
     }
   };
 
-  if (!show) return null;
+  if (!show || !isWorkspaceRoute) return null;
 
   return (
     <AnimatePresence>

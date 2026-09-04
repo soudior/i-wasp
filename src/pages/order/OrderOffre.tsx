@@ -11,7 +11,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useOrderFunnel, OfferType, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { Check, ArrowLeft, ArrowRight, Shield, Truck, Star } from "lucide-react";
+import { Check, ArrowLeft, ArrowRight, Shield, Truck } from "lucide-react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
 
@@ -304,15 +304,12 @@ function OrderOffreContent() {
             <div className="flex items-center gap-2">
               <Truck className="w-3 h-3" style={{ color: COUTURE.gold }} />
               <span className="text-[9px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
-                Livraison 48h
+                Livraison suivie
               </span>
             </div>
-            <div className="flex items-center gap-1">
-              {[1,2,3,4,5].map(i => (
-                <Star key={i} className="w-2.5 h-2.5" fill={COUTURE.gold} style={{ color: COUTURE.gold }} />
-              ))}
-              <span className="text-[9px] ml-1" style={{ color: COUTURE.textMuted }}>4.9</span>
-            </div>
+            <Link to="/cgv" className="text-[9px] uppercase tracking-wider underline underline-offset-4" style={{ color: COUTURE.textMuted }}>
+              Prix et conditions
+            </Link>
           </div>
           
           {/* CTA Button - Plus visible */}
