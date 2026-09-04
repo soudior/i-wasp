@@ -565,7 +565,7 @@ export default function WebStudioConfiguration() {
               <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 mb-6">
                 <div className="flex items-center gap-2 mb-2">
                   <Sparkles size={16} className="text-emerald-500" />
-                  <span className="text-sm font-medium text-emerald-500">Pack Basic - Site Vitrine</span>
+                  <span className="text-sm font-medium text-emerald-500">Pack Lancement — Site vitrine</span>
                 </div>
                 <p className="text-xs text-white/60">
                   Votre site vitrine sera créé avec : accueil, services, contact et formulaire.

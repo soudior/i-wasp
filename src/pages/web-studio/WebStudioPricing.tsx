@@ -603,19 +603,19 @@ export default function WebStudioPricing() {
                       className="text-center p-6 font-medium"
                       style={{ color: COLORS.emerald }}
                     >
-                      Basic
+                      Lancement
                     </th>
                     <th 
                       className="text-center p-6 font-medium"
                       style={{ color: COLORS.blue }}
                     >
-                      Pro
+                      Croissance
                     </th>
                     <th 
                       className="text-center p-6 font-medium"
                       style={{ color: COLORS.amber }}
                     >
-                      Enterprise
+                      Signature
                     </th>
                   </tr>
                 </thead>

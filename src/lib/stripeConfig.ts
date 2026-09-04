@@ -61,7 +61,7 @@ export const PROMO_STRIPE_PRICES = {
 export const WEB_STUDIO_STRIPE_PRICES = {
   BASIC: {
     id: 'basic',
-    name: 'Site Basic (5 pages)',
+    name: 'Site Lancement (5 pages)',
     priceIdMAD: 'price_1SpKRXIvyaABH94u3XFnG4qg',
     priceIdEUR: 'price_1SpKDVIvyaABH94u9C3Zq7i1',
     productId: 'prod_TmuG5HE5p4MFRj',
@@ -70,7 +70,7 @@ export const WEB_STUDIO_STRIPE_PRICES = {
   },
   PRO: {
     id: 'pro',
-    name: 'Site Pro (10 pages)',
+    name: 'Site Croissance (10 pages)',
     priceIdMAD: 'price_1SpKRqIvyaABH94uKQIXaEIW',
     priceIdEUR: 'price_1SpKDmIvyaABH94uhKxXCnW5',
     productId: 'prod_TmuGoD257oDhrS',
@@ -79,7 +79,7 @@ export const WEB_STUDIO_STRIPE_PRICES = {
   },
   ENTERPRISE: {
     id: 'enterprise',
-    name: 'Site Enterprise (Illimité)',
+    name: 'Site Signature (Illimité)',
     priceIdMAD: 'price_1SpKS3IvyaABH94ujjmo6jDb',
     priceIdEUR: 'price_1SpKEGIvyaABH94uY8yuOQ4l',
     productId: 'prod_TmuGjPyWT6Gle4',

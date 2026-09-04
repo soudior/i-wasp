@@ -7,7 +7,7 @@ export const WEBSTUDIO_STRIPE_PRODUCTS = {
   BASIC: {
     product_id: 'prod_Tmu1Ku2SVd3vOV',
     price_id: 'price_1SpKDVIvyaABH94u9C3Zq7i1',
-    name: 'Web Studio Basic',
+    name: 'Web Studio Lancement',
     description: 'Site web jusqu\'à 5 pages',
     priceEur: 200,
     priceMad: 2000,
@@ -16,7 +16,7 @@ export const WEBSTUDIO_STRIPE_PRODUCTS = {
   PRO: {
     product_id: 'prod_Tmu19XepLfGFdH',
     price_id: 'price_1SpKDmIvyaABH94uhKxXCnW5',
-    name: 'Web Studio Pro',
+    name: 'Web Studio Croissance',
     description: 'Site web jusqu\'à 10 pages',
     priceEur: 500,
     priceMad: 5000,
@@ -25,7 +25,7 @@ export const WEBSTUDIO_STRIPE_PRODUCTS = {
   ENTERPRISE: {
     product_id: 'prod_Tmu21t1NzPkYvW',
     price_id: 'price_1SpKEGIvyaABH94uY8yuOQ4l',
-    name: 'Web Studio Enterprise',
+    name: 'Web Studio Signature',
     description: 'Site web illimité + CRM',
     priceEur: 1000,
     priceMad: 10000,

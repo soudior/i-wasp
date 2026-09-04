@@ -42,9 +42,9 @@ type VerificationStatus = 'verifying' | 'success' | 'generating' | 'generated' |
 
 // Package info mapping
 const PACKAGE_INFO = {
-  basic: { name: 'Pack Basic', pages: 'Jusqu\'à 5 pages', delivery: '📅 5-7 jours' },
-  pro: { name: 'Pack Pro', pages: 'Jusqu\'à 10 pages', delivery: '📅 7-10 jours' },
-  enterprise: { name: 'Pack Enterprise', pages: 'Illimité', delivery: '📅 10-14 jours' },
+  basic: { name: 'Pack Lancement', pages: 'Jusqu\'à 5 pages', delivery: '📅 5 à 7 jours' },
+  pro: { name: 'Pack Croissance', pages: 'Jusqu\'à 10 pages', delivery: '📅 7 à 10 jours' },
+  enterprise: { name: 'Pack Signature', pages: 'Illimité', delivery: '📅 10 à 14 jours' },
 };
 
 export default function WebStudioPaymentSuccess() {
