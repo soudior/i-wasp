@@ -1,770 +1,107 @@
-/**
- * Demo Page — i-wasp Interactive Demo
- * 
- * Palette Stealth Luxury:
- * - Noir Émeraude: #050807
- * - Argent Titane: #A5A9B4
- * - Platine: #D1D5DB
- */
-
-import { useState, useRef, MouseEvent } from "react";
-import { CardData } from "@/components/templates/CardTemplates";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { 
-  Phone, Mail, MapPin, Globe, Linkedin, Instagram,
-  X, Plus, Wallet, Share2, Sparkles, ArrowLeft, ShoppingBag,
-  Play, Smartphone, CreditCard, User, Building2
-} from "lucide-react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeft, ArrowRight, Check, Contact, Mail, Phone, Radio, WalletCards } from "lucide-react";
 import { Link } from "react-router-dom";
-import { downloadVCard } from "@/lib/vcard";
-import { addToAppleWallet, addToGoogleWallet, WalletCardData } from "@/lib/walletService";
-import { toast } from "sonner";
-import { IWASPLogoSimple } from "@/components/IWASPLogo";
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
-import demoProfileImage from "@/assets/demo-profile.jpg";
-import { NFCPhysicalCard } from "@/components/print/NFCPhysicalCard";
+import { SEOHead } from "@/components/SEOHead";
+import nfcVisual from "@/assets/cards/iwasp-nfc-tap-realistic-1920x1080.webp";
+import walletVisual from "@/assets/cards/iwasp-wallet-realistic-1920x1080.webp";
 
-// Stealth Luxury Colors
-const STEALTH = {
-  noir: "#050807",
-  noirElevated: "#0A0F0D",
-  titanium: "#A5A9B4",
-  platinum: "#D1D5DB",
-  emeraldGlow: "#1A2B26",
-};
+const steps = [
+  { label: "Le geste NFC", short: "Approcher" },
+  { label: "Le profil digital", short: "Découvrir" },
+  { label: "Le pass Wallet", short: "Conserver" },
+];
 
-// 3D Tilt hook for premium hover effect
-function useTilt3D(intensity: number = 15) {
-  const rotateX = useMotionValue(0);
-  const rotateY = useMotionValue(0);
-  const brightness = useMotionValue(1);
-  
-  const springConfig = { stiffness: 300, damping: 30 };
-  const smoothRotateX = useSpring(rotateX, springConfig);
-  const smoothRotateY = useSpring(rotateY, springConfig);
-  const smoothBrightness = useSpring(brightness, { stiffness: 200, damping: 25 });
-
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    const mouseX = e.clientX - centerX;
-    const mouseY = e.clientY - centerY;
-    
-    const rotateXValue = (mouseY / (rect.height / 2)) * -intensity;
-    const rotateYValue = (mouseX / (rect.width / 2)) * intensity;
-    
-    rotateX.set(rotateXValue);
-    rotateY.set(rotateYValue);
-    brightness.set(1.05);
-  };
-
-  const handleMouseLeave = () => {
-    rotateX.set(0);
-    rotateY.set(0);
-    brightness.set(1);
-  };
-
-  return {
-    style: {
-      rotateX: smoothRotateX,
-      rotateY: smoothRotateY,
-      filter: smoothBrightness,
-    },
-    handlers: {
-      onMouseMove: handleMouseMove,
-      onMouseLeave: handleMouseLeave,
-    },
-  };
-}
-
-// Demo card data - IWASP showcase
-const demoCardData: CardData = {
-  id: "demo-card-001",
-  slug: "sarah-laurent-demo",
-  firstName: "Sarah",
-  lastName: "Laurent",
-  title: "Directrice Marketing",
-  company: "IWASP",
-  email: "sarah@iwasp.ma",
-  phone: "+212 6 12 34 56 78",
-  location: "Casablanca, Maroc",
-  website: "iwasp.ma",
-  linkedin: "sarah-laurent",
-  instagram: "@sarahlaurent",
-  tagline: "L'élégance professionnelle, version numérique",
-  photoUrl: demoProfileImage,
-};
-
-// Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring" as const,
-      stiffness: 100,
-      damping: 15,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 40, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      type: "spring" as const,
-      stiffness: 80,
-      damping: 20,
-      duration: 0.8,
-    },
-  },
-};
-
-// Action item component with enhanced tap area
-function ActionItem({ 
-  icon: Icon, 
-  label, 
-  value, 
-  href,
-}: { 
-  icon: React.ElementType; 
-  label: string; 
-  value: string; 
-  href?: string;
-}) {
-  const content = (
-    <motion.div 
-      variants={itemVariants}
-      whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.06)" }}
-      whileTap={{ scale: 0.98 }}
-      className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.04] transition-colors duration-200 group cursor-pointer"
-    >
-      <div className="w-11 h-11 rounded-xl bg-white/[0.05] flex items-center justify-center flex-shrink-0 group-hover:bg-white/[0.08] transition-colors">
-        <Icon size={20} className="text-white/50 group-hover:text-white/70 transition-colors" />
+function ProfilePreview() {
+  return (
+    <div className="relative mx-auto w-[285px] rounded-[2.7rem] border-[7px] border-[#202020] bg-black p-2 shadow-[0_40px_100px_rgba(0,0,0,0.65)] sm:w-[320px]">
+      <div className="overflow-hidden rounded-[2.15rem] bg-[#080808]">
+        <div className="h-40 bg-[radial-gradient(circle_at_50%_0%,rgba(220,199,176,0.26),transparent_65%)] px-5 pt-8 text-center">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-[#DCC7B0]/30 bg-[#DCC7B0]/10 font-display text-2xl text-[#DCC7B0]">W</div>
+        </div>
+        <div className="px-5 pb-7 text-center">
+          <p className="font-mono text-[8px] uppercase tracking-[0.32em] text-[#DCC7B0]/70">Profil i-wasp</p>
+          <h2 className="mt-3 font-display text-2xl text-white">Votre nom</h2>
+          <p className="mt-1 text-xs text-white/45">Votre fonction · Votre entreprise</p>
+          <p className="mx-auto mt-4 max-w-[230px] text-xs font-light leading-5 text-white/55">Votre identité professionnelle, vos coordonnées et vos réseaux réunis au même endroit.</p>
+          <div className="mt-6 grid grid-cols-2 gap-2">
+            {[{ icon: Phone, text: "Appeler" }, { icon: Mail, text: "Écrire" }, { icon: Contact, text: "Enregistrer" }, { icon: WalletCards, text: "Wallet" }].map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.035] px-2 py-3 text-[10px] text-white/70"><Icon className="h-3.5 w-3.5 text-[#DCC7B0]" aria-hidden />{text}</div>
+            ))}
+          </div>
+          <div className="mt-5 rounded-xl bg-[#DCC7B0] py-3 text-[10px] font-semibold uppercase tracking-[0.17em] text-black">Ajouter aux contacts</div>
+        </div>
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[11px] uppercase tracking-wider text-white/30 mb-0.5">{label}</p>
-        <p className="text-sm text-white/80 truncate">{value}</p>
-      </div>
-    </motion.div>
+    </div>
   );
-
-  if (href) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className="block">
-        {content}
-      </a>
-    );
-  }
-  
-  return content;
 }
 
 export default function Demo() {
-  const [showLeadForm, setShowLeadForm] = useState(false);
-  const [leadData, setLeadData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-  });
-  const [leadSubmitted, setLeadSubmitted] = useState(false);
-  const [loadingApple, setLoadingApple] = useState(false);
-  const [loadingGoogle, setLoadingGoogle] = useState(false);
-  
-  // 3D Tilt effect
-  const { style: tiltStyle, handlers: tiltHandlers } = useTilt3D(12);
-  
-  // Parallax scroll effect
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollY } = useScroll();
-  const parallaxY = useTransform(scrollY, [0, 300], [0, -30]);
-  const parallaxOpacity = useTransform(scrollY, [0, 200], [1, 0.8]);
-  const smoothY = useSpring(parallaxY, { stiffness: 100, damping: 30 });
-
-  // Handle vCard download
-  const handleDownloadVCard = () => {
-    downloadVCard({
-      firstName: demoCardData.firstName || '',
-      lastName: demoCardData.lastName || '',
-      title: demoCardData.title,
-      company: demoCardData.company,
-      email: demoCardData.email,
-      phone: demoCardData.phone,
-    });
-    toast.success("Contact ajouté à votre répertoire !");
-  };
-
-  // Handle Apple Wallet
-  const handleAppleWallet = async () => {
-    setLoadingApple(true);
-    try {
-      const walletData: WalletCardData = {
-        id: demoCardData.id!,
-        firstName: demoCardData.firstName!,
-        lastName: demoCardData.lastName!,
-        title: demoCardData.title,
-        company: demoCardData.company,
-        email: demoCardData.email,
-        phone: demoCardData.phone,
-        website: demoCardData.website,
-        location: demoCardData.location,
-        slug: demoCardData.slug!,
-        linkedin: demoCardData.linkedin,
-        instagram: demoCardData.instagram,
-        tagline: demoCardData.tagline,
-      };
-      await addToAppleWallet(walletData);
-    } finally {
-      setLoadingApple(false);
-    }
-  };
-
-  // Handle Google Wallet
-  const handleGoogleWallet = async () => {
-    setLoadingGoogle(true);
-    try {
-      const walletData: WalletCardData = {
-        id: demoCardData.id!,
-        firstName: demoCardData.firstName!,
-        lastName: demoCardData.lastName!,
-        title: demoCardData.title,
-        company: demoCardData.company,
-        email: demoCardData.email,
-        phone: demoCardData.phone,
-        website: demoCardData.website,
-        location: demoCardData.location,
-        slug: demoCardData.slug!,
-        linkedin: demoCardData.linkedin,
-        instagram: demoCardData.instagram,
-        tagline: demoCardData.tagline,
-      };
-      await addToGoogleWallet(walletData);
-    } finally {
-      setLoadingGoogle(false);
-    }
-  };
-
-  // Handle lead form submission
-  const handleShareInfo = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await new Promise(resolve => setTimeout(resolve, 500));
-    toast.success("Vos coordonnées ont été partagées avec succès !");
-    setShowLeadForm(false);
-    setLeadSubmitted(true);
-    setLeadData({ name: "", email: "", phone: "", company: "" });
-  };
+  const [activeStep, setActiveStep] = useState(0);
+  const next = () => setActiveStep((current) => (current + 1) % steps.length);
 
   return (
-    <div className="min-h-screen bg-[hsl(0,0%,3%)] relative overflow-hidden">
-      {/* Subtle ambient background */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-radial from-amber-500/[0.03] via-transparent to-transparent" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-radial from-amber-600/[0.02] via-transparent to-transparent" />
-      </div>
-      
-      {/* Noise texture */}
-      <div className="absolute inset-0 opacity-[0.015]" style={{ 
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")` 
-      }} />
+    <div className="min-h-screen overflow-hidden bg-[#030303] text-white">
+      <SEOHead title="Démonstration NFC & Wallet | i-wasp" description="Découvrez le parcours i-wasp : geste NFC, profil digital et pass Apple Wallet." />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(220,199,176,0.09),transparent_35%)]" aria-hidden />
 
-      {/* Header */}
-      <header className="relative z-20 px-5 py-4 flex items-center justify-between">
-        <Link 
-          to="/" 
-          className="flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span className="text-sm font-light">Retour</span>
-        </Link>
-        
-        {/* Demo badge */}
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20">
-          <Sparkles className="h-3 w-3 text-amber-400" />
-          <span className="text-[11px] font-medium text-amber-400 tracking-wide">DÉMO INTERACTIVE</span>
-        </div>
+      <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+        <Link to="/" className="flex items-center gap-2 text-sm text-white/55 transition hover:text-white"><ArrowLeft className="h-4 w-4" aria-hidden /> Retour</Link>
+        <span className="font-display text-xl tracking-[0.08em]">i-wasp</span>
+        <Link to="/order/offre" className="hidden rounded-full border border-[#DCC7B0]/25 bg-[#DCC7B0]/10 px-5 py-2.5 font-mono text-[9px] uppercase tracking-[0.2em] text-[#DCC7B0] sm:block">Créer ma carte</Link>
       </header>
 
-      {/* Main content */}
-      <main ref={containerRef} className="relative z-10 flex items-start justify-center px-5 py-6 pb-12">
-        <motion.div 
-          className="w-full max-w-[380px]"
-          style={{ y: smoothY, opacity: parallaxOpacity }}
-        >
-          
-          {/* Premium Card Container with entry animation and 3D tilt */}
-          <motion.div 
-            className="relative rounded-[28px] overflow-hidden bg-[hsl(0,0%,6%)] border border-white/[0.06] shadow-2xl shadow-black/50"
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            style={{ 
-              rotateX: tiltStyle.rotateX, 
-              rotateY: tiltStyle.rotateY,
-              transformPerspective: 1000,
-              transformStyle: "preserve-3d",
-            }}
-            {...tiltHandlers}
-            whileHover={{ 
-              boxShadow: "0 50px 100px -20px rgba(0,0,0,0.7), 0 0 60px rgba(245,158,11,0.08)",
-            }}
-            transition={{ boxShadow: { duration: 0.3 } }}
-          >
-            {/* Subtle top gradient line */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            
-            {/* IWASP Logo - Top Right */}
-            <motion.div 
-              className="absolute top-5 right-5 z-10"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 0.3, x: 0 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-            >
-              <IWASPLogoSimple variant="dark" size="sm" />
-            </motion.div>
-
-            {/* Card Content */}
-            <div className="p-7 pt-6">
-              
-              {/* Profile Section with staggered animations */}
-              <motion.div 
-                className="flex flex-col items-center text-center mb-8"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                {/* Avatar with premium shadow */}
-                <motion.div 
-                  className="relative mb-5"
-                  variants={itemVariants}
-                >
-                  <motion.div 
-                    className="w-28 h-28 rounded-full overflow-hidden ring-2 ring-white/[0.08] shadow-xl shadow-black/40"
-                    whileHover={{ scale: 1.05, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.6)" }}
-                    transition={{ type: "spring" as const, stiffness: 300, damping: 20 }}
-                  >
-                    <img 
-                      src={demoCardData.photoUrl || ""} 
-                      alt={`${demoCardData.firstName} ${demoCardData.lastName}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </motion.div>
-                  {/* Status indicator */}
-                  <motion.div 
-                    className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-[3px] border-[hsl(0,0%,6%)] flex items-center justify-center"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.6, type: "spring" as const, stiffness: 500, damping: 15 }}
-                  >
-                    <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                  </motion.div>
-                </motion.div>
-
-                {/* Name - Dominant */}
-                <motion.h1 
-                  className="font-display text-[26px] font-semibold text-white tracking-tight mb-1"
-                  variants={itemVariants}
-                >
-                  {demoCardData.firstName} {demoCardData.lastName}
-                </motion.h1>
-                
-                {/* Title - Secondary */}
-                <motion.p 
-                  className="text-[15px] text-white/50 font-light mb-0.5"
-                  variants={itemVariants}
-                >
-                  {demoCardData.title}
-                </motion.p>
-                
-                {/* Company */}
-                <motion.p 
-                  className="text-[13px] text-white/30 font-light"
-                  variants={itemVariants}
-                >
-                  {demoCardData.company}
-                </motion.p>
-
-                {/* Tagline - Subtle italic */}
-                {demoCardData.tagline && (
-                  <motion.p 
-                    className="mt-4 text-[13px] text-white/25 italic font-light max-w-[280px] leading-relaxed"
-                    variants={itemVariants}
-                  >
-                    "{demoCardData.tagline}"
-                  </motion.p>
-                )}
-              </motion.div>
-
-              {/* Action List - Enhanced with stagger */}
-              <motion.div 
-                className="space-y-2.5 mb-7"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                {demoCardData.phone && (
-                  <ActionItem 
-                    icon={Phone} 
-                    label="Téléphone" 
-                    value={demoCardData.phone} 
-                    href={`tel:${demoCardData.phone}`}
-                  />
-                )}
-                {demoCardData.email && (
-                  <ActionItem 
-                    icon={Mail} 
-                    label="Email" 
-                    value={demoCardData.email} 
-                    href={`mailto:${demoCardData.email}`}
-                  />
-                )}
-                {demoCardData.website && (
-                  <ActionItem 
-                    icon={Globe} 
-                    label="Site web" 
-                    value={demoCardData.website} 
-                    href={`https://${demoCardData.website}`}
-                  />
-                )}
-                {demoCardData.location && (
-                  <ActionItem 
-                    icon={MapPin} 
-                    label="Localisation" 
-                    value={demoCardData.location} 
-                    href={`https://maps.google.com/?q=${encodeURIComponent(demoCardData.location)}`}
-                  />
-                )}
-                {demoCardData.linkedin && (
-                  <ActionItem 
-                    icon={Linkedin} 
-                    label="LinkedIn" 
-                    value={demoCardData.linkedin} 
-                    href={`https://linkedin.com/in/${demoCardData.linkedin}`}
-                  />
-                )}
-                {demoCardData.instagram && (
-                  <ActionItem 
-                    icon={Instagram} 
-                    label="Instagram" 
-                    value={demoCardData.instagram} 
-                    href={`https://instagram.com/${demoCardData.instagram.replace('@', '')}`}
-                  />
-                )}
-              </motion.div>
-
-              {/* CTA Buttons with micro-animations */}
-              <motion.div 
-                className="space-y-3"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                {/* Primary - Add to contacts */}
-                <motion.button
-                  onClick={handleDownloadVCard}
-                  className="w-full py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-[hsl(0,0%,5%)] font-semibold rounded-2xl flex items-center justify-center gap-2.5 shadow-lg shadow-amber-500/20 overflow-hidden relative group"
-                  variants={itemVariants}
-                  whileHover={{ 
-                    scale: 1.02,
-                    boxShadow: "0 20px 40px -10px rgba(245,158,11,0.4)",
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                >
-                  {/* Shimmer effect on hover */}
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
-                  />
-                  <motion.span
-                    className="relative z-10 flex items-center gap-2.5"
-                  >
-                    <motion.span
-                      whileHover={{ rotate: 90 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                    >
-                      <Plus size={20} strokeWidth={2.5} />
-                    </motion.span>
-                    Ajouter aux contacts
-                  </motion.span>
-                </motion.button>
-
-                {/* Wallet buttons */}
-                <div className="grid grid-cols-2 gap-2.5">
-                  <motion.button
-                    onClick={handleAppleWallet}
-                    disabled={loadingApple}
-                    className="py-3.5 bg-white/[0.04] border border-white/[0.06] rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 overflow-hidden relative group"
-                    variants={itemVariants}
-                    whileHover={{ 
-                      scale: 1.03,
-                      backgroundColor: "rgba(255,255,255,0.08)",
-                      borderColor: "rgba(255,255,255,0.12)",
-                    }}
-                    whileTap={{ scale: 0.97 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  >
-                    <motion.span
-                      className="flex items-center gap-2"
-                      whileHover={{ y: -1 }}
-                    >
-                      <motion.span
-                        whileHover={{ scale: 1.15, rotate: -5 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                      >
-                        <Wallet size={17} className="text-white/40 group-hover:text-white/60 transition-colors" />
-                      </motion.span>
-                      <span className="text-[13px] text-white/60 group-hover:text-white/80 transition-colors">Apple Wallet</span>
-                    </motion.span>
-                  </motion.button>
-                  <motion.button
-                    onClick={handleGoogleWallet}
-                    disabled={loadingGoogle}
-                    className="py-3.5 bg-white/[0.04] border border-white/[0.06] rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 overflow-hidden relative group"
-                    variants={itemVariants}
-                    whileHover={{ 
-                      scale: 1.03,
-                      backgroundColor: "rgba(255,255,255,0.08)",
-                      borderColor: "rgba(255,255,255,0.12)",
-                    }}
-                    whileTap={{ scale: 0.97 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  >
-                    <motion.span
-                      className="flex items-center gap-2"
-                      whileHover={{ y: -1 }}
-                    >
-                      <motion.span
-                        whileHover={{ scale: 1.15, rotate: 5 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                      >
-                        <Wallet size={17} className="text-white/40 group-hover:text-white/60 transition-colors" />
-                      </motion.span>
-                      <span className="text-[13px] text-white/60 group-hover:text-white/80 transition-colors">Google Wallet</span>
-                    </motion.span>
-                  </motion.button>
-                </div>
-
-                {/* Share info button */}
-                <motion.button
-                  onClick={() => setShowLeadForm(true)}
-                  disabled={leadSubmitted}
-                  className="w-full py-3.5 bg-transparent border border-white/[0.08] rounded-xl flex items-center justify-center gap-2 text-white/40 disabled:opacity-50 overflow-hidden relative group"
-                  variants={itemVariants}
-                  whileHover={{ 
-                    scale: 1.02,
-                    backgroundColor: "rgba(255,255,255,0.04)",
-                    borderColor: "rgba(255,255,255,0.15)",
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                >
-                  <motion.span
-                    className="flex items-center gap-2"
-                  >
-                    <motion.span
-                      whileHover={{ rotate: 15, scale: 1.1 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                    >
-                      <Share2 size={17} className="group-hover:text-white/60 transition-colors" />
-                    </motion.span>
-                    <span className="text-[13px] group-hover:text-white/70 transition-colors">
-                      {leadSubmitted ? "Coordonnées partagées ✓" : "Partager mes coordonnées"}
-                    </span>
-                  </motion.span>
-                </motion.button>
-              </motion.div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t border-white/[0.04] py-4 text-center">
-              <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="text-[10px] text-white/15 tracking-[0.2em] uppercase hover:opacity-80 transition-opacity">
-                Powered by I-WASP.com
-              </a>
-            </div>
-          </motion.div>
-
-          {/* Physical NFC Card Preview */}
-          <motion.div 
-            className="mt-8 p-6 rounded-3xl bg-white/[0.02] border border-white/[0.05]"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-          >
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-4">
-                <Smartphone className="h-3.5 w-3.5 text-white/40" />
-                <span className="text-[11px] text-white/50 uppercase tracking-wider">Carte physique NFC</span>
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-1">Votre carte premium</h3>
-              <p className="text-sm text-white/40">Un tap suffit pour partager votre profil</p>
-            </div>
-            
-            {/* Physical Card Component - Interactive color selector */}
-            <div className="max-w-[300px] mx-auto">
-              <NFCPhysicalCard colorId="white" showBack={false} interactive={true} />
-            </div>
-            
-            {/* Card specs */}
-            <div className="mt-6 flex justify-center gap-6 text-center">
-              <div>
-                <p className="text-[11px] text-white/30 uppercase tracking-wider mb-1">Format</p>
-                <p className="text-sm text-white/60">CR80</p>
-              </div>
-              <div>
-                <p className="text-[11px] text-white/30 uppercase tracking-wider mb-1">Dimensions</p>
-                <p className="text-sm text-white/60">85.6 × 54 mm</p>
-              </div>
-              <div>
-                <p className="text-[11px] text-white/30 uppercase tracking-wider mb-1">Technologie</p>
-                <p className="text-sm text-white/60">NFC</p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* CTA to order */}
-          <motion.div 
-            className="mt-6 p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-          >
-            <div className="flex items-center gap-4 mb-4">
-              <div className="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center">
-                <CreditCard className="h-5 w-5 text-amber-400" />
-              </div>
-              <div>
-                <p className="font-medium text-white">Votre carte NFC premium</p>
-                <p className="text-sm text-white/40">À partir de 29€</p>
-              </div>
-            </div>
-            <Link to="/order/type">
-              <Button className="w-full h-12 bg-white text-[hsl(0,0%,5%)] hover:bg-white/90 font-medium">
-                Commander ma carte
-              </Button>
-            </Link>
-          </motion.div>
-
-          {/* IWASP branding */}
-          <motion.div 
-            className="text-center mt-6 space-y-1"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 0.5 }}
-          >
-            <p className="text-[11px] text-white/25">
-              🇲🇦 Livraison Maroc • Paiement à la livraison
-            </p>
-          </motion.div>
-        </motion.div>
-      </main>
-
-      {/* Lead capture modal */}
-      <div 
-        className={`fixed inset-0 z-50 flex items-center justify-center p-5 bg-black/80 backdrop-blur-xl transition-opacity duration-200 ${
-          showLeadForm ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="w-full max-w-sm rounded-2xl bg-[hsl(0,0%,8%)] border border-white/[0.08] p-6 shadow-2xl">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-white">
-              Partager mes coordonnées
-            </h2>
-            <button
-              onClick={() => setShowLeadForm(false)}
-              className="w-9 h-9 rounded-full bg-white/[0.05] hover:bg-white/[0.1] flex items-center justify-center transition-colors"
-            >
-              <X size={18} className="text-white/50" />
-            </button>
-          </div>
-
-          <form onSubmit={handleShareInfo} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="demo-lead-name" className="flex items-center gap-2 text-sm text-white/60">
-                <User size={14} />
-                Nom complet
-              </Label>
-              <Input
-                id="demo-lead-name"
-                value={leadData.name}
-                onChange={(e) => setLeadData({ ...leadData, name: e.target.value })}
-                placeholder="Jean Dupont"
-                className="bg-white/[0.04] border-white/[0.08] h-12 text-white placeholder:text-white/30"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="demo-lead-email" className="flex items-center gap-2 text-sm text-white/60">
-                <Mail size={14} />
-                Email
-              </Label>
-              <Input
-                id="demo-lead-email"
-                type="email"
-                value={leadData.email}
-                onChange={(e) => setLeadData({ ...leadData, email: e.target.value })}
-                placeholder="jean@exemple.com"
-                className="bg-white/[0.04] border-white/[0.08] h-12 text-white placeholder:text-white/30"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="demo-lead-phone" className="flex items-center gap-2 text-sm text-white/60">
-                <Phone size={14} />
-                Téléphone
-              </Label>
-              <Input
-                id="demo-lead-phone"
-                value={leadData.phone}
-                onChange={(e) => setLeadData({ ...leadData, phone: e.target.value })}
-                placeholder="+212 6 12 34 56 78"
-                className="bg-white/[0.04] border-white/[0.08] h-12 text-white placeholder:text-white/30"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="demo-lead-company" className="flex items-center gap-2 text-sm text-white/60">
-                <Building2 size={14} />
-                Entreprise
-              </Label>
-              <Input
-                id="demo-lead-company"
-                value={leadData.company}
-                onChange={(e) => setLeadData({ ...leadData, company: e.target.value })}
-                placeholder="Ma Société"
-                className="bg-white/[0.04] border-white/[0.08] h-12 text-white placeholder:text-white/30"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full h-12 bg-amber-500 hover:bg-amber-400 text-[hsl(0,0%,5%)] font-medium mt-2"
-            >
-              Envoyer
-            </Button>
-          </form>
+      <main className="relative z-10 mx-auto max-w-7xl px-6 pb-20 pt-8 sm:pt-14">
+        <div className="mb-12 text-center">
+          <p className="font-mono text-[10px] uppercase tracking-[0.38em] text-[#DCC7B0]">Démonstration interactive</p>
+          <h1 className="mx-auto mt-5 max-w-4xl font-display text-4xl leading-[1.05] sm:text-6xl lg:text-7xl">Une rencontre.<br /><span className="italic text-[#DCC7B0]">Toute votre présence.</span></h1>
+          <p className="mx-auto mt-6 max-w-2xl text-sm font-light leading-7 text-white/55 sm:text-base">Découvrez exactement ce que vit votre contact lorsqu’il approche votre carte i-wasp.</p>
         </div>
-      </div>
+
+        <div className="mb-8 grid grid-cols-3 gap-2 rounded-2xl border border-white/[0.07] bg-white/[0.025] p-2">
+          {steps.map((step, index) => (
+            <button key={step.label} type="button" onClick={() => setActiveStep(index)} className={`rounded-xl px-3 py-3 text-center transition ${activeStep === index ? "bg-[#DCC7B0] text-black" : "text-white/45 hover:bg-white/[0.04] hover:text-white"}`}>
+              <span className="block font-mono text-[8px] uppercase tracking-[0.2em]">0{index + 1}</span>
+              <span className="mt-1 hidden text-xs sm:block">{step.short}</span>
+            </button>
+          ))}
+        </div>
+
+        <section className="relative min-h-[610px] overflow-hidden rounded-[2.5rem] border border-white/[0.08] bg-[#090909] lg:min-h-[650px]">
+          <AnimatePresence mode="wait">
+            <motion.div key={activeStep} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.45 }} className="grid min-h-[610px] lg:min-h-[650px] lg:grid-cols-[0.42fr_0.58fr]">
+              <div className="flex flex-col justify-center p-8 sm:p-12 lg:p-14">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#DCC7B0]/20 bg-[#DCC7B0]/10">
+                  {activeStep === 0 ? <Radio className="h-5 w-5 text-[#DCC7B0]" /> : activeStep === 1 ? <Contact className="h-5 w-5 text-[#DCC7B0]" /> : <WalletCards className="h-5 w-5 text-[#DCC7B0]" />}
+                </div>
+                <p className="mt-7 font-mono text-[9px] uppercase tracking-[0.3em] text-[#DCC7B0]/70">Étape 0{activeStep + 1}</p>
+                <h2 className="mt-3 font-display text-4xl sm:text-5xl">{steps[activeStep].label}</h2>
+                <p className="mt-5 max-w-md text-sm font-light leading-7 text-white/55">
+                  {activeStep === 0 && "La carte approche le haut du smartphone. Le NFC déclenche instantanément l’ouverture du profil, sans application."}
+                  {activeStep === 1 && "Le contact découvre une fiche mobile élégante : informations, réseaux, portfolio et actions utiles restent toujours à jour."}
+                  {activeStep === 2 && "Le pass signé rejoint Apple Wallet. Le QR canonique ouvre la même fiche i-wasp et reste disponible à tout moment."}
+                </p>
+                <div className="mt-7 space-y-2 text-xs text-white/65">
+                  {[activeStep === 0 ? "Compatible iPhone et Android" : activeStep === 1 ? "Modifiable sans réimprimer" : "Pass Wallet signé", activeStep === 0 ? "Aucune application requise" : activeStep === 1 ? "Contact enregistré en un geste" : "QR canonique i-wasp"].map((item) => <div key={item} className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400" />{item}</div>)}
+                </div>
+                <button type="button" onClick={next} className="mt-9 inline-flex w-fit items-center gap-3 rounded-full bg-[#DCC7B0] px-6 py-3 text-xs font-semibold text-black transition hover:bg-white">{activeStep === 2 ? "Rejouer la démo" : "Étape suivante"}<ArrowRight className="h-4 w-4" /></button>
+              </div>
+
+              <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden bg-black/30 p-5 sm:p-10">
+                {activeStep === 0 && <img src={nfcVisual} alt="Carte i-wasp approchée d’un smartphone" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />}
+                {activeStep === 1 && <ProfilePreview />}
+                {activeStep === 2 && <img src={walletVisual} alt="Pass i-wasp dans Apple Wallet" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />}
+                {activeStep !== 1 && <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" aria-hidden />}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </section>
+
+        <div className="mt-10 flex flex-col items-center justify-between gap-6 rounded-[2rem] border border-[#DCC7B0]/15 bg-[#DCC7B0]/[0.05] p-7 text-center sm:flex-row sm:p-9 sm:text-left">
+          <div><p className="font-display text-2xl">Prêt à créer votre expérience ?</p><p className="mt-2 text-sm text-white/50">Carte physique, profil digital, QR et Wallet réunis.</p></div>
+          <Link to="/order/offre" className="inline-flex items-center gap-3 rounded-full bg-white px-6 py-3 text-xs font-semibold text-black">Créer ma carte <ArrowRight className="h-4 w-4" /></Link>
+        </div>
+      </main>
     </div>
   );
 }
