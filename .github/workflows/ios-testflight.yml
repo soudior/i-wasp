@@ -131,7 +131,7 @@ jobs:
             CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="iwasp App Store" \
+            PROVISIONING_PROFILE_SPECIFIER="iwasp App Store NFC" \
             clean archive
 
       - name: Write ExportOptions.plist
@@ -146,7 +146,7 @@ jobs:
             <key>signingStyle</key><string>manual</string>
             <key>provisioningProfiles</key>
             <dict>
-              <key>app.iwasp.digital</key><string>iwasp App Store</string>
+              <key>app.iwasp.digital</key><string>iwasp App Store NFC</string>
             </dict>
             <key>destination</key><string>export</string>
             <key>uploadSymbols</key><true/>
