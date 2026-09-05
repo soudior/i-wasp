@@ -17,7 +17,7 @@
     "jsx": "react-jsx",
     // Rigueur TypeScript réactivée par paliers (0 erreur mesurée à chaque étape).
     // strictNullChecks + noImplicitAny désormais actifs (null-safety + typage explicite).
-    // Restent optionnels : noUnusedLocals/Parameters (nettoyage du code mort Lovable).
+    // Restent optionnels : noUnusedLocals/Parameters (nettoyage du code mort hérité).
     "strict": false,
     "strictNullChecks": true,
     "noImplicitAny": true,

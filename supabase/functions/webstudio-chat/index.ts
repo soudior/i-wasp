@@ -5,13 +5,13 @@
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { AI_GATEWAY_API_KEY, AI_GATEWAY_URL } from "../_shared/aiGateway.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
 interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -42,8 +42,8 @@ serve(async (req) => {
   try {
     const { messages, conversationState } = await req.json();
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    if (!AI_GATEWAY_API_KEY || !AI_GATEWAY_URL) {
+      throw new Error("AI_GATEWAY_API_KEY is not configured");
     }
 
     const systemPrompt = `Tu es un assistant IA amical et professionnel qui aide les utilisateurs à créer leur site web. Tu travailles pour une agence web premium.
@@ -72,7 +72,7 @@ RÈGLES CRITIQUES:
 - Quand tu extrais une donnée, indique-la avec [DATA:champ=valeur]
 - À l'étape summary, génère un récapitulatif formaté et demande confirmation
 - Si l'utilisateur confirme le récapitulatif, réponds avec [READY_TO_GENERATE]
-- Ne mentionne JAMAIS "Lovable", "AI", "intelligence artificielle" - tu es juste "l'assistant"
+- Ne mentionne JAMAIS un outil tiers, "AI" ni "intelligence artificielle" - tu es juste "l'assistant"
 
 FORMAT DES RÉPONSES:
 Réponds naturellement, puis ajoute les métadonnées à la fin entre crochets si nécessaire.
@@ -81,10 +81,10 @@ Exemples:
 "Super ! [DATA:businessType=Restaurant] Et comment s'appelle votre restaurant ? [NEXT_STEP:business_name]"
 "Parfait, je note tout ça ! [DATA:contactEmail=test@email.com] [READY_TO_GENERATE]"`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(AI_GATEWAY_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${AI_GATEWAY_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

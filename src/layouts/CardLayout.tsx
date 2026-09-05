@@ -6,7 +6,7 @@
  * - NO footer
  * - NO menu
  * - NO links to home
- * - NO Lovable branding
+ * - NO third-party editor branding
  * - NO global components
  * - Full height page
  * - Card centered

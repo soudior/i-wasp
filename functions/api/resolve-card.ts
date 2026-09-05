@@ -3,9 +3,9 @@
  *
  * Resout une carte derriere l'URL canonique https://i-wasp.com/card/[id].
  *
- * Pourquoi ici et pas dans le projet Supabase de production :
- * cette base appartient a Lovable et n'est pas administrable depuis le compte
- * du proprietaire. Or la resolution n'a jamais eu besoin d'y vivre. Le RPC
+ * Pourquoi ici et pas dans le projet Supabase de production : la resolution
+ * n'a jamais eu besoin d'y vivre, et la servir depuis la meme origine que le
+ * site evite un aller-retour CORS sur le chemin critique. Le RPC
  * `get_public_card` est SECURITY DEFINER et executable par le role `anon` : la
  * cle publique — deja livree au navigateur de chaque visiteur — suffit a lire
  * exactement les champs publics, et rien de plus.

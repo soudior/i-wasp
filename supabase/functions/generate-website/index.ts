@@ -1,16 +1,16 @@
 /**
  * Edge Function: generate-website
- * Génère une proposition de site web via Lovable AI
+ * Génère une proposition de site web via la passerelle IA i-wasp
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { AI_GATEWAY_API_KEY, AI_GATEWAY_URL } from "../_shared/aiGateway.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
 interface FormData {
   businessType: string;
@@ -31,8 +31,8 @@ serve(async (req) => {
   try {
     const formData: FormData = await req.json();
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    if (!AI_GATEWAY_API_KEY || !AI_GATEWAY_URL) {
+      throw new Error("AI_GATEWAY_API_KEY is not configured");
     }
 
     const systemPrompt = `Tu es un expert en conception de sites web. Tu génères des propositions de sites web professionnelles et détaillées en JSON.
@@ -90,10 +90,10 @@ ${formData.products ? `Produits/Services (liste): ${formData.products}` : ""}
 ${formData.websiteUrl ? `Site existant à analyser: ${formData.websiteUrl}` : ""}
 ${formData.socialLinks ? `Réseaux sociaux: ${formData.socialLinks}` : ""}`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(AI_GATEWAY_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${AI_GATEWAY_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

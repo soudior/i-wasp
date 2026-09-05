@@ -2,7 +2,7 @@
  * PhysicalCardStudio - Studio complet pour carte physique NFC
  * 
  * - Lié à la carte digitale
- * - Modifiable par IA (Lovable AI)
+ * - Modifiable par IA (passerelle IA i-wasp)
  * - Visualisable
  * - Exportable (PDF/Image)
  * - Commandable

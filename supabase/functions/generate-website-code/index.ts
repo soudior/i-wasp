@@ -1,18 +1,18 @@
 /**
  * Edge Function: generate-website-code
  * Génère automatiquement le code HTML/CSS/JS d'un site web basé sur une proposition Web Studio
- * Utilise Lovable AI pour la génération
+ * Utilise la passerelle IA i-wasp pour la génération
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.89.0";
+import { AI_GATEWAY_API_KEY, AI_GATEWAY_URL } from "../_shared/aiGateway.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
@@ -547,7 +547,7 @@ serve(async (req) => {
   }
 
   try {
-    if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    if (!AI_GATEWAY_API_KEY || !AI_GATEWAY_URL || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       throw new Error("Configuration manquante");
     }
 
@@ -631,16 +631,16 @@ serve(async (req) => {
       })
       .eq("id", proposalId);
 
-    // Call Lovable AI
+    // Appel de la passerelle IA configurée
     const systemPrompt = generateSystemPrompt();
     const userPrompt = generateUserPrompt(proposal as WebsiteProposal);
 
-    console.log("Calling Lovable AI for website generation...");
+    console.log("Calling the configured AI gateway for website generation...");
 
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const aiResponse = await fetch(AI_GATEWAY_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${AI_GATEWAY_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

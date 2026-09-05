@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { AI_GATEWAY_API_KEY, AI_GATEWAY_URL } from "../_shared/aiGateway.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,9 +21,8 @@ serve(async (req) => {
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY not configured");
+    if (!AI_GATEWAY_API_KEY || !AI_GATEWAY_URL) {
+      console.error("AI_GATEWAY_API_KEY not configured");
       return new Response(
         JSON.stringify({ error: "Configuration manquante" }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -31,11 +31,11 @@ serve(async (req) => {
 
     console.log("Generating image with prompt:", prompt);
 
-    // Use Lovable AI with the image generation model
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    // Passerelle IA configurée (AI_GATEWAY_URL), modèle de génération d'image
+    const response = await fetch(AI_GATEWAY_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${AI_GATEWAY_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
