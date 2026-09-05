@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { useUserDashboardData } from '@/hooks/useUserDashboardData';
 import { useAuth } from '@/contexts/AuthContext';
+import { signInWithGoogleCrossPlatform } from '@/lib/nativeOAuth';
 
 // Images
 import heroBackground from '@/assets/hero-background.jpg';
@@ -274,13 +275,8 @@ const AuthSection = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`
-        }
-      });
-      if (error) throw error;
+      const result = await signInWithGoogleCrossPlatform(`${window.location.origin}/dashboard`);
+      if (result === 'error') throw new Error('Erreur de connexion Google');
     } catch (error: any) {
       toast.error(error.message || 'Erreur de connexion Google');
     }

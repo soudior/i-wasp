@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { STRIPE_PRODUCTS, formatStripePrice } from '@/lib/stripeConfig';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface SubscriptionUpgradeProps {
   isOpen?: boolean;
@@ -20,6 +21,7 @@ interface SubscriptionUpgradeProps {
 
 export function SubscriptionUpgrade({ isOpen = true, onClose, onSuccess }: SubscriptionUpgradeProps) {
   const { user } = useAuth();
+  const { currency } = useCurrency();
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
 
@@ -33,7 +35,7 @@ export function SubscriptionUpgrade({ isOpen = true, onClose, onSuccess }: Subsc
 
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { plan: selectedPlan },
+        body: { plan: selectedPlan, currency: currency === 'MAD' ? 'mad' : 'eur' },
       });
 
       if (error) throw error;

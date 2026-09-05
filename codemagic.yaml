@@ -27,6 +27,14 @@ workflows:
         script: |
           [ -d ios ] || npx cap add ios
           npx cap sync ios
+      - name: Generate branded i-WASP iOS icons
+        script: |
+          mkdir -p assets
+          cp public/app-icon-1024.png assets/icon-only.png
+          npx capacitor-assets generate --ios
+          test -f ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json
+      - name: Apply native iOS configuration (NFC + Universal Links)
+        script: node scripts/configure-ios-native.mjs
       - name: CocoaPods (only if a Podfile exists)
         script: cd ios/App && ([ -f Podfile ] && pod install || echo 'Pas de Podfile (SPM Capacitor 8) — ignore.')
       - name: Compile (unsigned)
@@ -63,8 +71,14 @@ workflows:
         script: |
           [ -d ios ] || npx cap add ios
           npx cap sync ios
+      - name: Generate branded i-WASP iOS icons
+        script: |
+          mkdir -p assets
+          cp public/app-icon-1024.png assets/icon-only.png
+          npx capacitor-assets generate --ios
+          test -f ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json
       - name: Apply entitlements
-        script: '[ -f ios-config/App.entitlements ] && cp ios-config/App.entitlements ios/App/App/App.entitlements || true'
+        script: node scripts/configure-ios-native.mjs
       - name: CocoaPods (only if a Podfile exists)
         script: cd ios/App && ([ -f Podfile ] && pod install || echo 'Pas de Podfile (SPM Capacitor 8) — ignore.')
       - name: Set up code signing

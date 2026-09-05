@@ -61,7 +61,7 @@ export const PROMO_STRIPE_PRICES = {
 export const WEB_STUDIO_STRIPE_PRICES = {
   BASIC: {
     id: 'basic',
-    name: 'Site Basic (5 pages)',
+    name: 'Site Lancement (5 pages)',
     priceIdMAD: 'price_1SpKRXIvyaABH94u3XFnG4qg',
     priceIdEUR: 'price_1SpKDVIvyaABH94u9C3Zq7i1',
     productId: 'prod_TmuG5HE5p4MFRj',
@@ -70,7 +70,7 @@ export const WEB_STUDIO_STRIPE_PRICES = {
   },
   PRO: {
     id: 'pro',
-    name: 'Site Pro (10 pages)',
+    name: 'Site Croissance (10 pages)',
     priceIdMAD: 'price_1SpKRqIvyaABH94uKQIXaEIW',
     priceIdEUR: 'price_1SpKDmIvyaABH94uhKxXCnW5',
     productId: 'prod_TmuGoD257oDhrS',
@@ -79,7 +79,7 @@ export const WEB_STUDIO_STRIPE_PRICES = {
   },
   ENTERPRISE: {
     id: 'enterprise',
-    name: 'Site Enterprise (Illimité)',
+    name: 'Site Signature (Illimité)',
     priceIdMAD: 'price_1SpKS3IvyaABH94ujjmo6jDb',
     priceIdEUR: 'price_1SpKEGIvyaABH94uY8yuOQ4l',
     productId: 'prod_TmuGjPyWT6Gle4',
@@ -94,7 +94,7 @@ export const STRIPE_PRODUCTS = {
     product_id: 'prod_TkashOgkZlDDzm',
     price_id: 'price_1Sn5gvIvyaABH94uT3RkeEbz',
     name: 'IWASP Gold - Mensuel',
-    price: 290, // cents
+    price: 499, // cents
     currency: 'eur',
     interval: 'month' as const,
   },
@@ -102,7 +102,7 @@ export const STRIPE_PRODUCTS = {
     product_id: 'prod_TkasPk75rM1k69',
     price_id: 'price_1Sn5h7IvyaABH94uTfkCq0zL',
     name: 'IWASP Gold - Annuel',
-    price: 2300, // cents
+    price: 4900, // cents
     currency: 'eur',
     interval: 'year' as const,
   },

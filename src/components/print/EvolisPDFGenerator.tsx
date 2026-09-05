@@ -47,6 +47,7 @@ import {
   PrintColor
 } from "@/lib/printTypes";
 import { LogoUploadValidator } from "./LogoUploadValidator";
+import { publicActivationUrl } from "@/lib/publicUrl";
 
 // Evolis-specific constants
 const EVOLIS_SPECS = {
@@ -114,9 +115,7 @@ export function EvolisPDFGenerator({
   const selectedCard = digitalCards?.find(c => c.id === selectedCardId);
   
   // Generate activation URL with pre-filled serial code
-  const activationUrl = selectedCard?.serial_code 
-    ? `${window.location.origin}/activation?code=${selectedCard.serial_code}`
-    : `${window.location.origin}/activation`;
+  const activationUrl = publicActivationUrl(selectedCard?.serial_code);
 
   const colorConfig = PRINT_COLORS[selectedColor];
 

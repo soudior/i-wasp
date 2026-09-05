@@ -143,7 +143,7 @@ export function AdminOmniaLayout({ children, title, subtitle }: AdminOmniaLayout
             </div>
             <div>
               <h1 className="font-display text-omnia-ivoire text-lg tracking-tight">
-                OMNIA
+                i-wasp
               </h1>
               <p className="text-xs text-omnia-champagne/60 font-light tracking-wider uppercase">
                 L'Atelier
@@ -209,7 +209,7 @@ export function AdminOmniaLayout({ children, title, subtitle }: AdminOmniaLayout
             <Command className="h-4 w-4 text-omnia-champagne" />
           </div>
           <span className="font-display text-omnia-ivoire text-base tracking-tight">
-            OMNIA
+            i-wasp
           </span>
         </Link>
 

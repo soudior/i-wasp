@@ -1,4 +1,5 @@
 import { DigitalCard } from "@/hooks/useCards";
+import { publicLegacyCardUrl } from "@/lib/publicUrl";
 
 export interface WalletPassData {
   type: "apple" | "google";
@@ -119,7 +120,7 @@ export interface GoogleWalletPass {
  */
 export function generateAppleWalletPass(data: WalletPassData): AppleWalletPass {
   const { card } = data;
-  const publicUrl = `${window.location.origin}/c/${card.slug}`;
+  const publicUrl = publicLegacyCardUrl(card.slug);
 
   return {
     formatVersion: 1,
@@ -203,7 +204,7 @@ export function generateAppleWalletPass(data: WalletPassData): AppleWalletPass {
  */
 export function generateGoogleWalletPass(data: WalletPassData): GoogleWalletPass {
   const { card } = data;
-  const publicUrl = `${window.location.origin}/c/${card.slug}`;
+  const publicUrl = publicLegacyCardUrl(card.slug);
   const issuerId = "3388000000022319245"; // This would be your actual issuer ID
 
   return {

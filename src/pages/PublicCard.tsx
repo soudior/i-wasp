@@ -10,6 +10,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { usePublicCard, useCardActionUrl, useIncrementCardView } from "@/hooks/usePublicCard";
+import { useResolvedCard } from "@/hooks/useResolvedCard";
+import { ResolvedCardFallback } from "@/components/ResolvedCardFallback";
 import { useRecordScan } from "@/hooks/useScans";
 import { usePublicStory } from "@/hooks/useStories";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +33,7 @@ import KhokhaSignatureCard from "./KhokhaSignatureCard";
 
 // Import local profile photo for Herbalism Marrakech
 import ibrahimPhoto from "@/assets/clients/ibrahim-herbalism.jpeg";
+import { publicCardUrl } from "@/lib/publicUrl";
 
 const PublicCard = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -43,10 +46,19 @@ const PublicCard = () => {
     .replace(/\s+/g, "") // Remove all whitespace
     .replace(/[–—]/g, "-") // Normalize dashes (en-dash, em-dash to hyphen)
     .replace(/-+/g, "-") // Collapse multiple hyphens
-    .replace(/^-|-$/g, "") // Remove leading/trailing hyphens
+    // A trailing hyphen is a valid card identifier (for example
+    // `medina-mall-`). Removing it made the page resolve a different card than
+    // the canonical URL encoded in Apple Wallet. Only a leading hyphen is
+    // invalid and may be stripped here.
+    .replace(/^-+/, "")
     .toLowerCase();
 
   const { data: card, isLoading, error } = usePublicCard(cleanedSlug);
+  // Repli : la carte n'est pas dans la base i-wasp. Elle vit peut-etre dans
+  // iwallet-card — le resolveur tranche. On n'appelle qu'en dernier recours.
+  const localLookupEmpty = !isLoading && !card;
+  const { data: resolved, isLoading: resolving, error: resolveError } =
+    useResolvedCard(cleanedSlug, localLookupEmpty);
   const { story } = usePublicStory(card?.id || undefined);
   const recordScan = useRecordScan();
   const getActionUrl = useCardActionUrl();
@@ -65,10 +77,10 @@ const PublicCard = () => {
   useEffect(() => {
     if (card?.id && !scanRecorded) {
       recordScan.mutate(card.id);
-      incrementView(cleanedSlug);
+      incrementView(card.slug);
       setScanRecorded(true);
     }
-  }, [card?.id, scanRecorded, cleanedSlug, recordScan, incrementView]);
+  }, [card?.id, card?.slug, scanRecorded, recordScan, incrementView]);
 
   // Secure action handlers - get URLs from server, never expose raw data
   const handleAction = useCallback(
@@ -146,7 +158,7 @@ const PublicCard = () => {
         vcardData.company ? `ORG:${vcardData.company}` : null,
         vcardData.email ? `EMAIL:${vcardData.email}` : null,
         vcardData.phone ? `TEL:${vcardData.phone}` : null,
-        `URL:${window.location.origin}/card/${vcardData.slug}`,
+        `URL:${publicCardUrl(vcardData.slug)}`,
         "END:VCARD",
       ]
         .filter(Boolean)
@@ -179,6 +191,37 @@ const PublicCard = () => {
   }
 
   // Error state
+  // Le resolveur est encore en train de repondre : ne pas afficher un faux 404.
+  if (localLookupEmpty && resolving) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center p-6" style={{ backgroundColor: "#F5F5F7" }}>
+        <p className="text-sm" style={{ color: "#8E8E93" }}>Chargement de la carte…</p>
+      </div>
+    );
+  }
+
+  // Carte servie depuis iwallet-card, rendue sous i-wasp.com sans redirection.
+  if (localLookupEmpty && resolved?.card) {
+    return <ResolvedCardFallback card={resolved.card} />;
+  }
+
+  // A 502/504 means the resolver could not confirm either store. Do not tell a
+  // customer that their card is missing while an upstream service is down.
+  if (localLookupEmpty && resolveError instanceof Error && resolveError.message === 'upstream') {
+    return (
+      <div className="min-h-dvh flex items-center justify-center p-6" style={{ backgroundColor: "#F5F5F7" }}>
+        <div className="text-center">
+          <h1 className="text-xl font-semibold mb-2" style={{ color: "#1D1D1F" }}>
+            Carte temporairement indisponible
+          </h1>
+          <p className="text-sm" style={{ color: "#8E8E93" }}>
+            Le service de résolution est momentanément indisponible. Réessayez dans quelques instants.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (error || !card) {
     return (
       <div 
@@ -283,7 +326,10 @@ const PublicCard = () => {
       <DarkLuxuryBusinessTemplate
         card={{
           id: card.id,
-          slug: card.slug,
+          // L'URL NFC demeure canonique, meme lorsque la carte native a ete
+          // retrouvee via son ancien alias sans tiret final.
+          slug: cleanedSlug,
+          action_slug: card.slug,
           first_name: card.first_name,
           last_name: card.last_name,
           title: card.title,

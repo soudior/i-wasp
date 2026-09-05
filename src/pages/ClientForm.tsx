@@ -23,7 +23,10 @@ import {
   Sparkles,
   Camera,
   Upload,
-  X
+  X,
+  QrCode,
+  WalletCards,
+  Link2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +43,7 @@ const formSchema = z.object({
   lastName: z.string().min(2, "Nom requis"),
   title: z.string().optional(),
   company: z.string().optional(),
+  businessSource: z.string().optional(),
   phone: z.string().min(8, "Numéro requis"),
   email: z.string().email("Email invalide").optional().or(z.literal("")),
   whatsapp: z.string().optional(),
@@ -138,6 +142,7 @@ Prénom: ${data.firstName}
 Nom: ${data.lastName}
 ${data.title ? `Fonction: ${data.title}` : ""}
 ${data.company ? `Entreprise: ${data.company}` : ""}
+${data.businessSource ? `Lien principal à analyser: ${data.businessSource}` : ""}
 
 📱 *Contact*
 Téléphone: ${data.phone}
@@ -207,7 +212,7 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
       <div className="sticky top-0 z-50 bg-[#0B0B0B]/95 backdrop-blur-lg border-b border-[#E5E5E5]/10 px-4 py-4">
         <div className="flex items-center justify-center gap-3">
           <img src={iwaspLogo} alt="IWASP" className="h-8 w-auto" />
-          <span className="text-white font-semibold">Créer ma carte</span>
+          <span className="text-white font-semibold">Studio NFC & Wallet</span>
         </div>
       </div>
 
@@ -220,13 +225,34 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
         >
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFC700]/20 text-[#FFC700] text-sm mb-4">
             <Sparkles className="w-4 h-4" />
-            Carte NFC Premium
+            Création premium par i-Wasp
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">
-            Vos informations
+            Votre carte NFC, QR et Apple Wallet
           </h1>
           <p className="text-[#E5E5E5]/60 text-sm">
-            Remplissez ce formulaire pour créer votre carte digitale professionnelle
+            Donnez-nous votre activité et vos liens. Nous créons une fiche digitale complète,
+            fidèle à votre image et prête à partager.
+          </p>
+
+          <div className="grid grid-cols-3 gap-2 mt-5">
+            {[
+              { icon: Link2, label: "Lien i-wasp" },
+              { icon: QrCode, label: "QR vers la fiche" },
+              { icon: WalletCards, label: "Apple Wallet" },
+            ].map(({ icon: Icon, label }) => (
+              <div
+                key={label}
+                className="rounded-xl border border-[#FFC700]/15 bg-[#FFC700]/5 px-2 py-3 text-center"
+              >
+                <Icon className="mx-auto mb-1.5 h-4 w-4 text-[#FFC700]" />
+                <span className="text-[10px] leading-tight text-[#E5E5E5]/70">{label}</span>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-4 text-[11px] leading-relaxed text-[#E5E5E5]/45">
+            Le QR visible et celui du pass Wallet ouvriront le même lien NFC sécurisé sur i-wasp.com.
           </p>
         </motion.div>
 
@@ -358,6 +384,21 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
                   placeholder="Nom de votre entreprise"
                   className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
                 />
+              </div>
+
+              <div>
+                <Label className="text-[#E5E5E5]/70 text-xs">
+                  Lien Google, site ou réseau principal
+                </Label>
+                <Input
+                  {...register("businessSource")}
+                  inputMode="url"
+                  placeholder="https://maps.google.com/..."
+                  className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                />
+                <p className="mt-1.5 text-[10px] leading-relaxed text-[#E5E5E5]/40">
+                  Ce lien nous permet de retrouver votre logo, votre univers et vos informations officielles.
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -513,7 +554,7 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
             ) : (
               <>
                 <MessageCircle className="w-5 h-5" />
-                Envoyer via WhatsApp
+                Demander ma carte NFC + Wallet
               </>
             )}
           </Button>

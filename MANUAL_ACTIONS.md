@@ -140,3 +140,33 @@ App ID numérique App Store, empreinte SHA-256 de signature Android, `PROJECT_RE
 - ✅ AASA corrigé sur `app.iwasp.digital` (+ copie `.well-known/`), chemins `/c/*`, `/card/*`, `/n/*`.
 - ✅ Capacitor : bloc serveur Lovable retiré.
 - ✅ `ENVIRONMENT.md` : liste des noms de variables (sans valeurs).
+
+## ~~Déployer `resolve-card` sur la base de production~~ — plus nécessaire
+
+**Cette action a été supprimée : elle reposait sur une contrainte inexistante.**
+
+La fonction avait été écrite avec `SUPABASE_SERVICE_ROLE_KEY`, ce qui l'obligeait
+à vivre dans le projet Supabase de production — projet qui appartient à Lovable
+et n'est pas administrable depuis le compte du propriétaire.
+
+Or le RPC `get_public_card` est `SECURITY DEFINER` et exécutable par le rôle
+`anon` : la clé **publique**, déjà livrée au navigateur de chaque visiteur,
+suffit à lire exactement les champs publics. Vérifié sur les 7 cartes réelles.
+
+La résolution est donc assurée par une **Pages Function** —
+`functions/api/resolve-card.ts` — servie par le site lui-même, sur la même
+origine. Aucun accès à la base de production n'est requis, aucune donnée n'est
+migrée, et le service survit à une sortie de Lovable.
+
+C'est aussi plus sûr : `service_role` contourne les règles RLS, la clé publique
+ne peut lire que ce que le RPC autorise déjà.
+
+Variables à définir sur l'environnement Pages (`wrangler pages secret put`) :
+
+- `IWASP_SUPABASE_URL`
+- `IWASP_SUPABASE_ANON_KEY`
+- `IWALLET_CARD_BASE_URL` — facultative ; absente = déploiement à une seule
+  source, ce qui n'est pas traité comme une panne.
+
+Validé en préproduction : `medina-mall-` → 200, identifiant inconnu → 404.
+

@@ -121,7 +121,7 @@ export const OMNIA_COPY = {
   
   // Taglines
   taglines: {
-    brand: 'i-wasp Omnia',
+    brand: 'i-wasp',
     philosophy: 'Présence. Héritage. Omniprésence.',
     footer: 'L\'Art de la Présence',
   },

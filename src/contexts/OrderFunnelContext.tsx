@@ -28,9 +28,9 @@ export interface OfferConfig {
 }
 
 export const OFFERS: OfferConfig[] = [
-  { id: "essentiel", name: "Essentielle", price: 32900, priceCurrency: "MAD" },
-  { id: "signature", name: "Professionnelle", price: 54900, priceCurrency: "MAD" },
-  { id: "alliance", name: "Prestige", price: 98900, priceCurrency: "MAD" },
+  { id: "essentiel", name: "Essentielle", price: 19900, priceCurrency: "MAD" },
+  { id: "signature", name: "Professionnelle", price: 34900, priceCurrency: "MAD" },
+  { id: "alliance", name: "Prestige", price: 59900, priceCurrency: "MAD" },
 ];
 
 export const VITRINE_PACKS = [

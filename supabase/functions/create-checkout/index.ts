@@ -12,10 +12,9 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
   console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
 };
 
-// Price IDs from Stripe
-const PRICE_IDS = {
-  monthly: 'price_1Sn5gvIvyaABH94uT3RkeEbz',
-  annual: 'price_1Sn5h7IvyaABH94uTfkCq0zL',
+const PRICES = {
+  monthly: { eur: 499, mad: 3900, interval: 'month' as const },
+  annual: { eur: 4900, mad: 34900, interval: 'year' as const },
 };
 
 serve(async (req) => {
@@ -46,9 +45,11 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    const { plan = 'annual' } = await req.json();
-    const priceId = PRICE_IDS[plan as keyof typeof PRICE_IDS] || PRICE_IDS.annual;
-    logStep("Plan selected", { plan, priceId });
+    const { plan = 'annual', currency = 'eur' } = await req.json();
+    const safePlan = plan === 'monthly' ? 'monthly' : 'annual';
+    const safeCurrency = currency === 'mad' ? 'mad' : 'eur';
+    const selectedPrice = PRICES[safePlan];
+    logStep("Plan selected", { plan: safePlan, currency: safeCurrency });
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     
@@ -67,7 +68,12 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price: priceId,
+          price_data: {
+            currency: safeCurrency,
+            unit_amount: selectedPrice[safeCurrency],
+            recurring: { interval: selectedPrice.interval },
+            product_data: { name: `i-Wasp Pro - ${safePlan === 'monthly' ? 'Mensuel' : 'Annuel'}` },
+          },
           quantity: 1,
         },
       ],
@@ -76,7 +82,11 @@ serve(async (req) => {
       cancel_url: `${origin}/dashboard?subscription=cancelled`,
       metadata: {
         user_id: user.id,
-        plan: plan,
+        plan: `pro_${safePlan}`,
+        currency: safeCurrency,
+      },
+      subscription_data: {
+        metadata: { user_id: user.id, plan: `pro_${safePlan}` },
       },
     });
 

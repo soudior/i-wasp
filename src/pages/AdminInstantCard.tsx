@@ -50,6 +50,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { motion } from "framer-motion";
 import { StoryEditor } from "@/components/StoryEditor";
 import { useStories } from "@/hooks/useStories";
+import { publicCardUrl } from "@/lib/publicUrl";
 
 // OMNIA Design System Colors
 const OMNIA = {
@@ -468,7 +469,7 @@ function AdminInstantCardContent() {
 
   const getCardUrl = () => {
     if (!createdCard) return '';
-    return `${window.location.origin}/card/${createdCard.slug}`;
+    return publicCardUrl(createdCard.slug);
   };
 
   const copyLink = async () => {

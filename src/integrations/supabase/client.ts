@@ -3,8 +3,14 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 import { brokeredPreviewStorage } from './previewAuthStorage';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// Les valeurs du projet sont publiques par conception (URL + clé publishable/anon)
+// et sont écrites en dur pour garantir leur présence dans le bundle de production,
+// même si les variables d'environnement ne sont pas injectées au build de publication.
+const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL || "https://vwlngxifajsziexhkafe.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  "sb_publishable_K9qQTKdVJG-k5-OKdSqZBw_DrURXgVV";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";

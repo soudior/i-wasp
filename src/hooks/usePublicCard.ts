@@ -50,9 +50,19 @@ export function usePublicCard(slug: string) {
   return useQuery({
     queryKey: ["publicCard", slug],
     queryFn: async (): Promise<PublicCardData | null> => {
-      const { data, error } = await supabase.rpc("get_public_card", {
-        p_slug: slug,
+      const lookup = (candidate: string) => supabase.rpc("get_public_card", {
+        p_slug: candidate,
       });
+
+      let { data, error } = await lookup(slug);
+
+      // Certaines anciennes cartes ont ete creees sans le tiret final, alors
+      // que leur URL NFC canonique (deja distribuee) le contient. On essaie
+      // d'abord l'identifiant exact, puis uniquement cet alias historique.
+      // Le lien visible et le QR restent inchanges.
+      if (!error && !data && /-$/.test(slug)) {
+        ({ data, error } = await lookup(slug.replace(/-+$/, "")));
+      }
 
       if (error) throw error;
       if (!data) return null;

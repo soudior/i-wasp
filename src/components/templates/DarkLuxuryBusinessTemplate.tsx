@@ -32,6 +32,9 @@ import { PushNotificationOptIn } from "@/components/PushNotificationOptIn";
 import { downloadVCard, VCardData } from "@/lib/vcard";
 import { StoryRing } from "@/components/StoryRing";
 import { usePublicMultipleStories } from "@/hooks/useMultipleStories";
+import { publicCardUrl } from "@/lib/publicUrl";
+import { QRCodeSVG } from "qrcode.react";
+import medinaMallLogo from "@/assets/clients/medina-mall-logo.png";
 
 interface CustomStyles {
   backgroundColor?: string;
@@ -48,6 +51,7 @@ interface DarkLuxuryBusinessTemplateProps {
   card: {
     id: string;
     slug: string;
+    action_slug?: string;
     first_name: string;
     last_name: string;
     title?: string | null;
@@ -116,9 +120,13 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
   
   // Get WhatsApp number for story reply
   const whatsappLink = card.social_links?.find((l: any) => l.platform === 'whatsapp')?.url;
+  const isMedinaMall = card.slug === 'medina-mall-' || card.slug === 'medina-mall';
+  const effectiveLogoUrl = card.logo_url || (isMedinaMall ? medinaMallLogo : undefined);
+  const nfcUrl = publicCardUrl(card.slug);
+  const appleWalletUrl = `https://walletcard.ssouhail-92.chatgpt.site/api/apple-wallet?slug=${encodeURIComponent(card.slug)}`;
 
   const handleAction = async (action: "phone" | "whatsapp" | "email") => {
-    const url = await getActionUrl(card.slug, action);
+    const url = await getActionUrl(card.action_slug || card.slug, action);
     if (url) {
       window.location.href = url;
     }
@@ -155,7 +163,7 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
       company: card.company || undefined,
       website: card.website || undefined,
       photoUrl: card.photo_url || card.logo_url || undefined,
-      nfcPageUrl: `${window.location.origin}/card/${card.slug}`,
+      nfcPageUrl: publicCardUrl(card.slug),
       address: card.location || undefined,
       // Social networks
       instagram: getSocialLink('instagram') || undefined,
@@ -188,15 +196,28 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
         >
           {/* Photo with Story Ring */}
           <div className="flex justify-center mb-6">
-            <StoryRing
-              photoUrl={card.photo_url || card.logo_url || undefined}
-              firstName={card.first_name}
-              lastName={card.last_name}
-              stories={stories}
-              whatsappNumber={whatsappLink}
-              size="lg"
-              className="border-2 rounded-full"
-            />
+            {isMedinaMall && effectiveLogoUrl ? (
+              <div
+                className="w-36 h-36 rounded-3xl bg-white p-4 flex items-center justify-center shadow-2xl"
+                style={{ boxShadow: `0 18px 55px ${accentColor}20` }}
+              >
+                <img
+                  src={effectiveLogoUrl}
+                  alt="Logo Medina Mall"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            ) : (
+              <StoryRing
+                photoUrl={card.photo_url || effectiveLogoUrl || undefined}
+                firstName={card.first_name}
+                lastName={card.last_name}
+                stories={stories}
+                whatsappNumber={whatsappLink}
+                size="lg"
+                className="border-2 rounded-full"
+              />
+            )}
           </div>
 
           <h1 
@@ -375,6 +396,63 @@ export function DarkLuxuryBusinessTemplate({ card }: DarkLuxuryBusinessTemplateP
             </p>
           </motion.div>
         )}
+
+        {/* Apple Wallet + QR canonique NFC */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.22 }}
+          className="rounded-2xl p-5 mb-6 border"
+          style={{
+            background: `linear-gradient(145deg, ${accentColor}18, ${textColor}08)`,
+            borderColor: `${accentColor}35`,
+          }}
+          aria-label="Carte Apple Wallet et QR NFC"
+        >
+          <div className="flex items-center gap-3 mb-5">
+            {effectiveLogoUrl ? (
+              <div className="w-14 h-14 rounded-xl bg-white p-2 flex items-center justify-center flex-shrink-0">
+                <img src={effectiveLogoUrl} alt="" className="w-full h-full object-contain" />
+              </div>
+            ) : (
+              <div
+                className="w-14 h-14 rounded-xl flex items-center justify-center text-xl font-bold flex-shrink-0"
+                style={{ backgroundColor: accentColor, color: bgColor }}
+              >
+                {displayName.charAt(0)}
+              </div>
+            )}
+            <div className="min-w-0 text-left">
+              <p className="text-xs uppercase tracking-[0.16em]" style={{ color: secondaryTextColor }}>
+                Carte digitale officielle
+              </p>
+              <p className="font-semibold truncate" style={{ color: textColor }}>{displayName}</p>
+              <p className="text-xs" style={{ color: accentColor }}>QR relié au lien NFC i-wasp.com</p>
+            </div>
+          </div>
+
+          <a
+            href={appleWalletUrl}
+            className="w-full h-14 rounded-xl bg-white text-black font-semibold flex items-center justify-center gap-2 mb-5 active:scale-[0.99] transition-transform"
+          >
+            <span className="text-2xl leading-none" aria-hidden="true"></span>
+            Ajouter à Apple Wallet
+          </a>
+
+          <div className="rounded-2xl bg-white p-4 flex flex-col items-center">
+            <QRCodeSVG
+              value={nfcUrl}
+              size={176}
+              level="H"
+              includeMargin
+              fgColor="#0B0B0B"
+              bgColor="#FFFFFF"
+              title={`QR de la carte NFC ${displayName}`}
+            />
+            <p className="text-sm font-semibold text-black mt-2">Scanner la carte NFC</p>
+            <p className="text-[11px] text-black/60 text-center break-all mt-1">{nfcUrl}</p>
+          </div>
+        </motion.section>
 
         {/* Image Gallery */}
         {galleryImages.length > 0 && (

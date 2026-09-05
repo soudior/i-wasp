@@ -27,6 +27,7 @@ import { RouteLoader } from "@/components/RouteLoader";
 
 // Route-level code-splitting (performance mobile)
 const PublicCard = lazy(() => import("./pages/PublicCard"));
+const AjbanAlKhairCard = lazy(() => import("./pages/AjbanAlKhairCard"));
 const AdminClients = lazy(() => import("./pages/AdminClients"));
 const AdminCreator = lazy(() => import("./pages/AdminCreator"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
@@ -134,6 +135,7 @@ const TrackOrder = lazy(() => import("./pages/TrackOrder"));
 const WalletPassDownload = lazy(() => import("./pages/WalletPassDownload"));
 const WalletCustomizer = lazy(() => import("./pages/WalletCustomizer"));
 const AppStoreChecklist = lazy(() => import("./pages/AppStoreChecklist"));
+const NativeNfcStudio = lazy(() => import("./pages/NativeNfcStudio"));
 const CharlesLazimiCard = lazy(() => import("./pages/CharlesLazimiCard"));
 const KechExcluCard = lazy(() => import("./pages/KechExcluCard"));
 const LuxePrestigeCard = lazy(() => import("./pages/LuxePrestigeCard"));
@@ -266,6 +268,7 @@ const App = () => {
                               <Route path="/card/alaseel" element={<AlaseelCoffeeCard />} />
                               <Route path="/card/coffee-spirit" element={<CoffeeSpiritCard />} />
                               <Route path="/card/lifestyle-group" element={<LifestyleGroupCard />} />
+                              <Route path="/card/ajban-al-khair" element={<AjbanAlKhairCard />} />
                               <Route path="/card/:slug" element={<PublicCard />} />
                               {/* Auth */}
                               <Route path="/login" element={<Login />} />
@@ -379,6 +382,7 @@ const App = () => {
                               {/* Client Form */}
                               <Route path="/form" element={<ClientForm />} />
                               <Route path="/formulaire" element={<ClientForm />} />
+                              <Route path="/creer-ma-carte" element={<ClientForm />} />
                               
                               {/* Finalize card after auth */}
                               <Route path="/onboarding/finalize" element={<FinalizeCard />} />
@@ -387,6 +391,7 @@ const App = () => {
                               <Route path="/dashboard" element={<DashboardGuard><Dashboard /></DashboardGuard>} />
                               <Route path="/elite-dashboard" element={<DashboardGuard><EliteDashboard /></DashboardGuard>} />
                               <Route path="/settings" element={<DashboardGuard><Settings /></DashboardGuard>} />
+                              <Route path="/nfc-studio" element={<DashboardGuard><NativeNfcStudio /></DashboardGuard>} />
                               <Route path="/subscription" element={<DashboardGuard><Subscription /></DashboardGuard>} />
                               <Route path="/orders" element={<DashboardGuard><Orders /></DashboardGuard>} />
                               <Route path="/orders/:orderId" element={<DashboardGuard><OrderDetails /></DashboardGuard>} />

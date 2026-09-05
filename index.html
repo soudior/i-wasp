@@ -3,14 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     
-    <!-- iOS/PWA optimized viewport - prevents zoom, enables safe areas -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <!-- Accessible viewport: keep pinch-to-zoom available on every device. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     
-    <!-- App identity - i-wasp Haute Couture Digitale -->
-    <title>i-wasp — Haute Couture Digitale</title>
-    <meta name="description" content="Maison d'identité professionnelle digitale. Une pièce de haute couture numérique : sobre, précise, intemporelle." />
+    <!-- App identity - intention commerciale explicite dès les résultats de recherche -->
+    <title>i-wasp — Carte de visite NFC premium &amp; profil digital</title>
+    <meta name="description" content="Créez votre carte de visite NFC premium avec profil digital, QR code et Apple Wallet. Partage instantané, sans application, sur iPhone et Android." />
     <meta name="author" content="i-wasp" />
-    <meta name="keywords" content="NFC, carte visite digitale, networking, Maroc, luxe, premium, haute couture, i-wasp" />
+    <meta name="keywords" content="carte de visite NFC, carte NFC personnalisée, profil digital, Apple Wallet, QR code, networking, i-wasp" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://i-wasp.com/" />
     
     <!-- PWA Configuration - Noir Couture -->
     <meta name="theme-color" content="#0A0A0A" />
@@ -31,10 +33,13 @@
     <link rel="apple-touch-startup-image" href="/apple-touch-icon.png" />
     
     <!-- Open Graph - i-wasp branded -->
-    <meta property="og:title" content="i-wasp — Haute Couture Digitale" />
-    <meta property="og:description" content="Maison d'identité professionnelle digitale. Sobre, précise, intemporelle." />
+    <meta property="og:title" content="i-wasp — Carte de visite NFC premium" />
+    <meta property="og:description" content="Partagez votre identité professionnelle en un contact : NFC, profil digital, QR code et Apple Wallet." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://i-wasp.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Carte de visite NFC premium i-wasp" />
     <meta property="og:locale" content="fr_FR" />
     <meta property="og:site_name" content="i-wasp" />
     <meta property="og:url" content="https://i-wasp.com" />
@@ -42,9 +47,33 @@
     <!-- Twitter - i-wasp branded -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@iwasp_ma" />
-    <meta name="twitter:title" content="i-wasp — Haute Couture Digitale" />
-    <meta name="twitter:description" content="Maison d'identité professionnelle digitale." />
+    <meta name="twitter:title" content="i-wasp — Carte de visite NFC premium" />
+    <meta name="twitter:description" content="NFC, profil digital, QR code et Apple Wallet dans une expérience professionnelle premium." />
     <meta name="twitter:image" content="https://i-wasp.com/og-image.png" />
+    <meta name="twitter:image:alt" content="Carte de visite NFC premium i-wasp" />
+
+    <!-- Machine-readable identity for search engines. Product/price data stays
+         on the dedicated pages where the canonical catalogue is rendered. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "i-wasp",
+        "url": "https://i-wasp.com/",
+        "logo": "https://i-wasp.com/app-icon-1024.png",
+        "description": "Cartes de visite NFC premium et profils digitaux professionnels",
+        "email": "contact@i-wasp.com"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "i-wasp",
+        "url": "https://i-wasp.com/",
+        "inLanguage": "fr-FR"
+      }
+    </script>
     
     <!-- Deep Linking / Universal Links -->
     <meta name="apple-itunes-app" content="app-id=6799452085, app-argument=iwasp://" />
@@ -97,6 +126,51 @@
 
   <body>
     <div id="root"></div>
+
+    <!-- Garde-fou démarrage : jamais d'écran noir vide.
+         Si le bundle échoue avant le montage React (ex. configuration
+         backend absente au build), on affiche un message lisible. -->
+    <script>
+      (function () {
+        var shown = false;
+        function showBootFallback(reason) {
+          if (shown) return;
+          var root = document.getElementById("root");
+          if (!root || root.childElementCount > 0) return;
+          shown = true;
+          console.error("[i-wasp] Démarrage interrompu:", reason);
+          root.innerHTML =
+            '<div style="min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px;background:#0A0A0A;font-family:Inter,-apple-system,system-ui,sans-serif;">' +
+            '<div style="max-width:360px;text-align:center;">' +
+            '<p style="color:#8E8E93;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin:0 0 12px;">i-wasp</p>' +
+            '<h1 style="color:#FDFCFB;font-size:22px;font-weight:600;margin:0 0 10px;">Actualisation requise</h1>' +
+            '<p style="color:#8E8E93;font-size:14px;line-height:1.6;margin:0 0 24px;">Une erreur technique empêche le chargement de l\u2019application. Veuillez rafraîchir la page pour continuer.</p>' +
+            '<button onclick="window.location.reload()" style="background:#DCC7B0;color:#0A0A0A;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:600;cursor:pointer;">Rafraîchir</button>' +
+            "</div></div>";
+        }
+        window.addEventListener(
+          "error",
+          function (e) {
+            var msg = (e && (e.message || (e.error && e.error.message))) || "";
+            if (/supabaseUrl is required|VITE_SUPABASE|Failed to fetch dynamically imported module|Loading chunk|ChunkLoadError/i.test(msg)) {
+              showBootFallback(msg);
+            }
+          },
+          true
+        );
+        window.addEventListener("unhandledrejection", function (e) {
+          var msg = String((e && e.reason && (e.reason.message || e.reason)) || "");
+          if (/supabaseUrl is required|VITE_SUPABASE|Failed to fetch dynamically imported module|Loading chunk|ChunkLoadError/i.test(msg)) {
+            showBootFallback(msg);
+          }
+        });
+        // Si après 10s rien n'est monté, on signale proprement.
+        window.setTimeout(function () {
+          showBootFallback("timeout: application non montée");
+        }, 10000);
+      })();
+    </script>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

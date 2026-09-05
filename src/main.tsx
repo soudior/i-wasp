@@ -5,6 +5,7 @@ import App from "./App.tsx";
 import "./index.css";
 import "./i18n";
 import { checkAndClearStaleCache, forceRefresh } from "./utils/cacheVersion";
+import { recoverNativeOAuthLaunch } from "./lib/nativeOAuth";
 
 function isLikelyStaleBuildError(message: unknown) {
   const m = String(message ?? "").toLowerCase();
@@ -55,6 +56,10 @@ const cacheWasStale = checkAndClearStaleCache();
 if (cacheWasStale) {
   document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui;color:#666;">Mise à jour en cours...</div>';
 } else {
+  // Récupère un callback OAuth si iOS a relancé l'app après avoir fermé la
+  // WebView pendant l'authentification dans Safari.
+  void recoverNativeOAuthLaunch();
+
   // Global error handler to prevent white screen
   window.addEventListener("error", (event) => {
     console.error("Global error:", event.error ?? event.message);

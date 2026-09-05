@@ -10,8 +10,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useOrderFunnel, OfferType, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { Check, ArrowLeft, ArrowRight, Shield, Truck, Star } from "lucide-react";
+import { Check, ArrowLeft, ArrowRight, Shield, Truck } from "lucide-react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
 
@@ -30,39 +29,42 @@ const offers: OfferDetail[] = [
     id: "essentiel",
     title: "Essentielle",
     subtitle: "Découverte",
-    priceEUR: 29.90,
-    priceMAD: 329,
+    priceEUR: 29,
+    priceMAD: 199,
     features: [
       "1 carte NFC standard",
       "Profil numérique simple",
       "QR code personnalisé",
+      "3 mois Pro inclus",
     ],
   },
   {
     id: "signature",
     title: "Professionnelle",
     subtitle: "Recommandé",
-    priceEUR: 49.90,
-    priceMAD: 549,
+    priceEUR: 49,
+    priceMAD: 349,
     isSignature: true,
     features: [
       "Carte NFC premium",
       "Design personnalisé",
       "Analytics avancés",
       "Support prioritaire",
+      "3 mois Pro inclus",
     ],
   },
   {
     id: "alliance",
     title: "Prestige",
     subtitle: "Premium",
-    priceEUR: 89.90,
-    priceMAD: 989,
+    priceEUR: 79,
+    priceMAD: 599,
     features: [
       "Carte NFC luxe",
       "Personnalisation totale",
       "Analytics & CRM",
       "Support VIP dédié",
+      "3 mois Pro inclus",
     ],
   },
 ];
@@ -70,7 +72,6 @@ const offers: OfferDetail[] = [
 function OrderOffreContent() {
   const navigate = useNavigate();
   const { state, setSelectedOffer, nextStep } = useOrderFunnel();
-  const { formatDualPrice } = useCurrency();
   const [isNavigating, setIsNavigating] = useState(false);
   
   // Tracking conversions
@@ -178,7 +179,7 @@ function OrderOffreContent() {
               className="text-sm font-light"
               style={{ color: COUTURE.textMuted }}
             >
-              Carte NFC incluse dans toutes les offres.
+              Carte NFC + 3 mois Pro inclus. Le profil gratuit reste actif ensuite.
             </p>
           </motion.div>
 
@@ -259,10 +260,13 @@ function OrderOffreContent() {
                     {/* Right: Price & check */}
                     <div className="flex items-center gap-6">
                       <span 
-                        className="text-2xl font-light tabular-nums"
+                        className="text-right font-light tabular-nums"
                         style={{ color: isSelected ? COUTURE.gold : COUTURE.silk }}
                       >
-                        {formatDualPrice(offer.priceEUR, offer.priceMAD)}
+                        <span className="block text-2xl">{offer.priceMAD} DH</span>
+                        <span className="block mt-1 text-[10px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
+                          {offer.priceEUR} € international
+                        </span>
                       </span>
                       
                       {isSelected && (
@@ -281,6 +285,53 @@ function OrderOffreContent() {
               );
             })}
           </div>
+
+          <section
+            className="mt-12 p-6 md:p-8"
+            style={{ border: `1px solid ${COUTURE.gold}30`, backgroundColor: `${COUTURE.gold}05` }}
+          >
+            <p className="text-[10px] uppercase tracking-[0.25em] mb-3" style={{ color: COUTURE.gold }}>
+              Après vos 3 mois offerts
+            </p>
+            <h2 className="font-display text-xl md:text-2xl font-light mb-3" style={{ color: COUTURE.silk }}>
+              Votre carte partage. Pro transforme chaque rencontre en opportunité.
+            </h2>
+            <p className="text-xs md:text-sm leading-relaxed mb-6" style={{ color: COUTURE.textMuted }}>
+              Sans abonnement, votre carte, votre QR code, votre Wallet et votre profil essentiel restent actifs. Pro ajoute les outils qui font gagner des clients.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="p-5" style={{ border: `1px solid ${COUTURE.jetSoft}` }}>
+                <div className="flex items-baseline justify-between gap-3 mb-4">
+                  <h3 className="text-sm uppercase tracking-[0.15em]" style={{ color: COUTURE.silk }}>Gratuit</h3>
+                  <span className="text-lg" style={{ color: COUTURE.silk }}>0 DH</span>
+                </div>
+                <p className="text-xs leading-6" style={{ color: COUTURE.textMuted }}>
+                  Profil essentiel · NFC & QR · Apple/Google Wallet · partage illimité
+                </p>
+              </div>
+
+              <div className="relative p-5" style={{ border: `1px solid ${COUTURE.gold}70` }}>
+                <span className="absolute -top-3 right-4 px-3 py-1 text-[8px] uppercase tracking-[0.18em]" style={{ backgroundColor: COUTURE.gold, color: COUTURE.jet }}>
+                  Meilleure valeur
+                </span>
+                <div className="flex items-baseline justify-between gap-3 mb-4">
+                  <h3 className="text-sm uppercase tracking-[0.15em]" style={{ color: COUTURE.gold }}>Pro</h3>
+                  <div className="text-right">
+                    <span className="block text-lg" style={{ color: COUTURE.gold }}>349 DH/an</span>
+                    <span className="block text-[9px]" style={{ color: COUTURE.textMuted }}>ou 39 DH/mois · 49 €/an international</span>
+                  </div>
+                </div>
+                <p className="text-xs leading-6" style={{ color: COUTURE.textMuted }}>
+                  Design sans branding · analytics avancés · capture de leads · export contacts · automatisations CRM · support prioritaire
+                </p>
+              </div>
+            </div>
+
+            <p className="mt-5 text-[10px] leading-relaxed" style={{ color: COUTURE.textMuted }}>
+              Aucun blocage : si vous ne renouvelez pas, seules les fonctions Pro s'arrêtent. Votre carte reste utilisable.
+            </p>
+          </section>
         </div>
       </main>
 
@@ -304,15 +355,12 @@ function OrderOffreContent() {
             <div className="flex items-center gap-2">
               <Truck className="w-3 h-3" style={{ color: COUTURE.gold }} />
               <span className="text-[9px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
-                Livraison 48h
+                Livraison suivie
               </span>
             </div>
-            <div className="flex items-center gap-1">
-              {[1,2,3,4,5].map(i => (
-                <Star key={i} className="w-2.5 h-2.5" fill={COUTURE.gold} style={{ color: COUTURE.gold }} />
-              ))}
-              <span className="text-[9px] ml-1" style={{ color: COUTURE.textMuted }}>4.9</span>
-            </div>
+            <Link to="/cgv" className="text-[9px] uppercase tracking-wider underline underline-offset-4" style={{ color: COUTURE.textMuted }}>
+              Prix et conditions
+            </Link>
           </div>
           
           {/* CTA Button - Plus visible */}

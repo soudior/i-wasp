@@ -27,6 +27,41 @@ function generateOrderNumber(): string {
   return `WS-${year}${month}-${random}`;
 }
 
+async function grantNfcProTrial(supabase: ReturnType<typeof createClient>, orderId: string) {
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .select('user_id')
+    .eq('id', orderId)
+    .maybeSingle();
+  if (orderError || !order?.user_id) return;
+
+  const trialEnd = new Date();
+  trialEnd.setMonth(trialEnd.getMonth() + 3);
+  const { data: existing } = await supabase
+    .from('subscriptions')
+    .select('id, expires_at, status')
+    .eq('user_id', order.user_id)
+    .maybeSingle();
+
+  if (existing?.expires_at && new Date(existing.expires_at) > trialEnd) return;
+  const values = {
+    plan: 'premium',
+    status: 'active',
+    expires_at: trialEnd.toISOString(),
+    notes: `3 mois Pro inclus - commande ${orderId}`,
+    updated_at: new Date().toISOString(),
+  };
+  if (existing) {
+    await supabase.from('subscriptions').update(values).eq('id', existing.id);
+  } else {
+    await supabase.from('subscriptions').insert({
+      ...values,
+      user_id: order.user_id,
+      price_cents: 0,
+    });
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -112,6 +147,8 @@ serve(async (req) => {
             logStep("NFC order update FAILED", { orderId, error: nfcUpdateError.message });
           } else {
             logStep("NFC order marked paid", { orderId });
+            await grantNfcProTrial(supabase, orderId);
+            logStep("NFC Pro trial granted", { orderId, months: 3 });
           }
         } else {
           logStep("NFC payment without order_id or not paid", { orderId, paymentStatus: session.payment_status });

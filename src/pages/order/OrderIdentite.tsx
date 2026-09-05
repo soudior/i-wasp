@@ -68,8 +68,8 @@ const validateEmail = (email: string): boolean => {
 };
 
 const validatePhone = (phone: string): boolean => {
-  const cleaned = phone.replace(/[\s\-\.\(\)]/g, "");
-  return cleaned.length >= 8 && /^[\+]?[0-9]+$/.test(cleaned);
+  const cleaned = phone.replace(/[\s.()-]/g, "");
+  return cleaned.length >= 8 && /^\+?[0-9]+$/.test(cleaned);
 };
 
 function OrderIdentiteContent() {
@@ -103,9 +103,10 @@ function OrderIdentiteContent() {
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const handleGeoSuccess = useCallback((geoData: any) => {
+  const handleGeoSuccess = useCallback((geoData: { latitude: number | null; longitude: number | null }) => {
     const lat = geoData.latitude;
     const lng = geoData.longitude;
+    if (lat === null || lng === null) return;
     const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
     
     setFormData(prev => ({
@@ -521,6 +522,9 @@ function OrderIdentiteContent() {
                       className="rounded-none border-0 border-b bg-transparent focus:ring-0"
                       style={inputStyles}
                     />
+                    <p className="text-[10px] leading-relaxed" style={{ color: COUTURE.textMuted }}>
+                      Utilisé pour le suivi de votre commande et affiché sur votre profil uniquement selon vos réglages.
+                    </p>
                     {touched.phone && errors.phone && (
                       <p className="text-[10px]" style={{ color: "#8B4049" }}>{errors.phone}</p>
                     )}
@@ -707,6 +711,16 @@ function OrderIdentiteContent() {
               </motion.div>
             </div>
           </div>
+          <p className="mx-auto mt-10 max-w-xl text-center text-[10px] leading-relaxed" style={{ color: COUTURE.textMuted }}>
+            En continuant, vous confirmez que les informations fournies sont exactes. Consultez notre{" "}
+            <Link to="/privacy" className="underline underline-offset-4" style={{ color: COUTURE.gold }}>
+              politique de confidentialité
+            </Link>{" "}
+            et nos{" "}
+            <Link to="/cgv" className="underline underline-offset-4" style={{ color: COUTURE.gold }}>
+              conditions générales de vente
+            </Link>.
+          </p>
         </div>
       </main>
 

@@ -39,4 +39,19 @@ describe("Vercel SPA fallback", () => {
       });
     }
   });
+  it("adds baseline security headers to every public route", () => {
+    const vercelConfigPath = path.resolve(process.cwd(), "vercel.json");
+    const vercelConfig = JSON.parse(readFileSync(vercelConfigPath, "utf8")) as {
+      headers?: Array<{ source?: string; headers?: Array<{ key?: string; value?: string }> }>;
+    };
+
+    const rule = vercelConfig.headers?.find((header) => header.source === "/(.*)");
+    expect(rule).toBeDefined();
+    expect(rule?.headers).toEqual(expect.arrayContaining([
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "X-Frame-Options", value: "DENY" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "Content-Security-Policy", value: "frame-ancestors 'none'; object-src 'none'; base-uri 'self'" },
+    ]));
+  });
 });

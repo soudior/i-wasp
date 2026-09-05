@@ -20,9 +20,8 @@ import {
   HeadphonesIcon,
   Globe,
   Star,
-  Percent
 } from 'lucide-react';
-import { WEB_STUDIO_PACKAGES, WEB_MAINTENANCE, WebStudioPackageKey, ANNUAL_DISCOUNT_PERCENT } from '@/lib/webStudioPackages';
+import { WEB_STUDIO_PACKAGES, WEB_MAINTENANCE, WebStudioPackageKey } from '@/lib/webStudioPackages';
 
 const COLORS = {
   noir: "#050505",
@@ -96,14 +95,6 @@ export default function WebStudioPricing() {
   const [hoveredPackage, setHoveredPackage] = useState<WebStudioPackageKey | null>(null);
   const [showComparison, setShowComparison] = useState(false);
   const [isYearly, setIsYearly] = useState(false);
-
-  // Calculate annual price with discount
-  const getDisplayPrice = (monthlyPrice: number) => {
-    if (isYearly) {
-      return Math.round(monthlyPrice * 12 * (1 - ANNUAL_DISCOUNT_PERCENT / 100));
-    }
-    return monthlyPrice;
-  };
 
   const handleSelectPackage = (packageKey: WebStudioPackageKey) => {
     sessionStorage.setItem('selectedWebStudioPackage', packageKey);
@@ -221,63 +212,23 @@ export default function WebStudioPricing() {
             ))}
           </motion.div>
 
-          {/* Billing Toggle */}
+          {/* Commercial reassurance */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="flex justify-center items-center gap-4 mb-12"
+            className="flex flex-wrap justify-center items-center gap-3 mb-12"
           >
-            <span 
-              className={`text-sm font-medium transition-colors cursor-pointer ${!isYearly ? 'opacity-100' : 'opacity-50'}`}
-              style={{ color: COLORS.ivoire }}
-              onClick={() => setIsYearly(false)}
-            >
-              Mensuel
-            </span>
-            
-            <motion.button
-              onClick={() => setIsYearly(!isYearly)}
-              className="relative w-16 h-8 rounded-full p-1 transition-colors"
-              style={{ 
-                backgroundColor: isYearly ? COLORS.or : COLORS.border,
-              }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <motion.div
-                className="w-6 h-6 rounded-full bg-white shadow-lg"
-                animate={{ x: isYearly ? 32 : 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              />
-            </motion.button>
-            
-            <div className="flex items-center gap-2">
-              <span 
-                className={`text-sm font-medium transition-colors cursor-pointer ${isYearly ? 'opacity-100' : 'opacity-50'}`}
-                style={{ color: COLORS.ivoire }}
-                onClick={() => setIsYearly(true)}
+            {['Paiement unique', 'Sans abonnement obligatoire', 'Devis clair avant démarrage'].map((label) => (
+              <span
+                key={label}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm"
+                style={{ backgroundColor: `${COLORS.emerald}12`, color: COLORS.ivoire }}
               >
-                Annuel
+                <Check size={14} style={{ color: COLORS.emerald }} />
+                {label}
               </span>
-              
-              <AnimatePresence>
-                {isYearly && (
-                  <motion.span
-                    initial={{ opacity: 0, scale: 0.8, x: -10 }}
-                    animate={{ opacity: 1, scale: 1, x: 0 }}
-                    exit={{ opacity: 0, scale: 0.8, x: -10 }}
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold"
-                    style={{ 
-                      backgroundColor: `${COLORS.emerald}20`,
-                      color: COLORS.emerald,
-                    }}
-                  >
-                    <Percent size={10} />
-                    -{ANNUAL_DISCOUNT_PERCENT}%
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </div>
+            ))}
           </motion.div>
         </motion.div>
       </section>
@@ -360,53 +311,26 @@ export default function WebStudioPricing() {
                     <div className="mb-6">
                       <AnimatePresence mode="wait">
                         <motion.div
-                          key={isYearly ? 'yearly-price' : 'monthly-price'}
+                          key="one-time-price"
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -10 }}
                           transition={{ duration: 0.2 }}
                         >
-                          {isYearly && (
-                            <p 
-                              className="text-sm line-through"
-                              style={{ color: COLORS.gris }}
-                            >
-                              {pkg.priceMad} MAD
-                            </p>
-                          )}
                           <div className="flex items-baseline gap-1">
                             <span 
                               className="text-4xl font-bold"
                               style={{ color: COLORS.ivoire }}
                             >
-                              {isYearly 
-                                ? Math.round(pkg.priceMad * (1 - ANNUAL_DISCOUNT_PERCENT / 100))
-                                : pkg.priceMad
-                              }
+                              {pkg.priceMad.toLocaleString('fr-FR')}
                             </span>
                             <span style={{ color: COLORS.gris }}>MAD</span>
-                            {isYearly && (
-                              <motion.span
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="ml-2 px-2 py-0.5 rounded text-xs font-semibold"
-                                style={{ 
-                                  backgroundColor: `${COLORS.emerald}20`,
-                                  color: COLORS.emerald,
-                                }}
-                              >
-                                -{ANNUAL_DISCOUNT_PERCENT}%
-                              </motion.span>
-                            )}
                           </div>
                           <p 
                             className="text-sm mt-1"
                             style={{ color: COLORS.gris }}
                           >
-                            ≈ {isYearly 
-                              ? Math.round(pkg.priceEur * (1 - ANNUAL_DISCOUNT_PERCENT / 100))
-                              : pkg.priceEur
-                            }€ • Paiement unique
+                            ≈ {pkg.priceEur}€ • Paiement unique
                           </p>
                         </motion.div>
                       </AnimatePresence>
@@ -514,6 +438,25 @@ export default function WebStudioPricing() {
               border: `1px solid ${COLORS.or}30`,
             }}
           >
+            <div className="flex justify-center md:justify-end gap-2 mb-8">
+              {[
+                { yearly: false, label: 'Mensuelle' },
+                { yearly: true, label: 'Annuelle • 2 mois offerts' },
+              ].map((option) => (
+                <button
+                  key={option.label}
+                  type="button"
+                  onClick={() => setIsYearly(option.yearly)}
+                  className="px-4 py-2 rounded-full text-xs font-semibold transition-colors"
+                  style={{
+                    backgroundColor: isYearly === option.yearly ? COLORS.or : COLORS.border,
+                    color: isYearly === option.yearly ? COLORS.noir : COLORS.ivoire,
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
             <div className="flex flex-col md:flex-row md:items-center gap-8">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
@@ -660,19 +603,19 @@ export default function WebStudioPricing() {
                       className="text-center p-6 font-medium"
                       style={{ color: COLORS.emerald }}
                     >
-                      Basic
+                      Lancement
                     </th>
                     <th 
                       className="text-center p-6 font-medium"
                       style={{ color: COLORS.blue }}
                     >
-                      Pro
+                      Croissance
                     </th>
                     <th 
                       className="text-center p-6 font-medium"
                       style={{ color: COLORS.amber }}
                     >
-                      Enterprise
+                      Signature
                     </th>
                   </tr>
                 </thead>

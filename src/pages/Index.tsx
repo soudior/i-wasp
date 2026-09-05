@@ -6,14 +6,17 @@
  */
 
 import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles, Shield, Zap, Globe, Check, Linkedin, Instagram, Mail, Phone, Globe2, MessageCircle } from "lucide-react";
+import { ArrowRight, Sparkles, Shield, Zap, Globe, Check, Linkedin, Instagram, Mail, Phone, Globe2, MessageCircle, QrCode, WalletCards, WandSparkles } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { NfcCard3D } from "@/components/home/NfcCard3D";
+import { HeroProductVisual } from "@/components/home/HeroProductVisual";
 import { NfcDemoSteps } from "@/components/home/NfcDemoSteps";
+import { RealProductShowcase } from "@/components/home/RealProductShowcase";
 import { IncludedSection } from "@/components/home/IncludedSection";
 import { ModelsSection } from "@/components/home/ModelsSection";
 import { BenefitsSection } from "@/components/home/BenefitsSection";
@@ -38,8 +41,8 @@ const HOME_STRUCTURED_DATA = [
     description:
       "Carte de visite NFC premium avec profil digital toujours à jour. Un contact suffit pour partager toutes vos informations, sans application requise.",
     image: "https://i-wasp.com/og-image.png",
-    lowPrice: 29.9,
-    highPrice: 89.9,
+    lowPrice: 29,
+    highPrice: 79,
   }),
   faqSchema(FAQS),
 ];
@@ -72,129 +75,6 @@ const scaleIn = {
     },
   },
 };
-
-// ═══════════════════════════════════════════════════════════════════════════
-// CARTE 3D PREMIUM AVEC NOM PERSONNALISÉ
-// ═══════════════════════════════════════════════════════════════════════════
-
-function PremiumCard3D({ name = "VOTRE NOM", animate = true }: { name?: string; animate?: boolean }) {
-  return (
-    <motion.div
-      initial={{ rotateY: -15, rotateX: 5, opacity: 0 }}
-      animate={{ rotateY: 0, rotateX: 0, opacity: 1 }}
-      transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{
-        rotateY: -8,
-        rotateX: 3,
-        scale: 1.02,
-        transition: { duration: 0.8 }
-      }}
-      className="relative w-[340px] h-[200px] sm:w-[400px] sm:h-[240px] perspective-1000"
-      style={{ transformStyle: "preserve-3d" }}
-    >
-      {/* Glow derrière la carte */}
-      <motion.div
-        className="absolute inset-0 -z-10"
-        animate={animate ? {
-          boxShadow: [
-            "0 0 60px rgba(220, 199, 176, 0.15), 0 0 120px rgba(220, 199, 176, 0.08)",
-            "0 0 80px rgba(220, 199, 176, 0.2), 0 0 160px rgba(220, 199, 176, 0.1)",
-            "0 0 60px rgba(220, 199, 176, 0.15), 0 0 120px rgba(220, 199, 176, 0.08)",
-          ],
-        } : undefined}
-        transition={animate ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : undefined}
-        style={{ borderRadius: "1.5rem" }}
-      />
-      
-      {/* Carte principale */}
-      <div 
-        className="relative w-full h-full rounded-3xl overflow-hidden"
-        style={{
-          background: "linear-gradient(145deg, #0A0A0A 0%, #1A1A1A 40%, #0A0A0A 100%)",
-          boxShadow: "0 30px 60px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
-        }}
-      >
-        {/* Reflet Champagne diagonal */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: "linear-gradient(135deg, transparent 30%, rgba(220, 199, 176, 0.08) 50%, transparent 70%)",
-          }}
-          animate={animate ? {
-            opacity: [0.5, 0.8, 0.5],
-          } : undefined}
-          transition={animate ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : undefined}
-        />
-        
-        {/* Logo W */}
-        <div className="absolute top-6 left-6">
-          <div 
-            className="w-12 h-12 rounded-full flex items-center justify-center"
-            style={{
-              background: "linear-gradient(135deg, rgba(220, 199, 176, 0.15) 0%, rgba(220, 199, 176, 0.05) 100%)",
-              border: "1px solid rgba(220, 199, 176, 0.2)",
-            }}
-          >
-            <span className="font-display text-lg text-[#DCC7B0]">W</span>
-          </div>
-        </div>
-        
-        {/* Badge édition */}
-        <div className="absolute top-6 right-6 text-right">
-          <p className="font-mono text-[8px] tracking-[0.3em] uppercase text-[#DCC7B0]/50">
-            PRIVATE_ASSET_V6
-          </p>
-          <p className="font-mono text-[8px] tracking-[0.2em] uppercase text-white/30 mt-1">
-            LIMITED EDITION
-          </p>
-        </div>
-        
-        {/* Nom du propriétaire */}
-        <div className="absolute top-1/2 left-6 right-6 -translate-y-1/2">
-          <motion.h3 
-            key={name}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="font-display text-2xl sm:text-3xl tracking-[0.15em] text-white/95"
-          >
-            {name.toUpperCase()}
-          </motion.h3>
-          <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-[#DCC7B0]/70 mt-2">
-            SUPREME OWNER
-          </p>
-        </div>
-        
-        {/* Icône NFC */}
-        <div className="absolute bottom-6 left-6">
-          <motion.div
-            className="w-10 h-10 rounded-full flex items-center justify-center"
-            style={{
-              background: "rgba(220, 199, 176, 0.08)",
-              border: "1px solid rgba(220, 199, 176, 0.15)",
-            }}
-            animate={animate ? {
-              boxShadow: [
-                "0 0 0 0 rgba(220, 199, 176, 0.2)",
-                "0 0 0 8px rgba(220, 199, 176, 0)",
-              ],
-            } : undefined}
-            transition={animate ? { duration: 2, repeat: Infinity } : undefined}
-          >
-            <Zap className="w-4 h-4 text-[#DCC7B0]/80" />
-          </motion.div>
-        </div>
-        
-        {/* Numéro de série */}
-        <div className="absolute bottom-6 right-6">
-          <p className="font-mono text-[9px] tracking-[0.2em] text-white/25">
-            SN-4820-ABS
-          </p>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // BOUTON CTA LUXUEUX
@@ -314,7 +194,7 @@ const Index = () => {
                 <span className="font-display text-sm text-[#DCC7B0]">W</span>
               </div>
               <span className="font-display text-xl tracking-[0.1em] text-[#FDFCFB]/90">
-                i-wasp <span className="text-[#DCC7B0]">Omnia</span>
+                i-wasp
               </span>
             </Link>
             
@@ -323,6 +203,7 @@ const Index = () => {
               {[
                 { label: t("homepage.nav.personnaliser"), href: "#configurateur" },
                 { label: t("homepage.nav.profil"), href: "#laura" },
+                { label: "Studio NFC & Wallet", href: "/creer-ma-carte" },
                 { label: t("homepage.nav.tarifs"), href: "/pricing" },
               ].map((item) => (
                 <a
@@ -356,6 +237,7 @@ const Index = () => {
         {/* ═══════════════════════════════════════════════════════════════
             HERO SECTION — Le Choc Visuel
             ═══════════════════════════════════════════════════════════════ */}
+        <main>
         <section id="manifeste" className="relative min-h-screen flex items-center justify-center px-6 pt-32 pb-20">
           <div className="max-w-7xl mx-auto w-full">
             <div className="grid lg:grid-cols-2 gap-16 lg:gap-8 items-center">
@@ -374,10 +256,10 @@ const Index = () => {
 
                 <motion.h1
                   custom={1}
-                  initial="hidden"
+                  initial={false}
                   animate="visible"
                   variants={fadeUp}
-                  className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal tracking-[0.02em] leading-[1.02] text-[#FDFCFB] mb-6"
+                  className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-normal tracking-[0.02em] leading-[1.02] text-[#FDFCFB] mb-6"
                 >
                   {t("homepage.hero.titleLead")}
                   <span className="italic text-[#DCC7B0]">{t("homepage.hero.titleAccent")}</span>
@@ -422,7 +304,7 @@ const Index = () => {
                 variants={scaleIn}
                 className="flex justify-center lg:justify-end order-1 lg:order-2"
               >
-                <PremiumCard3D name={previewName} animate={allowInfiniteAnimations} />
+                <HeroProductVisual />
               </motion.div>
             </div>
           </div>
@@ -439,6 +321,65 @@ const Index = () => {
               transition={allowInfiniteAnimations ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" } : undefined}
               className="w-px h-16 bg-gradient-to-b from-[#DCC7B0]/50 to-transparent"
             />
+          </motion.div>
+        </section>
+
+        {/* Accès client — création NFC + Wallet */}
+        <section className="relative px-6 py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 36 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-[#DCC7B0]/15 bg-[#DCC7B0]/[0.04]"
+          >
+            <div className="grid gap-10 p-8 sm:p-12 lg:grid-cols-[1.15fr_0.85fr] lg:p-16">
+              <div>
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#DCC7B0]/20 bg-[#DCC7B0]/10 px-4 py-2">
+                  <WandSparkles className="h-4 w-4 text-[#DCC7B0]" />
+                  <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#DCC7B0]">
+                    Accessible à tous les clients
+                  </span>
+                </div>
+
+                <h2 className="font-display text-4xl leading-tight tracking-[0.03em] text-[#FDFCFB] sm:text-5xl">
+                  Confiez-nous votre image.
+                  <span className="block italic text-[#DCC7B0]">Recevez l’expérience complète.</span>
+                </h2>
+
+                <p className="mt-6 max-w-2xl font-body text-base font-extralight leading-relaxed text-[#FDFCFB]/50">
+                  Envoyez le nom de votre entreprise ou un lien Google. L’équipe i-Wasp recherche vos
+                  informations officielles et réalise une fiche premium avec QR canonique et véritable pass Apple Wallet.
+                </p>
+
+                <div className="mt-9">
+                  <LuxuryButton href="/creer-ma-carte" variant="primary">
+                    Créer ma carte NFC + Wallet
+                  </LuxuryButton>
+                </div>
+              </div>
+
+              <div className="grid gap-3 self-center">
+                {[
+                  { icon: Globe, title: "Votre lien NFC", text: "Une fiche publique premium sur i-wasp.com." },
+                  { icon: QrCode, title: "Un QR unique", text: "Le QR ouvre toujours votre fiche web, jamais un simple numéro." },
+                  { icon: WalletCards, title: "Apple Wallet", text: "Un véritable pass signé, prêt à être ajouté sur iPhone." },
+                ].map(({ icon: Icon, title, text }) => (
+                  <div
+                    key={title}
+                    className="flex gap-4 rounded-2xl border border-white/[0.06] bg-black/25 p-4"
+                  >
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#DCC7B0]/15 bg-[#DCC7B0]/10">
+                      <Icon className="h-5 w-5 text-[#DCC7B0]" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-sm tracking-[0.06em] text-[#FDFCFB]">{title}</h3>
+                      <p className="mt-1 font-body text-xs font-extralight leading-relaxed text-[#FDFCFB]/60">{text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </motion.div>
         </section>
 
@@ -481,7 +422,7 @@ const Index = () => {
                   }}
                 >
                   <item.icon className="w-6 h-6 text-[#DCC7B0]/70 mx-auto mb-4" />
-                  <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-[#FDFCFB]/40 mb-1">
+                  <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-[#FDFCFB]/60 mb-1">
                     {item.label}
                   </p>
                   <p className="font-body text-sm font-extralight text-[#DCC7B0]">
@@ -495,6 +436,9 @@ const Index = () => {
 
         {/* Démonstration NFC en 3 étapes */}
         <NfcDemoSteps />
+
+        {/* Photographie produit réelle — chargée à la demande sous la ligne de flottaison */}
+        <RealProductShowcase />
 
         {/* Ce qui est inclus */}
         <IncludedSection />
@@ -520,7 +464,7 @@ const Index = () => {
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[0.04em] text-[#FDFCFB] mb-6">
                 {t("homepage.configurator.titleLead")}<span className="italic text-[#DCC7B0]">{t("homepage.configurator.titleAccent")}</span>
               </h2>
-              <p className="font-body text-base font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto">
+              <p className="font-body text-base font-extralight text-[#FDFCFB]/60 max-w-xl mx-auto">
                 {t("homepage.configurator.subtitle")}
               </p>
             </motion.div>
@@ -589,7 +533,10 @@ const Index = () => {
                 transition={{ duration: 1, delay: 0.4 }}
                 className="flex justify-center"
               >
-                <PremiumCard3D name={previewName || t("homepage.previewNameDefault")} animate={allowInfiniteAnimations} />
+                <NfcCard3D
+                  name={previewName || t("homepage.previewNameDefault")}
+                  animate={allowInfiniteAnimations}
+                />
               </motion.div>
             </div>
           </div>
@@ -621,7 +568,7 @@ const Index = () => {
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[0.04em] text-[#FDFCFB] mb-6">
                 {t("homepage.profile.titleLead")}<span className="italic text-[#DCC7B0]">{t("homepage.profile.titleAccent")}</span>
               </h2>
-              <p className="font-body text-base font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto">
+              <p className="font-body text-base font-extralight text-[#FDFCFB]/60 max-w-xl mx-auto">
                 {t("homepage.profile.subtitle")}
               </p>
             </motion.div>
@@ -729,7 +676,7 @@ const Index = () => {
                         </p>
 
                         {/* Tagline */}
-                        <p className="font-body text-xs font-extralight text-[#FDFCFB]/40 text-center mb-8 px-4">
+                        <p className="font-body text-xs font-extralight text-[#FDFCFB]/60 text-center mb-8 px-4">
                           {t("homepage.profile.tagline")}
                         </p>
 
@@ -794,7 +741,7 @@ const Index = () => {
                         
                         {/* Footer du profil */}
                         <div className="mt-auto pt-6">
-                          <p className="font-mono text-[8px] tracking-[0.3em] uppercase text-[#FDFCFB]/20">
+                          <p className="font-mono text-[8px] tracking-[0.3em] uppercase text-[#FDFCFB]/55">
                             POWERED BY I-WASP
                           </p>
                         </div>
@@ -850,7 +797,7 @@ const Index = () => {
                         <h4 className="font-display text-sm tracking-[0.08em] text-[#FDFCFB] mb-1">
                           {feature.title}
                         </h4>
-                        <p className="font-body text-xs font-extralight text-[#FDFCFB]/40">
+                        <p className="font-body text-xs font-extralight text-[#FDFCFB]/60">
                           {feature.desc}
                         </p>
                       </div>
@@ -900,7 +847,7 @@ const Index = () => {
               <span className="italic text-[#DCC7B0]">{t("homepage.finalCta.titleAccent")}</span>
             </h2>
 
-            <p className="font-body text-lg font-extralight text-[#FDFCFB]/40 max-w-xl mx-auto mb-12">
+            <p className="font-body text-lg font-extralight text-[#FDFCFB]/60 max-w-xl mx-auto mb-12">
               {t("homepage.finalCta.subtitle")}
             </p>
 
@@ -913,6 +860,8 @@ const Index = () => {
         {/* ═══════════════════════════════════════════════════════════════
             FOOTER MINIMAL
             ═══════════════════════════════════════════════════════════════ */}
+        </main>
+
         <footer className="relative py-16 px-6 border-t border-white/[0.03]">
           <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
@@ -926,15 +875,15 @@ const Index = () => {
                 <span className="font-display text-xs text-[#DCC7B0]">W</span>
               </div>
               <span className="font-display text-sm tracking-[0.1em] text-[#FDFCFB]/60">
-                i-wasp Omnia
+                i-wasp
               </span>
             </div>
             
-            <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#FDFCFB]/20">
+            <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#FDFCFB]/60">
               {t("homepage.finalCta.footerTagline")}
             </p>
             
-            <p className="font-body text-xs font-extralight text-[#FDFCFB]/20">
+            <p className="font-body text-xs font-extralight text-[#FDFCFB]/60">
               © {new Date().getFullYear()} IWASP
             </p>
           </div>

@@ -23,11 +23,35 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import { Capacitor } from "@capacitor/core";
 
 /** Deep link de retour dans l'app (déclaré dans Info.plist, scheme `iwasp`). */
 export const NATIVE_OAUTH_REDIRECT = "iwasp://auth/callback";
 
 export type NativeOAuthResult = "success" | "canceled" | "error";
+
+async function exchangeNativeOAuthCallback(url: string): Promise<NativeOAuthResult | null> {
+  if (!isNativeOAuthCallback(url)) return null;
+
+  const providerError = extractAuthError(url);
+  if (providerError) {
+    return /cancel|denied/i.test(providerError) ? "canceled" : "error";
+  }
+
+  const code = extractAuthCode(url);
+  if (!code) {
+    console.error("Native OAuth: callback sans code d'autorisation");
+    return "error";
+  }
+
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (error) {
+    console.error("Native OAuth: échec de l'échange PKCE", error.message);
+    return "error";
+  }
+
+  return "success";
+}
 
 /** Vrai si `url` est bien notre deep link de retour OAuth (validation stricte). */
 export function isNativeOAuthCallback(url: string): boolean {
@@ -100,46 +124,58 @@ export async function signInWithProviderNative(
       void cleanup().finally(() => resolve(result));
     };
 
-    // 4-5) Retour par deep link → validation → échange code ↔ session.
-    void App.addListener("appUrlOpen", ({ url }) => {
-      if (!isNativeOAuthCallback(url)) return; // autre deep link : ignorer.
-      void (async () => {
-        const providerError = extractAuthError(url);
-        if (providerError) {
-          // Annulation/refus côté Apple : pas un échec technique.
-          settle(/cancel|denied/i.test(providerError) ? "canceled" : "error");
-          return;
-        }
-        const code = extractAuthCode(url);
-        if (!code) {
-          console.error("Native OAuth: callback sans code d'autorisation");
-          settle("error");
-          return;
-        }
-        const { error: xErr } = await supabase.auth.exchangeCodeForSession(code);
-        if (xErr) {
-          // Ne jamais journaliser l'URL ni le code — message d'erreur seul.
-          console.error("Native OAuth: échec de l'échange PKCE", xErr.message);
-          settle("error");
-          return;
-        }
-        settle("success");
-      })();
-    }).then((h) => { urlListener = h; });
+    void (async () => {
+      // Installer les listeners AVANT d'ouvrir Safari. Sans cet await, un retour
+      // OAuth rapide peut arriver pendant que le bridge natif n'écoute pas encore.
+      urlListener = await App.addListener("appUrlOpen", ({ url }) => {
+        void exchangeNativeOAuthCallback(url).then((result) => {
+          if (result) settle(result);
+        });
+      });
 
-    // Annulation : l'utilisateur ferme le navigateur système sans finir.
-    void Browser.addListener("browserFinished", () => {
-      // Laisser une courte fenêtre : sur iOS, appUrlOpen peut arriver juste
-      // après la fermeture automatique du navigateur.
-      setTimeout(() => settle("canceled"), 1500);
-    }).then((h) => { finishListener = h; });
+      // Annulation : l'utilisateur ferme le navigateur système sans finir.
+      finishListener = await Browser.addListener("browserFinished", () => {
+        setTimeout(() => settle("canceled"), 1500);
+      });
 
-    timeoutId = setTimeout(() => settle("canceled"), AUTH_TIMEOUT_MS);
+      timeoutId = setTimeout(() => settle("canceled"), AUTH_TIMEOUT_MS);
 
-    // 2) Ouverture dans le navigateur système.
-    void Browser.open({ url: data.url, presentationStyle: "popover" }).catch((e) => {
+      await Browser.open({ url: data.url, presentationStyle: "popover" });
+    })().catch((e) => {
       console.error("Native OAuth: impossible d'ouvrir le navigateur système", e?.message ?? e);
       settle("error");
     });
   });
+}
+
+/**
+ * Termine un OAuth qui a relancé l'app à froid. iOS peut supprimer la WebView
+ * pendant Safari ; `appUrlOpen` n'a alors plus de listener JavaScript vivant,
+ * mais Capacitor conserve l'URL de lancement.
+ */
+export async function recoverNativeOAuthLaunch(): Promise<NativeOAuthResult | null> {
+  if (!Capacitor.isNativePlatform()) return null;
+
+  const { App } = await import("@capacitor/app");
+  const launch = await App.getLaunchUrl();
+  if (!launch?.url) return null;
+  return exchangeNativeOAuthCallback(launch.url);
+}
+
+/** OAuth Google commun au web et aux apps Capacitor. */
+export async function signInWithGoogleCrossPlatform(
+  webRedirectTo: string,
+): Promise<NativeOAuthResult> {
+  if (Capacitor.isNativePlatform()) {
+    return signInWithProviderNative("google");
+  }
+
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: webRedirectTo,
+      queryParams: { access_type: "offline", prompt: "consent" },
+    },
+  });
+  return error ? "error" : "success";
 }

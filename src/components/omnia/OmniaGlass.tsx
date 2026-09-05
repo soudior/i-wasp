@@ -215,7 +215,7 @@ export function OmniaCard3D({ className }: OmniaCard3DProps) {
           className="font-display text-2xl tracking-[0.15em]"
           style={{ color: "rgba(220, 199, 176, 0.9)" }}
         >
-          OMNIA
+          i-wasp
         </span>
       </div>
       
