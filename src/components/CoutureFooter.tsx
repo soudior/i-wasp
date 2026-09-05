@@ -16,7 +16,7 @@ const footerLinks = {
   ],
   support: [
     { label: "Contact", href: "/contact" },
-    { label: "Guide", href: "/user-guide" },
+    { label: "Guide", href: "/guide" },
     { label: "FAQ", href: "/faq" },
   ],
   services: [
@@ -122,7 +122,7 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm font-light transition-colors"
+                      className="text-sm font-light transition-colors inline-flex items-center min-h-[44px] md:min-h-0"
                       style={{ 
                         color: COUTURE.silk,
                         transitionDuration: "400ms",
@@ -150,7 +150,7 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm font-light transition-colors"
+                      className="text-sm font-light transition-colors inline-flex items-center min-h-[44px] md:min-h-0"
                       style={{ 
                         color: COUTURE.silk,
                         transitionDuration: "400ms",
@@ -178,7 +178,7 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm font-light transition-colors"
+                      className="text-sm font-light transition-colors inline-flex items-center min-h-[44px] md:min-h-0"
                       style={{ 
                         color: COUTURE.silk,
                         transitionDuration: "400ms",
@@ -206,7 +206,7 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm font-light transition-colors"
+                      className="text-sm font-light transition-colors inline-flex items-center min-h-[44px] md:min-h-0"
                       style={{ 
                         color: COUTURE.silk,
                         transitionDuration: "400ms",

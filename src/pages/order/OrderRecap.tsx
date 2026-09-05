@@ -27,7 +27,9 @@ function OrderRecapContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe");
 
-  const selectedOffer = OFFERS.find(o => o.id === state.selectedOffer);
+  // Aucun montant en dur : le repli vient du catalogue canonique, jamais d'un
+  // nombre écrit à la main (sinon l'écran et la commande enregistrée divergent).
+  const selectedOffer = OFFERS.find(o => o.id === state.selectedOffer) ?? OFFERS[0];
 
   const formatPrice = (cents: number): string => {
     return `${(cents / 100).toFixed(0)} MAD`;
@@ -98,18 +100,18 @@ function OrderRecapContent() {
       const orderItem: OrderItem = {
         id: crypto.randomUUID(),
         templateId: "iwasp-signature",
-        templateName: `Carte NFC i-Wasp ${selectedOffer?.name || ""}`,
+        templateName: `Carte NFC i-Wasp ${selectedOffer.name}`,
         cardName: `${firstName} ${lastName}`,
         quantity: 1,
-        unitPriceCents: selectedOffer?.price || 59900,
+        unitPriceCents: selectedOffer.price,
         logoUrl: state.cardPersonalization?.imageUrl || null,
       };
 
       const order = await createOrder.mutateAsync({
         order_items: [orderItem],
         quantity: 1,
-        unit_price_cents: selectedOffer?.price || 59900,
-        total_price_cents: selectedOffer?.price || 59900,
+        unit_price_cents: selectedOffer.price,
+        total_price_cents: selectedOffer.price,
         order_type: "personalized",
         template: "signature",
         card_color: "#0B0B0B",
@@ -267,7 +269,7 @@ function OrderRecapContent() {
                   Offre
                 </span>
                 <span className="font-display font-light" style={{ color: COUTURE.gold }}>
-                  i-wasp {selectedOffer?.name}
+                  i-wasp {selectedOffer.name}
                 </span>
               </div>
               <div className="flex justify-between items-center mb-4">
@@ -287,7 +289,7 @@ function OrderRecapContent() {
                   Total TTC
                 </span>
                 <span className="text-xl font-light" style={{ color: COUTURE.gold }}>
-                  {formatPrice(selectedOffer?.price || 0)}
+                  {formatPrice(selectedOffer.price)}
                 </span>
               </div>
             </div>
@@ -419,7 +421,7 @@ function OrderRecapContent() {
             {isProcessing 
               ? "Traitement..." 
               : paymentMethod === "stripe" 
-                ? `Payer ${formatPrice(selectedOffer?.price || 0)}` 
+                ? `Payer ${formatPrice(selectedOffer.price)}` 
                 : "Confirmer ma commande"
             }
           </button>

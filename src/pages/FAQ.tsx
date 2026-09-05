@@ -96,7 +96,7 @@ const faqCategories = [
     faqs: [
       {
         question: "Quel est le prix d'une carte i-wasp ?",
-        answer: "Une carte i-wasp est à 149 DH (au lieu de 249 DH). Ce prix inclut : la carte NFC premium personnalisée, votre profil digital à vie, les mises à jour illimitées, et la livraison gratuite partout au Maroc.",
+        answer: "Trois cartes, un paiement unique : Essentielle 329 DH (29,90 €), Professionnelle 549 DH (49,90 €) et Prestige — carte métal — 989 DH (89,90 €). Pour une équipe, le Pack TEAM de 5 cartes est à 2 189 DH (199 €). Chaque prix inclut la carte NFC personnalisée, votre profil digital à vie, les mises à jour illimitées et la livraison gratuite partout au Maroc.",
       },
       {
         question: "Y a-t-il des frais cachés ou un abonnement ?",
@@ -495,7 +495,7 @@ export default function FAQ() {
               </Link>
               
               <p className="text-white/40 text-sm mt-4">
-                149 DH seulement • Sans abonnement
+                À partir de 329 DH • Paiement unique, sans abonnement
               </p>
             </motion.div>
           </div>

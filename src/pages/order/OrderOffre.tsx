@@ -9,10 +9,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useOrderFunnel, OfferType, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
+import { useOrderFunnel, OfferType, OrderFunnelGuard, OFFERS } from "@/contexts/OrderFunnelContext";
 import { Check, ArrowLeft, ArrowRight, Shield, Truck } from "lucide-react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
+import { NFC_PRICING } from "@/lib/nfcPricing";
 
 interface OfferDetail {
   id: OfferType;
@@ -24,13 +25,22 @@ interface OfferDetail {
   isSignature?: boolean;
 }
 
-const offers: OfferDetail[] = [
+/**
+ * Cette page n'écrit AUCUN prix. Elle ne porte que la présentation (titre,
+ * accroche, bénéfices) et lit les montants dans le catalogue canonique.
+ *
+ * C'est délibéré : une seconde liste de prix écrite ici a déjà fait diverger
+ * l'écran de choix du montant réellement débité par le serveur — le visiteur
+ * voyait un tarif et en payait un autre. Une seule source de vérité.
+ */
+const OFFER_PRESENTATION: Array<Omit<OfferDetail, "priceEUR" | "priceMAD"> & {
+  catalogKey: keyof typeof NFC_PRICING.cards;
+}> = [
   {
     id: "essentiel",
+    catalogKey: "ESSENTIELLE",
     title: "Essentielle",
     subtitle: "Découverte",
-    priceEUR: 29,
-    priceMAD: 199,
     features: [
       "1 carte NFC standard",
       "Profil numérique simple",
@@ -40,10 +50,9 @@ const offers: OfferDetail[] = [
   },
   {
     id: "signature",
+    catalogKey: "PROFESSIONNELLE",
     title: "Professionnelle",
     subtitle: "Recommandé",
-    priceEUR: 49,
-    priceMAD: 349,
     isSignature: true,
     features: [
       "Carte NFC premium",
@@ -55,10 +64,9 @@ const offers: OfferDetail[] = [
   },
   {
     id: "alliance",
+    catalogKey: "PRESTIGE",
     title: "Prestige",
     subtitle: "Premium",
-    priceEUR: 79,
-    priceMAD: 599,
     features: [
       "Carte NFC luxe",
       "Personnalisation totale",
@@ -68,6 +76,31 @@ const offers: OfferDetail[] = [
     ],
   },
 ];
+
+/** « 29,90 € » — virage décimale française, jamais « 29.9 € ». */
+const formatEur = (value: number): string =>
+  new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+  }).format(value);
+
+export const offers: OfferDetail[] = OFFER_PRESENTATION.map(
+  ({ catalogKey, ...presentation }) => {
+    const card = NFC_PRICING.cards[catalogKey];
+    const funnelOffer = OFFERS.find((o) => o.id === presentation.id);
+
+    // Le tunnel envoie `id` au serveur, qui décide seul du montant. Si les deux
+    // catalogues divergeaient, l'écran mentirait sur le prix débité.
+    if (funnelOffer && funnelOffer.price !== card.priceMad * 100) {
+      throw new Error(
+        `Grille incohérente pour « ${presentation.id} » : ${funnelOffer.price} centimes côté tunnel, ${card.priceMad * 100} côté catalogue.`,
+      );
+    }
+
+    return { ...presentation, priceEUR: card.priceEur, priceMAD: card.priceMad };
+  },
+);
 
 function OrderOffreContent() {
   const navigate = useNavigate();
@@ -265,7 +298,7 @@ function OrderOffreContent() {
                       >
                         <span className="block text-2xl">{offer.priceMAD} DH</span>
                         <span className="block mt-1 text-[10px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
-                          {offer.priceEUR} € international
+                          {formatEur(offer.priceEUR)} international
                         </span>
                       </span>
                       

@@ -630,7 +630,11 @@ function PricingContent() {
                         
                         <div className="flex items-baseline gap-2 mb-6">
                           <span className="text-4xl font-light">
-                            {currency === "MAD" ? plan.priceMAD.toLocaleString() : plan.priceEUR}
+                            {/* Toujours la locale fr-FR : sans elle, le même montant
+                                s'affichait « 1 000 » plus haut et « 1,000 » ici. */}
+                            {currency === "MAD"
+                              ? plan.priceMAD.toLocaleString('fr-FR')
+                              : plan.priceEUR.toLocaleString('fr-FR')}
                           </span>
                           <span style={{ color: COLORS.gris }}>
                             {currency === "MAD" ? "DH" : "€"}{plan.period}

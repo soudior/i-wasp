@@ -10,8 +10,10 @@ import {
 
 describe("nfcPricing — accès catalogue", () => {
   it("getNfcCardById renvoie la carte ou null", () => {
-    expect(getNfcCardById("essentielle")?.priceMad).toBe(199);
-    expect(getNfcCardById("prestige")?.priceMad).toBe(599);
+    expect(getNfcCardById("essentielle")?.priceMad).toBe(329);
+    expect(getNfcCardById("essentielle")?.priceEur).toBe(29.9);
+    expect(getNfcCardById("prestige")?.priceMad).toBe(989);
+    expect(getNfcCardById("prestige")?.priceEur).toBe(89.9);
     expect(getNfcCardById("inconnu")).toBeNull();
   });
 
@@ -26,12 +28,16 @@ describe("nfcPricing — accès catalogue", () => {
 });
 
 describe("nfcPricing — formatage", () => {
-  it("formatPriceEur formate en euros avec 2 décimales", () => {
-    expect(formatPriceEur(29.9)).toBe("29.90€");
-    expect(formatPriceEur(89.9)).toBe("89.90€");
+  it("formatPriceEur suit la typographie française (virgule, espace insécable)", () => {
+    expect(formatPriceEur(29.9)).toBe("29,90\u00A0€");
+    expect(formatPriceEur(89.9)).toBe("89,90\u00A0€");
+  });
+
+  it("formatPriceEur n'ajoute pas de décimales à un montant rond", () => {
+    expect(formatPriceEur(199)).toBe("199\u00A0€");
   });
 
   it("formatPriceBoth combine EUR et MAD (conversion x11)", () => {
-    expect(formatPriceBoth(29.9)).toBe("29.90€ (329 DH)");
+    expect(formatPriceBoth(29.9)).toBe("29,90\u00A0€ (329 DH)");
   });
 });
