@@ -22,8 +22,8 @@ export const NFC_PRICING = {
       id: 'essentielle',
       name: 'Essentielle',
       subtitle: 'Carte PVC classique',
-      priceEur: 29,
-      priceMad: 199,
+      priceEur: 29.90,
+      priceMad: 329,
       proTrialMonths: 3,
       badge: null,
       features: [
@@ -38,8 +38,8 @@ export const NFC_PRICING = {
       id: 'professionnelle',
       name: 'Professionnelle',
       subtitle: 'Carte PVC premium',
-      priceEur: 49,
-      priceMad: 349,
+      priceEur: 49.90,
+      priceMad: 549,
       proTrialMonths: 3,
       badge: '⭐ Populaire',
       features: [
@@ -54,8 +54,8 @@ export const NFC_PRICING = {
       id: 'prestige',
       name: 'Prestige',
       subtitle: 'Carte métal premium',
-      priceEur: 79,
-      priceMad: 599,
+      priceEur: 89.90,
+      priceMad: 989,
       proTrialMonths: 3,
       badge: '🏆 Premium',
       features: [
@@ -72,11 +72,11 @@ export const NFC_PRICING = {
       name: 'Pack TEAM',
       subtitle: '5 cartes pour équipe',
       quantity: 5,
-      priceEur: 119,
-      priceMad: 1299,
-      pricePerCardEur: 23.80,
-      pricePerCardMad: 259.80,
-      savings: 26,
+      priceEur: 199,
+      priceMad: 2189,
+      pricePerCardEur: 39.80,
+      pricePerCardMad: 437.80,
+      savings: 20, // -20% vs tarif unitaire Professionnelle (5 × 49,90 = 249,50 €)
       badge: '👥 Équipe',
       features: [
         '5 cartes Professionnelle',
@@ -179,8 +179,8 @@ export const NFC_PRICING = {
       name: 'Essentielle',
       subtitle: 'Carte PVC classique',
       quantity: 1,
-      priceMad: 199,
-      pricePerCardMad: 199,
+      priceMad: 329,
+      pricePerCardMad: 329,
       savings: null,
       badge: null,
       features: [
@@ -241,8 +241,19 @@ export function getNfcPackById(id: string): NfcPack | null {
   return pack || null;
 }
 
+/**
+ * Typographie française : virgule décimale, espace insécable avant le symbole,
+ * et pas de « ,00 » inutile sur un montant rond. « 29,90 € », « 199 € ».
+ * C'est la même règle sur tout le site : un prix ne doit jamais s'écrire de
+ * deux façons différentes d'une page à l'autre.
+ */
 export function formatPriceEur(amount: number): string {
-  return `${amount.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(',', '.')}€`;
+  const decimals = Number.isInteger(amount) ? 0 : 2;
+  const value = amount.toLocaleString('fr-FR', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+  return `${value}\u00A0€`;
 }
 
 export function formatPriceMad(amount: number): string {

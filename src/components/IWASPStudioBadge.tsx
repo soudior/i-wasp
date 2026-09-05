@@ -8,7 +8,7 @@
  * - "Plateforme d'identité digitale i-wasp"
  * - "Powered by i-wasp Advanced IA"
  * 
- * JAMAIS de mention "Lovable" dans l'interface client !
+ * JAMAIS le nom d'un outil tiers dans l'interface client !
  */
 
 import { motion } from 'framer-motion';

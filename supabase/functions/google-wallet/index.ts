@@ -68,7 +68,9 @@ async function createGoogleWalletJWT(
   const claims = {
     iss: serviceAccount.client_email,
     aud: 'google',
-    origins: ['https://i-wasp.com', 'https://lovable.dev'],
+    // Origines autorisées à présenter le bouton « Enregistrer dans Google Wallet ».
+    // Uniquement les domaines i-wasp : aucun domaine d'éditeur tiers.
+    origins: ['https://i-wasp.com', 'https://www.i-wasp.com'],
     typ: 'savetowallet',
     iat: now,
     payload: payload

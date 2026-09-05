@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { AI_GATEWAY_API_KEY, AI_GATEWAY_URL } from "../_shared/aiGateway.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -44,10 +45,9 @@ serve(async (req) => {
     console.log('Authenticated user:', user.id);
 
     const { logoUrl, style } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
+    if (!AI_GATEWAY_API_KEY || !AI_GATEWAY_URL) {
+      throw new Error('AI_GATEWAY_API_KEY not configured');
     }
 
     console.log('Generating palette for logo:', logoUrl, 'style:', style);
@@ -93,10 +93,10 @@ Réponds UNIQUEMENT en JSON valide, sans markdown, sans explication:
       messages.push({ role: "user", content: userPrompt });
     }
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch(AI_GATEWAY_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Authorization': `Bearer ${AI_GATEWAY_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({

@@ -66,7 +66,7 @@ function generateStatusUpdateHtml(data: StatusUpdateRequest): string {
     description: "Le statut de votre commande a été mis à jour."
   };
 
-  // Use the published Lovable domain
+  // Domaine public i-wasp
   const trackingUrl = `https://i-wasp.com/web-studio/suivi?id=${data.orderId}`;
 
   return `
