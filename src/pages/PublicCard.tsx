@@ -158,7 +158,7 @@ const PublicCard = () => {
         vcardData.company ? `ORG:${vcardData.company}` : null,
         vcardData.email ? `EMAIL:${vcardData.email}` : null,
         vcardData.phone ? `TEL:${vcardData.phone}` : null,
-        `URL:${publicCardUrl(vcardData.slug)}`,
+        vcardData.slug ? `URL:${publicCardUrl(vcardData.slug)}` : null,
         "END:VCARD",
       ]
         .filter(Boolean)

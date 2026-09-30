@@ -188,9 +188,9 @@ Bonjour,
 
 • Compte de démonstration : demo-appstore@i-wasp.com (mot de passe fourni ci-dessus).
 • Connexion : l'app propose une authentification first-party (email + mot de passe)
-  ainsi qu'une connexion Google optionnelle. Sign in with Apple n'est pas requis au
-  titre de la Guideline 4.8 car l'app n'utilise PAS exclusivement un login social :
-  un compte email/mot de passe natif est disponible.
+  ainsi que Google et Sign in with Apple. Tester ces deux providers avant la
+  soumission ; la présence du compte email/mot de passe ne dispense pas de
+  l'option de connexion respectant la Guideline 4.8.
 • Suppression de compte (5.1.1(v)) : Réglages → Zone de danger → « Supprimer
   définitivement mon compte » (confirmation par saisie de « SUPPRIMER »). La
   suppression est effectuée côté serveur (compte et données personnelles supprimés,

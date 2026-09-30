@@ -8,9 +8,9 @@
  * - ANONYMISE les commandes (conservées pour obligations comptables) au lieu de les
  *   supprimer, en détachant l'utilisateur et en effaçant TOUTE donnée directement
  *   identifiante (y compris order_items, notes internes et URLs de fichiers).
- * - Révoque les jetons Sign in with Apple si configuré (exigé par Apple lorsqu'une
+ * - Révoque les jetons Sign in with Apple pour les comptes Apple (exigé par Apple lorsqu'une
  *   app propose à la fois la création de compte ET Sign in with Apple).
- * - Supprime les fichiers de l'utilisateur dans le stockage (best-effort).
+ * - Supprime les fichiers de l'utilisateur dans le stockage, avec contrôle des erreurs.
  * - Supprime le compte Auth (auth.users) via l'API admin → supprime toutes les
  *   identités (email, google, apple) et révoque toutes les sessions : reconnexion
  *   impossible, un nouvel accès crée un compte neuf et vide.
@@ -21,6 +21,8 @@
  *    `supabase functions deploy delete-account` (voir APP_STORE_LISTING.md §2 & §8).
  *    Tester d'abord sur un compte jetable et vérifier l'impossibilité de reconnexion.
  */
+
+import { checkedDeletionStep } from "./checkedStep.ts";
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.89.0";
 
@@ -76,7 +78,15 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Méthode non autorisée" }), {
+      status: 405, headers: { ...corsHeaders, "Content-Type": "application/json", Allow: "POST, OPTIONS" },
+    });
+  }
 
+  const completedSteps: string[] = [];
+  let currentStep = "configuration";
+  const requestId = crypto.randomUUID();
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -102,29 +112,55 @@ Deno.serve(async (req) => {
     const userId = userData.user.id;
     log("Suppression demandée", { userId });
 
-    // Helper : tente une opération, journalise l'échec sans interrompre la suppression.
-    const attempt = async (label: string, fn: () => Promise<unknown>) => {
-      try {
-        await fn();
-        log(`OK: ${label}`);
-      } catch (e) {
-        log(`SKIP: ${label}`, { message: e instanceof Error ? e.message : String(e) });
-      }
+    // Every cleanup must succeed before Auth deletion. Earlier changes cannot
+    // be rolled back across Storage/Auth/Apple; keep Auth available for retry.
+    const attempt = async (label: string, fn: () => PromiseLike<unknown>) => {
+      currentStep = label;
+      const result = await checkedDeletionStep(label, fn);
+      completedSteps.push(label);
+      log(`OK: ${label}`, { requestId });
+      return result;
     };
 
-    // 2) Récupérer les cartes de l'utilisateur (pour supprimer les dépendances par card_id)
-    //    puis les stories de ces cartes (story_analytics est indexé par story_id).
-    let cardIds: string[] = [];
+    const cardsResult = await attempt("lecture cartes", () =>
+      admin.from("digital_cards").select("id").eq("user_id", userId));
+    const cardIds = ((cardsResult as { data: { id: string }[] | null }).data ?? []).map(c => c.id);
     let storyIds: string[] = [];
-    try {
-      const { data: cards } = await admin.from("digital_cards").select("id").eq("user_id", userId);
-      cardIds = (cards ?? []).map((c: { id: string }) => c.id);
-      if (cardIds.length > 0) {
-        const { data: stories } = await admin.from("card_stories").select("id").in("card_id", cardIds);
-        storyIds = (stories ?? []).map((s: { id: string }) => s.id);
-      }
-    } catch (e) {
-      log("SKIP: lecture des cartes/stories", { message: e instanceof Error ? e.message : String(e) });
+    if (cardIds.length > 0) {
+      const storiesResult = await attempt("lecture stories", () =>
+        admin.from("card_stories").select("id").in("card_id", cardIds));
+      storyIds = ((storiesResult as { data: { id: string }[] | null }).data ?? []).map(s => s.id);
+    }
+
+    // Revoke Apple BEFORE destructive cleanup. Missing configuration for an
+    // Apple identity is a reportable failure, not a successful deletion.
+    if (userData.user.identities?.some(identity => identity.provider === "apple")) {
+      await attempt("apple: révocation des jetons", async () => {
+        const clientId = Deno.env.get("APPLE_REVOKE_CLIENT_ID");
+        const teamId = Deno.env.get("APPLE_TEAM_ID");
+        const keyId = Deno.env.get("APPLE_KEY_ID");
+        const privateKeyPem = Deno.env.get("APPLE_PRIVATE_KEY");
+        if (!clientId || !teamId || !keyId || !privateKeyPem)
+          throw new Error("Configuration de révocation Apple manquante");
+        const { data, error } = await admin.from("apple_auth_tokens")
+          .select("refresh_token").eq("user_id", userId);
+        if (error) throw error;
+        const tokens = (data ?? []).map((r: { refresh_token: string | null }) => r.refresh_token)
+          .filter((token): token is string => !!token);
+        if (tokens.length === 0) throw new Error("Jeton Apple de révocation manquant");
+        const clientSecret = await buildAppleClientSecret({ clientId, teamId, keyId, privateKeyPem });
+        for (const token of tokens) {
+          const response = await fetch("https://appleid.apple.com/auth/revoke", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ client_id: clientId, client_secret: clientSecret,
+              token, token_type_hint: "refresh_token" }),
+          });
+          if (!response.ok) throw new Error(`Apple revoke HTTP ${response.status}`);
+        }
+      });
+      // Retain token records until other cleanup succeeds, so a retry can revoke
+      // the same tokens again rather than lose its only revocation evidence.
     }
 
     // 3) Supprimer les données dépendantes des cartes (colonnes réelles vérifiées sur le schéma)
@@ -178,78 +214,40 @@ Deno.serve(async (req) => {
       }).eq("user_id", userId),
     );
 
-    // 6) Supprimer les fichiers de l'utilisateur (best-effort) dans les buckets publics
+    // Storage listings are paginated and recursive. Do not silently leave
+    // nested folders or files beyond the first 1,000 entries.
     for (const bucket of ["card-assets", "stories"]) {
       await attempt(`storage:${bucket}`, async () => {
-        const { data: files } = await admin.storage.from(bucket).list(userId, { limit: 1000 });
-        if (files && files.length > 0) {
-          const paths = files.map((f: { name: string }) => `${userId}/${f.name}`);
-          await admin.storage.from(bucket).remove(paths);
+        const collect = async (prefix: string): Promise<string[]> => {
+          const paths: string[] = [];
+          for (let offset = 0; ; offset += 1000) {
+            const { data: files, error } = await admin.storage.from(bucket)
+              .list(prefix, { limit: 1000, offset, sortBy: { column: "name", order: "asc" } });
+            if (error) throw error;
+            for (const file of files ?? []) {
+              const path = `${prefix}/${file.name}`;
+              if (file.id === null) paths.push(...await collect(path));
+              else paths.push(path);
+            }
+            if (!files || files.length < 1000) break;
+          }
+          return paths;
+        };
+        const paths = await collect(userId);
+        for (let i = 0; i < paths.length; i += 1000) {
+          const { error } = await admin.storage.from(bucket).remove(paths.slice(i, i + 1000));
+          if (error) throw error;
         }
       });
     }
-
-    // 6b) Révoquer les jetons Sign in with Apple (best-effort, non bloquant).
-    //     Exigé par Apple lorsqu'une app propose à la fois la création de compte et
-    //     Sign in with Apple. Activé UNIQUEMENT si les secrets Apple sont configurés
-    //     (Supabase → Edge Functions → Secrets) ET si un refresh token Apple a été
-    //     stocké pour l'utilisateur (table optionnelle `apple_auth_tokens`).
-    //     Voir SIGN_IN_WITH_APPLE.md pour la configuration exacte.
-    await attempt("apple: révocation des jetons", async () => {
-      const clientId = Deno.env.get("APPLE_REVOKE_CLIENT_ID");
-      const teamId = Deno.env.get("APPLE_TEAM_ID");
-      const keyId = Deno.env.get("APPLE_KEY_ID");
-      const privateKeyPem = Deno.env.get("APPLE_PRIVATE_KEY");
-      if (!clientId || !teamId || !keyId || !privateKeyPem) {
-        log("SKIP: révocation Apple (secrets non configurés)");
-        return;
-      }
-      let refreshTokens: string[] = [];
-      try {
-        const { data } = await admin
-          .from("apple_auth_tokens")
-          .select("refresh_token")
-          .eq("user_id", userId);
-        refreshTokens = (data ?? [])
-          .map((r: { refresh_token: string | null }) => r.refresh_token)
-          .filter((t): t is string => !!t);
-      } catch {
-        log("SKIP: table apple_auth_tokens absente");
-        return;
-      }
-      if (refreshTokens.length === 0) {
-        log("SKIP: aucun refresh token Apple stocké");
-        return;
-      }
-      const clientSecret = await buildAppleClientSecret({ clientId, teamId, keyId, privateKeyPem });
-      for (const token of refreshTokens) {
-        const body = new URLSearchParams({
-          client_id: clientId,
-          client_secret: clientSecret,
-          token,
-          token_type_hint: "refresh_token",
-        });
-        const res = await fetch("https://appleid.apple.com/auth/revoke", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body,
-        });
-        if (!res.ok) throw new Error(`Apple revoke HTTP ${res.status}`);
-      }
-      await admin.from("apple_auth_tokens").delete().eq("user_id", userId);
-      log("OK: jetons Apple révoqués", { count: refreshTokens.length });
-    });
+    if (userData.user.identities?.some(identity => identity.provider === "apple")) {
+      await attempt("apple: suppression des jetons révoqués", () =>
+        admin.from("apple_auth_tokens").delete().eq("user_id", userId));
+    }
 
     // 7) Supprimer le compte Auth → supprime les identités (email/google/apple) et
     //    révoque toutes les sessions → reconnexion impossible. ÉTAPE CRITIQUE.
-    const { error: delErr } = await admin.auth.admin.deleteUser(userId);
-    if (delErr) {
-      log("ERREUR: suppression du compte Auth", { message: delErr.message });
-      return new Response(
-        JSON.stringify({ error: "La suppression du compte a échoué. Contactez le support." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
+    await attempt("suppression du compte Auth", () => admin.auth.admin.deleteUser(userId));
 
     log("Compte supprimé avec succès", { userId });
     return new Response(JSON.stringify({ success: true }), {
@@ -257,8 +255,8 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    log("ERREUR", { message });
-    return new Response(JSON.stringify({ error: message }), {
+    log("ERREUR", { message, requestId, currentStep, completedSteps });
+    return new Response(JSON.stringify({ error: "La suppression est incomplète. Réessayez ou contactez le support avec cette référence.", requestId, failedStep: currentStep, completedSteps, partial: completedSteps.some(step => !step.startsWith("lecture")) }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
