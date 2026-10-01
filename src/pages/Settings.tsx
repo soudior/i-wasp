@@ -211,13 +211,23 @@ const Settings = () => {
     }
     impactMedium();
     setDeletingAccount(true);
+    let deletionReference: string | undefined;
     try {
       const { data, error } = await supabase.functions.invoke("delete-account");
       // L'edge function renvoie { success: true } ou { error: "..." }.
-      if (error) throw new Error(error.message);
+      if (error) {
+        if (error.context instanceof Response) {
+          const failure = await error.context.clone().json().catch(() => null);
+          if (typeof failure?.requestId === "string" && /^[a-f0-9-]{36}$/i.test(failure.requestId)) {
+            deletionReference = failure.requestId;
+          }
+        }
+        throw new Error(error.message);
+      }
       if (data && (data as { error?: string }).error) {
         throw new Error((data as { error?: string }).error);
       }
+      if (data?.success !== true) throw new Error("Suppression non confirmée par le serveur");
 
       // Le compte Auth est supprimé côté serveur : on nettoie la session locale.
       await signOut();
@@ -228,6 +238,7 @@ const Settings = () => {
       notificationError();
       toast.error(
         "Erreur lors de la suppression du compte. Veuillez réessayer ou contacter le support.",
+        deletionReference ? { description: `Référence : ${deletionReference}` } : undefined,
       );
       console.error("Delete account error:", error);
     } finally {

@@ -45,7 +45,7 @@ ici) sont détaillées dans **`SIGN_IN_WITH_APPLE.md`**.
 
 ---
 
-## 2. Suppression de compte in-app (Guideline 5.1.1(v)) — ✅ implémentée
+## 2. Suppression de compte in-app (Guideline 5.1.1(v)) — ⚠️ code prêt, déploiement incomplet
 
 | Élément | Statut | Détail |
 |---------|--------|--------|
@@ -53,10 +53,13 @@ ici) sont détaillées dans **`SIGN_IN_WITH_APPLE.md`**.
 | Confirmation explicite (saisie « SUPPRIMER ») | ✅ | Champ typé + bouton désactivé tant que non confirmé. |
 | Suppression **réelle** côté serveur | ✅ | Edge function `delete-account` (service-role) : supprime cartes, leads, scans, stories, analytics, profil, abonnement, notifications push, webhooks, locations ; **anonymise** les commandes ; supprime les fichiers de stockage ; supprime le compte Auth (révoque toutes les sessions). |
 | Ré-authentification | ✅ | La fonction exige le **JWT de l'appelant** (`admin.auth.getUser(token)`) ; `verify_jwt=true` au niveau passerelle. Un utilisateur ne peut supprimer que **son** compte. |
-| Pas de fausse suppression côté UI | ✅ | Le compte `auth.users` est réellement supprimé côté serveur. |
+| Révocation Apple | ⚠️ | Le code bloque la suppression d'un compte Apple tant que la configuration ou le refresh token manque. La table et la collecte de `apple_auth_tokens` restent à déployer et tester. |
+| Pas de fausse suppression côté UI | ✅ | L'interface ne confirme le succès qu'après la réponse serveur `success: true` et affiche la référence de support en cas d'échec. |
 
-**Reste à faire (déploiement — nécessite Supabase) :**
-`supabase functions deploy delete-account` puis test end-to-end (voir §8 tests).
+**Reste à faire (déploiement — nécessite le backend Supabase officiel) :**
+identifier le projet de production, créer/alimenter `apple_auth_tokens`, configurer
+les secrets `APPLE_*`, déployer `delete-account`, puis réussir le test end-to-end
+(voir §8). La soumission App Store reste bloquée jusque-là.
 
 **Procédure de transfert d'une carte NFC (au lieu de la désactiver) :**
 la carte physique pointe vers un profil ; supprimer le compte désactive ce profil.
@@ -188,9 +191,9 @@ Bonjour,
 
 • Compte de démonstration : demo-appstore@i-wasp.com (mot de passe fourni ci-dessus).
 • Connexion : l'app propose une authentification first-party (email + mot de passe)
-  ainsi qu'une connexion Google optionnelle. Sign in with Apple n'est pas requis au
-  titre de la Guideline 4.8 car l'app n'utilise PAS exclusivement un login social :
-  un compte email/mot de passe natif est disponible.
+  ainsi que Google et Sign in with Apple. Tester ces deux providers avant la
+  soumission ; la présence du compte email/mot de passe ne dispense pas de
+  l'option de connexion respectant la Guideline 4.8.
 • Suppression de compte (5.1.1(v)) : Réglages → Zone de danger → « Supprimer
   définitivement mon compte » (confirmation par saisie de « SUPPRIMER »). La
   suppression est effectuée côté serveur (compte et données personnelles supprimés,

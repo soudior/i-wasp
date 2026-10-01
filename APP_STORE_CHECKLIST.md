@@ -50,7 +50,7 @@
 | Contenu de la fiche (description, mots-clés, âge, catégorie) | ✅ | Prêt à copier-coller : `APP_STORE_LISTING.md` §3. |
 | Compte de démo App Review + notes reviewer | ✅ | Modèle prêt : `APP_STORE_LISTING.md` §5 & §7 (créer le compte démo côté Supabase). |
 | Statut trader UE (DSA) | ☐ | À déclarer dans App Store Connect → Business : `APP_STORE_LISTING.md` §6. |
-| Suppression de compte **dans l'app** | ✅ | Implémentée : bouton « Supprimer définitivement mon compte » (Settings.tsx, confirmation typée « SUPPRIMER ») + edge function `delete-account` (service-role, suppression réelle côté serveur, anonymisation des commandes, révocation des sessions). Reste : `supabase functions deploy delete-account`. Détail : `APP_STORE_LISTING.md` §2. |
+| Suppression de compte **dans l'app** | ⚠️ | Parcours et edge function implémentés. Backend officiel identifié : `fyxiyevbbvidckzaequx`, mais il n'est pas accessible avec la connexion Supabase actuelle. Pour une identité Apple, la révocation est obligatoire avant la suppression. Reste à créer/alimenter `apple_auth_tokens`, configurer les secrets Apple, déployer et réussir le test de bout en bout. Détail : `APP_STORE_LISTING.md` §2. |
 | Sign in with Apple | ✅ | **Requis** (Guideline 4.8, car Google OAuth est proposé) et **implémenté** : bouton conforme HIG (web + iOS), nonce/state, gestion d'erreurs, liaison de compte, e-mail masqué. Reste : activer le provider Apple (Supabase) + clé `.p8`. Détail : `SIGN_IN_WITH_APPLE.md`. |
 | Pas de clé privée dans le bundle | ✅ | Aucun secret dans le frontend (vérifié). Confirmer qu'aucun `.env` secret n'est embarqué au build. |
 

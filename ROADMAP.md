@@ -1,5 +1,7 @@
 # ROADMAP — i-wasp
 
+> Lot local App Store du 2026-10-01 : contrôle des erreurs de suppression, révocation Apple préalable, storage paginé/récursif, notes reviewer cohérentes, garde SDK26 et version explicite. Voir `APP_STORE_FIX_NOTES.md` pour validations et limites. Non poussé, non déployé ; conformité native et données de production non vérifiées.
+
 > Feuille de route priorisée, dérivée de `AUDIT.md`. Mise à jour au fil des corrections.
 > Statut : ☐ à faire · 🔄 en cours · ✅ fait · 🔒 bloqué (secret / décision commerciale requise).
 

@@ -14,6 +14,10 @@ Fichier : `.env` (à la racine). Ces valeurs sont **publiques par conception** (
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Clé anon/publishable Supabase (rôle `anon`) | `src/integrations/supabase/client.ts` |
 | `VITE_SUPABASE_PROJECT_ID` | Identifiant du projet Supabase | `.env` (référence) |
 
+Projet public actuellement servi par `i-wasp.com` : `fyxiyevbbvidckzaequx`.
+Le repli embarqué dans l'app native et `supabase/config.toml` doivent rester alignés
+sur cette référence ; un test bloque désormais toute régression vers l'ancien projet.
+
 ## 2. Backend (Supabase Edge Functions — `Deno.env.get`, SECRETS)
 
 À définir dans **Supabase → Edge Functions → Secrets**. **Ne jamais** exposer côté frontend.
@@ -53,7 +57,7 @@ Fichier : `.env` (à la racine). Ces valeurs sont **publiques par conception** (
 
 ## Notes de sécurité
 
-1. **`.env` est actuellement suivi par git** dans les deux dépôts. Il ne contient que des clés publishable/anon (publiques par conception), donc **pas de fuite de secret** — mais par hygiène, `.env` devrait être retiré du suivi et ajouté à `.gitignore`, avec un `.env.example` listant les noms seuls. (Voir ROADMAP — détachement Lovable / hygiène.)
+1. **`.env` n'est pas suivi dans ce dépôt** ; `.env.example` documente uniquement les noms. Le frontend embarque un repli URL + clé anon publique afin que le build natif reste fonctionnel sans injection Vercel. Aucun secret serveur ne doit y être ajouté.
 2. **`STRIPE_WEBHOOK_SECRET` est absente** et doit être ajoutée pour corriger la faille P0-2 (webhook Stripe non signé).
 3. **Aucune clé secrète (`sk_`, service-role, Resend, PassKit) n'est présente dans le frontend** — vérifié. Elles ne doivent y figurer sous aucune forme.
 4. Rotation recommandée pour tout secret ayant pu transiter par un environnement partagé (ex. mots de passe wifi présents dans un seed de migration — AUDIT P3-WIFI-SEED).
