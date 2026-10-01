@@ -23,7 +23,18 @@ La table apple_auth_tokens et sa collecte sont à confirmer ; aucun secret ajout
 
 Aucun PrivacyInfo.xcprivacy ajouté : établir les données collectées, les API natives et les manifests embarqués par les SDK dans l'archive avant de rédiger des déclarations. Aucun audit de l'archive native n'a été réalisé sur Windows.
 
-Il reste à valider le backend attendu (domaine public et dépôt divergent), les providers OAuth, le modèle de vente numérique/iOS, les captures iPhone, les permissions, la signature et les essais réels NFC/Wallet/OAuth sur TestFlight. L'archive exige un Mac ou la CI macOS ; la publication exige le compte Apple.
+Le backend public a été identifié dans le bundle réellement servi : projet
+`fyxiyevbbvidckzaequx`. Le repli natif, le Web Studio et `supabase/config.toml`
+sont maintenant alignés sur ce projet, avec un test anti-régression. La connexion
+Supabase disponible dans cet environnement ne donne toutefois accès qu'à l'ancien
+projet `vwlngxifajsziexhkafe`, désormais inactif : impossible de contrôler ou
+déployer le schéma, les providers et les Edge Functions de production tant que le
+compte Supabase qui possède le projet public n'est pas connecté.
+
+Il reste à valider les providers OAuth, le modèle de vente numérique/iOS, les
+captures iPhone, les permissions, la signature et les essais réels
+NFC/Wallet/OAuth sur TestFlight. L'archive exige un Mac ou la CI macOS ; la
+publication exige le compte Apple.
 
 ## Validation locale
 
