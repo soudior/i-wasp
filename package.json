@@ -8,8 +8,9 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
+    "test": "vitest run && npm run test:ios-backend",
+    "test:ios-backend": "node --test scripts/verify-ios-backend.node-test.mjs",
     "test:watch": "vitest",
     "preview": "vite preview"
   },

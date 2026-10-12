@@ -15,18 +15,27 @@ on:
   # NB : workflow_dispatch apparaît dans l'onglet Actions une fois ce fichier
   # sur la branche par défaut (à la fusion de la PR).
   workflow_dispatch:
+    inputs:
+      save_artifact:
+        description: "Conserver le .app (stockage Actions potentiellement facturable hors quota). Laisser désactivé pour une validation sans stockage."
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: ios-unsigned-${{ github.ref }}
   cancel-in-progress: true
 
 env:
+  IWASP_IOS_APPROVED_PROJECT_ID: ${{ vars.IWASP_IOS_APPROVED_PROJECT_ID }}
   VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
   VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
   VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
 
 jobs:
   build-unsigned:
+    # This validation branch is authorized only for free public-repository runners.
+    if: ${{ github.event.repository.private == false }}
     runs-on: macos-26
     timeout-minutes: 45
     steps:
@@ -43,10 +52,18 @@ jobs:
         with:
           # Capacitor 8 CLI exige Node >= 22.
           node-version: 22
-          cache: npm
+
+      - name: Verify iOS backend configuration and Auth availability
+        run: node scripts/verify-ios-backend.mjs
 
       - name: Install JS dependencies
         run: npm ci
+
+      - name: Validate web code and backend guard
+        run: |
+          npm run typecheck
+          npm run lint
+          npm test
 
       - name: Build web assets (dist/)
         run: npm run build
@@ -132,6 +149,7 @@ jobs:
           fi
 
       - name: Package the unsigned .app
+        if: ${{ inputs.save_artifact }}
         run: |
           APP=$(find "$RUNNER_TEMP/DerivedData/Build/Products" -maxdepth 2 -name "App.app" -type d | head -1)
           mkdir -p "$RUNNER_TEMP/out"
@@ -143,6 +161,7 @@ jobs:
           ls -la "$RUNNER_TEMP/out"
 
       - name: Upload unsigned build artifact
+        if: ${{ inputs.save_artifact }}
         uses: actions/upload-artifact@v4
         with:
           name: iwasp-ios-unsigned-app
@@ -150,12 +169,16 @@ jobs:
             ${{ runner.temp }}/out/IWASP-unsigned-App.zip
             ${{ runner.temp }}/out/Package.resolved
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 1
 
       - name: Summary
         if: success()
         run: |
           echo "✅ Le projet iOS compile (non signe)."
-          echo "Artefact publie: iwasp-ios-unsigned-app (App.app non signe + Package.resolved)."
+          if [ "${{ inputs.save_artifact }}" = "true" ]; then
+            echo "Artefact publie: iwasp-ios-unsigned-app (App.app non signe + Package.resolved)."
+          else
+            echo "Validation seulement : aucun artefact ni cache persistant ajoute."
+          fi
           echo "capacitor-swift-pm epingle exact 8.5.0 (garde anti-derive active)."
           echo "Icones iOS generees depuis public/app-icon-1024.png (aucun placeholder Capacitor)."
