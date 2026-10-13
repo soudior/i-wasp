@@ -12,10 +12,10 @@ Instructions : README, CLAUDE.md, PROTECTED_FILES.md et `.claude/skills/iwasp-nf
 
 ## Changements visibles
 
-- Accueil français : hiérarchie éditoriale sombre/champagne, photographie réelle en relief CSS léger, contrôle recto/verso natif au clavier, CTA « Créer ma carte » vers `/order/offre`, lien d’inscription `/signup`, exemple `/demo`, étapes et FAQ.
+- Accueil français : héros ivoire/encre/bleu, téléphone frontal avec capture réelle du profil fictif, packshot sur socle clair, changement de vue recto/verso natif au clavier, CTA « Créer ma carte » vers `/order/offre`, lien d’inscription `/signup`, exemple `/demo`, étapes et FAQ.
 - Accompagnement distinct : `/creer-ma-carte` est un formulaire pour préparer une demande à l’équipe via WhatsApp, pas une création autonome. Il n’annonce plus un envoi avant confirmation ; le message reste à ouvrir puis envoyer par l’utilisateur. Les données du formulaire restent modifiables et le lien préparé est invalidé après modification.
 - Douze champs textuels étiquetés ; erreurs reliées et annoncées, focus sur le premier champ invalide, autocomplétion, boutons photo nommés, style choisi exposé via aria-pressed. Plus de confettis automatiques. La photo existante est toujours téléversée dès sélection : ce comportement est maintenant explicité, non testé avec des données réelles.
-- Sur les trois pages concernées, la barre mobile globale ne masque plus les contrôles. Pas de WebGL, animation continue ou dépendance 3D ajoutée. Reduced-motion retire la transformation ; repli CSS sans perspective.
+- Sur les pages concernées, la barre mobile globale ne masque plus les contrôles. Pas de WebGL, animation continue ou dépendance 3D ajoutée. Reduced-motion supprime les mouvements ; les photographies produit ne sont jamais tournées, car leur perspective et leurs ombres sont déjà intégrées.
 - Pas de faux témoignages ni logos clients. Les nouvelles légendes Wallet sont explicitement illustratives.
 
 Les actifs publics fournis ont été inspectés visuellement et comparés aux fichiers existants :
@@ -93,3 +93,19 @@ Décision tarifs/conditions par le propriétaire ; configuration et contrats fou
 ## Complément de validation
 
 Le test navigateur attend maintenant la fin du fondu d’entrée du formulaire avant de mesurer le contraste : le contrôle précédent pouvait capturer une opacité transitoire. Retournement recto/verso au clavier et absence de transform en reduced-motion retestés à 390 et 1440 px. Aucun changement fonctionnel d’authentification ; seul le correctif de style `const` est ajouté.
+
+## Démonstration réelle et livrables média — complément
+
+`/demo` réutilise `WizardPreview`, `StepIdentity` et `DigitalCard`/Signature. Aucun appel de création/enregistrement ; état uniquement en mémoire. Le compte n’est pas simulé comme créé : une légende explique la vraie étape d’inscription. Les coordonnées example.invalid, le nom Camille Exemple et le portrait vectoriel sont fictifs. L’illustration du portrait est originale et ne représente pas un client ; ce n’est pas une photo réelle.
+
+Les actions click/clavier et les déclencheurs de pressions longues sont neutralisés dans le profil de démonstration. Une région status explique qu’aucun contact, fichier ou Wallet n’est créé. Les captures proviennent de Chrome exécutant ces vrais composants, sans UI générée. Un défaut existant de LocationPicker est corrigé : le déclencheur inline est un bouton natif, accessible au clavier, au lieu d’un div portant aria-expanded.
+
+La scène `src/assets/iwasp-hero-illustration.webp` (2688×1520, ~62 Ko) a été fournie via Library et inspectée visuellement. Provenance : Higgsfield/GPT Image 2.5, génération a5d64d9e-cd3b-4017-982d-a344732f5348. Elle reste une illustration, indiquée en HTML dans `/demo`, avec `demo-profile-capture.jpg` superposé comme élément distinct dans l’écran. Ratio conservé, aucun faux geste NFC ni installation Wallet. Sur mobile, la scène réduite est masquée au profit de la vraie interface interactive lisible. L’accueil garde les deux photographies officielles sans double perspective et une capture de profil dans un cadre frontal.
+
+Contenus sémantiques uniques dans `/demo` : usages accueil hôtelier et restauration, coordonnées utiles et liens vers menu/réservation existants. Aucun faux moteur de réservation ni garantie de classement. Palette ivoire/encre/bleu avec panneaux nuit, logo produit doré conservé. Aucun achat, génération supplémentaire, mise à jour de dépendances ou déploiement effectué par cette tâche.
+
+Validation complémentaire : Chrome 360/390/768/1440 px, saisie et propagation vers le vrai profil, aucune requête POST externe, absence de débordement horizontal et de violation axe WCAG A/AA sur le profil de démo. Les parcours accueil/formulaire/Wallet restent testés en 390/1440 px. Ce ne sont pas des tests Safari/iPhone physiques. Résultats : `demo-browser-results.json` et `browser-results.json`.
+
+Captures review : `desktop-hero.jpg`, `mobile-hero.jpg`, `desktop-demo.jpg`, `mobile-demo.jpg`. Source écran pour média : `src/assets/demo-profile-capture.jpg`. Script supplémentaire : `scripts/test-demo-browser.cjs` (Chrome/Playwright/axe installés temporairement, résolution via IWASP_BROWSER_PACKAGES). La provenance source complète et ses identités Library sont conservées localement dans media-source/, exclu de Git.
+
+CI GitHub : les workflows inspectés sont manuels. Aucun résultat vide/pending n’est présenté comme un succès CI ; les vérifications locales sont distinctes. Le commit a1dafdf8e738a4886252c30248660922ab196c20 avait zéro check, zéro status et zéro workflow run. Recontrôler le dernier SHA avant fusion, qui reste interdite sans validation.

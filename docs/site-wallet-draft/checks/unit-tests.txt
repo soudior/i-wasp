@@ -1,27 +1,27 @@
 
 > vite_react_shadcn_ts@0.0.0 test
-> vitest run
+> vitest run --run
 
 
  RUN  v3.2.7 /Users/user/Documents/Codex/2026-10-13/task-2/i-wasp
 
- ✓ tests/wallet/handlers.test.ts (9 tests) 61ms
- ✓ src/lib/walletDraft.test.ts (30 tests) 39ms
- ✓ src/lib/appleAuth.test.ts (12 tests) 9ms
- ✓ src/lib/nfcPricing.test.ts (5 tests) 76ms
- ✓ src/lib/accountDeletion.test.ts (9 tests) 6ms
- ✓ src/lib/pricing.test.ts (15 tests) 4ms
+ ✓ tests/wallet/handlers.test.ts (9 tests) 69ms
+ ✓ src/lib/walletDraft.test.ts (30 tests) 19ms
+ ✓ src/lib/vcard.test.ts (6 tests) 4ms
+ ✓ src/lib/accountDeletion.test.ts (9 tests) 5ms
+ ✓ src/lib/appleAuth.test.ts (12 tests) 8ms
+ ✓ src/lib/walletService.test.ts (9 tests) 10ms
  ✓ src/lib/orderValidation.test.ts (11 tests) 6ms
- ✓ src/lib/walletService.test.ts (9 tests) 9ms
- ✓ src/pages/PrivacyPolicy.test.tsx (1 test) 16ms
- ✓ src/lib/vcard.test.ts (6 tests) 6ms
- ✓ src/lib/nativeOAuth.test.ts (9 tests) 5ms
- ✓ src/lib/validation.test.ts (3 tests) 2ms
+ ✓ src/lib/nfcPricing.test.ts (5 tests) 40ms
  ✓ src/config/vercel.test.ts (3 tests) 4ms
- ✓ src/lib/socialNetworks.test.ts (1 test) 2ms
- ✓ src/lib/pricingContract.test.ts (5 tests) 3ms
+ ✓ src/lib/pricing.test.ts (15 tests) 5ms
+ ✓ src/pages/PrivacyPolicy.test.tsx (1 test) 11ms
+ ✓ src/lib/validation.test.ts (3 tests) 2ms
+ ✓ src/lib/socialNetworks.test.ts (1 test) 1ms
+ ✓ src/lib/pricingContract.test.ts (5 tests) 1ms
+ ✓ src/lib/nativeOAuth.test.ts (9 tests) 2ms
 
  Test Files  15 passed (15)
       Tests  128 passed (128)
-   Start at  16:05:48
-   Duration  2.24s (transform 468ms, setup 151ms, collect 1.15s, tests 249ms, environment 9.41s, prepare 1.61s)
+   Start at  16:32:15
+   Duration  1.40s (transform 389ms, setup 68ms, collect 883ms, tests 187ms, environment 5.28s, prepare 1.32s)

@@ -222,12 +222,12 @@ export function LocationPicker({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div className={`flex items-center gap-3 p-2.5 cursor-pointer hover:bg-slate-800/30 rounded-xl transition-colors ${className}`}>
-          <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center">
+        <button type="button" className={`text-left flex items-center gap-3 p-2.5 cursor-pointer hover:bg-slate-800/30 rounded-xl transition-colors ${className}`}>
+          <span className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center">
             <MapPin size={16} className={iconClassName || "text-amber-400"} />
-          </div>
+          </span>
           <span className={textClassName || "text-sm text-slate-400"}>{address}</span>
-        </div>
+        </button>
       </PopoverTrigger>
       <PopoverContent className="w-52 p-2 bg-slate-900/95 backdrop-blur-xl border-slate-700 z-50" align="start">
         <p className="text-xs text-slate-400 px-3 py-1.5 mb-1">Ouvrir dans...</p>
