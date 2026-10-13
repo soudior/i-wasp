@@ -1,0 +1,92 @@
+[
+  {
+    "name": "mobile",
+    "width": 390,
+    "errors": [],
+    "homeViolations": [],
+    "formViolations": [],
+    "externalRequestsBlocked": [
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "http://127.0.0.1:54321",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "http://127.0.0.1:54321",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "http://127.0.0.1:54321",
+        "method": "GET"
+      }
+    ]
+  },
+  {
+    "name": "desktop",
+    "width": 1440,
+    "errors": [],
+    "homeViolations": [],
+    "formViolations": [],
+    "externalRequestsBlocked": [
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "http://127.0.0.1:54321",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "http://127.0.0.1:54321",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "http://127.0.0.1:54321",
+        "method": "GET"
+      }
+    ]
+  }
+]

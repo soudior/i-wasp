@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": { "deploymentEnabled": { "codex/site-wallet-draft-20261013": false } },
   "headers": [
     {
       "source": "/.well-known/apple-app-site-association",

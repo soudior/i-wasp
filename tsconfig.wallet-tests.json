@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "lib": ["ES2022", "DOM"], "module": "ESNext",
+    "moduleResolution": "bundler", "allowImportingTsExtensions": true,
+    "noEmit": true, "strict": false, "skipLibCheck": true, "types": ["node"]
+  },
+  "include": ["tests/wallet/**/*", "supabase/functions/apple-wallet/index.ts", "supabase/functions/google-wallet/index.ts", "supabase/functions/_shared/wallet*.ts"]
+}

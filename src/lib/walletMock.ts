@@ -13,6 +13,7 @@ export interface WalletCardData {
 
 // Mock Apple Wallet .pkpass generation
 export function downloadAppleWalletPass(data: WalletCardData): void {
+  if (!import.meta.env.DEV && import.meta.env.MODE !== "test") throw new Error("Wallet mock réservé aux tests locaux");
   // Generate mock pkpass data (in production, this would be a proper .pkpass file)
   const passData = {
     formatVersion: 1,
@@ -58,23 +59,24 @@ export function downloadAppleWalletPass(data: WalletCardData): void {
 
   // Create a mock .pkpass file (JSON representation)
   const blob = new Blob([JSON.stringify(passData, null, 2)], {
-    type: "application/vnd.apple.pkpass",
+    type: "application/json",
   });
   const url = URL.createObjectURL(blob);
 
   const link = document.createElement("a");
   link.href = url;
-  link.download = `${data.firstName}_${data.lastName}_AppleWallet.pkpass`;
+  link.download = `${data.firstName}_${data.lastName}_AppleWallet.TEST-ONLY.json`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 
-  toast.success("Pass Apple Wallet téléchargé !");
+  toast.info("Données de test JSON uniquement : ce fichier n’est pas un pass Apple Wallet");
 }
 
 // Mock Google Wallet pass generation
 export function downloadGoogleWalletPass(data: WalletCardData): void {
+  if (!import.meta.env.DEV && import.meta.env.MODE !== "test") throw new Error("Wallet mock réservé aux tests locaux");
   // Generate mock Google Wallet pass data
   const passData = {
     iss: "iwasp@iwasp-wallet.iam.gserviceaccount.com",
@@ -135,13 +137,13 @@ export function downloadGoogleWalletPass(data: WalletCardData): void {
 
   const link = document.createElement("a");
   link.href = url;
-  link.download = `${data.firstName}_${data.lastName}_GoogleWallet.json`;
+  link.download = `${data.firstName}_${data.lastName}_GoogleWallet.TEST-ONLY.json`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 
-  toast.success("Pass Google Wallet téléchargé !");
+  toast.info("Données de test JSON uniquement : ce fichier n’est pas un pass Google Wallet");
 }
 
 // Check if device likely supports Apple Wallet
