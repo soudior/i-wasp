@@ -3,7 +3,9 @@ import {
   isDeleteConfirmed,
   DELETE_CONFIRM_WORD,
   DELETED_USER_SENTINEL,
+  DELETE_ACCOUNT_FAILURE_MESSAGE,
   anonymizedOrderPatch,
+  requestAccountDeletion,
 } from "./accountDeletion";
 
 describe("account deletion confirmation gate", () => {
@@ -72,5 +74,27 @@ describe("order anonymization contract", () => {
     // aucune trace d'un e-mail réel ou d'un domaine client
     expect(serialized).not.toContain("@gmail");
     expect(serialized).not.toContain("@i-wasp.com");
+  });
+});
+
+describe("account deletion request contract", () => {
+  it("accepts only an explicit success response", async () => {
+    await expect(requestAccountDeletion(async () => ({ data: null, error: null })))
+      .rejects.toThrow(DELETE_ACCOUNT_FAILURE_MESSAGE);
+
+    await expect(requestAccountDeletion(async () => ({ data: {}, error: null })))
+      .rejects.toThrow(DELETE_ACCOUNT_FAILURE_MESSAGE);
+
+    await expect(requestAccountDeletion(async () => ({
+      data: { success: true },
+      error: null,
+    }))).resolves.toBeUndefined();
+  });
+
+  it("replaces SDK and server details with a stable user-facing error", async () => {
+    await expect(requestAccountDeletion(async () => ({
+      data: null,
+      error: { message: "Edge Function returned a non-2xx status code" },
+    }))).rejects.toThrow(DELETE_ACCOUNT_FAILURE_MESSAGE);
   });
 });

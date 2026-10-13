@@ -24,6 +24,8 @@ describe("PrivacyPolicy", () => {
       "openstreetmap",
       "notifications push",
       "messagerie",
+      "chat",
+      "profils publics",
       "statistiques",
       "conservation",
     ]) {
