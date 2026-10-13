@@ -13,7 +13,7 @@ export function HeroProductVisual() {
         <div className="iw-profile-frame">
           <img
             src={profileCapture}
-            alt="Capture du vrai profil Signature : Camille Exemple, personne fictive et avatar illustré"
+            alt="Capture du vrai profil Signature : Camille Exemple, données de démonstration et emplacement photo à compléter"
             width={327}
             height={747}
           />
@@ -26,7 +26,7 @@ export function HeroProductVisual() {
             src={flipped ? back : front}
             alt={
               flipped
-                ? "Verso de la carte i-wasp noire, avec une marquage doré"
+                ? "Verso de la carte i-wasp noire, avec un marquage doré"
                 : "Recto de la carte i-wasp noire, avec son logo doré"
             }
             width={1024}

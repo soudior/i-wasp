@@ -33,8 +33,8 @@ export default function Index() {
       <section className="iw-hero" aria-labelledby="hero-title">
         <div className="iw-hero-copy">
           <p className="iw-eyebrow"><span aria-hidden="true" /> LA CARTE. LE PROFIL. LA RENCONTRE.</p>
-          <h1 id="hero-title">Votre prochaine<br />rencontre<br /><em>commence ici.</em></h1>
-          <p className="iw-lead">Une carte de visite qui ouvre votre univers. Partagez votre profil, vos coordonnées et vos liens d’un geste, ou avec un QR.</p>
+          <h1 id="hero-title">Votre nom.<br /><em>Votre signature.</em></h1>
+          <p className="iw-lead">Une carte à votre image. Un profil clair pour que vos contacts vous retrouvent. Partagez vos coordonnées et vos liens par NFC ou QR.</p>
           <div className="iw-actions"><Link className="iw-button" to="/order/offre">Créer ma carte <ArrowRight size={18} aria-hidden="true" /></Link><Link className="iw-text-link" to="/demo">Voir un exemple <ArrowUpRight size={17} aria-hidden="true" /></Link></div>
           <p className="iw-hero-note">Déjà prêt à commencer ? <Link to="/signup">Créer mon compte</Link></p>
         </div>

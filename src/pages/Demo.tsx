@@ -6,8 +6,6 @@ import { DigitalCard } from "@/components/DigitalCard";
 import { StepIdentity } from "@/components/card-wizard/steps/StepIdentity";
 import { WizardPreview } from "@/components/card-wizard/WizardPreview";
 import { demoData } from "@/components/demo/demoData";
-import scene from "@/assets/iwasp-hero-illustration.webp";
-import profileCapture from "@/assets/demo-profile-capture.jpg";
 import "./demo-draft.css";
 
 export default function Demo() {
@@ -54,36 +52,6 @@ export default function Demo() {
               avec une personne fictive.
             </p>
           </div>
-          <figure className="demo-scene">
-            <div className="demo-scene-image">
-              <img
-                src={scene}
-                alt="Scène illustrative : carte noire et téléphone frontal dans un studio bleu et ivoire"
-                width={2688}
-                height={1520}
-                loading="lazy"
-              />
-              <img
-                className="demo-scene-profile"
-                src={profileCapture}
-                alt="Capture du véritable profil Signature de Camille Exemple, personne fictive"
-                width={327}
-                height={747}
-                loading="lazy"
-              />
-              <p>
-                Votre carte.
-                <br />
-                Votre profil.
-                <br />
-                Le même contact.
-              </p>
-            </div>
-            <figcaption>
-              Illustration de présentation · écran issu de la démo réelle
-              ci-dessous · aucun test NFC physique.
-            </figcaption>
-          </figure>
           <nav className="demo-steps" aria-label="Étapes de la démonstration">
             {[
               "Après l’inscription",
@@ -125,8 +93,8 @@ export default function Demo() {
                 }
               </p>
               <p className="demo-notice">
-                Camille Exemple est une personne fictive. Son visuel de profil
-                est une illustration originale, pas la photo d’un client.
+                Données de démonstration. L’emplacement photo reste neutre en
+                attendant une vraie photo autorisée. Aucun visage artificiel.
               </p>
               {step < 2 ? (
                 <button

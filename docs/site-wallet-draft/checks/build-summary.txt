@@ -1,6 +1,6 @@
-✓ 4749 modules transformed.
-✓ built in 11.45s
+✓ 4748 modules transformed.
+✓ built in 1m 11s
 mode      generateSW
-precache  414 entries (5834.91 KiB)
+precache  413 entries (5834.76 KiB)
 files generated
   dist/sw.js
