@@ -73,7 +73,7 @@ VITE_SUPABASE_URL=http://127.0.0.1:54321 VITE_SUPABASE_PUBLISHABLE_KEY=test-only
 - 128 tests réussis, dont 48 nouveaux tests Wallet : données forgées, sessions/droits, champs masqués, configuration absente, erreurs fournisseur, Unicode français/arabe/emoji, IDs stables, navigation, choix vCard. Mocks locaux uniquement.
 - Typage frontend, configuration Vite et fonctions Wallet réussis. Pour Wallet, déclarations Deno de test dans `tests/wallet/runtime.d.ts` ; ce contrôle ne prouve pas une exécution Edge distante.
 - Build web/PWA réussi avec URL et clé factices locales. Ce bundle de validation ne doit pas être publié.
-- Lint global : **1 erreur préexistante** `prefer-const`, `src/integrations/supabase/previewAuthStorage.ts:38`, et **272 warnings**. Vérifiée présente dans le commit de base. Fichier auth volontairement laissé au lot existant #9 ; lint ciblé des fichiers modifiés : 0 erreur, 2 warnings déjà présents dans WalletCustomizer.
+- Lint global : **0 erreur, 272 warnings**. L’erreur préexistante `prefer-const` de `previewAuthStorage.ts` est corrigée sur demande du propriétaire : suppression de la déclaration `let` séparée, déclaration `const` au même appel setTimeout. Aucun changement de délai, ordre d’appel, message, origine, stockage ou comportement auth. La suppression de ce module prévue par #9 reste à traiter dans cette autre PR.
 - Chromium/Chrome headless : 390×844 et 1440×1000, pas d’erreur JS, pas de débordement horizontal ; audit axe WCAG A/AA sans violation sur accueil et formulaire. Bouton carte via clavier, skip-link, CTA/retour navigateur, erreurs de formulaire/focus, préparation sans envoi, invalidation du message après édition, reduced-motion et refus Wallet anonyme vérifiés. Ce n’est pas une certification d’accessibilité ni un test Safari sur iPhone réel.
 
 Script : `scripts/test-site-wallet-browser.mjs`, requêtes hors `http://127.0.0.1:8080` interceptées. Playwright et `@axe-core/playwright` requis dans l’environnement de test ; `IWASP_BROWSER_PACKAGES` peut pointer vers leur package.json temporaire. Aucun ajout de ces dépendances au produit.
@@ -88,4 +88,8 @@ Aperçu local : lancer `npm run dev -- --host 127.0.0.1` avec les mêmes variabl
 
 ## Validation encore requise
 
-Décision tarifs/conditions par le propriétaire ; configuration et contrats fournisseurs sans exposer les secrets ; contrôle RLS et distribution Wallet ; rendu et installation sur véritables iPhone/Android ; parcours signup/commande avec environnement de test approuvé ; traduction éventuelle ; résolution du lint préexistant et des recouvrements de PR. Rien ne doit être fusionné ou publié avant cette validation.
+Décision tarifs/conditions par le propriétaire ; configuration et contrats fournisseurs sans exposer les secrets ; contrôle RLS et distribution Wallet ; rendu et installation sur véritables iPhone/Android ; parcours signup/commande avec environnement de test approuvé ; traduction éventuelle ; résolution des recouvrements de PR. Rien ne doit être fusionné ou publié avant cette validation.
+
+## Complément de validation
+
+Le test navigateur attend maintenant la fin du fondu d’entrée du formulaire avant de mesurer le contraste : le contrôle précédent pouvait capturer une opacité transitoire. Retournement recto/verso au clavier et absence de transform en reduced-motion retestés à 390 et 1440 px. Aucun changement fonctionnel d’authentification ; seul le correctif de style `const` est ajouté.

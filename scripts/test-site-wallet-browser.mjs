@@ -44,6 +44,8 @@ try {
   const url=await page.getByRole('link',{name:'Ouvrir WhatsApp pour envoyer'}).getAttribute('href');assert.ok(url.startsWith('https://wa.me/'));
   await page.getByLabel('Prénom *',{exact:true}).fill('Élodie modifiée');assert.equal(await page.getByRole('link',{name:'Ouvrir WhatsApp pour envoyer'}).count(),0);
   const unlabelled=await page.locator('input:not([type=hidden]),textarea').evaluateAll(nodes=>nodes.filter(n=>!n.labels?.length&&!n.getAttribute('aria-label')).map(n=>n.name));assert.deepEqual(unlabelled,[]);
+  // Audit the final rendered contrast, after the entrance fade has completed.
+  await page.waitForFunction(() => { const intro = document.querySelector('.text-center.mb-8'); return intro && getComputedStyle(intro).opacity === '1'; });
   const formAxe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
   await page.screenshot({path:`${output}/${name}-form.png`,fullPage:true});
   await page.getByRole('link',{name:'← Retour à l’accueil'}).click();await page.waitForURL(base+'/');
