@@ -1,3 +1,4 @@
+import { expressPublicProfile } from "@/lib/expressPublicProfile";
 /**
  * Express Step 3: Récapitulatif + Paiement
  * /express/payer
@@ -58,14 +59,11 @@ export default function ExpressPayer() {
       if (user?.id) {
         const slug = generateSlug(firstName, lastName);
         
-        await supabase.from('digital_cards').insert({
+        const publicProfile = expressPublicProfile(state.customerInfo);
+        if (publicProfile) await supabase.from('digital_cards').insert({
           user_id: user.id,
           slug,
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          phone: phone,
-          template: 'signature',
+          ...publicProfile,
           is_active: true,
           nfc_enabled: true,
           wallet_enabled: true,

@@ -1,3 +1,4 @@
+import { orderPalette } from "./orderPalette";
 import type { DigitalIdentity } from "@/contexts/OrderFunnelContext";
 
 export const EMPTY_IDENTITY: DigitalIdentity = {
@@ -113,5 +114,6 @@ export function orderProfileFields(
     tagline: (d.tagline ?? d.bio) || null,
     photo_url: d.photoUrl || null,
     template: template || "signature",
+    custom_styles: orderPalette(template || "signature"),
   };
 }

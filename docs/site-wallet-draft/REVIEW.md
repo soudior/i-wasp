@@ -146,3 +146,31 @@ Captures Chrome locales avec **Camille Test, données fictives** : `creation-mob
 La commande complète et le signup restent non exécutés. Le handler existant crée le profil avant certaines opérations de commande ; son atomicité demande une revue dédiée avant publication. Les autres tunnels Express/CardStudio restent à harmoniser : CardStudio conserve notamment un risque de saisie écrasée lors d’un refetch et des valeurs de nom par défaut. Ces constats ne sont pas présentés comme corrigés. Les fichiers clients protégés ne sont pas modifiés. La photo réelle autorisée, les prérequis Wallet et les validations commerciales restent attendus.
 
 PR11 revérifiée, tête inchangée `8529a4ff827fe460a2e3cfbe25195e28b8c1f8ec`. Le petit ajout `PublicCard.tsx` est un nouveau recouvrement à examiner, sans absorber le travail iOS/vCard de cette branche.
+
+## Fermeture des écarts de cohérence — complément final
+
+### Chemins réellement accessibles
+
+- Express est actif : `/contact`, `/about` et `/a-propos`, `/produit`, `/iwasp/produit`, `/conversion` et certaines pages historiques contiennent des liens vers `/express/offre`. `/create` redirige également vers Express, y compris depuis des liens du guide et du dashboard. Le navigateur local vérifie Contact → Express et la redirection `/create`.
+- `/editor` et `/card-studio` sont déclarés mais protégés par `DashboardGuard` : anonyme → `/login`, utilisateur sans carte → `/onboarding`. Aucun lien vers ces deux routes n’a été trouvé dans les composants/pages publics ni Studio. Les deux redirections anonymes sont testées. CardStudio n’est donc pas refondu ; ses risques de refetch/valeurs par défaut restent à traiter avant de l’exposer davantage. Aucune session réelle ouverte.
+
+### Harmonisations limitées aux divergences prouvées
+
+Express utilisait les données de livraison comme coordonnées publiques lors de l’insertion d’une carte pour un utilisateur connecté. Désormais, l’option distincte `publishNameOnly` est décochée par défaut, y compris pour les anciens brouillons. Sans confirmation, aucune insertion de profil n’est préparée par ce tunnel. Avec confirmation, seuls prénom et nom sont publiés ; email et téléphone de commande restent null dans le profil. Modifier les données invalide ce choix. Prix, abonnements, paiement et logique de commande inchangés ; aucun de ces handlers n’a été déclenché pendant les tests.
+
+Les six labels Express sont associés aux champs/erreurs ; focus sur première erreur. Le numéro n’est plus transformé automatiquement en +212 ni tronqué. Brouillon sauvegardé dans le même onglet, quota signalé. La barre mobile globale est masquée dans le tunnel Express pour ne pas recouvrir son CTA. La mention « +500 cartes livrées » non étayée et le délai arbitraire « 2 minutes » ont été retirés de cette étape.
+
+Les quatre choix `/order/template` deviennent explicitement des **palettes du profil public à mise en page commune**, plutôt que de promettre quatre renderers distincts. La même définition sert aux vignettes et aux `custom_styles` du nouveau profil. Le renderer PublicCard existant applique ces styles. Aucun recalcul des cartes existantes, aucune modification des templates clients ou de PublicCard dans ce complément. Les choix exposent aria-pressed, le numéro d’étape est corrigé à 03, les entrées animées respectent reduced-motion et le badge « Populaire » non prouvé est retiré. Les captures montrent Executive choisi puis rendu, avec Camille Test.
+
+### Compatibilité précise avec PR11
+
+Tête PR11 revérifiée : `8529a4ff827fe460a2e3cfbe25195e28b8c1f8ec`, ouverte/draft. Son seul hunk PublicCard remplace l’URL vCard inconditionnelle par `vcardData.slug ? URL : null`, vers la ligne 161. Cette condition est **déjà présente dans notre base c82eadb1**, puis conservée dans PR12 ; notre unique ajout PublicCard se situe vers la ligne 435 (phrase de présentation). Le patch ne s’applique pas en avant parce qu’il est déjà présent ; `git apply --reverse --check` réussit sans rien modifier. Le test navigateur télécharge deux vCards locales fictives : sans slug, aucune ligne URL ; avec slug, une ligne URL, jamais « undefined ». Aucun contact installé. Aucun fichier iOS/workflow ni PR11 modifié. Cela vérifie ce hunk, pas une fusion générale des deux branches.
+
+### Preuves finales de ce complément
+
+- 149 tests unitaires (17 fichiers) réussis ; 9 nouveaux cas consentement Express, absence de copie des coordonnées et correspondance des palettes.
+- Typechecks app/node/Wallet et build/PWA réussis. Lint : zéro erreur, 271 avertissements.
+- `scripts/test-creation-consistency.cjs` et `consistency-browser-results.json` : Chrome 390/1440 px, routes, erreurs/focus Express, conservation du téléphone et du brouillon, invalidation du consentement, quatre palettes sélectionnées → mapping réel → RPC fictif → CSS destinataire vérifié, vCards avec/sans slug. Zéro erreur JS ; axe sans violation sur la nouvelle section confidentialité Express. Aucun POST vers orders/digital_cards/subscriptions/signup. Toutes les requêtes externes, y compris analytics, sont interceptées. Les handlers de paiement/commande ne sont pas cliqués.
+- Captures natives : `express-privacy-{390,1440}.jpg`, `palette-choice-{390,1440}.jpg`, `palette-recipient-{390,1440}.jpg`. Données exclusivement fictives. Les trois captures 390 px sont aussi conservées dans Library.
+
+Restent non exécutés : compte authentifié réel, sauvegarde distante, commande, transfert photo, installation Wallet/NFC et Safari/iPhone physique. Le traitement historique Express des abonnements avant finalisation de commande, les erreurs d’insertion ignorées et l’atomicité restent hors modification, à revoir séparément avant publication. La correspondance ajoutée porte sur les quatre palettes du tunnel principal, pas sur l’ensemble des templates du catalogue/CardStudio. Aucune fusion ni production.

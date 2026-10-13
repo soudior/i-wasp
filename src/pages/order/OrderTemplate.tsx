@@ -1,3 +1,4 @@
+import { ORDER_PALETTES } from "@/lib/orderPalette";
 /**
  * Step 2: Choix du template
  * /order/template
@@ -5,8 +6,8 @@
  * Style: Haute Couture Digitale — Noir, minimaliste, silencieux
  */
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useRef } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useOrderFunnel, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
 import { Check, ArrowLeft } from "lucide-react";
@@ -58,6 +59,8 @@ const templates: TemplateOption[] = [
 ];
 
 function OrderTemplateContent() {
+  const reducedMotion = useReducedMotion();
+  const lock = useRef(false);
   const navigate = useNavigate();
   const { state, setSelectedTemplate, nextStep, prevStep } = useOrderFunnel();
   const [isNavigating, setIsNavigating] = useState(false);
@@ -68,7 +71,8 @@ function OrderTemplateContent() {
   };
 
   const handleContinue = async () => {
-    if (isNavigating || state.isTransitioning) return;
+    if (lock.current || isNavigating || state.isTransitioning) return;
+    lock.current = true;
     setIsNavigating(true);
     setSelectedTemplate(selectedId);
     await nextStep();
@@ -96,7 +100,7 @@ function OrderTemplateContent() {
           <button 
             onClick={handleBack}
             className="flex items-center gap-2 transition-all duration-500"
-            style={{ color: COUTURE.textMuted }}
+            style={{ color: "#bcb8b0" }}
             onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.silk}
             onMouseLeave={(e) => e.currentTarget.style.color = COUTURE.textMuted}
           >
@@ -124,7 +128,7 @@ function OrderTemplateContent() {
               className="text-[10px] uppercase tracking-[0.3em]"
               style={{ color: COUTURE.gold }}
             >
-              02
+              03
             </span>
             <div 
               className="w-12 h-px"
@@ -132,7 +136,7 @@ function OrderTemplateContent() {
             />
             <span 
               className="text-[10px] uppercase tracking-[0.2em]"
-              style={{ color: COUTURE.textMuted }}
+              style={{ color: "#bcb8b0" }}
             >
               Template
             </span>
@@ -146,7 +150,7 @@ function OrderTemplateContent() {
           {/* Title */}
           <motion.div 
             className="text-center mb-16"
-            initial={{ opacity: 0 }}
+            initial={reducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5 }}
           >
@@ -158,9 +162,9 @@ function OrderTemplateContent() {
             </h1>
             <p 
               className="text-sm font-light"
-              style={{ color: COUTURE.textMuted }}
+              style={{ color: "#bcb8b0" }}
             >
-              Personnalisable à l'étape suivante.
+              Choisissez la palette de votre profil public. La mise en page reste commune ; la carte physique se personnalise à l’étape suivante.
             </p>
           </motion.div>
 
@@ -173,7 +177,8 @@ function OrderTemplateContent() {
                 <motion.button
                   key={template.id}
                   onClick={() => handleSelectTemplate(template.id)}
-                  initial={{ opacity: 0, y: 20 }}
+                  aria-pressed={isSelected}
+                  initial={reducedMotion ? false : { opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.08, duration: 0.8 }}
                   className="text-left transition-all duration-700 relative overflow-hidden"
@@ -193,71 +198,19 @@ function OrderTemplateContent() {
                 >
                   {/* Preview area */}
                   <div 
-                    className="h-28 md:h-36 relative overflow-hidden"
-                    style={{ background: template.preview }}
+                    className="min-h-36 relative overflow-hidden"
+                    style={{ background: ORDER_PALETTES[template.id as keyof typeof ORDER_PALETTES].backgroundColor }}
                   >
-                    {/* Pattern overlay based on template type */}
-                    {template.pattern === "honeycomb" && (
-                      <div 
-                        className="absolute inset-0 opacity-20"
-                        style={{
-                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cpath d='M14 0L0 8.5V24.5L14 33L28 24.5V8.5L14 0zM14 16.5L28 25V41L14 49L0 41V25L14 16.5z' fill='${encodeURIComponent(template.accent || "#D4AF37")}' fill-opacity='0.4'/%3E%3C/svg%3E")`,
-                          backgroundSize: '20px 35px',
-                        }}
-                      />
-                    )}
-                    {template.pattern === "diagonal" && (
-                      <div 
-                        className="absolute inset-0 opacity-15"
-                        style={{
-                          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,255,255,0.1) 8px, rgba(255,255,255,0.1) 16px)`,
-                        }}
-                      />
-                    )}
-                    {template.pattern === "grid" && (
-                      <div 
-                        className="absolute inset-0 opacity-20"
-                        style={{
-                          backgroundImage: `linear-gradient(${template.accent || "#87CEEB"}20 1px, transparent 1px), linear-gradient(90deg, ${template.accent || "#87CEEB"}20 1px, transparent 1px)`,
-                          backgroundSize: '16px 16px',
-                        }}
-                      />
-                    )}
-                    {template.pattern === "dots" && (
-                      <div 
-                        className="absolute inset-0 opacity-25"
-                        style={{
-                          backgroundImage: `radial-gradient(${template.accent || "#C9A96E"} 1px, transparent 1px)`,
-                          backgroundSize: '12px 12px',
-                        }}
-                      />
-                    )}
-
-                    {/* Accent line */}
-                    {template.accent && (
-                      <div 
-                        className="absolute bottom-0 left-0 right-0 h-0.5"
-                        style={{ backgroundColor: template.accent }}
-                      />
-                    )}
-
-                    {/* Signature badge */}
-                    {template.isSignature && (
-                      <span 
-                        className="absolute top-3 right-3 px-2 py-0.5 text-[8px] uppercase tracking-[0.15em]"
-                        style={{ 
-                          backgroundColor: COUTURE.gold,
-                          color: COUTURE.jet,
-                        }}
-                      >
-                        Populaire
-                      </span>
-                    )}
+                    <div className="m-4 p-3 rounded-xl" style={{ background: '#1D1D1F', color: '#FFFFFF' }}>
+                      <p className="text-sm">Votre nom</p>
+                      <p className="text-xs" style={{color:'#C7C7CC'}}>Profil public</p>
+                      <span className="block text-xs mt-2 px-2 py-1 rounded" style={{background: ORDER_PALETTES[template.id as keyof typeof ORDER_PALETTES].accentColor}}>Ajouter au contact</span>
+                    </div>
 
                     {/* Selection check */}
                     {isSelected && (
                       <motion.div 
-                        initial={{ scale: 0 }}
+                        initial={reducedMotion ? false : { scale: 0 }}
                         animate={{ scale: 1 }}
                         className="absolute top-3 left-3 w-6 h-6 rounded-full flex items-center justify-center"
                         style={{ backgroundColor: COUTURE.gold }}
@@ -280,7 +233,7 @@ function OrderTemplateContent() {
                     </h3>
                     <p 
                       className="text-[11px]"
-                      style={{ color: COUTURE.textMuted }}
+                      style={{ color: "#bcb8b0" }}
                     >
                       {template.description}
                     </p>
@@ -304,9 +257,9 @@ function OrderTemplateContent() {
           <button
             onClick={handleContinue}
             disabled={!selectedId || isNavigating || state.isTransitioning}
-            className="text-[11px] uppercase tracking-[0.25em] font-light transition-all duration-700 pb-1 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="text-[11px] uppercase tracking-[0.25em] min-h-12 px-8 font-medium disabled:opacity-30 disabled:cursor-not-allowed"
             style={{ 
-              color: selectedId ? COUTURE.gold : COUTURE.textMuted,
+              color: selectedId ? "#d6c6ac" : "#bcb8b0",
               borderBottom: `1px solid ${selectedId ? `${COUTURE.gold}60` : 'transparent'}`,
             }}
           >

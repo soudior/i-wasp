@@ -1,3 +1,4 @@
+import { normalizeExpressPhone } from "@/lib/expressPublicProfile";
 /**
  * Express Step 2: Informations client + livraison
  * /express/infos
@@ -23,34 +24,7 @@ const validateEmail = (email: string): boolean => {
 
 const validatePhone = (phone: string): boolean => {
   const cleaned = phone.replace(/[\s\-\.\(\)]/g, "");
-  return cleaned.length >= 9 && /^[\+]?[0-9]+$/.test(cleaned);
-};
-
-const formatPhoneNumber = (value: string): string => {
-  let digits = value.replace(/[^\d+]/g, "");
-  
-  if (digits.startsWith("0")) {
-    digits = "+212" + digits.slice(1);
-  }
-  
-  if (digits.length > 0 && !digits.startsWith("+")) {
-    if (digits.length <= 9) {
-      digits = "+212" + digits;
-    }
-  }
-  
-  if (digits.startsWith("+212") && digits.length > 4) {
-    const rest = digits.slice(4);
-    let formatted = "+212";
-    if (rest.length > 0) formatted += " " + rest.slice(0, 1);
-    if (rest.length > 1) formatted += " " + rest.slice(1, 3);
-    if (rest.length > 3) formatted += " " + rest.slice(3, 5);
-    if (rest.length > 5) formatted += " " + rest.slice(5, 7);
-    if (rest.length > 7) formatted += " " + rest.slice(7, 9);
-    return formatted;
-  }
-  
-  return digits;
+  return /^\+?[0-9]{8,15}$/.test(cleaned);
 };
 
 const POPULAR_CITIES = [
@@ -60,7 +34,7 @@ const POPULAR_CITIES = [
 
 export default function ExpressInfos() {
   const navigate = useNavigate();
-  const { state, setCustomerInfo, canAccessStep } = useExpressCheckout();
+  const { state, setCustomerInfo, setCustomerDraft, storageWarning, canAccessStep } = useExpressCheckout();
   const [isNavigating, setIsNavigating] = useState(false);
   const { trackInfoSubmit } = useExpressCheckoutTracking('infos');
   const [showCityDropdown, setShowCityDropdown] = useState(false);
@@ -74,7 +48,7 @@ export default function ExpressInfos() {
   }, [canAccessStep, navigate]);
 
   const [formData, setFormData] = useState<ExpressCustomerInfo>(
-    state.customerInfo || {
+    state.customerDraft || state.customerInfo || {
       firstName: "",
       lastName: "",
       email: "",
@@ -98,7 +72,7 @@ export default function ExpressInfos() {
     if (!formData.phone.trim()) {
       errs.phone = "Téléphone requis";
     } else if (!validatePhone(formData.phone)) {
-      errs.phone = "Format: +212 6 XX XX XX XX";
+      errs.phone = "Indiquez 8 à 15 chiffres ; aucun indicatif n’est ajouté automatiquement.";
     }
     if (!formData.address.trim()) errs.address = "Adresse requise";
     if (!formData.city.trim()) errs.city = "Ville requise";
@@ -108,10 +82,9 @@ export default function ExpressInfos() {
   const isValid = Object.keys(errors).length === 0;
 
   const handleChange = (field: keyof ExpressCustomerInfo, value: string) => {
-    if (field === "phone") {
-      value = formatPhoneNumber(value);
-    }
-    setFormData(prev => ({ ...prev, [field]: value }));
+    const next = { ...formData, [field]: value, publishNameOnly: false };
+    setFormData(next);
+    setCustomerDraft(next);
   };
 
   const handleBlur = (field: string) => {
@@ -122,7 +95,7 @@ export default function ExpressInfos() {
   };
 
   const handleCitySelect = (city: string) => {
-    setFormData(prev => ({ ...prev, city }));
+    handleChange("city", city);
     setShowCityDropdown(false);
   };
 
@@ -139,6 +112,7 @@ export default function ExpressInfos() {
         city: true,
       });
       toast.error("Veuillez remplir tous les champs");
+      requestAnimationFrame(() => document.getElementById(`express-${Object.keys(errors)[0]}`)?.focus());
       return;
     }
 
@@ -149,7 +123,8 @@ export default function ExpressInfos() {
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
       email: formData.email.toLowerCase().trim(),
-      phone: formData.phone.trim(),
+      phone: normalizeExpressPhone(formData.phone),
+      publishNameOnly: formData.publishNameOnly === true,
       address: formData.address.trim(),
       city: formData.city.trim(),
     });
@@ -200,7 +175,7 @@ export default function ExpressInfos() {
             <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: APPLE.border }} />
           </div>
           <p className="text-center mt-2 text-xs font-medium" style={{ color: APPLE.textMuted }}>
-            Étape 2 sur 3 — Plus que 2 minutes
+            Étape 2 sur 3 — Coordonnées de commande
           </p>
         </div>
       </div>
@@ -208,19 +183,6 @@ export default function ExpressInfos() {
       {/* Main content */}
       <main className="px-6 pb-44">
         <div className="max-w-lg mx-auto">
-          {/* Social Proof Banner */}
-          <motion.div 
-            className="mb-6 p-3 rounded-full flex items-center justify-center gap-2"
-            style={{ backgroundColor: APPLE.accentSubtle }}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <CheckCircle className="w-4 h-4" style={{ color: APPLE.accent }} />
-            <span className="text-sm" style={{ color: APPLE.accent }}>
-              <strong>+500 cartes</strong> livrées au Maroc
-            </span>
-          </motion.div>
-
           {/* Title */}
           <motion.div 
             className="text-center mb-6"
@@ -248,11 +210,12 @@ export default function ExpressInfos() {
             {/* Name Row */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium" style={{ color: APPLE.textSecondary }}>
+                <Label htmlFor="express-firstName" className="text-sm font-medium" style={{ color: APPLE.textSecondary }}>
                   Prénom
                 </Label>
                 <Input
-                  value={formData.firstName}
+                  id="express-firstName" required aria-invalid={Boolean(touched.firstName && errors.firstName)} aria-describedby={touched.firstName && errors.firstName ? "express-firstName-error" : undefined}
+                value={formData.firstName}
                   onChange={(e) => handleChange("firstName", e.target.value)}
                   onBlur={() => handleBlur("firstName")}
                   placeholder="Prénom"
@@ -265,15 +228,16 @@ export default function ExpressInfos() {
                   }}
                 />
                 {touched.firstName && errors.firstName && (
-                  <p className="text-xs" style={{ color: APPLE.error }}>{errors.firstName}</p>
+                  <p id="express-firstName-error" className="text-xs" style={{ color: APPLE.error }}>{errors.firstName}</p>
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium" style={{ color: APPLE.textSecondary }}>
+                <Label htmlFor="express-lastName" className="text-sm font-medium" style={{ color: APPLE.textSecondary }}>
                   Nom
                 </Label>
                 <Input
-                  value={formData.lastName}
+                  id="express-lastName" required aria-invalid={Boolean(touched.lastName && errors.lastName)} aria-describedby={touched.lastName && errors.lastName ? "express-lastName-error" : undefined}
+                value={formData.lastName}
                   onChange={(e) => handleChange("lastName", e.target.value)}
                   onBlur={() => handleBlur("lastName")}
                   placeholder="Nom"
@@ -286,19 +250,20 @@ export default function ExpressInfos() {
                   }}
                 />
                 {touched.lastName && errors.lastName && (
-                  <p className="text-xs" style={{ color: APPLE.error }}>{errors.lastName}</p>
+                  <p id="express-lastName-error" className="text-xs" style={{ color: APPLE.error }}>{errors.lastName}</p>
                 )}
               </div>
             </div>
 
             {/* Phone */}
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
+              <Label htmlFor="express-phone" className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
                 <Phone className="w-4 h-4" style={{ color: APPLE.accent }} />
                 Téléphone WhatsApp
               </Label>
               <Input
                 type="tel"
+                id="express-phone" required aria-invalid={Boolean(touched.phone && errors.phone)} aria-describedby={touched.phone && errors.phone ? "express-phone-error" : undefined}
                 value={formData.phone}
                 onChange={(e) => handleChange("phone", e.target.value)}
                 onBlur={() => handleBlur("phone")}
@@ -312,18 +277,19 @@ export default function ExpressInfos() {
                 }}
               />
               {touched.phone && errors.phone && (
-                <p className="text-xs" style={{ color: APPLE.error }}>{errors.phone}</p>
+                <p id="express-phone-error" className="text-xs" style={{ color: APPLE.error }}>{errors.phone}</p>
               )}
             </div>
 
             {/* Email */}
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
+              <Label htmlFor="express-email" className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
                 <Mail className="w-4 h-4" style={{ color: APPLE.accent }} />
                 Email (pour le suivi)
               </Label>
               <Input
                 type="email"
+                id="express-email" required aria-invalid={Boolean(touched.email && errors.email)} aria-describedby={touched.email && errors.email ? "express-email-error" : undefined}
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
                 onBlur={() => handleBlur("email")}
@@ -337,17 +303,18 @@ export default function ExpressInfos() {
                 }}
               />
               {touched.email && errors.email && (
-                <p className="text-xs" style={{ color: APPLE.error }}>{errors.email}</p>
+                <p id="express-email-error" className="text-xs" style={{ color: APPLE.error }}>{errors.email}</p>
               )}
             </div>
 
             {/* City */}
             <div className="space-y-1.5 relative">
-              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
+              <Label htmlFor="express-city" className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
                 <MapPin className="w-4 h-4" style={{ color: APPLE.accent }} />
                 Ville
               </Label>
               <Input
+                id="express-city" required aria-invalid={Boolean(touched.city && errors.city)} aria-describedby={touched.city && errors.city ? "express-city-error" : undefined}
                 value={formData.city}
                 onChange={(e) => {
                   handleChange("city", e.target.value);
@@ -388,17 +355,18 @@ export default function ExpressInfos() {
                 </div>
               )}
               {touched.city && errors.city && (
-                <p className="text-xs" style={{ color: APPLE.error }}>{errors.city}</p>
+                <p id="express-city-error" className="text-xs" style={{ color: APPLE.error }}>{errors.city}</p>
               )}
             </div>
 
             {/* Address */}
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
+              <Label htmlFor="express-address" className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
                 <Truck className="w-4 h-4" style={{ color: APPLE.accent }} />
                 Adresse de livraison
               </Label>
               <Input
+                id="express-address" required aria-invalid={Boolean(touched.address && errors.address)} aria-describedby={touched.address && errors.address ? "express-address-error" : undefined}
                 value={formData.address}
                 onChange={(e) => handleChange("address", e.target.value)}
                 onBlur={() => handleBlur("address")}
@@ -412,9 +380,21 @@ export default function ExpressInfos() {
                 }}
               />
               {touched.address && errors.address && (
-                <p className="text-xs" style={{ color: APPLE.error }}>{errors.address}</p>
+                <p id="express-address-error" className="text-xs" style={{ color: APPLE.error }}>{errors.address}</p>
               )}
             </div>
+
+            <section className="rounded-xl border p-4 space-y-3" style={{color: APPLE.text, backgroundColor: APPLE.card}} aria-label="Visibilité du profil">
+              <p className="text-sm">L’email, le téléphone et l’adresse ci-dessus servent à la commande. Ils ne sont pas copiés sur votre profil public.</p>
+              <label className="flex gap-3 text-sm items-start">
+                <input type="checkbox" className="mt-1 w-5 h-5" checked={formData.publishNameOnly === true}
+                  onChange={e => { const next = {...formData, publishNameOnly:e.target.checked}; setFormData(next); setCustomerDraft(next); }} />
+                Je souhaite aussi un profil public avec uniquement mon prénom et mon nom (facultatif, pour un compte connecté).
+              </label>
+              <p className="text-sm">Sans cette option, ce tunnel ne crée pas de profil. Pour choisir les informations et la palette de votre carte, utilisez le <Link to="/order/offre" className="underline">parcours de personnalisation</Link>.</p>
+              <p className="text-sm">Brouillon conservé dans cet onglet. <Link to="/privacy" className="underline">Confidentialité</Link></p>
+              {storageWarning && <p role="alert">Le navigateur ne peut pas conserver ce brouillon après rechargement. Gardez cette page ouverte.</p>}
+            </section>
 
             {/* WhatsApp Help */}
             <motion.button

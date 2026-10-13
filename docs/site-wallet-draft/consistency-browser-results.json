@@ -1,0 +1,538 @@
+[
+  {
+    "width": 390,
+    "paletteResults": [
+      {
+        "id": "signature",
+        "background": "rgb(23, 23, 39)"
+      },
+      {
+        "id": "dark-luxury",
+        "background": "rgb(16, 16, 15)"
+      },
+      {
+        "id": "executive",
+        "background": "rgb(16, 38, 60)"
+      },
+      {
+        "id": "boutique",
+        "background": "rgb(48, 37, 28)"
+      }
+    ],
+    "errors": [],
+    "externalRequestsIntercepted": [
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/analytics_events",
+        "method": "POST"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/analytics_events",
+        "method": "POST"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/get_public_card",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_stories",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/increment_card_view",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_scans",
+        "method": "POST"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/get_public_card",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_stories",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/increment_card_view",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_scans",
+        "method": "POST"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/get_public_card",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_stories",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/increment_card_view",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_scans",
+        "method": "POST"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/get_public_card",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_stories",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/increment_card_view",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_scans",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/rpc/get_vcard_data",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/rpc/get_vcard_data",
+        "method": "POST"
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "paletteResults": [
+      {
+        "id": "signature",
+        "background": "rgb(23, 23, 39)"
+      },
+      {
+        "id": "dark-luxury",
+        "background": "rgb(16, 16, 15)"
+      },
+      {
+        "id": "executive",
+        "background": "rgb(16, 38, 60)"
+      },
+      {
+        "id": "boutique",
+        "background": "rgb(48, 37, 28)"
+      }
+    ],
+    "errors": [],
+    "externalRequestsIntercepted": [
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/analytics_events",
+        "method": "POST"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/analytics_events",
+        "method": "POST"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/get_public_card",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_stories",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/increment_card_view",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_scans",
+        "method": "POST"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/get_public_card",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_stories",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/increment_card_view",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_scans",
+        "method": "POST"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/get_public_card",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_stories",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/increment_card_view",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_scans",
+        "method": "POST"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/json/",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/brand_assets",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/get_public_card",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_stories",
+        "method": "GET"
+      },
+      {
+        "path": "/rest/v1/rpc/increment_card_view",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/card_scans",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/rpc/get_vcard_data",
+        "method": "POST"
+      },
+      {
+        "path": "/rest/v1/rpc/get_vcard_data",
+        "method": "POST"
+      }
+    ]
+  }
+]
