@@ -100,7 +100,7 @@ Le test navigateur attend maintenant la fin du fondu d’entrée du formulaire a
 
 Les actions click/clavier et les déclencheurs de pressions longues sont neutralisés dans le profil de démonstration. Une région status explique qu’aucun contact, fichier ou Wallet n’est créé. Les captures proviennent de Chrome exécutant ces vrais composants, sans UI générée. Un défaut existant de LocationPicker est corrigé : le déclencheur inline est un bouton natif, accessible au clavier, au lieu d’un div portant aria-expanded.
 
-La scène bleue Higgsfield a été retirée de l’interface et de l’arbre du brouillon suivant le retour du propriétaire. Sa provenance reste archivée localement dans media-source/ et dans Library. Elle n’est jamais présentée comme une photographie réelle. Les deux packshots officiels sont conservés, avec leur fond photographique original, sans rotation ni double perspective. Le vrai écran Signature a été recapturé sans portrait artificiel.
+La scène bleue Higgsfield a été retirée de l’interface et de l’arbre du brouillon suivant le retour du propriétaire. Sa provenance reste archivée localement dans media-source/ et dans Library. Elle n’est jamais présentée comme une photographie réelle. Les deux packshots officiels sont conservés, à partir de leur photographie originale, sans rotation ni double perspective. Le vrai écran Signature a été recapturé sans portrait artificiel.
 
 Contenus sémantiques uniques dans `/demo` : usages accueil hôtelier et restauration, coordonnées utiles et liens vers menu/réservation existants. Aucun faux moteur de réservation ni garantie de classement. Direction validée pour cette itération : noir profond, graphite, champagne discret ; typographie affirmée « Votre nom. Votre signature. », composition éditoriale et cadres sobres. Logo produit doré conservé. Aucun achat, génération supplémentaire, mise à jour de dépendances ou déploiement effectué par cette tâche.
 
@@ -113,3 +113,11 @@ CI GitHub : les workflows inspectés sont manuels. Aucun résultat vide/pending 
 ## Retour propriétaire : direction noire et photo réelle attendue
 
 La direction blanche/bleue précédente est remplacée dans l’accueil et la démonstration. Aucun nouveau visage généré, aucune photo client récupérée, aucune image stock présentée comme cliente. Les cinq captures sont remplacées dans les mêmes fichiers et les mêmes identités Library ; leurs versions précédentes restent l’historique. La vraie photo autorisée constitue le seul élément visuel demandé encore manquant. Aucun coût supplémentaire ni changement commercial.
+
+## Visuel principal de la carte — cadrage rapproché
+
+Révision limitée à HeroProductVisual et sa présentation CSS. Le grand panneau blanc est remplacé par un cadrage de détail de la photographie officielle frontale : fenêtre source x=272, y=152, largeur 482, hauteur 288. Logo et surface photographiée inchangés ; fichier source SHA-1 toujours 08131e45f961928e8e26244455e4c206ef18496b. Aucun fichier raster retouché, aucune image générée, aucune dépense ni promesse de matériau/finition. La légende dit explicitement « détail de la photo officielle ». L’encadrement et l’ombre sont des éléments de présentation CSS.
+
+La photo verso conserve son cadrage complet et sa perspective d’origine. Le changement de vue est utilisable au clavier, sans animation de faux retournement. Mobile : carte séparée du téléphone, aucune légende masquée. Contrôles affectés : lint global, typecheck app, build/PWA, scripts navigateur accueil/formulaire/Wallet et contrôle de débordement aux largeurs 360/390/768/1440. Aucun changement aux tarifs, Wallet, profil, formulaire ou données client.
+
+Livrables : card-closeup.jpg (gros plan de la composition native, ~430 px de large), mobile-hero.jpg, desktop-hero.jpg. Le cadrage est limité par la résolution de la photographie fournie ; pour une vue ou un éclairage produit véritablement nouveau, une nouvelle photo autorisée ou une retouche raster validée serait nécessaire.

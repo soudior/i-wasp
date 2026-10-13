@@ -37,8 +37,10 @@ export function HeroProductVisual() {
       </div>
       <figcaption>
         <div>
-          <span className="iw-product-label">LA CARTE i-WASP</span>
-          <p role="status">{flipped ? "Verso" : "Recto"} · visuel du produit</p>
+          <span className="iw-product-label">i-WASP / CARTE DE VISITE</span>
+          <p role="status">
+            {flipped ? "Verso" : "Recto"} · détail de la photo officielle
+          </p>
         </div>
         <button
           type="button"
