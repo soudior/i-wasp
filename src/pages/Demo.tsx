@@ -86,8 +86,8 @@ export default function Demo() {
               <p>
                 {
                   [
-                    "Dans le parcours réel, vous créez votre compte avant d’enregistrer votre carte. Cet aperçu reprend le composant utilisé pendant la création : aucun compte n’est ouvert ici.",
-                    "Modifiez les champs du véritable formulaire d’identité. Les changements restent uniquement dans cette page, jusqu’à son rechargement.",
+                    "Explorez une démonstration locale des composants i-wasp. Le parcours de commande comporte ses propres étapes ; aucun compte ni aucune carte ne sont créés ici.",
+                    "Essayez ce formulaire de démonstration. Les changements restent uniquement dans cette page, jusqu’à son rechargement. Le formulaire de commande est accessible depuis « Créer ma carte ».",
                     "Voici le véritable composant du profil Signature, présenté dans un cadre de téléphone illustratif. Les informations saisies sont reprises ; les actions sont neutralisées dans cette démo.",
                   ][step]
                 }

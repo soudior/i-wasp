@@ -432,6 +432,8 @@ const PublicCard = () => {
           )}
         </div>
 
+        {card.tagline && <p className="text-center text-sm mb-6" style={{ color: textColor }}>{card.tagline}</p>}
+
         {/* Action Buttons - Only show if contact method exists */}
         <div className="space-y-3">
           {/* Primary Actions Row */}

@@ -52,7 +52,7 @@ Les handlers vérifient le bearer via Auth, puis relisent uniquement la carte ac
 
 ## PR existantes et conflits
 
-- #11 `codex/ios-login-backend-guard`, ouverte en brouillon, tête `8529a4ff827fe460a2e3cfbe25195e28b8c1f8ec`, non fusionnée : iOS, workflows, backend, vCard PublicCard. Aucun de ces fichiers applicatifs n’est touché. Seul `vercel.json` se recoupe : conserver les deux entrées de désactivation de branches lors d’une intégration ultérieure.
+- #11 `codex/ios-login-backend-guard`, ouverte en brouillon, tête `8529a4ff827fe460a2e3cfbe25195e28b8c1f8ec`, non fusionnée : iOS, workflows, backend, vCard PublicCard. La dernière correction ajoute aussi la phrase de présentation dans `PublicCard.tsx`, fichier commun à la PR11 : conserver ses changements vCard lors de la revue. `vercel.json` se recoupe également : conserver les deux entrées de désactivation de branches lors d’une intégration ultérieure.
 - #9 ouverte : tarifs, autonomie, suppression previewAuthStorage, fonction Google Wallet. Recouvre Index, google-wallet et potentiellement vercel.json. Revue manuelle nécessaire ; ne pas rétablir automatiquement ses changements de prix ni les écraser. Cette PR laisse les origines Google existantes intactes pour ne pas absorber sa décision.
 - #8 et #10 ouvertes : suppression compte/confidentialité/iOS. Aucun workflow, paiement, politique de compte ou client protégé changé.
 - `main` vérifié inchangé à `c82eadb1` avant préparation de la PR.
@@ -121,3 +121,28 @@ Révision limitée à HeroProductVisual et sa présentation CSS. Le grand pannea
 La photo verso conserve son cadrage complet et sa perspective d’origine. Le changement de vue est utilisable au clavier, sans animation de faux retournement. Mobile : carte séparée du téléphone, aucune légende masquée. Contrôles affectés : lint global, typecheck app, build/PWA, scripts navigateur accueil/formulaire/Wallet et contrôle de débordement aux largeurs 360/390/768/1440. Aucun changement aux tarifs, Wallet, profil, formulaire ou données client.
 
 Livrables : card-closeup.jpg (gros plan de la composition native, ~430 px de large), mobile-hero.jpg, desktop-hero.jpg. Le cadrage est limité par la résolution de la photographie fournie ; pour une vue ou un éclairage produit véritablement nouveau, une nouvelle photo autorisée ou une retouche raster validée serait nécessaire.
+
+
+## Audit du parcours actif et corrections — 13 octobre, complément
+
+Le CTA d’accueil utilise `/order/offre` → `/order/identite` → `/order/template` → `/order/carte` → `/order/livraison` → `/order/recap` → confirmation. Cela représente six étapes avant confirmation. `CardWizard` n’est pas monté dans ce parcours ; `/create` redirige vers le tunnel Express et `/editor` vers CardStudio. Le texte de `/demo` est corrigé : c’est une démonstration locale de composants, pas une copie exacte du formulaire actif ni une preuve de création de compte.
+
+### Corrections concrètes
+
+- Identité : prénom et nom requis, photo/activité/liens regroupés dans une section facultative. Labels, attributs required, erreurs associées et focus premier champ invalide ; liens http/https validés, pas de code pays inventé.
+- Coordonnées publiques explicitement séparées de l’email de compte et du téléphone de livraison. Confirmation de visibilité requise et invalidée après chaque modification. Une valeur publique vide reste `null` ; aucune récupération implicite de l’email privé du compte.
+- Aperçu des informations en direct sur ordinateur et bascule mobile. Il annonce que le rendu final peut différer ; aucune action de contact active.
+- Brouillon de l’identité dans sessionStorage du même onglet, conservé sur Retour, navigateur précédent/suivant et rechargement. Bouton effacer ; erreur quota signalée, saisie en mémoire préservée. Le brouillon n’est pas une sauvegarde serveur ni une reprise multiappareil.
+- Photo locale jusqu’à Continuer ; formats/poids vérifiés. Le transfert exige une session existante, utilise le préfixe utilisateur prévu par le stockage et un nom aléatoire. Échec : message sans perte des champs. Retirer une photo ne supprime pas un ancien média déjà public. Aucun transfert réel exécuté.
+- Verrou synchrone contre doubles clics ; état de route resynchronisé après Retour navigateur.
+- `orderProfileFields` mappe désormais photo, phrase et modèle choisi vers l’insertion existante. La phrase apparaît aussi sur la fiche publique standard. Aucune modification des prix, paiements, drapeaux Wallet/NFC, authentification ou RLS.
+
+### Preuves et limites
+
+140 tests unitaires réussis, dont 12 nouveaux cas identité/mapping. Lint : zéro erreur, 272 avertissements existants. Typechecks app/node/Wallet et build/PWA réussis. `scripts/test-identity-flow.cjs` teste les routes réelles à 390 et 1440 px avec réduction du mouvement : champs obligatoires/facultatifs, erreur email et focus, Tab/Enter, photo invalide et refus sans session, retour/rechargement, consentement, double clic, quota sessionStorage, propagation vers l’état, puis fiche publique servie par RPC fictif. Zéro erreur JS et zéro violation axe sur le formulaire testé. Les requêtes externes, y compris les tentatives de statistiques, sont interceptées ; aucune écriture distante n’a eu lieu. Pas de test humain VoiceOver ni de Safari/iPhone physique.
+
+Captures Chrome locales avec **Camille Test, données fictives** : `creation-mobile.jpg`, `creation-desktop.jpg`, `creation-preview-mobile.jpg`, `creation-recipient-mobile.jpg`. La dernière montre le renderer public standard existant avec un RPC simulé : elle ne prouve pas une persistance serveur. Le profil standard ne reproduit pas tous les styles proposés dans le sélecteur ; la PR conserve ce renderer et signale cette limite au lieu de promettre un aperçu exact.
+
+La commande complète et le signup restent non exécutés. Le handler existant crée le profil avant certaines opérations de commande ; son atomicité demande une revue dédiée avant publication. Les autres tunnels Express/CardStudio restent à harmoniser : CardStudio conserve notamment un risque de saisie écrasée lors d’un refetch et des valeurs de nom par défaut. Ces constats ne sont pas présentés comme corrigés. Les fichiers clients protégés ne sont pas modifiés. La photo réelle autorisée, les prérequis Wallet et les validations commerciales restent attendus.
+
+PR11 revérifiée, tête inchangée `8529a4ff827fe460a2e3cfbe25195e28b8c1f8ec`. Le petit ajout `PublicCard.tsx` est un nouveau recouvrement à examiner, sans absorber le travail iOS/vCard de cette branche.

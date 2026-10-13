@@ -1,3 +1,4 @@
+import { orderProfileFields } from "@/lib/orderIdentity";
 /**
  * Step 5: Récapitulatif Final
  * /order/recap
@@ -69,18 +70,7 @@ function OrderRecapContent() {
           .insert({
             user_id: userId,
             slug,
-            first_name: firstName,
-            last_name: lastName,
-            title: title || null,
-            company: company || null,
-            email: (email || userEmail) || null,
-            phone: phone || null,
-            whatsapp: whatsapp || null,
-            instagram: instagram || null,
-            linkedin: linkedin || null,
-            website: website || null,
-            tagline: bio || null,
-            template: 'signature',
+            ...orderProfileFields(state.digitalIdentity!, state.selectedTemplate),
             is_active: true,
             nfc_enabled: true,
             wallet_enabled: true,
