@@ -23,10 +23,10 @@
 - Compte Apple Developer (99$/an) : https://developer.apple.com
 
 ### Étape 1 : Exporter vers GitHub
-1. Cliquez sur **"Export to GitHub"** dans Lovable
+1. Utilisez le dépôt GitHub du projet
 2. Clonez le projet sur votre Mac :
 ```bash
-git clone https://github.com/VOTRE_USERNAME/i-wasp.git
+git clone https://github.com/soudior/i-wasp.git
 cd i-wasp
 ```
 

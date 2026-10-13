@@ -26,7 +26,7 @@
 ```
 i-wasp/
 ├── index.html               # Shell SPA, meta SEO/PWA, fonts, deep-links
-├── vite.config.ts           # Build, PWA (manifest + Workbox), plugin Lovable (dev)
+├── vite.config.ts           # Build, PWA (manifest + Workbox), sans plugin éditeur
 ├── capacitor.config.ts      # appId app.iwasp.digital, plugins natifs
 ├── tailwind.config.ts       # Tokens de design → variables CSS
 ├── src/

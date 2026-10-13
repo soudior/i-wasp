@@ -849,3 +849,22 @@
     padding-bottom: 20px;
   }
 }
+
+/* Final pass: one editorial typeface per hierarchy and stable product geometry. */
+.iw-product-explainer {font-size:12px; color:#cfbea2; margin:22px 0 10px; line-height:1.7;}
+.iw-card-stage[data-flipped="true"] .iw-card-plane {aspect-ratio:482/288;}
+.iw-card-stage[data-flipped="true"] .iw-card-plane img {height:100%; object-fit:contain;}
+.iw-home #tarifs {font-family:Inter,sans-serif;}
+.iw-home #tarifs * {font-family:inherit;}
+@media(max-width:767px){
+ .iw-home .iw-hero {padding-top:30px;}
+ .iw-home .iw-hero h1 {font-size:clamp(40px,11.8vw,46px);}
+ .iw-home .iw-hero .iw-lead {font-size:16px; line-height:1.65;}
+ .iw-home .iw-product {margin-top:20px;}
+ .iw-home .iw-hero-phone {width:176px;}
+ .iw-home .iw-hero-phone .iw-profile-frame {border-radius:18px;}
+ .iw-product-explainer {font-size:11px;}
+}
+/* Keep the skip link hidden without transforms, including reduced-motion mode. */
+.iw-home .iw-skip {top:-1000px; transform:none !important;}
+.iw-home .iw-skip:focus {top:12px;}

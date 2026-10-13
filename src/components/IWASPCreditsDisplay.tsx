@@ -3,7 +3,6 @@
  * Shows user's available credits and credit-related messages
  * 
  * Branding:
- * - "i-wasp Credits" (jamais "Lovable Credits")
  * - "Powered by i-wasp Advanced IA"
  * - Couleurs i-wasp officielles
  */

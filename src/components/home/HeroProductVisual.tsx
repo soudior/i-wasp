@@ -16,6 +16,7 @@ export function HeroProductVisual() {
             alt="Capture du vrai profil Signature : Camille Exemple, données de démonstration et emplacement photo à compléter"
             width={327}
             height={747}
+            decoding="async"
           />
         </div>
         <p>VRAIE INTERFACE · PROFIL FICTIF</p>
@@ -32,6 +33,7 @@ export function HeroProductVisual() {
             width={1024}
             height={576}
             fetchPriority="high"
+            decoding="async"
           />
         </div>
       </div>

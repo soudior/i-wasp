@@ -34,9 +34,9 @@ export default function Index() {
         <div className="iw-hero-copy">
           <p className="iw-eyebrow"><span aria-hidden="true" /> LA CARTE. LE PROFIL. LA RENCONTRE.</p>
           <h1 id="hero-title">Votre nom.<br /><em>Votre signature.</em></h1>
-          <p className="iw-lead">Une carte à votre image. Un profil clair pour que vos contacts vous retrouvent. Partagez vos coordonnées et vos liens par NFC ou QR.</p>
+          <p className="iw-lead">Votre carte de visite, en version numérique et physique. Un profil à partager par lien, QR ou carte NFC compatible.</p>
           <div className="iw-actions"><Link className="iw-button" to="/order/offre">Créer ma carte <ArrowRight size={18} aria-hidden="true" /></Link><Link className="iw-text-link" to="/demo">Voir un exemple <ArrowUpRight size={17} aria-hidden="true" /></Link></div>
-          <p className="iw-hero-note">Déjà prêt à commencer ? <Link to="/signup">Créer mon compte</Link></p>
+          <p className="iw-product-explainer">Profil numérique · Carte NFC · Wallet en option</p><p className="iw-hero-note">Déjà prêt à commencer ? <Link to="/signup">Créer mon compte</Link></p>
         </div>
         <HeroProductVisual />
         <div className="iw-hero-footer"><span>01 / UNE PREMIÈRE IMPRESSION QUI RESTE</span><a href="#experience">Découvrir l’expérience ↓</a></div>

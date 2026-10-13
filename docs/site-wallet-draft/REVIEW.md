@@ -174,3 +174,35 @@ Tête PR11 revérifiée : `8529a4ff827fe460a2e3cfbe25195e28b8c1f8ec`, ouverte/dr
 - Captures natives : `express-privacy-{390,1440}.jpg`, `palette-choice-{390,1440}.jpg`, `palette-recipient-{390,1440}.jpg`. Données exclusivement fictives. Les trois captures 390 px sont aussi conservées dans Library.
 
 Restent non exécutés : compte authentifié réel, sauvegarde distante, commande, transfert photo, installation Wallet/NFC et Safari/iPhone physique. Le traitement historique Express des abonnements avant finalisation de commande, les erreurs d’insertion ignorées et l’atomicité restent hors modification, à revoir séparément avant publication. La correspondance ajoutée porte sur les quatre palettes du tunnel principal, pas sur l’ensemble des templates du catalogue/CardStudio. Aucune fusion ni production.
+
+## Finition visuelle et retrait de marque — complément
+
+Inspection des images réelles : `public/favicon.ico` portait encore le symbole Lovable. `favicon.png`, `apple-touch-icon.png` et `og-image.png` sont déjà i-wasp ; ces actifs ont été inspectés et conservés. Nouvelle icône SVG typographique i-wasp, favicon.ico supprimé et retiré de la liste PWA. Métadonnées de partage sans marque tierce ; les descriptions HTML précisent désormais la disponibilité conditionnelle du Wallet.
+
+Supprimés : `src/integrations/supabase/previewAuthStorage.ts` (pont postMessage de session vers l’éditeur), `bun.lock`, `bun.lockb`, `public/favicon.ico`. Le stockage de session du site reste le même localStorage de première partie ; PKCE, refresh, détection de session et permissions inchangés. Seule la connexion partagée avec l’ancien éditeur disparaît. Les workflows et README utilisent npm ; package-lock.json est conservé inchangé. `lovable-tagger` était déjà absent de package.json et Vite. Nettoyage des commentaires frontend, de la procédure d’export des deux guides et de la ligne d’architecture devenue obsolète. Aucune licence ni historique Git effacé.
+
+**Résidus nécessaires, non masqués :** neuf fonctions IA appellent encore `ai.gateway.lovable.dev` et le nom de variable `LOVABLE_API_KEY` : adaptive-template, generate-palette, generate-website-code, generate-template, smart-suggestions, generate-image, webstudio-chat, regenerate-text, generate-website. Migration de fournisseur requise avant suppression ; aucun appel, secret lu/configuré ou fournisseur payé. Deux commentaires de fonctions email, la déclaration d’origine Google Wallet, la note de propriété du backend dans functions/api/resolve-card.ts et les documents historiques/audit/environnement restent conservés pour ne pas changer silencieusement les services ou droits. La mention du nom dans le test de non-régression reste volontaire. Aucune occurrence dans le JS compilé, les textes publics ou les métadonnées inspectées. Ne pas annoncer un détachement complet du backend IA.
+
+Finition ciblée : explication immédiate profil numérique/carte NFC/Wallet optionnel, hiérarchie Inter/serif cohérente, tarifs utilisant Inter sans changer une valeur, téléphone illustratif plus compact sur mobile, photos officielles inchangées avec décodage asynchrone. Le cadre garde le même ratio au changement de face. L’inspection reduced-motion a révélé un lien d’évitement affiché sur le CTA à cause de l’annulation globale des transforms ; son masquage utilise maintenant top, avec réapparition au focus clavier.
+
+### Mesures avant/après
+
+Script `scripts/measure-home.cjs`, build Vite production servi localement, Chrome headless, trois contextes froids par largeur, réseau extérieur intercepté, service worker bloqué, sans limitation CPU/réseau. Les corps de ressources sont mesurés par encodedBodySize. Ce n’est ni Lighthouse ni une mesure de terrain ou de réseau mobile. Les tentatives externes renvoient des fixtures vides.
+
+| Mesure | Avant | Après |
+| --- | --- | --- |
+| Ressources initiales locales, aux deux largeurs | 608 722 octets / 28 requêtes | 493 828 octets / 25 requêtes |
+| Réduction | — | 114 894 octets, soit 18,9 % |
+| Déplacement document de la légende recto/verso, mobile | 11,97 px | 0 px |
+| Déplacement document de la légende recto/verso, desktop | 15,05 px | 0 px |
+| Hauteur du héros à 390 px | 1 520 px | 1 403 px |
+| LCP médian local, 390 px | 112 ms | 104 ms |
+| LCP médian local, 1440 px | 116 ms | 120 ms |
+| CLS maximum observé, 390 px | 0,000098 | 0,001010 |
+| CLS maximum observé, 1440 px | 0,000094 | 0,000094 |
+
+Le gain robuste concerne les octets, requêtes et le déplacement au changement de face. Le LCP varie de quelques millisecondes et le petit CLS mobile augmente : aucune amélioration de vitesse perçue universelle ni absence absolue de décalage revendiquée. Aucun débordement aux deux largeurs. Le précache PWA reste séparément d’environ 5,7 MiB ; il est exclu de ces mesures et n’a pas été refondu. Les images officielles du héros étaient déjà petites (~19/17 Ko et capture ~28 Ko) : aucun réencodage destructif ou génération facturée ajouté.
+
+151 tests réussis (18 fichiers), lint zéro erreur/271 avertissements, typages app/node/Wallet et build/PWA réussis. Le script navigateur accueil/formulaire/Wallet passe sur le build final à 390/1440 px, clavier/skip-link, erreurs, contraste axe et réduction du mouvement. Aucun compte réel, commande ou Wallet installé. Captures `finish-before-*` / `finish-after-*`, rapports performance JSON et résultats navigateur conservés. Les deux captures finales remplacent les mêmes identités Library (version 4).
+
+PR9 recoupe aussi la suppression du pont previewAuthStorage : conserver le retrait plutôt que le réintroduire lors d’une intégration future. PR11 et fichiers clients protégés restent inchangés. Aucun backend/auth déployé, droit modifié, paiement ou tarif changé, aucune fusion/production.
