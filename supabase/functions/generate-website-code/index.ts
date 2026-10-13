@@ -1,3 +1,4 @@
+import { publicAiError } from "../_shared/publicAiError.ts";
 /**
  * Edge Function: generate-website-code
  * Génère automatiquement le code HTML/CSS/JS d'un site web basé sur une proposition Web Studio
@@ -938,7 +939,7 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("generate-website-code error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
+    const errorMessage = publicAiError(error);
     return new Response(
       JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

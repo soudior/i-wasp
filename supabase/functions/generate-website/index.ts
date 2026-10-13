@@ -1,3 +1,4 @@
+import { publicAiError } from "../_shared/publicAiError.ts";
 /**
  * Edge Function: generate-website
  * Génère une proposition de site web via Lovable AI
@@ -152,7 +153,7 @@ ${formData.socialLinks ? `Réseaux sociaux: ${formData.socialLinks}` : ""}`;
 
   } catch (error) {
     console.error("generate-website error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Une erreur est survenue";
+    const errorMessage = publicAiError(error);
     return new Response(
       JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

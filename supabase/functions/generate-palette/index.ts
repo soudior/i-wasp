@@ -1,3 +1,4 @@
+import { publicAiError } from "../_shared/publicAiError.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -163,7 +164,7 @@ Réponds UNIQUEMENT en JSON valide, sans markdown, sans explication:
     console.error('Error in generate-palette:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message,
+        error: publicAiError(error),
         // Fallback palettes
         palettes: [
           { name: "Noir Élégant", backgroundColor: "#0B0B0C", accentColor: "#F4F2EF" },
