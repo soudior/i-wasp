@@ -1,0 +1,11 @@
+{
+  "generatedAt": "2026-10-14T04:47:17.255Z",
+  "results": [
+    "CSP blocks external API/resources",
+    "Actual client compiled against loopback fake API",
+    "Synthetic unconfirmed signup response",
+    "Payment error is generated locally",
+    "Unknown endpoints fail closed without remote fallback"
+  ],
+  "realBackendCalls": 0
+}

@@ -1,0 +1,16 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> vite_react_shadcn_ts@0.0.0 test
+> vitest run tests/webstudio/payment-and-order.test.ts
+
+
+ RUN  v3.2.7 /workspace/scratch/98091a8a6317/iwasp-recovery-20261014
+
+ ✓ tests/webstudio/payment-and-order.test.ts (62 tests) 102ms
+
+ Test Files  1 passed (1)
+      Tests  62 passed (62)
+   Start at  05:43:16
+   Duration  532ms (transform 94ms, setup 16ms, collect 64ms, tests 102ms, environment 0ms, prepare 61ms)
+
+Captured command exit: 0

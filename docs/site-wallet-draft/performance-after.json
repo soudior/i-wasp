@@ -1,0 +1,818 @@
+[
+  {
+    "width": 390,
+    "cls": 0.0009584693910256411,
+    "lcp": 120,
+    "overflow": false,
+    "resources": [
+      {
+        "path": "/assets/ui-DSm4pIaO.js",
+        "bytes": 28139,
+        "type": "other"
+      },
+      {
+        "path": "/assets/vendor-Cu6VOrpW.js",
+        "bytes": 52405,
+        "type": "other"
+      },
+      {
+        "path": "/assets/index-C_O-WjOQ.js",
+        "bytes": 84411,
+        "type": "script"
+      },
+      {
+        "path": "/assets/supabase-DKhRVBRa.js",
+        "bytes": 41567,
+        "type": "other"
+      },
+      {
+        "path": "/assets/i18n-DVBeYFuH.js",
+        "bytes": 17116,
+        "type": "other"
+      },
+      {
+        "path": "/registerSW.js",
+        "bytes": 134,
+        "type": "script"
+      },
+      {
+        "path": "/assets/motion-6Ldr5NI5.js",
+        "bytes": 40686,
+        "type": "other"
+      },
+      {
+        "path": "/assets/index-C5Kg-MR8.css",
+        "bytes": 66272,
+        "type": "link"
+      },
+      {
+        "path": "/assets/Index-DJ5qarDd.js",
+        "bytes": 5390,
+        "type": "script"
+      },
+      {
+        "path": "/assets/SEOHead-BOE0IxIs.js",
+        "bytes": 1387,
+        "type": "script"
+      },
+      {
+        "path": "/assets/card-back-DI1In0y4.js",
+        "bytes": 95,
+        "type": "script"
+      },
+      {
+        "path": "/assets/arrow-up-right-CcJkkGs2.js",
+        "bytes": 335,
+        "type": "script"
+      },
+      {
+        "path": "/assets/wallet-DBImEURl.js",
+        "bytes": 456,
+        "type": "script"
+      },
+      {
+        "path": "/assets/useReducedMotion-Cctc2Epp.js",
+        "bytes": 626,
+        "type": "script"
+      },
+      {
+        "path": "/assets/nfcPricing-CWZGFi-o.js",
+        "bytes": 725,
+        "type": "script"
+      },
+      {
+        "path": "/assets/Index-DwOLcz9N.css",
+        "bytes": 3369,
+        "type": "link"
+      },
+      {
+        "path": "/assets/qr-code-DqSwKDs1.js",
+        "bytes": 819,
+        "type": "script"
+      },
+      {
+        "path": "/favicon.svg",
+        "bytes": 249,
+        "type": "other"
+      },
+      {
+        "path": "/assets/card-front-9FAgPWOe.png",
+        "bytes": 19375,
+        "type": "img"
+      },
+      {
+        "path": "/assets/demo-profile-capture-mbSL2HPR.jpg",
+        "bytes": 28016,
+        "type": "img"
+      },
+      {
+        "path": "/assets/inter-latin-400-normal-C38fXH4l.woff2",
+        "bytes": 23664,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-500-normal-Cerq10X2.woff2",
+        "bytes": 24272,
+        "type": "css"
+      },
+      {
+        "path": "/assets/plus-jakarta-sans-latin-400-normal-Dhut76fR.woff2",
+        "bytes": 11816,
+        "type": "css"
+      },
+      {
+        "path": "/assets/tenor-sans-latin-400-normal-Bloz8C9r.woff2",
+        "bytes": 18588,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-300-normal-BVlfKGgI.woff2",
+        "bytes": 23916,
+        "type": "css"
+      }
+    ],
+    "heroHeight": 1403.140625,
+    "flipLayoutShift": 0,
+    "run": 0
+  },
+  {
+    "width": 390,
+    "cls": 0.000967224358974359,
+    "lcp": 104,
+    "overflow": false,
+    "resources": [
+      {
+        "path": "/assets/index-C_O-WjOQ.js",
+        "bytes": 84411,
+        "type": "script"
+      },
+      {
+        "path": "/assets/i18n-DVBeYFuH.js",
+        "bytes": 17116,
+        "type": "other"
+      },
+      {
+        "path": "/assets/ui-DSm4pIaO.js",
+        "bytes": 28139,
+        "type": "other"
+      },
+      {
+        "path": "/registerSW.js",
+        "bytes": 134,
+        "type": "script"
+      },
+      {
+        "path": "/assets/supabase-DKhRVBRa.js",
+        "bytes": 41567,
+        "type": "other"
+      },
+      {
+        "path": "/assets/motion-6Ldr5NI5.js",
+        "bytes": 40686,
+        "type": "other"
+      },
+      {
+        "path": "/assets/vendor-Cu6VOrpW.js",
+        "bytes": 52405,
+        "type": "other"
+      },
+      {
+        "path": "/assets/index-C5Kg-MR8.css",
+        "bytes": 66272,
+        "type": "link"
+      },
+      {
+        "path": "/assets/Index-DJ5qarDd.js",
+        "bytes": 5390,
+        "type": "script"
+      },
+      {
+        "path": "/assets/SEOHead-BOE0IxIs.js",
+        "bytes": 1387,
+        "type": "script"
+      },
+      {
+        "path": "/assets/card-back-DI1In0y4.js",
+        "bytes": 95,
+        "type": "script"
+      },
+      {
+        "path": "/assets/arrow-up-right-CcJkkGs2.js",
+        "bytes": 335,
+        "type": "script"
+      },
+      {
+        "path": "/assets/useReducedMotion-Cctc2Epp.js",
+        "bytes": 626,
+        "type": "script"
+      },
+      {
+        "path": "/assets/nfcPricing-CWZGFi-o.js",
+        "bytes": 725,
+        "type": "script"
+      },
+      {
+        "path": "/assets/Index-DwOLcz9N.css",
+        "bytes": 3369,
+        "type": "link"
+      },
+      {
+        "path": "/assets/wallet-DBImEURl.js",
+        "bytes": 456,
+        "type": "script"
+      },
+      {
+        "path": "/assets/qr-code-DqSwKDs1.js",
+        "bytes": 819,
+        "type": "script"
+      },
+      {
+        "path": "/favicon.svg",
+        "bytes": 249,
+        "type": "other"
+      },
+      {
+        "path": "/assets/demo-profile-capture-mbSL2HPR.jpg",
+        "bytes": 28016,
+        "type": "img"
+      },
+      {
+        "path": "/assets/card-front-9FAgPWOe.png",
+        "bytes": 19375,
+        "type": "img"
+      },
+      {
+        "path": "/assets/tenor-sans-latin-400-normal-Bloz8C9r.woff2",
+        "bytes": 18588,
+        "type": "css"
+      },
+      {
+        "path": "/assets/plus-jakarta-sans-latin-400-normal-Dhut76fR.woff2",
+        "bytes": 11816,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-400-normal-C38fXH4l.woff2",
+        "bytes": 23664,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-500-normal-Cerq10X2.woff2",
+        "bytes": 24272,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-300-normal-BVlfKGgI.woff2",
+        "bytes": 23916,
+        "type": "css"
+      }
+    ],
+    "heroHeight": 1403.140625,
+    "flipLayoutShift": 0,
+    "run": 1
+  },
+  {
+    "width": 390,
+    "cls": 0.0010104283653846156,
+    "lcp": 104,
+    "overflow": false,
+    "resources": [
+      {
+        "path": "/assets/index-C_O-WjOQ.js",
+        "bytes": 84411,
+        "type": "script"
+      },
+      {
+        "path": "/assets/vendor-Cu6VOrpW.js",
+        "bytes": 52405,
+        "type": "other"
+      },
+      {
+        "path": "/assets/ui-DSm4pIaO.js",
+        "bytes": 28139,
+        "type": "other"
+      },
+      {
+        "path": "/assets/i18n-DVBeYFuH.js",
+        "bytes": 17116,
+        "type": "other"
+      },
+      {
+        "path": "/assets/motion-6Ldr5NI5.js",
+        "bytes": 40686,
+        "type": "other"
+      },
+      {
+        "path": "/registerSW.js",
+        "bytes": 134,
+        "type": "script"
+      },
+      {
+        "path": "/assets/supabase-DKhRVBRa.js",
+        "bytes": 41567,
+        "type": "other"
+      },
+      {
+        "path": "/assets/index-C5Kg-MR8.css",
+        "bytes": 66272,
+        "type": "link"
+      },
+      {
+        "path": "/assets/Index-DJ5qarDd.js",
+        "bytes": 5390,
+        "type": "script"
+      },
+      {
+        "path": "/assets/card-back-DI1In0y4.js",
+        "bytes": 95,
+        "type": "script"
+      },
+      {
+        "path": "/assets/SEOHead-BOE0IxIs.js",
+        "bytes": 1387,
+        "type": "script"
+      },
+      {
+        "path": "/assets/useReducedMotion-Cctc2Epp.js",
+        "bytes": 626,
+        "type": "script"
+      },
+      {
+        "path": "/assets/arrow-up-right-CcJkkGs2.js",
+        "bytes": 335,
+        "type": "script"
+      },
+      {
+        "path": "/assets/nfcPricing-CWZGFi-o.js",
+        "bytes": 725,
+        "type": "script"
+      },
+      {
+        "path": "/assets/wallet-DBImEURl.js",
+        "bytes": 456,
+        "type": "script"
+      },
+      {
+        "path": "/assets/qr-code-DqSwKDs1.js",
+        "bytes": 819,
+        "type": "script"
+      },
+      {
+        "path": "/assets/Index-DwOLcz9N.css",
+        "bytes": 3369,
+        "type": "link"
+      },
+      {
+        "path": "/favicon.svg",
+        "bytes": 249,
+        "type": "other"
+      },
+      {
+        "path": "/assets/demo-profile-capture-mbSL2HPR.jpg",
+        "bytes": 28016,
+        "type": "img"
+      },
+      {
+        "path": "/assets/card-front-9FAgPWOe.png",
+        "bytes": 19375,
+        "type": "img"
+      },
+      {
+        "path": "/assets/inter-latin-400-normal-C38fXH4l.woff2",
+        "bytes": 23664,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-500-normal-Cerq10X2.woff2",
+        "bytes": 24272,
+        "type": "css"
+      },
+      {
+        "path": "/assets/plus-jakarta-sans-latin-400-normal-Dhut76fR.woff2",
+        "bytes": 11816,
+        "type": "css"
+      },
+      {
+        "path": "/assets/tenor-sans-latin-400-normal-Bloz8C9r.woff2",
+        "bytes": 18588,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-300-normal-BVlfKGgI.woff2",
+        "bytes": 23916,
+        "type": "css"
+      }
+    ],
+    "heroHeight": 1403.140625,
+    "flipLayoutShift": 0,
+    "run": 2
+  },
+  {
+    "width": 1440,
+    "cls": 0.00009381860803674768,
+    "lcp": 116,
+    "overflow": false,
+    "resources": [
+      {
+        "path": "/assets/index-C_O-WjOQ.js",
+        "bytes": 84411,
+        "type": "script"
+      },
+      {
+        "path": "/assets/i18n-DVBeYFuH.js",
+        "bytes": 17116,
+        "type": "other"
+      },
+      {
+        "path": "/assets/ui-DSm4pIaO.js",
+        "bytes": 28139,
+        "type": "other"
+      },
+      {
+        "path": "/assets/supabase-DKhRVBRa.js",
+        "bytes": 41567,
+        "type": "other"
+      },
+      {
+        "path": "/registerSW.js",
+        "bytes": 134,
+        "type": "script"
+      },
+      {
+        "path": "/assets/motion-6Ldr5NI5.js",
+        "bytes": 40686,
+        "type": "other"
+      },
+      {
+        "path": "/assets/vendor-Cu6VOrpW.js",
+        "bytes": 52405,
+        "type": "other"
+      },
+      {
+        "path": "/assets/index-C5Kg-MR8.css",
+        "bytes": 66272,
+        "type": "link"
+      },
+      {
+        "path": "/assets/Index-DJ5qarDd.js",
+        "bytes": 5390,
+        "type": "script"
+      },
+      {
+        "path": "/assets/card-back-DI1In0y4.js",
+        "bytes": 95,
+        "type": "script"
+      },
+      {
+        "path": "/assets/SEOHead-BOE0IxIs.js",
+        "bytes": 1387,
+        "type": "script"
+      },
+      {
+        "path": "/assets/arrow-up-right-CcJkkGs2.js",
+        "bytes": 335,
+        "type": "script"
+      },
+      {
+        "path": "/assets/useReducedMotion-Cctc2Epp.js",
+        "bytes": 626,
+        "type": "script"
+      },
+      {
+        "path": "/assets/nfcPricing-CWZGFi-o.js",
+        "bytes": 725,
+        "type": "script"
+      },
+      {
+        "path": "/assets/wallet-DBImEURl.js",
+        "bytes": 456,
+        "type": "script"
+      },
+      {
+        "path": "/assets/qr-code-DqSwKDs1.js",
+        "bytes": 819,
+        "type": "script"
+      },
+      {
+        "path": "/assets/Index-DwOLcz9N.css",
+        "bytes": 3369,
+        "type": "link"
+      },
+      {
+        "path": "/favicon.svg",
+        "bytes": 249,
+        "type": "other"
+      },
+      {
+        "path": "/assets/demo-profile-capture-mbSL2HPR.jpg",
+        "bytes": 28016,
+        "type": "img"
+      },
+      {
+        "path": "/assets/card-front-9FAgPWOe.png",
+        "bytes": 19375,
+        "type": "img"
+      },
+      {
+        "path": "/assets/inter-latin-400-normal-C38fXH4l.woff2",
+        "bytes": 23664,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-500-normal-Cerq10X2.woff2",
+        "bytes": 24272,
+        "type": "css"
+      },
+      {
+        "path": "/assets/plus-jakarta-sans-latin-400-normal-Dhut76fR.woff2",
+        "bytes": 11816,
+        "type": "css"
+      },
+      {
+        "path": "/assets/tenor-sans-latin-400-normal-Bloz8C9r.woff2",
+        "bytes": 18588,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-300-normal-BVlfKGgI.woff2",
+        "bytes": 23916,
+        "type": "css"
+      }
+    ],
+    "heroHeight": 1079.140625,
+    "flipLayoutShift": 0,
+    "run": 0
+  },
+  {
+    "width": 1440,
+    "cls": 0.00009381860803674768,
+    "lcp": 120,
+    "overflow": false,
+    "resources": [
+      {
+        "path": "/assets/index-C_O-WjOQ.js",
+        "bytes": 84411,
+        "type": "script"
+      },
+      {
+        "path": "/assets/vendor-Cu6VOrpW.js",
+        "bytes": 52405,
+        "type": "other"
+      },
+      {
+        "path": "/assets/ui-DSm4pIaO.js",
+        "bytes": 28139,
+        "type": "other"
+      },
+      {
+        "path": "/assets/i18n-DVBeYFuH.js",
+        "bytes": 17116,
+        "type": "other"
+      },
+      {
+        "path": "/assets/supabase-DKhRVBRa.js",
+        "bytes": 41567,
+        "type": "other"
+      },
+      {
+        "path": "/assets/motion-6Ldr5NI5.js",
+        "bytes": 40686,
+        "type": "other"
+      },
+      {
+        "path": "/registerSW.js",
+        "bytes": 134,
+        "type": "script"
+      },
+      {
+        "path": "/assets/index-C5Kg-MR8.css",
+        "bytes": 66272,
+        "type": "link"
+      },
+      {
+        "path": "/assets/Index-DJ5qarDd.js",
+        "bytes": 5390,
+        "type": "script"
+      },
+      {
+        "path": "/assets/card-back-DI1In0y4.js",
+        "bytes": 95,
+        "type": "script"
+      },
+      {
+        "path": "/assets/SEOHead-BOE0IxIs.js",
+        "bytes": 1387,
+        "type": "script"
+      },
+      {
+        "path": "/assets/arrow-up-right-CcJkkGs2.js",
+        "bytes": 335,
+        "type": "script"
+      },
+      {
+        "path": "/assets/nfcPricing-CWZGFi-o.js",
+        "bytes": 725,
+        "type": "script"
+      },
+      {
+        "path": "/assets/useReducedMotion-Cctc2Epp.js",
+        "bytes": 626,
+        "type": "script"
+      },
+      {
+        "path": "/assets/wallet-DBImEURl.js",
+        "bytes": 456,
+        "type": "script"
+      },
+      {
+        "path": "/assets/qr-code-DqSwKDs1.js",
+        "bytes": 819,
+        "type": "script"
+      },
+      {
+        "path": "/assets/Index-DwOLcz9N.css",
+        "bytes": 3369,
+        "type": "link"
+      },
+      {
+        "path": "/favicon.svg",
+        "bytes": 249,
+        "type": "other"
+      },
+      {
+        "path": "/assets/demo-profile-capture-mbSL2HPR.jpg",
+        "bytes": 28016,
+        "type": "img"
+      },
+      {
+        "path": "/assets/card-front-9FAgPWOe.png",
+        "bytes": 19375,
+        "type": "img"
+      },
+      {
+        "path": "/assets/inter-latin-400-normal-C38fXH4l.woff2",
+        "bytes": 23664,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-500-normal-Cerq10X2.woff2",
+        "bytes": 24272,
+        "type": "css"
+      },
+      {
+        "path": "/assets/plus-jakarta-sans-latin-400-normal-Dhut76fR.woff2",
+        "bytes": 11816,
+        "type": "css"
+      },
+      {
+        "path": "/assets/tenor-sans-latin-400-normal-Bloz8C9r.woff2",
+        "bytes": 18588,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-300-normal-BVlfKGgI.woff2",
+        "bytes": 23916,
+        "type": "css"
+      }
+    ],
+    "heroHeight": 1079.140625,
+    "flipLayoutShift": 0,
+    "run": 1
+  },
+  {
+    "width": 1440,
+    "cls": 0.00009381860803674768,
+    "lcp": 124,
+    "overflow": false,
+    "resources": [
+      {
+        "path": "/assets/index-C_O-WjOQ.js",
+        "bytes": 84411,
+        "type": "script"
+      },
+      {
+        "path": "/assets/ui-DSm4pIaO.js",
+        "bytes": 28139,
+        "type": "other"
+      },
+      {
+        "path": "/assets/i18n-DVBeYFuH.js",
+        "bytes": 17116,
+        "type": "other"
+      },
+      {
+        "path": "/assets/supabase-DKhRVBRa.js",
+        "bytes": 41567,
+        "type": "other"
+      },
+      {
+        "path": "/assets/motion-6Ldr5NI5.js",
+        "bytes": 40686,
+        "type": "other"
+      },
+      {
+        "path": "/assets/vendor-Cu6VOrpW.js",
+        "bytes": 52405,
+        "type": "other"
+      },
+      {
+        "path": "/registerSW.js",
+        "bytes": 134,
+        "type": "script"
+      },
+      {
+        "path": "/assets/index-C5Kg-MR8.css",
+        "bytes": 66272,
+        "type": "link"
+      },
+      {
+        "path": "/assets/Index-DJ5qarDd.js",
+        "bytes": 5390,
+        "type": "script"
+      },
+      {
+        "path": "/assets/card-back-DI1In0y4.js",
+        "bytes": 95,
+        "type": "script"
+      },
+      {
+        "path": "/assets/SEOHead-BOE0IxIs.js",
+        "bytes": 1387,
+        "type": "script"
+      },
+      {
+        "path": "/assets/useReducedMotion-Cctc2Epp.js",
+        "bytes": 626,
+        "type": "script"
+      },
+      {
+        "path": "/assets/nfcPricing-CWZGFi-o.js",
+        "bytes": 725,
+        "type": "script"
+      },
+      {
+        "path": "/assets/arrow-up-right-CcJkkGs2.js",
+        "bytes": 335,
+        "type": "script"
+      },
+      {
+        "path": "/assets/wallet-DBImEURl.js",
+        "bytes": 456,
+        "type": "script"
+      },
+      {
+        "path": "/assets/Index-DwOLcz9N.css",
+        "bytes": 3369,
+        "type": "link"
+      },
+      {
+        "path": "/assets/qr-code-DqSwKDs1.js",
+        "bytes": 819,
+        "type": "script"
+      },
+      {
+        "path": "/favicon.svg",
+        "bytes": 249,
+        "type": "other"
+      },
+      {
+        "path": "/assets/demo-profile-capture-mbSL2HPR.jpg",
+        "bytes": 28016,
+        "type": "img"
+      },
+      {
+        "path": "/assets/card-front-9FAgPWOe.png",
+        "bytes": 19375,
+        "type": "img"
+      },
+      {
+        "path": "/assets/inter-latin-400-normal-C38fXH4l.woff2",
+        "bytes": 23664,
+        "type": "css"
+      },
+      {
+        "path": "/assets/plus-jakarta-sans-latin-400-normal-Dhut76fR.woff2",
+        "bytes": 11816,
+        "type": "css"
+      },
+      {
+        "path": "/assets/tenor-sans-latin-400-normal-Bloz8C9r.woff2",
+        "bytes": 18588,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-500-normal-Cerq10X2.woff2",
+        "bytes": 24272,
+        "type": "css"
+      },
+      {
+        "path": "/assets/inter-latin-300-normal-BVlfKGgI.woff2",
+        "bytes": 23916,
+        "type": "css"
+      }
+    ],
+    "heroHeight": 1079.140625,
+    "flipLayoutShift": 0,
+    "run": 2
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "width": 360,
+    "violations": [],
+    "external": [
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET"
+    ]
+  },
+  {
+    "width": 390,
+    "violations": [],
+    "external": [
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET"
+    ]
+  },
+  {
+    "width": 768,
+    "violations": [],
+    "external": [
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET"
+    ]
+  },
+  {
+    "width": 1440,
+    "violations": [],
+    "external": [
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET"
+    ]
+  }
+]

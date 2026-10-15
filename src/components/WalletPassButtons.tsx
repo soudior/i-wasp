@@ -97,10 +97,7 @@ export function WalletPassButtons({
         tagline: data.tagline,
       };
       
-      const success = await addToAppleWallet(walletData);
-      if (success) {
-        toast.success("Carte ajoutée à Apple Wallet !");
-      }
+      await addToAppleWallet(walletData);
     } finally {
       setLoadingApple(false);
     }
@@ -142,10 +139,7 @@ export function WalletPassButtons({
         tagline: data.tagline,
       };
       
-      const success = await addToGoogleWallet(walletData);
-      if (success) {
-        toast.success("Carte ajoutée à Google Wallet !");
-      }
+      await addToGoogleWallet(walletData);
     } finally {
       setLoadingGoogle(false);
     }
@@ -263,7 +257,7 @@ export function WalletPassButtons({
       {/* Info text for GOLD users */}
       {isGold && (
         <p className="text-xs text-muted-foreground text-center">
-          Ta carte NFC sera synchronisée automatiquement dans ton Wallet.
+          Disponibilité selon la configuration du service. Confirmez l’ajout dans votre Wallet ; aucune installation ni synchronisation automatique n’est vérifiée ici.
         </p>
       )}
     </div>

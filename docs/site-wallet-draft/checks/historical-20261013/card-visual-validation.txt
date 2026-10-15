@@ -1,0 +1,11 @@
+Card hero visual revision
+Source: official card-front.png unchanged (SHA-1 08131e45f961928e8e26244455e4c206ef18496b).
+Native CSS framing only; no raster generation, spend, material claim or backend change.
+Global lint: 0 errors, 272 existing warnings.
+App TypeScript: passed.
+Unit regressions: 128/128 passed.
+Production build/PWA: passed using local test-only Supabase placeholders.
+Browser: site/wallet script and demo responsive script passed.
+Widths: 360, 390, 768, 1440.
+Keyboard view control, reduced motion, no overflow and axe checks passed.
+No physical NFC/Wallet or Safari test claimed.

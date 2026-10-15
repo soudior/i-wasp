@@ -1,0 +1,2 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+{"path":"/workspace/scratch/98091a8a6317/iwasp-recovery-20261014/supabase/migrations/20261014044343_website_generation_statuses.sql","message":"Migration created"}

@@ -1,3 +1,5 @@
+import { publicAiError } from "../_shared/publicAiError.ts";
+import { authorizeWebsiteGeneration, isProposalId, WebsiteGenerationAccessError } from "../_shared/websiteGenerationAccess.ts";
 /**
  * Edge Function: generate-website-code
  * Génère automatiquement le code HTML/CSS/JS d'un site web basé sur une proposition Web Studio
@@ -12,9 +14,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 interface WebsiteProposal {
   id: string;
@@ -546,16 +545,28 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Méthode non autorisée" }), {
+      status: 405, headers: { ...corsHeaders, Allow: "POST, OPTIONS", "Content-Type": "application/json" },
+    });
+  }
+
+  let releaseOnFailure: (() => Promise<void>) | undefined;
   try {
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       throw new Error("Configuration manquante");
     }
 
-    const { proposalId } = await req.json();
-
-    if (!proposalId) {
+    let body: { proposalId?: unknown; generationToken?: unknown };
+    try { body = await req.json(); }
+    catch { throw new WebsiteGenerationAccessError(400, "Requête JSON invalide"); }
+    const proposalId = body?.proposalId;
+    if (!isProposalId(proposalId)) {
       return new Response(
-        JSON.stringify({ error: "proposalId requis" }),
+        JSON.stringify({ error: "proposalId valide requis" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -563,6 +574,9 @@ serve(async (req) => {
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
+
+    // Authenticate before reading private proposal content or creating any effect.
+    const caller = await authorizeWebsiteGeneration(req, proposalId, body.generationToken, SUPABASE_SERVICE_ROLE_KEY, admin);
 
     // Fetch the proposal
     const { data: proposal, error: fetchError } = await admin
@@ -580,27 +594,68 @@ serve(async (req) => {
     }
 
     // Check if already generating or completed
-    const { data: existingWebsite } = await admin
+    const { data: existingWebsite, error: existingError } = await admin
       .from("generated_websites")
-      .select("id, status")
+      .select("id, status, preview_url")
       .eq("proposal_id", proposalId)
-      .single();
+      .maybeSingle();
+    if (existingError) throw new Error("Website lookup failed");
 
-    let websiteId: string;
+    let websiteId: string | undefined;
 
     if (existingWebsite) {
+      // Only admins explicitly regenerate a completed site. Ordinary retries
+      // must not rotate blog tokens, resend mail or spend credits again.
+      if (existingWebsite.status === "completed" && caller !== "admin") {
+        if (proposal.status === "generating") throw new WebsiteGenerationAccessError(409, "Génération déjà en cours");
+        if (proposal.status !== "site_generated") {
+          const { data: reconciled, error: reconcileError } = await admin.from("website_proposals")
+            .update({ status: "site_generated", updated_at: new Date().toISOString() })
+            .eq("id", proposalId).eq("status", proposal.status).select("id").maybeSingle();
+          if (reconcileError) throw new Error("Completed proposal reconciliation failed");
+          if (!reconciled) throw new WebsiteGenerationAccessError(409, "Génération déjà en cours");
+        }
+        return new Response(JSON.stringify({
+          success: true, websiteId: existingWebsite.id, previewUrl: existingWebsite.preview_url,
+          alreadyGenerated: true, notificationRetried: false, message: "Site web déjà généré",
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
       if (existingWebsite.status === "generating") {
         return new Response(
           JSON.stringify({ error: "Génération déjà en cours", websiteId: existingWebsite.id }),
           { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+    }
+    if (proposal.status === "generating") throw new WebsiteGenerationAccessError(409, "Génération déjà en cours");
+    // Compare-and-set before writing a website or calling the provider.
+    // The additive status-constraint migration is a prerequisite.
+    const { data: claimed, error: claimError } = await admin.from("website_proposals")
+      .update({ status: "generating", updated_at: new Date().toISOString() })
+      .eq("id", proposalId).eq("status", proposal.status).select("id").maybeSingle();
+    if (claimError) throw new Error("Generation claim failed");
+    if (!claimed) throw new WebsiteGenerationAccessError(409, "Génération déjà en cours");
+    releaseOnFailure = async () => {
+      const { error: resetProposalError } = await admin.from("website_proposals")
+        .update({ status: "generation_failed", updated_at: new Date().toISOString() })
+        .eq("id", proposalId).eq("status", "generating");
+      let resetWebsiteError: unknown;
+      if (websiteId) {
+        const result = await admin.from("generated_websites")
+          .update({ status: "failed", generation_log: "Génération interrompue", updated_at: new Date().toISOString() })
+          .eq("id", websiteId).eq("status", "generating");
+        resetWebsiteError = result.error;
+      }
+      if (resetProposalError || resetWebsiteError) throw new Error("Generation cleanup failed");
+    };
+
+    if (existingWebsite) {
       websiteId = existingWebsite.id;
       // Update to generating status
-      await admin
-        .from("generated_websites")
+      const { data: started, error: startError } = await admin.from("generated_websites")
         .update({ status: "generating", generation_log: "Démarrage de la génération...", updated_at: new Date().toISOString() })
-        .eq("id", websiteId);
+        .eq("id", websiteId).select("id").single();
+      if (startError || !started) throw new Error("Website generation start failed");
     } else {
       // Create new record
       const { data: newWebsite, error: insertError } = await admin
@@ -621,15 +676,6 @@ serve(async (req) => {
     }
 
     console.log(`Generating website for proposal ${proposalId}, website record: ${websiteId}`);
-
-    // Update proposal status
-    await admin
-      .from("website_proposals")
-      .update({ 
-        status: "generating",
-        updated_at: new Date().toISOString()
-      })
-      .eq("id", proposalId);
 
     // Call Lovable AI
     const systemPrompt = generateSystemPrompt();
@@ -663,19 +709,10 @@ serve(async (req) => {
         ? "Crédits IA insuffisants."
         : `Erreur IA: ${aiResponse.status}`;
 
-      await admin
-        .from("generated_websites")
-        .update({ 
-          status: "failed", 
-          generation_log: errorMessage,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", websiteId);
-
-      await admin
-        .from("website_proposals")
-        .update({ status: "generation_failed", updated_at: new Date().toISOString() })
-        .eq("id", proposalId);
+      // HTTP failures must use the same checked cleanup as thrown failures.
+      // Preserve the provider status even when cleanup needs manual recovery.
+      try { await releaseOnFailure(); } catch { console.error("Generation failure cleanup unavailable"); }
+      releaseOnFailure = undefined;
 
       return new Response(
         JSON.stringify({ error: errorMessage }),
@@ -762,7 +799,7 @@ serve(async (req) => {
     // The edge function has Content-Security-Policy restrictions that prevent proper HTML rendering
     const previewUrl = `https://i-wasp.com/s/${websiteSlug}`;
     
-    await admin
+    const { data: savedWebsite, error: saveError } = await admin
       .from("generated_websites")
       .update({
         status: "completed",
@@ -776,16 +813,18 @@ serve(async (req) => {
         generated_at: nowIso,
         updated_at: nowIso,
       })
-      .eq("id", websiteId);
+      .eq("id", websiteId).select("id").single();
+    if (saveError || !savedWebsite) throw new Error("Generated website persistence failed");
 
     // Update proposal status
-    await admin
+    const { data: savedProposal, error: proposalSaveError } = await admin
       .from("website_proposals")
       .update({ 
         status: "site_generated",
         updated_at: nowIso
       })
-      .eq("id", proposalId);
+      .eq("id", proposalId).select("id").single();
+    if (proposalSaveError || !savedProposal) throw new Error("Generated proposal persistence failed");
 
     // Generate blog access token
     const blogToken = crypto.randomUUID();
@@ -801,14 +840,15 @@ serve(async (req) => {
       console.error("Error creating blog token:", tokenError);
     }
 
-    const blogEditorUrl = `https://i-wasp.com/web-studio/blog-editor?token=${blogToken}`;
+    const blogEditorUrl = tokenError ? null : `https://i-wasp.com/web-studio/blog-editor?token=${blogToken}`;
 
     console.log(`Website generated successfully for proposal ${proposalId}, hosted at: ${previewUrl}`);
-    console.log(`Blog editor available at: ${blogEditorUrl}`);
+    // Blog editor URLs contain a bearer capability: never log them.
 
     // === AUTO SEND EMAIL TO CLIENT ===
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const recipientEmail = proposal.form_data?.contactEmail;
+    let emailSent = false;
     
     if (RESEND_API_KEY && recipientEmail) {
       console.log(`Sending automatic notification email to: ${recipientEmail}`);
@@ -873,7 +913,7 @@ serve(async (req) => {
                               Lien direct : <a href="${previewUrl}" style="color: #F59E0B;">${previewUrl}</a>
                             </p>
                             
-                            <!-- Blog Editor Section -->
+                            ${blogEditorUrl ? `<!-- Blog Editor Section -->
                             <div style="margin-top: 32px; padding: 24px; background: #F9FAFB; border-radius: 12px;">
                               <h3 style="margin: 0 0 12px; color: #1D1D1F; font-size: 16px; font-weight: 600;">
                                 📝 Gérez votre blog
@@ -884,7 +924,7 @@ serve(async (req) => {
                               <a href="${blogEditorUrl}" style="color: #F59E0B; font-size: 14px; text-decoration: none;">
                                 Accéder à l'éditeur de blog →
                               </a>
-                            </div>
+                            </div>` : ""}
                           </td>
                         </tr>
                         
@@ -912,6 +952,7 @@ serve(async (req) => {
         const emailData = await emailResponse.json();
         
         if (emailResponse.ok) {
+          emailSent = true;
           console.log(`Email sent successfully to ${recipientEmail}`, emailData);
         } else {
           console.error("Failed to send email:", emailData);
@@ -930,15 +971,22 @@ serve(async (req) => {
         websiteId,
         previewUrl,
         blogEditorUrl,
-        emailSent: !!recipientEmail,
-        message: "Site web généré avec succès"
+        emailSent,
+        blogEditorAvailable: Boolean(blogEditorUrl),
+        message: blogEditorUrl ? "Site web généré avec succès" : "Site web généré ; accès au blog momentanément indisponible"
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 
   } catch (error) {
+    if (releaseOnFailure) {
+      try { await releaseOnFailure(); } catch { console.error("Generation failure cleanup unavailable"); }
+    }
+    if (error instanceof WebsiteGenerationAccessError) return new Response(JSON.stringify({ error: error.message }), {
+      status: error.status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
     console.error("generate-website-code error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
+    const errorMessage = publicAiError(error);
     return new Response(
       JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

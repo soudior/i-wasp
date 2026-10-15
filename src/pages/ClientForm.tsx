@@ -34,7 +34,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import confetti from "canvas-confetti";
+import { Link } from "react-router-dom";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import iwaspLogo from "@/assets/iwasp-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -64,7 +65,8 @@ const templates = [
 ];
 
 export default function ClientForm() {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [preparedUrl, setPreparedUrl] = useState<string | null>(null);
+  const { shouldReduceMotion } = useReducedMotion();
   const [selectedTemplate, setSelectedTemplate] = useState("signature");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -165,46 +167,9 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
     const whatsappNumber = "33626424394"; // Numéro IWASP
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
-    // Afficher confetti
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ["#D4AF37", "#1A1A1A", "#FFFFFF"],
-    });
-
-    setIsSubmitted(true);
-    
-    // Ouvrir WhatsApp après un délai
-    setTimeout(() => {
-      window.open(whatsappUrl, "_blank");
-    }, 1500);
+    // Preparing a message is not evidence that it was sent. Keep the form mounted.
+    setPreparedUrl(whatsappUrl);
   };
-
-  if (isSubmitted) {
-    return (
-      <div className="min-h-dvh bg-[#0B0B0B] flex items-center justify-center p-6">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="text-center max-w-sm"
-        >
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center">
-            <CheckCircle2 className="w-10 h-10 text-green-500" />
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-3">
-            Formulaire envoyé ! 🎉
-          </h2>
-          <p className="text-[#E5E5E5]/70 mb-6">
-            WhatsApp va s'ouvrir pour envoyer vos informations à notre équipe.
-          </p>
-          <p className="text-sm text-[#E5E5E5]/50">
-            Nous vous contacterons sous 24h pour finaliser votre carte.
-          </p>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-dvh bg-[#0B0B0B] pb-safe">
@@ -212,14 +177,14 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
       <div className="sticky top-0 z-50 bg-[#0B0B0B]/95 backdrop-blur-lg border-b border-[#E5E5E5]/10 px-4 py-4">
         <div className="flex items-center justify-center gap-3">
           <img src={iwaspLogo} alt="IWASP" className="h-8 w-auto" />
-          <span className="text-white font-semibold">Studio NFC & Wallet</span>
+          <span className="text-white font-semibold">Création accompagnée</span>
         </div>
       </div>
 
       <div className="max-w-lg mx-auto px-4 py-6">
         {/* Intro */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
@@ -228,18 +193,17 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
             Création premium par i-Wasp
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">
-            Votre carte NFC, QR et Apple Wallet
+            Préparons votre carte de visite
           </h1>
           <p className="text-[#E5E5E5]/60 text-sm">
-            Donnez-nous votre activité et vos liens. Nous créons une fiche digitale complète,
-            fidèle à votre image et prête à partager.
+            Renseignez vos informations pour préparer une demande à l’équipe. Vous pourrez ensuite la relire et l’envoyer dans WhatsApp. Ce formulaire ne crée pas automatiquement un compte ou une carte.
           </p>
 
           <div className="grid grid-cols-3 gap-2 mt-5">
             {[
               { icon: Link2, label: "Lien i-wasp" },
               { icon: QrCode, label: "QR vers la fiche" },
-              { icon: WalletCards, label: "Apple Wallet" },
+              { icon: WalletCards, label: "Wallet en option" },
             ].map(({ icon: Icon, label }) => (
               <div
                 key={label}
@@ -251,12 +215,13 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
             ))}
           </div>
 
-          <p className="mt-4 text-[11px] leading-relaxed text-[#E5E5E5]/45">
-            Le QR visible et celui du pass Wallet ouvriront le même lien NFC sécurisé sur i-wasp.com.
+          <p className="mt-4 text-[11px] leading-relaxed text-[#E5E5E5]/70">
+            Apple Wallet et Google Wallet : disponibilité selon votre compte et la configuration du service, à confirmer avec l’équipe.
           </p>
         </motion.div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <Link to="/" className="inline-block py-3 text-[#FFC700] underline">← Retour à l’accueil</Link>
+        <form noValidate onSubmit={handleSubmit(onSubmit)} onChange={() => setPreparedUrl(null)} className="space-y-6">
           {/* Photo Upload */}
           <Card className="bg-[#1A1A1A] border-[#E5E5E5]/10">
             <CardContent className="p-4">
@@ -268,6 +233,7 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
               <div className="flex flex-col items-center gap-4">
                 <input
                   ref={fileInputRef}
+                  aria-label="Photo de profil"
                   type="file"
                   accept="image/*"
                   onChange={handlePhotoUpload}
@@ -278,9 +244,9 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
                   {photoUrl ? (
                     <motion.div
                       key="photo"
-                      initial={{ opacity: 0, scale: 0.8 }}
+                      initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
+                      exit={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.8 }}
                       className="relative"
                     >
                       <img
@@ -291,7 +257,8 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
                       <button
                         type="button"
                         onClick={removePhoto}
-                        className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"
+                        aria-label="Supprimer la photo"
+                        className="absolute -top-1 -right-1 w-11 h-11 bg-red-500 rounded-full flex items-center justify-center"
                       >
                         <X className="w-3 h-3 text-white" />
                       </button>
@@ -299,9 +266,9 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
                   ) : (
                     <motion.button
                       key="upload"
-                      initial={{ opacity: 0, scale: 0.8 }}
+                      initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
+                      exit={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.8 }}
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploading}
@@ -345,32 +312,41 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-[#E5E5E5]/70 text-xs">Prénom *</Label>
+                  <Label htmlFor="firstName" className="text-[#E5E5E5]/70 text-xs">Prénom *</Label>
                   <Input
-                    {...register("firstName")}
+                    id="firstName" autoComplete="given-name"
+                  aria-invalid={!!errors.firstName}
+                  aria-describedby={errors.firstName ? "firstName-error" : undefined}
+                  {...register("firstName")}
                     placeholder="Votre prénom"
                     className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
                   />
                   {errors.firstName && (
-                    <p className="text-red-400 text-xs mt-1">{errors.firstName.message}</p>
+                    <p id="firstName-error" role="alert" className="text-red-400 text-xs mt-1">{errors.firstName.message}</p>
                   )}
                 </div>
                 <div>
-                  <Label className="text-[#E5E5E5]/70 text-xs">Nom *</Label>
+                  <Label htmlFor="lastName" className="text-[#E5E5E5]/70 text-xs">Nom *</Label>
                   <Input
-                    {...register("lastName")}
+                    id="lastName" autoComplete="family-name"
+                  aria-invalid={!!errors.lastName}
+                  aria-describedby={errors.lastName ? "lastName-error" : undefined}
+                  {...register("lastName")}
                     placeholder="Votre nom"
                     className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
                   />
                   {errors.lastName && (
-                    <p className="text-red-400 text-xs mt-1">{errors.lastName.message}</p>
+                    <p id="lastName-error" role="alert" className="text-red-400 text-xs mt-1">{errors.lastName.message}</p>
                   )}
                 </div>
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">Fonction / Titre</Label>
+                <Label htmlFor="title" className="text-[#E5E5E5]/70 text-xs">Fonction / Titre</Label>
                 <Input
+                  id="title" autoComplete="organization-title"
+                  aria-invalid={!!errors.title}
+                  aria-describedby={errors.title ? "title-error" : undefined}
                   {...register("title")}
                   placeholder="Ex: Directeur Commercial"
                   className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
@@ -378,8 +354,11 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">Entreprise</Label>
+                <Label htmlFor="company" className="text-[#E5E5E5]/70 text-xs">Entreprise</Label>
                 <Input
+                  id="company" autoComplete="organization"
+                  aria-invalid={!!errors.company}
+                  aria-describedby={errors.company ? "company-error" : undefined}
                   {...register("company")}
                   placeholder="Nom de votre entreprise"
                   className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
@@ -387,16 +366,19 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">
+                <Label htmlFor="businessSource" className="text-[#E5E5E5]/70 text-xs">
                   Lien Google, site ou réseau principal
                 </Label>
                 <Input
+                  id="businessSource"
+                  aria-invalid={!!errors.businessSource}
+                  aria-describedby={errors.businessSource ? "businessSource-error" : undefined}
                   {...register("businessSource")}
                   inputMode="url"
                   placeholder="https://maps.google.com/..."
                   className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
                 />
-                <p className="mt-1.5 text-[10px] leading-relaxed text-[#E5E5E5]/40">
+                <p className="mt-1.5 text-[10px] leading-relaxed text-[#E5E5E5]/70">
                   Ce lien nous permet de retrouver votre logo, votre univers et vos informations officielles.
                 </p>
               </div>
@@ -412,34 +394,43 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">Téléphone *</Label>
+                <Label htmlFor="phone" className="text-[#E5E5E5]/70 text-xs">Téléphone *</Label>
                 <Input
+                  id="phone" autoComplete="tel"
+                  aria-invalid={!!errors.phone}
+                  aria-describedby={errors.phone ? "phone-error" : undefined}
                   {...register("phone")}
                   type="tel"
                   placeholder="+212 6XX XXX XXX"
                   className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
                 />
                 {errors.phone && (
-                  <p className="text-red-400 text-xs mt-1">{errors.phone.message}</p>
+                  <p id="phone-error" role="alert" className="text-red-400 text-xs mt-1">{errors.phone.message}</p>
                 )}
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">Email</Label>
+                <Label htmlFor="email" className="text-[#E5E5E5]/70 text-xs">Email</Label>
                 <Input
+                  id="email" autoComplete="email"
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                   {...register("email")}
                   type="email"
                   placeholder="votre@email.com"
                   className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
                 />
                 {errors.email && (
-                  <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
+                  <p id="email-error" role="alert" className="text-red-400 text-xs mt-1">{errors.email.message}</p>
                 )}
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">WhatsApp (si différent)</Label>
+                <Label htmlFor="whatsapp" className="text-[#E5E5E5]/70 text-xs">WhatsApp (si différent)</Label>
                 <Input
+                  id="whatsapp"
+                  aria-invalid={!!errors.whatsapp}
+                  aria-describedby={errors.whatsapp ? "whatsapp-error" : undefined}
                   {...register("whatsapp")}
                   type="tel"
                   placeholder="+212 6XX XXX XXX"
@@ -458,10 +449,13 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs flex items-center gap-2">
+                <Label htmlFor="linkedin" className="text-[#E5E5E5]/70 text-xs flex items-center gap-2">
                   <Linkedin className="w-3 h-3" /> LinkedIn
                 </Label>
                 <Input
+                  id="linkedin"
+                  aria-invalid={!!errors.linkedin}
+                  aria-describedby={errors.linkedin ? "linkedin-error" : undefined}
                   {...register("linkedin")}
                   placeholder="linkedin.com/in/votre-profil"
                   className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
@@ -469,10 +463,13 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs flex items-center gap-2">
+                <Label htmlFor="instagram" className="text-[#E5E5E5]/70 text-xs flex items-center gap-2">
                   <Instagram className="w-3 h-3" /> Instagram
                 </Label>
                 <Input
+                  id="instagram"
+                  aria-invalid={!!errors.instagram}
+                  aria-describedby={errors.instagram ? "instagram-error" : undefined}
                   {...register("instagram")}
                   placeholder="@votre_compte"
                   className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
@@ -480,8 +477,11 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">Site web</Label>
+                <Label htmlFor="website" className="text-[#E5E5E5]/70 text-xs">Site web</Label>
                 <Input
+                  id="website" autoComplete="url"
+                  aria-invalid={!!errors.website}
+                  aria-describedby={errors.website ? "website-error" : undefined}
                   {...register("website")}
                   placeholder="https://votre-site.com"
                   className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
@@ -495,18 +495,19 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
             <CardContent className="p-4 space-y-4">
               <div className="flex items-center gap-2 text-[#FFC700] mb-2">
                 <MessageCircle className="w-4 h-4" />
-                <span className="font-medium text-sm">Bio / Description</span>
+                <Label htmlFor="bio" className="font-medium text-sm">Bio / Description</Label>
               </div>
 
-              <Textarea
+              <Textarea id="bio" aria-describedby="bio-count bio-error" aria-invalid={!!errors.bio}
                 {...register("bio")}
                 placeholder="Décrivez brièvement votre activité..."
                 className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white min-h-[80px] resize-none"
                 maxLength={200}
               />
-              <p className="text-[#E5E5E5]/40 text-xs text-right">
+              <p id="bio-count" className="text-[#E5E5E5]/70 text-xs text-right">
                 {watchedData.bio?.length || 0}/200
               </p>
+              <p id="bio-error" role="alert" className="text-red-400 text-xs">{errors.bio?.message}</p>
             </CardContent>
           </Card>
 
@@ -523,11 +524,12 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
                   <button
                     key={template.id}
                     type="button"
-                    onClick={() => setSelectedTemplate(template.id)}
+                    aria-pressed={selectedTemplate === template.id}
+                    onClick={() => { setSelectedTemplate(template.id); setPreparedUrl(null); }}
                     className={`relative p-4 rounded-xl border-2 transition-all ${
                       selectedTemplate === template.id
                         ? "border-[#FFC700] ring-2 ring-[#FFC700]/30"
-                        : "border-[#E5E5E5]/20 hover:border-[#E5E5E5]/40"
+                        : "border-[#E5E5E5]/20 hover:border-[#E5E5E5]/70"
                     }`}
                   >
                     <div className={`w-full h-16 rounded-lg ${template.color} mb-2`} />
@@ -546,27 +548,32 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
           {/* Submit Button */}
           <Button
             type="submit"
-            disabled={isSubmitting}
-            className="w-full h-14 bg-[#25D366] hover:bg-[#25D366]/90 text-white font-bold text-lg rounded-xl flex items-center justify-center gap-3"
+            disabled={isSubmitting || isUploading}
+            className="w-full h-14 bg-[#25D366] hover:bg-[#25D366]/90 text-[#071d10] font-bold text-base rounded-xl flex items-center justify-center gap-3"
           >
             {isSubmitting ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <>
                 <MessageCircle className="w-5 h-5" />
-                Demander ma carte NFC + Wallet
+                Préparer ma demande
               </>
             )}
           </Button>
 
-          <p className="text-center text-[#E5E5E5]/40 text-xs">
-            En soumettant ce formulaire, vous acceptez d'être contacté par IWASP
+          <p className="text-center text-[#E5E5E5]/70 text-xs">
+            Vos informations seront transmises à WhatsApp uniquement lorsque vous ouvrirez le lien puis enverrez le message. La photo, si ajoutée, est téléversée dès sa sélection.
           </p>
+          {preparedUrl && <div role="status" className="rounded-xl border border-[#FFC700]/70 p-5 text-white">
+            <h2 className="font-semibold">Votre demande est prête, pas encore envoyée.</h2>
+            <p className="text-sm text-[#E5E5E5] my-3">Ouvrez WhatsApp, relisez le message puis confirmez son envoi. Vous pouvez encore modifier les champs ci-dessus.</p>
+            <a href={preparedUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-[#FFC700] underline">Ouvrir WhatsApp pour envoyer</a>
+          </div>}
         </form>
       </div>
 
       {/* Footer */}
-      <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="block text-center py-6 text-[#E5E5E5]/30 text-xs hover:opacity-80 transition-opacity">
+      <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="block text-center py-6 text-[#E5E5E5]/70 text-xs hover:opacity-80 transition-opacity">
         Powered by I-WASP.com
       </a>
     </div>

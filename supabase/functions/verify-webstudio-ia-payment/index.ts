@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { verifiedPaymentProposal } from "../_shared/webstudioPaymentBinding.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
@@ -32,23 +33,40 @@ serve(async (req) => {
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    if (session.payment_status !== "paid") {
+    if (session.status !== "complete" || session.payment_status !== "paid") {
       return new Response(JSON.stringify({ success: false, error: "Payment not completed" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    const verifiedProposalId = verifiedPaymentProposal(session, proposalId, "ia");
+    if (!verifiedProposalId) return new Response(JSON.stringify({ success: false, error: "Paiement et proposition incompatibles" }), {
+      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
     logStep("Payment verified", { sessionId });
 
     const isInstant = session.metadata?.isInstant === 'true';
 
-    // Update proposal status
-    await supabase.from('website_proposals').update({ status: 'paid' }).eq('id', proposalId);
+    const { data: proposal, error: lookupError } = await supabase.from("website_proposals")
+      .select("status").eq("id", verifiedProposalId).single();
+    if (lookupError || !proposal) throw new Error("Proposition introuvable");
+    if (["generating", "site_generated"].includes(proposal.status)) return new Response(JSON.stringify({ success: true, isInstant }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+    if (proposal.status !== "paid") {
+      const { data: updated, error: updateError } = await supabase.from("website_proposals")
+        .update({ status: "paid" }).eq("id", verifiedProposalId).eq("status", proposal.status)
+        .select("id").maybeSingle();
+      if (updateError) throw new Error("Mise à jour du paiement impossible");
+      if (!updated) return new Response(JSON.stringify({ success: true, isInstant }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // For instant packages, trigger generation
     if (isInstant) {
       logStep("Triggering instant generation");
-      await supabase.functions.invoke('generate-website-code', { body: { proposalId } });
+      await supabase.functions.invoke('generate-website-code', { body: { proposalId: verifiedProposalId } });
     }
 
     return new Response(JSON.stringify({ success: true, isInstant }), {

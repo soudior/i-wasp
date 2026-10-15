@@ -1,3 +1,4 @@
+import { publicAiError } from "../_shared/publicAiError.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -131,7 +132,7 @@ Réponds UNIQUEMENT avec le nouveau paragraphe, sans guillemets, sans explicatio
   } catch (error) {
     console.error("Error regenerating text:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Erreur inattendue" }),
+      JSON.stringify({ error: publicAiError(error) }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

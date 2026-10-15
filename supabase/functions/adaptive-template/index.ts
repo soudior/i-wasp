@@ -1,3 +1,4 @@
+import { publicAiError } from "../_shared/publicAiError.ts";
 /**
  * IWASP Adaptive Templates Engine - Edge Function
  * 
@@ -270,7 +271,7 @@ serve(async (req) => {
     console.error("Template generation error:", error);
     return new Response(
       JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Erreur de génération" 
+        error: publicAiError(error)
       }),
       { 
         status: 500, 

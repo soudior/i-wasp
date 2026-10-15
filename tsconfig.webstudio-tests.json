@@ -1,0 +1,4 @@
+{
+ "compilerOptions": {"target":"ES2022", "lib":["ES2022","DOM"], "module":"ESNext", "moduleResolution":"bundler", "allowImportingTsExtensions":true, "noEmit":true, "strict":false, "skipLibCheck":true, "types":["node"]},
+ "include":["tests/webstudio/**/*", "tests/wallet/runtime.d.ts", "supabase/functions/_shared/websiteGenerationAccess.ts", "supabase/functions/_shared/webstudioPaymentBinding.ts"]
+}

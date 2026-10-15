@@ -8,14 +8,14 @@
 
 ## 🚀 Étapes de Configuration
 
-### 1. Exporter depuis Lovable vers GitHub
+### 1. Récupérer le dépôt GitHub
 
-Dans Lovable, cliquez sur **"Export to GitHub"** pour transférer le projet.
+Le dépôt GitHub est la source du projet.
 
 ### 2. Cloner le projet
 
 ```bash
-git clone https://github.com/VOTRE_USERNAME/i-wasp.git
+git clone https://github.com/soudior/i-wasp.git
 cd i-wasp
 ```
 

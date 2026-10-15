@@ -1,0 +1,1 @@
+[0;32m✓ Vérification protection clients: OK[0m

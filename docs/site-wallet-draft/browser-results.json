@@ -1,0 +1,68 @@
+[
+  {
+    "name": "mobile",
+    "width": 390,
+    "errors": [],
+    "homeViolations": [],
+    "formViolations": [],
+    "externalRequestsBlocked": [
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://vwlngxifajsziexhkafe.supabase.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://vwlngxifajsziexhkafe.supabase.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://vwlngxifajsziexhkafe.supabase.co",
+        "method": "GET"
+      }
+    ]
+  },
+  {
+    "name": "desktop",
+    "width": 1440,
+    "errors": [],
+    "homeViolations": [],
+    "formViolations": [],
+    "externalRequestsBlocked": [
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://vwlngxifajsziexhkafe.supabase.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://vwlngxifajsziexhkafe.supabase.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://ipapi.co",
+        "method": "GET"
+      },
+      {
+        "origin": "https://vwlngxifajsziexhkafe.supabase.co",
+        "method": "GET"
+      }
+    ]
+  }
+]

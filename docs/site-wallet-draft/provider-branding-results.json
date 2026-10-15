@@ -1,0 +1,42 @@
+[
+  {
+    "width": 390,
+    "route": "/",
+    "visibleProviderMentions": 0
+  },
+  {
+    "width": 390,
+    "route": "/demo",
+    "visibleProviderMentions": 0
+  },
+  {
+    "width": 390,
+    "route": "/web-studio",
+    "visibleProviderMentions": 0
+  },
+  {
+    "width": 390,
+    "route": "/web-studio-legacy",
+    "visibleProviderMentions": 0
+  },
+  {
+    "width": 1440,
+    "route": "/",
+    "visibleProviderMentions": 0
+  },
+  {
+    "width": 1440,
+    "route": "/demo",
+    "visibleProviderMentions": 0
+  },
+  {
+    "width": 1440,
+    "route": "/web-studio",
+    "visibleProviderMentions": 0
+  },
+  {
+    "width": 1440,
+    "route": "/web-studio-legacy",
+    "visibleProviderMentions": 0
+  }
+]

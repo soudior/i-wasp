@@ -39,7 +39,7 @@ export default defineConfig(() => ({
       // Manifest unique : on utilise public/manifest.json (lié dans index.html)
       // pour éviter deux manifests concurrents. Le plugin ne gère que le service worker.
       manifest: false,
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icons/icon-192x192.png', 'icons/icon-512x512.png'],
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'icons/icon-192x192.png', 'icons/icon-512x512.png'],
       workbox: {
         // Les fiches NFC sont des pages publiques vivantes : elles ne doivent
         // jamais etre remplacees par un ancien app-shell mis en cache. Le

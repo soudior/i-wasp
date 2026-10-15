@@ -1,3 +1,4 @@
+import { publicAiError } from "../_shared/publicAiError.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -164,7 +165,7 @@ Pour une entreprise: priorise LinkedIn, site web, adresse`;
     console.error('Smart suggestions error:', error);
     const isUnauthorized = error instanceof Error && /unauthorized|auth/i.test(error.message);
     return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: publicAiError(error),
       code: isUnauthorized ? 'UNAUTHORIZED' : 'INTERNAL_ERROR'
     }), {
       status: isUnauthorized ? 401 : 500,

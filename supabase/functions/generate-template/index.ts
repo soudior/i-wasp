@@ -1,3 +1,4 @@
+import { publicAiError } from "../_shared/publicAiError.ts";
 /**
  * IWASP AI Template Generator
  * Generates card template structure based on user description
@@ -219,7 +220,7 @@ serve(async (req) => {
     console.error("Template generation error:", error);
     return new Response(
       JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Erreur de génération" 
+        error: publicAiError(error)
       }),
       { 
         status: 500, 

@@ -6,7 +6,6 @@
  * - Visible, discret, non intrusif
  * - Présent sur TOUTES les pages publiques (anciens et nouveaux clients, tous templates)
  * - Ne peut être modifié par un client standard
- * - Aucune mention lovable.app en production
  * 
  * Exception UNIQUE:
  * - Peut être désactivé pour les offres White-label

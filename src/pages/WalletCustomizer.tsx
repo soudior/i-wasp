@@ -468,7 +468,7 @@ export default function WalletCustomizer() {
           transition={{ delay: 0.25 }}
           className="text-center text-xs text-[#8E8E93] px-4"
         >
-          Ces paramètres seront appliqués lors de l'ajout du pass à Apple Wallet ou Google Wallet.
+          Aperçu indicatif. Les préférences sont sauvegardées ; le rendu final dépend du fournisseur. Les couleurs Apple dépendent du template PassKit configuré. Aucun pass n’est installé par cette sauvegarde.
         </motion.div>
       </div>
     </div>

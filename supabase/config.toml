@@ -84,6 +84,8 @@ verify_jwt = false
 [functions.send-webstudio-status-update]
 verify_jwt = false
 
+# Mixed verified admin JWT, exact service key, or short-lived proposal capability.
+# The handler must authorize every call before any privileged lookup.
 [functions.generate-website-code]
 verify_jwt = false
 
