@@ -14,6 +14,24 @@
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href="https://i-wasp.com/" />
     
+    <!-- Audience measurement on public marketing pages only. -->
+    <script>
+      (function () {
+        var publicPages = ["/", "/omnia", "/elite", "/iwasp", "/iwasp/produit", "/produit", "/produits", "/conciergerie", "/club", "/contact", "/demo"];
+        if (!["i-wasp.com", "www.i-wasp.com"].includes(location.hostname) ||
+            !publicPages.includes(location.pathname) || location.search || location.hash) return;
+        var tracker = document.createElement("script");
+        tracker.async = true;
+        tracker.src = "https://tracker.metricool.com/resources/be.js";
+        tracker.onload = function () {
+          if (window.beTracker && publicPages.includes(location.pathname) && !location.search && !location.hash) {
+            window.beTracker.t({ hash: "2f33edb1a4db16ee23392e3b661df6d" });
+          }
+        };
+        document.head.appendChild(tracker);
+      })();
+    </script>
+
     <!-- PWA Configuration - Noir Couture -->
     <meta name="theme-color" content="#0A0A0A" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
