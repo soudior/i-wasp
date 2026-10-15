@@ -4,21 +4,20 @@
  */
 
 import { useState, useRef } from "react";
+import { Link } from "react-router-dom";
+import "@/styles/creation-studio.css";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, 
-  Briefcase, 
   Phone, 
-  Mail, 
   MessageCircle,
   Linkedin,
   Instagram,
   Globe,
   Palette,
-  Send,
   CheckCircle2,
   Sparkles,
   Camera,
@@ -26,7 +25,8 @@ import {
   X,
   QrCode,
   WalletCards,
-  Link2
+  Link2,
+  ArrowUpRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -170,7 +170,7 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ["#D4AF37", "#1A1A1A", "#FFFFFF"],
+      colors: ["#DCC7B0", "#111111", "#FFFFFF"],
     });
 
     setIsSubmitted(true);
@@ -183,7 +183,7 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
 
   if (isSubmitted) {
     return (
-      <div className="min-h-dvh bg-[#0B0B0B] flex items-center justify-center p-6">
+      <div className="min-h-dvh bg-[#030303] flex items-center justify-center p-6">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -195,10 +195,10 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
           <h2 className="text-2xl font-bold text-white mb-3">
             Formulaire envoyé ! 🎉
           </h2>
-          <p className="text-[#E5E5E5]/70 mb-6">
+          <p className="text-[#FDFCFB]/70 mb-6">
             WhatsApp va s'ouvrir pour envoyer vos informations à notre équipe.
           </p>
-          <p className="text-sm text-[#E5E5E5]/50">
+          <p className="text-sm text-[#FDFCFB]/50">
             Nous vous contacterons sous 24h pour finaliser votre carte.
           </p>
         </motion.div>
@@ -207,35 +207,36 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
   }
 
   return (
-    <div className="min-h-dvh bg-[#0B0B0B] pb-safe">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-[#0B0B0B]/95 backdrop-blur-lg border-b border-[#E5E5E5]/10 px-4 py-4">
-        <div className="flex items-center justify-center gap-3">
-          <img src={iwaspLogo} alt="IWASP" className="h-8 w-auto" />
-          <span className="text-white font-semibold">Studio NFC & Wallet</span>
-        </div>
-      </div>
+    <div className="creation-studio min-h-dvh bg-[#030303] pb-safe">
+      <header className="studio-header">
+        <Link to="/" className="studio-brand" aria-label="i-wasp, accueil">
+          <img src={iwaspLogo} alt="IWASP" className="h-9 w-auto" />
+          <span>i-wasp<span className="studio-brand-caption">L’ART DE LA PRÉSENCE</span></span>
+        </Link>
+        <Link to="/contact" className="studio-contact">Parlons de votre projet <ArrowUpRight size={15} aria-hidden="true" /></Link>
+      </header>
 
-      <div className="max-w-lg mx-auto px-4 py-6">
+      <main className="studio-layout">
         {/* Intro */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="studio-intro"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFC700]/20 text-[#FFC700] text-sm mb-4">
+          <div className="studio-eyebrow">
             <Sparkles className="w-4 h-4" />
-            Création premium par i-Wasp
+            LE STUDIO i-wasp
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">
-            Votre carte NFC, QR et Apple Wallet
+          <h1 className="studio-title">
+            Votre présence.<br /><span>Votre signature.</span>
           </h1>
-          <p className="text-[#E5E5E5]/60 text-sm">
+          <p className="studio-subtitle">Votre carte NFC, QR et Apple Wallet</p>
+          <p className="studio-description">
             Donnez-nous votre activité et vos liens. Nous créons une fiche digitale complète,
             fidèle à votre image et prête à partager.
           </p>
 
-          <div className="grid grid-cols-3 gap-2 mt-5">
+          <div className="studio-features">
             {[
               { icon: Link2, label: "Lien i-wasp" },
               { icon: QrCode, label: "QR vers la fiche" },
@@ -243,24 +244,32 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
             ].map(({ icon: Icon, label }) => (
               <div
                 key={label}
-                className="rounded-xl border border-[#FFC700]/15 bg-[#FFC700]/5 px-2 py-3 text-center"
+                className="studio-feature"
               >
-                <Icon className="mx-auto mb-1.5 h-4 w-4 text-[#FFC700]" />
-                <span className="text-[10px] leading-tight text-[#E5E5E5]/70">{label}</span>
+                <Icon className="mx-auto mb-1.5 h-4 w-4 text-[#DCC7B0]" />
+                <span className="text-xs leading-relaxed text-[#FDFCFB]/80">{label}</span>
               </div>
             ))}
           </div>
 
-          <p className="mt-4 text-[11px] leading-relaxed text-[#E5E5E5]/45">
+          <p className="mt-5 text-xs leading-relaxed text-[#FDFCFB]/65">
             Le QR visible et celui du pass Wallet ouvriront le même lien NFC sécurisé sur i-wasp.com.
           </p>
+          <div className="studio-signature" aria-hidden="true">
+            <span className="studio-signature-wordmark">i-wasp</span>
+            <QrCode size={30} strokeWidth={1} />
+            <span className="studio-signature-label">NFC · DIGITAL IDENTITY</span>
+            <span className="studio-signature-line" />
+          </div>
+          <p className="studio-process">01. Vos informations <span>02. Votre style</span> 03. Votre demande</p>
         </motion.div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="studio-form space-y-6">
+          <div className="studio-form-heading"><span>VOTRE CARTE, SUR MESURE</span><h2>Commençons par vous.</h2><p>Les champs marqués d’un * sont obligatoires.</p></div>
           {/* Photo Upload */}
-          <Card className="bg-[#1A1A1A] border-[#E5E5E5]/10">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 text-[#FFC700] mb-4">
+          <Card className="studio-panel bg-[#111111] border-[#FDFCFB]/10">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2 text-[#DCC7B0] mb-4">
                 <Camera className="w-4 h-4" />
                 <span className="font-medium text-sm">Photo de profil</span>
               </div>
@@ -286,10 +295,11 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
                       <img
                         src={photoUrl}
                         alt="Photo de profil"
-                        className="w-24 h-24 rounded-full object-cover border-2 border-[#FFC700]"
+                        className="w-24 h-24 rounded-full object-cover border-2 border-[#DCC7B0]"
                       />
                       <button
                         type="button"
+                        aria-label="Supprimer la photo"
                         onClick={removePhoto}
                         className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"
                       >
@@ -305,14 +315,14 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploading}
-                      className="w-24 h-24 rounded-full bg-[#0B0B0B] border-2 border-dashed border-[#E5E5E5]/30 flex flex-col items-center justify-center gap-1 hover:border-[#FFC700] hover:bg-[#0B0B0B]/80 transition-all"
+                      className="w-24 h-24 rounded-full bg-[#030303] border-2 border-dashed border-[#FDFCFB]/30 flex flex-col items-center justify-center gap-1 hover:border-[#DCC7B0] hover:bg-[#030303]/80 transition-all"
                     >
                       {isUploading ? (
-                        <div className="w-6 h-6 border-2 border-[#FFC700] border-t-transparent rounded-full animate-spin" />
+                        <div className="w-6 h-6 border-2 border-[#DCC7B0] border-t-transparent rounded-full animate-spin" />
                       ) : (
                         <>
-                          <Upload className="w-5 h-5 text-[#E5E5E5]/60" />
-                          <span className="text-[10px] text-[#E5E5E5]/60">Ajouter</span>
+                          <Upload className="w-5 h-5 text-[#FDFCFB]/60" />
+                          <span className="text-[10px] text-[#FDFCFB]/60">Ajouter</span>
                         </>
                       )}
                     </motion.button>
@@ -325,7 +335,7 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
                     variant="ghost"
                     size="sm"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-[#FFC700] text-xs"
+                    className="text-[#DCC7B0] text-xs"
                   >
                     <Camera className="w-3 h-3 mr-1" />
                     Changer la photo
@@ -336,31 +346,33 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
           </Card>
 
           {/* Identité */}
-          <Card className="bg-[#1A1A1A] border-[#E5E5E5]/10">
-            <CardContent className="p-4 space-y-4">
-              <div className="flex items-center gap-2 text-[#FFC700] mb-2">
+          <Card className="studio-panel bg-[#111111] border-[#FDFCFB]/10">
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-[#DCC7B0] mb-2">
                 <User className="w-4 h-4" />
                 <span className="font-medium text-sm">Identité</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-[#E5E5E5]/70 text-xs">Prénom *</Label>
+                  <Label htmlFor="studio-firstName" className="text-[#FDFCFB]/70 text-xs">Prénom *</Label>
                   <Input
+                    id="studio-firstName"
                     {...register("firstName")}
                     placeholder="Votre prénom"
-                    className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                    className="bg-[#030303] border-[#FDFCFB]/20 text-white mt-1"
                   />
                   {errors.firstName && (
                     <p className="text-red-400 text-xs mt-1">{errors.firstName.message}</p>
                   )}
                 </div>
                 <div>
-                  <Label className="text-[#E5E5E5]/70 text-xs">Nom *</Label>
+                  <Label htmlFor="studio-lastName" className="text-[#FDFCFB]/70 text-xs">Nom *</Label>
                   <Input
+                    id="studio-lastName"
                     {...register("lastName")}
                     placeholder="Votre nom"
-                    className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                    className="bg-[#030303] border-[#FDFCFB]/20 text-white mt-1"
                   />
                   {errors.lastName && (
                     <p className="text-red-400 text-xs mt-1">{errors.lastName.message}</p>
@@ -369,34 +381,37 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">Fonction / Titre</Label>
+                <Label htmlFor="studio-title" className="text-[#FDFCFB]/70 text-xs">Fonction / Titre</Label>
                 <Input
-                  {...register("title")}
+                  id="studio-title"
+                    {...register("title")}
                   placeholder="Ex: Directeur Commercial"
-                  className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                  className="bg-[#030303] border-[#FDFCFB]/20 text-white mt-1"
                 />
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">Entreprise</Label>
+                <Label htmlFor="studio-company" className="text-[#FDFCFB]/70 text-xs">Entreprise</Label>
                 <Input
-                  {...register("company")}
+                  id="studio-company"
+                    {...register("company")}
                   placeholder="Nom de votre entreprise"
-                  className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                  className="bg-[#030303] border-[#FDFCFB]/20 text-white mt-1"
                 />
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">
+                <Label htmlFor="studio-businessSource" className="text-[#FDFCFB]/70 text-xs">
                   Lien Google, site ou réseau principal
                 </Label>
                 <Input
-                  {...register("businessSource")}
+                  id="studio-businessSource"
+                    {...register("businessSource")}
                   inputMode="url"
                   placeholder="https://maps.google.com/..."
-                  className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                  className="bg-[#030303] border-[#FDFCFB]/20 text-white mt-1"
                 />
-                <p className="mt-1.5 text-[10px] leading-relaxed text-[#E5E5E5]/40">
+                <p className="mt-1.5 text-[10px] leading-relaxed text-[#FDFCFB]/65">
                   Ce lien nous permet de retrouver votre logo, votre univers et vos informations officielles.
                 </p>
               </div>
@@ -404,20 +419,21 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
           </Card>
 
           {/* Contact */}
-          <Card className="bg-[#1A1A1A] border-[#E5E5E5]/10">
-            <CardContent className="p-4 space-y-4">
-              <div className="flex items-center gap-2 text-[#FFC700] mb-2">
+          <Card className="studio-panel bg-[#111111] border-[#FDFCFB]/10">
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-[#DCC7B0] mb-2">
                 <Phone className="w-4 h-4" />
                 <span className="font-medium text-sm">Contact</span>
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">Téléphone *</Label>
+                <Label htmlFor="studio-phone" className="text-[#FDFCFB]/70 text-xs">Téléphone *</Label>
                 <Input
-                  {...register("phone")}
+                  id="studio-phone"
+                    {...register("phone")}
                   type="tel"
                   placeholder="+212 6XX XXX XXX"
-                  className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                  className="bg-[#030303] border-[#FDFCFB]/20 text-white mt-1"
                 />
                 {errors.phone && (
                   <p className="text-red-400 text-xs mt-1">{errors.phone.message}</p>
@@ -425,12 +441,13 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">Email</Label>
+                <Label htmlFor="studio-email" className="text-[#FDFCFB]/70 text-xs">Email</Label>
                 <Input
-                  {...register("email")}
+                  id="studio-email"
+                    {...register("email")}
                   type="email"
                   placeholder="votre@email.com"
-                  className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                  className="bg-[#030303] border-[#FDFCFB]/20 text-white mt-1"
                 />
                 {errors.email && (
                   <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
@@ -438,82 +455,87 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">WhatsApp (si différent)</Label>
+                <Label htmlFor="studio-whatsapp" className="text-[#FDFCFB]/70 text-xs">WhatsApp (si différent)</Label>
                 <Input
-                  {...register("whatsapp")}
+                  id="studio-whatsapp"
+                    {...register("whatsapp")}
                   type="tel"
                   placeholder="+212 6XX XXX XXX"
-                  className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                  className="bg-[#030303] border-[#FDFCFB]/20 text-white mt-1"
                 />
               </div>
             </CardContent>
           </Card>
 
           {/* Réseaux sociaux */}
-          <Card className="bg-[#1A1A1A] border-[#E5E5E5]/10">
-            <CardContent className="p-4 space-y-4">
-              <div className="flex items-center gap-2 text-[#FFC700] mb-2">
+          <Card className="studio-panel bg-[#111111] border-[#FDFCFB]/10">
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-[#DCC7B0] mb-2">
                 <Globe className="w-4 h-4" />
                 <span className="font-medium text-sm">Réseaux sociaux</span>
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs flex items-center gap-2">
+                <Label htmlFor="studio-linkedin" className="text-[#FDFCFB]/70 text-xs flex items-center gap-2">
                   <Linkedin className="w-3 h-3" /> LinkedIn
                 </Label>
                 <Input
-                  {...register("linkedin")}
+                  id="studio-linkedin"
+                    {...register("linkedin")}
                   placeholder="linkedin.com/in/votre-profil"
-                  className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                  className="bg-[#030303] border-[#FDFCFB]/20 text-white mt-1"
                 />
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs flex items-center gap-2">
+                <Label htmlFor="studio-instagram" className="text-[#FDFCFB]/70 text-xs flex items-center gap-2">
                   <Instagram className="w-3 h-3" /> Instagram
                 </Label>
                 <Input
-                  {...register("instagram")}
+                  id="studio-instagram"
+                    {...register("instagram")}
                   placeholder="@votre_compte"
-                  className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                  className="bg-[#030303] border-[#FDFCFB]/20 text-white mt-1"
                 />
               </div>
 
               <div>
-                <Label className="text-[#E5E5E5]/70 text-xs">Site web</Label>
+                <Label htmlFor="studio-website" className="text-[#FDFCFB]/70 text-xs">Site web</Label>
                 <Input
-                  {...register("website")}
+                  id="studio-website"
+                    {...register("website")}
                   placeholder="https://votre-site.com"
-                  className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white mt-1"
+                  className="bg-[#030303] border-[#FDFCFB]/20 text-white mt-1"
                 />
               </div>
             </CardContent>
           </Card>
 
           {/* Bio */}
-          <Card className="bg-[#1A1A1A] border-[#E5E5E5]/10">
-            <CardContent className="p-4 space-y-4">
-              <div className="flex items-center gap-2 text-[#FFC700] mb-2">
+          <Card className="studio-panel bg-[#111111] border-[#FDFCFB]/10">
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-[#DCC7B0] mb-2">
                 <MessageCircle className="w-4 h-4" />
                 <span className="font-medium text-sm">Bio / Description</span>
               </div>
 
               <Textarea
+                aria-label="Bio / Description"
                 {...register("bio")}
                 placeholder="Décrivez brièvement votre activité..."
-                className="bg-[#0B0B0B] border-[#E5E5E5]/20 text-white min-h-[80px] resize-none"
+                className="bg-[#030303] border-[#FDFCFB]/20 text-white min-h-[80px] resize-none"
                 maxLength={200}
               />
-              <p className="text-[#E5E5E5]/40 text-xs text-right">
+              <p className="text-[#FDFCFB]/65 text-xs text-right">
                 {watchedData.bio?.length || 0}/200
               </p>
             </CardContent>
           </Card>
 
           {/* Template Selection */}
-          <Card className="bg-[#1A1A1A] border-[#E5E5E5]/10">
-            <CardContent className="p-4 space-y-4">
-              <div className="flex items-center gap-2 text-[#FFC700] mb-2">
+          <Card className="studio-panel bg-[#111111] border-[#FDFCFB]/10">
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-center gap-2 text-[#DCC7B0] mb-2">
                 <Palette className="w-4 h-4" />
                 <span className="font-medium text-sm">Style de carte</span>
               </div>
@@ -523,18 +545,19 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
                   <button
                     key={template.id}
                     type="button"
+                    aria-pressed={selectedTemplate === template.id}
                     onClick={() => setSelectedTemplate(template.id)}
                     className={`relative p-4 rounded-xl border-2 transition-all ${
                       selectedTemplate === template.id
-                        ? "border-[#FFC700] ring-2 ring-[#FFC700]/30"
-                        : "border-[#E5E5E5]/20 hover:border-[#E5E5E5]/40"
+                        ? "border-[#DCC7B0] ring-2 ring-[#DCC7B0]/30"
+                        : "border-[#FDFCFB]/20 hover:border-[#FDFCFB]/40"
                     }`}
                   >
                     <div className={`w-full h-16 rounded-lg ${template.color} mb-2`} />
                     <p className="text-white text-sm font-medium">{template.name}</p>
                     {selectedTemplate === template.id && (
-                      <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#FFC700] flex items-center justify-center">
-                        <CheckCircle2 className="w-3 h-3 text-[#0B0B0B]" />
+                      <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#DCC7B0] flex items-center justify-center">
+                        <CheckCircle2 className="w-3 h-3 text-[#030303]" />
                       </div>
                     )}
                   </button>
@@ -547,7 +570,7 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-14 bg-[#25D366] hover:bg-[#25D366]/90 text-white font-bold text-lg rounded-xl flex items-center justify-center gap-3"
+            className="studio-submit whitespace-normal text-center w-full min-h-14 h-auto py-4 bg-[#DCC7B0] hover:bg-[#E8D9C7] text-[#030303] font-medium text-sm rounded-xl flex items-center justify-center gap-3"
           >
             {isSubmitting ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -559,14 +582,14 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
             )}
           </Button>
 
-          <p className="text-center text-[#E5E5E5]/40 text-xs">
+          <p className="text-center text-[#FDFCFB]/65 text-xs">
             En soumettant ce formulaire, vous acceptez d'être contacté par IWASP
           </p>
         </form>
-      </div>
+      </main>
 
       {/* Footer */}
-      <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="block text-center py-6 text-[#E5E5E5]/30 text-xs hover:opacity-80 transition-opacity">
+      <a href="https://i-wasp.com" target="_blank" rel="noopener noreferrer" className="block text-center py-6 text-[#FDFCFB]/65 text-xs hover:opacity-80 transition-opacity">
         Powered by I-WASP.com
       </a>
     </div>

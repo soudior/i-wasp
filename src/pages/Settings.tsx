@@ -31,9 +31,23 @@ import {
 import { useHapticFeedback } from "@/hooks/useHapticFeedback";
 import { useOnboardingTour } from "@/components/onboarding/OnboardingTour";
 import iwaspCertifiedBadge from "@/assets/iwasp-certified-badge.png";
+import { BRAND } from "@/lib/brandPalette";
+import "@/styles/workspace-brand.css";
 
-// Stealth Luxury Colors
+// Account presentation, aligned with the public OMNIA palette.
 const COLORS = {
+  bg: BRAND.background,
+  bgCard: BRAND.card,
+  accent: BRAND.accent,
+  accentLight: BRAND.accentLight,
+  text: BRAND.text,
+  textMuted: BRAND.textSecondary,
+  textDim: BRAND.textMuted,
+  border: BRAND.border,
+};
+
+// Preserve the existing physical-card finish independently of the page palette.
+const CARD_PREVIEW_COLORS = {
   bg: "#050807",
   bgCard: "#0A0D0C",
   accent: "#A5A9B4",
@@ -241,13 +255,13 @@ const Settings = () => {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: COLORS.bg }}>
+    <div className="brand-workspace brand-settings min-h-screen" style={{ backgroundColor: COLORS.bg }}>
       <Navbar />
       
-      <main className="pt-20 pb-16">
-        <div className="container mx-auto px-4 max-w-4xl">
+      <main className="workspace-main pt-20 pb-16">
+        <div className="workspace-content container mx-auto px-4 max-w-4xl">
           {/* Header */}
-          <div className="flex items-center gap-4 mb-8">
+          <div className="workspace-settings-heading flex items-center gap-4 mb-8">
             <Button 
               variant="ghost" 
               size="icon"
@@ -258,7 +272,7 @@ const Settings = () => {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="font-playfair text-2xl md:text-3xl font-bold" style={{ color: COLORS.text }}>
+              <h1 className="workspace-title font-display text-2xl md:text-3xl font-bold" style={{ color: COLORS.text }}>
                 Paramètres du compte
               </h1>
               <p className="text-sm" style={{ color: COLORS.textDim }}>
@@ -269,9 +283,9 @@ const Settings = () => {
 
           <div className="space-y-8">
             {/* Logo Upload Section */}
-            <Card style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
-              <CardHeader>
-                <div className="flex items-center gap-3">
+            <Card className="workspace-panel" style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
+              <CardHeader className="workspace-panel-header">
+                <div className="workspace-settings-title flex items-center gap-3">
                   <div 
                     className="w-10 h-10 rounded-xl flex items-center justify-center"
                     style={{ background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})` }}
@@ -356,7 +370,7 @@ const Settings = () => {
 
                     {logoPreview && !savedLogoUrl && (
                       <Button
-                        className="w-full mt-4 font-semibold"
+                        className="workspace-primary w-full mt-4 font-semibold"
                         style={{ 
                           background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
                           color: COLORS.bg 
@@ -391,19 +405,19 @@ const Settings = () => {
 
                   {/* Card Preview */}
                   <div>
-                    <p className="text-sm mb-3" style={{ color: COLORS.textMuted }}>Aperçu sur votre carte</p>
+                    <p className="text-sm mb-3" style={{ color: CARD_PREVIEW_COLORS.textMuted }}>Aperçu sur votre carte</p>
                     <div 
                       className="relative aspect-[1.586] rounded-2xl overflow-hidden shadow-2xl"
                       style={{ 
-                        background: `linear-gradient(135deg, ${COLORS.bgCard}, ${COLORS.bg})`,
-                        border: `1px solid ${COLORS.border}`
+                        background: `linear-gradient(135deg, ${CARD_PREVIEW_COLORS.bgCard}, ${CARD_PREVIEW_COLORS.bg})`,
+                        border: `1px solid ${CARD_PREVIEW_COLORS.border}`
                       }}
                     >
                       {/* Card texture */}
                       <div className="absolute inset-0 opacity-10">
                         <div 
                           className="absolute inset-0" 
-                          style={{ background: `linear-gradient(135deg, ${COLORS.accent}20, transparent, ${COLORS.accent}10)` }}
+                          style={{ background: `linear-gradient(135deg, ${CARD_PREVIEW_COLORS.accent}20, transparent, ${CARD_PREVIEW_COLORS.accent}10)` }}
                         />
                       </div>
                       
@@ -420,11 +434,11 @@ const Settings = () => {
                           <div className="text-center">
                             <div 
                               className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-2"
-                              style={{ backgroundColor: `${COLORS.accent}15` }}
+                              style={{ backgroundColor: `${CARD_PREVIEW_COLORS.accent}15` }}
                             >
-                              <Image className="h-7 w-7" style={{ color: COLORS.textMuted }} />
+                              <Image className="h-7 w-7" style={{ color: CARD_PREVIEW_COLORS.textMuted }} />
                             </div>
-                            <p className="text-xs" style={{ color: COLORS.textDim }}>Votre logo ici</p>
+                            <p className="text-xs" style={{ color: CARD_PREVIEW_COLORS.textDim }}>Votre logo ici</p>
                           </div>
                         )}
                       </div>
@@ -432,23 +446,23 @@ const Settings = () => {
                       {/* Accent line */}
                       <div 
                         className="absolute bottom-4 left-4 right-4 h-0.5" 
-                        style={{ background: `linear-gradient(90deg, ${COLORS.accent}50, ${COLORS.accentLight}80, ${COLORS.accent}50)` }}
+                        style={{ background: `linear-gradient(90deg, ${CARD_PREVIEW_COLORS.accent}50, ${CARD_PREVIEW_COLORS.accentLight}80, ${CARD_PREVIEW_COLORS.accent}50)` }}
                       />
                       
                       {/* i-wasp branding */}
                       <div className="absolute bottom-4 right-4">
-                        <span className="text-[8px] font-medium tracking-widest" style={{ color: `${COLORS.accent}60` }}>i-wasp</span>
+                        <span className="text-[8px] font-medium tracking-widest" style={{ color: `${CARD_PREVIEW_COLORS.accent}60` }}>i-wasp</span>
                       </div>
 
                       {/* NFC indicator */}
                       <div 
                         className="absolute top-4 right-4 w-6 h-6 rounded-full flex items-center justify-center"
-                        style={{ border: `1px solid ${COLORS.accent}30` }}
+                        style={{ border: `1px solid ${CARD_PREVIEW_COLORS.accent}30` }}
                       >
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `${COLORS.accent}50` }} />
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `${CARD_PREVIEW_COLORS.accent}50` }} />
                       </div>
                     </div>
-                    <p className="text-xs text-center mt-3" style={{ color: COLORS.textDim }}>
+                    <p className="text-xs text-center mt-3" style={{ color: CARD_PREVIEW_COLORS.textDim }}>
                       Le logo sera utilisé pour la gravure sur votre carte physique
                     </p>
                   </div>
@@ -457,9 +471,9 @@ const Settings = () => {
             </Card>
 
             {/* Profile Section */}
-            <Card style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
-              <CardHeader>
-                <div className="flex items-center gap-3">
+            <Card className="workspace-panel" style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
+              <CardHeader className="workspace-panel-header">
+                <div className="workspace-settings-title flex items-center gap-3">
                   <div 
                     className="w-10 h-10 rounded-xl flex items-center justify-center"
                     style={{ backgroundColor: `${COLORS.accent}20` }}
@@ -488,7 +502,7 @@ const Settings = () => {
                         borderColor: COLORS.border, 
                         color: COLORS.text 
                       }}
-                      className="placeholder:text-white/30"
+                      className="workspace-input"
                     />
                   </div>
                   <div className="space-y-2">
@@ -503,7 +517,7 @@ const Settings = () => {
                         borderColor: COLORS.border, 
                         color: COLORS.text 
                       }}
-                      className="placeholder:text-white/30"
+                      className="workspace-input"
                     />
                   </div>
                 </div>
@@ -521,7 +535,7 @@ const Settings = () => {
                         borderColor: COLORS.border, 
                         color: COLORS.text 
                       }}
-                      className="placeholder:text-white/30"
+                      className="workspace-input"
                     />
                   </div>
                   <div className="space-y-2">
@@ -536,7 +550,7 @@ const Settings = () => {
                         borderColor: COLORS.border, 
                         color: COLORS.text 
                       }}
-                      className="placeholder:text-white/30"
+                      className="workspace-input"
                     />
                   </div>
                 </div>
@@ -549,7 +563,7 @@ const Settings = () => {
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Décrivez-vous en quelques mots..."
                     rows={3}
-                    className="resize-none placeholder:text-white/30"
+                    className="workspace-input resize-none"
                     style={{ 
                       backgroundColor: `${COLORS.accent}10`, 
                       borderColor: COLORS.border, 
@@ -561,7 +575,7 @@ const Settings = () => {
                 <Button
                   onClick={handleSaveProfile}
                   disabled={savingProfile}
-                  className="font-semibold"
+                  className="workspace-primary font-semibold"
                   style={{ 
                     background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
                     color: COLORS.bg 
@@ -583,9 +597,9 @@ const Settings = () => {
             </Card>
 
             {/* Security Section */}
-            <Card style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
-              <CardHeader>
-                <div className="flex items-center gap-3">
+            <Card className="workspace-panel" style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
+              <CardHeader className="workspace-panel-header">
+                <div className="workspace-settings-title flex items-center gap-3">
                   <div 
                     className="w-10 h-10 rounded-xl flex items-center justify-center"
                     style={{ backgroundColor: `${COLORS.accent}20` }}
@@ -636,7 +650,7 @@ const Settings = () => {
                         borderColor: COLORS.border, 
                         color: COLORS.text 
                       }}
-                      className="placeholder:text-white/30"
+                      className="workspace-input"
                     />
                   </div>
 
@@ -653,7 +667,7 @@ const Settings = () => {
                         borderColor: COLORS.border, 
                         color: COLORS.text 
                       }}
-                      className="placeholder:text-white/30"
+                      className="workspace-input"
                     />
                   </div>
 
@@ -678,9 +692,9 @@ const Settings = () => {
             </Card>
 
             {/* Preferences Section */}
-            <Card style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
-              <CardHeader>
-                <div className="flex items-center gap-3">
+            <Card className="workspace-panel" style={{ backgroundColor: COLORS.bgCard, borderColor: COLORS.border }}>
+              <CardHeader className="workspace-panel-header">
+                <div className="workspace-settings-title flex items-center gap-3">
                   <div 
                     className="w-10 h-10 rounded-xl flex items-center justify-center"
                     style={{ backgroundColor: `${COLORS.accent}20` }}
@@ -723,15 +737,15 @@ const Settings = () => {
             </Card>
 
             {/* Danger Zone - Account Deletion (Apple App Store Requirement) */}
-            <Card className="bg-red-950/20 border-red-900/30">
-              <CardHeader>
-                <div className="flex items-center gap-3">
+            <Card className="workspace-danger bg-red-950/20 border-red-900/30">
+              <CardHeader className="workspace-panel-header">
+                <div className="workspace-settings-title flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-red-900/30 flex items-center justify-center">
                     <AlertTriangle className="h-5 w-5 text-red-400" />
                   </div>
                   <div>
                     <CardTitle className="text-red-400">Zone de danger</CardTitle>
-                    <CardDescription className="text-red-300/60">
+                    <CardDescription className="text-red-300/80">
                       Actions irréversibles sur votre compte
                     </CardDescription>
                   </div>
@@ -739,10 +753,10 @@ const Settings = () => {
               </CardHeader>
               <CardContent>
                 <div className="p-4 rounded-xl bg-red-900/10 border border-red-900/30">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="workspace-danger-row flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                       <p className="text-sm font-medium text-red-300">Supprimer définitivement mon compte</p>
-                      <p className="text-xs text-red-400/60 mt-1">
+                      <p className="text-xs text-red-300/80 mt-1">
                         Cette action supprime définitivement votre compte et vos données personnelles côté serveur. Elle est irréversible.
                       </p>
                     </div>
@@ -750,7 +764,7 @@ const Settings = () => {
                       <AlertDialogTrigger asChild>
                         <Button
                           variant="destructive"
-                          className="bg-red-600 hover:bg-red-700 text-white shrink-0"
+                          className="workspace-danger-action bg-red-600 hover:bg-red-700 text-white shrink-0"
                           disabled={deletingAccount}
                         >
                           {deletingAccount ? (

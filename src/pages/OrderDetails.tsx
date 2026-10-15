@@ -26,6 +26,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { generateInvoicePDF, downloadInvoice } from "@/lib/invoiceGenerator";
 import { toast } from "sonner";
+import "@/styles/workspace-brand.css";
 
 // Timeline step component
 function TimelineStep({ 
@@ -102,7 +103,7 @@ export default function OrderDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="brand-workspace brand-order-detail min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
@@ -110,16 +111,16 @@ export default function OrderDetails() {
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="brand-workspace brand-order-detail min-h-screen bg-background">
         <Navbar />
-        <main className="pt-24 pb-16">
-          <div className="container max-w-2xl mx-auto px-6 text-center">
+        <main className="workspace-main pt-24 pb-16">
+          <div className="workspace-content workspace-empty container max-w-2xl mx-auto px-6 text-center">
             <Package className="h-16 w-16 mx-auto mb-6 text-muted-foreground" />
-            <h1 className="text-2xl font-bold mb-4">Commande introuvable</h1>
+            <h1 className="workspace-title text-2xl font-bold mb-4">Commande introuvable</h1>
             <p className="text-muted-foreground mb-6">
               Cette commande n'existe pas ou vous n'y avez pas accès.
             </p>
-            <Button onClick={() => navigate("/orders")}>
+            <Button className="workspace-primary" onClick={() => navigate("/orders")}>
               Voir mes commandes
             </Button>
           </div>
@@ -167,15 +168,15 @@ export default function OrderDetails() {
   ];
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="brand-workspace brand-order-detail min-h-screen bg-background relative overflow-hidden">
       {/* Background effects */}
-      <div className="absolute inset-0 bg-grid opacity-20" />
-      <div className="noise" />
+      <div className="workspace-decoration absolute inset-0 bg-grid opacity-20" />
+      <div className="workspace-decoration noise" />
       
       <Navbar />
       
-      <main className="relative z-10 pt-24 pb-16">
-        <div className="container max-w-3xl mx-auto px-6">
+      <main className="workspace-main relative z-10 pt-24 pb-16">
+        <div className="workspace-content container max-w-3xl mx-auto px-6">
           {/* Back button */}
           <Button 
             variant="ghost" 
@@ -187,10 +188,10 @@ export default function OrderDetails() {
           </Button>
 
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div className="workspace-page-heading flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="font-display text-2xl md:text-3xl font-bold">
+              <div className="workspace-order-heading flex items-center gap-3 mb-2">
+                <h1 className="workspace-title font-display text-2xl md:text-3xl font-bold">
                   Commande {order.order_number}
                 </h1>
                 <Badge className={getOrderStatusColor(order.status)}>
@@ -206,7 +207,7 @@ export default function OrderDetails() {
             <Button 
               onClick={handleDownloadInvoice}
               disabled={isGeneratingInvoice}
-              className="gap-2"
+              className="workspace-primary gap-2"
             >
               {isGeneratingInvoice ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -219,11 +220,11 @@ export default function OrderDetails() {
 
           <div className="grid gap-6 md:grid-cols-2">
             {/* Timeline */}
-            <Card>
-              <CardHeader>
+            <Card className="workspace-panel">
+              <CardHeader className="workspace-panel-header">
                 <CardTitle className="text-lg">Suivi de commande</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="workspace-panel-content">
                 {timelineSteps.map((step, index) => {
                   const stepIndex = statusOrder.indexOf(step.status);
                   const isCompleted = stepIndex < currentIndex;
@@ -244,9 +245,9 @@ export default function OrderDetails() {
 
                 {/* Tracking number */}
                 {order.tracking_number && (
-                  <div className="mt-4 p-4 bg-secondary/50 rounded-lg">
+                  <div className="workspace-tracking mt-4 p-4 bg-secondary/50 rounded-lg">
                     <p className="text-sm text-muted-foreground mb-1">Numéro de suivi</p>
-                    <p className="font-mono font-medium">{order.tracking_number}</p>
+                    <p className="workspace-tracking-number font-mono font-medium">{order.tracking_number}</p>
                   </div>
                 )}
               </CardContent>
@@ -255,14 +256,14 @@ export default function OrderDetails() {
             {/* Order details */}
             <div className="space-y-6">
               {/* Products */}
-              <Card>
-                <CardHeader>
+              <Card className="workspace-panel">
+                <CardHeader className="workspace-panel-header">
                   <CardTitle className="text-lg">Détails de la commande</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
+                <CardContent className="workspace-panel-content space-y-4">
+                  <div className="workspace-product-row flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center">
+                      <div className="workspace-icon w-12 h-12 rounded-lg bg-secondary flex items-center justify-center shrink-0">
                         <Package className="h-6 w-6" />
                       </div>
                       <div>
@@ -303,15 +304,15 @@ export default function OrderDetails() {
               </Card>
 
               {/* Delivery address */}
-              <Card>
-                <CardHeader>
+              <Card className="workspace-panel">
+                <CardHeader className="workspace-panel-header">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
                     Adresse de livraison
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-1 text-sm">
+                <CardContent className="workspace-panel-content">
+                  <div className="workspace-address space-y-1 text-sm">
                     <p className="font-medium">{order.shipping_name}</p>
                     <p className="text-muted-foreground">{order.shipping_address}</p>
                     <p className="text-muted-foreground">
@@ -325,14 +326,14 @@ export default function OrderDetails() {
               </Card>
 
               {/* Payment method */}
-              <Card>
-                <CardHeader>
+              <Card className="workspace-panel">
+                <CardHeader className="workspace-panel-header">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <CreditCard className="h-4 w-4" />
                     Mode de paiement
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="workspace-panel-content">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                       order.payment_method === "stripe" ? "bg-blue-100" : "bg-primary/10"
@@ -361,8 +362,8 @@ export default function OrderDetails() {
           </div>
 
           {/* Help section */}
-          <Card className="mt-8 bg-secondary/30">
-            <CardContent className="pt-6">
+          <Card className="workspace-panel workspace-help mt-8 bg-secondary/30">
+            <CardContent className="workspace-panel-content pt-6">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>
                   <h3 className="font-medium mb-1">Besoin d'aide ?</h3>
@@ -370,7 +371,7 @@ export default function OrderDetails() {
                     Notre équipe est disponible pour répondre à vos questions
                   </p>
                 </div>
-                <Button variant="outline" asChild>
+                <Button variant="outline" className="workspace-secondary" asChild>
                   <a href="mailto:support@iwasp.ma">
                     <Phone className="h-4 w-4 mr-2" />
                     Contacter le support

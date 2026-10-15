@@ -66,7 +66,7 @@ export function MobileBottomNav() {
   }, [lastScrollY]);
 
   // Don't show on certain pages (login, signup, order funnel, public cards)
-  const hiddenPaths = ["/login", "/signup", "/order/", "/card/", "/c/", "/certificat", "/onboarding", "/checkout"];
+  const hiddenPaths = ["/login", "/signup", "/order/", "/express/", "/card/", "/c/", "/certificat", "/onboarding", "/checkout"];
   const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
 
   // Only show on mobile

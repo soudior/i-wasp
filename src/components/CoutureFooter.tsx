@@ -3,10 +3,11 @@
  * Style: Ultra minimal, typographie éditoriale, grands espaces
  */
 
+import "@/styles/public-brand.css";
 import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { COUTURE } from "@/lib/hauteCouturePalette";
+import { BRAND } from "@/lib/brandPalette";
 
 const footerLinks = {
   product: [
@@ -32,16 +33,16 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { 
-    name: "Instagram", 
+  {
+    name: "Instagram",
     href: "https://instagram.com/iwasp.nfc",
   },
-  { 
-    name: "LinkedIn", 
+  {
+    name: "LinkedIn",
     href: "https://linkedin.com/company/iwasp",
   },
-  { 
-    name: "WhatsApp", 
+  {
+    name: "WhatsApp",
     href: "https://wa.me/33626424394",
   },
 ];
@@ -53,11 +54,11 @@ interface CoutureFooterProps {
 export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
   function CoutureFooter({ variant = "dark" }, ref) {
   return (
-    <footer 
+    <footer
       ref={ref}
-      className="py-12 md:py-16"
-      style={{ 
-        backgroundColor: COUTURE.jet,
+      className="brand-navigation py-12 md:py-16"
+      style={{
+        backgroundColor: BRAND.background,
       }}
     >
       <div className="container mx-auto px-8 md:px-12">
@@ -66,17 +67,17 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
           {/* Brand section */}
           <div className="md:col-span-5">
             <Link to="/" className="inline-block mb-4">
-              <span 
+              <span
                 className="font-display text-xl tracking-tight"
-                style={{ color: COUTURE.silk }}
+                style={{ color: BRAND.text }}
               >
                 i-wasp
               </span>
             </Link>
-            <p 
+            <p
               className="text-sm leading-relaxed max-w-xs mb-6 font-light"
-              style={{ 
-                color: COUTURE.textMuted,
+              style={{
+                color: BRAND.textMuted,
                 letterSpacing: "0.02em",
               }}
             >
@@ -84,22 +85,22 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
               <br />
               <span className="italic">Sobre. Précise. Intemporelle.</span>
             </p>
-            
+
             {/* Social links - text only */}
             <div className="flex items-center gap-6">
               {socialLinks.map((social) => (
-                <a 
+                <a
                   key={social.name}
-                  href={social.href} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-xs uppercase tracking-[0.15em] transition-colors"
-                  style={{ 
-                    color: COUTURE.textMuted,
+                  style={{
+                    color: BRAND.textMuted,
                     transitionDuration: "400ms",
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.gold}
-                  onMouseLeave={(e) => e.currentTarget.style.color = COUTURE.textMuted}
+                  onMouseEnter={(e) => e.currentTarget.style.color = BRAND.accent}
+                  onMouseLeave={(e) => e.currentTarget.style.color = BRAND.textMuted}
                 >
                   {social.name}
                 </a>
@@ -111,9 +112,9 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
           <div className="md:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4">
             {/* Product */}
             <div>
-              <h4 
+              <h4
                 className="text-[10px] uppercase tracking-[0.25em] mb-4 font-medium"
-                style={{ color: COUTURE.textMuted }}
+                style={{ color: BRAND.textMuted }}
               >
                 Produit
               </h4>
@@ -123,12 +124,12 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
                     <Link
                       to={link.href}
                       className="text-sm font-light transition-colors"
-                      style={{ 
-                        color: COUTURE.silk,
+                      style={{
+                        color: BRAND.text,
                         transitionDuration: "400ms",
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.gold}
-                      onMouseLeave={(e) => e.currentTarget.style.color = COUTURE.silk}
+                      onMouseEnter={(e) => e.currentTarget.style.color = BRAND.accent}
+                      onMouseLeave={(e) => e.currentTarget.style.color = BRAND.text}
                     >
                       {link.label}
                     </Link>
@@ -139,9 +140,9 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
 
             {/* Services */}
             <div>
-              <h4 
+              <h4
                 className="text-[10px] uppercase tracking-[0.25em] mb-4 font-medium"
-                style={{ color: COUTURE.textMuted }}
+                style={{ color: BRAND.textMuted }}
               >
                 Services
               </h4>
@@ -151,12 +152,12 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
                     <Link
                       to={link.href}
                       className="text-sm font-light transition-colors"
-                      style={{ 
-                        color: COUTURE.silk,
+                      style={{
+                        color: BRAND.text,
                         transitionDuration: "400ms",
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.gold}
-                      onMouseLeave={(e) => e.currentTarget.style.color = COUTURE.silk}
+                      onMouseEnter={(e) => e.currentTarget.style.color = BRAND.accent}
+                      onMouseLeave={(e) => e.currentTarget.style.color = BRAND.text}
                     >
                       {link.label}
                     </Link>
@@ -167,9 +168,9 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
 
             {/* Support */}
             <div>
-              <h4 
+              <h4
                 className="text-[10px] uppercase tracking-[0.25em] mb-4 font-medium"
-                style={{ color: COUTURE.textMuted }}
+                style={{ color: BRAND.textMuted }}
               >
                 Support
               </h4>
@@ -179,12 +180,12 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
                     <Link
                       to={link.href}
                       className="text-sm font-light transition-colors"
-                      style={{ 
-                        color: COUTURE.silk,
+                      style={{
+                        color: BRAND.text,
                         transitionDuration: "400ms",
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.gold}
-                      onMouseLeave={(e) => e.currentTarget.style.color = COUTURE.silk}
+                      onMouseEnter={(e) => e.currentTarget.style.color = BRAND.accent}
+                      onMouseLeave={(e) => e.currentTarget.style.color = BRAND.text}
                     >
                       {link.label}
                     </Link>
@@ -195,9 +196,9 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
 
             {/* Legal */}
             <div>
-              <h4 
+              <h4
                 className="text-[10px] uppercase tracking-[0.25em] mb-4 font-medium"
-                style={{ color: COUTURE.textMuted }}
+                style={{ color: BRAND.textMuted }}
               >
                 Légal
               </h4>
@@ -207,12 +208,12 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
                     <Link
                       to={link.href}
                       className="text-sm font-light transition-colors"
-                      style={{ 
-                        color: COUTURE.silk,
+                      style={{
+                        color: BRAND.text,
                         transitionDuration: "400ms",
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.gold}
-                      onMouseLeave={(e) => e.currentTarget.style.color = COUTURE.silk}
+                      onMouseEnter={(e) => e.currentTarget.style.color = BRAND.accent}
+                      onMouseLeave={(e) => e.currentTarget.style.color = BRAND.text}
                     >
                       {link.label}
                     </Link>
@@ -224,34 +225,34 @@ export const CoutureFooter = forwardRef<HTMLElement, CoutureFooterProps>(
         </div>
 
         {/* Bottom bar */}
-        <div 
+        <div
           className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4"
-          style={{ borderTop: `1px solid ${COUTURE.jetSoft}` }}
+          style={{ borderTop: `1px solid ${BRAND.border}` }}
         >
           <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-            <p 
+            <p
               className="text-[11px] tracking-[0.1em]"
-              style={{ color: COUTURE.textMuted }}
+              style={{ color: BRAND.textMuted }}
             >
               © 2026 i-wasp.com — Plateforme de Concierge Identité Digitale
             </p>
-            <span 
+            <span
               className="hidden md:inline text-[10px]"
-              style={{ color: COUTURE.textMuted }}
+              style={{ color: BRAND.textMuted }}
             >
               •
             </span>
-            <p 
+            <p
               className="text-[10px] tracking-[0.08em]"
-              style={{ color: COUTURE.textMuted }}
+              style={{ color: BRAND.textMuted }}
             >
               Hébergé sur i-wasp Cloud Infrastructure
             </p>
           </div>
-          
-          <p 
+
+          <p
             className="text-[10px] uppercase tracking-[0.15em]"
-            style={{ color: COUTURE.gold }}
+            style={{ color: BRAND.accent }}
           >
             Technologie propriétaire i-wasp Studio
           </p>

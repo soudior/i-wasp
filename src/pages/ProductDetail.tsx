@@ -2,6 +2,7 @@
  * ProductDetail - Fiche produit Luxe Max avec carrousel et pastilles de finition
  */
 
+import "@/styles/public-brand.css";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,7 +10,7 @@ import { ClubNavbar } from "@/components/ClubNavbar";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { STEALTH } from "@/lib/stealthPalette";
+import { BRAND } from "@/lib/brandPalette";
 import {
   ArrowLeft,
   ArrowRight,
@@ -157,13 +158,13 @@ export default function ProductDetail() {
   // Redirect non-signature products to generic page for now
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: STEALTH.bg }}>
+      <div className="brand-public antialiased leading-relaxed min-h-screen flex items-center justify-center" style={{ backgroundColor: BRAND.background }}>
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-4">Produit non trouvé</h1>
-          <Button 
-            onClick={() => navigate("/produits")} 
+          <Button
+            onClick={() => navigate("/produits")}
             className="rounded-full"
-            style={{ backgroundColor: STEALTH.accent, color: STEALTH.bg }}
+            style={{ backgroundColor: BRAND.accent, color: BRAND.background }}
           >
             Retour aux produits
           </Button>
@@ -190,26 +191,26 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="min-h-screen text-white relative" style={{ backgroundColor: STEALTH.bg }}>
+    <div className="brand-public antialiased leading-relaxed min-h-screen text-[#FDFCFB] relative" style={{ backgroundColor: BRAND.background }}>
       <ClubNavbar />
-      
+
       {/* Subtle cyan halos */}
-      <div 
-        className="absolute top-1/4 right-0 w-[500px] h-[500px] rounded-full blur-[200px] opacity-15 pointer-events-none"
-        style={{ backgroundColor: STEALTH.accent }}
+      <div
+        className="absolute top-1/4 right-0 w-[500px] max-w-full h-[500px] rounded-full blur-[200px] opacity-15 pointer-events-none"
+        style={{ backgroundColor: BRAND.accent }}
       />
-      <div 
-        className="absolute bottom-1/4 left-0 w-[400px] h-[400px] rounded-full blur-[180px] opacity-10 pointer-events-none"
-        style={{ backgroundColor: STEALTH.accent }}
+      <div
+        className="absolute bottom-1/4 left-0 w-[400px] max-w-full h-[400px] rounded-full blur-[180px] opacity-10 pointer-events-none"
+        style={{ backgroundColor: BRAND.accent }}
       />
 
       {/* Breadcrumb */}
       <div className="pt-24 px-6 relative z-10">
         <div className="container mx-auto max-w-6xl">
-          <Link 
+          <Link
             to="/produits"
             className="inline-flex items-center gap-2 text-sm transition-colors hover:opacity-80"
-            style={{ color: STEALTH.textSecondary }}
+            style={{ color: BRAND.textSecondary }}
           >
             <ArrowLeft className="w-4 h-4" />
             Retour aux produits
@@ -220,32 +221,32 @@ export default function ProductDetail() {
       {/* Main Content - 2 Columns */}
       <section className="py-12 px-6 relative z-10">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-            
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+
             {/* LEFT COLUMN: Image Gallery */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="space-y-4"
+              className="min-w-0 space-y-4"
             >
               {/* Main Image with 3D effect */}
-              <div 
+              <div
                 className="relative aspect-[4/3] rounded-3xl overflow-hidden group"
-                style={{ 
-                  backgroundColor: STEALTH.bgCard,
-                  border: `1px solid ${STEALTH.border}`,
-                  boxShadow: STEALTH.shadowCard
+                style={{
+                  backgroundColor: BRAND.card,
+                  border: `1px solid ${BRAND.border}`,
+                  boxShadow: BRAND.shadowCard
                 }}
               >
                 {/* Subtle reflection effect */}
-                <div 
+                <div
                   className="absolute inset-0 pointer-events-none z-10"
                   style={{
                     background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%, rgba(255,255,255,0.02) 100%)"
                   }}
                 />
-                
+
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={`${selectedFinish.id}-${activeImageIndex}`}
@@ -258,42 +259,42 @@ export default function ProductDetail() {
                     transition={{ duration: 0.3 }}
                   />
                 </AnimatePresence>
-                
+
                 {/* Navigation Arrows */}
                 <button
                   onClick={handlePrevImage}
                   className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   style={{ backgroundColor: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)" }}
                 >
-                  <ChevronLeft className="w-5 h-5" style={{ color: STEALTH.text }} />
+                  <ChevronLeft className="w-5 h-5" style={{ color: BRAND.text }} />
                 </button>
                 <button
                   onClick={handleNextImage}
                   className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   style={{ backgroundColor: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)" }}
                 >
-                  <ChevronRight className="w-5 h-5" style={{ color: STEALTH.text }} />
+                  <ChevronRight className="w-5 h-5" style={{ color: BRAND.text }} />
                 </button>
 
                 {/* Badge */}
                 {product.badge && (
-                  <Badge 
+                  <Badge
                     className="absolute top-4 left-4"
-                    style={{ backgroundColor: STEALTH.accent, color: STEALTH.bg }}
+                    style={{ backgroundColor: BRAND.accent, color: BRAND.background }}
                   >
                     <Star className="w-3 h-3 mr-1" />
                     {product.badge}
                   </Badge>
                 )}
-                
+
                 {/* Image indicator */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
                   {currentImages.map((_, idx) => (
-                    <div 
+                    <div
                       key={idx}
                       className="w-2 h-2 rounded-full transition-all"
-                      style={{ 
-                        backgroundColor: idx === activeImageIndex ? STEALTH.accent : "rgba(255,255,255,0.3)"
+                      style={{
+                        backgroundColor: idx === activeImageIndex ? BRAND.accent : "rgba(255,255,255,0.3)"
                       }}
                     />
                   ))}
@@ -301,18 +302,18 @@ export default function ProductDetail() {
               </div>
 
               {/* Thumbnails */}
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+              <div className="flex min-w-0 max-w-full gap-3 overflow-x-auto pb-2 scrollbar-hide">
                 {currentImages.map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setActiveImageIndex(index)}
                     className="flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden transition-all duration-200"
-                    style={{ 
-                      border: index === activeImageIndex 
-                        ? `2px solid ${STEALTH.accent}` 
-                        : `1px solid ${STEALTH.border}`,
+                    style={{
+                      border: index === activeImageIndex
+                        ? `2px solid ${BRAND.accent}`
+                        : `1px solid ${BRAND.border}`,
                       opacity: index === activeImageIndex ? 1 : 0.6,
-                      backgroundColor: STEALTH.bgCard
+                      backgroundColor: BRAND.card
                     }}
                   >
                     <img src={img} alt="" className="w-full h-full object-contain p-1" />
@@ -326,25 +327,25 @@ export default function ProductDetail() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="space-y-6"
+              className="min-w-0 space-y-6"
             >
               {/* Title & Subtitle */}
               <div>
-                <p 
+                <p
                   className="text-sm tracking-[0.2em] uppercase mb-2"
-                  style={{ color: STEALTH.accent }}
+                  style={{ color: BRAND.accent }}
                 >
                   {product.subtitle}
                 </p>
-                <h1 
+                <h1
                   className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4"
-                  style={{ color: STEALTH.text }}
+                  style={{ color: BRAND.text }}
                 >
                   {product.name}
                 </h1>
-                <p 
+                <p
                   className="text-lg leading-relaxed"
-                  style={{ color: STEALTH.textSecondary }}
+                  style={{ color: BRAND.textSecondary }}
                 >
                   {product.tagline}
                 </p>
@@ -353,16 +354,16 @@ export default function ProductDetail() {
               {/* Key Benefits - 3-4 short bullets */}
               <ul className="space-y-3">
                 {product.bullets.map((bullet, i) => (
-                  <li 
-                    key={i} 
+                  <li
+                    key={i}
                     className="flex items-center gap-3 text-base"
-                    style={{ color: STEALTH.text }}
+                    style={{ color: BRAND.text }}
                   >
-                    <div 
+                    <div
                       className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: `${STEALTH.accent}20` }}
+                      style={{ backgroundColor: `${BRAND.accent}20` }}
                     >
-                      <Check className="w-3 h-3" style={{ color: STEALTH.accent }} />
+                      <Check className="w-3 h-3" style={{ color: BRAND.accent }} />
                     </div>
                     {bullet}
                   </li>
@@ -370,39 +371,39 @@ export default function ProductDetail() {
               </ul>
 
               {/* Finish Selection - Color chips */}
-              <div 
+              <div
                 className="pt-6"
-                style={{ borderTop: `1px solid ${STEALTH.border}` }}
+                style={{ borderTop: `1px solid ${BRAND.border}` }}
               >
-                <p className="text-sm font-medium mb-3" style={{ color: STEALTH.textSecondary }}>
-                  Finition : <span style={{ color: STEALTH.text }}>{selectedFinish.name}</span>
+                <p className="text-sm font-medium mb-3" style={{ color: BRAND.textSecondary }}>
+                  Finition : <span style={{ color: BRAND.text }}>{selectedFinish.name}</span>
                 </p>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   {finishOptions.map((finish) => (
                     <button
                       key={finish.id}
                       onClick={() => handleFinishChange(finish)}
                       className="relative w-10 h-10 rounded-full transition-all duration-200"
-                      style={{ 
-                        background: finish.colorSecondary 
+                      style={{
+                        background: finish.colorSecondary
                           ? `linear-gradient(135deg, ${finish.color}, ${finish.colorSecondary})`
                           : finish.color,
-                        boxShadow: selectedFinish.id === finish.id 
-                          ? `0 0 0 2px ${STEALTH.bg}, 0 0 0 4px ${STEALTH.accent}`
+                        boxShadow: selectedFinish.id === finish.id
+                          ? `0 0 0 2px ${BRAND.background}, 0 0 0 4px ${BRAND.accent}`
                           : "none",
-                        border: finish.color === "#f5f5f5" ? `1px solid ${STEALTH.border}` : "none"
+                        border: finish.color === "#f5f5f5" ? `1px solid ${BRAND.border}` : "none"
                       }}
                       title={finish.name}
                     >
                       {selectedFinish.id === finish.id && (
-                        <motion.div 
+                        <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           className="absolute inset-0 flex items-center justify-center"
                         >
-                          <Check 
-                            className="w-4 h-4" 
-                            style={{ color: finish.color === "#f5f5f5" ? "#000" : "#fff" }} 
+                          <Check
+                            className="w-4 h-4"
+                            style={{ color: finish.color === "#f5f5f5" ? "#000" : "#fff" }}
                           />
                         </motion.div>
                       )}
@@ -413,23 +414,23 @@ export default function ProductDetail() {
 
               {/* Material Selection */}
               <div>
-                <p className="text-sm font-medium mb-3" style={{ color: STEALTH.textSecondary }}>
+                <p className="text-sm font-medium mb-3" style={{ color: BRAND.textSecondary }}>
                   Matériau
                 </p>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   {materialOptions.map((material) => (
                     <button
                       key={material.id}
                       onClick={() => setSelectedMaterial(material)}
                       className="px-5 py-3 rounded-xl transition-all duration-200 text-sm font-medium"
-                      style={{ 
-                        backgroundColor: selectedMaterial.id === material.id 
-                          ? STEALTH.accent 
-                          : STEALTH.bgCard,
-                        color: selectedMaterial.id === material.id 
-                          ? STEALTH.bg 
-                          : STEALTH.text,
-                        border: `1px solid ${selectedMaterial.id === material.id ? STEALTH.accent : STEALTH.border}`
+                      style={{
+                        backgroundColor: selectedMaterial.id === material.id
+                          ? BRAND.accent
+                          : BRAND.card,
+                        color: selectedMaterial.id === material.id
+                          ? BRAND.background
+                          : BRAND.text,
+                        border: `1px solid ${selectedMaterial.id === material.id ? BRAND.accent : BRAND.border}`
                       }}
                     >
                       {material.name}
@@ -439,24 +440,24 @@ export default function ProductDetail() {
               </div>
 
               {/* Price */}
-              <div 
+              <div
                 className="pt-6"
-                style={{ borderTop: `1px solid ${STEALTH.border}` }}
+                style={{ borderTop: `1px solid ${BRAND.border}` }}
               >
-                <p className="text-sm mb-1" style={{ color: STEALTH.textSecondary }}>
+                <p className="text-sm mb-1" style={{ color: BRAND.textSecondary }}>
                   À partir de
                 </p>
-                <div className="flex items-baseline gap-3">
-                  <span 
+                <div className="flex flex-wrap items-baseline gap-3">
+                  <span
                     className="text-4xl font-bold"
-                    style={{ color: STEALTH.accent }}
+                    style={{ color: BRAND.accent }}
                   >
                     {formattedPrice}
                   </span>
                   {selectedMaterial.id === "pvc" && (
-                    <span 
+                    <span
                       className="text-sm"
-                      style={{ color: STEALTH.textMuted }}
+                      style={{ color: BRAND.textMuted }}
                     >
                       Métal à partir de 89 €
                     </span>
@@ -465,20 +466,20 @@ export default function ProductDetail() {
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex gap-4 pt-2">
-                <Button 
+              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                <Button
                   size="lg"
                   onClick={() => navigate("/order/offre")}
                   className="flex-1 font-semibold rounded-full py-6 gap-2"
-                  style={{ 
-                    backgroundColor: STEALTH.accent,
-                    color: STEALTH.bg
+                  style={{
+                    backgroundColor: BRAND.accent,
+                    color: BRAND.background
                   }}
                 >
                   Commander
                   <ArrowRight className="w-5 h-5" />
                 </Button>
-                <Button 
+                <Button
                   size="lg"
                   variant="outline"
                   onClick={() => {
@@ -486,9 +487,9 @@ export default function ProductDetail() {
                     specsSection?.scrollIntoView({ behavior: "smooth" });
                   }}
                   className="px-6 rounded-full py-6"
-                  style={{ 
-                    borderColor: STEALTH.border,
-                    color: STEALTH.text
+                  style={{
+                    borderColor: BRAND.border,
+                    color: BRAND.text
                   }}
                 >
                   Voir les détails
@@ -502,12 +503,12 @@ export default function ProductDetail() {
                   { icon: Zap, label: "Livraison 48h" },
                   { icon: CreditCard, label: "Paiement sécurisé" }
                 ].map((item, i) => (
-                  <div 
+                  <div
                     key={i}
                     className="flex items-center gap-2 text-sm"
-                    style={{ color: STEALTH.textSecondary }}
+                    style={{ color: BRAND.textSecondary }}
                   >
-                    <item.icon className="w-4 h-4" style={{ color: STEALTH.accent }} />
+                    <item.icon className="w-4 h-4" style={{ color: BRAND.accent }} />
                     {item.label}
                   </div>
                 ))}
@@ -518,16 +519,16 @@ export default function ProductDetail() {
       </section>
 
       {/* Specifications Section */}
-      <section 
+      <section
         id="specs"
         className="py-20 px-6 relative"
-        style={{ backgroundColor: STEALTH.bgCard }}
+        style={{ backgroundColor: BRAND.card }}
       >
-        <div 
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[200px] opacity-10 pointer-events-none"
-          style={{ backgroundColor: STEALTH.accent }}
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] max-w-full h-[300px] rounded-full blur-[200px] opacity-10 pointer-events-none"
+          style={{ backgroundColor: BRAND.accent }}
         />
-        
+
         <div className="container mx-auto max-w-4xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -535,15 +536,15 @@ export default function ProductDetail() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <p 
+            <p
               className="text-sm tracking-[0.2em] uppercase mb-3"
-              style={{ color: STEALTH.accent }}
+              style={{ color: BRAND.accent }}
             >
               Spécifications
             </p>
-            <h2 
+            <h2
               className="text-3xl font-bold"
-              style={{ color: STEALTH.text }}
+              style={{ color: BRAND.text }}
             >
               Conçue pour durer
             </h2>
@@ -558,21 +559,21 @@ export default function ProductDetail() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
                 className="p-5 rounded-2xl"
-                style={{ 
-                  backgroundColor: STEALTH.bgElevated,
-                  border: `1px solid ${STEALTH.border}`
+                style={{
+                  backgroundColor: BRAND.cardHover,
+                  border: `1px solid ${BRAND.border}`
                 }}
               >
-                <div 
+                <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
-                  style={{ backgroundColor: `${STEALTH.accent}15` }}
+                  style={{ backgroundColor: `${BRAND.accent}15` }}
                 >
-                  <spec.icon className="w-5 h-5" style={{ color: STEALTH.accent }} />
+                  <spec.icon className="w-5 h-5" style={{ color: BRAND.accent }} />
                 </div>
-                <p className="text-sm mb-1" style={{ color: STEALTH.textSecondary }}>
+                <p className="text-sm mb-1" style={{ color: BRAND.textSecondary }}>
                   {spec.label}
                 </p>
-                <p className="font-semibold" style={{ color: STEALTH.text }}>
+                <p className="font-semibold" style={{ color: BRAND.text }}>
                   {spec.value}
                 </p>
               </motion.div>
@@ -582,40 +583,40 @@ export default function ProductDetail() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 relative" style={{ backgroundColor: STEALTH.bg }}>
-        <div 
+      <section className="py-20 px-6 relative" style={{ backgroundColor: BRAND.background }}>
+        <div
           className="absolute inset-0 pointer-events-none"
-          style={{ 
-            background: `radial-gradient(ellipse at center, ${STEALTH.accent}08 0%, transparent 70%)`
+          style={{
+            background: `radial-gradient(ellipse at center, ${BRAND.accent}08 0%, transparent 70%)`
           }}
         />
-        
+
         <div className="container mx-auto max-w-2xl text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <Sparkles className="w-10 h-10 mx-auto mb-6" style={{ color: STEALTH.accent }} />
-            <h2 
+            <Sparkles className="w-10 h-10 mx-auto mb-6" style={{ color: BRAND.accent }} />
+            <h2
               className="text-3xl font-bold mb-4"
-              style={{ color: STEALTH.text }}
+              style={{ color: BRAND.text }}
             >
               Prêt à vous démarquer ?
             </h2>
-            <p 
+            <p
               className="text-lg mb-8"
-              style={{ color: STEALTH.textSecondary }}
+              style={{ color: BRAND.textSecondary }}
             >
               Commandez votre Carte Signature et rejoignez la nouvelle génération du networking.
             </p>
-            <Button 
+            <Button
               size="lg"
               onClick={() => navigate("/order/offre")}
               className="font-semibold px-10 py-6 rounded-full text-lg gap-3"
-              style={{ 
-                backgroundColor: STEALTH.accent,
-                color: STEALTH.bg
+              style={{
+                backgroundColor: BRAND.accent,
+                color: BRAND.background
               }}
             >
               Commander maintenant

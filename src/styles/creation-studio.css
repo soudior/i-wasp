@@ -1,0 +1,32 @@
+/* Studio uses the existing OMNIA identity; scope excludes all customer cards. */
+.creation-studio { color: #FDFCFB; background: radial-gradient(ellipse at 12% 25%, #DCC7B009, transparent 48%), #030303; }
+.studio-header { max-width: 1440px; margin: auto; padding: 26px 6%; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid #DCC7B020; }
+.studio-brand { display: inline-flex; align-items: center; gap: 14px; font-family: var(--font-display); font-size: 26px; }
+.studio-brand-caption { display: block; margin-top: 3px; font-family: var(--font-body); font-size: 8px; letter-spacing: .22em; color: #DCC7B0; }
+.studio-contact { font-size: 12px; color: #DCC7B0; display: flex; align-items: center; gap: 16px; }
+.studio-layout { max-width: 1320px; padding: 72px 6% 88px; margin: auto; display: grid; grid-template-columns: 1fr 1.08fr; align-items: start; gap: clamp(40px, 7vw, 104px); }
+.studio-intro { position: sticky; top: 48px; padding-top: 18px; }
+.studio-eyebrow { display: flex; align-items: center; gap: 10px; font-size: 10px; letter-spacing: .26em; color: #DCC7B0; margin-bottom: 28px; }
+.creation-studio .studio-title { font-family: var(--font-display); font-size: clamp(40px, 4.4vw, 68px); font-weight: 400; letter-spacing: -.045em; line-height: 1.12; margin-bottom: 26px; }
+.studio-title span { color: #DCC7B0; }
+.studio-subtitle { font-size: 14px; color: #FDFCFB; margin-bottom: 16px; }
+.studio-description { color: #b9b6b2; font-size: 14px; line-height: 1.9; max-width: 420px; }
+.studio-features { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-top: 32px; }
+.studio-feature { border: 1px solid #DCC7B024; border-radius: 12px; text-align: center; padding: 18px 6px; background: #DCC7B005; }
+.studio-signature { position: relative; margin: 42px 0 24px; max-width: 350px; aspect-ratio: 1.7; border: 1px solid #DCC7B055; border-radius: 16px; background: linear-gradient(125deg,#24211d,#111 60%,#1f1c18); padding: 26px; box-shadow: 0 28px 60px #0008; color: #DCC7B0; overflow: hidden; }
+.studio-signature-wordmark { font-family: var(--font-display); font-size: 30px; letter-spacing: -.03em; }
+.studio-signature svg { position: absolute; bottom: 26px; right: 26px; }
+.studio-signature-label { position: absolute; bottom: 28px; left: 26px; font-size: 8px; letter-spacing: .18em; }
+.studio-signature-line { position: absolute; width: 150%; height: 1px; background: #DCC7B024; transform: rotate(-32deg); left: 0; top: 30%; }
+.studio-process { display: flex; flex-wrap: wrap; gap: 12px; font-size: 10px; line-height: 1.8; color: #b9b6b2; }
+.studio-form-heading { padding: 0 2px 12px; }
+.studio-form-heading > span { color: #DCC7B0; font-size: 9px; letter-spacing: .2em; }
+.creation-studio .studio-form-heading h2 { font-family: var(--font-display); font-size: 28px; font-weight: 400; letter-spacing: -.02em; margin: 12px 0; }
+.studio-form-heading p { font-size: 12px; color: #b9b6b2; }
+.creation-studio .studio-form > .studio-panel { border-radius: 16px; background: #0d0d0d; border-color: #DCC7B024; box-shadow: none; }
+.creation-studio input:not([type=file]), .creation-studio textarea { border-radius: 9px; min-height: 48px; border-color: #DCC7B038; background: #090909; color: #FDFCFB; }
+.creation-studio input::placeholder, .creation-studio textarea::placeholder { color: #92908c; opacity: 1; }
+.creation-studio :is(a,button,input,textarea):focus-visible { outline: 2px solid #DCC7B0; outline-offset: 4px; }
+.creation-studio .studio-submit { border-radius: 10px; letter-spacing: .02em; box-shadow: none; }
+@media (max-width: 760px) { .studio-header { padding: 20px 22px; } .studio-brand { font-size: 23px; } .studio-contact { max-width: 120px; font-size: 11px; } .studio-layout { grid-template-columns: 1fr; padding: 38px 22px 48px; gap: 42px; } .studio-intro { position: static; padding-top: 0; } .creation-studio .studio-title { font-size: clamp(38px,10vw,56px); } .studio-signature, .studio-process { display: none; } .studio-description { max-width: none; } .studio-eyebrow { margin-bottom: 22px; } }
+@media (prefers-reduced-motion: reduce) { .creation-studio *, .creation-studio *::before, .creation-studio *::after { animation: none !important; transition: none !important; } }

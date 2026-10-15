@@ -1,6 +1,7 @@
+import "@/styles/account-brand.css";
 /**
  * Signup - iWasp Style
- * Dark theme with gold accent (#FFC700)
+ * Dark theme with gold accent (#DCC7B0)
  * Step 1 of onboarding: Account creation
  */
 
@@ -111,33 +112,33 @@ export default function Signup() {
 
   if (loading) {
     return (
-      <div className="min-h-dvh flex items-center justify-center bg-[#0B0B0B]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#FFC700]" />
+      <div className="brand-account min-h-dvh flex items-center justify-center bg-[#030303]">
+        <Loader2 className="h-8 w-8 animate-spin text-[#DCC7B0]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center p-6 bg-[#0B0B0B] relative overflow-hidden">
+    <div className="brand-account min-h-dvh flex flex-col items-center justify-center p-6 bg-[#030303] relative overflow-hidden">
       {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-[#FFC700]/10 rounded-full blur-[120px]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-[#DCC7B0]/10 rounded-full blur-[120px]" />
 
       <div className="relative z-10 w-full max-w-md">
         {/* Welcome Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#FFC700]/20 mb-6">
-            <span className="text-3xl font-bold text-[#FFC700]">iW</span>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#DCC7B0]/20 mb-6">
+            <span className="text-3xl font-bold text-[#DCC7B0]">iW</span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-3">
             Bienvenue sur iWasp
           </h1>
-          <p className="text-[#E5E5E5]/70 text-lg leading-relaxed">
+          <p className="text-[#FDFCFB]/70 text-lg leading-relaxed">
             Simplifie le partage de ton identité professionnelle grâce au NFC.
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-[#1F1F1F] rounded-2xl p-8 border border-[#E5E5E5]/10">
+        <div className="bg-[#11100F] rounded-2xl p-8 border border-[#FDFCFB]/10">
           <h2 className="text-xl font-semibold text-white mb-6 text-center">
             Créer un compte
           </h2>
@@ -147,7 +148,7 @@ export default function Signup() {
             type="button"
             onClick={handleGoogleSignup}
             disabled={isGoogleLoading || isLoading || isAppleLoading}
-            className="w-full py-4 rounded-xl font-medium text-sm flex items-center justify-center gap-3 mb-6 bg-white text-[#0B0B0B] disabled:opacity-50 transition-all hover:bg-[#E5E5E5]"
+            className="w-full py-4 rounded-xl font-medium text-sm flex items-center justify-center gap-3 mb-6 bg-white text-[#030303] disabled:opacity-50 transition-all hover:bg-[#FDFCFB]"
           >
             {isGoogleLoading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -188,13 +189,13 @@ export default function Signup() {
 
           {/* Divider */}
           <div className="flex items-center gap-4 mb-6">
-            <div className="flex-1 h-px bg-[#E5E5E5]/10" />
-            <span className="text-xs text-[#E5E5E5]/50">ou par email</span>
-            <div className="flex-1 h-px bg-[#E5E5E5]/10" />
+            <div className="flex-1 h-px bg-[#FDFCFB]/10" />
+            <span className="text-xs text-[#FDFCFB]/50">ou par email</span>
+            <div className="flex-1 h-px bg-[#FDFCFB]/10" />
           </div>
 
           {confirmationEmail && (
-            <p role="status" className="mb-6 rounded-xl border border-[#FFC700]/30 p-4 text-sm text-[#E5E5E5]">
+            <p role="status" className="mb-6 rounded-xl border border-[#DCC7B0]/30 p-4 text-sm text-[#FDFCFB]">
               Vérifiez votre boîte mail ({confirmationEmail}) et cliquez sur le lien de confirmation avant de vous connecter.
             </p>
           )}
@@ -202,7 +203,7 @@ export default function Signup() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <label htmlFor="signup-first-name" className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
+                <label htmlFor="signup-first-name" className="text-sm text-[#FDFCFB]/70 flex items-center gap-2">
                   <User size={14} />
                   Prénom
                 </label>
@@ -214,12 +215,12 @@ export default function Signup() {
                   placeholder="Jean"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#0B0B0B] border border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 rounded-xl bg-[#030303] border border-[#FDFCFB]/10 text-white placeholder:text-[#FDFCFB]/30 focus:border-[#DCC7B0]/50 focus:outline-none transition-colors"
                   disabled={isLoading || isGoogleLoading || isAppleLoading}
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="signup-last-name" className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
+                <label htmlFor="signup-last-name" className="text-sm text-[#FDFCFB]/70 flex items-center gap-2">
                   <User size={14} />
                   Nom
                 </label>
@@ -231,14 +232,14 @@ export default function Signup() {
                   placeholder="Dupont"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#0B0B0B] border border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 rounded-xl bg-[#030303] border border-[#FDFCFB]/10 text-white placeholder:text-[#FDFCFB]/30 focus:border-[#DCC7B0]/50 focus:outline-none transition-colors"
                   disabled={isLoading || isGoogleLoading || isAppleLoading}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="signup-email" className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
+              <label htmlFor="signup-email" className="text-sm text-[#FDFCFB]/70 flex items-center gap-2">
                 <Mail size={14} />
                 Email *
               </label>
@@ -251,13 +252,13 @@ export default function Signup() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-[#0B0B0B] border border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50 focus:outline-none transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-[#030303] border border-[#FDFCFB]/10 text-white placeholder:text-[#FDFCFB]/30 focus:border-[#DCC7B0]/50 focus:outline-none transition-colors"
                 disabled={isLoading || isGoogleLoading || isAppleLoading}
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="signup-password" className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
+              <label htmlFor="signup-password" className="text-sm text-[#FDFCFB]/70 flex items-center gap-2">
                 <Lock size={14} />
                 Mot de passe *
               </label>
@@ -270,16 +271,16 @@ export default function Signup() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-[#0B0B0B] border border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50 focus:outline-none transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-[#030303] border border-[#FDFCFB]/10 text-white placeholder:text-[#FDFCFB]/30 focus:border-[#DCC7B0]/50 focus:outline-none transition-colors"
                 disabled={isLoading || isGoogleLoading || isAppleLoading}
               />
-              <p className="text-xs text-[#E5E5E5]/40">Minimum 6 caractères</p>
+              <p className="text-xs text-[#FDFCFB]/65">Minimum 6 caractères</p>
             </div>
 
             <button
               type="submit"
               disabled={isLoading || isGoogleLoading || isAppleLoading}
-              className="w-full py-4 rounded-xl font-bold text-[#0B0B0B] bg-[#FFC700] hover:bg-[#FFC700]/90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 mt-6"
+              className="w-full py-4 rounded-xl font-bold text-[#030303] bg-[#DCC7B0] hover:bg-[#DCC7B0]/90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 mt-6"
             >
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -292,10 +293,10 @@ export default function Signup() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-[#E5E5E5]/10 text-center">
-            <p className="text-sm text-[#E5E5E5]/60">
+          <div className="mt-6 pt-6 border-t border-[#FDFCFB]/10 text-center">
+            <p className="text-sm text-[#FDFCFB]/60">
               Déjà un compte ?{" "}
-              <Link to="/login" className="text-[#FFC700] font-medium hover:underline">
+              <Link to="/login" className="text-[#DCC7B0] font-medium hover:underline">
                 Se connecter
               </Link>
             </p>
@@ -303,7 +304,7 @@ export default function Signup() {
         </div>
 
         <div className="text-center mt-6">
-          <Link to="/" className="text-sm text-[#E5E5E5]/50 hover:text-[#E5E5E5]/70">
+          <Link to="/" className="text-sm text-[#FDFCFB]/50 hover:text-[#FDFCFB]/70">
             ← Retour à l'accueil
           </Link>
         </div>

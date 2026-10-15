@@ -1,19 +1,21 @@
 /**
  * Conciergerie & IA — Formulaire projet i-wasp
- * Stealth Luxury Style - Argent Titane (#A5A9B4)
+ * OMNIA — Obsidienne, champagne et ivoire
  */
 
+import "@/styles/public-brand.css";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { BRAND } from "@/lib/brandPalette";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Navbar } from "@/components/Navbar";
 import { GlobalFooter } from "@/components/GlobalFooter";
-import { 
-  Sparkles, 
-  Send, 
+import {
+  Sparkles,
+  Send,
   Check,
   MessageSquare,
   Zap,
@@ -25,17 +27,17 @@ import { toast } from "sonner";
 
 const WHATSAPP_PROJECT_URL = "https://wa.me/33626424394?text=";
 
-// Stealth Luxury Colors
+// Public OMNIA colors
 const COLORS = {
-  bg: "#050807",
-  bgCard: "#0A0D0C",
-  accent: "#A5A9B4",
-  accentLight: "#D1D5DB",
-  text: "#F9FAFB",
-  textMuted: "rgba(249, 250, 251, 0.7)",
-  textDim: "rgba(249, 250, 251, 0.5)",
-  border: "rgba(165, 169, 180, 0.15)",
-  borderActive: "rgba(165, 169, 180, 0.4)",
+  bg: BRAND.background,
+  bgCard: BRAND.card,
+  accent: BRAND.accent,
+  accentLight: BRAND.accentLight,
+  text: BRAND.text,
+  textMuted: BRAND.textSecondary,
+  textDim: BRAND.textMuted,
+  border: BRAND.border,
+  borderActive: BRAND.borderActive,
 };
 
 // Benefits
@@ -85,7 +87,7 @@ export default function Conciergerie() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Build WhatsApp message
     const message = `Bonjour 👋
 
@@ -106,7 +108,7 @@ ${formData.budget}`;
 
     // Open WhatsApp with pre-filled message
     window.open(WHATSAPP_PROJECT_URL + encodeURIComponent(message), "_blank");
-    
+
     toast.success("Message préparé ! WhatsApp va s'ouvrir.");
     setIsSubmitting(false);
   };
@@ -116,9 +118,9 @@ ${formData.budget}`;
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: COLORS.bg, color: COLORS.text }}>
+    <div className="brand-public antialiased leading-relaxed min-h-screen" style={{ backgroundColor: COLORS.bg, color: COLORS.text }}>
       <Navbar />
-      
+
       {/* Hero */}
       <section className="pt-32 pb-16 px-6">
         <div className="container mx-auto max-w-5xl text-center">
@@ -126,27 +128,27 @@ ${formData.budget}`;
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div 
+            <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
               style={{ backgroundColor: `${COLORS.accent}10`, border: `1px solid ${COLORS.border}` }}
             >
               <Sparkles className="w-4 h-4" style={{ color: COLORS.accent }} />
               <span className="text-sm" style={{ color: COLORS.textMuted }}>Conciergerie & IA</span>
             </div>
-            
+
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
               Décris ton projet,<br />
               <span style={{ color: COLORS.accent }}>on s'occupe du reste</span>
             </h1>
-            
-            <p className="text-xl max-w-2xl mx-auto" style={{ color: COLORS.textDim }}>
-              Notre IA analyse tes besoins. Un conseiller te propose une solution complète. 
+
+            <p className="text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto" style={{ color: COLORS.textDim }}>
+              Notre IA analyse tes besoins. Un conseiller te propose une solution complète.
               Tu valides, on livre.
             </p>
           </motion.div>
         </div>
       </section>
-      
+
       {/* Benefits */}
       <section className="py-16 px-6" style={{ backgroundColor: COLORS.bgCard }}>
         <div className="container mx-auto max-w-5xl">
@@ -161,7 +163,7 @@ ${formData.budget}`;
                 className="p-6 rounded-2xl"
                 style={{ backgroundColor: `${COLORS.text}05`, border: `1px solid ${COLORS.border}` }}
               >
-                <div 
+                <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
                   style={{ backgroundColor: `${COLORS.accent}15` }}
                 >
@@ -174,7 +176,7 @@ ${formData.budget}`;
           </div>
         </div>
       </section>
-      
+
       {/* Form + Process */}
       <section className="py-24 px-6" style={{ backgroundColor: COLORS.bg }}>
         <div className="container mx-auto max-w-6xl">
@@ -187,7 +189,7 @@ ${formData.budget}`;
             >
               <h2 className="text-2xl font-bold mb-2" style={{ color: COLORS.text }}>Parle-nous de ton projet</h2>
               <p className="mb-8" style={{ color: COLORS.textDim }}>Remplis le formulaire, on te recontacte en 24h max.</p>
-              
+
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
@@ -199,8 +201,8 @@ ${formData.budget}`;
                       required
                       placeholder="Jean Dupont"
                       className="h-12"
-                      style={{ 
-                        backgroundColor: `${COLORS.text}05`, 
+                      style={{
+                        backgroundColor: `${COLORS.text}05`,
                         borderColor: COLORS.border,
                         color: COLORS.text
                       }}
@@ -216,15 +218,15 @@ ${formData.budget}`;
                       required
                       placeholder="+33 6 12 34 56 78"
                       className="h-12"
-                      style={{ 
-                        backgroundColor: `${COLORS.text}05`, 
+                      style={{
+                        backgroundColor: `${COLORS.text}05`,
                         borderColor: COLORS.border,
                         color: COLORS.text
                       }}
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm mb-2" style={{ color: COLORS.textMuted }}>Email *</label>
                   <Input
@@ -235,14 +237,14 @@ ${formData.budget}`;
                     required
                     placeholder="jean@entreprise.com"
                     className="h-12"
-                    style={{ 
-                      backgroundColor: `${COLORS.text}05`, 
+                    style={{
+                      backgroundColor: `${COLORS.text}05`,
                       borderColor: COLORS.border,
                       color: COLORS.text
                     }}
                   />
                 </div>
-                
+
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm mb-2" style={{ color: COLORS.textMuted }}>Entreprise</label>
@@ -252,8 +254,8 @@ ${formData.budget}`;
                       onChange={handleChange}
                       placeholder="Mon entreprise"
                       className="h-12"
-                      style={{ 
-                        backgroundColor: `${COLORS.text}05`, 
+                      style={{
+                        backgroundColor: `${COLORS.text}05`,
                         borderColor: COLORS.border,
                         color: COLORS.text
                       }}
@@ -266,8 +268,8 @@ ${formData.budget}`;
                       value={formData.sector}
                       onChange={handleChange}
                       className="w-full h-12 px-3 rounded-md focus:outline-none transition-colors"
-                      style={{ 
-                        backgroundColor: `${COLORS.text}05`, 
+                      style={{
+                        backgroundColor: `${COLORS.text}05`,
                         border: `1px solid ${COLORS.border}`,
                         color: COLORS.text
                       }}
@@ -282,7 +284,7 @@ ${formData.budget}`;
                     </select>
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm mb-2" style={{ color: COLORS.textMuted }}>Décris ton projet *</label>
                   <Textarea
@@ -293,14 +295,14 @@ ${formData.budget}`;
                     rows={4}
                     placeholder="Quel est ton objectif ? Qu'est-ce que tu veux créer avec le NFC ?"
                     className="resize-none"
-                    style={{ 
-                      backgroundColor: `${COLORS.text}05`, 
+                    style={{
+                      backgroundColor: `${COLORS.text}05`,
                       borderColor: COLORS.border,
                       color: COLORS.text
                     }}
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm mb-2" style={{ color: COLORS.textMuted }}>Budget estimé</label>
                   <select
@@ -308,8 +310,8 @@ ${formData.budget}`;
                     value={formData.budget}
                     onChange={handleChange}
                     className="w-full h-12 px-3 rounded-md focus:outline-none transition-colors"
-                    style={{ 
-                      backgroundColor: `${COLORS.text}05`, 
+                    style={{
+                      backgroundColor: `${COLORS.text}05`,
                       border: `1px solid ${COLORS.border}`,
                       color: COLORS.text
                     }}
@@ -321,13 +323,13 @@ ${formData.budget}`;
                     <option value="> 1000€" style={{ backgroundColor: COLORS.bgCard }}>Plus de 1000€</option>
                   </select>
                 </div>
-                
+
                 <Button
                   type="submit"
                   disabled={isSubmitting}
                   size="lg"
                   className="w-full font-semibold gap-2 h-14 text-base"
-                  style={{ 
+                  style={{
                     background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
                     color: COLORS.bg
                   }}
@@ -335,13 +337,13 @@ ${formData.budget}`;
                   <Send className="w-5 h-5" />
                   {isSubmitting ? "Envoi..." : "Envoyer via WhatsApp"}
                 </Button>
-                
+
                 <p className="text-xs text-center" style={{ color: COLORS.textDim }}>
                   En soumettant, tu acceptes d'être recontacté par notre équipe.
                 </p>
               </form>
             </motion.div>
-            
+
             {/* Process */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
@@ -350,13 +352,13 @@ ${formData.budget}`;
             >
               <h2 className="text-2xl font-bold mb-2" style={{ color: COLORS.text }}>Comment ça marche</h2>
               <p className="mb-8" style={{ color: COLORS.textDim }}>Un processus simple en 4 étapes.</p>
-              
+
               <div className="space-y-6">
                 {processSteps.map((step, index) => (
                   <div key={step.number} className="flex gap-4">
-                    <div 
+                    <div
                       className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold"
-                      style={{ 
+                      style={{
                         background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
                         color: COLORS.bg
                       }}
@@ -370,9 +372,9 @@ ${formData.budget}`;
                   </div>
                 ))}
               </div>
-              
+
               {/* Trust badges */}
-              <div 
+              <div
                 className="mt-12 p-6 rounded-2xl"
                 style={{ backgroundColor: `${COLORS.text}05`, border: `1px solid ${COLORS.border}` }}
               >
@@ -400,7 +402,7 @@ ${formData.budget}`;
           </div>
         </div>
       </section>
-      
+
       <GlobalFooter variant="dark" />
     </div>
   );

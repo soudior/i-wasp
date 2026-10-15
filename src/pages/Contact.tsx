@@ -1,8 +1,9 @@
 /**
- * Contact Page - Apple/Cupertino Style
+ * Contact Page - OMNIA public design
  * Ultra-minimal, clean, professional
  */
 
+import "@/styles/public-brand.css";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -22,11 +23,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { 
-  Send, 
-  Building2, 
-  Users, 
-  Palette, 
+import {
+  Send,
+  Building2,
+  Users,
+  Palette,
   Handshake,
   Phone,
   Mail,
@@ -38,7 +39,7 @@ import {
   ArrowLeft
 } from "lucide-react";
 import { toast } from "sonner";
-import { APPLE } from "@/lib/applePalette";
+import { BRAND } from "@/lib/brandPalette";
 
 // Form validation schema
 const contactSchema = z.object({
@@ -85,7 +86,7 @@ export default function Contact() {
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
-    
+
     try {
       const { error } = await supabase.from("contact_requests").insert({
         name: data.name,
@@ -113,27 +114,27 @@ export default function Contact() {
     return (
       <>
         <SEOHead {...SEO_CONFIGS.contact} />
-        <div className="min-h-screen" style={{ backgroundColor: APPLE.background }}>
+        <div className="brand-public min-h-screen antialiased leading-relaxed" style={{ backgroundColor: BRAND.background, color: BRAND.text }}>
           {/* Header */}
-          <header 
+          <header
             className="sticky top-0 z-50 backdrop-blur-xl"
-            style={{ 
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
-              borderBottom: `1px solid ${APPLE.border}`
+            style={{
+              backgroundColor: BRAND.header,
+              borderBottom: `1px solid ${BRAND.border}`
             }}
           >
             <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="text-xl font-semibold tracking-tight"
-                style={{ color: APPLE.text }}
+                style={{ color: BRAND.text }}
               >
                 IWASP
               </Link>
               <Link to="/express/offre">
-                <Button 
+                <Button
                   className="rounded-full px-6 h-10 font-medium"
-                  style={{ backgroundColor: APPLE.accent, color: "#FFFFFF" }}
+                  style={{ backgroundColor: BRAND.accent, color: BRAND.background }}
                 >
                   Commander
                 </Button>
@@ -148,32 +149,32 @@ export default function Contact() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center py-16"
               >
-                <div 
+                <div
                   className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
-                  style={{ backgroundColor: APPLE.accentSubtle }}
+                  style={{ backgroundColor: BRAND.accentSubtle }}
                 >
-                  <CheckCircle2 className="w-10 h-10" style={{ color: APPLE.accent }} />
+                  <CheckCircle2 className="w-10 h-10" style={{ color: BRAND.accent }} />
                 </div>
-                <h1 
+                <h1
                   className="text-3xl font-bold mb-4 tracking-tight"
-                  style={{ color: APPLE.text }}
+                  style={{ color: BRAND.text }}
                 >
                   Message envoyé !
                 </h1>
-                <p 
+                <p
                   className="mb-8 text-lg"
-                  style={{ color: APPLE.textSecondary }}
+                  style={{ color: BRAND.textSecondary }}
                 >
                   Merci pour votre message. Notre équipe vous contactera dans les 24h.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link to="/">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="rounded-full px-6"
-                      style={{ 
-                        borderColor: APPLE.border, 
-                        color: APPLE.text,
+                      style={{
+                        borderColor: BRAND.border,
+                        color: BRAND.text,
                         backgroundColor: "transparent"
                       }}
                     >
@@ -181,9 +182,9 @@ export default function Contact() {
                     </Button>
                   </Link>
                   <Link to="/express/offre">
-                    <Button 
+                    <Button
                       className="rounded-full px-6"
-                      style={{ backgroundColor: APPLE.accent, color: "#FFFFFF" }}
+                      style={{ backgroundColor: BRAND.accent, color: BRAND.background }}
                     >
                       Commander une carte
                     </Button>
@@ -200,27 +201,27 @@ export default function Contact() {
   return (
     <>
       <SEOHead {...SEO_CONFIGS.contact} />
-      <div className="min-h-screen" style={{ backgroundColor: APPLE.background }}>
+      <div className="brand-public min-h-screen antialiased leading-relaxed" style={{ backgroundColor: BRAND.background, color: BRAND.text }}>
         {/* Header */}
-        <header 
+        <header
           className="sticky top-0 z-50 backdrop-blur-xl"
-          style={{ 
-            backgroundColor: "rgba(255, 255, 255, 0.8)",
-            borderBottom: `1px solid ${APPLE.border}`
+          style={{
+            backgroundColor: BRAND.header,
+            borderBottom: `1px solid ${BRAND.border}`
           }}
         >
           <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="text-xl font-semibold tracking-tight"
-              style={{ color: APPLE.text }}
+              style={{ color: BRAND.text }}
             >
               IWASP
             </Link>
             <Link to="/express/offre">
-              <Button 
+              <Button
                 className="rounded-full px-6 h-10 font-medium"
-                style={{ backgroundColor: APPLE.accent, color: "#FFFFFF" }}
+                style={{ backgroundColor: BRAND.accent, color: BRAND.background }}
               >
                 Commander
               </Button>
@@ -229,40 +230,40 @@ export default function Contact() {
         </header>
 
         {/* Hero */}
-        <section 
+        <section
           className="pt-16 pb-12 px-6"
-          style={{ backgroundColor: APPLE.backgroundPure, borderBottom: `1px solid ${APPLE.border}` }}
+          style={{ backgroundColor: BRAND.backgroundPure, borderBottom: `1px solid ${BRAND.border}` }}
         >
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <div 
+              <div
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
-                style={{ backgroundColor: APPLE.accentSubtle }}
+                style={{ backgroundColor: BRAND.accentSubtle }}
               >
-                <MessageSquare className="w-4 h-4" style={{ color: APPLE.accent }} />
-                <span className="text-sm font-medium" style={{ color: APPLE.accent }}>Contact</span>
+                <MessageSquare className="w-4 h-4" style={{ color: BRAND.accent }} />
+                <span className="text-sm font-medium" style={{ color: BRAND.accent }}>Contact</span>
               </div>
-              
-              <h1 
+
+              <h1
                 className="text-4xl sm:text-5xl font-bold mb-4 tracking-tight"
-                style={{ color: APPLE.text }}
+                style={{ color: BRAND.text }}
               >
                 Une question ?
               </h1>
-              
-              <p 
-                className="text-xl max-w-2xl mx-auto"
-                style={{ color: APPLE.textSecondary }}
+
+              <p
+                className="text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto"
+                style={{ color: BRAND.textSecondary }}
               >
                 Devis, projet sur-mesure ou partenariat ? Notre équipe est à votre écoute.
               </p>
             </motion.div>
           </div>
         </section>
-        
+
         {/* Form + Info */}
         <section className="py-12 px-6">
           <div className="max-w-5xl mx-auto">
@@ -273,28 +274,28 @@ export default function Contact() {
                 animate={{ opacity: 1, y: 0 }}
                 className="lg:col-span-2"
               >
-                <div 
-                  className="p-8 rounded-2xl"
-                  style={{ 
-                    backgroundColor: APPLE.card, 
-                    boxShadow: APPLE.shadowCard
+                <div
+                  className="p-5 sm:p-8 rounded-2xl border"
+                  style={{
+                    backgroundColor: BRAND.card,
+                    borderColor: BRAND.border, boxShadow: BRAND.shadowCard
                   }}
                 >
-                  <h2 
+                  <h2
                     className="text-xl font-semibold mb-6 flex items-center gap-2"
-                    style={{ color: APPLE.text }}
+                    style={{ color: BRAND.text }}
                   >
-                    <Send className="w-5 h-5" style={{ color: APPLE.accent }} />
+                    <Send className="w-5 h-5" style={{ color: BRAND.accent }} />
                     Envoyez-nous un message
                   </h2>
-                  
+
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                       {/* Request Type */}
                       <div>
-                        <label 
+                        <label
                           className="text-sm font-medium mb-3 block"
-                          style={{ color: APPLE.textSecondary }}
+                          style={{ color: BRAND.textSecondary }}
                         >
                           Type de demande
                         </label>
@@ -308,19 +309,19 @@ export default function Contact() {
                                 onClick={() => form.setValue("requestType", type.value as any)}
                                 className="p-3 rounded-xl text-center transition-all"
                                 style={{
-                                  backgroundColor: isSelected ? APPLE.accentSubtle : APPLE.backgroundSubtle,
-                                  border: isSelected 
-                                    ? `2px solid ${APPLE.accent}` 
-                                    : `1px solid ${APPLE.border}`,
+                                  backgroundColor: isSelected ? BRAND.accentSubtle : BRAND.backgroundSubtle,
+                                  border: isSelected
+                                    ? `2px solid ${BRAND.accent}`
+                                    : `1px solid ${BRAND.border}`,
                                 }}
                               >
-                                <type.icon 
-                                  className="w-5 h-5 mx-auto mb-2" 
-                                  style={{ color: isSelected ? APPLE.accent : APPLE.textSecondary }} 
+                                <type.icon
+                                  className="w-5 h-5 mx-auto mb-2"
+                                  style={{ color: isSelected ? BRAND.accent : BRAND.textSecondary }}
                                 />
-                                <p 
+                                <p
                                   className="text-sm font-medium"
-                                  style={{ color: isSelected ? APPLE.accent : APPLE.text }}
+                                  style={{ color: isSelected ? BRAND.accent : BRAND.text }}
                                 >
                                   {type.label}
                                 </p>
@@ -336,16 +337,16 @@ export default function Contact() {
                           name="name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel style={{ color: APPLE.textSecondary }}>Nom *</FormLabel>
+                              <FormLabel style={{ color: BRAND.textSecondary }}>Nom *</FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder="Votre nom" 
-                                  {...field} 
+                                <Input
+                                  placeholder="Votre nom"
+                                  {...field}
                                   className="h-12 rounded-xl"
-                                  style={{ 
-                                    backgroundColor: APPLE.background,
-                                    border: `1px solid ${APPLE.border}`,
-                                    color: APPLE.text
+                                  style={{
+                                    backgroundColor: BRAND.background,
+                                    border: `1px solid ${BRAND.border}`,
+                                    color: BRAND.text
                                   }}
                                 />
                               </FormControl>
@@ -359,17 +360,17 @@ export default function Contact() {
                           name="email"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel style={{ color: APPLE.textSecondary }}>Email *</FormLabel>
+                              <FormLabel style={{ color: BRAND.textSecondary }}>Email *</FormLabel>
                               <FormControl>
-                                <Input 
-                                  type="email" 
-                                  placeholder="votre@email.com" 
-                                  {...field} 
+                                <Input
+                                  type="email"
+                                  placeholder="votre@email.com"
+                                  {...field}
                                   className="h-12 rounded-xl"
-                                  style={{ 
-                                    backgroundColor: APPLE.background,
-                                    border: `1px solid ${APPLE.border}`,
-                                    color: APPLE.text
+                                  style={{
+                                    backgroundColor: BRAND.background,
+                                    border: `1px solid ${BRAND.border}`,
+                                    color: BRAND.text
                                   }}
                                 />
                               </FormControl>
@@ -385,17 +386,17 @@ export default function Contact() {
                           name="phone"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel style={{ color: APPLE.textSecondary }}>Téléphone</FormLabel>
+                              <FormLabel style={{ color: BRAND.textSecondary }}>Téléphone</FormLabel>
                               <FormControl>
-                                <Input 
-                                  type="tel" 
-                                  placeholder="+33 6 00 00 00 00" 
-                                  {...field} 
+                                <Input
+                                  type="tel"
+                                  placeholder="+33 6 00 00 00 00"
+                                  {...field}
                                   className="h-12 rounded-xl"
-                                  style={{ 
-                                    backgroundColor: APPLE.background,
-                                    border: `1px solid ${APPLE.border}`,
-                                    color: APPLE.text
+                                  style={{
+                                    backgroundColor: BRAND.background,
+                                    border: `1px solid ${BRAND.border}`,
+                                    color: BRAND.text
                                   }}
                                 />
                               </FormControl>
@@ -409,16 +410,16 @@ export default function Contact() {
                           name="company"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel style={{ color: APPLE.textSecondary }}>Entreprise</FormLabel>
+                              <FormLabel style={{ color: BRAND.textSecondary }}>Entreprise</FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder="Nom de l'entreprise" 
-                                  {...field} 
+                                <Input
+                                  placeholder="Nom de l'entreprise"
+                                  {...field}
                                   className="h-12 rounded-xl"
-                                  style={{ 
-                                    backgroundColor: APPLE.background,
-                                    border: `1px solid ${APPLE.border}`,
-                                    color: APPLE.text
+                                  style={{
+                                    backgroundColor: BRAND.background,
+                                    border: `1px solid ${BRAND.border}`,
+                                    color: BRAND.text
                                   }}
                                 />
                               </FormControl>
@@ -433,15 +434,15 @@ export default function Contact() {
                         name="message"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel style={{ color: APPLE.textSecondary }}>Message *</FormLabel>
+                            <FormLabel style={{ color: BRAND.textSecondary }}>Message *</FormLabel>
                             <FormControl>
                               <Textarea
                                 placeholder="Décrivez votre projet..."
                                 className="min-h-[120px] resize-none rounded-xl"
-                                style={{ 
-                                  backgroundColor: APPLE.background,
-                                  border: `1px solid ${APPLE.border}`,
-                                  color: APPLE.text
+                                style={{
+                                  backgroundColor: BRAND.background,
+                                  border: `1px solid ${BRAND.border}`,
+                                  color: BRAND.text
                                 }}
                                 {...field}
                               />
@@ -455,7 +456,7 @@ export default function Contact() {
                         type="submit"
                         size="lg"
                         className="w-full font-semibold h-14 rounded-xl text-base"
-                        style={{ backgroundColor: APPLE.accent, color: "#FFFFFF" }}
+                        style={{ backgroundColor: BRAND.accent, color: BRAND.background }}
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? (
@@ -483,31 +484,31 @@ export default function Contact() {
                 className="space-y-6"
               >
                 {/* Contact Info */}
-                <div 
+                <div
                   className="p-6 rounded-2xl"
-                  style={{ 
-                    backgroundColor: APPLE.card, 
-                    boxShadow: APPLE.shadowCard
+                  style={{
+                    backgroundColor: BRAND.card,
+                    borderColor: BRAND.border, boxShadow: BRAND.shadowCard
                   }}
                 >
-                  <h3 
+                  <h3
                     className="font-semibold mb-4"
-                    style={{ color: APPLE.text }}
+                    style={{ color: BRAND.text }}
                   >
                     Nos coordonnées
                   </h3>
                   <div className="space-y-4">
                     {contactInfo.map((item) => (
                       <div key={item.label} className="flex items-start gap-3">
-                        <div 
+                        <div
                           className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: APPLE.accentSubtle }}
+                          style={{ backgroundColor: BRAND.accentSubtle }}
                         >
-                          <item.icon className="w-5 h-5" style={{ color: APPLE.accent }} />
+                          <item.icon className="w-5 h-5" style={{ color: BRAND.accent }} />
                         </div>
                         <div>
-                          <p className="text-sm" style={{ color: APPLE.textSecondary }}>{item.label}</p>
-                          <p className="font-medium" style={{ color: APPLE.text }}>{item.value}</p>
+                          <p className="text-sm" style={{ color: BRAND.textSecondary }}>{item.label}</p>
+                          <p className="font-medium" style={{ color: BRAND.text }}>{item.value}</p>
                         </div>
                       </div>
                     ))}
@@ -515,33 +516,33 @@ export default function Contact() {
                 </div>
 
                 {/* WhatsApp CTA */}
-                <div 
+                <div
                   className="p-6 rounded-2xl"
-                  style={{ 
-                    backgroundColor: APPLE.card, 
-                    boxShadow: APPLE.shadowCard
+                  style={{
+                    backgroundColor: BRAND.card,
+                    borderColor: BRAND.border, boxShadow: BRAND.shadowCard
                   }}
                 >
-                  <h3 
+                  <h3
                     className="font-semibold mb-2"
-                    style={{ color: APPLE.text }}
+                    style={{ color: BRAND.text }}
                   >
                     Réponse rapide ?
                   </h3>
-                  <p 
+                  <p
                     className="text-sm mb-4"
-                    style={{ color: APPLE.textSecondary }}
+                    style={{ color: BRAND.textSecondary }}
                   >
                     Contactez-nous directement sur WhatsApp pour une réponse immédiate.
                   </p>
-                  <a 
+                  <a
                     href="https://wa.me/33626424394?text=Bonjour%20👋%0AJ'ai%20une%20question%20sur%20IWASP."
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button 
+                    <Button
                       className="w-full rounded-xl h-12"
-                      style={{ backgroundColor: "#25D366", color: "#FFFFFF" }}
+                      style={{ backgroundColor: BRAND.accent, color: BRAND.background }}
                     >
                       <Phone className="mr-2 h-4 w-4" />
                       WhatsApp
@@ -554,11 +555,11 @@ export default function Contact() {
         </section>
 
         {/* Footer */}
-        <footer 
+        <footer
           className="py-8 px-6 text-center"
-          style={{ borderTop: `1px solid ${APPLE.border}` }}
+          style={{ borderTop: `1px solid ${BRAND.border}` }}
         >
-          <p className="text-sm" style={{ color: APPLE.textMuted }}>
+          <p className="text-sm" style={{ color: BRAND.textMuted }}>
             Powered by IWASP
           </p>
         </footer>

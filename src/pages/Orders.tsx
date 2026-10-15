@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import "@/styles/workspace-brand.css";
 
 // Status icon mapping
 function getStatusIcon(status: string) {
@@ -41,20 +42,20 @@ export default function Orders() {
   const { data: orders, isLoading } = useUserOrders();
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="brand-workspace brand-orders min-h-screen bg-background relative overflow-hidden">
       {/* Background effects */}
-      <div className="absolute inset-0 bg-grid opacity-20" />
-      <div className="absolute top-20 left-1/4 w-[600px] h-[600px] orb opacity-20 animate-pulse-glow" />
-      <div className="noise" />
+      <div className="workspace-decoration absolute inset-0 bg-grid opacity-20" />
+      <div className="workspace-decoration absolute top-20 left-1/4 w-[600px] h-[600px] orb opacity-20 animate-pulse-glow" />
+      <div className="workspace-decoration noise" />
       
       <Navbar />
       
-      <main className="relative z-10 pt-24 pb-16">
-        <div className="container max-w-4xl mx-auto px-6">
+      <main className="workspace-main relative z-10 pt-24 pb-16">
+        <div className="workspace-content container max-w-4xl mx-auto px-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8 animate-fade-up">
+          <div className="workspace-page-heading flex items-center justify-between mb-8 animate-fade-up">
             <div>
-              <h1 className="font-display text-3xl font-bold mb-2">
+              <h1 className="workspace-title font-display text-3xl font-bold mb-2">
                 Mes commandes
               </h1>
               <p className="text-muted-foreground">
@@ -62,7 +63,7 @@ export default function Orders() {
               </p>
             </div>
             <Link to="/checkout">
-              <Button variant="chrome">
+              <Button variant="chrome" className="workspace-primary">
                 <ShoppingBag className="h-4 w-4 mr-2" />
                 Commander
               </Button>
@@ -83,19 +84,19 @@ export default function Orders() {
                   className="block animate-fade-up"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <Card className="p-5 hover:bg-secondary/30 transition-all cursor-pointer group">
-                    <div className="flex items-center justify-between gap-4">
+                  <Card className="workspace-panel workspace-order-card p-5 hover:bg-secondary/30 transition-all cursor-pointer group">
+                    <div className="workspace-order-row flex items-center justify-between gap-4">
                       {/* Order info */}
                       <div className="flex items-center gap-4 flex-1 min-w-0">
                         {/* Icon */}
-                        <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+                        <div className="workspace-icon w-12 h-12 rounded-xl bg-secondary flex items-center justify-center shrink-0">
                           <Package className="h-6 w-6 text-foreground" />
                         </div>
                         
                         {/* Details */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-1">
-                            <span className="font-mono font-semibold text-foreground">
+                          <div className="workspace-order-heading flex items-center gap-3 mb-1">
+                            <span className="workspace-order-number font-mono font-semibold text-foreground">
                               {order.order_number}
                             </span>
                             <Badge className={getOrderStatusColor(order.status)}>
@@ -103,7 +104,7 @@ export default function Orders() {
                               <span className="ml-1">{getOrderStatusLabel(order.status)}</span>
                             </Badge>
                           </div>
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                          <div className="workspace-order-metadata flex items-center gap-3 text-sm text-muted-foreground">
                             <span>
                               {format(new Date(order.created_at), "d MMMM yyyy", { locale: fr })}
                             </span>
@@ -114,7 +115,7 @@ export default function Orders() {
                       </div>
 
                       {/* Price & Arrow */}
-                      <div className="flex items-center gap-4">
+                      <div className="workspace-order-total flex items-center gap-4">
                         <div className="text-right">
                           <p className="font-semibold text-foreground">
                             {formatPrice(order.total_price_cents)}
@@ -131,8 +132,8 @@ export default function Orders() {
               ))}
             </div>
           ) : (
-            <Card className="p-12 text-center animate-fade-up">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-secondary flex items-center justify-center">
+            <Card className="workspace-panel workspace-empty p-12 text-center animate-fade-up">
+              <div className="workspace-icon w-16 h-16 mx-auto mb-6 rounded-2xl bg-secondary flex items-center justify-center">
                 <ShoppingBag className="h-8 w-8 text-muted-foreground" />
               </div>
               <h3 className="font-display text-xl font-semibold mb-3">
@@ -142,7 +143,7 @@ export default function Orders() {
                 Vous n'avez pas encore passé de commande. Découvrez nos cartes NFC premium.
               </p>
               <Link to="/checkout">
-                <Button variant="chrome" size="lg">
+                <Button variant="chrome" size="lg" className="workspace-primary">
                   <ShoppingBag className="h-4 w-4 mr-2" />
                   Commander maintenant
                 </Button>

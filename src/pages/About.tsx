@@ -1,13 +1,14 @@
 /**
- * About Page - Apple/Cupertino Style
+ * About Page - OMNIA public design
  * Ultra-minimal, clean, professional
  */
 
+import "@/styles/public-brand.css";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Zap, Shield, Target, Crown, ArrowRight, Sparkles, BarChart3, Bell, Wifi } from "lucide-react";
-import { APPLE } from "@/lib/applePalette";
+import { BRAND } from "@/lib/brandPalette";
 
 const features = [
   { icon: BarChart3, title: "Dashboard Analytics", desc: "Statistiques en temps réel de vos scans et conversions" },
@@ -17,46 +18,46 @@ const features = [
 ];
 
 const pillars = [
-  { 
-    icon: Zap, 
-    title: "L'Innovation", 
+  {
+    icon: Zap,
+    title: "L'Innovation",
     desc: "Le premier écosystème NFC complet au Maroc. Nous avons osé le faire en premier."
   },
-  { 
-    icon: Target, 
-    title: "La Simplicité", 
+  {
+    icon: Target,
+    title: "La Simplicité",
     desc: "VCard, Stories, WiFi, Leads, Push — tout en un seul endroit. Zéro friction."
   },
-  { 
-    icon: Crown, 
-    title: "L'Excellence", 
+  {
+    icon: Crown,
+    title: "L'Excellence",
     desc: "Un standard de qualité premium inspiré des plus grandes marques."
   },
 ];
 
 export default function About() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: APPLE.background }}>
+    <div className="brand-public min-h-screen antialiased leading-relaxed" style={{ backgroundColor: BRAND.background, color: BRAND.text }}>
       {/* Header */}
-      <header 
+      <header
         className="sticky top-0 z-50 backdrop-blur-xl"
-        style={{ 
-          backgroundColor: "rgba(255, 255, 255, 0.8)",
-          borderBottom: `1px solid ${APPLE.border}`
+        style={{
+          backgroundColor: BRAND.header,
+          borderBottom: `1px solid ${BRAND.border}`
         }}
       >
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="text-xl font-semibold tracking-tight"
-            style={{ color: APPLE.text }}
+            style={{ color: BRAND.text }}
           >
             IWASP
           </Link>
           <Link to="/express/offre">
-            <Button 
+            <Button
               className="rounded-full px-6 h-10 font-medium"
-              style={{ backgroundColor: APPLE.accent, color: "#FFFFFF" }}
+              style={{ backgroundColor: BRAND.accent, color: BRAND.background }}
             >
               Commander
             </Button>
@@ -65,9 +66,9 @@ export default function About() {
       </header>
 
       {/* Hero Section */}
-      <section 
+      <section
         className="py-20 md:py-28 px-6"
-        style={{ backgroundColor: APPLE.backgroundPure, borderBottom: `1px solid ${APPLE.border}` }}
+        style={{ backgroundColor: BRAND.backgroundPure, borderBottom: `1px solid ${BRAND.border}` }}
       >
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
@@ -75,36 +76,36 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}
           >
             {/* Badge */}
-            <div 
+            <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
-              style={{ backgroundColor: APPLE.accentSubtle }}
+              style={{ backgroundColor: BRAND.accentSubtle }}
             >
-              <Crown className="w-4 h-4" style={{ color: APPLE.accent }} />
-              <span className="text-sm font-medium" style={{ color: APPLE.accent }}>Notre Histoire</span>
+              <Crown className="w-4 h-4" style={{ color: BRAND.accent }} />
+              <span className="text-sm font-medium" style={{ color: BRAND.accent }}>Notre Histoire</span>
             </div>
-            
+
             {/* Title */}
-            <h1 
+            <h1
               className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight"
-              style={{ color: APPLE.text }}
+              style={{ color: BRAND.text }}
             >
               L'aube d'une nouvelle ère
             </h1>
-            
-            <p 
+
+            <p
               className="text-xl md:text-2xl leading-relaxed max-w-3xl mx-auto mb-8"
-              style={{ color: APPLE.textSecondary }}
+              style={{ color: BRAND.textSecondary }}
             >
-              Née d'une <span style={{ color: APPLE.text }} className="font-semibold">obsession</span> : 
+              Née d'une <span style={{ color: BRAND.text }} className="font-semibold">obsession</span> :
               transformer chaque interaction physique en une opportunité digitale mesurable.
             </p>
-            
-            <p 
+
+            <p
               className="text-lg leading-relaxed max-w-2xl mx-auto"
-              style={{ color: APPLE.textMuted }}
+              style={{ color: BRAND.textMuted }}
             >
-              Nous avons fusionné la logistique des géants du web avec l'élégance du contact humain. 
-              <span className="font-medium" style={{ color: APPLE.textSecondary }}> IWASP n'est pas une carte, c'est votre centre de commandement.</span>
+              Nous avons fusionné la logistique des géants du web avec l'élégance du contact humain.
+              <span className="font-medium" style={{ color: BRAND.textSecondary }}> IWASP n'est pas une carte, c'est votre centre de commandement.</span>
             </p>
           </motion.div>
         </div>
@@ -115,66 +116,66 @@ export default function About() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Card Preview */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="relative"
             >
-              <div 
+              <div
                 className="p-8 rounded-3xl"
-                style={{ 
-                  backgroundColor: APPLE.card, 
-                  boxShadow: APPLE.shadowLg
+                style={{
+                  backgroundColor: BRAND.card,
+                  boxShadow: BRAND.shadowLg
                 }}
               >
                 <div className="text-center">
-                  <div 
+                  <div
                     className="text-4xl font-bold tracking-tight mb-4"
-                    style={{ color: APPLE.text }}
+                    style={{ color: BRAND.text }}
                   >
                     IWASP
                   </div>
-                  <p style={{ color: APPLE.textSecondary }}>
+                  <p style={{ color: BRAND.textSecondary }}>
                     Design premium. Technologie invisible.
                   </p>
                 </div>
               </div>
             </motion.div>
-            
+
             {/* Features */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="space-y-4"
             >
-              <h2 
+              <h2
                 className="text-3xl font-bold mb-8 tracking-tight"
-                style={{ color: APPLE.text }}
+                style={{ color: BRAND.text }}
               >
                 La puissance d'une multinationale
               </h2>
-              
+
               {features.map((feature, i) => (
-                <motion.div 
+                <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
                   className="flex items-start gap-4 p-4 rounded-2xl transition-all hover:scale-[1.02]"
-                  style={{ 
-                    backgroundColor: APPLE.card,
-                    boxShadow: APPLE.shadowSm
+                  style={{
+                    backgroundColor: BRAND.card,
+                    boxShadow: BRAND.shadowSm
                   }}
                 >
-                  <div 
+                  <div
                     className="p-3 rounded-xl"
-                    style={{ backgroundColor: APPLE.accentSubtle }}
+                    style={{ backgroundColor: BRAND.accentSubtle }}
                   >
-                    <feature.icon className="w-5 h-5" style={{ color: APPLE.accent }} />
+                    <feature.icon className="w-5 h-5" style={{ color: BRAND.accent }} />
                   </div>
                   <div>
-                    <h3 className="font-semibold" style={{ color: APPLE.text }}>{feature.title}</h3>
-                    <p className="text-sm" style={{ color: APPLE.textSecondary }}>{feature.desc}</p>
+                    <h3 className="font-semibold" style={{ color: BRAND.text }}>{feature.title}</h3>
+                    <p className="text-sm" style={{ color: BRAND.textSecondary }}>{feature.desc}</p>
                   </div>
                 </motion.div>
               ))}
@@ -184,48 +185,48 @@ export default function About() {
       </section>
 
       {/* Pillars Section */}
-      <section 
+      <section
         className="py-16 px-6"
-        style={{ backgroundColor: APPLE.backgroundPure, borderTop: `1px solid ${APPLE.border}`, borderBottom: `1px solid ${APPLE.border}` }}
+        style={{ backgroundColor: BRAND.backgroundPure, borderTop: `1px solid ${BRAND.border}`, borderBottom: `1px solid ${BRAND.border}` }}
       >
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h2 
+            <h2
               className="text-3xl font-bold text-center mb-12 tracking-tight"
-              style={{ color: APPLE.text }}
+              style={{ color: BRAND.text }}
             >
               Nos trois piliers
             </h2>
-            
+
             <div className="grid md:grid-cols-3 gap-6">
               {pillars.map((pillar, i) => (
-                <motion.div 
+                <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
                   className="p-6 rounded-2xl transition-all hover:scale-[1.02]"
-                  style={{ 
-                    backgroundColor: APPLE.card,
-                    boxShadow: APPLE.shadowCard
+                  style={{
+                    backgroundColor: BRAND.card,
+                    borderColor: BRAND.border, boxShadow: BRAND.shadowCard
                   }}
                 >
-                  <div 
+                  <div
                     className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-                    style={{ backgroundColor: APPLE.accentSubtle }}
+                    style={{ backgroundColor: BRAND.accentSubtle }}
                   >
-                    <pillar.icon className="w-7 h-7" style={{ color: APPLE.accent }} />
+                    <pillar.icon className="w-7 h-7" style={{ color: BRAND.accent }} />
                   </div>
-                  <h3 
+                  <h3
                     className="text-xl font-bold mb-2"
-                    style={{ color: APPLE.text }}
+                    style={{ color: BRAND.text }}
                   >
                     {pillar.title}
                   </h3>
-                  <p style={{ color: APPLE.textSecondary }}>{pillar.desc}</p>
+                  <p style={{ color: BRAND.textSecondary }}>{pillar.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -240,42 +241,42 @@ export default function About() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="p-8 md:p-12 rounded-3xl"
-            style={{ 
-              backgroundColor: APPLE.text
+            style={{
+              backgroundColor: BRAND.text
             }}
           >
-            <Crown className="w-12 h-12 mx-auto mb-6" style={{ color: APPLE.background }} />
-            <h2 
+            <Crown className="w-12 h-12 mx-auto mb-6" style={{ color: BRAND.background }} />
+            <h2
               className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ color: APPLE.background }}
+              style={{ color: BRAND.background }}
             >
               Prêt à nous rejoindre ?
             </h2>
-            <p 
+            <p
               className="mb-8 max-w-xl mx-auto"
-              style={{ color: APPLE.textMuted }}
+              style={{ color: "#655D54" }}
             >
               Rejoignez les centaines de professionnels qui ont déjà adopté les cartes NFC IWASP.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/express/offre">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="gap-2 font-semibold px-8 rounded-full"
-                  style={{ backgroundColor: APPLE.background, color: APPLE.text }}
+                  style={{ backgroundColor: BRAND.background, color: BRAND.text }}
                 >
                   Commander ma Carte
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button 
-                  variant="outline" 
-                  size="lg" 
+                <Button
+                  variant="outline"
+                  size="lg"
                   className="rounded-full"
-                  style={{ 
-                    borderColor: "rgba(245, 245, 247, 0.3)", 
-                    color: APPLE.background,
+                  style={{
+                    borderColor: "rgba(3, 3, 3, 0.25)",
+                    color: BRAND.background,
                     backgroundColor: "transparent"
                   }}
                 >
@@ -288,11 +289,11 @@ export default function About() {
       </section>
 
       {/* Footer */}
-      <footer 
+      <footer
         className="py-8 px-6 text-center"
-        style={{ borderTop: `1px solid ${APPLE.border}` }}
+        style={{ borderTop: `1px solid ${BRAND.border}` }}
       >
-        <p className="text-sm" style={{ color: APPLE.textMuted }}>
+        <p className="text-sm" style={{ color: BRAND.textMuted }}>
           Powered by IWASP
         </p>
       </footer>

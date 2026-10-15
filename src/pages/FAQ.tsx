@@ -1,13 +1,14 @@
+import "@/styles/public-brand.css";
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Search, 
-  ChevronDown, 
-  Phone, 
-  MessageCircle, 
-  CreditCard, 
-  Truck, 
-  Shield, 
+import {
+  Search,
+  ChevronDown,
+  Phone,
+  MessageCircle,
+  CreditCard,
+  Truck,
+  Shield,
   Smartphone,
   RefreshCw,
   Users,
@@ -186,13 +187,13 @@ const trustStats = [
 // Highlight search matches
 function HighlightText({ text, query }: { text: string; query: string }) {
   if (!query.trim()) return <>{text}</>;
-  
+
   const parts = text.split(new RegExp(`(${query})`, 'gi'));
   return (
     <>
       {parts.map((part, i) =>
         part.toLowerCase() === query.toLowerCase() ? (
-          <mark key={i} className="bg-primary/20 text-primary rounded px-0.5">
+          <mark key={i} className="bg-[#DCC7B0]/20 text-[#EFE4D6] rounded px-0.5">
             {part}
           </mark>
         ) : (
@@ -229,15 +230,15 @@ export default function FAQ() {
     <>
       <SEOHead {...SEO_CONFIGS.faq} />
 
-      <div className="min-h-screen bg-[#F5F5F7]">
+      <div className="brand-public min-h-screen antialiased leading-relaxed bg-[#030303] text-[#FDFCFB]">
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-xl border-b border-black/5 sticky top-0 z-50">
+        <header className="bg-[#030303]/90 backdrop-blur-xl border-b border-[#DCC7B0]/15 sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link to="/" className="font-semibold text-[#1D1D1F] text-xl tracking-tight">
+            <Link to="/" className="font-semibold text-[#FDFCFB] text-xl tracking-tight">
               IWASP
             </Link>
-            <Link to="/express/pack">
-              <Button className="bg-[#007AFF] hover:bg-[#0056CC] text-white rounded-full px-6 h-10 font-medium">
+            <Link to="/express/offre">
+              <Button className="bg-[#DCC7B0] hover:bg-[#E8D8C5] text-[#030303] rounded-full px-6 h-10 font-medium">
                 Commander
               </Button>
             </Link>
@@ -245,41 +246,41 @@ export default function FAQ() {
         </header>
 
         {/* Hero Section */}
-        <section className="bg-white border-b border-black/5">
+        <section className="bg-[#11100F] border-b border-[#DCC7B0]/15">
           <div className="max-w-4xl mx-auto px-6 py-16 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#007AFF]/10 text-[#007AFF] text-sm font-medium mb-6">
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#DCC7B0]/10 text-[#DCC7B0] text-sm font-medium mb-6">
                 <HelpCircle className="w-4 h-4" />
                 Centre d'aide
               </span>
-              
-              <h1 className="text-4xl md:text-5xl font-bold text-[#1D1D1F] tracking-tight mb-4">
+
+              <h1 className="text-4xl md:text-5xl font-bold text-[#FDFCFB] tracking-tight mb-4">
                 Questions fréquentes
               </h1>
-              
-              <p className="text-lg text-[#8E8E93] mb-8 max-w-2xl mx-auto">
-                Tout ce que vous devez savoir sur les cartes NFC i-wasp. 
+
+              <p className="text-lg leading-relaxed text-[#ABA49C] mb-8 max-w-2xl mx-auto">
+                Tout ce que vous devez savoir sur les cartes NFC i-wasp.
                 {totalFaqs} réponses pour vous aider.
               </p>
 
               {/* Search */}
               <div className="relative max-w-xl mx-auto">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8E8E93]" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#ABA49C]" />
                 <Input
                   type="text"
                   placeholder="Rechercher une question..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 h-14 text-lg bg-[#F5F5F7] border-0 rounded-2xl focus:ring-2 focus:ring-[#007AFF]/20 placeholder:text-[#8E8E93]"
+                  className="w-full pl-12 pr-4 py-4 h-14 text-lg bg-[#141210] border-0 rounded-2xl focus:ring-2 focus:ring-[#DCC7B0]/20 placeholder:text-[#ABA49C]"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8E8E93] hover:text-[#1D1D1F]"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#ABA49C] hover:text-[#FDFCFB]"
                   >
                     ✕
                   </button>
@@ -296,8 +297,8 @@ export default function FAQ() {
             >
               {trustStats.map((stat, index) => (
                 <div key={index} className="text-center">
-                  <div className="text-2xl font-bold text-[#1D1D1F]">{stat.value}</div>
-                  <div className="text-sm text-[#8E8E93]">{stat.label}</div>
+                  <div className="text-2xl font-bold text-[#FDFCFB]">{stat.value}</div>
+                  <div className="text-sm text-[#ABA49C]">{stat.label}</div>
                 </div>
               ))}
             </motion.div>
@@ -305,15 +306,15 @@ export default function FAQ() {
         </section>
 
         {/* Category Filter */}
-        <section className="bg-[#F5F5F7] sticky top-[73px] z-40 border-b border-black/5">
+        <section className="bg-[#141210] sticky top-[73px] z-40 border-b border-[#DCC7B0]/15">
           <div className="max-w-6xl mx-auto px-6 py-4">
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               <button
                 onClick={() => setSelectedCategory(null)}
                 className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   !selectedCategory
-                    ? "bg-[#1D1D1F] text-white"
-                    : "bg-white text-[#1D1D1F] hover:bg-black/5"
+                    ? "bg-[#DCC7B0] text-[#030303]"
+                    : "bg-[#11100F] text-[#FDFCFB] hover:bg-[#DCC7B0]/10"
                 }`}
               >
                 Tout voir
@@ -328,8 +329,8 @@ export default function FAQ() {
                     )}
                     className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                       selectedCategory === category.id
-                        ? "bg-[#1D1D1F] text-white"
-                        : "bg-white text-[#1D1D1F] hover:bg-black/5"
+                        ? "bg-[#DCC7B0] text-[#030303]"
+                        : "bg-[#11100F] text-[#FDFCFB] hover:bg-[#DCC7B0]/10"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -352,13 +353,13 @@ export default function FAQ() {
                   exit={{ opacity: 0 }}
                   className="text-center py-16"
                 >
-                  <div className="w-16 h-16 bg-[#F5F5F7] rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Search className="w-8 h-8 text-[#8E8E93]" />
+                  <div className="w-16 h-16 bg-[#141210] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="w-8 h-8 text-[#ABA49C]" />
                   </div>
-                  <h3 className="text-xl font-semibold text-[#1D1D1F] mb-2">
+                  <h3 className="text-xl font-semibold text-[#FDFCFB] mb-2">
                     Aucun résultat
                   </h3>
-                  <p className="text-[#8E8E93] mb-6">
+                  <p className="text-[#ABA49C] mb-6">
                     Essayez une autre recherche ou contactez-nous
                   </p>
                   <a
@@ -366,7 +367,7 @@ export default function FAQ() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button className="bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full px-6">
+                    <Button className="bg-[#DCC7B0] hover:bg-[#E8D8C5] text-[#030303] rounded-full px-6">
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Poser une question
                     </Button>
@@ -384,13 +385,13 @@ export default function FAQ() {
                       className="mb-10"
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-[#007AFF]/10 rounded-xl flex items-center justify-center">
-                          <Icon className="w-5 h-5 text-[#007AFF]" />
+                        <div className="w-10 h-10 bg-[#DCC7B0]/10 rounded-xl flex items-center justify-center">
+                          <Icon className="w-5 h-5 text-[#DCC7B0]" />
                         </div>
-                        <h2 className="text-xl font-semibold text-[#1D1D1F]">
+                        <h2 className="text-xl font-semibold text-[#FDFCFB]">
                           {category.title}
                         </h2>
-                        <span className="text-sm text-[#8E8E93] bg-black/5 px-2 py-0.5 rounded-full">
+                        <span className="text-sm text-[#ABA49C] bg-[#DCC7B0]/10 px-2 py-0.5 rounded-full">
                           {category.faqs.length}
                         </span>
                       </div>
@@ -400,12 +401,12 @@ export default function FAQ() {
                           <AccordionItem
                             key={faqIndex}
                             value={`${category.id}-${faqIndex}`}
-                            className="bg-white border-0 rounded-2xl shadow-sm overflow-hidden data-[state=open]:shadow-md transition-shadow"
+                            className="bg-[#11100F] border border-[#DCC7B0]/15 rounded-2xl shadow-sm overflow-hidden data-[state=open]:shadow-md transition-shadow"
                           >
-                            <AccordionTrigger className="px-6 py-5 text-left text-[#1D1D1F] font-medium hover:no-underline hover:bg-black/[0.02] [&[data-state=open]]:bg-black/[0.02]">
+                            <AccordionTrigger className="px-6 py-5 text-left text-[#FDFCFB] font-medium hover:no-underline hover:bg-[#DCC7B0]/5 [&[data-state=open]]:bg-[#DCC7B0]/5">
                               <HighlightText text={faq.question} query={searchQuery} />
                             </AccordionTrigger>
-                            <AccordionContent className="px-6 pb-5 text-[#8E8E93] leading-relaxed">
+                            <AccordionContent className="px-6 pb-5 text-[#ABA49C] leading-relaxed">
                               <HighlightText text={faq.answer} query={searchQuery} />
                             </AccordionContent>
                           </AccordionItem>
@@ -420,7 +421,7 @@ export default function FAQ() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-white border-t border-black/5">
+        <section className="py-16 bg-[#11100F] border-t border-[#DCC7B0]/15">
           <div className="max-w-4xl mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -428,10 +429,10 @@ export default function FAQ() {
               viewport={{ once: true }}
               className="text-center"
             >
-              <h2 className="text-2xl md:text-3xl font-bold text-[#1D1D1F] mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-[#FDFCFB] mb-4">
                 Vous n'avez pas trouvé votre réponse ?
               </h2>
-              <p className="text-[#8E8E93] mb-8 max-w-xl mx-auto">
+              <p className="text-[#ABA49C] mb-8 max-w-xl mx-auto">
                 Notre équipe est disponible 7j/7 pour répondre à toutes vos questions
               </p>
 
@@ -441,19 +442,19 @@ export default function FAQ() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Button 
+                  <Button
                     size="lg"
-                    className="bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full px-8 h-14 text-base font-medium w-full sm:w-auto"
+                    className="bg-[#DCC7B0] hover:bg-[#E8D8C5] text-[#030303] rounded-full px-8 h-14 text-base font-medium w-full sm:w-auto"
                   >
                     <MessageCircle className="w-5 h-5 mr-2" />
                     WhatsApp
                   </Button>
                 </a>
                 <a href="tel:+212667285923">
-                  <Button 
+                  <Button
                     size="lg"
                     variant="outline"
-                    className="rounded-full px-8 h-14 text-base font-medium border-2 w-full sm:w-auto"
+                    className="rounded-full px-8 h-14 text-base font-medium border border-[#DCC7B0]/30 bg-transparent text-[#FDFCFB] hover:bg-[#DCC7B0]/10 hover:text-[#FDFCFB] w-full sm:w-auto"
                   >
                     <Phone className="w-5 h-5 mr-2" />
                     +212 667 285 923
@@ -465,36 +466,36 @@ export default function FAQ() {
         </section>
 
         {/* Ready to Order CTA */}
-        <section className="py-16 bg-[#1D1D1F]">
+        <section className="py-16 bg-[#030303]">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white/80 text-sm mb-6">
-                <CheckCircle2 className="w-4 h-4 text-green-400" />
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#DCC7B0]/10 text-[#C6C0B9] text-sm mb-6">
+                <CheckCircle2 className="w-4 h-4 text-[#DCC7B0]" />
                 Livraison gratuite • Paiement à la livraison
               </div>
-              
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+
+              <h2 className="text-3xl md:text-4xl font-bold text-[#FDFCFB] mb-4">
                 Prêt à vous démarquer ?
               </h2>
-              <p className="text-white/60 mb-8 max-w-xl mx-auto">
+              <p className="text-[#C6C0B9] mb-8 max-w-xl mx-auto">
                 Rejoignez 500+ professionnels marocains qui ont déjà adopté la carte de visite du futur
               </p>
 
-              <Link to="/express/pack">
-                <Button 
+              <Link to="/express/offre">
+                <Button
                   size="lg"
-                  className="bg-[#007AFF] hover:bg-[#0056CC] text-white rounded-full px-10 h-14 text-lg font-medium group"
+                  className="bg-[#DCC7B0] hover:bg-[#E8D8C5] text-[#030303] rounded-full px-10 h-14 text-lg font-medium group"
                 >
                   Commander ma carte
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              
-              <p className="text-white/40 text-sm mt-4">
+
+              <p className="text-[#ABA49C] text-sm mt-4">
                 149 DH seulement • Sans abonnement
               </p>
             </motion.div>
@@ -502,20 +503,20 @@ export default function FAQ() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-white border-t border-black/5 py-8">
+        <footer className="bg-[#11100F] border-t border-[#DCC7B0]/15 py-8">
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="text-sm text-[#8E8E93]">
+              <div className="text-sm text-[#ABA49C]">
                 © 2025 IWASP. Tous droits réservés.
               </div>
               <div className="flex gap-6 text-sm">
-                <Link to="/cgv" className="text-[#8E8E93] hover:text-[#1D1D1F] transition-colors">
+                <Link to="/cgv" className="text-[#ABA49C] hover:text-[#FDFCFB] transition-colors">
                   CGV
                 </Link>
-                <Link to="/contact" className="text-[#8E8E93] hover:text-[#1D1D1F] transition-colors">
+                <Link to="/contact" className="text-[#ABA49C] hover:text-[#FDFCFB] transition-colors">
                   Contact
                 </Link>
-                <Link to="/" className="text-[#8E8E93] hover:text-[#1D1D1F] transition-colors">
+                <Link to="/" className="text-[#ABA49C] hover:text-[#FDFCFB] transition-colors">
                   Accueil
                 </Link>
               </div>

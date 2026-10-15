@@ -3,7 +3,9 @@
  * Style: Ultra minimal, noir couture, typographie éditoriale
  */
 
+import "@/styles/public-brand.css";
 import { useState, useEffect } from "react";
+import { BRAND } from "@/lib/brandPalette";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LayoutDashboard, LogOut, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,15 +18,15 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // Palette Premium raffinée
 const COUTURE = {
-  noir: "#030303",
-  noirGlass: "rgba(3, 3, 3, 0.85)",
-  ivoire: "#F8F7F4",
-  or: "#C9A962",
-  orLight: "#D4B87A",
-  gris: "#888888",
-  grisClair: "#ABABAB",
-  border: "rgba(255, 255, 255, 0.06)",
-  borderHover: "rgba(201, 169, 98, 0.3)",
+  noir: BRAND.background,
+  noirGlass: BRAND.header,
+  ivoire: BRAND.text,
+  or: BRAND.accent,
+  orLight: BRAND.accentHover,
+  gris: BRAND.textMuted,
+  grisClair: BRAND.textSecondary,
+  border: BRAND.border,
+  borderHover: BRAND.borderActive,
 } as const;
 
 export function CoutureNavbar() {
@@ -58,23 +60,23 @@ export function CoutureNavbar() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50"
+      className="brand-navigation fixed top-0 left-0 right-0 z-50"
       style={{
         transition: "all 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
       }}
     >
       {/* Gradient overlay for better readability */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-700"
         style={{
-          background: isScrolled 
+          background: isScrolled
             ? COUTURE.noirGlass
             : `linear-gradient(to bottom, ${COUTURE.noir}90 0%, transparent 100%)`,
           backdropFilter: isScrolled ? "blur(24px) saturate(180%)" : "none",
           WebkitBackdropFilter: isScrolled ? "blur(24px) saturate(180%)" : "none",
         }}
       />
-      
+
       {/* Bottom border with gradient */}
       <motion.div
         className="absolute bottom-0 left-0 right-0 h-px"
@@ -85,10 +87,10 @@ export function CoutureNavbar() {
           background: `linear-gradient(90deg, transparent, ${COUTURE.or}30, transparent)`,
         }}
       />
-      
+
       <nav className="container mx-auto px-6 md:px-10 lg:px-12 relative z-10">
         <div className="flex items-center justify-between h-16 md:h-18">
-          
+
           {/* Logo - Premium typography */}
           <Link to="/" className="flex items-center gap-3 group">
             <motion.div
@@ -96,7 +98,7 @@ export function CoutureNavbar() {
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
             >
-              <span 
+              <span
                 className="font-serif text-xl md:text-2xl tracking-wide"
                 style={{ color: COUTURE.ivoire }}
               >
@@ -115,9 +117,9 @@ export function CoutureNavbar() {
 
           {/* Desktop Navigation - Refined */}
           <div className="hidden lg:flex items-center">
-            <div 
+            <div
               className="flex items-center gap-0.5 px-2 py-1.5 rounded-full"
-              style={{ 
+              style={{
                 backgroundColor: `${COUTURE.ivoire}05`,
                 border: `1px solid ${COUTURE.border}`,
               }}
@@ -130,10 +132,10 @@ export function CoutureNavbar() {
                     to={link.href}
                     className="relative px-4 py-2 text-[13px] transition-all duration-500 flex items-center gap-1.5 rounded-full"
                     style={{
-                      color: link.highlight 
+                      color: link.highlight
                         ? COUTURE.or
-                        : isActive 
-                        ? COUTURE.ivoire 
+                        : isActive
+                        ? COUTURE.ivoire
                         : COUTURE.gris,
                       fontWeight: link.highlight || isActive ? 500 : 400,
                       letterSpacing: "0.01em",
@@ -153,9 +155,9 @@ export function CoutureNavbar() {
                     {link.icon && <link.icon size={13} strokeWidth={1.5} />}
                     {link.label}
                     {link.badge && (
-                      <span 
+                      <span
                         className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full font-medium"
-                        style={{ 
+                        style={{
                           backgroundColor: `${COUTURE.or}20`,
                           color: COUTURE.or,
                         }}
@@ -166,7 +168,7 @@ export function CoutureNavbar() {
                     {link.highlight && (
                       <motion.div
                         className="absolute inset-0 rounded-full -z-10"
-                        style={{ 
+                        style={{
                           border: `1px solid ${COUTURE.or}40`,
                         }}
                         animate={{
@@ -190,15 +192,15 @@ export function CoutureNavbar() {
             {!loading && (
               user ? (
                 <div className="flex items-center gap-2">
-                  <SubscriptionBadge 
-                    showLabel={true} 
-                    size="sm" 
-                    onClick={() => setShowUpgrade(true)} 
+                  <SubscriptionBadge
+                    showLabel={true}
+                    size="sm"
+                    onClick={() => setShowUpgrade(true)}
                   />
                   <Link to="/dashboard">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="gap-2 font-normal rounded-full hover:bg-white/5 text-[13px]"
                       style={{ color: COUTURE.gris }}
                     >
@@ -206,10 +208,10 @@ export function CoutureNavbar() {
                       {t("nav.dashboard")}
                     </Button>
                   </Link>
-                  <Button 
+                  <Button
                     variant="ghost"
-                    size="sm" 
-                    onClick={handleLogout} 
+                    size="sm"
+                    onClick={handleLogout}
                     className="gap-2 font-normal rounded-full hover:bg-white/5 p-2"
                     style={{ color: COUTURE.gris }}
                   >
@@ -219,8 +221,8 @@ export function CoutureNavbar() {
               ) : (
                 <div className="flex items-center gap-2">
                   <Link to="/login">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       className="font-normal rounded-full hover:bg-white/5 text-[13px] px-4"
                       style={{ color: COUTURE.gris }}
@@ -233,10 +235,10 @@ export function CoutureNavbar() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         className="font-medium px-5 rounded-full text-[13px] transition-all duration-300"
-                        style={{ 
+                        style={{
                           background: `linear-gradient(135deg, ${COUTURE.or} 0%, ${COUTURE.orLight} 100%)`,
                           color: COUTURE.noir,
                           boxShadow: `0 4px 20px ${COUTURE.or}30`,
@@ -255,7 +257,7 @@ export function CoutureNavbar() {
           <div className="lg:hidden flex items-center gap-3">
             <motion.button
               className="p-2 rounded-full transition-colors"
-              style={{ 
+              style={{
                 color: COUTURE.ivoire,
                 backgroundColor: `${COUTURE.ivoire}05`,
                 border: `1px solid ${COUTURE.border}`,
@@ -291,13 +293,13 @@ export function CoutureNavbar() {
             style={{ backgroundColor: COUTURE.noir }}
           >
             {/* Gradient accent */}
-            <div 
+            <div
               className="absolute top-0 left-0 right-0 h-32 pointer-events-none"
               style={{
                 background: `radial-gradient(ellipse at top, ${COUTURE.or}10 0%, transparent 70%)`,
               }}
             />
-            
+
             <div className="container mx-auto px-6 py-10 relative z-10">
               <div className="flex flex-col gap-5">
                 {navLinks.map((link, index) => (
@@ -305,10 +307,10 @@ export function CoutureNavbar() {
                     key={link.href}
                     initial={{ opacity: 0, x: -30 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ 
-                      duration: 0.5, 
+                    transition={{
+                      duration: 0.5,
                       delay: index * 0.08,
-                      ease: [0.22, 1, 0.36, 1] 
+                      ease: [0.22, 1, 0.36, 1]
                     }}
                   >
                     <Link
@@ -323,9 +325,9 @@ export function CoutureNavbar() {
                       {link.icon && <link.icon size={22} strokeWidth={1.5} style={{ color: COUTURE.or }} />}
                       <span>{link.label}</span>
                       {link.badge && (
-                        <span 
+                        <span
                           className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full font-medium"
-                          style={{ 
+                          style={{
                             backgroundColor: `${COUTURE.or}20`,
                             color: COUTURE.or,
                           }}
@@ -336,8 +338,8 @@ export function CoutureNavbar() {
                     </Link>
                   </motion.div>
                 ))}
-                
-                <motion.div 
+
+                <motion.div
                   className="pt-8 mt-6 flex flex-col gap-4"
                   style={{ borderTop: `1px solid ${COUTURE.border}` }}
                   initial={{ opacity: 0 }}
@@ -347,13 +349,13 @@ export function CoutureNavbar() {
                   <div className="flex items-center gap-4">
                     <ThemeToggle />
                   </div>
-                  
+
                   {user ? (
                     <>
                       <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Button 
+                        <Button
                           className="w-full gap-2 font-medium rounded-xl h-12"
-                          style={{ 
+                          style={{
                             background: `linear-gradient(135deg, ${COUTURE.or} 0%, ${COUTURE.orLight} 100%)`,
                             color: COUTURE.noir,
                           }}
@@ -365,7 +367,7 @@ export function CoutureNavbar() {
                       <Button
                         variant="outline"
                         className="w-full gap-2 font-normal rounded-xl h-12"
-                        style={{ 
+                        style={{
                           borderColor: COUTURE.border,
                           color: COUTURE.gris,
                           backgroundColor: "transparent",
@@ -382,10 +384,10 @@ export function CoutureNavbar() {
                   ) : (
                     <>
                       <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           className="w-full font-normal rounded-xl h-12"
-                          style={{ 
+                          style={{
                             borderColor: COUTURE.border,
                             color: COUTURE.gris,
                             backgroundColor: "transparent",
@@ -395,9 +397,9 @@ export function CoutureNavbar() {
                         </Button>
                       </Link>
                       <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Button 
+                        <Button
                           className="w-full font-medium rounded-xl h-12"
-                          style={{ 
+                          style={{
                             background: `linear-gradient(135deg, ${COUTURE.or} 0%, ${COUTURE.orLight} 100%)`,
                             color: COUTURE.noir,
                           }}
@@ -414,9 +416,9 @@ export function CoutureNavbar() {
         )}
       </AnimatePresence>
 
-      <SubscriptionUpgrade 
-        isOpen={showUpgrade} 
-        onClose={() => setShowUpgrade(false)} 
+      <SubscriptionUpgrade
+        isOpen={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
       />
     </header>
   );

@@ -71,6 +71,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { publicLegacyCardUrl } from "@/lib/publicUrl";
+import "@/styles/workspace-brand.css";
 
 // Animation variants - slow, luxurious
 const fadeUp = {
@@ -212,7 +213,7 @@ const Dashboard = () => {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-foreground selection:text-background">
+    <div className="brand-workspace brand-dashboard min-h-screen bg-background text-foreground selection:bg-foreground selection:text-background">
       
       {/* ═══════════════════════════════════════════════════════════════════
           NAVIGATION — Ultra minimal
@@ -221,7 +222,7 @@ const Dashboard = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.3 }}
-        className="fixed top-0 left-0 right-0 z-50 px-6 sm:px-12 py-6 sm:py-8 bg-background/80 backdrop-blur-xl border-b border-foreground/5"
+        className="workspace-nav fixed top-0 left-0 right-0 z-50 px-6 sm:px-12 py-6 sm:py-8 bg-background/80 backdrop-blur-xl border-b border-foreground/5"
       >
         <div className="max-w-[1400px] mx-auto flex items-center justify-between">
           <Link to="/" className="text-foreground font-serif text-xl sm:text-2xl tracking-wide">
@@ -250,7 +251,7 @@ const Dashboard = () => {
       </motion.nav>
 
       {/* Main Content */}
-      <main className="pt-32 pb-24 px-6 sm:px-12">
+      <main className="workspace-main pt-32 pb-24 px-6 sm:px-12">
         <div className="max-w-[1400px] mx-auto">
           
           {/* ═══════════════════════════════════════════════════════════════════
@@ -260,7 +261,7 @@ const Dashboard = () => {
             initial="hidden"
             animate="visible"
             variants={stagger}
-            className="mb-16 sm:mb-24"
+            className="workspace-intro mb-16 sm:mb-24"
           >
             <motion.p 
               variants={fadeUp}
@@ -270,7 +271,7 @@ const Dashboard = () => {
             </motion.p>
             <motion.h1 
               variants={fadeUp}
-              className="font-serif text-3xl sm:text-5xl md:text-6xl font-light tracking-tight mb-6"
+              className="workspace-title font-serif text-3xl sm:text-5xl md:text-6xl font-light tracking-tight mb-6"
             >
               {userName}
             </motion.h1>
@@ -289,7 +290,7 @@ const Dashboard = () => {
             initial="hidden"
             animate="visible"
             variants={stagger}
-            className="grid grid-cols-2 md:grid-cols-4 gap-px bg-foreground/5 rounded-2xl overflow-hidden mb-16 sm:mb-24"
+            className="workspace-metrics grid grid-cols-2 md:grid-cols-4 gap-px bg-foreground/5 rounded-2xl overflow-hidden mb-16 sm:mb-24"
           >
             {[
               { label: "Cartes", value: cards.length, icon: CreditCard },
@@ -300,7 +301,7 @@ const Dashboard = () => {
               <motion.div 
                 key={stat.label}
                 variants={fadeUp}
-                className="bg-background p-6 sm:p-10"
+                className="workspace-metric bg-background p-6 sm:p-10"
               >
                 <stat.icon size={20} className="text-muted-foreground mb-4" />
                 <p className="font-serif text-3xl sm:text-4xl md:text-5xl font-light tracking-tight mb-2">
@@ -320,7 +321,7 @@ const Dashboard = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="flex flex-wrap gap-6 sm:gap-12 mb-12 sm:mb-16 border-b border-foreground/5 pb-6"
+            className="workspace-tabs flex flex-wrap gap-6 sm:gap-12 mb-12 sm:mb-16 border-b border-foreground/5 pb-6"
           >
             {navItems.map((item) => (
               <button
@@ -341,7 +342,7 @@ const Dashboard = () => {
                 {activeSection === item.id && (
                   <motion.div 
                     layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-px bg-foreground"
+                    className="workspace-tab-indicator absolute bottom-0 left-0 right-0 h-px bg-foreground"
                     transition={{ duration: 0.3 }}
                   />
                 )}
@@ -359,12 +360,12 @@ const Dashboard = () => {
               variants={stagger}
             >
               {/* New card CTA */}
-              <motion.div variants={fadeUp} className="flex items-center justify-between mb-10">
+              <motion.div variants={fadeUp} className="workspace-section-heading flex items-center justify-between mb-10">
                 <h2 className="font-serif text-2xl sm:text-3xl font-light tracking-tight">
                   Mes cartes
                 </h2>
                 <Link to="/create">
-                  <button className="inline-flex items-center gap-3 text-xs sm:text-sm tracking-[0.15em] uppercase border border-foreground/30 px-5 py-3 hover:bg-foreground hover:text-background transition-all duration-500">
+                  <button className="workspace-primary inline-flex items-center gap-3 text-xs sm:text-sm tracking-[0.15em] uppercase border border-foreground/30 px-5 py-3 hover:bg-foreground hover:text-background transition-all duration-500">
                     <Plus size={16} />
                     Nouvelle carte
                   </button>
@@ -377,7 +378,7 @@ const Dashboard = () => {
               ) : cards.length === 0 ? (
                 <motion.div 
                   variants={fadeUp}
-                  className="py-24 text-center border border-foreground/10 rounded-2xl"
+                  className="workspace-panel workspace-empty py-24 text-center border border-foreground/10 rounded-2xl"
                 >
                   <CreditCard size={40} className="mx-auto text-muted-foreground mb-6" />
                   <h3 className="font-serif text-2xl font-light mb-3">Créez votre première carte</h3>
@@ -385,7 +386,7 @@ const Dashboard = () => {
                     Votre identité digitale premium vous attend
                   </p>
                   <Link to="/create">
-                    <button className="inline-flex items-center gap-3 bg-foreground text-background px-8 py-4 text-sm tracking-[0.15em] uppercase hover:opacity-80 transition-opacity duration-500">
+                    <button className="workspace-primary inline-flex items-center gap-3 bg-foreground text-background px-8 py-4 text-sm tracking-[0.15em] uppercase hover:opacity-80 transition-opacity duration-500">
                       <Plus size={16} />
                       Créer ma carte
                     </button>
@@ -398,10 +399,10 @@ const Dashboard = () => {
                       key={card.id}
                       variants={fadeUp}
                       custom={index}
-                      className="group p-6 sm:p-8 border border-foreground/10 rounded-2xl hover:border-foreground/30 transition-all duration-500"
+                      className="workspace-panel workspace-card-row group p-6 sm:p-8 border border-foreground/10 rounded-2xl hover:border-foreground/30 transition-all duration-500"
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-5 sm:gap-8">
+                        <div className="workspace-identity flex items-center gap-5 sm:gap-8">
                           <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-muted overflow-hidden flex-shrink-0">
                             {card.photo_url ? (
                               <img 
@@ -423,7 +424,7 @@ const Dashboard = () => {
                             <p className="text-sm text-muted-foreground mb-3">
                               {card.title || card.company || "Carte digitale"}
                             </p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <div className="workspace-card-metadata flex items-center gap-4 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1.5">
                                 <Eye size={12} />
                                 {card.view_count || 0} vues
@@ -508,7 +509,7 @@ const Dashboard = () => {
               {/* Orders Section */}
               {orders.length > 0 && (
                 <motion.div variants={fadeUp} className="mt-16">
-                  <div className="flex items-center justify-between mb-8">
+                  <div className="workspace-section-heading flex items-center justify-between mb-8">
                     <h3 className="font-serif text-xl sm:text-2xl font-light tracking-tight">
                       Commandes récentes
                     </h3>
@@ -532,7 +533,7 @@ const Dashboard = () => {
                         <Link 
                           key={order.id} 
                           to={`/orders/${order.id}`}
-                          className="flex items-center justify-between p-5 border border-foreground/10 rounded-xl hover:border-foreground/30 transition-all duration-500"
+                          className="workspace-panel workspace-record-row flex items-center justify-between p-5 border border-foreground/10 rounded-xl hover:border-foreground/30 transition-all duration-500"
                         >
                           <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
@@ -579,7 +580,7 @@ const Dashboard = () => {
                   <button 
                     onClick={handleExportLeads}
                     disabled={leads.length === 0}
-                    className="inline-flex items-center gap-2 text-xs sm:text-sm tracking-[0.15em] uppercase border border-foreground/30 px-4 py-2.5 hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="workspace-secondary inline-flex items-center gap-2 text-xs sm:text-sm tracking-[0.15em] uppercase border border-foreground/30 px-4 py-2.5 hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Download size={14} />
                     Export CSV
@@ -590,7 +591,7 @@ const Dashboard = () => {
               {leads.length === 0 ? (
                 <motion.div 
                   variants={fadeUp}
-                  className="py-24 text-center border border-foreground/10 rounded-2xl"
+                  className="workspace-panel workspace-empty py-24 text-center border border-foreground/10 rounded-2xl"
                 >
                   <Users size={40} className="mx-auto text-muted-foreground mb-6" />
                   <h3 className="font-serif text-2xl font-light mb-3">Aucun lead pour le moment</h3>
@@ -603,19 +604,19 @@ const Dashboard = () => {
                   {/* Stats mini */}
                   <motion.div 
                     variants={fadeUp}
-                    className="grid grid-cols-3 gap-px bg-foreground/5 rounded-xl overflow-hidden mb-10"
+                    className="workspace-mini-metrics grid grid-cols-3 gap-px bg-foreground/5 rounded-xl overflow-hidden mb-10"
                   >
-                    <div className="bg-background p-6 text-center">
+                    <div className="workspace-metric bg-background p-6 text-center">
                       <p className="font-serif text-3xl font-light mb-1">{leads.length}</p>
                       <p className="text-xs text-muted-foreground">Total</p>
                     </div>
-                    <div className="bg-background p-6 text-center">
+                    <div className="workspace-metric bg-background p-6 text-center">
                       <p className="font-serif text-3xl font-light mb-1">
                         {leads.filter(l => l.status === "new").length}
                       </p>
                       <p className="text-xs text-muted-foreground">Nouveaux</p>
                     </div>
-                    <div className="bg-background p-6 text-center">
+                    <div className="workspace-metric bg-background p-6 text-center">
                       <p className="font-serif text-3xl font-light mb-1">
                         {leads.filter(l => l.consent_given).length}
                       </p>
@@ -629,7 +630,7 @@ const Dashboard = () => {
                       <motion.div 
                         key={lead.id}
                         variants={fadeUp}
-                        className="flex items-center justify-between p-5 border border-foreground/10 rounded-xl"
+                        className="workspace-panel workspace-record-row flex items-center justify-between p-5 border border-foreground/10 rounded-xl"
                       >
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
@@ -659,7 +660,7 @@ const Dashboard = () => {
                   {leads.length > 5 && (
                     <motion.div variants={fadeUp} className="text-center mt-8">
                       <Link to="/leads">
-                        <button className="inline-flex items-center gap-3 text-sm tracking-[0.15em] uppercase border border-foreground/30 px-6 py-3 hover:bg-foreground hover:text-background transition-all duration-500">
+                        <button className="workspace-secondary inline-flex items-center gap-3 text-sm tracking-[0.15em] uppercase border border-foreground/30 px-6 py-3 hover:bg-foreground hover:text-background transition-all duration-500">
                           Voir les {leads.length} leads
                           <ChevronRight size={14} />
                         </button>
@@ -696,15 +697,15 @@ const Dashboard = () => {
                 </h3>
                 <div className="space-y-4">
                   {topLinks.map((link) => (
-                    <div key={link.label} className="flex items-center justify-between py-3 border-b border-foreground/5">
+                    <div key={link.label} className="workspace-stat-row flex items-center justify-between py-3 border-b border-foreground/5">
                       <div className="flex items-center gap-4">
                         <link.icon size={16} className="text-muted-foreground" />
                         <span className="text-sm">{link.label}</span>
                       </div>
                       <div className="flex items-center gap-4">
-                        <div className="w-32 h-1 bg-muted rounded-full overflow-hidden">
+                        <div className="workspace-stat-track w-32 h-1 bg-muted rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-foreground rounded-full"
+                            className="workspace-stat-fill h-full bg-foreground rounded-full"
                             style={{ width: `${(link.clicks / Math.max(totalViews, 1)) * 100}%` }}
                           />
                         </div>
@@ -728,7 +729,7 @@ const Dashboard = () => {
                       const cardLeads = leads.filter(l => l.card_id === card.id).length;
                       const cardViews = card.view_count || 0;
                       return (
-                        <div key={card.id} className="flex items-center justify-between py-4 border-b border-foreground/5">
+                        <div key={card.id} className="workspace-stat-row workspace-performance-row flex items-center justify-between py-4 border-b border-foreground/5">
                           <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-xl bg-muted overflow-hidden">
                               {card.photo_url ? (
@@ -787,7 +788,7 @@ const Dashboard = () => {
                 {/* Email */}
                 <motion.div 
                   variants={fadeUp}
-                  className="p-8 border border-foreground/10 rounded-2xl"
+                  className="workspace-panel workspace-campaign p-8 border border-foreground/10 rounded-2xl"
                 >
                   <Mail size={28} className="text-muted-foreground mb-6" />
                   <h3 className="font-serif text-xl font-light mb-2">Campagnes Email</h3>
@@ -799,7 +800,7 @@ const Dashboard = () => {
                   </p>
                   <button 
                     disabled={!isPremium}
-                    className="w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="workspace-secondary w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isPremium ? "Créer une campagne" : "Premium requis"}
                   </button>
@@ -808,7 +809,7 @@ const Dashboard = () => {
                 {/* WhatsApp */}
                 <motion.div 
                   variants={fadeUp}
-                  className="p-8 border border-foreground/10 rounded-2xl"
+                  className="workspace-panel workspace-campaign p-8 border border-foreground/10 rounded-2xl"
                 >
                   <MessageSquare size={28} className="text-muted-foreground mb-6" />
                   <h3 className="font-serif text-xl font-light mb-2">Messages WhatsApp</h3>
@@ -820,7 +821,7 @@ const Dashboard = () => {
                   </p>
                   <button 
                     disabled={!isPremium}
-                    className="w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="workspace-secondary w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isPremium ? "Configurer" : "Premium requis"}
                   </button>
@@ -829,7 +830,7 @@ const Dashboard = () => {
                 {/* Push */}
                 <motion.div 
                   variants={fadeUp}
-                  className="p-8 border border-foreground/10 rounded-2xl"
+                  className="workspace-panel workspace-campaign p-8 border border-foreground/10 rounded-2xl"
                 >
                   <Bell size={28} className="text-muted-foreground mb-6" />
                   <h3 className="font-serif text-xl font-light mb-2">Notifications Push</h3>
@@ -842,7 +843,7 @@ const Dashboard = () => {
                   <button 
                     onClick={() => setShowPushModal(true)}
                     disabled={cards.length === 0}
-                    className="w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="workspace-secondary w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Envoyer
                   </button>
@@ -851,7 +852,7 @@ const Dashboard = () => {
                 {/* Automation */}
                 <motion.div 
                   variants={fadeUp}
-                  className="p-8 border border-foreground/10 rounded-2xl"
+                  className="workspace-panel workspace-campaign p-8 border border-foreground/10 rounded-2xl"
                 >
                   <Sparkles size={28} className="text-muted-foreground mb-6" />
                   <h3 className="font-serif text-xl font-light mb-2">Scénarios automatiques</h3>
@@ -862,7 +863,7 @@ const Dashboard = () => {
                     Offre Élite
                   </p>
                   <Link to="/order/offre">
-                    <button className="w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 flex items-center justify-center gap-2">
+                    <button className="workspace-secondary w-full py-3 border border-foreground/30 text-sm tracking-[0.15em] uppercase hover:bg-foreground hover:text-background transition-all duration-500 flex items-center justify-center gap-2">
                       <Crown size={14} />
                       Découvrir
                     </button>
@@ -880,7 +881,7 @@ const Dashboard = () => {
                     {pushLogs.slice(0, 5).map((log) => (
                       <div 
                         key={log.id}
-                        className="flex items-center justify-between p-5 border border-foreground/10 rounded-xl"
+                        className="workspace-panel workspace-record-row flex items-center justify-between p-5 border border-foreground/10 rounded-xl"
                       >
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{log.title}</p>
@@ -912,7 +913,7 @@ const Dashboard = () => {
                       .map((notif) => (
                         <div 
                           key={notif.id}
-                          className="flex items-center justify-between p-5 border border-foreground/10 rounded-xl"
+                          className="workspace-panel workspace-record-row flex items-center justify-between p-5 border border-foreground/10 rounded-xl"
                         >
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm truncate">{notif.title}</p>
@@ -962,7 +963,7 @@ const Dashboard = () => {
       {/* ═══════════════════════════════════════════════════════════════════
           FOOTER — Minimal
           ═══════════════════════════════════════════════════════════════════ */}
-      <footer className="py-12 px-6 sm:px-12 border-t border-foreground/5">
+      <footer className="workspace-footer py-12 px-6 sm:px-12 border-t border-foreground/5">
         <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
           <div>
             <span className="font-serif text-lg tracking-wide">i-wasp</span>
