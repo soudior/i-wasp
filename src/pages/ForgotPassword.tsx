@@ -1,9 +1,11 @@
+import { BRAND } from "@/lib/brandPalette";
+import "@/styles/checkout-brand.css";
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * FORGOT PASSWORD — RÉINITIALISATION MOT DE PASSE i-WASP
  * ═══════════════════════════════════════════════════════════════════════════
  * 
- * Thème DARK Premium (#0B0B0B)
+ * Thème OMNIA — Obsidienne, champagne, ivoire
  * Utilise Supabase Auth resetPasswordForEmail
  * 
  * ═══════════════════════════════════════════════════════════════════════════
@@ -61,7 +63,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-dvh flex flex-col bg-background">
+    <div className="brand-recovery min-h-dvh flex flex-col" style={{ backgroundColor: BRAND.background }}>
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
@@ -74,7 +76,7 @@ export default function ForgotPassword() {
           </Link>
           
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
+            <div className="recovery-mark w-8 h-8 rounded-lg flex items-center justify-center">
               <span className="text-background font-bold text-sm">iW</span>
             </div>
           </div>
@@ -134,7 +136,7 @@ export default function ForgotPassword() {
               )}
 
               {/* Form Card */}
-              <div className="rounded-2xl bg-card border border-border p-8">
+              <div className="recovery-panel rounded-2xl border border-border p-8">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium text-foreground">
@@ -157,7 +159,7 @@ export default function ForgotPassword() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 min-h-[48px] rounded-xl font-semibold text-base disabled:opacity-50 disabled:pointer-events-none touch-manipulation select-none active:scale-[0.98] transition-all bg-primary text-primary-foreground hover:brightness-110"
+                    className="recovery-submit w-full py-3.5 min-h-[48px] rounded-xl font-semibold text-base disabled:opacity-50 disabled:pointer-events-none touch-manipulation select-none active:scale-[0.98] transition-all bg-primary text-primary-foreground hover:brightness-110"
                   >
                     {isLoading ? (
                       <Loader2 className="h-5 w-5 animate-spin mx-auto" />

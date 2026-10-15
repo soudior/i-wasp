@@ -1,0 +1,42 @@
+/* Opt-in public marketing styles. Never applied to customer card roots. */
+.brand-public {
+  color-scheme: dark;
+  font-family: var(--font-body);
+  overflow-wrap: break-word;
+}
+
+.brand-public :is(h1, h2) {
+  font-family: var(--font-display);
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.brand-public p {
+  line-height: 1.7;
+}
+
+.brand-public :is(input, textarea)::placeholder {
+  color: #ABA49C;
+  opacity: 1;
+}
+
+:is(.brand-public, .brand-navigation) :is(a, button, input, textarea, select):focus-visible {
+  outline: 2px solid #DCC7B0;
+  outline-offset: 4px;
+}
+
+.brand-public :is(input, textarea, select):focus-visible {
+  border-color: #DCC7B0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.brand-public, .brand-navigation) *,
+  :is(.brand-public, .brand-navigation) *::before,
+  :is(.brand-public, .brand-navigation) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

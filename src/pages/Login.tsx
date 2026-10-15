@@ -1,3 +1,5 @@
+import { BRAND } from "@/lib/brandPalette";
+import "@/styles/account-brand.css";
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * LOGIN — CONNEXION PREMIUM i-WASP
@@ -155,23 +157,23 @@ export default function Login() {
 
   if (loading) {
     return (
-      <div className="min-h-dvh flex items-center justify-center" style={{ backgroundColor: "#F5F5F7" }}>
-        <Loader2 className="h-8 w-8 animate-spin" style={{ color: "#007AFF" }} />
+      <div className="brand-account min-h-dvh flex items-center justify-center" style={{ backgroundColor: BRAND.background }}>
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: BRAND.accent }} />
       </div>
     );
   }
 
   return (
     <div 
-      className="min-h-dvh flex flex-col items-center justify-center p-6"
-      style={{ backgroundColor: "#F5F5F7" }}
+      className="brand-account min-h-dvh flex flex-col items-center justify-center p-6"
+      style={{ backgroundColor: BRAND.background }}
     >
       {hasGuestCard && (
         <div className="w-full max-w-sm mb-4">
           <button
             onClick={() => navigate("/create")}
             className="flex items-center gap-2 text-sm touch-manipulation active:opacity-70"
-            style={{ color: "#007AFF" }}
+            style={{ color: BRAND.accent }}
           >
             <ArrowLeft size={16} />
             Retour à ma carte
@@ -181,19 +183,19 @@ export default function Login() {
 
       <div 
         className="w-full max-w-sm rounded-2xl p-8 shadow-sm"
-        style={{ backgroundColor: "#FFFFFF" }}
+        style={{ backgroundColor: BRAND.card }}
       >
         <div className="text-center mb-6">
           <h1 
             className="text-2xl font-semibold tracking-tight"
-            style={{ color: "#1D1D1F" }}
+            style={{ color: BRAND.text }}
           >
             {mode === "signup" ? "Créer un compte" : "Connexion"}
           </h1>
           {hasGuestCard && (
             <p 
               className="text-sm mt-2"
-              style={{ color: "#8E8E93" }}
+              style={{ color: BRAND.textMuted }}
             >
               Pour sauvegarder votre carte
             </p>
@@ -220,12 +222,12 @@ export default function Login() {
           disabled={isGoogleLoading || isLoading}
           className="w-full py-3.5 min-h-[48px] rounded-xl font-medium text-sm flex items-center justify-center gap-3 mb-6 disabled:opacity-50 disabled:pointer-events-none touch-manipulation select-none active:scale-[0.98] transition-transform duration-75"
           style={{
-            background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)",
+            background: BRAND.backgroundPure,
             backdropFilter: "blur(10px)",
             WebkitBackdropFilter: "blur(10px)",
-            color: "#1D1D1F",
-            border: "1px solid rgba(212,175,55,0.3)",
-            boxShadow: "0 4px 20px rgba(212,175,55,0.1), inset 0 1px 0 rgba(255,255,255,0.5)",
+            color: BRAND.text,
+            border: `1px solid ${BRAND.border}`,
+            boxShadow: "none",
           }}
         >
           {isGoogleLoading ? (
@@ -254,9 +256,9 @@ export default function Login() {
 
         {/* Divider */}
         <div className="flex items-center gap-4 mb-6">
-          <div className="flex-1 h-px" style={{ backgroundColor: "#E5E5E7" }} />
-          <span className="text-xs" style={{ color: "#8E8E93" }}>ou</span>
-          <div className="flex-1 h-px" style={{ backgroundColor: "#E5E5E7" }} />
+          <div className="flex-1 h-px" style={{ backgroundColor: BRAND.border }} />
+          <span className="text-xs" style={{ color: BRAND.textMuted }}>ou</span>
+          <div className="flex-1 h-px" style={{ backgroundColor: BRAND.border }} />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -264,7 +266,7 @@ export default function Login() {
             <label 
               htmlFor="email" 
               className="text-sm font-medium"
-              style={{ color: "#1D1D1F" }}
+              style={{ color: BRAND.text }}
             >
               Email
             </label>
@@ -279,9 +281,9 @@ export default function Login() {
               autoComplete="email"
               className="w-full px-4 py-3 rounded-xl text-sm outline-none touch-manipulation"
               style={{ 
-                backgroundColor: "#F5F5F7",
-                color: "#1D1D1F",
-                border: "1px solid transparent"
+                backgroundColor: BRAND.background,
+                color: BRAND.text,
+                border: `1px solid ${BRAND.border}`
               }}
             />
           </div>
@@ -290,7 +292,7 @@ export default function Login() {
             <label 
               htmlFor="password" 
               className="text-sm font-medium"
-              style={{ color: "#1D1D1F" }}
+              style={{ color: BRAND.text }}
             >
               Mot de passe
             </label>
@@ -305,9 +307,9 @@ export default function Login() {
               autoComplete={mode === "signup" ? "new-password" : "current-password"}
               className="w-full px-4 py-3 rounded-xl text-sm outline-none touch-manipulation"
               style={{ 
-                backgroundColor: "#F5F5F7",
-                color: "#1D1D1F",
-                border: "1px solid transparent"
+                backgroundColor: BRAND.background,
+                color: BRAND.text,
+                border: `1px solid ${BRAND.border}`
               }}
             />
           </div>
@@ -317,8 +319,8 @@ export default function Login() {
             disabled={isLoading || isGoogleLoading}
             className="w-full py-3.5 min-h-[48px] rounded-xl font-medium text-sm disabled:opacity-50 disabled:pointer-events-none touch-manipulation select-none active:scale-[0.98] transition-transform duration-75"
             style={{
-              backgroundColor: "#007AFF",
-              color: "#FFFFFF",
+              backgroundColor: BRAND.accent,
+              color: BRAND.background,
             }}
           >
             {isLoading ? (
@@ -337,7 +339,7 @@ export default function Login() {
             <a
               href="/forgot-password"
               className="text-sm touch-manipulation active:opacity-70"
-              style={{ color: "#8E8E93" }}
+              style={{ color: BRAND.textMuted }}
             >
               Mot de passe oublié ?
             </a>
@@ -352,7 +354,7 @@ export default function Login() {
               setErrorMessage(null);
             }}
             className="text-sm touch-manipulation active:opacity-70"
-            style={{ color: "#007AFF" }}
+            style={{ color: BRAND.accent }}
           >
             {mode === "login" ? "Pas encore de compte ? Créer un compte" : "Déjà un compte ? Se connecter"}
           </button>
@@ -360,7 +362,7 @@ export default function Login() {
       </div>
 
       {/* Help text for OAuth */}
-      <p className="mt-6 text-xs text-center max-w-sm" style={{ color: "#8E8E93" }}>
+      <p className="mt-6 text-xs text-center max-w-sm" style={{ color: BRAND.textMuted }}>
         En continuant, vous acceptez nos conditions d'utilisation et notre politique de confidentialité.
       </p>
     </div>

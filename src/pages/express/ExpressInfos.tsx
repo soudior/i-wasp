@@ -2,7 +2,7 @@
  * Express Step 2: Informations client + livraison
  * /express/infos
  * 
- * Style: Apple/Cupertino - Clean, professional, high-conversion
+ * Style: OMNIA — Obsidienne, champagne, ivoire
  */
 
 import { useState, useMemo, useEffect, useRef } from "react";
@@ -12,7 +12,8 @@ import { useExpressCheckout, ExpressCustomerInfo, EXPRESS_OFFERS } from "@/conte
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, ArrowRight, User, Mail, Phone, MapPin, MessageCircle, CheckCircle, Shield, Truck } from "lucide-react";
-import { APPLE } from "@/lib/applePalette";
+import { CHECKOUT_BRAND as CHECKOUT } from "@/lib/checkoutBrandPalette";
+import "@/styles/checkout-brand.css";
 import { toast } from "sonner";
 import { useExpressCheckoutTracking } from "@/hooks/useAnalyticsEvents";
 
@@ -180,14 +181,14 @@ export default function ExpressInfos() {
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: APPLE.background }}>
+    <div className="brand-checkout min-h-screen" style={{ backgroundColor: CHECKOUT.background }}>
       {/* Header */}
       <header className="px-6 py-4">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <button 
             onClick={() => navigate("/express/offre")}
             className="flex items-center gap-2 transition-all"
-            style={{ color: APPLE.textSecondary }}
+            style={{ color: CHECKOUT.textSecondary }}
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm font-medium">Retour</span>
@@ -195,8 +196,8 @@ export default function ExpressInfos() {
           
           <Link 
             to="/"
-            className="text-xl font-semibold tracking-tight"
-            style={{ color: APPLE.text }}
+            className="checkout-wordmark text-xl font-semibold tracking-tight"
+            style={{ color: CHECKOUT.text }}
           >
             IWASP
           </Link>
@@ -209,11 +210,11 @@ export default function ExpressInfos() {
       <div className="px-6 mb-6">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center gap-2">
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: APPLE.accent }} />
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: APPLE.accent }} />
-            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: APPLE.border }} />
+            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: CHECKOUT.accent }} />
+            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: CHECKOUT.accent }} />
+            <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: CHECKOUT.border }} />
           </div>
-          <p className="text-center mt-2 text-xs font-medium" style={{ color: APPLE.textMuted }}>
+          <p className="text-center mt-2 text-xs font-medium" style={{ color: CHECKOUT.textMuted }}>
             Étape 2 sur 3 — Plus que 2 minutes
           </p>
         </div>
@@ -224,13 +225,13 @@ export default function ExpressInfos() {
         <div className="max-w-lg mx-auto">
           {/* Social Proof Banner */}
           <motion.div 
-            className="mb-6 p-3 rounded-full flex items-center justify-center gap-2"
-            style={{ backgroundColor: APPLE.accentSubtle }}
+            className="checkout-proof mb-6 p-3 rounded-full flex items-center justify-center gap-2"
+            style={{ backgroundColor: CHECKOUT.accentSubtle }}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <CheckCircle className="w-4 h-4" style={{ color: APPLE.accent }} />
-            <span className="text-sm" style={{ color: APPLE.accent }}>
+            <CheckCircle className="w-4 h-4" style={{ color: CHECKOUT.accent }} />
+            <span className="text-sm" style={{ color: CHECKOUT.accent }}>
               <strong>+500 cartes</strong> livrées au Maroc
             </span>
           </motion.div>
@@ -243,11 +244,11 @@ export default function ExpressInfos() {
           >
             <h1 
               className="text-2xl font-semibold tracking-tight mb-2"
-              style={{ color: APPLE.text }}
+              style={{ color: CHECKOUT.text }}
             >
               Où vous livrer ?
             </h1>
-            <p className="text-base" style={{ color: APPLE.textSecondary }}>
+            <p className="text-base" style={{ color: CHECKOUT.textSecondary }}>
               {selectedOffer?.name} · {selectedOffer?.priceDisplay}
             </p>
           </motion.div>
@@ -262,56 +263,59 @@ export default function ExpressInfos() {
             {/* Name Row */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium" style={{ color: APPLE.textSecondary }}>
+                <Label htmlFor="express-firstName" className="text-sm font-medium" style={{ color: CHECKOUT.textSecondary }}>
                   Prénom
                 </Label>
                 <Input
+                  id="express-firstName"
                   value={formData.firstName}
                   onChange={(e) => handleChange("firstName", e.target.value)}
                   onBlur={() => handleBlur("firstName")}
                   placeholder="Prénom"
                   className="h-12 text-base"
                   style={{ 
-                    backgroundColor: APPLE.card,
-                    borderColor: touched.firstName && errors.firstName ? APPLE.error : APPLE.border,
-                    borderRadius: APPLE.radiusMd,
-                    color: APPLE.text,
+                    backgroundColor: CHECKOUT.card,
+                    borderColor: touched.firstName && errors.firstName ? CHECKOUT.error : CHECKOUT.border,
+                    borderRadius: CHECKOUT.radiusMd,
+                    color: CHECKOUT.text,
                   }}
                 />
                 {touched.firstName && errors.firstName && (
-                  <p className="text-xs" style={{ color: APPLE.error }}>{errors.firstName}</p>
+                  <p className="text-xs" style={{ color: CHECKOUT.error }}>{errors.firstName}</p>
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium" style={{ color: APPLE.textSecondary }}>
+                <Label htmlFor="express-lastName" className="text-sm font-medium" style={{ color: CHECKOUT.textSecondary }}>
                   Nom
                 </Label>
                 <Input
+                  id="express-lastName"
                   value={formData.lastName}
                   onChange={(e) => handleChange("lastName", e.target.value)}
                   onBlur={() => handleBlur("lastName")}
                   placeholder="Nom"
                   className="h-12 text-base"
                   style={{ 
-                    backgroundColor: APPLE.card,
-                    borderColor: touched.lastName && errors.lastName ? APPLE.error : APPLE.border,
-                    borderRadius: APPLE.radiusMd,
-                    color: APPLE.text,
+                    backgroundColor: CHECKOUT.card,
+                    borderColor: touched.lastName && errors.lastName ? CHECKOUT.error : CHECKOUT.border,
+                    borderRadius: CHECKOUT.radiusMd,
+                    color: CHECKOUT.text,
                   }}
                 />
                 {touched.lastName && errors.lastName && (
-                  <p className="text-xs" style={{ color: APPLE.error }}>{errors.lastName}</p>
+                  <p className="text-xs" style={{ color: CHECKOUT.error }}>{errors.lastName}</p>
                 )}
               </div>
             </div>
 
             {/* Phone */}
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
-                <Phone className="w-4 h-4" style={{ color: APPLE.accent }} />
+              <Label htmlFor="express-phone" className="text-sm font-medium flex items-center gap-2" style={{ color: CHECKOUT.textSecondary }}>
+                <Phone className="w-4 h-4" style={{ color: CHECKOUT.accent }} />
                 Téléphone WhatsApp
               </Label>
               <Input
+                id="express-phone"
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => handleChange("phone", e.target.value)}
@@ -319,24 +323,25 @@ export default function ExpressInfos() {
                 placeholder="+212 6 00 00 00 00"
                 className="h-12 text-base"
                 style={{ 
-                  backgroundColor: APPLE.card,
-                  borderColor: touched.phone && errors.phone ? APPLE.error : APPLE.border,
-                  borderRadius: APPLE.radiusMd,
-                  color: APPLE.text,
+                  backgroundColor: CHECKOUT.card,
+                  borderColor: touched.phone && errors.phone ? CHECKOUT.error : CHECKOUT.border,
+                  borderRadius: CHECKOUT.radiusMd,
+                  color: CHECKOUT.text,
                 }}
               />
               {touched.phone && errors.phone && (
-                <p className="text-xs" style={{ color: APPLE.error }}>{errors.phone}</p>
+                <p className="text-xs" style={{ color: CHECKOUT.error }}>{errors.phone}</p>
               )}
             </div>
 
             {/* Email */}
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
-                <Mail className="w-4 h-4" style={{ color: APPLE.accent }} />
+              <Label htmlFor="express-email" className="text-sm font-medium flex items-center gap-2" style={{ color: CHECKOUT.textSecondary }}>
+                <Mail className="w-4 h-4" style={{ color: CHECKOUT.accent }} />
                 Email (pour le suivi)
               </Label>
               <Input
+                id="express-email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
@@ -344,24 +349,25 @@ export default function ExpressInfos() {
                 placeholder="votre@email.com"
                 className="h-12 text-base"
                 style={{ 
-                  backgroundColor: APPLE.card,
-                  borderColor: touched.email && errors.email ? APPLE.error : APPLE.border,
-                  borderRadius: APPLE.radiusMd,
-                  color: APPLE.text,
+                  backgroundColor: CHECKOUT.card,
+                  borderColor: touched.email && errors.email ? CHECKOUT.error : CHECKOUT.border,
+                  borderRadius: CHECKOUT.radiusMd,
+                  color: CHECKOUT.text,
                 }}
               />
               {touched.email && errors.email && (
-                <p className="text-xs" style={{ color: APPLE.error }}>{errors.email}</p>
+                <p className="text-xs" style={{ color: CHECKOUT.error }}>{errors.email}</p>
               )}
             </div>
 
             {/* City */}
             <div className="space-y-1.5 relative">
-              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
-                <MapPin className="w-4 h-4" style={{ color: APPLE.accent }} />
+              <Label htmlFor="express-city" className="text-sm font-medium flex items-center gap-2" style={{ color: CHECKOUT.textSecondary }}>
+                <MapPin className="w-4 h-4" style={{ color: CHECKOUT.accent }} />
                 Ville
               </Label>
               <Input
+                id="express-city"
                 value={formData.city}
                 onChange={(e) => {
                   handleChange("city", e.target.value);
@@ -372,20 +378,20 @@ export default function ExpressInfos() {
                 placeholder="Casablanca"
                 className="h-12 text-base"
                 style={{ 
-                  backgroundColor: APPLE.card,
-                  borderColor: touched.city && errors.city ? APPLE.error : APPLE.border,
-                  borderRadius: APPLE.radiusMd,
-                  color: APPLE.text,
+                  backgroundColor: CHECKOUT.card,
+                  borderColor: touched.city && errors.city ? CHECKOUT.error : CHECKOUT.border,
+                  borderRadius: CHECKOUT.radiusMd,
+                  color: CHECKOUT.text,
                 }}
               />
               {showCityDropdown && filteredCities.length > 0 && formData.city.length > 0 && (
                 <div 
                   className="absolute top-full left-0 right-0 mt-1 overflow-hidden z-30"
                   style={{ 
-                    backgroundColor: APPLE.card, 
-                    borderRadius: APPLE.radiusMd,
-                    border: `1px solid ${APPLE.border}`,
-                    boxShadow: APPLE.shadowMd,
+                    backgroundColor: CHECKOUT.card,
+                    borderRadius: CHECKOUT.radiusMd,
+                    border: `1px solid ${CHECKOUT.border}`,
+                    boxShadow: CHECKOUT.shadowMd,
                   }}
                 >
                   {filteredCities.slice(0, 5).map((city) => (
@@ -393,8 +399,8 @@ export default function ExpressInfos() {
                       key={city}
                       type="button"
                       onClick={() => handleCitySelect(city)}
-                      className="w-full text-left px-4 py-3 text-base hover:bg-gray-50 transition-colors"
-                      style={{ color: APPLE.text }}
+                      className="checkout-city-option w-full text-left px-4 py-3 text-base transition-colors"
+                      style={{ color: CHECKOUT.text }}
                     >
                       {city}
                     </button>
@@ -402,35 +408,36 @@ export default function ExpressInfos() {
                 </div>
               )}
               {touched.city && errors.city && (
-                <p className="text-xs" style={{ color: APPLE.error }}>{errors.city}</p>
+                <p className="text-xs" style={{ color: CHECKOUT.error }}>{errors.city}</p>
               )}
             </div>
 
             {/* Address */}
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium flex items-center gap-2" style={{ color: APPLE.textSecondary }}>
-                <Truck className="w-4 h-4" style={{ color: APPLE.accent }} />
+              <Label htmlFor="express-address" className="text-sm font-medium flex items-center gap-2" style={{ color: CHECKOUT.textSecondary }}>
+                <Truck className="w-4 h-4" style={{ color: CHECKOUT.accent }} />
                 Adresse de livraison
               </Label>
               <Input
+                id="express-address"
                 value={formData.address}
                 onChange={(e) => handleChange("address", e.target.value)}
                 onBlur={() => handleBlur("address")}
                 placeholder="123 Rue Mohammed V, Quartier..."
                 className="h-12 text-base"
                 style={{ 
-                  backgroundColor: APPLE.card,
-                  borderColor: touched.address && errors.address ? APPLE.error : APPLE.border,
-                  borderRadius: APPLE.radiusMd,
-                  color: APPLE.text,
+                  backgroundColor: CHECKOUT.card,
+                  borderColor: touched.address && errors.address ? CHECKOUT.error : CHECKOUT.border,
+                  borderRadius: CHECKOUT.radiusMd,
+                  color: CHECKOUT.text,
                 }}
               />
               {touched.address && errors.address && (
-                <p className="text-xs" style={{ color: APPLE.error }}>{errors.address}</p>
+                <p className="text-xs" style={{ color: CHECKOUT.error }}>{errors.address}</p>
               )}
             </div>
 
-            <section className="rounded-xl border p-4 space-y-3" style={{ color: APPLE.text, backgroundColor: APPLE.card, borderColor: APPLE.border }} aria-label="Visibilité du profil">
+            <section className="rounded-xl border p-4 space-y-3" style={{ color: CHECKOUT.text, backgroundColor: CHECKOUT.card, borderColor: CHECKOUT.border }} aria-label="Visibilité du profil">
               <p className="text-sm">L’email, le téléphone et l’adresse ci-dessus servent à la commande. Ils ne sont pas copiés sur votre profil public.</p>
               <label className="flex gap-3 text-sm items-start" htmlFor="express-publishNameOnly">
                 <input id="express-publishNameOnly" type="checkbox" className="mt-1 w-5 h-5"
@@ -451,7 +458,7 @@ export default function ExpressInfos() {
                 backgroundColor: "rgba(37, 211, 102, 0.1)", 
                 border: "1px solid rgba(37, 211, 102, 0.3)",
                 color: "#25D366",
-                borderRadius: APPLE.radiusMd,
+                borderRadius: CHECKOUT.radiusMd,
               }}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
@@ -461,14 +468,14 @@ export default function ExpressInfos() {
             </motion.button>
 
             {/* Trust badges */}
-            <div className="flex items-center justify-center gap-6 pt-2">
+            <div className="checkout-trust flex items-center justify-center gap-6 pt-2">
               <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4" style={{ color: APPLE.accent }} />
-                <span className="text-xs font-medium" style={{ color: APPLE.textSecondary }}>Paiement sécurisé</span>
+                <Shield className="w-4 h-4" style={{ color: CHECKOUT.accent }} />
+                <span className="text-xs font-medium" style={{ color: CHECKOUT.textSecondary }}>Paiement sécurisé</span>
               </div>
               <div className="flex items-center gap-2">
-                <Truck className="w-4 h-4" style={{ color: APPLE.accent }} />
-                <span className="text-xs font-medium" style={{ color: APPLE.textSecondary }}>Livraison gratuite</span>
+                <Truck className="w-4 h-4" style={{ color: CHECKOUT.accent }} />
+                <span className="text-xs font-medium" style={{ color: CHECKOUT.textSecondary }}>Livraison gratuite</span>
               </div>
             </div>
           </motion.div>
@@ -477,10 +484,10 @@ export default function ExpressInfos() {
 
       {/* Fixed CTA */}
       <div 
-        className="fixed bottom-0 left-0 right-0 z-20 px-6 py-5"
+        className="checkout-action-bar fixed bottom-0 left-0 right-0 z-20 px-6 py-5"
         style={{ 
-          backgroundColor: APPLE.background,
-          borderTop: `1px solid ${APPLE.border}`,
+          backgroundColor: CHECKOUT.background,
+          borderTop: `1px solid ${CHECKOUT.border}`,
         }}
       >
         <div className="max-w-lg mx-auto">
@@ -491,8 +498,8 @@ export default function ExpressInfos() {
             whileTap={{ scale: 0.98 }}
             className="w-full flex items-center justify-center gap-3 py-4 rounded-xl transition-all duration-200"
             style={{ 
-              backgroundColor: APPLE.accent,
-              color: "#FFFFFF",
+              backgroundColor: CHECKOUT.accent,
+              color: CHECKOUT.background,
               fontWeight: 600,
             }}
           >

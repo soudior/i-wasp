@@ -1,0 +1,8 @@
+/* Account presentation only: no provider branding or auth behavior changes. */
+.brand-account { color: #FDFCFB; }
+.brand-account h1, .brand-account h2 { font-family: var(--font-display); font-weight: 400; letter-spacing: -.025em; }
+.brand-account input { font-size: 16px; min-height: 48px; }
+.brand-account input::placeholder { color: #ABA49C; }
+.brand-account :is(a,button,input):focus-visible { outline: 2px solid #DCC7B0; outline-offset: 4px; }
+@media (max-width: 420px) { .brand-account { padding-left: 20px; padding-right: 20px; } .brand-account .p-8 { padding: 24px; } }
+@media (prefers-reduced-motion: reduce) { .brand-account * { transition: none !important; animation-duration: .01ms !important; } }
