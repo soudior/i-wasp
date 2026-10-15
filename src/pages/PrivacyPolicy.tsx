@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
       </header>
 
       <main className="container max-w-3xl mx-auto px-4 py-8 space-y-8">
-        <p className="text-muted-foreground text-sm">Dernière mise à jour : 21 août 2026</p>
+        <p className="text-muted-foreground text-sm">Dernière mise à jour : 15 octobre 2026</p>
 
         <section className="space-y-4">
           <h2 className="text-lg font-semibold">1. Objet de cette politique</h2>
@@ -129,6 +129,11 @@ export default function PrivacyPolicy() {
             Le service peut utiliser le stockage local, des cookies techniques et des événements de statistiques
             internes pour maintenir la session, mémoriser vos choix, mesurer l’utilisation et corriger les erreurs.
             Ces données ne servent pas au suivi publicitaire entre services tiers.
+          </p>
+          <p className="text-muted-foreground leading-relaxed">
+            Certaines pages publiques utilisent Metricool pour mesurer leur audience sous forme de statistiques
+            agrégées, sans cookies de suivi. Cette mesure exclut les espaces privés, les paiements et les adresses
+            contenant des paramètres ou une ancre. Elle ne déclenche aucune campagne publicitaire.
           </p>
         </section>
 
