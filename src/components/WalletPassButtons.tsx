@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { Wallet, Lock, Loader2, Crown } from "lucide-react";
 import { addToAppleWallet, addToGoogleWallet, WalletCardData, supportsAppleWallet, supportsGoogleWallet } from "@/lib/walletService";
 import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useWalletRequest } from "@/hooks/useWalletRequest";
 
 export interface WalletPassData {
   id: string;
@@ -54,8 +54,9 @@ export function WalletPassButtons({
 }: WalletPassButtonsProps) {
   const { isGold, isLoading: isLoadingSubscription } = useSubscription();
   const navigate = useNavigate();
-  const [loadingApple, setLoadingApple] = useState(false);
-  const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const { start, busyType, isBusy } = useWalletRequest(`${data.id}:${data.slug}`);
+  const loadingApple = busyType === 'apple';
+  const loadingGoogle = busyType === 'google';
 
   const isAppleDevice = supportsAppleWallet();
   const isAndroidDevice = supportsGoogleWallet();
@@ -77,7 +78,8 @@ export function WalletPassButtons({
       return;
     }
     
-    setLoadingApple(true);
+    const operation = start('apple');
+    if (!operation) return;
     try {
       const walletData: WalletCardData = {
         id: data.id,
@@ -97,12 +99,9 @@ export function WalletPassButtons({
         tagline: data.tagline,
       };
       
-      const success = await addToAppleWallet(walletData);
-      if (success) {
-        toast.success("Carte ajoutée à Apple Wallet !");
-      }
+      await addToAppleWallet(walletData, undefined, operation.signal);
     } finally {
-      setLoadingApple(false);
+      operation.finish();
     }
   };
 
@@ -122,7 +121,8 @@ export function WalletPassButtons({
       return;
     }
     
-    setLoadingGoogle(true);
+    const operation = start('google');
+    if (!operation) return;
     try {
       const walletData: WalletCardData = {
         id: data.id,
@@ -142,12 +142,9 @@ export function WalletPassButtons({
         tagline: data.tagline,
       };
       
-      const success = await addToGoogleWallet(walletData);
-      if (success) {
-        toast.success("Carte ajoutée à Google Wallet !");
-      }
+      await addToGoogleWallet(walletData, undefined, operation.signal);
     } finally {
-      setLoadingGoogle(false);
+      operation.finish();
     }
   };
 
@@ -206,7 +203,7 @@ export function WalletPassButtons({
         {(isAppleDevice || isDesktop) && (
           <button
             onClick={handleAppleWallet}
-            disabled={loadingApple}
+            disabled={isBusy}
             className={`${s.base} ${isGold ? s.apple : `${s.apple} ${s.locked}`}`}
           >
             {!isGold && <Lock className="w-4 h-4 absolute left-3" />}
@@ -223,7 +220,7 @@ export function WalletPassButtons({
         {(isAndroidDevice || isDesktop) && (
           <button
             onClick={handleGoogleWallet}
-            disabled={loadingGoogle}
+            disabled={isBusy}
             className={`${s.base} ${isGold ? s.google : `${s.google} ${s.locked}`}`}
           >
             {!isGold && <Lock className="w-4 h-4 absolute left-3" />}
@@ -263,7 +260,7 @@ export function WalletPassButtons({
       {/* Info text for GOLD users */}
       {isGold && (
         <p className="text-xs text-muted-foreground text-center">
-          Ta carte NFC sera synchronisée automatiquement dans ton Wallet.
+          Disponibilité selon la configuration du service. Confirmez l’ajout dans votre Wallet ; aucune installation ni synchronisation automatique n’est vérifiée ici.
         </p>
       )}
     </div>

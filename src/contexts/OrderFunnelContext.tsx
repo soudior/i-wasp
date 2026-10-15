@@ -11,7 +11,7 @@
  */
 
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // Offer types
 export type OfferType = "essentiel" | "signature" | "alliance";
@@ -45,6 +45,8 @@ export type ClientType = "particulier" | "independant" | "entreprise";
 // Digital identity (step 2: public profile)
 export interface DigitalIdentity {
   clientType: ClientType;
+  /** Missing in legacy drafts; never infer confirmation from entered fields. */
+  profileVisibilityConfirmed?: boolean;
   firstName: string;
   lastName: string;
   tagline?: string;         // Phrase emblème (max 80 caractères)
@@ -94,6 +96,7 @@ export interface OrderFunnelState {
   selectedOffer: OfferType | null;
   selectedTemplate: string | null; // NEW: template selection
   digitalIdentity: DigitalIdentity | null;
+  identityDraft?: DigitalIdentity | null;
   cardPersonalization: CardPersonalization | null;
   shippingInfo: ShippingInfo | null;
   paymentInfo: PaymentInfo | null;
@@ -131,6 +134,8 @@ interface OrderFunnelContextType {
   setSelectedOffer: (offer: OfferType) => void;
   setSelectedTemplate: (template: string) => void;
   setDigitalIdentity: (identity: DigitalIdentity) => void;
+  setIdentityDraft: (identity: DigitalIdentity) => void;
+  storageWarning: boolean;
   setCardPersonalization: (card: CardPersonalization) => void;
   setShippingInfo: (info: ShippingInfo) => void;
   setPaymentInfo: (info: PaymentInfo) => void;
@@ -169,6 +174,8 @@ const scrollToTopInstant = () => {
 export function OrderFunnelProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const transitionLock = useRef(false);
+  const location = useLocation();
+  const [storageWarning, setStorageWarning] = useState(false);
   
   // Load state from sessionStorage
   const [state, setState] = useState<OrderFunnelState>(() => {
@@ -176,7 +183,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
       const saved = sessionStorage.getItem("orderFunnelStateV2");
       if (saved) {
         const parsed = JSON.parse(saved);
-        return { ...parsed, isTransitioning: false };
+        return { ...initialState, ...parsed, isTransitioning: false };
       }
     } catch {
       // Ignore
@@ -187,18 +194,34 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
   // Persist state to sessionStorage
   useEffect(() => {
     const { isTransitioning, ...stateToSave } = state;
-    sessionStorage.setItem("orderFunnelStateV2", JSON.stringify(stateToSave));
+    try {
+      sessionStorage.setItem("orderFunnelStateV2", JSON.stringify(stateToSave));
+      setStorageWarning(false);
+    } catch {
+      setStorageWarning(true);
+    }
   }, [state]);
+
+  // Resuming with browser Back/Forward follows the displayed step.
+  useEffect(() => {
+    const step = STEP_PATHS.indexOf(location.pathname) + 1;
+    if (step > 0) setState(prev => prev.currentStep === step ? prev : { ...prev, currentStep: step });
+  }, [location.pathname]);
+
+  // An edited draft must be confirmed again before later steps are accessible.
+  const setIdentityDraft = useCallback((identity: DigitalIdentity) => {
+    setState(prev => ({ ...prev, identityDraft: identity, digitalIdentity: null }));
+  }, []);
 
   // Check if a step can be accessed (strict - no bypass)
   // Order: 1=Offre, 2=Identité, 3=Template, 4=Carte, 5=Livraison, 6=Récap, 7=Confirmation
   const canAccessStep = useCallback((step: number): boolean => {
     if (step === 1) return true;
     if (step === 2) return state.selectedOffer !== null;
-    if (step === 3) return state.selectedOffer !== null && state.digitalIdentity !== null;
-    if (step === 4) return state.selectedOffer !== null && state.digitalIdentity !== null && state.selectedTemplate !== null;
-    if (step === 5) return state.selectedOffer !== null && state.digitalIdentity !== null && state.selectedTemplate !== null && state.cardPersonalization !== null;
-    if (step === 6) return state.selectedOffer !== null && state.digitalIdentity !== null && state.selectedTemplate !== null && state.cardPersonalization !== null && state.shippingInfo !== null;
+    if (step === 3) return state.selectedOffer !== null && state.digitalIdentity?.profileVisibilityConfirmed === true;
+    if (step === 4) return state.selectedOffer !== null && state.digitalIdentity?.profileVisibilityConfirmed === true && state.selectedTemplate !== null;
+    if (step === 5) return state.selectedOffer !== null && state.digitalIdentity?.profileVisibilityConfirmed === true && state.selectedTemplate !== null && state.cardPersonalization !== null;
+    if (step === 6) return state.selectedOffer !== null && state.digitalIdentity?.profileVisibilityConfirmed === true && state.selectedTemplate !== null && state.cardPersonalization !== null && state.shippingInfo !== null;
     if (step === 7) return state.isComplete;
     return false;
   }, [state]);
@@ -207,7 +230,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
   // Order: 1=Offre, 2=Identité, 3=Template, 4=Carte, 5=Livraison, 6=Récap, 7=Confirmation
   const getFirstIncompleteStep = useCallback((): number => {
     if (!state.selectedOffer) return 1;
-    if (!state.digitalIdentity) return 2;
+    if (state.digitalIdentity?.profileVisibilityConfirmed !== true) return 2;
     if (!state.selectedTemplate) return 3;
     if (!state.cardPersonalization) return 4;
     if (!state.shippingInfo) return 5;
@@ -252,6 +275,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     setState(prev => ({
       ...prev,
       digitalIdentity: identity,
+      identityDraft: identity,
       currentStep: Math.max(prev.currentStep, 2),
     }));
   }, []);
@@ -334,20 +358,16 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
     const next = state.currentStep + 1;
     if (next <= TOTAL_STEPS) {
       transitionLock.current = true;
-      setState(prev => ({ ...prev, isTransitioning: true }));
+      setState(prev => ({ ...prev, currentStep: next, isTransitioning: true }));
       
       // Navigate
       navigate(STEP_PATHS[next - 1]);
       scrollToTopInstant();
       
-      // Update state after short delay
+      // Only release the lock: a browser Back/Forward during this delay has
+      // already synchronized currentStep with its newer displayed route.
       await new Promise(resolve => setTimeout(resolve, 100));
-      
-      setState(prev => ({ 
-        ...prev, 
-        currentStep: next,
-        isTransitioning: false 
-      }));
+      setState(prev => ({ ...prev, isTransitioning: false }));
       
       transitionLock.current = false;
     }
@@ -370,7 +390,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
       case 1:
         return state.selectedOffer !== null;
       case 2:
-        return state.digitalIdentity !== null;
+        return state.digitalIdentity?.profileVisibilityConfirmed === true;
       case 3:
         return state.selectedTemplate !== null;
       case 4:
@@ -389,7 +409,7 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
   // Reset funnel
   const resetFunnel = useCallback(() => {
     setState(initialState);
-    sessionStorage.removeItem("orderFunnelStateV2");
+    try { sessionStorage.removeItem("orderFunnelStateV2"); } catch { /* Reset remains effective in memory. */ }
   }, []);
 
   return (
@@ -400,6 +420,8 @@ export function OrderFunnelProvider({ children }: { children: ReactNode }) {
         setSelectedOffer,
         setSelectedTemplate,
         setDigitalIdentity,
+        setIdentityDraft,
+        storageWarning,
         setCardPersonalization,
         setShippingInfo,
         setPaymentInfo,

@@ -65,10 +65,30 @@ describe("Vercel SPA fallback", () => {
       "form-action 'self'",
       "frame-ancestors 'self'",
       "upgrade-insecure-requests",
-      "https://fyxiyevbbvidckzaequx.supabase.co",
-      "wss://fyxiyevbbvidckzaequx.supabase.co",
+      "https://vwlngxifajsziexhkafe.supabase.co",
+      "wss://vwlngxifajsziexhkafe.supabase.co",
     ]) {
       expect(csp, `directive CSP manquante : ${directive}`).toContain(directive);
     }
   });
+  it("uses the confirmed backend only, keeps CSP mirrors synchronized and keeps draft deployment disabled", () => {
+    const config = JSON.parse(readFileSync(path.resolve(process.cwd(), "vercel.json"), "utf8"));
+    const csp = config.headers.find((rule: { source: string }) => rule.source === "/(.*)")
+      .headers.find((header: { key: string }) => header.key === "Content-Security-Policy").value as string;
+    const portable = readFileSync(path.resolve(process.cwd(), "public/_headers"), "utf8")
+      .split("\n").find(line => line.trimStart().startsWith("Content-Security-Policy:"))!
+      .trim().slice("Content-Security-Policy:".length).trim();
+    expect(portable).toBe(csp);
+    const directives = Object.fromEntries(csp.split(";").map(part => {
+      const [name, ...values] = part.trim().split(/\s+/); return [name, values];
+    }));
+    expect(directives["connect-src"]).toContain("https://vwlngxifajsziexhkafe.supabase.co");
+    expect(directives["connect-src"]).toContain("wss://vwlngxifajsziexhkafe.supabase.co");
+    expect(directives["img-src"]).toContain("https://vwlngxifajsziexhkafe.supabase.co");
+    expect(csp).not.toContain("fyxiyevbbvidckzaequx");
+    expect(csp).not.toContain("*");
+    expect(config.git.deploymentEnabled["codex/site-wallet-draft-20261013"]).toBe(false);
+    expect(config.git.deploymentEnabled["codex/cards-wallet-minimal-draft-20261015"]).toBe(false);
+  });
+
 });

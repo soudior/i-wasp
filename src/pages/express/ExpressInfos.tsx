@@ -5,7 +5,7 @@
  * Style: Apple/Cupertino - Clean, professional, high-conversion
  */
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useExpressCheckout, ExpressCustomerInfo, EXPRESS_OFFERS } from "@/contexts/ExpressCheckoutContext";
@@ -58,10 +58,30 @@ const POPULAR_CITIES = [
   "Agadir", "Oujda", "Kenitra", "Tétouan", "Salé"
 ];
 
+function customerInfoErrors(formData: ExpressCustomerInfo): Record<string, string> {
+  const errs: Record<string, string> = {};
+  if (!formData.firstName.trim()) errs.firstName = "Prénom requis";
+  if (!formData.lastName.trim()) errs.lastName = "Nom requis";
+  if (!formData.email.trim()) {
+    errs.email = "Email requis";
+  } else if (!validateEmail(formData.email)) {
+    errs.email = "Email invalide";
+  }
+  if (!formData.phone.trim()) {
+    errs.phone = "Téléphone requis";
+  } else if (!validatePhone(formData.phone)) {
+    errs.phone = "Format: +212 6 XX XX XX XX";
+  }
+  if (!formData.address.trim()) errs.address = "Adresse requise";
+  if (!formData.city.trim()) errs.city = "Ville requise";
+  return errs;
+}
+
 export default function ExpressInfos() {
   const navigate = useNavigate();
-  const { state, setCustomerInfo, canAccessStep } = useExpressCheckout();
+  const { state, setCustomerInfo, setCustomerDraft, storageWarning, canAccessStep } = useExpressCheckout();
   const [isNavigating, setIsNavigating] = useState(false);
+  const navigationLock = useRef(false);
   const { trackInfoSubmit } = useExpressCheckoutTracking('infos');
   const [showCityDropdown, setShowCityDropdown] = useState(false);
 
@@ -74,7 +94,7 @@ export default function ExpressInfos() {
   }, [canAccessStep, navigate]);
 
   const [formData, setFormData] = useState<ExpressCustomerInfo>(
-    state.customerInfo || {
+    state.customerDraft || state.customerInfo || {
       firstName: "",
       lastName: "",
       email: "",
@@ -84,34 +104,25 @@ export default function ExpressInfos() {
     }
   );
 
+  const draftRef = useRef(formData);
+
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const errors = useMemo(() => {
-    const errs: Record<string, string> = {};
-    if (!formData.firstName.trim()) errs.firstName = "Prénom requis";
-    if (!formData.lastName.trim()) errs.lastName = "Nom requis";
-    if (!formData.email.trim()) {
-      errs.email = "Email requis";
-    } else if (!validateEmail(formData.email)) {
-      errs.email = "Email invalide";
-    }
-    if (!formData.phone.trim()) {
-      errs.phone = "Téléphone requis";
-    } else if (!validatePhone(formData.phone)) {
-      errs.phone = "Format: +212 6 XX XX XX XX";
-    }
-    if (!formData.address.trim()) errs.address = "Adresse requise";
-    if (!formData.city.trim()) errs.city = "Ville requise";
-    return errs;
-  }, [formData]);
+  const errors = useMemo(() => customerInfoErrors(formData), [formData]);
 
   const isValid = Object.keys(errors).length === 0;
 
-  const handleChange = (field: keyof ExpressCustomerInfo, value: string) => {
-    if (field === "phone") {
-      value = formatPhoneNumber(value);
-    }
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleChange = (field: keyof ExpressCustomerInfo, value: string | boolean) => {
+    if (navigationLock.current) return;
+    if (field === "phone" && typeof value === "string") value = formatPhoneNumber(value);
+    const next = {
+      ...draftRef.current,
+      [field]: value,
+      publishNameOnly: field === "publishNameOnly" ? value === true : false,
+    };
+    draftRef.current = next;
+    setFormData(next);
+    setCustomerDraft(next);
   };
 
   const handleBlur = (field: string) => {
@@ -122,14 +133,15 @@ export default function ExpressInfos() {
   };
 
   const handleCitySelect = (city: string) => {
-    setFormData(prev => ({ ...prev, city }));
+    handleChange("city", city);
     setShowCityDropdown(false);
   };
 
   const handleContinue = () => {
-    if (isNavigating) return;
+    if (navigationLock.current) return;
     
-    if (!isValid) {
+    const currentDraft = draftRef.current;
+    if (Object.keys(customerInfoErrors(currentDraft)).length) {
       setTouched({
         firstName: true,
         lastName: true,
@@ -142,16 +154,18 @@ export default function ExpressInfos() {
       return;
     }
 
+    navigationLock.current = true;
     setIsNavigating(true);
-    trackInfoSubmit(formData.city.trim());
+    trackInfoSubmit(currentDraft.city.trim());
     
     setCustomerInfo({
-      firstName: formData.firstName.trim(),
-      lastName: formData.lastName.trim(),
-      email: formData.email.toLowerCase().trim(),
-      phone: formData.phone.trim(),
-      address: formData.address.trim(),
-      city: formData.city.trim(),
+      firstName: currentDraft.firstName.trim(),
+      lastName: currentDraft.lastName.trim(),
+      email: currentDraft.email.toLowerCase().trim(),
+      phone: currentDraft.phone.trim(),
+      publishNameOnly: currentDraft.publishNameOnly === true,
+      address: currentDraft.address.trim(),
+      city: currentDraft.city.trim(),
     });
     navigate("/express/payer");
   };
@@ -415,6 +429,18 @@ export default function ExpressInfos() {
                 <p className="text-xs" style={{ color: APPLE.error }}>{errors.address}</p>
               )}
             </div>
+
+            <section className="rounded-xl border p-4 space-y-3" style={{ color: APPLE.text, backgroundColor: APPLE.card, borderColor: APPLE.border }} aria-label="Visibilité du profil">
+              <p className="text-sm">L’email, le téléphone et l’adresse ci-dessus servent à la commande. Ils ne sont pas copiés sur votre profil public.</p>
+              <label className="flex gap-3 text-sm items-start" htmlFor="express-publishNameOnly">
+                <input id="express-publishNameOnly" type="checkbox" className="mt-1 w-5 h-5"
+                  checked={formData.publishNameOnly === true} disabled={isNavigating}
+                  onChange={e => handleChange("publishNameOnly", e.target.checked)} />
+                Je souhaite aussi un profil public avec uniquement mon prénom et mon nom (facultatif, pour un compte connecté).
+              </label>
+              <p className="text-sm">Sans cette option, ce tunnel ne crée pas de profil. Pour choisir les informations de votre carte, utilisez le <Link to="/order/offre" className="underline">parcours de personnalisation</Link>.</p>
+              {storageWarning && <p role="alert" className="text-sm">Le navigateur ne peut pas conserver ce brouillon après rechargement. Gardez cette page ouverte.</p>}
+            </section>
 
             {/* WhatsApp Help */}
             <motion.button

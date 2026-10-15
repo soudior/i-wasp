@@ -1,3 +1,5 @@
+import { useAccountOperation } from "@/hooks/useAccountOperation";
+import { expressPublicProfile } from "@/lib/expressPublicProfile";
 /**
  * Express Step 3: Récapitulatif + Paiement
  * /express/payer
@@ -5,7 +7,7 @@
  * Style: Apple/Cupertino - Clean checkout
  */
 
-import { useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useExpressCheckout, EXPRESS_OFFERS, ExpressPaymentMethod } from "@/contexts/ExpressCheckoutContext";
@@ -20,14 +22,20 @@ export default function ExpressPayer() {
   const navigate = useNavigate();
   const { state, setPaymentMethod, markComplete, canAccessStep, resetCheckout } = useExpressCheckout();
   const { user } = useAuth();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const { start, isBusy: isProcessing, accountEpoch } = useAccountOperation(user?.id);
+  const createdCardFor = useRef<string | null>(null);
+  const createdOrder = useRef<{ key: string; id: string; orderNumber: string } | null>(null);
+  useEffect(() => {
+    createdCardFor.current = null;
+    createdOrder.current = null;
+  }, [user?.id, accountEpoch]);
   const { trackPurchase } = useExpressCheckoutTracking('payer');
 
   useEffect(() => {
     if (!canAccessStep(3)) {
-      navigate("/express/offre", { replace: true });
+      navigate(state.selectedOffer ? "/express/infos" : "/express/offre", { replace: true });
     }
-  }, [canAccessStep, navigate]);
+  }, [canAccessStep, state.selectedOffer, navigate]);
 
   const selectedOffer = EXPRESS_OFFERS.find(o => o.id === state.selectedOffer);
 
@@ -47,29 +55,33 @@ export default function ExpressPayer() {
   };
 
   const handleConfirmOrder = async () => {
-    if (isProcessing || !state.customerInfo || !selectedOffer) return;
-    
-    setIsProcessing(true);
+    if (!state.customerInfo || !selectedOffer) return;
+    const operation = start();
+    if (!operation) return;
+    let completed = false;
 
     try {
       const { firstName, lastName, email, phone, address, city } = state.customerInfo;
-      const orderNumber = `EXP-${Date.now().toString(36).toUpperCase()}`;
+      const cardKey = JSON.stringify([user?.id, state.customerInfo]);
+      const orderKey = JSON.stringify([cardKey, state.selectedOffer, state.paymentMethod]);
+      const orderNumber = createdOrder.current?.key === orderKey
+        ? createdOrder.current.orderNumber : `EXP-${Date.now().toString(36).toUpperCase()}`;
       
       if (user?.id) {
         const slug = generateSlug(firstName, lastName);
         
-        await supabase.from('digital_cards').insert({
-          user_id: user.id,
-          slug,
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          phone: phone,
-          template: 'signature',
-          is_active: true,
-          nfc_enabled: true,
-          wallet_enabled: true,
-        });
+        const publicProfile = expressPublicProfile(state.customerInfo);
+        if (publicProfile && createdCardFor.current !== cardKey) {
+          const { error: cardError } = await supabase.from('digital_cards').insert({
+            user_id: user.id,
+            slug,
+            ...publicProfile,
+            is_active: true,
+          });
+          if (!operation.isCurrent()) return;
+          if (cardError) throw cardError;
+          createdCardFor.current = cardKey;
+        }
 
         const oneYearFromNow = new Date();
         oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
@@ -80,6 +92,7 @@ export default function ExpressPayer() {
           .eq('user_id', user.id)
           .maybeSingle();
 
+        if (!operation.isCurrent()) return;
         if (existingSub) {
           await supabase.from('subscriptions').update({
             plan: 'gold',
@@ -98,6 +111,7 @@ export default function ExpressPayer() {
             notes: `Express Checkout - ${selectedOffer.name}`,
           });
         }
+        if (!operation.isCurrent()) return;
       }
 
       const orderItems = [{
@@ -110,7 +124,9 @@ export default function ExpressPayer() {
         logoUrl: null,
       }];
 
-      const { data: order, error: orderError } = await supabase.from('orders').insert({
+      const { data: order, error: orderError } = createdOrder.current?.key === orderKey
+        ? { data: createdOrder.current, error: null }
+        : await supabase.from('orders').insert({
         order_number: orderNumber,
         user_id: user?.id || null,
         order_items: orderItems,
@@ -131,7 +147,10 @@ export default function ExpressPayer() {
         status: state.paymentMethod === "cod" ? "pending" : "pending",
       } as import("@/integrations/supabase/types").TablesInsert<"orders">).select().single();
 
+      if (!operation.isCurrent()) return;
       if (orderError) throw orderError;
+      if (!order?.id) throw new Error('Missing created order identifier');
+      createdOrder.current = { key: orderKey, id: order.id, orderNumber };
 
       if (state.paymentMethod === "stripe" && order?.id) {
         toast.info("Redirection vers le paiement...");
@@ -145,10 +164,12 @@ export default function ExpressPayer() {
           },
         });
 
+        if (!operation.isCurrent()) return;
         if (error) throw error;
 
         if (data?.url) {
           window.location.href = data.url;
+          completed = true;
           return;
         } else {
           throw new Error('No checkout URL received');
@@ -176,11 +197,14 @@ export default function ExpressPayer() {
       resetCheckout();
       toast.success("Commande confirmée !");
       navigate("/express/succes");
+      completed = true;
 
     } catch (error) {
+      if (!operation.isCurrent()) return;
       console.error("Order error:", error);
       toast.error("Erreur lors de la commande. Veuillez réessayer.");
-      setIsProcessing(false);
+    } finally {
+      if (!completed) operation.finish();
     }
   };
 

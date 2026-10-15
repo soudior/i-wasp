@@ -11,13 +11,16 @@
  * - Sauvegarde en base de données
  */
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AdminOmniaLayout } from "@/layouts/AdminOmniaLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAccountOperation } from "@/hooks/useAccountOperation";
+import { createOrActivateInstantCard, type InstantCardIdentity } from "@/lib/instantCardCreation";
+import { adminCardCreationApi } from "@/lib/adminCardCreationApi";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { 
   ArrowLeft, 
@@ -153,9 +156,20 @@ function CardGeneratorContent() {
   
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<CardData>(initialData);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { start, isLocked, isBusy: isSubmitting, accountEpoch } = useAccountOperation(user?.id);
+  const pendingCardRef = useRef<InstantCardIdentity | null>(null);
+  const [pendingCard, setPendingCard] = useState<InstantCardIdentity | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [createdCard, setCreatedCard] = useState<{ id: string; slug: string } | null>(null);
+
+  useEffect(() => {
+    pendingCardRef.current = null;
+    setPendingCard(null);
+    setCreatedCard(null);
+    setFormData(initialData);
+    setCurrentStep(0);
+    setIsUploading(false);
+  }, [user?.id, accountEpoch]);
 
   // Existing cards query
   const { data: existingCards } = useQuery({
@@ -197,53 +211,39 @@ function CardGeneratorContent() {
     }));
   };
 
-  // Image upload
-  const uploadImage = async (file: File, folder: string): Promise<string | null> => {
-    if (!user) return null;
-    
+  // Upload and creation use the same synchronous lock, before React can disable inputs.
+  const uploadImage = async (file: File, folder: string, field: "logoUrl" | "photoUrl") => {
+    if (!user || pendingCardRef.current) return;
+    const operation = start();
+    if (!operation) return;
     setIsUploading(true);
     try {
       const fileExt = file.name.split(".").pop() || "png";
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
       const filePath = `${user.id}/${folder}/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("card-assets")
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from("card-assets")
-        .getPublicUrl(filePath);
-
-      return publicUrl;
-    } catch (error: any) {
-      toast.error("Erreur upload: " + error.message);
-      return null;
+      const { error } = await supabase.storage.from("card-assets").upload(filePath, file, { upsert: true });
+      if (!operation.isCurrent()) return;
+      if (error) throw error;
+      const { data: { publicUrl } } = supabase.storage.from("card-assets").getPublicUrl(filePath);
+      // Commit the media before releasing the lock; no unguarded caller continuation.
+      updateField(field, publicUrl);
+      toast.success(field === "logoUrl" ? "Logo uploadé ✓" : "Photo uploadée ✓");
+    } catch (error: unknown) {
+      if (operation.isCurrent()) toast.error("Erreur upload: " + (error instanceof Error ? error.message : "échec du transfert"));
     } finally {
-      setIsUploading(false);
+      if (operation.isCurrent()) setIsUploading(false);
+      operation.finish();
     }
   };
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const url = await uploadImage(file, "logo");
-    if (url) {
-      updateField("logoUrl", url);
-      toast.success("Logo uploadé ✓");
-    }
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) return uploadImage(file, "logo", "logoUrl");
   };
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const url = await uploadImage(file, "photo");
-    if (url) {
-      updateField("photoUrl", url);
-      toast.success("Photo uploadée ✓");
-    }
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) return uploadImage(file, "photo", "photoUrl");
   };
 
   // Generate slug
@@ -258,6 +258,7 @@ function CardGeneratorContent() {
 
   // Save card
   const handleSave = async () => {
+    if (isUploading) return;
     if (!user) {
       toast.error("Non authentifié");
       return;
@@ -268,16 +269,17 @@ function CardGeneratorContent() {
       return;
     }
 
-    setIsSubmitting(true);
+    const operation = start();
+    if (!operation) return;
     try {
       const slug = generateSlug();
       const socialLinksArray = Object.entries(formData.socialLinks)
         .filter(([_, url]) => url?.trim())
         .map(([platform, url]) => ({ platform, url }));
 
-      const { data: card, error } = await supabase
-        .from("digital_cards")
-        .insert([{
+      const card = await createOrActivateInstantCard({
+        api: adminCardCreationApi,
+        values: {
           user_id: user.id,
           slug,
           first_name: formData.firstName || formData.businessName,
@@ -298,26 +300,28 @@ function CardGeneratorContent() {
           template: formData.template,
           social_links: socialLinksArray,
           is_active: true,
-          nfc_enabled: true,
-          wallet_enabled: true,
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
+        },
+        existing: pendingCardRef.current,
+        isCurrent: operation.isCurrent,
+        onInserted: saved => { pendingCardRef.current = saved; setPendingCard(saved); },
+      });
+      if (!card || !operation.isCurrent()) return;
+      pendingCardRef.current = null;
+      setPendingCard(null);
 
       setCreatedCard({ id: card.id, slug: card.slug });
       setCurrentStep(STEPS.length - 1);
       queryClient.invalidateQueries({ queryKey: ["admin-cards"] });
       toast.success("Carte créée avec succès ! ✓");
-    } catch (error: any) {
-      toast.error("Erreur: " + error.message);
+    } catch (error: unknown) {
+      if (operation.isCurrent()) toast.error(error instanceof Error ? error.message : "Erreur de création");
     } finally {
-      setIsSubmitting(false);
+      operation.finish();
     }
   };
 
   const handleNext = () => {
+    if (isLocked()) return;
     if (currentStepId === "design") {
       handleSave();
     } else if (currentStep < STEPS.length - 1) {
@@ -326,6 +330,7 @@ function CardGeneratorContent() {
   };
 
   const handleBack = () => {
+    if (isLocked() || pendingCardRef.current) return;
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1);
     }
@@ -342,6 +347,9 @@ function CardGeneratorContent() {
   };
 
   const resetForm = () => {
+    if (isLocked()) return;
+    pendingCardRef.current = null;
+    setPendingCard(null);
     setFormData(initialData);
     setCreatedCard(null);
     setCurrentStep(0);
@@ -393,6 +401,8 @@ function CardGeneratorContent() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-6 pb-32">
+        {pendingCard && <p role="status">Carte enregistrée. Réessayez l’activation pour terminer.</p>}
+        <fieldset disabled={isSubmitting || !!pendingCard} className="border-0 p-0 m-0 min-w-0">
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Form Area */}
           <div className="order-2 lg:order-1">
@@ -962,6 +972,7 @@ function CardGeneratorContent() {
             )}
           </div>
         </div>
+        </fieldset>
       </main>
 
       {/* Sticky Footer */}
@@ -983,7 +994,7 @@ function CardGeneratorContent() {
 
             <button
               onClick={handleNext}
-              disabled={!canProceed || isSubmitting}
+              disabled={!canProceed || isSubmitting || isUploading}
               className={`flex-1 h-14 rounded-full font-medium text-base transition-all flex items-center justify-center gap-2 ${
                 canProceed ? "" : "opacity-50 cursor-not-allowed"
               }`}
@@ -992,12 +1003,12 @@ function CardGeneratorContent() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  <span>Création...</span>
+                  <span>{isUploading ? "Transfert..." : "Création..."}</span>
                 </>
               ) : currentStepId === "design" ? (
                 <>
                   <Sparkles size={20} />
-                  <span>Créer la carte</span>
+                  <span>{pendingCard ? "Réessayer l’activation" : "Créer la carte"}</span>
                 </>
               ) : (
                 <>

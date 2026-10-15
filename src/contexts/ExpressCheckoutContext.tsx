@@ -31,6 +31,8 @@ export const EXPRESS_OFFERS: ExpressOfferConfig[] = [
 
 // Minimal customer info (fusionné identité + livraison)
 export interface ExpressCustomerInfo {
+  /** Only an explicit checked choice permits a names-only public profile. */
+  publishNameOnly?: boolean;
   firstName: string;
   lastName: string;
   email: string;
@@ -48,6 +50,7 @@ export interface ExpressCheckoutState {
   currentStep: 1 | 2 | 3;
   selectedOffer: ExpressOfferType | null;
   customerInfo: ExpressCustomerInfo | null;
+  customerDraft?: ExpressCustomerInfo | null;
   paymentMethod: ExpressPaymentMethod;
   isComplete: boolean;
 }
@@ -66,6 +69,8 @@ interface ExpressCheckoutContextType {
   state: ExpressCheckoutState;
   setSelectedOffer: (offer: ExpressOfferType) => void;
   setCustomerInfo: (info: ExpressCustomerInfo) => void;
+  setCustomerDraft: (info: ExpressCustomerInfo) => void;
+  storageWarning: boolean;
   setPaymentMethod: (method: ExpressPaymentMethod) => void;
   goToStep: (step: 1 | 2 | 3) => void;
   nextStep: () => void;
@@ -88,13 +93,14 @@ const ExpressCheckoutContext = createContext<ExpressCheckoutContextType | null>(
 
 export function ExpressCheckoutProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
+  const [storageWarning, setStorageWarning] = useState(false);
   
   // Load state from sessionStorage
   const [state, setState] = useState<ExpressCheckoutState>(() => {
     try {
       const saved = sessionStorage.getItem("expressCheckoutState");
       if (saved) {
-        return JSON.parse(saved);
+        return { ...initialState, ...JSON.parse(saved) };
       }
     } catch {
       // Ignore
@@ -104,7 +110,12 @@ export function ExpressCheckoutProvider({ children }: { children: ReactNode }) {
 
   // Persist state to sessionStorage
   useEffect(() => {
-    sessionStorage.setItem("expressCheckoutState", JSON.stringify(state));
+    try {
+      sessionStorage.setItem("expressCheckoutState", JSON.stringify(state));
+      setStorageWarning(false);
+    } catch {
+      setStorageWarning(true);
+    }
   }, [state]);
 
   // Check if a step can be accessed
@@ -130,11 +141,17 @@ export function ExpressCheckoutProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  // Edits invalidate any previously validated checkout, including its public choice.
+  const setCustomerDraft = useCallback((info: ExpressCustomerInfo) => {
+    setState(prev => ({ ...prev, customerDraft: info, customerInfo: null }));
+  }, []);
+
   // Set customer info (step 2)
   const setCustomerInfo = useCallback((info: ExpressCustomerInfo) => {
     setState(prev => ({
       ...prev,
       customerInfo: info,
+      customerDraft: info,
     }));
   }, []);
 
@@ -186,7 +203,7 @@ export function ExpressCheckoutProvider({ children }: { children: ReactNode }) {
   // Reset checkout
   const resetCheckout = useCallback(() => {
     setState(initialState);
-    sessionStorage.removeItem("expressCheckoutState");
+    try { sessionStorage.removeItem("expressCheckoutState"); } catch { /* Reset remains effective in memory. */ }
   }, []);
 
   return (
@@ -195,6 +212,8 @@ export function ExpressCheckoutProvider({ children }: { children: ReactNode }) {
         state,
         setSelectedOffer,
         setCustomerInfo,
+        setCustomerDraft,
+        storageWarning,
         setPaymentMethod,
         goToStep,
         nextStep,

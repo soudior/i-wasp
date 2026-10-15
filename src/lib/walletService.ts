@@ -41,126 +41,51 @@ interface WalletResponse {
   fallback?: boolean;
 }
 
-/**
- * Download vCard as fallback when wallet fails
- */
-function downloadVCardFallback(cardData: WalletCardData, walletType: 'apple' | 'google'): void {
-  const vcardData: VCardData = {
-    firstName: cardData.firstName,
-    lastName: cardData.lastName,
-    title: cardData.title,
-    company: cardData.company,
-    email: cardData.email,
-    phone: cardData.phone,
-  };
-
-  downloadVCard(vcardData);
-  
-  const walletName = walletType === 'apple' ? 'Apple Wallet' : 'Google Wallet';
-  toast.info(
-    `${walletName} temporairement indisponible. Le contact a été téléchargé en format vCard.`,
-    { duration: 5000 }
-  );
+/** Keep vCard a deliberate contact action, never a disguised Wallet pass. */
+function unavailable(cardData: WalletCardData, walletType: 'apple' | 'google'): void {
+  toast.error(`${walletType === 'apple' ? 'Apple Wallet' : 'Google Wallet'} indisponible. Vérifiez votre connexion, vos droits ou la configuration du service.`, {
+    duration: 8000,
+    action: { label: "Télécharger le contact (.vcf)", onClick: () => downloadVCard(cardData as VCardData) },
+  });
 }
 
-/**
- * Generate and open Apple Wallet pass
- * Calls the backend edge function which uses PassKit.io
- * Falls back to vCard download if the service is unavailable
- */
-export async function addToAppleWallet(cardData: WalletCardData, walletStyles?: WalletStyles): Promise<boolean> {
+/** true means navigation requested, never proof of installation. Same-tab navigation
+ * avoids pop-up blocking after the asynchronous request and preserves browser Back. */
+async function openWallet(type: 'apple' | 'google', cardData: WalletCardData, walletStyles?: WalletStyles, signal?: AbortSignal): Promise<boolean> {
   try {
-    console.log('Requesting Apple Wallet pass for:', cardData.firstName, cardData.lastName);
-    console.log('With custom styles:', walletStyles);
-    
-    const { data, error } = await supabase.functions.invoke<WalletResponse>('apple-wallet', {
-      body: { cardData, walletStyles }
+    if (signal?.aborted) return false;
+    const { data, error } = await supabase.functions.invoke<WalletResponse>(`${type}-wallet`, {
+      body: { cardData, walletStyles },
+      signal,
     });
-
-    if (error) {
-      console.error('Apple Wallet edge function error:', error);
-      downloadVCardFallback(cardData, 'apple');
+    if (signal?.aborted) return false;
+    const rawUrl = type === 'apple' ? data?.passUrl : data?.saveUrl;
+    if (error || !data?.success || data.error || data.fallback || !rawUrl) {
+      unavailable(cardData, type);
       return false;
     }
-
-    if (!data) {
-      console.error('No data returned from Apple Wallet function');
-      downloadVCardFallback(cardData, 'apple');
+    const url = new URL(rawUrl);
+    const validHost = type === 'google'
+      ? url.hostname === 'pay.google.com' && url.pathname.startsWith('/gp/v/save/')
+      : url.hostname === 'pub1.pskt.io' || url.hostname.endsWith('.pskt.io');
+    if (url.protocol !== 'https:' || url.username || url.password || !validHost) {
+      unavailable(cardData, type);
       return false;
     }
-
-    if (data.fallback || data.error) {
-      console.warn('Apple Wallet fallback:', data.message);
-      downloadVCardFallback(cardData, 'apple');
-      return false;
-    }
-
-    if (data.success && data.passUrl) {
-      // Open the pass URL - this should trigger Safari to open the Wallet
-      window.location.href = data.passUrl;
-      toast.success("Pass ajouté à Apple Wallet");
-      return true;
-    }
-
-    console.error('Unexpected response format:', data);
-    downloadVCardFallback(cardData, 'apple');
-    return false;
-
-  } catch (error) {
-    console.error('Error adding to Apple Wallet:', error);
-    downloadVCardFallback(cardData, 'apple');
+    toast.info("Ouverture du Wallet. Confirmez l’ajout sur votre appareil ; l’installation n’est pas vérifiée ici.");
+    window.location.assign(url.href);
+    return true;
+  } catch {
+    if (signal?.aborted) return false;
+    unavailable(cardData, type);
     return false;
   }
 }
-
-/**
- * Generate and open Google Wallet pass
- * Calls the backend edge function which generates a signed JWT
- * Falls back to vCard download if the service is unavailable
- */
-export async function addToGoogleWallet(cardData: WalletCardData, walletStyles?: WalletStyles): Promise<boolean> {
-  try {
-    console.log('Requesting Google Wallet pass for:', cardData.firstName, cardData.lastName);
-    console.log('With custom styles:', walletStyles);
-    
-    const { data, error } = await supabase.functions.invoke<WalletResponse>('google-wallet', {
-      body: { cardData, walletStyles }
-    });
-
-    if (error) {
-      console.error('Google Wallet edge function error:', error);
-      downloadVCardFallback(cardData, 'google');
-      return false;
-    }
-
-    if (!data) {
-      console.error('No data returned from Google Wallet function');
-      downloadVCardFallback(cardData, 'google');
-      return false;
-    }
-
-    if (data.fallback || data.error) {
-      console.warn('Google Wallet fallback:', data.message);
-      downloadVCardFallback(cardData, 'google');
-      return false;
-    }
-
-    if (data.success && data.saveUrl) {
-      // Open the Google Wallet save URL
-      window.open(data.saveUrl, '_blank');
-      toast.success("Pass ajouté à Google Wallet");
-      return true;
-    }
-
-    console.error('Unexpected response format:', data);
-    downloadVCardFallback(cardData, 'google');
-    return false;
-
-  } catch (error) {
-    console.error('Error adding to Google Wallet:', error);
-    downloadVCardFallback(cardData, 'google');
-    return false;
-  }
+export function addToAppleWallet(cardData: WalletCardData, walletStyles?: WalletStyles, signal?: AbortSignal): Promise<boolean> {
+  return openWallet('apple', cardData, walletStyles, signal);
+}
+export function addToGoogleWallet(cardData: WalletCardData, walletStyles?: WalletStyles, signal?: AbortSignal): Promise<boolean> {
+  return openWallet('google', cardData, walletStyles, signal);
 }
 
 /**
