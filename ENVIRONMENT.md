@@ -33,7 +33,8 @@ Fichier : `.env` (à la racine). Ces valeurs sont **publiques par conception** (
 | `VAPID_PUBLIC_KEY` | Clé publique VAPID (probablement requise côté client/SW) | Web Push |
 | `PASSKIT_API_KEY` | Clé API PassKit (Apple Wallet) | `apple-wallet` |
 | `PASSKIT_API_SECRET` | Secret API PassKit | `apple-wallet` |
-| `PASSKIT_JWT_TOKEN` | Jeton JWT PassKit | `apple-wallet` |
+| `PASSKIT_JWT_TOKEN` | JWT PassKit pré-généré, envoyé brut (repli si aucune paire clé/secret ni jeton longue durée) | `apple-wallet` |
+| `PASSKIT_LONG_LIVED_TOKEN` | Jeton API PassKit longue durée, envoyé avec Bearer (optionnel ; la paire clé/secret reste prioritaire) | `apple-wallet` |
 | `GOOGLE_WALLET_SERVICE_ACCOUNT_JSON` | JSON du compte de service Google Wallet | `google-wallet` |
 | `FIRECRAWL_API_KEY` | Clé API Firecrawl (scraping) | `scrape-website` |
 

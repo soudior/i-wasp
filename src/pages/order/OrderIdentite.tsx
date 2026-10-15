@@ -5,11 +5,13 @@
  * Style: Haute Couture Digitale — Noir, minimaliste
  */
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useOrderFunnel, DigitalIdentity, OrderFunnelGuard } from "@/contexts/OrderFunnelContext";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { useAuth } from "@/contexts/AuthContext";
+import { useAccountOperation } from "@/hooks/useAccountOperation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -33,74 +35,48 @@ import {
   FileText,
 } from "lucide-react";
 import { toast } from "sonner";
+import { EMPTY_IDENTITY, identityErrors, normalizeIdentity } from "@/lib/orderIdentity";
 
-async function uploadPhotoToStorage(dataUrl: string, fileName: string): Promise<string | null> {
-  try {
-    const response = await fetch(dataUrl);
-    const blob = await response.blob();
-    const timestamp = Date.now();
-    const uniqueFileName = `order-photos/${timestamp}-${fileName}`;
-    
-    const { data, error } = await supabase.storage
-      .from("card-assets")
-      .upload(uniqueFileName, blob, {
-        cacheControl: "3600",
-        upsert: false,
-        contentType: blob.type,
-      });
-    
-    if (error) return null;
-    
-    const { data: urlData } = supabase.storage
-      .from("card-assets")
-      .getPublicUrl(data.path);
-    
-    return urlData.publicUrl;
-  } catch (err) {
-    console.error("Photo upload failed:", err);
-    return null;
-  }
+async function uploadPhotoToStorage(dataUrl: string, ownerId: string | undefined, isCurrent: () => boolean): Promise<string> {
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (!isCurrent()) throw new Error("Opération interrompue.");
+  if (authError || !user || !ownerId || user.id !== ownerId)
+    throw new Error("Connectez-vous pour transférer la photo, ou retirez-la pour continuer. Votre saisie est conservée.");
+
+  const blob = await (await fetch(dataUrl)).blob();
+  if (!isCurrent()) throw new Error("Opération interrompue.");
+  const extension = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
+  // The existing storage policy requires the authenticated owner as first folder.
+  const path = `${ownerId}/photos/${crypto.randomUUID()}.${extension}`;
+  const { error } = await supabase.storage.from("card-assets").upload(path, blob, {
+    cacheControl: "3600", upsert: false, contentType: blob.type,
+  });
+  if (!isCurrent()) throw new Error("Opération interrompue.");
+  if (error) throw new Error("Échec de l’upload. Réessayez ou retirez la photo. Votre saisie est conservée.");
+  return supabase.storage.from("card-assets").getPublicUrl(path).data.publicUrl;
 }
 
-const validateEmail = (email: string): boolean => {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(email.toLowerCase());
-};
-
-const validatePhone = (phone: string): boolean => {
-  const cleaned = phone.replace(/[\s.()-]/g, "");
-  return cleaned.length >= 8 && /^\+?[0-9]+$/.test(cleaned);
-};
-
 function OrderIdentiteContent() {
-  const { state, setDigitalIdentity, nextStep, prevStep } = useOrderFunnel();
-  const [isNavigating, setIsNavigating] = useState(false);
+  const { state, setDigitalIdentity, setIdentityDraft, storageWarning, nextStep, prevStep } = useOrderFunnel();
+  const { user } = useAuth();
+  const { start, isLocked, isBusy: isNavigating, accountEpoch } = useAccountOperation(user?.id);
   const [mobileView, setMobileView] = useState<"form" | "preview">("form");
 
-  const [formData, setFormData] = useState<DigitalIdentity>(
-    state.digitalIdentity || {
-      clientType: "particulier",
-      firstName: "",
-      lastName: "",
-      tagline: "",
-      photoUrl: "",
-      title: "",
-      company: "",
-      phone: "",
-      email: "",
-      whatsapp: "",
-      instagram: "",
-      linkedin: "",
-      website: "",
-      bio: "",
-      latitude: undefined,
-      longitude: undefined,
-      googleMapsUrl: "",
-    }
-  );
+  const [formData, setFormData] = useState<DigitalIdentity>(() => ({
+    ...EMPTY_IDENTITY,
+    ...(state.identityDraft || state.digitalIdentity),
+    tagline: (state.identityDraft || state.digitalIdentity)?.tagline ?? (state.identityDraft || state.digitalIdentity)?.bio ?? "",
+  }));
+  const draftRef = useRef(formData);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
 
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  useEffect(() => { setIsUploadingPhoto(false); }, [user?.id, accountEpoch]);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const handleGeoSuccess = useCallback((geoData: { latitude: number | null; longitude: number | null }) => {
@@ -109,14 +85,13 @@ function OrderIdentiteContent() {
     if (lat === null || lng === null) return;
     const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
     
-    setFormData(prev => ({
-      ...prev,
-      latitude: lat,
-      longitude: lng,
-      googleMapsUrl: mapsUrl,
-    }));
+    if (isLocked() || !mounted.current) return;
+    const next = { ...draftRef.current, latitude: lat, longitude: lng, googleMapsUrl: mapsUrl, profileVisibilityConfirmed: false };
+    draftRef.current = next;
+    setFormData(next);
+    setIdentityDraft(next);
     toast.success("Position enregistrée");
-  }, []);
+  }, [isLocked, setIdentityDraft]);
 
   const geolocation = useGeolocation({
     enableHighAccuracy: true,
@@ -125,27 +100,25 @@ function OrderIdentiteContent() {
   });
 
   const errors = useMemo(() => {
-    const errs: Record<string, string> = {};
-    if (!formData.firstName.trim()) errs.firstName = "Prénom requis";
-    if (!formData.lastName.trim()) errs.lastName = "Nom requis";
-    if (!formData.email.trim()) {
-      errs.email = "Email requis";
-    } else if (!validateEmail(formData.email)) {
-      errs.email = "Email invalide";
-    }
-    if (!formData.phone.trim()) {
-      errs.phone = "Téléphone requis";
-    } else if (!validatePhone(formData.phone)) {
-      errs.phone = "Téléphone invalide";
-    }
-    return errs;
+    const found = identityErrors(formData);
+    if (formData.profileVisibilityConfirmed !== true)
+      found.profileVisibilityConfirmed = "Confirmez les informations que vous souhaitez rendre publiques.";
+    return found;
   }, [formData]);
 
   const isValid = Object.keys(errors).length === 0;
 
-  const handleChange = (field: keyof DigitalIdentity, value: string | number | undefined) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  const handleChange = useCallback((field: keyof DigitalIdentity, value: string | number | boolean | undefined) => {
+    if (isLocked()) return;
+    const next = {
+      ...draftRef.current,
+      [field]: value,
+      profileVisibilityConfirmed: field === "profileVisibilityConfirmed" ? value === true : false,
+    };
+    draftRef.current = next;
+    setFormData(next);
+    setIdentityDraft(next);
+  }, [isLocked, setIdentityDraft]);
 
   const handleBlur = (field: string) => {
     setTouched(prev => ({ ...prev, [field]: true }));
@@ -153,7 +126,7 @@ function OrderIdentiteContent() {
 
   const handlePhotoUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || isLocked()) return;
 
     if (!file.type.startsWith("image/")) {
       toast.error("Veuillez sélectionner une image");
@@ -165,85 +138,72 @@ function OrderIdentiteContent() {
       return;
     }
 
+    const operation = start();
+    if (!operation) return;
     setIsUploadingPhoto(true);
 
     const reader = new FileReader();
     reader.onload = (e) => {
+      if (!operation.isCurrent()) return;
       const dataUrl = e.target?.result as string;
+      // Release the synchronous read lock before applying the new draft.
+      // No asynchronous boundary separates the generation check and mutation.
+      operation.finish();
       handleChange("photoUrl", dataUrl);
       setIsUploadingPhoto(false);
       toast.success("Photo ajoutée");
     };
-    reader.onerror = () => {
-      toast.error("Erreur lors du chargement");
+    const failRead = () => {
+      if (!operation.isCurrent()) return;
+      operation.finish();
+      if (photoInputRef.current) photoInputRef.current.value = "";
+      toast.error("Erreur lors du chargement. Vous pouvez réessayer.");
       setIsUploadingPhoto(false);
     };
-    reader.readAsDataURL(file);
-  }, []);
+    reader.onerror = failRead;
+    reader.onabort = failRead;
+    try { reader.readAsDataURL(file); } catch { failRead(); }
+  }, [handleChange, isLocked, start]);
 
   const handleRemovePhoto = useCallback(() => {
     handleChange("photoUrl", "");
     if (photoInputRef.current) {
       photoInputRef.current.value = "";
     }
-  }, []);
+  }, [handleChange]);
 
   const handleContinue = async () => {
-    if (isNavigating || state.isTransitioning) return;
-    
-    if (!isValid) {
-      setTouched({
-        firstName: true,
-        lastName: true,
-        email: true,
-        phone: true,
-      });
-      toast.error("Veuillez corriger les erreurs");
+    if (isLocked() || isUploadingPhoto || state.isTransitioning) return;
+    const currentDraft = draftRef.current;
+    const currentErrors = identityErrors(currentDraft);
+    if (currentDraft.profileVisibilityConfirmed !== true)
+      currentErrors.profileVisibilityConfirmed = "Confirmez les informations que vous souhaitez rendre publiques.";
+    if (Object.keys(currentErrors).length) {
+      setTouched(Object.fromEntries(Object.keys(currentErrors).map(key => [key, true])));
+      setMobileView("form");
+      toast.error("Veuillez vérifier les informations publiques et confirmer votre choix.");
+      requestAnimationFrame(() => document.getElementById(`profile-${Object.keys(currentErrors)[0]}`)?.focus());
       return;
     }
 
-    setIsNavigating(true);
-
-    let finalPhotoUrl = formData.photoUrl;
-
-    if (formData.photoUrl && formData.photoUrl.startsWith("data:")) {
-      toast.loading("Upload de la photo...", { id: "photo-upload" });
-      
-      const fileName = `${formData.firstName}-${formData.lastName}`.toLowerCase().replace(/\s+/g, "-") + ".jpg";
-      const uploadedUrl = await uploadPhotoToStorage(formData.photoUrl, fileName);
-      
-      if (uploadedUrl) {
-        finalPhotoUrl = uploadedUrl;
-        toast.success("Photo uploadée", { id: "photo-upload" });
-      } else {
-        toast.error("Échec de l'upload", { id: "photo-upload" });
-        setIsNavigating(false);
-        return;
+    const operation = start();
+    if (!operation) return;
+    try {
+      const normalizedData = normalizeIdentity(currentDraft);
+      if (normalizedData.photoUrl?.startsWith("data:")) {
+        normalizedData.photoUrl = await uploadPhotoToStorage(normalizedData.photoUrl, user?.id, operation.isCurrent);
+        if (!operation.isCurrent()) return;
       }
+      if (!operation.isCurrent()) return;
+      draftRef.current = normalizedData;
+      setFormData(normalizedData);
+      setDigitalIdentity(normalizedData);
+      await nextStep();
+    } catch (error) {
+      if (operation.isCurrent()) toast.error(error instanceof Error ? error.message : "Impossible de continuer. Votre saisie est conservée.");
+    } finally {
+      operation.finish();
     }
-
-    const normalizedData: DigitalIdentity = {
-      clientType: formData.clientType,
-      firstName: formData.firstName.trim(),
-      lastName: formData.lastName.trim(),
-      tagline: formData.tagline?.trim()?.slice(0, 80),
-      photoUrl: finalPhotoUrl,
-      title: formData.title?.trim(),
-      company: formData.company?.trim(),
-      phone: formData.phone.trim(),
-      email: formData.email.toLowerCase().trim(),
-      whatsapp: formData.whatsapp?.trim(),
-      instagram: formData.instagram?.replace("@", "").trim(),
-      linkedin: formData.linkedin?.trim(),
-      website: formData.website?.trim(),
-      bio: formData.bio?.trim(),
-      latitude: formData.latitude,
-      longitude: formData.longitude,
-      googleMapsUrl: formData.googleMapsUrl,
-    };
-
-    setDigitalIdentity(normalizedData);
-    await nextStep();
   };
 
   const inputStyles = {
@@ -268,6 +228,7 @@ function OrderIdentiteContent() {
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <button 
             onClick={() => prevStep()}
+            disabled={isNavigating}
             className="flex items-center gap-2 transition-all duration-500"
             style={{ color: COUTURE.textMuted }}
             onMouseEnter={(e) => e.currentTarget.style.color = COUTURE.silk}
@@ -369,14 +330,14 @@ function OrderIdentiteContent() {
               className="text-sm font-light"
               style={{ color: COUTURE.textMuted }}
             >
-              Ces informations apparaîtront sur votre profil i‑wasp
+              Ces informations apparaîtront sur votre profil public i‑wasp. Ajoutez uniquement les coordonnées que vous souhaitez partager.
             </p>
           </motion.div>
 
           {/* Two column layout */}
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Form */}
-            <div className={mobileView === "preview" ? "hidden lg:block" : ""}>
+            <fieldset disabled={isNavigating} className={mobileView === "preview" ? "hidden lg:block" : ""}>
               <motion.div 
                 className="space-y-6"
                 initial={{ opacity: 0, y: 20 }}
@@ -429,10 +390,11 @@ function OrderIdentiteContent() {
                 {/* Name fields */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+                    <Label htmlFor="profile-firstName" className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
                       Prénom *
                     </Label>
                     <Input
+                      id="profile-firstName" aria-invalid={Boolean(touched.firstName && errors.firstName)} aria-describedby={touched.firstName && errors.firstName ? "profile-firstName-error" : undefined}
                       value={formData.firstName}
                       onChange={(e) => handleChange("firstName", e.target.value)}
                       onBlur={() => handleBlur("firstName")}
@@ -441,14 +403,15 @@ function OrderIdentiteContent() {
                       style={inputStyles}
                     />
                     {touched.firstName && errors.firstName && (
-                      <p className="text-[10px]" style={{ color: "#8B4049" }}>{errors.firstName}</p>
+                      <p id="profile-firstName-error" className="text-[10px]" style={{ color: "#8B4049" }}>{errors.firstName}</p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+                    <Label htmlFor="profile-lastName" className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
                       Nom *
                     </Label>
                     <Input
+                      id="profile-lastName" aria-invalid={Boolean(touched.lastName && errors.lastName)} aria-describedby={touched.lastName && errors.lastName ? "profile-lastName-error" : undefined}
                       value={formData.lastName}
                       onChange={(e) => handleChange("lastName", e.target.value)}
                       onBlur={() => handleBlur("lastName")}
@@ -457,7 +420,7 @@ function OrderIdentiteContent() {
                       style={inputStyles}
                     />
                     {touched.lastName && errors.lastName && (
-                      <p className="text-[10px]" style={{ color: "#8B4049" }}>{errors.lastName}</p>
+                      <p id="profile-lastName-error" className="text-[10px]" style={{ color: "#8B4049" }}>{errors.lastName}</p>
                     )}
                   </div>
                 </div>
@@ -465,10 +428,11 @@ function OrderIdentiteContent() {
                 {/* Title & Company */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+                    <Label htmlFor="profile-title" className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
                       Titre
                     </Label>
                     <Input
+                      id="profile-title" aria-invalid={Boolean(touched.title && errors.title)} aria-describedby={touched.title && errors.title ? "profile-title-error" : undefined}
                       value={formData.title || ""}
                       onChange={(e) => handleChange("title", e.target.value)}
                       placeholder="CEO, Consultant..."
@@ -477,10 +441,11 @@ function OrderIdentiteContent() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+                    <Label htmlFor="profile-company" className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
                       Entreprise
                     </Label>
                     <Input
+                      id="profile-company" aria-invalid={Boolean(touched.company && errors.company)} aria-describedby={touched.company && errors.company ? "profile-company-error" : undefined}
                       value={formData.company || ""}
                       onChange={(e) => handleChange("company", e.target.value)}
                       placeholder="Votre société"
@@ -493,11 +458,12 @@ function OrderIdentiteContent() {
                 {/* Contact */}
                 <div className="space-y-4 pt-4">
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
-                      <Mail className="w-3 h-3" /> Email *
+                    <Label htmlFor="profile-email" className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                      <Mail className="w-3 h-3" /> Email public (facultatif)
                     </Label>
                     <Input
                       type="email"
+                      id="profile-email" aria-invalid={Boolean(touched.email && errors.email)} aria-describedby={touched.email && errors.email ? "profile-email-error" : undefined}
                       value={formData.email}
                       onChange={(e) => handleChange("email", e.target.value)}
                       onBlur={() => handleBlur("email")}
@@ -506,15 +472,16 @@ function OrderIdentiteContent() {
                       style={inputStyles}
                     />
                     {touched.email && errors.email && (
-                      <p className="text-[10px]" style={{ color: "#8B4049" }}>{errors.email}</p>
+                      <p id="profile-email-error" className="text-[10px]" style={{ color: "#8B4049" }}>{errors.email}</p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
-                      <Phone className="w-3 h-3" /> Téléphone *
+                    <Label htmlFor="profile-phone" className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                      <Phone className="w-3 h-3" /> Téléphone public (facultatif)
                     </Label>
                     <Input
                       type="tel"
+                      id="profile-phone" aria-invalid={Boolean(touched.phone && errors.phone)} aria-describedby={touched.phone && errors.phone ? "profile-phone-error" : undefined}
                       value={formData.phone}
                       onChange={(e) => handleChange("phone", e.target.value)}
                       onBlur={() => handleBlur("phone")}
@@ -523,10 +490,10 @@ function OrderIdentiteContent() {
                       style={inputStyles}
                     />
                     <p className="text-[10px] leading-relaxed" style={{ color: COUTURE.textMuted }}>
-                      Utilisé pour le suivi de votre commande et affiché sur votre profil uniquement selon vos réglages.
+                      Si renseigné, ce numéro sera public. Le téléphone de livraison sera demandé séparément.
                     </p>
                     {touched.phone && errors.phone && (
-                      <p className="text-[10px]" style={{ color: "#8B4049" }}>{errors.phone}</p>
+                      <p id="profile-phone-error" className="text-[10px]" style={{ color: "#8B4049" }}>{errors.phone}</p>
                     )}
                   </div>
                 </div>
@@ -534,74 +501,94 @@ function OrderIdentiteContent() {
                 {/* Social */}
                 <div className="space-y-4 pt-4">
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                    <Label htmlFor="profile-whatsapp" className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
                       <MessageCircle className="w-3 h-3" /> WhatsApp
                     </Label>
                     <Input
+                      id="profile-whatsapp" aria-invalid={Boolean(touched.whatsapp && errors.whatsapp)} aria-describedby={touched.whatsapp && errors.whatsapp ? "profile-whatsapp-error" : undefined}
                       value={formData.whatsapp || ""}
                       onChange={(e) => handleChange("whatsapp", e.target.value)}
                       placeholder="+212 6 00 00 00 00"
                       className="rounded-none border-0 border-b bg-transparent focus:ring-0"
                       style={inputStyles}
                     />
+                    {touched.whatsapp && errors.whatsapp && (
+                      <p id="profile-whatsapp-error" className="text-[10px]" style={{ color: "#8B4049" }}>{errors.whatsapp}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                    <Label htmlFor="profile-instagram" className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
                       <Instagram className="w-3 h-3" /> Instagram
                     </Label>
                     <Input
+                      id="profile-instagram" aria-invalid={Boolean(touched.instagram && errors.instagram)} aria-describedby={touched.instagram && errors.instagram ? "profile-instagram-error" : undefined}
                       value={formData.instagram || ""}
                       onChange={(e) => handleChange("instagram", e.target.value)}
                       placeholder="@votre_compte"
                       className="rounded-none border-0 border-b bg-transparent focus:ring-0"
                       style={inputStyles}
                     />
+                    {touched.instagram && errors.instagram && (
+                      <p id="profile-instagram-error" className="text-[10px]" style={{ color: "#8B4049" }}>{errors.instagram}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                    <Label htmlFor="profile-linkedin" className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
                       <Linkedin className="w-3 h-3" /> LinkedIn
                     </Label>
                     <Input
+                      id="profile-linkedin" aria-invalid={Boolean(touched.linkedin && errors.linkedin)} aria-describedby={touched.linkedin && errors.linkedin ? "profile-linkedin-error" : undefined}
                       value={formData.linkedin || ""}
                       onChange={(e) => handleChange("linkedin", e.target.value)}
                       placeholder="linkedin.com/in/vous"
                       className="rounded-none border-0 border-b bg-transparent focus:ring-0"
                       style={inputStyles}
                     />
+                    {touched.linkedin && errors.linkedin && (
+                      <p id="profile-linkedin-error" className="text-[10px]" style={{ color: "#8B4049" }}>{errors.linkedin}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
+                    <Label htmlFor="profile-website" className="text-[11px] uppercase tracking-[0.1em] flex items-center gap-2" style={{ color: COUTURE.textMuted }}>
                       <Globe className="w-3 h-3" /> Site web
                     </Label>
                     <Input
+                      id="profile-website" aria-invalid={Boolean(touched.website && errors.website)} aria-describedby={touched.website && errors.website ? "profile-website-error" : undefined}
                       value={formData.website || ""}
                       onChange={(e) => handleChange("website", e.target.value)}
                       placeholder="https://votresite.com"
                       className="rounded-none border-0 border-b bg-transparent focus:ring-0"
                       style={inputStyles}
                     />
+                    {touched.website && errors.website && (
+                      <p id="profile-website-error" className="text-[10px]" style={{ color: "#8B4049" }}>{errors.website}</p>
+                    )}
                   </div>
                 </div>
 
                 {/* Bio */}
                 <div className="space-y-2 pt-4">
-                  <Label className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
+                  <Label htmlFor="profile-tagline" className="text-[11px] uppercase tracking-[0.1em]" style={{ color: COUTURE.textMuted }}>
                     Tagline
                   </Label>
                   <Textarea
-                    value={formData.tagline || ""}
+                    id="profile-tagline" aria-invalid={Boolean(touched.tagline && errors.tagline)} aria-describedby={touched.tagline && errors.tagline ? "profile-tagline-error" : undefined}
+                      value={formData.tagline || ""}
                     onChange={(e) => handleChange("tagline", e.target.value.slice(0, 80))}
                     placeholder="Votre signature en une phrase..."
                     rows={2}
                     className="rounded-none border bg-transparent focus:ring-0 resize-none"
                     style={inputStyles}
                   />
+                    {touched.tagline && errors.tagline && (
+                      <p id="profile-tagline-error" className="text-[10px]" style={{ color: "#8B4049" }}>{errors.tagline}</p>
+                    )}
                   <p className="text-[10px] text-right" style={{ color: COUTURE.textMuted }}>
                     {(formData.tagline || "").length}/80
                   </p>
                 </div>
               </motion.div>
-            </div>
+            </fieldset>
 
             {/* Preview */}
             <div className={mobileView === "form" ? "hidden lg:block" : ""}>
@@ -711,6 +698,21 @@ function OrderIdentiteContent() {
               </motion.div>
             </div>
           </div>
+          <section className="mx-auto mt-8 max-w-xl space-y-3" style={{ color: COUTURE.silk }} aria-label="Visibilité du profil">
+            <p className="text-sm">Ces champs servent au profil public. L’email du compte et les coordonnées de livraison ne sont pas ajoutés automatiquement.</p>
+            <label className="flex gap-3 text-sm items-start" htmlFor="profile-profileVisibilityConfirmed">
+              <input id="profile-profileVisibilityConfirmed" type="checkbox" className="mt-1 w-5 h-5"
+                checked={formData.profileVisibilityConfirmed === true} disabled={isNavigating || isUploadingPhoto}
+                aria-invalid={Boolean(touched.profileVisibilityConfirmed && errors.profileVisibilityConfirmed)}
+                aria-describedby={touched.profileVisibilityConfirmed && errors.profileVisibilityConfirmed ? "profile-profileVisibilityConfirmed-error" : undefined}
+                onChange={e => handleChange("profileVisibilityConfirmed", e.target.checked)} />
+              Je confirme que les informations et la photo renseignées ci-dessus seront publiques sur ma carte.
+            </label>
+            {touched.profileVisibilityConfirmed && errors.profileVisibilityConfirmed && (
+              <p id="profile-profileVisibilityConfirmed-error" role="alert" className="text-sm" style={{ color: COUTURE.gold }}>{errors.profileVisibilityConfirmed}</p>
+            )}
+            {storageWarning && <p role="alert" className="text-sm">Le navigateur ne peut pas conserver ce brouillon après rechargement. Gardez cette page ouverte.</p>}
+          </section>
           <p className="mx-auto mt-10 max-w-xl text-center text-[10px] leading-relaxed" style={{ color: COUTURE.textMuted }}>
             En continuant, vous confirmez que les informations fournies sont exactes. Consultez notre{" "}
             <Link to="/privacy" className="underline underline-offset-4" style={{ color: COUTURE.gold }}>
@@ -735,7 +737,7 @@ function OrderIdentiteContent() {
         <div className="max-w-3xl mx-auto flex justify-center">
           <button
             onClick={handleContinue}
-            disabled={!isValid || isNavigating || state.isTransitioning}
+            disabled={isNavigating || isUploadingPhoto || state.isTransitioning}
             className="text-[11px] uppercase tracking-[0.25em] font-light transition-all duration-700 pb-1 disabled:opacity-30 disabled:cursor-not-allowed"
             style={{ 
               color: isValid ? COUTURE.gold : COUTURE.textMuted,

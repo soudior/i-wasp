@@ -8,12 +8,15 @@
  * - Status: "Créée par Admin"
  */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminGuard } from "@/components/AdminGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAccountOperation } from "@/hooks/useAccountOperation";
+import { createOrActivateInstantCard, type InstantCardIdentity } from "@/lib/instantCardCreation";
+import { adminCardCreationApi } from "@/lib/adminCardCreationApi";
 import { 
   Shield, 
   Plus, 
@@ -84,77 +87,67 @@ function AdminCreatorContent() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [formData, setFormData] = useState<CardFormData>(initialFormData);
-  const [isCreating, setIsCreating] = useState(false);
+  const { start, isBusy: isCreating, accountEpoch } = useAccountOperation(user?.id);
+  const [pendingCard, setPendingCard] = useState<InstantCardIdentity | null>(null);
+  const pendingCardRef = useRef<InstantCardIdentity | null>(null);
+  const pendingNewUserRef = useRef<{ id: string; email: string } | null>(null);
   const [createdCard, setCreatedCard] = useState<{ id: string; slug: string } | null>(null);
   const [assignMode, setAssignMode] = useState<"new" | "existing" | null>(null);
   const [existingEmail, setExistingEmail] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
   const [newUserPassword, setNewUserPassword] = useState("");
   
+  useEffect(() => {
+    pendingCardRef.current = null;
+    pendingNewUserRef.current = null;
+    setPendingCard(null);
+    setCreatedCard(null);
+    setFormData(initialFormData);
+    setNewUserEmail("");
+    setNewUserPassword("");
+    setExistingEmail("");
+    setAssignMode(null);
+  }, [user?.id, accountEpoch]);
+
   const templates = getAllTemplates();
 
   const handleInputChange = (field: keyof CardFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const fileExt = file.name.split('.').pop();
-    const fileName = `admin-${Date.now()}.${fileExt}`;
-    const filePath = `admin-uploads/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('card-assets')
-      .upload(filePath, file);
-
-    if (uploadError) {
-      toast.error("Erreur upload photo");
-      return;
+  const uploadAsset = async (file: File | undefined, field: "photoUrl" | "logoUrl") => {
+    if (!file || pendingCardRef.current) return;
+    // Uploads and card creation share one synchronous lock, including same-tick events.
+    const operation = start();
+    if (!operation) return;
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${field === "logoUrl" ? "admin-logo" : "admin"}-${Date.now()}.${fileExt}`;
+      const filePath = `admin-uploads/${fileName}`;
+      const { error } = await supabase.storage.from('card-assets').upload(filePath, file);
+      if (!operation.isCurrent()) return;
+      if (error) throw error;
+      const { data: { publicUrl } } = supabase.storage.from('card-assets').getPublicUrl(filePath);
+      setFormData(previous => ({ ...previous, [field]: publicUrl }));
+      toast.success(field === "logoUrl" ? "Logo uploadé" : "Photo uploadée");
+    } catch (error: unknown) {
+      if (operation.isCurrent()) toast.error(field === "logoUrl" ? "Erreur upload logo" : "Erreur upload photo");
+    } finally {
+      operation.finish();
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('card-assets')
-      .getPublicUrl(filePath);
-
-    setFormData(prev => ({ ...prev, photoUrl: publicUrl }));
-    toast.success("Photo uploadée");
   };
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => uploadAsset(event.target.files?.[0], "photoUrl");
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => uploadAsset(event.target.files?.[0], "logoUrl");
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `admin-logo-${Date.now()}.${fileExt}`;
-    const filePath = `admin-uploads/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('card-assets')
-      .upload(filePath, file);
-
-    if (uploadError) {
-      toast.error("Erreur upload logo");
-      return;
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('card-assets')
-      .getPublicUrl(filePath);
-
-    setFormData(prev => ({ ...prev, logoUrl: publicUrl }));
-    toast.success("Logo uploadé");
-  };
-
-  const createCard = async (targetUserId: string) => {
+  const createCard = async (targetUserId: string, isCurrent: () => boolean) => {
     // Generate a unique slug
     const baseSlug = `${formData.firstName}-${formData.lastName}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
     const uniqueSlug = `${baseSlug}-${Date.now().toString(36)}`;
     
-    const { data: card, error } = await supabase
-      .from('digital_cards')
-      .insert([{
+    const card = await createOrActivateInstantCard({
+      api: adminCardCreationApi,
+      values: {
         user_id: targetUserId,
         slug: uniqueSlug,
         first_name: formData.firstName,
@@ -173,14 +166,13 @@ function AdminCreatorContent() {
         photo_url: formData.photoUrl || null,
         logo_url: formData.logoUrl || null,
         is_active: true,
-        nfc_enabled: true,
-        wallet_enabled: true,
         hide_branding: false,
-      }])
-      .select()
-      .single();
-
-    if (error) throw error;
+      },
+      existing: pendingCardRef.current,
+      isCurrent,
+      onInserted: saved => { pendingCardRef.current = saved; setPendingCard(saved); },
+    });
+    if (!card || !isCurrent()) return null;
 
     // Automatically upgrade user to premium subscription
     const oneYearFromNow = new Date();
@@ -193,6 +185,7 @@ function AdminCreatorContent() {
       .eq('user_id', targetUserId)
       .maybeSingle();
 
+    if (!isCurrent()) return null;
     if (existingSub) {
       // Update existing subscription to premium
       await supabase
@@ -219,10 +212,11 @@ function AdminCreatorContent() {
         });
     }
 
-    return card;
+    return isCurrent() ? card : null;
   };
 
   const handleCreateForAdmin = async () => {
+    if (pendingNewUserRef.current) return;
     if (!formData.firstName || !formData.lastName) {
       toast.error("Prénom et nom obligatoires");
       return;
@@ -233,16 +227,19 @@ function AdminCreatorContent() {
       return;
     }
 
-    setIsCreating(true);
+    const operation = start();
+    if (!operation) return;
     try {
-      const card = await createCard(user.id);
+      const card = await createCard(user.id, operation.isCurrent);
+      if (!card || !operation.isCurrent()) return;
+      pendingCardRef.current = null;
+      setPendingCard(null);
       setCreatedCard({ id: card.id, slug: card.slug });
       toast.success("Carte créée par Admin ✓");
-    } catch (error: any) {
-      console.error("Error creating card:", error);
-      toast.error("Erreur: " + error.message);
+    } catch (error: unknown) {
+      if (operation.isCurrent()) toast.error(error instanceof Error ? error.message : "Erreur de création");
     } finally {
-      setIsCreating(false);
+      operation.finish();
     }
   };
 
@@ -252,22 +249,12 @@ function AdminCreatorContent() {
       return;
     }
 
-    setIsCreating(true);
-    try {
-      // Find user by email in profiles (we can't query auth.users directly)
-      // We need to create the card and assign it later or use a different approach
-      // For now, we'll create an admin card and the admin can manually update the user_id
-      
-      toast.info("Fonctionnalité en cours de développement");
-      // TODO: Implement user lookup and card assignment
-    } catch (error: any) {
-      toast.error("Erreur: " + error.message);
-    } finally {
-      setIsCreating(false);
-    }
+    if (isCreating || pendingCardRef.current) return;
+    toast.info("Fonctionnalité en cours de développement");
   };
 
   const handleCreateWithNewAccount = async () => {
+    if (!user || (pendingCardRef.current && !pendingNewUserRef.current)) return;
     if (!newUserEmail || !newUserPassword) {
       toast.error("Email et mot de passe requis");
       return;
@@ -278,37 +265,48 @@ function AdminCreatorContent() {
       return;
     }
 
-    setIsCreating(true);
+    const operation = start();
+    if (!operation) return;
     try {
-      // Create new user account
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: newUserEmail,
-        password: newUserPassword,
-        options: {
-          data: {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
+      // Retain a successful signup when only a later card/activation request failed.
+      let newUser = pendingNewUserRef.current;
+      if (!newUser) {
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: newUserEmail,
+          password: newUserPassword,
+          options: {
+            data: {
+              first_name: formData.firstName,
+              last_name: formData.lastName,
+            }
           }
-        }
-      });
+        });
 
-      if (authError) throw authError;
-      if (!authData.user) throw new Error("Échec création compte");
-
-      // Create card for new user
-      const card = await createCard(authData.user.id);
+        if (!operation.isCurrent()) return;
+        if (authError) throw authError;
+        if (!authData.user) throw new Error("Échec création compte");
+        newUser = { id: authData.user.id, email: newUserEmail };
+        pendingNewUserRef.current = newUser;
+      }
+      const card = await createCard(newUser.id, operation.isCurrent);
+      if (!card || !operation.isCurrent()) return;
+      pendingCardRef.current = null;
+      setPendingCard(null);
       setCreatedCard({ id: card.id, slug: card.slug });
       
       toast.success("Compte + carte créés ✓");
-    } catch (error: any) {
-      console.error("Error:", error);
-      toast.error("Erreur: " + error.message);
+    } catch (error: unknown) {
+      if (operation.isCurrent()) toast.error(error instanceof Error ? error.message : "Erreur de création");
     } finally {
-      setIsCreating(false);
+      operation.finish();
     }
   };
 
   const resetForm = () => {
+    if (isCreating) return;
+    pendingCardRef.current = null;
+    pendingNewUserRef.current = null;
+    setPendingCard(null);
     setFormData(initialFormData);
     setCreatedCard(null);
     setAssignMode(null);
@@ -392,6 +390,8 @@ function AdminCreatorContent() {
       </div>
 
       <div className="max-w-4xl mx-auto p-6 space-y-8">
+        {pendingCard && <p role="status">Carte enregistrée. Réessayez l’activation pour terminer.</p>}
+        <fieldset disabled={isCreating || !!pendingCard} className="space-y-8 border-0 p-0 m-0 min-w-0">
         {/* Template Selection */}
         <Card className="bg-card border-border">
           <CardHeader>
@@ -662,6 +662,7 @@ function AdminCreatorContent() {
           </CardContent>
         </Card>
 
+        </fieldset>
         {/* Action Buttons */}
         <Card className="bg-card border-border">
           <CardHeader>
@@ -687,18 +688,18 @@ function AdminCreatorContent() {
                 </p>
                 <Button
                   onClick={handleCreateForAdmin}
-                  disabled={isCreating || !formData.firstName || !formData.lastName}
+                  disabled={isCreating || !!pendingNewUserRef.current || !formData.firstName || !formData.lastName}
                   className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
                 >
                   {isCreating ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Création...
+                      Traitement...
                     </>
                   ) : (
                     <>
                       <Shield className="mr-2 h-4 w-4" />
-                      Créer carte Admin
+                      {pendingCard ? "Réessayer l’activation" : "Créer carte Admin"}
                     </>
                   )}
                 </Button>
@@ -713,6 +714,7 @@ function AdminCreatorContent() {
                     <Label htmlFor="newEmail" className="text-foreground">Email client</Label>
                     <Input
                       id="newEmail"
+                      disabled={isCreating || !!pendingNewUserRef.current || !!pendingCard}
                       type="email"
                       value={newUserEmail}
                       onChange={(e) => setNewUserEmail(e.target.value)}
@@ -724,6 +726,7 @@ function AdminCreatorContent() {
                     <Label htmlFor="newPassword" className="text-foreground">Mot de passe</Label>
                     <Input
                       id="newPassword"
+                      disabled={isCreating || !!pendingNewUserRef.current || !!pendingCard}
                       type="password"
                       value={newUserPassword}
                       onChange={(e) => setNewUserPassword(e.target.value)}
@@ -734,18 +737,18 @@ function AdminCreatorContent() {
                 </div>
                 <Button
                   onClick={handleCreateWithNewAccount}
-                  disabled={isCreating || !newUserEmail || !newUserPassword || !formData.firstName || !formData.lastName}
+                  disabled={isCreating || (!!pendingCard && !pendingNewUserRef.current) || !newUserEmail || !newUserPassword || !formData.firstName || !formData.lastName}
                   className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
                 >
                   {isCreating ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Création...
+                      Traitement...
                     </>
                   ) : (
                     <>
                       <UserPlus className="mr-2 h-4 w-4" />
-                      Créer compte + carte
+                      {pendingCard ? "Réessayer l’activation" : "Créer compte + carte"}
                     </>
                   )}
                 </Button>
@@ -768,7 +771,7 @@ function AdminCreatorContent() {
                 </div>
                 <Button
                   onClick={handleAssignToExisting}
-                  disabled={isCreating || !existingEmail || !formData.firstName || !formData.lastName}
+                  disabled={isCreating || !!pendingCard || !existingEmail || !formData.firstName || !formData.lastName}
                   className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
                 >
                   {isCreating ? (
