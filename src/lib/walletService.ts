@@ -51,11 +51,14 @@ function unavailable(cardData: WalletCardData, walletType: 'apple' | 'google'): 
 
 /** true means navigation requested, never proof of installation. Same-tab navigation
  * avoids pop-up blocking after the asynchronous request and preserves browser Back. */
-async function openWallet(type: 'apple' | 'google', cardData: WalletCardData, walletStyles?: WalletStyles): Promise<boolean> {
+async function openWallet(type: 'apple' | 'google', cardData: WalletCardData, walletStyles?: WalletStyles, signal?: AbortSignal): Promise<boolean> {
   try {
+    if (signal?.aborted) return false;
     const { data, error } = await supabase.functions.invoke<WalletResponse>(`${type}-wallet`, {
       body: { cardData, walletStyles },
+      signal,
     });
+    if (signal?.aborted) return false;
     const rawUrl = type === 'apple' ? data?.passUrl : data?.saveUrl;
     if (error || !data?.success || data.error || data.fallback || !rawUrl) {
       unavailable(cardData, type);
@@ -73,15 +76,16 @@ async function openWallet(type: 'apple' | 'google', cardData: WalletCardData, wa
     window.location.assign(url.href);
     return true;
   } catch {
+    if (signal?.aborted) return false;
     unavailable(cardData, type);
     return false;
   }
 }
-export function addToAppleWallet(cardData: WalletCardData, walletStyles?: WalletStyles): Promise<boolean> {
-  return openWallet('apple', cardData, walletStyles);
+export function addToAppleWallet(cardData: WalletCardData, walletStyles?: WalletStyles, signal?: AbortSignal): Promise<boolean> {
+  return openWallet('apple', cardData, walletStyles, signal);
 }
-export function addToGoogleWallet(cardData: WalletCardData, walletStyles?: WalletStyles): Promise<boolean> {
-  return openWallet('google', cardData, walletStyles);
+export function addToGoogleWallet(cardData: WalletCardData, walletStyles?: WalletStyles, signal?: AbortSignal): Promise<boolean> {
+  return openWallet('google', cardData, walletStyles, signal);
 }
 
 /**

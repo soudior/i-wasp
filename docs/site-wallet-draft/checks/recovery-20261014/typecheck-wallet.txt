@@ -1,0 +1,6 @@
+Command: npx --no-install tsc -p tsconfig.wallet-tests.json --noEmit
+UTC start: 2026-10-14T04:50:12.695836+00:00
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+UTC end: 2026-10-14T04:50:13.763213+00:00
+Exit: 0

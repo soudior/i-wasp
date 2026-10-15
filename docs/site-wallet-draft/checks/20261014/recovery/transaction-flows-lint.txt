@@ -1,0 +1,8 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+/workspace/scratch/98091a8a6317/iwasp-recovery-20261014/src/contexts/AuthContext.tsx
+  114:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+✖ 1 problem (0 errors, 1 warning)
+
+Captured command exit: 0

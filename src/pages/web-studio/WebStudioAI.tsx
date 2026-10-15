@@ -1,3 +1,4 @@
+import { websiteGenerationNotice } from "@/lib/websiteGenerationResult";
 /**
  * Web Studio AI - Assistant conversationnel premium
  * Interface de chat style Apple/Cupertino avec animations fluides
@@ -497,6 +498,7 @@ export default function WebStudioAI() {
   const [isReadyToGenerate, setIsReadyToGenerate] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedSiteUrl, setGeneratedSiteUrl] = useState<string | null>(null);
+  const [generationNotice, setGenerationNotice] = useState<string | null>(null);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [showHero, setShowHero] = useState(true);
   const [savedSession, setSavedSession] = useState<SavedSession | null>(null);
@@ -700,11 +702,20 @@ export default function WebStudioAI() {
       const proposalId = orderData.proposalId;
       setGenerationProgress(60);
 
-      const { error: genError } = await supabase.functions.invoke("generate-website-code", {
-        body: { proposalId },
+      const { data: genData, error: genError } = await supabase.functions.invoke("generate-website-code", {
+        body: { proposalId, generationToken: orderData.generationToken },
       });
 
-      if (genError) console.error("Site generation error:", genError);
+      if (genError) throw genError;
+      if (genData?.success && typeof genData.previewUrl === "string") {
+        const notice = websiteGenerationNotice(genData);
+        setGenerationNotice(notice);
+        setGenerationProgress(100);
+        setGeneratedSiteUrl(genData.previewUrl);
+        clearSavedSession();
+        toast({ title: "🎉 Votre site est prêt !", description: notice || "Découvrez votre nouveau site web" });
+        return;
+      }
 
       setGenerationProgress(80);
 
@@ -841,6 +852,7 @@ export default function WebStudioAI() {
                 {collectedData.businessName || "Votre site"} est maintenant accessible à tous.
               </motion.p>
               
+              {generationNotice && <p role="status" className="text-sm mb-6" style={{ color: theme.text }}>{generationNotice}</p>}
               <motion.a
                 href={generatedSiteUrl}
                 target="_blank"

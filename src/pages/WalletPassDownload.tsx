@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { addToAppleWallet, addToGoogleWallet } from "@/lib/walletService";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,21 +8,36 @@ import { publicCardUrl } from "@/lib/publicUrl";
 export default function WalletPassDownload() {
   const { slug } = useParams<{ slug: string }>();
   const [busy, setBusy] = useState(false);
+  const request = useRef<AbortController | null>(null);
   const [message, setMessage] = useState('Connectez-vous au compte propriétaire de la carte. La disponibilité dépend de vos droits et de la configuration du service.');
+  useEffect(() => {
+    setBusy(false);
+    return () => {
+      request.current?.abort();
+      request.current = null;
+    };
+  }, [slug]);
   const open = async (type: 'apple' | 'google') => {
-    if (!slug || busy) return;
+    if (!slug || request.current) return;
+    const controller = new AbortController();
+    request.current = controller;
     setBusy(true);
     try {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (controller.signal.aborted) return;
       if (authError || !user) { setMessage('Connexion requise au compte propriétaire.'); return; }
       const { data: card, error } = await supabase.from('digital_cards').select('id,slug,first_name,last_name')
         .eq('slug', slug).eq('user_id', user.id).eq('is_active', true).maybeSingle();
+      if (controller.signal.aborted) return;
       if (error || !card) { setMessage('Carte introuvable ou indisponible pour ce compte.'); return; }
       const data = { id: card.id, slug: card.slug, firstName: card.first_name, lastName: card.last_name };
-      const opened = await (type === 'apple' ? addToAppleWallet(data) : addToGoogleWallet(data));
+      const opened = await (type === 'apple' ? addToAppleWallet(data, undefined, controller.signal) : addToGoogleWallet(data, undefined, controller.signal));
+      if (controller.signal.aborted) return;
       setMessage(opened ? 'Ouverture demandée. Confirmez l’ajout dans le Wallet ; aucune installation n’est vérifiée ici.' : 'Pass indisponible. Vous pouvez réessayer ou revenir à votre profil.');
-    } catch { setMessage('Impossible de préparer le pass. Réessayez plus tard.'); }
-    finally { setBusy(false); }
+    } catch { if (!controller.signal.aborted) setMessage('Impossible de préparer le pass. Réessayez plus tard.'); }
+    finally {
+      if (request.current === controller) { request.current = null; setBusy(false); }
+    }
   };
   return <main className="min-h-dvh bg-[#101211] text-white flex items-center justify-center p-6"><div className="max-w-md space-y-6">
     <Link to="/" className="inline-block py-3 underline">← Accueil</Link>

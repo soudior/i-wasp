@@ -4,7 +4,7 @@
  * Step 1 of onboarding: Account creation
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -20,14 +20,24 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState<string | null>(null);
+  const submitLock = useRef(false);
+  const mounted = useRef(true);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { signUp, user, loading } = useAuth();
   const { loading: isAppleLoading, signInWithApple } = useAppleAuth({ redirectPath: "/onboarding" });
   const navigate = useNavigate();
 
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
+
   const handleAppleSignup = async () => {
-    if (isAppleLoading || isGoogleLoading || isLoading) return;
-    await signInWithApple();
+    if (submitLock.current || isAppleLoading || isGoogleLoading || isLoading) return;
+    submitLock.current = true;
+    try { await signInWithApple(); }
+    finally { submitLock.current = false; }
   };
 
   useEffect(() => {
@@ -37,21 +47,25 @@ export default function Signup() {
   }, [user, loading, navigate]);
 
   const handleGoogleSignup = async () => {
+    if (submitLock.current || isAppleLoading || isGoogleLoading || isLoading) return;
+    submitLock.current = true;
     setIsGoogleLoading(true);
     try {
       const result = await signInWithGoogleCrossPlatform(`${window.location.origin}/onboarding`);
-      if (result === "error") {
+      if (mounted.current && result === "error") {
         toast.error("Erreur de connexion Google");
       }
     } catch {
-      toast.error("Erreur de connexion");
+      if (mounted.current) toast.error("Erreur de connexion");
     } finally {
-      setIsGoogleLoading(false);
+      submitLock.current = false;
+      if (mounted.current) setIsGoogleLoading(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitLock.current || isGoogleLoading || isAppleLoading) return;
 
     if (!email || !password) {
       toast.error("Veuillez remplir tous les champs obligatoires");
@@ -63,32 +77,36 @@ export default function Signup() {
       return;
     }
 
+    submitLock.current = true;
     setIsLoading(true);
-    const { error } = await signUp(email, password, firstName, lastName);
-
-    if (error) {
-      setIsLoading(false);
-      if (error.message.includes("already registered")) {
-        toast.error("Cet email est déjà utilisé");
-      } else {
-        toast.error("Erreur lors de la création du compte");
-      }
-      return;
-    }
-
-    // Send welcome email in background
+    setConfirmationEmail(null);
     try {
-      const dashboardUrl = `${window.location.origin}/dashboard`;
-      await supabase.functions.invoke("send-welcome-email", {
-        body: { email, firstName, lastName, dashboardUrl },
-      });
-    } catch {
-      // Silent fail
-    }
+      const { error, requiresEmailConfirmation } = await signUp(email.trim(), password, firstName.trim(), lastName.trim());
+      if (!mounted.current) return;
+      if (error) {
+        toast.error(error.message.includes("already registered")
+          ? "Cet email est déjà utilisé"
+          : "Erreur lors de la création du compte");
+        return;
+      }
+      if (requiresEmailConfirmation) {
+        setConfirmationEmail(email.trim());
+        return;
+      }
 
-    setIsLoading(false);
-    toast.success("Compte créé avec succès !");
-    navigate("/onboarding");
+      // A welcome request is only made for an authenticated signup. Its failure
+      // must never turn a successfully created account into a signup retry.
+      void supabase.functions.invoke("send-welcome-email", {
+        body: { email: email.trim(), firstName: firstName.trim(), lastName: lastName.trim(), dashboardUrl: `${window.location.origin}/dashboard` },
+      }).catch(() => {});
+      toast.success("Compte créé avec succès !");
+      navigate("/onboarding");
+    } catch {
+      if (mounted.current) toast.error("Erreur lors de la création du compte. Réessayez.");
+    } finally {
+      submitLock.current = false;
+      if (mounted.current) setIsLoading(false);
+    }
   };
 
   if (loading) {
@@ -128,7 +146,7 @@ export default function Signup() {
           <button
             type="button"
             onClick={handleGoogleSignup}
-            disabled={isGoogleLoading || isLoading}
+            disabled={isGoogleLoading || isLoading || isAppleLoading}
             className="w-full py-4 rounded-xl font-medium text-sm flex items-center justify-center gap-3 mb-6 bg-white text-[#0B0B0B] disabled:opacity-50 transition-all hover:bg-[#E5E5E5]"
           >
             {isGoogleLoading ? (
@@ -163,7 +181,7 @@ export default function Signup() {
             <AppleSignInButton
               onClick={handleAppleSignup}
               loading={isAppleLoading}
-              disabled={isGoogleLoading || isLoading}
+              disabled={isGoogleLoading || isLoading || isAppleLoading}
               label="S'inscrire avec Apple"
             />
           </div>
@@ -175,74 +193,92 @@ export default function Signup() {
             <div className="flex-1 h-px bg-[#E5E5E5]/10" />
           </div>
 
+          {confirmationEmail && (
+            <p role="status" className="mb-6 rounded-xl border border-[#FFC700]/30 p-4 text-sm text-[#E5E5E5]">
+              Vérifiez votre boîte mail ({confirmationEmail}) et cliquez sur le lien de confirmation avant de vous connecter.
+            </p>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <label className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
+                <label htmlFor="signup-first-name" className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
                   <User size={14} />
                   Prénom
                 </label>
                 <input
+                  id="signup-first-name"
+                  name="firstName"
+                  autoComplete="given-name"
                   type="text"
                   placeholder="Jean"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl bg-[#0B0B0B] border border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50 focus:outline-none transition-colors"
-                  disabled={isLoading}
+                  disabled={isLoading || isGoogleLoading || isAppleLoading}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
+                <label htmlFor="signup-last-name" className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
                   <User size={14} />
                   Nom
                 </label>
                 <input
+                  id="signup-last-name"
+                  name="lastName"
+                  autoComplete="family-name"
                   type="text"
                   placeholder="Dupont"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl bg-[#0B0B0B] border border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50 focus:outline-none transition-colors"
-                  disabled={isLoading}
+                  disabled={isLoading || isGoogleLoading || isAppleLoading}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
+              <label htmlFor="signup-email" className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
                 <Mail size={14} />
                 Email *
               </label>
               <input
+                id="signup-email"
+                name="email"
+                autoComplete="email"
                 type="email"
                 placeholder="vous@exemple.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full px-4 py-3 rounded-xl bg-[#0B0B0B] border border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50 focus:outline-none transition-colors"
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading || isAppleLoading}
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
+              <label htmlFor="signup-password" className="text-sm text-[#E5E5E5]/70 flex items-center gap-2">
                 <Lock size={14} />
                 Mot de passe *
               </label>
               <input
+                id="signup-password"
+                name="password"
+                autoComplete="new-password"
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="w-full px-4 py-3 rounded-xl bg-[#0B0B0B] border border-[#E5E5E5]/10 text-white placeholder:text-[#E5E5E5]/30 focus:border-[#FFC700]/50 focus:outline-none transition-colors"
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading || isAppleLoading}
               />
               <p className="text-xs text-[#E5E5E5]/40">Minimum 6 caractères</p>
             </div>
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading || isAppleLoading}
               className="w-full py-4 rounded-xl font-bold text-[#0B0B0B] bg-[#FFC700] hover:bg-[#FFC700]/90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 mt-6"
             >
               {isLoading ? (

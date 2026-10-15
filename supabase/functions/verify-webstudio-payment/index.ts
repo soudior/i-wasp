@@ -4,6 +4,7 @@
  */
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { verifiedPaymentProposal } from "../_shared/webstudioPaymentBinding.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.89.0";
 
@@ -67,8 +68,8 @@ serve(async (req) => {
       );
     }
 
-    // Get proposal ID from session metadata or request
-    const verifiedProposalId = session.metadata?.proposal_id || proposalId;
+    // Only a completed, paid session with matching server metadata can select the target.
+    const verifiedProposalId = verifiedPaymentProposal(session, proposalId, "webstudio");
     
     if (!verifiedProposalId) {
       logStep("No proposal ID found");
@@ -99,7 +100,7 @@ serve(async (req) => {
     }
 
     // Skip if already processed
-    if (proposal.status === 'paid' || proposal.status === 'generating' || proposal.status === 'site_generated') {
+    if (proposal.status === 'generating' || proposal.status === 'site_generated') {
       logStep("Already processed, skipping", { status: proposal.status });
       return new Response(
         JSON.stringify({ 
@@ -114,20 +115,25 @@ serve(async (req) => {
 
     // Update proposal status to paid
     const nowIso = new Date().toISOString();
-    const { error: updateError } = await admin
+    if (proposal.status !== "paid") {
+    const { data: updated, error: updateError } = await admin
       .from("website_proposals")
       .update({
         status: "paid",
         updated_at: nowIso,
       })
-      .eq("id", verifiedProposalId);
+      .eq("id", verifiedProposalId).eq("status", proposal.status).select("id").maybeSingle();
 
     if (updateError) {
       logStep("Update error", { error: updateError });
       throw new Error("Erreur lors de la mise à jour du statut");
     }
 
+    if (!updated) return new Response(JSON.stringify({ success: true, proposalId: verifiedProposalId }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
     logStep("Proposal marked as paid", { proposalId: verifiedProposalId });
+    }
 
     // Trigger automatic site generation
     logStep("Triggering site generation...");
@@ -142,12 +148,12 @@ serve(async (req) => {
         body: JSON.stringify({ proposalId: verifiedProposalId }),
       });
 
-      const generateResult = await generateResponse.json();
+      await generateResponse.json(); // Never retain/log the private blog capability.
       
       if (generateResponse.ok) {
-        logStep("Site generation triggered successfully", generateResult);
+        logStep("Site generation triggered successfully", { proposalId: verifiedProposalId });
       } else {
-        logStep("Site generation failed", { status: generateResponse.status, result: generateResult });
+        logStep("Site generation failed", { status: generateResponse.status });
         // Don't fail the payment verification, just log the error
       }
     } catch (genError) {

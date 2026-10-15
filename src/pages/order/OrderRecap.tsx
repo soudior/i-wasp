@@ -6,7 +6,7 @@ import { orderProfileFields } from "@/lib/orderIdentity";
  * Style: Haute Couture Digitale — Noir, minimaliste
  */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useOrderFunnel, OrderFunnelGuard, OFFERS } from "@/contexts/OrderFunnelContext";
@@ -26,6 +26,16 @@ function OrderRecapContent() {
   const { user } = useAuth();
   const createOrder = useCreateOrder();
   const [isProcessing, setIsProcessing] = useState(false);
+  const confirmationLock = useRef(false);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
+  // Reuse successful writes when only a later request failed. These in-memory
+  // checkpoints are deliberately scoped to this mounted checkout and user.
+  const createdCardFor = useRef<string | null>(null);
+  const createdOrder = useRef<{ key: string; id: string } | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe");
 
   const selectedOffer = OFFERS.find(o => o.id === state.selectedOffer);
@@ -42,13 +52,13 @@ function OrderRecapContent() {
   };
 
   const handleConfirmOrder = async () => {
-    if (isProcessing || state.isTransitioning) return;
-    
+    if (confirmationLock.current || state.isTransitioning) return;
+    confirmationLock.current = true;
     setIsProcessing(true);
     setPaymentInfo({ method: paymentMethod });
 
     try {
-      const { firstName, lastName, email, phone, title, company, whatsapp, instagram, linkedin, website, bio } = state.digitalIdentity || {};
+      const { firstName, lastName, email, phone } = state.digitalIdentity || {};
 
       // Sécurité/UX: si l'email appartient déjà à un compte (ou si l'utilisateur n'est pas connecté),
       // on demande une connexion au lieu de tenter un "auto-signup".
@@ -62,7 +72,13 @@ function OrderRecapContent() {
       const userId = user.id;
       const userEmail = user.email;
 
-      if (userId && firstName && lastName) {
+      if (!firstName || !lastName || !state.digitalIdentity?.profileVisibilityConfirmed || !selectedOffer) {
+        throw new Error("Incomplete checkout identity or offer");
+      }
+      const cardKey = JSON.stringify([userId, state.digitalIdentity, state.selectedTemplate]);
+      const orderKey = JSON.stringify([cardKey, state.selectedOffer, state.cardPersonalization, state.shippingInfo, paymentMethod]);
+
+      if (createdCardFor.current !== cardKey) {
         const slug = generateSlug(firstName, lastName);
         
         const { error: cardError } = await supabase
@@ -76,9 +92,11 @@ function OrderRecapContent() {
             wallet_enabled: true,
           });
 
+        if (!mounted.current) return;
         if (cardError) {
-          console.error("Card creation error:", cardError);
+          throw cardError;
         } else {
+          createdCardFor.current = cardKey;
           // The free profile is available immediately. Pro is granted only
           // after Stripe confirms payment (signed webhook / verify-payment).
           toast.success("Carte digitale créée. Pro sera activé après paiement.");
@@ -95,7 +113,7 @@ function OrderRecapContent() {
         logoUrl: state.cardPersonalization?.imageUrl || null,
       };
 
-      const order = await createOrder.mutateAsync({
+      const order = createdOrder.current?.key === orderKey ? createdOrder.current : await createOrder.mutateAsync({
         order_items: [orderItem],
         quantity: 1,
         unit_price_cents: selectedOffer?.price || 59900,
@@ -116,7 +134,11 @@ function OrderRecapContent() {
         user_id: userId,
       });
 
-      if (paymentMethod === "stripe" && order?.id) {
+      if (!mounted.current) return;
+      if (!order?.id) throw new Error("Missing created order identifier");
+      createdOrder.current = { key: orderKey, id: order.id };
+
+      if (paymentMethod === "stripe") {
         toast.info("Redirection vers le paiement...");
         
         // Le montant est fixé CÔTÉ SERVEUR à partir du tierId (grille canonique).
@@ -128,6 +150,7 @@ function OrderRecapContent() {
           },
         });
 
+        if (!mounted.current) return;
         if (error) throw error;
 
         if (data?.url) {
@@ -141,9 +164,12 @@ function OrderRecapContent() {
       markComplete();
       navigate("/order/confirmation");
     } catch (error) {
+      if (!mounted.current) return;
       console.error("Order error:", error);
       toast.error("Erreur lors de la commande");
       setIsProcessing(false);
+    } finally {
+      confirmationLock.current = false;
     }
   };
 

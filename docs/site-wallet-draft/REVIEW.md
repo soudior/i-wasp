@@ -1,5 +1,7 @@
 # i-wasp — brouillon site et Wallet, 13 octobre 2026
 
+> État actuel du lot du 14 octobre : [NIGHT-REVIEW-20261014.md](NIGHT-REVIEW-20261014.md), avec preuves brutes nouvelles et limites. Le texte ci-dessous est l’historique des révisions du 13 octobre ; ses chiffres et captures ne valent pas validation du nouveau code.
+
 ## État et périmètre
 
 Branche `codex/site-wallet-draft-20261013`, base `c82eadb1d3a1fd7c1fecda3c06bb72dace8f7813`.

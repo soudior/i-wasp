@@ -3,6 +3,8 @@
  * Creates a Web Studio order reliably (server-side insert), even for non-authenticated visitors.
  */
 
+import { issueWebsiteGenerationToken } from "../_shared/websiteGenerationAccess.ts";
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.89.0";
 
@@ -108,7 +110,6 @@ serve(async (req) => {
     const nowIso = new Date().toISOString();
 
     console.log("webstudio-order: creating proposal", {
-      sessionId,
       isExpress,
       hasProducts: Boolean(products),
     });
@@ -156,6 +157,9 @@ serve(async (req) => {
       });
     }
 
+    // Bound to the server-created ID. Never persist or log this short-lived capability.
+    const generationToken = await issueWebsiteGenerationToken(createdProposal.id, SUPABASE_SERVICE_ROLE_KEY);
+
     const message =
       `Nouvelle commande Web Studio\n\n` +
       `Projet: ${asString(p.siteName) || businessName}\n` +
@@ -180,7 +184,7 @@ serve(async (req) => {
       // We keep the proposal created (most important), but return a warning.
       console.error("webstudio-order: contact request insert error", contactError);
       return new Response(
-        JSON.stringify({ proposalId: createdProposal.id, warning: "Commande créée, mais notification interne échouée." }),
+        JSON.stringify({ proposalId: createdProposal.id, generationToken, warning: "Commande créée, mais notification interne échouée." }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -256,7 +260,7 @@ serve(async (req) => {
       // Continue anyway - order is more important
     }
 
-    return new Response(JSON.stringify({ proposalId: createdProposal.id }), {
+    return new Response(JSON.stringify({ proposalId: createdProposal.id, generationToken }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {

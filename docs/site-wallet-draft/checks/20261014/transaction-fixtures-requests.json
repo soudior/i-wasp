@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-10-14T04:47:17.227Z",
+  "syntheticOnly": true,
+  "base": "http://127.0.0.1:8088",
+  "csp": "default-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' ws://127.0.0.1:8088; media-src 'self' blob:; worker-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'",
+  "requests": [
+    {
+      "endpoint": "/auth/v1/signup",
+      "method": "POST",
+      "body": {
+        "email": "qa-only@example.invalid",
+        "password": "[synthetic password omitted]"
+      },
+      "at": "2026-10-14T04:47:17.196Z"
+    },
+    {
+      "endpoint": "/functions/v1/create-nfc-payment",
+      "method": "POST",
+      "body": {},
+      "at": "2026-10-14T04:47:17.214Z"
+    },
+    {
+      "endpoint": "/unknown",
+      "method": "GET",
+      "body": null,
+      "at": "2026-10-14T04:47:17.217Z"
+    }
+  ]
+}

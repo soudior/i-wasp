@@ -1,0 +1,6 @@
+Command: npx --no-install tsc -p tsconfig.node.json --noEmit
+UTC start: 2026-10-14T04:50:11.786499+00:00
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+UTC end: 2026-10-14T04:50:12.695519+00:00
+Exit: 0

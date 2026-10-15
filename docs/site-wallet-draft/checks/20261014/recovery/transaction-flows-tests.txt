@@ -1,0 +1,96 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.7 /workspace/scratch/98091a8a6317/iwasp-recovery-20261014
+
+ ✓ src/lib/walletService.test.ts (12 tests) 8ms
+ ✓ src/contexts/AuthContext.signup.test.tsx (3 tests) 18ms
+stderr | src/pages/transactionFlows.local.test.tsx > Wallet interactions, synthetic services only > never issues a pass on visit or without a logged-in owner
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+stderr | src/pages/transactionFlows.local.test.tsx > Order checkout interactions, no remote orders/payments > stops before creating an order when card creation fails
+Order error: Error: Synthetic card error
+    at /workspace/scratch/98091a8a6317/iwasp-recovery-20261014/src/pages/transactionFlows.local.test.tsx:185:72
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runFiles (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)
+
+stderr | src/pages/transactionFlows.local.test.tsx > Order checkout interactions, no remote orders/payments > retries a failed payment without duplicating card or order
+Order error: Error: Synthetic payment error
+    at /workspace/scratch/98091a8a6317/iwasp-recovery-20261014/src/pages/transactionFlows.local.test.tsx:191:68
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runFiles (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)
+
+stderr | src/pages/transactionFlows.local.test.tsx > Order checkout interactions, no remote orders/payments > retries a failed payment without duplicating card or order
+Order error: Error: Synthetic payment error
+    at /workspace/scratch/98091a8a6317/iwasp-recovery-20261014/src/pages/transactionFlows.local.test.tsx:191:68
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runFiles (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)
+
+stderr | src/pages/transactionFlows.local.test.tsx > Order checkout interactions, no remote orders/payments > never reuses another user’s successful writes after the authenticated user changes
+Order error: Error: Synthetic payment error
+    at /workspace/scratch/98091a8a6317/iwasp-recovery-20261014/src/pages/transactionFlows.local.test.tsx:208:68
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runFiles (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)
+
+stderr | src/pages/transactionFlows.local.test.tsx > Order checkout interactions, no remote orders/payments > never reuses another user’s successful writes after the authenticated user changes
+Order error: Error: Synthetic payment error
+    at /workspace/scratch/98091a8a6317/iwasp-recovery-20261014/src/pages/transactionFlows.local.test.tsx:208:68
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runFiles (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)
+
+stderr | src/pages/transactionFlows.local.test.tsx > Order checkout interactions, no remote orders/payments > retries a failed order without duplicating its already-created card
+Order error: Error: Synthetic order error
+    at /workspace/scratch/98091a8a6317/iwasp-recovery-20261014/src/pages/transactionFlows.local.test.tsx:214:68
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runFiles (file:///workspace/scratch/98091a8a6317/iwasp-recovery-20261014/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)
+
+ ✓ src/pages/transactionFlows.local.test.tsx (22 tests) 277ms
+
+ Test Files  3 passed (3)
+      Tests  37 passed (37)
+   Start at  05:44:19
+   Duration  1.27s (transform 207ms, setup 31ms, collect 591ms, tests 304ms, environment 972ms, prepare 179ms)
+
+Captured command exit: 0

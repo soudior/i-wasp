@@ -1,0 +1,101 @@
+[
+  {
+    "check": "unit-tests",
+    "argv": [
+      "npm",
+      "test"
+    ],
+    "start_utc": "2026-10-14T04:49:38.055614+00:00",
+    "end_utc": "2026-10-14T04:49:41.240323+00:00",
+    "exit_code": 0
+  },
+  {
+    "check": "typecheck-app",
+    "argv": [
+      "npx",
+      "--no-install",
+      "tsc",
+      "-p",
+      "tsconfig.app.json",
+      "--noEmit"
+    ],
+    "start_utc": "2026-10-14T04:49:41.240820+00:00",
+    "end_utc": "2026-10-14T04:50:11.786170+00:00",
+    "exit_code": 0
+  },
+  {
+    "check": "typecheck-node",
+    "argv": [
+      "npx",
+      "--no-install",
+      "tsc",
+      "-p",
+      "tsconfig.node.json",
+      "--noEmit"
+    ],
+    "start_utc": "2026-10-14T04:50:11.786499+00:00",
+    "end_utc": "2026-10-14T04:50:12.695519+00:00",
+    "exit_code": 0
+  },
+  {
+    "check": "typecheck-wallet",
+    "argv": [
+      "npx",
+      "--no-install",
+      "tsc",
+      "-p",
+      "tsconfig.wallet-tests.json",
+      "--noEmit"
+    ],
+    "start_utc": "2026-10-14T04:50:12.695836+00:00",
+    "end_utc": "2026-10-14T04:50:13.763213+00:00",
+    "exit_code": 0
+  },
+  {
+    "check": "typecheck-webstudio",
+    "argv": [
+      "npx",
+      "--no-install",
+      "tsc",
+      "-p",
+      "tsconfig.webstudio-tests.json",
+      "--noEmit"
+    ],
+    "start_utc": "2026-10-14T04:50:13.763536+00:00",
+    "end_utc": "2026-10-14T04:50:15.119436+00:00",
+    "exit_code": 0
+  },
+  {
+    "check": "global-lint",
+    "argv": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "start_utc": "2026-10-14T04:50:15.119824+00:00",
+    "end_utc": "2026-10-14T04:50:22.143104+00:00",
+    "exit_code": 0
+  },
+  {
+    "check": "build",
+    "argv": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "start_utc": "2026-10-14T04:50:22.143490+00:00",
+    "end_utc": "2026-10-14T04:50:46.898322+00:00",
+    "exit_code": 0
+  },
+  {
+    "check": "diff-check",
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "start_utc": "2026-10-14T04:50:46.898785+00:00",
+    "end_utc": "2026-10-14T04:50:46.904211+00:00",
+    "exit_code": 0
+  }
+]

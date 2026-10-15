@@ -1,5 +1,7 @@
 # Audit ciblé des neuf dépendances IA — brouillon
 
+> État actuel du lot du 14 octobre : [NIGHT-REVIEW-20261014.md](NIGHT-REVIEW-20261014.md), avec preuves brutes nouvelles et limites. Le texte ci-dessous est l’historique des révisions du 13 octobre ; ses chiffres et captures ne valent pas validation du nouveau code.
+
 Révision auditée : abfad9909a4fd74424b7d68544f13fba3400c50d. Analyse des imports JSX, routes App.tsx, appels functions.invoke et construction des requêtes serveur. Il s’agit de **liens de code démontrés**, pas de statistiques de trafic : aucun journal client, compte réel ou endpoint IA n’a été interrogé. Aucun secret lu. Un endpoint sans appel interne trouvé peut encore avoir des consommateurs externes.
 
 ## Fonctions et flux de données

@@ -3,7 +3,7 @@
  * All social networks, image gallery, complete options
  */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminOmniaLayout } from "@/layouts/AdminOmniaLayout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -51,6 +51,7 @@ import { motion } from "framer-motion";
 import { StoryEditor } from "@/components/StoryEditor";
 import { useStories } from "@/hooks/useStories";
 import { publicCardUrl } from "@/lib/publicUrl";
+import { createOrActivateInstantCard, type InstantCardIdentity } from "@/lib/instantCardCreation";
 
 // OMNIA Design System Colors
 const OMNIA = {
@@ -200,6 +201,55 @@ function AdminInstantCardContent() {
   const [createdCard, setCreatedCard] = useState<{ id: string; slug: string } | null>(null);
   const [activeSection, setActiveSection] = useState<"info" | "social" | "media" | "story" | "design">("info");
   const [stories, setStories] = useState<any[]>([]);
+  const [pendingCard, setPendingCard] = useState<InstantCardIdentity | null>(null);
+  const pendingCardRef = useRef<InstantCardIdentity | null>(null);
+  const activeRequest = useRef<symbol | null>(null);
+  const currentUserId = useRef(user?.id);
+  const mounted = useRef(true);
+  const formGeneration = useRef(0);
+  const [accountEpoch, setAccountEpoch] = useState(0);
+  currentUserId.current = user?.id;
+
+  useEffect(() => {
+    mounted.current = true;
+    // Cancel immediately at the auth event, before React can commit a new user.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      const nextUserId = nextSession?.user?.id;
+      if (nextUserId !== currentUserId.current) {
+        currentUserId.current = nextUserId;
+        formGeneration.current += 1;
+        setAccountEpoch(epoch => epoch + 1);
+        activeRequest.current = null;
+      }
+    });
+    return () => {
+      mounted.current = false;
+      formGeneration.current += 1;
+      activeRequest.current = null;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    formGeneration.current += 1;
+    activeRequest.current = null;
+    pendingCardRef.current = null;
+    setPendingCard(null);
+    setCreatedCard(null);
+    setIsCreating(false);
+    setIsLocating(false);
+    setIsUploadingLogo(false);
+    setIsUploadingPhoto(false);
+    setIsUploadingGallery(false);
+    setFormData(initialData);
+    setStories([]);
+  }, [user?.id, accountEpoch]);
+
+  const captureFormTask = () => {
+    const generation = formGeneration.current;
+    const ownerId = currentUserId.current;
+    return () => mounted.current && formGeneration.current === generation && currentUserId.current === ownerId;
+  };
 
   const handleInputChange = (field: keyof BusinessCardData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -238,9 +288,11 @@ function AdminInstantCardContent() {
       return;
     }
 
+    const isCurrent = captureFormTask();
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       async (position) => {
+        if (!isCurrent()) return;
         const { latitude, longitude } = position.coords;
         setFormData(prev => ({
           ...prev,
@@ -252,6 +304,7 @@ function AdminInstantCardContent() {
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
           );
           const data = await response.json();
+          if (!isCurrent()) return;
           if (data.display_name) {
             const city = data.address?.city || data.address?.town || data.address?.village || '';
             const country = data.address?.country || '';
@@ -264,10 +317,12 @@ function AdminInstantCardContent() {
           console.error("Reverse geocoding error:", error);
         }
 
+        if (!isCurrent()) return;
         setIsLocating(false);
         toast.success("Position détectée ✓");
       },
       (error) => {
+        if (!isCurrent()) return;
         setIsLocating(false);
         toast.error("Impossible de détecter la position");
         console.error("Geolocation error:", error);
@@ -276,8 +331,9 @@ function AdminInstantCardContent() {
     );
   };
 
-  const uploadImage = async (file: File, folder: string): Promise<string | null> => {
-    if (!user) {
+  const uploadImage = async (file: File, folder: string, isCurrent: () => boolean): Promise<string | null> => {
+    if (!isCurrent()) return null;
+    if (!user || currentUserId.current !== user.id) {
       toast.error("Non authentifié");
       return null;
     }
@@ -288,29 +344,28 @@ function AdminInstantCardContent() {
     // IMPORTANT: la policy Storage exige que le 1er dossier = user.id
     const filePath = `${user.id}/${folder}/${fileName}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("card-assets")
-      .upload(filePath, file, { upsert: true });
-
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
-      toast.error("Erreur upload: " + uploadError.message);
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from("card-assets")
+        .upload(filePath, file, { upsert: true });
+      if (!isCurrent()) return null;
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from("card-assets").getPublicUrl(filePath);
+      return publicUrl;
+    } catch {
+      if (isCurrent()) toast.error("Le transfert de l’image a échoué. Réessayez.");
       return null;
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from("card-assets")
-      .getPublicUrl(filePath);
-
-    return publicUrl;
   };
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const isCurrent = captureFormTask();
     setIsUploadingLogo(true);
-    const url = await uploadImage(file, 'logo');
+    const url = await uploadImage(file, 'logo', isCurrent);
+    if (!isCurrent()) return;
     if (url) {
       setFormData(prev => ({ ...prev, logoUrl: url }));
       toast.success("Logo uploadé ✓");
@@ -322,8 +377,10 @@ function AdminInstantCardContent() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const isCurrent = captureFormTask();
     setIsUploadingPhoto(true);
-    const url = await uploadImage(file, 'photo');
+    const url = await uploadImage(file, 'photo', isCurrent);
+    if (!isCurrent()) return;
     if (url) {
       setFormData(prev => ({ ...prev, photoUrl: url }));
       toast.success("Photo uploadée ✓");
@@ -335,11 +392,14 @@ function AdminInstantCardContent() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    const isCurrent = captureFormTask();
     setIsUploadingGallery(true);
     const uploadedUrls: string[] = [];
 
     for (let i = 0; i < files.length; i++) {
-      const url = await uploadImage(files[i], 'gallery');
+      if (!isCurrent()) return;
+      const url = await uploadImage(files[i], 'gallery', isCurrent);
+      if (!isCurrent()) return;
       if (url) {
         uploadedUrls.push(url);
       }
@@ -363,16 +423,21 @@ function AdminInstantCardContent() {
   };
 
   const createInstantCard = async () => {
+    if (activeRequest.current || isLocating || isUploadingLogo || isUploadingPhoto || isUploadingGallery) return;
     if (!formData.businessName) {
       toast.error("Nom commercial requis");
       return;
     }
 
-    if (!user) {
+    if (!user || currentUserId.current !== user.id) {
       toast.error("Non authentifié");
       return;
     }
 
+    const request = Symbol('instant-card');
+    activeRequest.current = request;
+    const ownerId = user.id;
+    const isCurrent = () => mounted.current && currentUserId.current === ownerId && activeRequest.current === request;
     setIsCreating(true);
     try {
       const baseSlug = formData.businessName.toLowerCase()
@@ -423,10 +488,24 @@ function AdminInstantCardContent() {
         fontFamily: formData.fontFamily
       };
 
-      const { data: card, error } = await supabase
-        .from('digital_cards')
-        .insert([{
-          user_id: user.id,
+      const card = await createOrActivateInstantCard({
+        api: {
+          insert: (values) => supabase.from('digital_cards').insert([values]).select('id,slug,user_id').single(),
+          // This production RPC is not yet represented in the generated schema types.
+          // Its return type is unknown: activation is confirmed by a separate scoped read.
+          activate: (id) => (supabase as unknown as {
+            rpc: (name: 'admin_set_card_lifecycle', params: {
+              p_card_id: string; p_is_active: boolean; p_nfc_enabled: boolean; p_wallet_enabled: boolean;
+            }) => PromiseLike<{ error: unknown }>;
+          }).rpc('admin_set_card_lifecycle', {
+            p_card_id: id, p_is_active: true, p_nfc_enabled: true, p_wallet_enabled: true,
+          }),
+          read: (id, userId) => supabase.from('digital_cards')
+            .select('id,slug,user_id,is_active,nfc_enabled,wallet_enabled')
+            .eq('id', id).eq('user_id', userId).single(),
+        },
+        values: {
+          user_id: ownerId,
           slug: uniqueSlug,
           first_name: formData.businessName,
           last_name: "",
@@ -448,22 +527,24 @@ function AdminInstantCardContent() {
           social_links: socialLinks,
           custom_styles: customStyles,
           is_active: true,
-          nfc_enabled: true,
-          wallet_enabled: true,
           hide_branding: false,
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
+        },
+        existing: pendingCardRef.current,
+        isCurrent,
+        onInserted: (saved) => { pendingCardRef.current = saved; setPendingCard(saved); },
+      });
+      if (!card || !isCurrent()) return;
+      pendingCardRef.current = null;
+      setPendingCard(null);
       setCreatedCard({ id: card.id, slug: card.slug });
       toast.success("Carte digitale créée ✓");
-    } catch (error: any) {
-      console.error("Error creating card:", error);
-      toast.error("Erreur: " + error.message);
+    } catch (error: unknown) {
+      if (isCurrent()) toast.error(error instanceof Error ? error.message : "Impossible de préparer la carte. Réessayez.");
     } finally {
-      setIsCreating(false);
+      if (isCurrent()) {
+        activeRequest.current = null;
+        setIsCreating(false);
+      }
     }
   };
 
@@ -637,7 +718,12 @@ function AdminInstantCardContent() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-        
+        {pendingCard && (
+          <p role="status" className="rounded-xl p-4 text-sm" style={{ backgroundColor: 'rgba(255, 199, 0, 0.12)', color: '#F5F5F5' }}>
+            Carte enregistrée. Activation à confirmer. La nouvelle tentative reprend cette même carte, sans en créer une autre.
+          </p>
+        )}
+        <fieldset disabled={isCreating || !!pendingCard} className="space-y-6 border-0 p-0 m-0 min-w-0">
         {/* SECTION: INFOS */}
         {activeSection === "info" && (
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
@@ -780,6 +866,7 @@ function AdminInstantCardContent() {
                   <Button
                     type="button"
                     onClick={handleGetLocation}
+                    aria-label="Détecter ma position"
                     disabled={isLocating}
                     className="h-12 px-4 rounded-xl"
                     style={{ backgroundColor: '#FFC700', color: '#0B0B0B' }}
@@ -1197,17 +1284,18 @@ function AdminInstantCardContent() {
           </motion.div>
         )}
 
+        </fieldset>
         {/* Create Button */}
         <Button
           onClick={createInstantCard}
-          disabled={isCreating || !formData.businessName}
+          disabled={isCreating || isLocating || isUploadingLogo || isUploadingPhoto || isUploadingGallery || !user || !formData.businessName}
           className="w-full h-14 rounded-xl font-bold text-lg"
           style={{ backgroundColor: formData.primaryColor, color: formData.secondaryColor }}
         >
           {isCreating ? (
-            <><Loader2 size={20} className="mr-2 animate-spin" /> Création...</>
+            <><Loader2 size={20} className="mr-2 animate-spin" /> {pendingCard ? 'Activation...' : 'Création...'}</>
           ) : (
-            <><Zap size={20} className="mr-2" /> Créer la carte</>
+            <><Zap size={20} className="mr-2" /> {pendingCard ? 'Réessayer l’activation' : 'Créer la carte'}</>
           )}
         </Button>
 
