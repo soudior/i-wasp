@@ -290,6 +290,7 @@ const App = () => {
                               <Route path="/templates" element={<Templates />} />
                               <Route path="/install" element={<Install />} />
                               <Route path="/help" element={<Help />} />
+                              <Route path="/support" element={<Help />} />
                               <Route path="/faq" element={<FAQ />} />
                               <Route path="/demo-dashboard" element={<DemoDashboard />} />
                               <Route path="/nails" element={<Nails />} />

@@ -38,6 +38,13 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Verify App Store SDK requirements
+        run: |
+          XCODE_MAJOR=$(xcodebuild -version | awk '/^Xcode / {split($2, version, "."); print version[1]}')
+          SDK_MAJOR=$(xcrun --sdk iphoneos --show-sdk-version | cut -d. -f1)
+          test "$XCODE_MAJOR" -ge 26
+          test "$SDK_MAJOR" -ge 26
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:

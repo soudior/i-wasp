@@ -26,6 +26,7 @@ env:
   # Valeur NON secrète (Team ID Apple). Surchargée par la variable de dépôt si définie.
   APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID || 'Y4JV4X2DJ6' }}
   APPLE_BUNDLE_ID: app.iwasp.digital
+  APP_MARKETING_VERSION: "1.0"
   VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
   VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
   VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
@@ -42,6 +43,13 @@ jobs:
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
+
+      - name: Verify App Store SDK requirements
+        run: |
+          XCODE_MAJOR=$(xcodebuild -version | awk '/^Xcode / {split($2, version, "."); print version[1]}')
+          SDK_MAJOR=$(xcrun --sdk iphoneos --show-sdk-version | cut -d. -f1)
+          test "$XCODE_MAJOR" -ge 26
+          test "$SDK_MAJOR" -ge 26
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -128,6 +136,7 @@ jobs:
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
             PRODUCT_BUNDLE_IDENTIFIER="$APPLE_BUNDLE_ID" \
+            MARKETING_VERSION="$APP_MARKETING_VERSION" \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution" \

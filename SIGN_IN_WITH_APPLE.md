@@ -18,7 +18,7 @@
 | Orchestration web (`signInWithOAuth`) + iOS natif (`signInWithIdToken`) | `src/hooks/useAppleAuth.ts` |
 | Bouton intégré aux écrans Connexion & Inscription | `src/pages/Login.tsx`, `src/pages/Signup.tsx` |
 | Liaison à un compte existant (anti-doublon) | `useAppleAuth().linkAppleIdentity()` |
-| Révocation des jetons Apple à la suppression de compte (best-effort, gated) | `supabase/functions/delete-account/index.ts` |
+| Révocation des jetons Apple avant la suppression de compte (bloquante pour une identité Apple) | `supabase/functions/delete-account/index.ts` |
 
 **Web → flux OAuth Supabase classique** (`signInWithOAuth`, redirection navigateur,
 échange `?code=` automatique via PKCE/`detectSessionInUrl` — parcours inchangé).
@@ -134,9 +134,11 @@ auth enfermée dans la WebView :
 Apple impose : une app qui permet **création + suppression** de compte **et** propose
 Sign in with Apple **doit révoquer** le jeton Apple lors de la suppression.
 
-**Déjà en place (best-effort, non bloquant) :** `delete-account` appelle
-`https://appleid.apple.com/auth/revoke` **si** les secrets sont configurés et si un
-refresh token Apple est stocké pour l'utilisateur.
+**Déjà en place (bloquant pour un compte Apple) :** `delete-account` appelle
+`https://appleid.apple.com/auth/revoke` avant de supprimer les données. Si les
+secrets, la table ou le refresh token manquent, la fonction s'arrête et renvoie une
+référence de support. Elle ne prétend donc jamais avoir supprimé correctement un
+compte Apple sans avoir révoqué ses jetons.
 
 **À finaliser (nécessite secrets + décision de stockage du refresh token) :**
 1. 🔑 Secrets **Supabase → Edge Functions → Secrets** (noms exacts) :
@@ -144,16 +146,15 @@ refresh token Apple est stocké pour l'utilisateur.
    - `APPLE_TEAM_ID` — `Y4JV4X2DJ6`.
    - `APPLE_KEY_ID` — Key ID de la clé `.p8`.
    - `APPLE_PRIVATE_KEY` — **contenu** du `.p8` (`-----BEGIN PRIVATE KEY----- …`).
-2. ☐ **Stocker le refresh token Apple** dans une table `apple_auth_tokens`
+2. ☐ **Créer et alimenter la table `apple_auth_tokens`**
    (migration à préparer : colonnes `user_id`, `refresh_token`, `created_at`, RLS
    service-role uniquement). Le refresh token s'obtient en échangeant le
-   `authorizationCode` (flux natif) contre un token, côté serveur, avec le client
-   secret. Tant que cette table est absente, la révocation est **ignorée
-   proprement** (log `SKIP`), sans bloquer la suppression.
+   `authorizationCode` contre les jetons Apple côté serveur, avec le client secret.
+   Tant que cette collecte n'est pas déployée et vérifiée, la suppression d'un
+   compte Apple échoue volontairement avant toute suppression irréversible.
 
-> Même sans révocation, la suppression reste conforme au strict minimum
-> (compte + données supprimés, reconnexion impossible) ; la révocation ajoute la
-> conformité **complète** exigée par Apple pour SIWA.
+> Ne pas soumettre l'app tant que la collecte du refresh token et sa révocation
+> n'ont pas été testées de bout en bout avec un compte Apple jetable.
 
 ---
 

@@ -91,13 +91,9 @@
         <string>applinks:www.i-wasp.com</string>
     </array>
     
-    <!-- Background Modes -->
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>fetch</string>
-        <string>remote-notification</string>
-    </array>
-    
+    <!-- No native background fetch/APNs implementation is registered.
+         Web Push runs through the browser service worker, not these modes. -->
+
     <!-- App Capabilities -->
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
