@@ -16,7 +16,7 @@ interface SEOHeadProps {
   noindex?: boolean;
 }
 
-const BASE_URL = "https://i-wasp.com";
+const BASE_URL = "https://www.i-wasp.com";
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
 const SITE_NAME = "i-wasp";
 
@@ -91,8 +91,8 @@ export function SEOHead({
 // Predefined SEO configs for common pages (français — langue primaire)
 export const SEO_CONFIGS = {
   home: {
-    title: "i-wasp — Carte de visite NFC premium & identité digitale",
-    description: "La carte de visite NFC qui transforme chaque rencontre en opportunité. Partagez vos coordonnées, réseaux et portfolio d'un simple geste. Aucune application requise pour votre interlocuteur.",
+    title: "Carte de visite NFC personnalisée & digitale | i-wasp",
+    description: "Découvrez les cartes de visite NFC personnalisées i-wasp : profil digital, QR code et Apple Wallet. Partagez vos coordonnées en un geste, sur iPhone et Android.",
     canonical: "/",
     image: `${BASE_URL}/og-image.png`,
   },
