@@ -3,11 +3,11 @@ import React, { act } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-const mocks = vi.hoisted(() => ({ signUp: vi.fn(), invoke: vi.fn(), unsubscribe: vi.fn() }));
+const mocks = vi.hoisted(() => ({ signUp: vi.fn(), signIn: vi.fn(), invoke: vi.fn(), unsubscribe: vi.fn() }));
 vi.mock('@/integrations/supabase/client', () => ({ supabase: {
   auth: {
     onAuthStateChange: () => ({ data: { subscription: { unsubscribe: mocks.unsubscribe } } }),
-    getSession: async () => ({ data: { session: null } }), signUp: mocks.signUp,
+    getSession: async () => ({ data: { session: null } }), signUp: mocks.signUp, signInWithPassword: mocks.signIn,
   }, functions: { invoke: mocks.invoke },
 } }));
 import { AuthProvider, useAuth } from './AuthContext';
@@ -36,5 +36,17 @@ describe('AuthProvider signup confirmation contract', () => {
   it('preserves signup errors for existing consumers', async () => {
     const error = new Error('Synthetic signup error'); mocks.signUp.mockResolvedValue({ data: { session: null }, error });
     expect(await auth.signUp('qa-only@example.invalid', 'Synthetic-only-000!')).toEqual({ error, requiresEmailConfirmation: false });
+  });
+  it('returns sign-in errors using the same error-result contract', async () => {
+    const error = new Error('Synthetic sign-in error'); mocks.signIn.mockResolvedValue({ data: { session: null }, error });
+    expect(await auth.signIn('qa-only@example.invalid', 'Synthetic-only-000!')).toEqual({ error });
+  });
+  it('converts rejected sign-up and sign-in requests into their error-result contracts', async () => {
+    const signupError = new Error('Synthetic signup transport failure');
+    const signinError = new Error('Synthetic signin transport failure');
+    mocks.signUp.mockRejectedValueOnce(signupError);
+    mocks.signIn.mockRejectedValueOnce(signinError);
+    expect(await auth.signUp('qa-only@example.invalid', 'Synthetic-only-000!')).toEqual({ error: signupError, requiresEmailConfirmation: false });
+    expect(await auth.signIn('qa-only@example.invalid', 'Synthetic-only-000!')).toEqual({ error: signinError });
   });
 });

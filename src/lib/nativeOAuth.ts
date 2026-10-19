@@ -16,7 +16,7 @@
  *
  * Sécurité :
  *  - l'URL de retour (qui contient le code à usage unique) n'est JAMAIS journalisée ;
- *  - le code n'est jamais conservé (variable locale, portée de l'échange) ;
+ *  - le code n'est ni persisté ni journalisé (mémoire transitoire pendant l'échange) ;
  *  - annulation utilisateur (fermeture du navigateur) → résolution "canceled",
  *    sans erreur affichée ;
  *  - timeout de sécurité pour ne pas laisser une promesse pendante.
@@ -29,6 +29,12 @@ import { Capacitor } from "@capacitor/core";
 export const NATIVE_OAUTH_REDIRECT = "iwasp://auth/callback";
 
 export type NativeOAuthResult = "success" | "canceled" | "error";
+
+// Coalesce duplicate native URL events while the same one-time code is exchanged.
+const inFlightExchanges = new Map<string, Promise<NativeOAuthResult>>();
+let activeSignIn: Promise<NativeOAuthResult> | null = null;
+let activeSignInProvider: "apple" | "google" | null = null;
+let launchCallbackHandled = false;
 
 async function exchangeNativeOAuthCallback(url: string): Promise<NativeOAuthResult | null> {
   if (!isNativeOAuthCallback(url)) return null;
@@ -44,13 +50,28 @@ async function exchangeNativeOAuthCallback(url: string): Promise<NativeOAuthResu
     return "error";
   }
 
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error) {
-    console.error("Native OAuth: échec de l'échange PKCE", error.message);
-    return "error";
-  }
+  const existingExchange = inFlightExchanges.get(code);
+  if (existingExchange) return existingExchange;
 
-  return "success";
+  const exchange = (async (): Promise<NativeOAuthResult> => {
+    try {
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      if (error) {
+        console.error("Native OAuth: échec de l'échange PKCE", error.message);
+        return "error";
+      }
+      return "success";
+    } catch (e) {
+      console.error("Native OAuth: exception pendant l'échange PKCE");
+      return "error";
+    }
+  })();
+  inFlightExchanges.set(code, exchange);
+  try {
+    return await exchange;
+  } finally {
+    if (inFlightExchanges.get(code) === exchange) inFlightExchanges.delete(code);
+  }
 }
 
 /** Vrai si `url` est bien notre deep link de retour OAuth (validation stricte). */
@@ -82,70 +103,124 @@ export function extractAuthError(url: string): string | null {
 }
 
 const AUTH_TIMEOUT_MS = 5 * 60 * 1000; // 5 min : au-delà, on considère abandonné.
+const BROWSER_FINISHED_GRACE_MS = 1500;
 
 /**
  * Exécute le flux OAuth natif complet pour un provider Supabase.
  * Résout "success" | "canceled" | "error" — ne rejette jamais.
  */
-export async function signInWithProviderNative(
+export function signInWithProviderNative(
   provider: "apple" | "google",
 ): Promise<NativeOAuthResult> {
-  const { App } = await import("@capacitor/app");
-  const { Browser } = await import("@capacitor/browser");
-
-  // 1) URL d'autorisation (sans redirection de la WebView).
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider,
-    options: {
-      redirectTo: NATIVE_OAUTH_REDIRECT,
-      skipBrowserRedirect: true,
-    },
-  });
-  if (error || !data?.url) {
-    console.error("Native OAuth: échec de création de l'URL d'autorisation", error?.message);
-    return "error";
+  if (activeSignIn) {
+    return activeSignInProvider === provider ? activeSignIn : Promise.resolve("error");
   }
 
-  return await new Promise<NativeOAuthResult>((resolve) => {
+  const operation = runNativeSignIn(provider).catch((e): NativeOAuthResult => {
+    console.error("Native OAuth: exception inattendue");
+    return "error";
+  });
+  activeSignIn = operation;
+  activeSignInProvider = provider;
+  void operation.then(() => {
+    if (activeSignIn === operation) {
+      activeSignIn = null;
+      activeSignInProvider = null;
+    }
+  });
+  return operation;
+}
+
+async function runNativeSignIn(provider: "apple" | "google"): Promise<NativeOAuthResult> {
+  try {
+    const { App } = await import("@capacitor/app");
+    const { Browser } = await import("@capacitor/browser");
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: NATIVE_OAUTH_REDIRECT, skipBrowserRedirect: true },
+    });
+    if (error || !data?.url) {
+      console.error("Native OAuth: échec de création de l'URL d'autorisation", error?.message);
+      return "error";
+    }
+
+    launchCallbackHandled = false;
+    return await new Promise<NativeOAuthResult>((resolve) => {
     let settled = false;
+    let callbackInProgress = false;
     let urlListener: { remove: () => Promise<void> } | null = null;
     let finishListener: { remove: () => Promise<void> } | null = null;
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let cancelGraceId: ReturnType<typeof setTimeout> | null = null;
 
-    const cleanup = async () => {
+    const cleanup = (closeBrowser: boolean) => {
       if (timeoutId) clearTimeout(timeoutId);
-      try { await urlListener?.remove(); } catch { /* noop */ }
-      try { await finishListener?.remove(); } catch { /* noop */ }
-      try { await Browser.close(); } catch { /* déjà fermé */ }
+      if (cancelGraceId) clearTimeout(cancelGraceId);
+      // Cleanup must not hold up the caller if a native bridge operation stalls.
+      void Promise.resolve().then(async () => {
+        try { await urlListener?.remove(); } catch { /* noop */ }
+        try { await finishListener?.remove(); } catch { /* noop */ }
+        if (closeBrowser) {
+          try { await Browser.close(); } catch { /* browser already closed */ }
+        }
+      });
     };
-    const settle = (result: NativeOAuthResult) => {
+    const settle = (result: NativeOAuthResult, closeBrowser = true) => {
       if (settled) return;
       settled = true;
-      void cleanup().finally(() => resolve(result));
+      cleanup(closeBrowser);
+      inFlightExchanges.clear();
+      resolve(result);
     };
+
+    // Borne aussi une préparation du bridge ou un échange PKCE qui ne répond pas.
+    timeoutId = setTimeout(() => settle(callbackInProgress ? "error" : "canceled"), AUTH_TIMEOUT_MS);
 
     void (async () => {
       // Installer les listeners AVANT d'ouvrir Safari. Sans cet await, un retour
       // OAuth rapide peut arriver pendant que le bridge natif n'écoute pas encore.
       urlListener = await App.addListener("appUrlOpen", ({ url }) => {
+        if (settled || callbackInProgress || !isNativeOAuthCallback(url)) return;
+        callbackInProgress = true;
+        launchCallbackHandled = true;
+        if (cancelGraceId) clearTimeout(cancelGraceId);
         void exchangeNativeOAuthCallback(url).then((result) => {
           if (result) settle(result);
+        }).catch((e) => {
+          console.error("Native OAuth: exception de traitement du callback");
+          settle("error");
         });
       });
+      if (settled) {
+        try { await urlListener.remove(); } catch { /* noop */ }
+        return;
+      }
 
       // Annulation : l'utilisateur ferme le navigateur système sans finir.
       finishListener = await Browser.addListener("browserFinished", () => {
-        setTimeout(() => settle("canceled"), 1500);
+        if (settled || callbackInProgress) return;
+        if (cancelGraceId) clearTimeout(cancelGraceId);
+        cancelGraceId = setTimeout(() => {
+          if (!callbackInProgress) settle("canceled", false);
+        }, BROWSER_FINISHED_GRACE_MS);
       });
+      if (settled) {
+        try { await finishListener.remove(); } catch { /* noop */ }
+        return;
+      }
 
-      timeoutId = setTimeout(() => settle("canceled"), AUTH_TIMEOUT_MS);
-
+      // `popover` is the supported adaptive presentation for iPad; retain it
+      // explicitly rather than relying on platform defaults.
       await Browser.open({ url: data.url, presentationStyle: "popover" });
     })().catch((e) => {
-      console.error("Native OAuth: impossible d'ouvrir le navigateur système", e?.message ?? e);
+      console.error("Native OAuth: impossible de préparer/ouvrir le navigateur système");
       settle("error");
     });
   });
+  } catch (e) {
+    console.error("Native OAuth: impossible d'initialiser le flux");
+    return "error";
+  }
 }
 
 /**
@@ -154,12 +229,17 @@ export async function signInWithProviderNative(
  * mais Capacitor conserve l'URL de lancement.
  */
 export async function recoverNativeOAuthLaunch(): Promise<NativeOAuthResult | null> {
-  if (!Capacitor.isNativePlatform()) return null;
-
-  const { App } = await import("@capacitor/app");
-  const launch = await App.getLaunchUrl();
-  if (!launch?.url) return null;
-  return exchangeNativeOAuthCallback(launch.url);
+  try {
+    if (!Capacitor.isNativePlatform() || launchCallbackHandled) return null;
+    const { App } = await import("@capacitor/app");
+    const launch = await App.getLaunchUrl();
+    if (!launch?.url || !isNativeOAuthCallback(launch.url)) return null;
+    launchCallbackHandled = true;
+    return await exchangeNativeOAuthCallback(launch.url);
+  } catch (e) {
+    console.error("Native OAuth: impossible de récupérer l'URL de lancement");
+    return "error";
+  }
 }
 
 /** OAuth Google commun au web et aux apps Capacitor. */

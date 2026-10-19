@@ -15,11 +15,12 @@ vi.mock("@/integrations/supabase/client", () => ({ supabase: {
 } }));
 vi.mock("@/hooks/use-toast", () => ({ toast: vi.fn() }));
 
-import { AuthProvider } from "./AuthContext";
+import { AuthProvider, useAuth } from "./AuthContext";
 
 let root: Root | null;
 let host: HTMLDivElement;
 let queryClient: QueryClient;
+let authState: ReturnType<typeof useAuth>;
 let invalidate: MockInstance<QueryClient["invalidateQueries"]>;
 let authListener: (event: AuthChangeEvent, session: Session | null) => void;
 let forbiddenFetch: ReturnType<typeof vi.fn>;
@@ -38,10 +39,14 @@ function deferredValue<T>() {
   return { promise, resolve };
 }
 const deferredResult = () => deferredValue<{ error: unknown }>();
+function StateProbe() {
+  authState = useAuth();
+  return null;
+}
 async function mount() {
   root = createRoot(host);
   await act(async () => root?.render(
-    <StrictMode><QueryClientProvider client={queryClient}><AuthProvider>{null}</AuthProvider></QueryClientProvider></StrictMode>,
+    <StrictMode><QueryClientProvider client={queryClient}><AuthProvider><StateProbe /></AuthProvider></QueryClientProvider></StrictMode>,
   ));
 }
 async function unmount() {
@@ -82,6 +87,19 @@ afterEach(async () => {
 });
 
 describe("AuthProvider bootstrap-admin lifecycle", () => {
+  it.each([
+    ["returns an error", () => mocks.getSession.mockResolvedValueOnce({ data: { session: null }, error: new Error("Synthetic storage error") })],
+    ["rejects", () => mocks.getSession.mockRejectedValueOnce(new Error("Synthetic storage rejection"))],
+  ])("clears loading when the initial session read %s", async (_label, configureFailure) => {
+    await unmount();
+    configureFailure();
+    await mount();
+    expect(authState.loading).toBe(false);
+    expect(authState.user).toBeNull();
+    expect(authState.session).toBeNull();
+    expect(mocks.invoke).not.toHaveBeenCalled();
+  });
+
   it("bootstraps an initial session once, including under StrictMode", async () => {
     await unmount();
     const pending = deferredValue<{ data: { session: Session | null } }>();

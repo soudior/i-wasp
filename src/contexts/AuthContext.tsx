@@ -16,6 +16,15 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function toAuthError(error: unknown): Error {
+  if (error instanceof Error) return error;
+  if (typeof error === "string") return new Error(error);
+  if (error && typeof error === "object" && "message" in error && typeof error.message === "string") {
+    return new Error(error.message);
+  }
+  return new Error("Authentication request failed");
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
@@ -64,12 +73,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // THEN check for existing session. Restoration can fail (including by
+    // rejection); never leave the app in its initial loading state on failure.
+    void (async () => {
+      let initialSession: Session | null = null;
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.warn("Unable to restore auth session", error);
+        } else {
+          initialSession = data?.session ?? null;
+        }
+      } catch (error) {
+        console.warn("Unable to restore auth session", error);
+      }
+
       // A newer auth event is authoritative; a delayed initial read must not
       // restore an old account (or update an already unmounted provider).
-      if (!disposed && !receivedAuthEvent) applySession(session);
-    });
+      if (!disposed && !receivedAuthEvent) applySession(initialSession);
+    })();
 
     return () => {
       disposed = true;
@@ -130,28 +152,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
     const redirectUrl = `${window.location.origin}/dashboard`;
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          first_name: firstName,
-          last_name: lastName,
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          }
         }
-      }
-    });
-
-    return { error: error as Error | null, requiresEmailConfirmation: !error && !data.session };
+      });
+      const authError = error ? toAuthError(error) : null;
+      return { error: authError, requiresEmailConfirmation: !authError && !data?.session };
+    } catch (error) {
+      return { error: toAuthError(error), requiresEmailConfirmation: false };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    return { error: error as Error | null };
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      return { error: error ? toAuthError(error) : null };
+    } catch (error) {
+      return { error: toAuthError(error) };
+    }
   };
 
   const signOut = async () => {

@@ -14,13 +14,13 @@ import "@/styles/account-brand.css";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGuestCard } from "@/contexts/GuestCardContext";
 import { toast } from "sonner";
 import { Loader2, ArrowLeft, AlertCircle } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { safeAuthReturnPath } from "@/lib/authRedirect";
 import { AppleSignInButton } from "@/components/auth/AppleSignInButton";
 import { useAppleAuth } from "@/hooks/useAppleAuth";
 import { signInWithGoogleCrossPlatform } from "@/lib/nativeOAuth";
@@ -32,20 +32,30 @@ export default function Login() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const actionInFlight = useRef(false);
   const { signIn, signUp, user, loading } = useAuth();
   const { hasGuestCard } = useGuestCard();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   // Support both "returnTo" and "redirect" params
-  const returnTo = searchParams.get("returnTo") || searchParams.get("redirect") || "/dashboard";
+  const returnTo = safeAuthReturnPath(searchParams.get("returnTo") || searchParams.get("redirect"));
 
   const { loading: isAppleLoading, signInWithApple } = useAppleAuth({ redirectPath: returnTo });
 
+  const isBusy = isLoading || isGoogleLoading || isAppleLoading;
+
   const handleAppleLogin = async () => {
-    if (isAppleLoading || isGoogleLoading || isLoading) return;
+    if (actionInFlight.current || isBusy) return;
+    actionInFlight.current = true;
     setErrorMessage(null);
-    await signInWithApple();
+    setInfoMessage(null);
+    try {
+      await signInWithApple();
+    } finally {
+      actionInFlight.current = false;
+    }
   };
 
   // Show message if redirected from protected route
@@ -72,7 +82,9 @@ export default function Login() {
 
   const handleGoogleLogin = async () => {
     // Prevent double-tap
-    if (isGoogleLoading || isLoading) return;
+    if (actionInFlight.current || isBusy) return;
+    actionInFlight.current = true;
+    setInfoMessage(null);
     
     setIsGoogleLoading(true);
     setErrorMessage(null);
@@ -92,6 +104,7 @@ export default function Login() {
       setErrorMessage("Erreur inattendue lors de la connexion Google");
       toast.error("Erreur de connexion");
     } finally {
+      actionInFlight.current = false;
       setIsGoogleLoading(false);
     }
   };
@@ -99,59 +112,54 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Prevent double submission
-    if (isLoading || isGoogleLoading) return;
-    
+    if (actionInFlight.current || isBusy) return;
     setErrorMessage(null);
-    
-    if (!email || !password) {
+    setInfoMessage(null);
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail || !password) {
       setErrorMessage("Veuillez remplir tous les champs");
-      toast.error("Veuillez remplir tous les champs");
       return;
     }
-
-    if (password.length < 6) {
+    // Une règle de création ne doit pas empêcher la connexion à un compte existant.
+    if (mode === "signup" && password.length < 6) {
       setErrorMessage("Le mot de passe doit contenir au moins 6 caractères");
-      toast.error("Le mot de passe doit contenir au moins 6 caractères");
       return;
     }
 
+    actionInFlight.current = true;
     setIsLoading(true);
-    
-    if (mode === "signup") {
-      const { error } = await signUp(email, password);
-      setIsLoading(false);
-
-      if (error) {
-        if (error.message.includes("already registered")) {
-          setErrorMessage("Cet email est déjà utilisé. Essayez de vous connecter.");
-          toast.error("Cet email est déjà utilisé");
+    try {
+      if (mode === "signup") {
+        const { error, requiresEmailConfirmation } = await signUp(normalizedEmail, password);
+        if (error) throw error;
+        if (requiresEmailConfirmation) {
+          setInfoMessage("Vérifiez votre boîte mail et confirmez votre adresse avant de vous connecter. Pensez aussi aux courriers indésirables.");
         } else {
-          setErrorMessage(`Erreur: ${error.message}`);
-          toast.error("Erreur lors de la création du compte");
+          toast.success("Compte créé avec succès !");
         }
-        return;
+      } else {
+        const { error } = await signIn(normalizedEmail, password);
+        if (error) throw error;
+        toast.success("Connexion réussie");
       }
-
-      toast.success("Compte créé avec succès !");
-      // Auto-redirect handled by useEffect
-    } else {
-      const { error } = await signIn(email, password);
+      // La navigation attend la session réelle, reçue par AuthProvider.
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      const code = typeof error === "object" && error !== null && "code" in error ? error.code : "";
+      if (code === "invalid_credentials" || /Invalid login credentials/i.test(message)) {
+        setErrorMessage("Email ou mot de passe incorrect. Vérifiez vos identifiants ou utilisez « Mot de passe oublié ? ».");
+      } else if (code === "email_not_confirmed" || /Email not confirmed/i.test(message)) {
+        setErrorMessage("Confirmez d’abord votre adresse email depuis le message reçu avant de vous connecter.");
+      } else if (code === "user_already_exists" || /already registered/i.test(message)) {
+        setErrorMessage("Cet email est déjà utilisé. Essayez de vous connecter.");
+      } else if (code === "over_request_rate_limit" || /rate limit|too many requests/i.test(message)) {
+        setErrorMessage("Trop de tentatives. Patientez quelques instants avant de réessayer.");
+      } else {
+        setErrorMessage("Connexion impossible pour le moment. Vérifiez votre connexion Internet puis réessayez.");
+      }
+    } finally {
+      actionInFlight.current = false;
       setIsLoading(false);
-
-      if (error) {
-        if (error.message.includes("Invalid login credentials")) {
-          setErrorMessage("Email ou mot de passe incorrect");
-          toast.error("Email ou mot de passe incorrect");
-        } else {
-          setErrorMessage(`Erreur: ${error.message}`);
-          toast.error("Erreur de connexion");
-        }
-        return;
-      }
-
-      toast.success("Connexion réussie");
-      // Redirect handled by useEffect
     }
   };
 
@@ -205,6 +213,7 @@ export default function Login() {
         {/* Error Message - Visible and Clear */}
         {errorMessage && (
           <div 
+            role="alert"
             className="mb-6 p-4 rounded-xl flex items-start gap-3"
             style={{ backgroundColor: "#FEF2F2", border: "1px solid #FCA5A5" }}
           >
@@ -215,11 +224,17 @@ export default function Login() {
           </div>
         )}
 
+        {infoMessage && (
+          <p role="status" className="mb-6 p-4 rounded-xl text-sm" style={{ color: BRAND.text, backgroundColor: BRAND.background }}>
+            {infoMessage}
+          </p>
+        )}
+
         {/* Google OAuth Button - Single tap, min 48px height, disabled during loading */}
         <button
           type="button"
           onClick={handleGoogleLogin}
-          disabled={isGoogleLoading || isLoading}
+          disabled={isBusy}
           className="w-full py-3.5 min-h-[48px] rounded-xl font-medium text-sm flex items-center justify-center gap-3 mb-6 disabled:opacity-50 disabled:pointer-events-none touch-manipulation select-none active:scale-[0.98] transition-transform duration-75"
           style={{
             background: BRAND.backgroundPure,
@@ -250,7 +265,7 @@ export default function Login() {
           <AppleSignInButton
             onClick={handleAppleLogin}
             loading={isAppleLoading}
-            disabled={isGoogleLoading || isLoading}
+            disabled={isBusy}
           />
         </div>
 
@@ -277,7 +292,11 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="vous@exemple.com"
               required
-              disabled={isLoading}
+              disabled={isBusy}
+              name="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               autoComplete="email"
               className="w-full px-4 py-3 rounded-xl text-sm outline-none touch-manipulation"
               style={{ 
@@ -298,12 +317,13 @@ export default function Login() {
             </label>
             <input
               id="password"
+              name="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              disabled={isLoading}
+              disabled={isBusy}
               autoComplete={mode === "signup" ? "new-password" : "current-password"}
               className="w-full px-4 py-3 rounded-xl text-sm outline-none touch-manipulation"
               style={{ 
@@ -316,7 +336,7 @@ export default function Login() {
 
           <button
             type="submit"
-            disabled={isLoading || isGoogleLoading}
+            disabled={isBusy}
             className="w-full py-3.5 min-h-[48px] rounded-xl font-medium text-sm disabled:opacity-50 disabled:pointer-events-none touch-manipulation select-none active:scale-[0.98] transition-transform duration-75"
             style={{
               backgroundColor: BRAND.accent,
@@ -336,13 +356,13 @@ export default function Login() {
         {/* Forgot password link */}
         {mode === "login" && (
           <div className="mt-4 text-center">
-            <a
-              href="/forgot-password"
+            <Link
+              to="/forgot-password"
               className="text-sm touch-manipulation active:opacity-70"
               style={{ color: BRAND.textMuted }}
             >
               Mot de passe oublié ?
-            </a>
+            </Link>
           </div>
         )}
 
@@ -352,7 +372,9 @@ export default function Login() {
             onClick={() => {
               setMode(mode === "login" ? "signup" : "login");
               setErrorMessage(null);
+              setInfoMessage(null);
             }}
+            disabled={isBusy}
             className="text-sm touch-manipulation active:opacity-70"
             style={{ color: BRAND.accent }}
           >
