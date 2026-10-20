@@ -1,0 +1,85 @@
+name: PR validation
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-validation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: ${{ matrix.check }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        check: [auth, regression, typescript, quality, web, ios-config]
+    env:
+      # Valeurs factices publiques : les tests ne doivent pas utiliser la production.
+      VITE_SUPABASE_URL: https://ci.invalid
+      VITE_SUPABASE_PUBLISHABLE_KEY: ci-placeholder-not-a-secret
+      VITE_SUPABASE_PROJECT_ID: ci-placeholder
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Authentication tests
+        if: matrix.check == 'auth'
+        run: npm run test:auth
+      - name: Regression tests
+        if: matrix.check == 'regression'
+        run: |
+          npm test
+          node scripts/test-resolver-core.mjs
+          npm run test:ci
+      - name: TypeScript application and tooling
+        if: matrix.check == 'typescript'
+        run: npm run typecheck
+      - name: Quality checks
+        if: matrix.check == 'quality'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || 'HEAD^' }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || 'HEAD' }}
+        run: |
+          npm run lint
+          git diff --check "$BASE_SHA" "$HEAD_SHA"
+      - name: Build web
+        if: matrix.check == 'web' || matrix.check == 'ios-config'
+        run: npm run build
+      - name: Check iOS callback configuration
+        if: matrix.check == 'ios-config'
+        run: npm run check:ios
+      - name: Generate native iOS project (not an Xcode compilation)
+        if: matrix.check == 'ios-config'
+        run: |
+          npx --no-install cap add ios
+          npx --no-install cap sync ios
+          node scripts/configure-ios-native.mjs
+          npm run check:ios -- --generated
+      - name: Actionable failure summary
+        if: failure()
+        env:
+          CHECK: ${{ matrix.check }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          node --input-type=module <<'JS'
+          import { appendFileSync } from 'node:fs';
+          const message = `Échec du contrôle ${process.env.CHECK}. Ouvrir les étapes rouges dans ${process.env.RUN_URL}, reproduire la commande de CI_VALIDATION.md, corriger sur la branche puis pousser. Ne pas fusionner avant validation.`;
+          console.log(`::error title=CI ${process.env.CHECK}::${message}`);
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Contrôle en échec : ${process.env.CHECK}\n\n${message}\n`);
+          JS

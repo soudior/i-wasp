@@ -8,10 +8,13 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:auth": "vitest run src/contexts/AuthContext.bootstrap.test.tsx src/contexts/AuthContext.signup.test.tsx src/pages/Login.auth.test.tsx src/lib/nativeOAuth.test.ts src/lib/appleAuth.test.ts src/lib/bootstrapAdminRetry.test.ts",
+    "check:ios": "node scripts/check-ios-config.mjs",
+    "test:ci": "node --test scripts/*.test.mjs"
   },
   "dependencies": {
     "@capacitor/android": "8.5.0",
