@@ -13,6 +13,32 @@
 
 ---
 
+## Prérequis de configuration avant tout build iOS
+
+Pour la reprise après refus, suivre d’abord [`APPLE_REVIEW_DOSSIER.md`](APPLE_REVIEW_DOSSIER.md).
+Aucun lancement de build payant ou envoi Apple n’est autorisé par ce document.
+
+Les workflows iOS utilisent `npm run build:ios` : URL et clé **publique** du projet attendu
+doivent être fournies ensemble, sans espaces parasites. Sur GitHub, leurs noms sont
+`VITE_SUPABASE_URL` et `VITE_SUPABASE_PUBLISHABLE_KEY` dans les **Variables Actions** ;
+`VITE_SUPABASE_PROJECT_ID` est facultative, mais contrôlée si fournie. Dans Codemagic,
+le responsable fournit les mêmes variables publiques dans l’environnement de build.
+Ces réglages ne sont ni consultés ni modifiés par cette PR. Ne pas y mettre de clé serveur.
+
+Le YAML Codemagic ne référence actuellement aucun groupe Supabase et ne définit pas ces
+valeurs. Si elles ne sont pas déjà injectées par un environnement accessible au workflow,
+le build échouera volontairement avant Vite. Le responsable doit confirmer leur disponibilité
+avant tout lancement manuel ; cette PR n’ajoute aucun groupe supposé ni aucune valeur.
+
+Le garde-fou vérifie la forme et les incohérences détectables **sans réseau**. Il ne valide
+pas une signature, une révocation, ni l’association d’une clé publishable opaque à son projet.
+La connexion du compte exact sur le binaire candidat reste indispensable. La CI Ubuntu
+utilise `npm run build` et des valeurs factices : ses artefacts ne doivent pas servir à Apple.
+
+La source iOS est `public/app-icon-ios-1024.png`, vrai PNG RGB 1024×1024 sans alpha,
+réencodé sans changer les pixels existants. L’approbation de l’identité finale et le contrôle
+des icônes réellement installées restent ouverts. Ce n’est pas une refonte graphique.
+
 ## Étape 1 — Valider la compilation (build NON signé, aucun secret)
 
 C'est l'étape à faire en premier. Elle prouve que le projet compile, sans aucune

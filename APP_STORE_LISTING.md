@@ -1,9 +1,14 @@
 # APP_STORE_LISTING — Contenu & conformité de la fiche App Store (i-wasp)
 
-> Tout le contenu prêt à copier-coller dans **App Store Connect**. Rien ici n'est
+> Modèles de contenu à vérifier sur le build candidat avant saisie dans **App Store Connect**. Rien ici n'est
 > un secret. Les valeurs d'identité (Bundle ID, Team ID, App ID) sont dans
 > `APP_STORE_CHECKLIST.md` §7.
 > Statut : ☐ à saisir dans App Store Connect · ✅ prêt dans le dépôt.
+
+> **Reprise après refus :** [`APPLE_REVIEW_DOSSIER.md`](APPLE_REVIEW_DOSSIER.md) fait foi
+> pour les preuves manquantes : compte exact de revue, vidéo réelle, questions du 26 août,
+> icônes et parcours natif du 28 août. Les anciens modèles ne prouvent ni leur saisie côté
+> Apple ni leur fonctionnement. Aucune création de compte ou action backend autorisée ici.
 
 ---
 

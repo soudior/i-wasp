@@ -4,6 +4,11 @@
 > Statut : ☐ à faire · ⚠️ partiel / à corriger · ✅ fait.
 > Réfs croisées : voir `AUDIT.md` (P0-4, P2-SCHEME) et `STORE_DEPLOYMENT_GUIDE.md`.
 
+> **Reprise après refus :** consulter d’abord [`APPLE_REVIEW_DOSSIER.md`](APPLE_REVIEW_DOSSIER.md).
+> Les coches historiques ci-dessous ne prouvent ni un build candidat testé, ni une connexion
+> de revue fonctionnelle, ni une vidéo réalisée. Pas de fusion, build payant ou envoi Apple
+> autorisé par cette checklist. Les numéros « version 1.0 / build 1 » sont historiques.
+
 ## 1. Identité de l'application
 
 | Item | Statut | Détail |
@@ -28,10 +33,10 @@
 
 | Item | Statut | Détail |
 |------|--------|--------|
-| Icône app 1024×1024 | ✅ | `public/app-icon-1024.png`. |
-| Jeu d'icônes iOS/Android complet | ☐ | À générer depuis la source 1024 (Capacitor assets). |
+| Icône app 1024×1024 | ⚠️ | Source iOS réelle PNG RGB sans alpha : `public/app-icon-ios-1024.png`, mêmes pixels que l’ancien JPEG nommé `.png`. Identité finale à approuver ; ne prouve pas le remplacement des icônes provisoires visées par Apple. |
+| Jeu d'icônes iOS/Android complet | ☐ | Génération iOS prévue dans les workflows ; vérifier le catalogue de l’archive et l’icône installée. Android reste à contrôler séparément. |
 | Launch screen / SplashScreen | ✅ | Configuré (`capacitor.config.ts`), fond `#000000`. |
-| Icônes PWA (web) | ✅ | Corrigé : manifest pointe vers `public/icons/*x*.png` (AUDIT P0-3 résolu). |
+| Icônes PWA (web) | ⚠️ | Chemins présents, mais les fichiers inspectés font 1024×1024 malgré les tailles annoncées. À corriger séparément ; pas une preuve de conformité iOS. |
 
 ## 4. Permissions (iOS) — textes explicatifs
 
@@ -124,15 +129,18 @@ supprimée). Ils étaient **config-only** (non importés dans `src/`) :
 
 ```sh
 # 1. Dépendances + build web
-npm install
-npm run build
+npm ci
+# Fournir la paire publique du projet attendu dans l’environnement autorisé ;
+# jamais de clé serveur, jamais de valeur de test pour un binaire de revue.
+npm run build:ios
 
 # 2. Générer le projet natif iOS (crée le dossier ios/)
 npx cap add ios
 npx cap sync ios
 
-# 3. Générer icônes + launch screen depuis public/app-icon-1024.png
-npx @capacitor/assets generate --ios
+# 3. Générer les icônes depuis une vraie source PNG
+cp public/app-icon-ios-1024.png assets/icon-only.png
+npx capacitor-assets generate --ios
 
 # 4. Ouvrir dans Xcode
 npx cap open ios
