@@ -54,7 +54,7 @@ jobs:
         run: npm ci
 
       - name: Build web assets (dist/)
-        run: npm run build
+        run: npm run build:ios
 
       - name: Generate native iOS project
         run: |
@@ -64,7 +64,7 @@ jobs:
       - name: Generate branded i-WASP iOS icons
         run: |
           mkdir -p assets
-          cp public/app-icon-1024.png assets/icon-only.png
+          cp public/app-icon-ios-1024.png assets/icon-only.png
           npx capacitor-assets generate --ios
           test -f ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json
           find ios/App/App/Assets.xcassets/AppIcon.appiconset -maxdepth 1 -type f -print

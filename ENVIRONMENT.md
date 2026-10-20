@@ -14,6 +14,12 @@ Fichier : `.env` (à la racine). Ces valeurs sont **publiques par conception** (
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Clé anon/publishable Supabase (rôle `anon`) | `src/integrations/supabase/client.ts` |
 | `VITE_SUPABASE_PROJECT_ID` | Identifiant du projet Supabase | `.env` (référence) |
 
+Pour un export iOS, utiliser `npm run build:ios` : la paire URL/clé publique explicite
+est obligatoire. Le contrôle est hors réseau et ne prouve pas qu’une clé soit active
+ou rattachée au bon projet ; voir [`APPLE_REVIEW_DOSSIER.md`](APPLE_REVIEW_DOSSIER.md).
+GitHub utilise les Variables Actions, Codemagic l’environnement configuré par le responsable.
+Aucune valeur ne doit être copiée dans la PR pour établir ce diagnostic.
+
 ## 2. Backend (Supabase Edge Functions — `Deno.env.get`, SECRETS)
 
 À définir dans **Supabase → Edge Functions → Secrets**. **Ne jamais** exposer côté frontend.
@@ -54,7 +60,7 @@ Fichier : `.env` (à la racine). Ces valeurs sont **publiques par conception** (
 
 ## Notes de sécurité
 
-1. **`.env` est actuellement suivi par git** dans les deux dépôts. Il ne contient que des clés publishable/anon (publiques par conception), donc **pas de fuite de secret** — mais par hygiène, `.env` devrait être retiré du suivi et ajouté à `.gitignore`, avec un `.env.example` listant les noms seuls. (Voir ROADMAP — détachement Lovable / hygiène.)
+1. Dans ce dépôt inspecté, `.env` n’est pas suivi par Git ; `.env.example` contient seulement les noms et `.gitignore` exclut `.env` et les fichiers locaux usuels. L’état du dépôt satellite n’est pas revérifié ici. Ne jamais suivre un fichier d’environnement contenant des secrets.
 2. **`STRIPE_WEBHOOK_SECRET` est absente** et doit être ajoutée pour corriger la faille P0-2 (webhook Stripe non signé).
 3. **Aucune clé secrète (`sk_`, service-role, Resend, PassKit) n'est présente dans le frontend** — vérifié. Elles ne doivent y figurer sous aucune forme.
 4. Rotation recommandée pour tout secret ayant pu transiter par un environnement partagé (ex. mots de passe wifi présents dans un seed de migration — AUDIT P3-WIFI-SEED).

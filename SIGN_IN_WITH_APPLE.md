@@ -15,7 +15,7 @@
 |---------|---------|
 | Bouton « Continuer avec Apple » conforme HIG (fond noir, logo Apple, ≥44pt) | `src/components/auth/AppleSignInButton.tsx` |
 | Logique nonce (SHA-256), détection e-mail relais, classification d'erreurs | `src/lib/appleAuth.ts` (+ tests `appleAuth.test.ts`) |
-| Orchestration web (`signInWithOAuth`) + iOS natif (`signInWithIdToken`) | `src/hooks/useAppleAuth.ts` |
+| Orchestration web + iOS Capacitor : OAuth navigateur système / PKCE / retour deep link (pas de feuille Apple native ni de `signInWithIdToken` dans ce parcours) | `src/hooks/useAppleAuth.ts`, `src/lib/nativeOAuth.ts` |
 | Bouton intégré aux écrans Connexion & Inscription | `src/pages/Login.tsx`, `src/pages/Signup.tsx` |
 | Liaison à un compte existant (anti-doublon) | `useAppleAuth().linkAppleIdentity()` |
 | Révocation des jetons Apple à la suppression de compte (best-effort, gated) | `supabase/functions/delete-account/index.ts` |
@@ -163,8 +163,10 @@ refresh token Apple est stocké pour l'utilisateur.
   relais, classification d'erreurs).
 - ☐ Manuel **web** : bouton Apple → redirection Apple → retour connecté ; vérifier
   qu'aucun doublon n'est créé pour un e-mail existant.
-- ☐ Manuel **iOS** (après build natif) : feuille Apple native → session ouverte ;
-  tester « Masquer mon e-mail » ; tester la suppression de compte + révocation.
+- ☐ Manuel **iOS** (après build natif autorisé) : navigateur système → Apple → retour
+  deep link → session ouverte ; tester annulation/reprise et « Masquer mon e-mail ».
+  La suppression de compte et la révocation exigent un environnement de test et une
+  autorisation distincte. Aucun test réel ni feuille Apple native n’est attesté ici.
 
 ---
 

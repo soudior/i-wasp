@@ -4,6 +4,11 @@
 > Statut : ☐ à faire · ⚠️ partiel / à corriger · ✅ fait.
 > Réfs croisées : voir `AUDIT.md` (P0-4, P2-SCHEME) et `STORE_DEPLOYMENT_GUIDE.md`.
 
+> **Reprise après refus :** consulter d’abord [`APPLE_REVIEW_DOSSIER.md`](APPLE_REVIEW_DOSSIER.md).
+> Les coches historiques ci-dessous ne prouvent ni un build candidat testé, ni une connexion
+> de revue fonctionnelle, ni une vidéo réalisée. Pas de fusion, build payant ou envoi Apple
+> autorisé par cette checklist. Les numéros « version 1.0 / build 1 » sont historiques.
+
 ## 1. Identité de l'application
 
 | Item | Statut | Détail |
@@ -28,10 +33,10 @@
 
 | Item | Statut | Détail |
 |------|--------|--------|
-| Icône app 1024×1024 | ✅ | `public/app-icon-1024.png`. |
-| Jeu d'icônes iOS/Android complet | ☐ | À générer depuis la source 1024 (Capacitor assets). |
+| Icône app 1024×1024 | ⚠️ | Source iOS réelle PNG RGB sans alpha : `public/app-icon-ios-1024.png`, mêmes pixels que l’ancien JPEG nommé `.png`. Identité finale à approuver ; ne prouve pas le remplacement des icônes provisoires visées par Apple. |
+| Jeu d'icônes iOS/Android complet | ☐ | Génération iOS prévue dans les workflows ; vérifier le catalogue de l’archive et l’icône installée. Android reste à contrôler séparément. |
 | Launch screen / SplashScreen | ✅ | Configuré (`capacitor.config.ts`), fond `#000000`. |
-| Icônes PWA (web) | ✅ | Corrigé : manifest pointe vers `public/icons/*x*.png` (AUDIT P0-3 résolu). |
+| Icônes PWA (web) | ⚠️ | Chemins présents, mais les fichiers inspectés font 1024×1024 malgré les tailles annoncées. À corriger séparément ; pas une preuve de conformité iOS. |
 
 ## 4. Permissions (iOS) — textes explicatifs
 
@@ -46,9 +51,11 @@
 | Item | Statut | Détail |
 |------|--------|--------|
 | Politique de confidentialité accessible | ⚠️ | Page `/privacy` existe → publier une URL stable et la lier dans la fiche store. |
-| Déclaration des données collectées (App Privacy) | ✅ | Réponses prêtes dans `APP_STORE_LISTING.md` §4 → reste à recopier dans App Store Connect. |
-| Contenu de la fiche (description, mots-clés, âge, catégorie) | ✅ | Prêt à copier-coller : `APP_STORE_LISTING.md` §3. |
+| Déclaration des données collectées (App Privacy) | ⚠️ | Hypothèses dans `APP_STORE_LISTING.md` §4, à revalider sur le candidat : mesure d’audience/pixels conditionnels et données réellement utilisées. Aucune déclaration de production modifiée. |
+| Contenu de la fiche (description, mots-clés, âge, catégorie) | ⚠️ | Modèles dans `APP_STORE_LISTING.md` §3. Âge, contenus publics, fonctions réellement disponibles et droits à confirmer avant saisie. |
 | Compte de démo App Review + notes reviewer | ☐ | Modèle seulement : `APP_STORE_LISTING.md` §5 & §7. Existence du compte et validité des identifiants non confirmées ; tester le build candidat sur iPad puis renseigner App Review Information avant toute nouvelle soumission. |
+| Sept demandes Apple du 26 août | ⚠️ | Textes exacts et réponses proposées préparés dans `APPLE_REVIEW_DOSSIER.md`. Pas de réponse envoyée. Tests matériels, accès, services activés, marchés et droits restent à confirmer. |
+| Vidéo sur appareil physique | ☐ | Réalisée ultérieurement par l’utilisateur : commencer par le lancement ; couvrir inscription/login/suppression, paiements, contenus utilisateur et permissions applicables. Aucun enregistrement ni téléversement effectué ici. |
 | Statut trader UE (DSA) | ☐ | À déclarer dans App Store Connect → Business : `APP_STORE_LISTING.md` §6. |
 | Suppression de compte **dans l'app** | ✅ | Implémentée : bouton « Supprimer définitivement mon compte » (Settings.tsx, confirmation typée « SUPPRIMER ») + edge function `delete-account` (service-role, suppression réelle côté serveur, anonymisation des commandes, révocation des sessions). Reste : `supabase functions deploy delete-account`. Détail : `APP_STORE_LISTING.md` §2. |
 | Sign in with Apple | ✅ | **Requis** (Guideline 4.8, car Google OAuth est proposé) et **implémenté** : bouton conforme HIG (web + iOS), nonce/state, gestion d'erreurs, liaison de compte, e-mail masqué. Reste : activer le provider Apple (Supabase) + clé `.p8`. Détail : `SIGN_IN_WITH_APPLE.md`. |
@@ -124,15 +131,18 @@ supprimée). Ils étaient **config-only** (non importés dans `src/`) :
 
 ```sh
 # 1. Dépendances + build web
-npm install
-npm run build
+npm ci
+# Fournir la paire publique du projet attendu dans l’environnement autorisé ;
+# jamais de clé serveur, jamais de valeur de test pour un binaire de revue.
+npm run build:ios
 
 # 2. Générer le projet natif iOS (crée le dossier ios/)
 npx cap add ios
 npx cap sync ios
 
-# 3. Générer icônes + launch screen depuis public/app-icon-1024.png
-npx @capacitor/assets generate --ios
+# 3. Générer les icônes depuis une vraie source PNG
+cp public/app-icon-ios-1024.png assets/icon-only.png
+npx capacitor-assets generate --ios
 
 # 4. Ouvrir dans Xcode
 npx cap open ios
