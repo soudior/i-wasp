@@ -125,9 +125,10 @@ carte visite,nfc,carte connectée,networking,contact,vcard,digital,qr,profession
 **URL de support :** https://i-wasp.com/support  *(☐ créer une page /support stable, ou utiliser mailto:support@i-wasp.com)*
 **URL politique de confidentialité :** https://i-wasp.com/privacy  *(✅ page `/privacy` existante)*
 
-**Classification par âge :** 4+ (aucun contenu sensible ; pas de contenu généré
-par les utilisateurs partagé publiquement de façon non modérée au sens Apple —
-à confirmer dans le questionnaire).
+**Classification par âge :** **à confirmer dans le questionnaire Apple**. L’ancienne
+proposition 4+ n’est pas validée ici. Le dépôt comporte des profils publics personnalisés ;
+la nature des contenus et les mécanismes de signalement/blocage doivent être confirmés
+par le titulaire, sans déduire leur absence ou leur conformité du code seul.
 
 **Droits (copyright) :** © 2026 i-wasp
 
@@ -135,10 +136,12 @@ par les utilisateurs partagé publiquement de façon non modérée au sens Apple
 
 ## 4. App Privacy — réponses au questionnaire « Données collectées »
 
-> À renseigner dans App Store Connect → App Privacy. Basé sur les données
-> **réellement** manipulées (auth Supabase, commandes, scans, leads, paiements Stripe).
+> **Hypothèses de travail à revalider sur le build candidat**, pas réponses certifiées
+> à recopier telles quelles dans App Store Connect. Le dépôt comporte auth/données Supabase,
+> paiements et mesure d’audience ; leur activation et leur portée réelles ne sont pas testées
+> dans cette intervention. Voir l’inventaire de [`APPLE_REVIEW_DOSSIER.md`](APPLE_REVIEW_DOSSIER.md).
 
-| Type de données | Collecté ? | Usage | Lié à l'identité ? | Suivi (tracking) ? |
+| Type de données | Collecté ? | Usage | Lié à l'identité ? | Suivi (hypothèse à valider) ? |
 |-----------------|-----------|-------|--------------------|--------------------|
 | Adresse email | Oui | Fonctionnement de l'app (compte), communications transactionnelles | Oui | Non |
 | Nom | Oui | Fonctionnement de l'app (profil, livraison) | Oui | Non |
@@ -147,12 +150,16 @@ par les utilisateurs partagé publiquement de façon non modérée au sens Apple
 | Coordonnées de paiement | **Non stocké par l'app** | Traité par **Stripe** (l'app ne conserve pas le n° de carte) | — | Non |
 | Identifiants utilisateur (user ID) | Oui | Fonctionnement de l'app | Oui | Non |
 | Données d'usage / analytics de scan | Oui | Statistiques produit fournies à l'utilisateur (nb de scans de SA carte) | Oui | Non |
-| Contacts (carnet d'adresses de l'appareil) | **Non** | L'app génère une vCard mais n'importe pas le carnet | — | Non |
-| Localisation | Optionnel (si l'utilisateur ajoute une adresse à son profil) | Affichage sur le profil | Oui | Non |
+| Contacts (carnet d'adresses de l'appareil) | **À confirmer sur le candidat** | vCard présente ; une description d’usage Contacts existe dans le modèle plist, sans preuve d’import réel dans cet audit | À confirmer | À confirmer |
+| Localisation | **À confirmer sur le candidat** | Adresse de profil, hook de géolocalisation et détection de pays par IP présents ; distinguer les usages réellement activés | À confirmer | À confirmer |
 
-**Tracking (App Tracking Transparency) :** l'app **ne suit pas** les utilisateurs
-à travers apps/sites tiers → pas de framework de tracking publicitaire → **pas**
-de prompt ATT requis. (À reconfirmer si un SDK analytics tiers est ajouté.)
+**Tracking / App Tracking Transparency : à déterminer sur le candidat.** `index.html`
+prévoit Metricool sur certaines pages du domaine public ; `src/hooks/useAnalyticsEvents.ts`
+enregistre des événements via Supabase ; `src/lib/analytics.ts` contient un générateur
+conditionnel de scripts Google/Meta. Leur présence n’atteste pas un suivi publicitaire
+actif dans le binaire iOS, mais interdit de certifier globalement « aucun suivi / ATT
+inutile » sans vérifier les services réellement chargés, les données et les usages.
+Aucun prompt, paramètre externe ni déclaration App Privacy de production n’a été modifié.
 
 ---
 

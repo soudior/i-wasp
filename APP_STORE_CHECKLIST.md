@@ -51,9 +51,11 @@
 | Item | Statut | Détail |
 |------|--------|--------|
 | Politique de confidentialité accessible | ⚠️ | Page `/privacy` existe → publier une URL stable et la lier dans la fiche store. |
-| Déclaration des données collectées (App Privacy) | ✅ | Réponses prêtes dans `APP_STORE_LISTING.md` §4 → reste à recopier dans App Store Connect. |
-| Contenu de la fiche (description, mots-clés, âge, catégorie) | ✅ | Prêt à copier-coller : `APP_STORE_LISTING.md` §3. |
+| Déclaration des données collectées (App Privacy) | ⚠️ | Hypothèses dans `APP_STORE_LISTING.md` §4, à revalider sur le candidat : mesure d’audience/pixels conditionnels et données réellement utilisées. Aucune déclaration de production modifiée. |
+| Contenu de la fiche (description, mots-clés, âge, catégorie) | ⚠️ | Modèles dans `APP_STORE_LISTING.md` §3. Âge, contenus publics, fonctions réellement disponibles et droits à confirmer avant saisie. |
 | Compte de démo App Review + notes reviewer | ☐ | Modèle seulement : `APP_STORE_LISTING.md` §5 & §7. Existence du compte et validité des identifiants non confirmées ; tester le build candidat sur iPad puis renseigner App Review Information avant toute nouvelle soumission. |
+| Sept demandes Apple du 26 août | ⚠️ | Textes exacts et réponses proposées préparés dans `APPLE_REVIEW_DOSSIER.md`. Pas de réponse envoyée. Tests matériels, accès, services activés, marchés et droits restent à confirmer. |
+| Vidéo sur appareil physique | ☐ | Réalisée ultérieurement par l’utilisateur : commencer par le lancement ; couvrir inscription/login/suppression, paiements, contenus utilisateur et permissions applicables. Aucun enregistrement ni téléversement effectué ici. |
 | Statut trader UE (DSA) | ☐ | À déclarer dans App Store Connect → Business : `APP_STORE_LISTING.md` §6. |
 | Suppression de compte **dans l'app** | ✅ | Implémentée : bouton « Supprimer définitivement mon compte » (Settings.tsx, confirmation typée « SUPPRIMER ») + edge function `delete-account` (service-role, suppression réelle côté serveur, anonymisation des commandes, révocation des sessions). Reste : `supabase functions deploy delete-account`. Détail : `APP_STORE_LISTING.md` §2. |
 | Sign in with Apple | ✅ | **Requis** (Guideline 4.8, car Google OAuth est proposé) et **implémenté** : bouton conforme HIG (web + iOS), nonce/state, gestion d'erreurs, liaison de compte, e-mail masqué. Reste : activer le provider Apple (Supabase) + clé `.p8`. Détail : `SIGN_IN_WITH_APPLE.md`. |
