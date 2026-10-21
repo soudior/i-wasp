@@ -63,16 +63,6 @@ export function WalletPassButtons({
   const isDesktop = !isAppleDevice && !isAndroidDevice;
 
   const handleAppleWallet = async () => {
-    if (!isGold) {
-      toast.info("Passe en GOLD pour ajouter ta carte au Wallet", {
-        action: {
-          label: "Voir GOLD",
-          onClick: () => navigate("/pricing"),
-        },
-      });
-      return;
-    }
-
     if (!data.id || !data.slug) {
       toast.error("Données de carte incomplètes");
       return;
@@ -107,9 +97,9 @@ export function WalletPassButtons({
 
   const handleGoogleWallet = async () => {
     if (!isGold) {
-      toast.info("Passe en GOLD pour ajouter ta carte au Wallet", {
+      toast.info("Passe à Premium pour ajouter ta carte à Google Wallet", {
         action: {
-          label: "Voir GOLD",
+          label: "Voir Premium",
           onClick: () => navigate("/pricing"),
         },
       });
@@ -192,7 +182,7 @@ export function WalletPassButtons({
         <span className="font-medium text-sm text-foreground">Wallet Pass</span>
         {isGold && (
           <span className="ml-auto px-2 py-0.5 bg-[#FFC700]/10 text-[#FFC700] text-xs font-medium rounded">
-            GOLD
+            PREMIUM
           </span>
         )}
       </div>
@@ -204,9 +194,8 @@ export function WalletPassButtons({
           <button
             onClick={handleAppleWallet}
             disabled={isBusy}
-            className={`${s.base} ${isGold ? s.apple : `${s.apple} ${s.locked}`}`}
+            className={`${s.base} ${s.apple}`}
           >
-            {!isGold && <Lock className="w-4 h-4 absolute left-3" />}
             {loadingApple ? (
               <Loader2 className={`${s.icon} animate-spin`} />
             ) : (
@@ -234,33 +223,33 @@ export function WalletPassButtons({
         )}
       </div>
 
-      {/* Upgrade message for FREE users - clean style */}
+      {/* Google Wallet remains a Premium feature; Apple Wallet is included in both plans. */}
       {!isGold && showUpgradeMessage && (
         <div className="mt-4 p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
           <div className="flex items-start gap-3">
             <Lock className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-sm font-medium text-foreground">
-                Réservé aux membres GOLD
+                Google Wallet réservé aux membres Premium
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Ajoute ta carte iWasp dans Apple Wallet ou Google Wallet.
+                Apple Wallet est inclus gratuitement. Passe à Premium pour ajouter la carte à Google Wallet.
               </p>
               <button
                 onClick={() => navigate("/pricing")}
                 className="mt-2 text-xs font-medium text-[#FFC700] hover:underline"
               >
-                Passer à GOLD →
+                Passer à Premium →
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Info text for GOLD users */}
-      {isGold && (
+      {/* Apple Wallet availability and installation are distinct; never claim installation. */}
+      {(
         <p className="text-xs text-muted-foreground text-center">
-          Disponibilité selon la configuration du service. Confirmez l’ajout dans votre Wallet ; aucune installation ni synchronisation automatique n’est vérifiée ici.
+          Apple Wallet est inclus pour les plans Free et Premium. Ouvrez le fichier téléchargé sur votre appareil et confirmez l’ajout ; aucune installation ni synchronisation automatique n’est vérifiée ici.
         </p>
       )}
     </div>
