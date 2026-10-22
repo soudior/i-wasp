@@ -55,7 +55,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.create-nfc-payment]
-verify_jwt = false
+verify_jwt = true
 
 [functions.verify-payment]
 verify_jwt = false
