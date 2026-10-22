@@ -16,6 +16,7 @@ import { NFC_PRICING, PRO_SUBSCRIPTION } from "./nfcPricing";
 import { OFFERS } from "@/contexts/OrderFunnelContext";
 import { EXPRESS_OFFERS } from "@/contexts/ExpressCheckoutContext";
 import { serverChargeCents, proTrialMonths } from "./nfcChargeCatalog";
+import { isLaunchOfferActive } from "./launchOffer";
 
 // Centimes MAD canoniques (miroir du catalogue serveur create-nfc-payment).
 const CANONICAL_MAD_CENTS = {
@@ -70,7 +71,8 @@ describe("montants facturés — date de l'offre de lancement", () => {
     expect(serverChargeCents("alliance", "EUR", during)).toBe(7900);
     expect(serverChargeCents("alliance", "MAD", during)).toBe(59900);
     expect(serverChargeCents("pack_team", "EUR", during)).toBe(11900);
-    expect(serverChargeCents("pack_team", "MAD", during)).toBe(129900);
+    expect(serverChargeCents("pack_team", "MAD", during)).toBe(99900);
+    expect(serverChargeCents("team", "EUR", during)).toBe(11900);
     expect(proTrialMonths("signature", during)).toBe(12);
     expect(proTrialMonths("essentiel", during)).toBe(3);
   });
@@ -82,6 +84,7 @@ describe("montants facturés — date de l'offre de lancement", () => {
     expect(serverChargeCents("duo", "MAD", after)).toBeNull();
     expect(proTrialMonths("signature", after)).toBe(3);
     expect(serverChargeCents("pack_team", "EUR", after)).toBe(11900);
+    expect(serverChargeCents("pack_team", "MAD", after)).toBe(129900);
   });
 });
 
@@ -94,6 +97,8 @@ describe("grille canonique — tunnel /order (OrderFunnelContext)", () => {
     const duo = serverChargeCents("duo", "MAD");
     if (duo == null) expect(byId.duo).toBeUndefined();
     else expect(byId.duo).toBe(duo);
+    if (isLaunchOfferActive()) expect(byId.team).toBe(serverChargeCents("team", "MAD"));
+    else expect(byId.team).toBeUndefined();
   });
 });
 

@@ -268,6 +268,7 @@ const KNOWN_CENT_PAIRS: Array<{ mad: number; eur: number }> = [
   { mad: NFC_PRICING.cards.PACK_TEAM.priceMad, eur: NFC_PRICING.cards.PACK_TEAM.priceEur },
   { mad: LAUNCH_OFFER.professionnelle.priceMad, eur: LAUNCH_OFFER.professionnelle.priceEur },
   { mad: LAUNCH_OFFER.duo.priceMad, eur: LAUNCH_OFFER.duo.priceEur },
+  { mad: LAUNCH_OFFER.team.priceMad, eur: LAUNCH_OFFER.team.priceEur },
   { mad: NFC_PRICING.extras.laserEngraving.priceMad, eur: NFC_PRICING.extras.laserEngraving.priceEur },
   { mad: NFC_PRICING.extras.expressProduction.priceMad, eur: NFC_PRICING.extras.expressProduction.priceEur },
   { mad: NFC_PRICING.extras.customPackaging.priceMad, eur: NFC_PRICING.extras.customPackaging.priceEur },
@@ -292,7 +293,9 @@ export function packTeamSavingsPercent(currency: "EUR" | "MAD", now: Date = new 
   const unit = currency === "MAD"
     ? (launch ? LAUNCH_OFFER.professionnelle.priceMad : NFC_PRICING.cards.PROFESSIONNELLE.priceMad)
     : (launch ? LAUNCH_OFFER.professionnelle.priceEur : NFC_PRICING.cards.PROFESSIONNELLE.priceEur);
-  const pack = currency === "MAD" ? NFC_PRICING.cards.PACK_TEAM.priceMad : NFC_PRICING.cards.PACK_TEAM.priceEur;
+  const pack = currency === "MAD"
+    ? (launch ? LAUNCH_OFFER.team.priceMad : NFC_PRICING.cards.PACK_TEAM.priceMad)
+    : (launch ? LAUNCH_OFFER.team.priceEur : NFC_PRICING.cards.PACK_TEAM.priceEur);
   const full = unit * NFC_PRICING.cards.PACK_TEAM.quantity;
   if (pack >= full) return null;
   return Math.round((1 - pack / full) * 100);

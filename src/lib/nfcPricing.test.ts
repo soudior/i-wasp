@@ -52,7 +52,9 @@ describe("nfcPricing — formatage", () => {
     const during = new Date("2026-10-22T12:00:00+01:00");
     const after = new Date("2026-12-01T00:00:00+01:00");
     expect(packTeamSavingsPercent("EUR", during)).toBe(32);
-    expect(packTeamSavingsPercent("MAD", during)).toBeNull();
+    expect(packTeamSavingsPercent("MAD", during)).toBe(20);
+    expect(formatMadCents(99900, "EUR")).toBe("119 €");
+    expect(formatMadCents(99900, "MAD")).toBe("999 DH");
     expect(packTeamSavingsPercent("EUR", after)).toBe(51);
     expect(packTeamSavingsPercent("MAD", after)).toBe(26);
   });

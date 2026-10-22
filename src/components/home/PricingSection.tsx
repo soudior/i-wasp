@@ -133,10 +133,19 @@ export function PricingSection() {
             <div className="text-center sm:text-left">
               <h3 className="font-display text-lg" style={{ color: HOME.text }}>{t("homepage.pricing.teamTitle")}</h3>
               <p className="font-body text-sm font-light mt-1" style={{ color: HOME.textMuted }}>
+                {launch && (
+                  <span className="line-through opacity-60 mr-2">
+                    {formatCatalogAmount(LAUNCH_OFFER.team.compareEur, LAUNCH_OFFER.team.compareMad, marketCurrency)}
+                  </span>
+                )}
                 {savings != null
                   ? t("homepage.pricing.teamDesc", {
                     count: team.quantity,
-                    price: formatCatalogAmount(team.priceEur, team.priceMad, marketCurrency),
+                    price: formatCatalogAmount(
+                      launch ? LAUNCH_OFFER.team.priceEur : team.priceEur,
+                      launch ? LAUNCH_OFFER.team.priceMad : team.priceMad,
+                      marketCurrency,
+                    ),
                     savings,
                   })
                   : `${team.quantity} cartes · ${formatCatalogAmount(team.priceEur, team.priceMad, marketCurrency)}`}

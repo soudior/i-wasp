@@ -74,13 +74,21 @@ function nfcTiers(now = Date.now()): Record<string, MoneyTier> {
       quantity: 1,
       proMonths: 3,
     },
-    pack_team: {
-      name: "Pack TEAM (5 cartes) + 3 mois Pro",
-      amountMadCents: 129900,
-      amountEurCents: 11900,
-      quantity: 5,
-      proMonths: 3,
-    },
+    pack_team: launch
+      ? {
+        name: "Pack TEAM (5 cartes) + 3 mois Pro",
+        amountMadCents: 99900,
+        amountEurCents: 11900,
+        quantity: 5,
+        proMonths: 3,
+      }
+      : {
+        name: "Pack TEAM (5 cartes) + 3 mois Pro",
+        amountMadCents: 129900,
+        amountEurCents: 11900,
+        quantity: 5,
+        proMonths: 3,
+      },
   };
   if (launch) {
     table.pack_duo = {
@@ -100,6 +108,7 @@ const TIER_ALIASES: Record<string, string> = {
   alliance: "prestige",
   single: "essentielle",
   duo: "pack_duo",
+  team: "pack_team",
 };
 
 const NFC_EXTRAS: Record<string, { name: string; amountMadCents: number; amountEurCents: number }> = {

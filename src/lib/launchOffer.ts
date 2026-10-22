@@ -29,6 +29,16 @@ export const LAUNCH_OFFER = {
     compareMad: 698,
     quantity: 2,
   },
+  team: {
+    id: "pack_team",
+    priceEur: 119,
+    priceMad: 999,
+    amountEurCents: 11900,
+    amountMadCents: 99900,
+    compareEur: 175,
+    compareMad: 1299,
+    quantity: 5,
+  },
 } as const;
 
 export function launchOfferEndsAt(): number {

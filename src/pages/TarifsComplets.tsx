@@ -53,6 +53,9 @@ export default function TarifsComplets() {
     if (launch && id === "professionnelle") {
       return formatCatalogAmount(LAUNCH_OFFER.professionnelle.priceEur, LAUNCH_OFFER.professionnelle.priceMad, marketCurrency);
     }
+    if (launch && id === "pack_team") {
+      return formatCatalogAmount(LAUNCH_OFFER.team.priceEur, LAUNCH_OFFER.team.priceMad, marketCurrency);
+    }
     return formatCatalogAmount(eur, mad, marketCurrency);
   };
 
@@ -199,7 +202,11 @@ export default function TarifsComplets() {
                       </span>
                       {"quantity" in tier && tier.quantity > 1 && "pricePerCardMad" in tier && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          {formatCatalogAmount(tier.pricePerCardEur, tier.pricePerCardMad, marketCurrency)}/carte
+                          {formatCatalogAmount(
+                            launch && tier.id === "pack_team" ? LAUNCH_OFFER.team.priceEur / LAUNCH_OFFER.team.quantity : tier.pricePerCardEur,
+                            launch && tier.id === "pack_team" ? LAUNCH_OFFER.team.priceMad / LAUNCH_OFFER.team.quantity : tier.pricePerCardMad,
+                            marketCurrency,
+                          )}/carte
                         </p>
                       )}
                     </div>

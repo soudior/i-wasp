@@ -16,6 +16,7 @@ const TIER_ALIASES: Record<string, string> = {
   single: "essentielle",
   duo: "pack_duo",
   pack_duo: "pack_duo",
+  team: "pack_team",
   essentielle: "essentielle",
   professionnelle: "professionnelle",
   prestige: "prestige",
@@ -43,6 +44,9 @@ export function serverChargeCents(
     return currency === "EUR"
       ? LAUNCH_OFFER.professionnelle.amountEurCents
       : LAUNCH_OFFER.professionnelle.amountMadCents;
+  }
+  if (tier === "pack_team" && launch) {
+    return currency === "EUR" ? LAUNCH_OFFER.team.amountEurCents : LAUNCH_OFFER.team.amountMadCents;
   }
   const card = {
     essentielle: NFC_PRICING.cards.ESSENTIELLE,
@@ -72,6 +76,9 @@ export function launchCompareAmounts(
   }
   if (tier === "pack_duo") {
     return { eur: LAUNCH_OFFER.duo.compareEur, mad: LAUNCH_OFFER.duo.compareMad };
+  }
+  if (tier === "pack_team") {
+    return { eur: LAUNCH_OFFER.team.compareEur, mad: LAUNCH_OFFER.team.compareMad };
   }
   return null;
 }

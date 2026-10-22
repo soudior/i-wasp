@@ -93,6 +93,20 @@ function buildOffers(): OfferDetail[] {
         "Livraison offerte",
       ],
     });
+    rows.push({
+      id: "team",
+      title: "Pack TEAM",
+      subtitle: "5 cartes",
+      priceEUR: LAUNCH_OFFER.team.priceEur,
+      priceMAD: LAUNCH_OFFER.team.priceMad,
+      compareEUR: LAUNCH_OFFER.team.compareEur,
+      compareMAD: LAUNCH_OFFER.team.compareMad,
+      features: [
+        "5 cartes Professionnelle",
+        "Pour une équipe",
+        "Livraison offerte",
+      ],
+    });
   }
   return rows;
 }
@@ -105,7 +119,6 @@ function OrderOffreContent() {
   // Tracking conversions
   const marketCurrency = useMarketCurrency();
   const offers = buildOffers();
-  const team = NFC_PRICING.cards.PACK_TEAM;
   const teamSavings = packTeamSavingsPercent(marketCurrency);
   const { trackOfferSelect, trackCheckoutStart, trackCTA } = useConversionTracking({
     pageName: 'OrderOffre',
@@ -272,7 +285,9 @@ function OrderOffreContent() {
                           className="text-[10px] uppercase tracking-[0.15em]"
                           style={{ color: COUTURE.textMuted }}
                         >
-                          {offer.subtitle}
+                          {offer.id === "team" && teamSavings != null
+                            ? `${teamSavings}% d'économie`
+                            : offer.subtitle}
                         </span>
                       </div>
                       
@@ -317,22 +332,6 @@ function OrderOffreContent() {
                 </motion.button>
               );
             })}
-          </div>
-
-          <div
-            className="mt-4 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-            style={{ border: `1px solid ${COUTURE.jetSoft}` }}
-          >
-            <div>
-              <h3 className="font-display text-lg font-light" style={{ color: COUTURE.silk }}>Pack TEAM</h3>
-              <p className="text-xs mt-1" style={{ color: COUTURE.textMuted }}>
-                5 cartes · {formatCatalogAmount(team.priceEur, team.priceMad, marketCurrency)}
-                {teamSavings != null ? ` · ${teamSavings}% d'économie vs le tarif unitaire` : ""}
-              </p>
-            </div>
-            <Link to="/enterprise" className="text-[10px] uppercase tracking-[0.15em]" style={{ color: COUTURE.gold }}>
-              Demander un devis équipe
-            </Link>
           </div>
 
           <section

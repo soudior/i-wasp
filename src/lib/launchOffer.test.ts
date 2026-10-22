@@ -40,6 +40,11 @@ describe("offre de lancement", () => {
     expect(LAUNCH_OFFER.duo.compareEur).toBe(98);
     expect(LAUNCH_OFFER.duo.quantity).toBe(2);
     expect(LAUNCH_OFFER.professionnelle.proMonths).toBe(12);
+    expect(serverChargeCents("team", "MAD", DURING)).toBe(99900);
+    expect(serverChargeCents("team", "EUR", DURING)).toBe(11900);
+    expect(LAUNCH_OFFER.team.compareMad).toBe(1299);
+    expect(LAUNCH_OFFER.team.compareEur).toBe(175);
+    expect(LAUNCH_OFFER.team.priceMad).toBeLessThan(LAUNCH_OFFER.professionnelle.priceMad * 5);
   });
 
   it("verrouille les mêmes montants dans create-nfc-payment, sans montant client", () => {
@@ -49,7 +54,7 @@ describe("offre de lancement", () => {
     );
     expect(source).toContain('const LAUNCH_OFFER_ENDS_AT = "2026-11-30T23:59:59+01:00"');
     expect(source).toContain("const LAUNCH_OFFER_ENABLED = true");
-    for (const amount of ["2900", "4900", "7900", "11900", "19900", "34900", "59900", "129900", "24900", "3500", "54900"]) {
+    for (const amount of ["2900", "4900", "7900", "11900", "19900", "34900", "59900", "129900", "24900", "3500", "54900", "99900"]) {
       expect(source, amount).toContain(amount);
     }
     expect(source).toContain('body.action === "quote"');

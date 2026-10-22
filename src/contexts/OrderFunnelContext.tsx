@@ -13,9 +13,10 @@
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { serverChargeCents } from "@/lib/nfcChargeCatalog";
+import { isLaunchOfferActive } from "@/lib/launchOffer";
 
 // Offer types
-export type OfferType = "essentiel" | "signature" | "alliance" | "duo";
+export type OfferType = "essentiel" | "signature" | "alliance" | "duo" | "team";
 
 // Pack vitrine (upsell)
 export type VitrinePackType = "none" | "solo" | "equipe";
@@ -36,6 +37,10 @@ function listedOffers(): OfferConfig[] {
   ];
   const duo = serverChargeCents("duo", "MAD");
   if (duo != null) rows.push({ id: "duo", name: "Pack DUO", price: duo, priceCurrency: "MAD" });
+  if (isLaunchOfferActive()) {
+    const team = serverChargeCents("team", "MAD");
+    if (team != null) rows.push({ id: "team", name: "Pack TEAM", price: team, priceCurrency: "MAD" });
+  }
   return rows;
 }
 
