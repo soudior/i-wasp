@@ -1,9 +1,9 @@
 /**
  * CONTRAT DE PRIX — grille canonique unique.
  *
- * La grille officielle i-wasp est : Essentielle 329 DH / 29,90 € ·
- * Professionnelle 549 DH / 49,90 € · Prestige 989 DH / 89,90 € ·
- * Pack TEAM 2189 DH / 199 € (taux unique 1 € = 11 DH).
+ * La grille officielle i-wasp est : Essentielle 199 DH / 29 € ·
+ * Professionnelle 349 DH / 49 € · Prestige 599 DH / 79 € ·
+ * Pack TEAM 1299 DH / 119 €. Les montants ne sont pas dérivés d'un taux.
  *
  * Ces tests échouent si une source de prix (catalogue, tunnel /order,
  * tunnel /express) diverge. Le catalogue serveur

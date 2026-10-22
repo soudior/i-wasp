@@ -1152,7 +1152,7 @@ export default function SovereignDashboard() {
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => navigate("/order/type")}
+                        onClick={() => navigate("/order/offre")}
                         className="px-8 py-4 rounded-full font-bold uppercase tracking-wider"
                         style={{ background: OBSIDIAN.gradient, color: OBSIDIAN.bg }}
                       >

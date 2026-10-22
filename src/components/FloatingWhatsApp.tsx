@@ -1,4 +1,5 @@
 import { MessageCircle } from "lucide-react";
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 import {
   Tooltip,
   TooltipContent,
@@ -6,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const WHATSAPP_URL = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20des%20informations%20sur%20i-wasp.";
+const WHATSAPP_URL = `https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20des%20informations%20sur%20i-wasp.`;
 
 export function FloatingWhatsApp() {
   return (

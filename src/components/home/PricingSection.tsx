@@ -7,7 +7,8 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { NFC_PRICING, formatPriceEur, formatPriceMad } from "@/lib/nfcPricing";
+import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
 import { HOME, reveal, staggerParent } from "./theme";
 
 // Ordre + prix depuis le catalogue (nfcPricing) ; textes traduits via i18n.
@@ -20,6 +21,7 @@ const TIER_DEFS = [
 export function PricingSection() {
   const { shouldReduceMotion } = useReducedMotion();
   const { t } = useTranslation();
+  const marketCurrency = useMarketCurrency();
   const team = NFC_PRICING.cards.PACK_TEAM;
 
   const TIERS = TIER_DEFS.map((def) => ({
@@ -77,10 +79,7 @@ export function PricingSection() {
                 <p className="font-body text-sm font-light mb-6" style={{ color: HOME.textFaint }}>{tier.subtitle}</p>
 
                 <div className="mb-6">
-                  <span className="font-display text-4xl" style={{ color: HOME.text }}>{formatPriceEur(tier.priceEur)}</span>
-                  <span className="font-body text-sm ml-2" style={{ color: HOME.textFaint }}>
-                    {formatPriceMad(tier.priceMad)}
-                  </span>
+                  <span className="font-display text-4xl" style={{ color: HOME.text }}>{formatCatalogAmount(tier.priceEur, tier.priceMad, marketCurrency)}</span>
                 </div>
 
                 <ul className="space-y-3 mb-8 flex-1">
@@ -118,7 +117,7 @@ export function PricingSection() {
               <p className="font-body text-sm font-light mt-1" style={{ color: HOME.textMuted }}>
                 {t("homepage.pricing.teamDesc", {
                   count: team.quantity,
-                  price: formatPriceEur(team.priceEur),
+                  price: formatCatalogAmount(team.priceEur, team.priceMad, marketCurrency),
                   savings: team.savings,
                 })}
               </p>

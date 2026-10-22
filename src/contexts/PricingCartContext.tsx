@@ -5,6 +5,7 @@
  */
 
 import { createContext, useContext, useState, useMemo, ReactNode } from 'react';
+import { detectMarketCurrency } from '@/lib/currencyDetection';
 
 // Types
 export type Currency = 'MAD' | 'EUR';
@@ -83,14 +84,23 @@ export const MAINTENANCE_PLANS = [
 
 // NFC Plans
 export const NFC_PACKAGES = {
-  ESSENTIEL: { id: 'nfc-essentiel', name: 'Essentiel NFC', priceMAD: 290, priceEUR: 29 },
+  ESSENTIEL: { id: 'nfc-essentiel', name: 'Essentiel NFC', priceMAD: 199, priceEUR: 29 },
   SIGNATURE: { id: 'nfc-signature', name: 'Signature NFC', priceMAD: 290, priceEUR: 29, subscription: { priceMAD: 29, priceEUR: 2.9, period: '/mois' } },
   ELITE: { id: 'nfc-elite', name: 'Elite NFC', priceMAD: 990, priceEUR: 99 },
 };
 
 export function PricingCartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [currency, setCurrency] = useState<Currency>('EUR');
+  const [currency, setCurrency] = useState<Currency>(() => {
+    try {
+      return detectMarketCurrency({
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        languages: navigator.languages,
+      });
+    } catch {
+      return 'EUR';
+    }
+  });
 
   const addItem = (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
     setItems(prev => {

@@ -6,6 +6,8 @@
  */
 
 import { useState } from "react";
+import { NFC_PRICING } from "@/lib/nfcPricing";
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CoutureNavbar } from "@/components/CoutureNavbar";
@@ -720,13 +722,13 @@ function PricingContent() {
                     <p className="text-sm mb-6 font-light" style={{ color: COLORS.gris }}>Votre entrée dans la conciergerie</p>
                     
                     <div className="mb-6">
-                      <span className="text-4xl font-light">{currency === "MAD" ? "329" : "29,90"}</span>
+                      <span className="text-4xl font-light">{currency === "MAD" ? NFC_PRICING.cards.ESSENTIELLE.priceMad : NFC_PRICING.cards.ESSENTIELLE.priceEur}</span>
                       <span className="text-lg ml-2" style={{ color: COLORS.gris }}>{currency === "MAD" ? "DH" : "€"}</span>
                       <p className="text-sm mt-1" style={{ color: COLORS.gris }}>mise en service</p>
                     </div>
                     
                     <a 
-                      href="https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20accéder%20au%20service%20Essentiel%20i-Wasp."
+                      href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20accéder%20au%20service%20Essentiel%20i-Wasp.`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -804,7 +806,7 @@ function PricingContent() {
                       </div>
                     </div>
                     
-                    <Link to="/order/type">
+                    <Link to="/order/offre">
                       <Button 
                         className="w-full py-6 font-medium text-sm uppercase tracking-widest"
                         style={{ 
@@ -876,7 +878,7 @@ function PricingContent() {
                     </div>
                     
                     <a 
-                      href="https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20en%20savoir%20plus%20sur%20le%20service%20Élite%20pour%20mon%20équipe."
+                      href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20en%20savoir%20plus%20sur%20le%20service%20Élite%20pour%20mon%20équipe.`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -1102,7 +1104,7 @@ function PricingContent() {
                     </div>
                   </div>
                   
-                  <Link to="/order/type">
+                  <Link to="/order/offre">
                     <Button 
                       className="px-6 py-3 font-medium text-xs uppercase tracking-widest rounded-xl"
                       style={{ 
@@ -1231,7 +1233,7 @@ function PricingContent() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a 
-                href="https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20en%20savoir%20plus%20sur%20vos%20services."
+                href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20en%20savoir%20plus%20sur%20vos%20services.`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

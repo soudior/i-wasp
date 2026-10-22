@@ -3,7 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { 
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
+import {
   Search, 
   Mail, 
   Hash, 
@@ -533,7 +534,7 @@ export default function TrackWebStudioOrder() {
                   </div>
                   <Button asChild>
                     <a 
-                      href="https://wa.me/212600000000" 
+                      href={`https://wa.me/${IWASP_WHATSAPP_WA}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="gap-2"

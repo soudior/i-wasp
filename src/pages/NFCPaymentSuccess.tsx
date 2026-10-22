@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
+import {
   CheckCircle2, 
   Package,
   MessageCircle,
@@ -139,7 +140,7 @@ export default function NFCPaymentSuccess() {
             )}
             <div className="flex flex-col gap-3 pt-2">
               <Button asChild style={{ backgroundColor: COLORS.success, color: "white" }}>
-                <a href="https://wa.me/212661928670?text=Bonjour%2C%20mon%20paiement%20NFC%20n'est%20pas%20confirm%C3%A9." target="_blank" rel="noopener noreferrer">
+                <a href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%2C%20mon%20paiement%20NFC%20n'est%20pas%20confirm%C3%A9.`} target="_blank" rel="noopener noreferrer">
                   <MessageCircle size={16} className="mr-2" /> Contacter le support
                 </a>
               </Button>
@@ -345,7 +346,7 @@ export default function NFCPaymentSuccess() {
                 }}
               >
                 <a 
-                  href="https://wa.me/212661928670?text=Bonjour%20!%20Je%20viens%20de%20commander%20des%20cartes%20NFC%20et%20j'ai%20une%20question."
+                  href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20!%20Je%20viens%20de%20commander%20des%20cartes%20NFC%20et%20j'ai%20une%20question.`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

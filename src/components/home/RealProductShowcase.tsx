@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Radio, Smartphone, UserRoundCheck, WalletCards } from "lucide-react";
-import nfcTapVisual from "@/assets/cards/iwasp-nfc-tap-realistic-1920x1080.webp";
+const nfcTapVisual = "/media/hero/hero-nfc.webp";
 import walletVisual from "@/assets/cards/iwasp-wallet-realistic-1920x1080.webp";
 
 const facts = [

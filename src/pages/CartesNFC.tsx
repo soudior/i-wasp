@@ -5,6 +5,9 @@
 
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
+import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,8 +41,8 @@ interface Product {
   id: string;
   name: string;
   subtitle: string;
-  price: string;
-  currency: string;
+  priceEur: number;
+  priceMad: number;
   color: string;
   features: string[];
   popular: boolean;
@@ -50,8 +53,8 @@ const products: Product[] = [
     id: "classique",
     name: "Classique",
     subtitle: "PVC Premium",
-    price: "329",
-    currency: "MAD",
+    priceEur: NFC_PRICING.cards.ESSENTIELLE.priceEur,
+    priceMad: NFC_PRICING.cards.ESSENTIELLE.priceMad,
     color: "Noir mat + Or",
     features: [
       "PVC haute qualité",
@@ -66,8 +69,8 @@ const products: Product[] = [
     id: "premium",
     name: "Premium",
     subtitle: "PVC Luxe",
-    price: "549",
-    currency: "MAD",
+    priceEur: NFC_PRICING.cards.PROFESSIONNELLE.priceEur,
+    priceMad: NFC_PRICING.cards.PROFESSIONNELLE.priceMad,
     color: "Blanc nacré + Argent",
     features: [
       "PVC premium épais",
@@ -83,8 +86,8 @@ const products: Product[] = [
     id: "metal",
     name: "Métal",
     subtitle: "Acier brossé",
-    price: "989",
-    currency: "MAD",
+    priceEur: NFC_PRICING.cards.PRESTIGE.priceEur,
+    priceMad: NFC_PRICING.cards.PRESTIGE.priceMad,
     color: "Or brossé",
     features: [
       "Acier inoxydable",
@@ -145,11 +148,13 @@ const faqs = [
   },
   {
     question: "Comment commander ?",
-    answer: "C'est simple ! Cliquez sur 'Commander' pour nous contacter via WhatsApp. Précisez le modèle souhaité et nous vous guiderons pour la personnalisation, le paiement et la livraison.",
+    answer: "C'est simple : cliquez sur Commander pour ouvrir la page de commande, choisissez l'offre, puis indiquez la livraison. Le paiement se fait par carte ou à la livraison.",
   },
 ];
 
 export default function CartesNFC() {
+  const marketCurrency = useMarketCurrency();
+  const priceLabel = (product: Product) => formatCatalogAmount(product.priceEur, product.priceMad, marketCurrency);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [orderForm, setOrderForm] = useState({
     name: "",
@@ -172,7 +177,7 @@ export default function CartesNFC() {
     const message = `🛒 *COMMANDE CARTE NFC*
 
 📦 *Produit:* ${selectedProduct.name} (${selectedProduct.subtitle})
-💰 *Prix:* ${selectedProduct.price} ${selectedProduct.currency}
+💰 *Prix:* ${priceLabel(selectedProduct)}
 🎨 *Couleur:* ${selectedProduct.color}
 
 👤 *Client:*
@@ -182,7 +187,7 @@ export default function CartesNFC() {
 ${company ? `• Entreprise: ${company}` : ""}
 ${notes ? `\n📝 *Notes:* ${notes}` : ""}`;
 
-    const whatsappUrl = `https://wa.me/33626424394?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${IWASP_WHATSAPP_WA}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
     setSelectedProduct(null);
     setOrderForm({ name: "", email: "", phone: "", company: "", notes: "" });
@@ -208,7 +213,7 @@ ${notes ? `\n📝 *Notes:* ${notes}` : ""}`;
                 <div>
                   <p className="font-semibold text-foreground">{selectedProduct.name}</p>
                   <p className="text-lg font-bold text-primary">
-                    {selectedProduct.price} {selectedProduct.currency}
+                    {priceLabel(selectedProduct)}
                   </p>
                 </div>
               </div>
@@ -307,14 +312,10 @@ ${notes ? `\n📝 *Notes:* ${notes}` : ""}`;
                   </a>
                 </Button>
                 <Button variant="outline" size="lg" asChild>
-                  <a 
-                    href="https://wa.me/33626424394?text=Bonjour, je souhaite commander une carte NFC"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <Link to="/order/offre">
                     <MessageCircle className="w-5 h-5 mr-2" />
-                    Commander sur WhatsApp
-                  </a>
+                    Commander
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -405,8 +406,7 @@ ${notes ? `\n📝 *Notes:* ${notes}` : ""}`;
                   </div>
 
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold text-foreground">{product.price}</span>
-                    <span className="text-muted-foreground">{product.currency}</span>
+                    <span className="text-4xl font-bold text-foreground">{priceLabel(product)}</span>
                   </div>
 
                   <ul className="space-y-3">
@@ -422,10 +422,12 @@ ${notes ? `\n📝 *Notes:* ${notes}` : ""}`;
                     variant={product.popular ? "default" : "outline"} 
                     size="lg" 
                     className="w-full"
-                    onClick={() => setSelectedProduct(product)}
+                    asChild
                   >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Commander
+                    <Link to="/order/offre">
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Commander
+                    </Link>
                   </Button>
                 </div>
               </div>
@@ -517,7 +519,7 @@ ${notes ? `\n📝 *Notes:* ${notes}` : ""}`;
               </p>
               <Button size="lg" asChild>
                 <a 
-                  href="https://wa.me/33626424394?text=Bonjour, j'ai une question concernant les cartes NFC"
+                  href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour, j'ai une question concernant les cartes NFC`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -543,14 +545,10 @@ ${notes ? `\n📝 *Notes:* ${notes}` : ""}`;
               </p>
               <div className="flex flex-wrap justify-center gap-4 pt-4">
                 <Button size="lg" asChild>
-                  <a 
-                    href="https://wa.me/33626424394?text=Bonjour, je souhaite commander une carte NFC premium"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <Link to="/order/offre">
                     <MessageCircle className="w-5 h-5 mr-2" />
                     Commander maintenant
-                  </a>
+                  </Link>
                 </Button>
                 <Button variant="outline" size="lg" asChild>
                   <Link to="/contact">

@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * Pricing Comparison Component - SaaS Professional
  * Clean table, no decorative effects
@@ -140,7 +141,7 @@ export function GoldPricingComparison() {
         {/* CTA Buttons */}
         <div className="grid md:grid-cols-2 gap-4 mt-8">
           <a 
-            href="https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commencer%20gratuitement%20avec%20une%20carte%20NFC%20i-wasp."
+            href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20commencer%20gratuitement%20avec%20une%20carte%20NFC%20i-wasp.`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full"
@@ -156,7 +157,7 @@ export function GoldPricingComparison() {
           <Button 
             size="lg"
             className="py-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold gap-2"
-            onClick={() => navigate("/order/type")}
+            onClick={() => navigate("/order/offre")}
           >
             <Crown className="w-5 h-5" />
             Passer GOLD

@@ -9,6 +9,7 @@
 
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { NFC_PRICING } from "@/lib/nfcPricing";
 
 // Offer types
 export type ExpressOfferType = "essentiel" | "signature" | "alliance";
@@ -22,11 +23,11 @@ export interface ExpressOfferConfig {
 }
 
 // Grille CANONIQUE (identique à nfcPricing.ts et au serveur create-nfc-payment) :
-// 329 / 549 / 989 DH ⇔ 29,90 / 49,90 / 89,90 €. Ne pas dériver d'autres montants.
+// 199 / 349 / 599 DH ⇔ 29 / 49 / 79 €. Ne pas dériver d'autres montants.
 export const EXPRESS_OFFERS: ExpressOfferConfig[] = [
-  { id: "essentiel", name: "Essentielle", price: 19900, priceDisplay: "199 MAD" },
-  { id: "signature", name: "Professionnelle", price: 34900, priceDisplay: "349 MAD" },
-  { id: "alliance", name: "Prestige", price: 59900, priceDisplay: "599 MAD" },
+  { id: "essentiel", name: "Essentielle", price: NFC_PRICING.cards.ESSENTIELLE.priceMad * 100, priceDisplay: `${NFC_PRICING.cards.ESSENTIELLE.priceMad} MAD` },
+  { id: "signature", name: "Professionnelle", price: NFC_PRICING.cards.PROFESSIONNELLE.priceMad * 100, priceDisplay: `${NFC_PRICING.cards.PROFESSIONNELLE.priceMad} MAD` },
+  { id: "alliance", name: "Prestige", price: NFC_PRICING.cards.PRESTIGE.priceMad * 100, priceDisplay: `${NFC_PRICING.cards.PRESTIGE.priceMad} MAD` },
 ];
 
 // Minimal customer info (fusionné identité + livraison)

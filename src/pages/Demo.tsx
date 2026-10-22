@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, Contact, Mail, Phone, Radio, WalletCards } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SEOHead } from "@/components/SEOHead";
-import nfcVisual from "@/assets/cards/iwasp-nfc-tap-realistic-1920x1080.webp";
+const nfcVisual = "/media/hero/hero-nfc.webp";
 import walletVisual from "@/assets/cards/iwasp-wallet-realistic-1920x1080.webp";
 
 const steps = [

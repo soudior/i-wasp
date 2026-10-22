@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * CheckoutTunnel - Sovereign Stealth Empire V2
  * 
@@ -110,14 +111,14 @@ const CheckoutTunnel = () => {
   const [identity, setIdentity] = useState({
     name: user?.email?.split('@')[0] || "Identité Elite",
     title: "Sovereign Member",
-    whatsapp: "33626424394",
+    whatsapp: IWASP_WHATSAPP_WA,
     website: "i-wasp.com",
     location: "Global Alliance",
     avatar: "W",
     status: "Vérifié"
   });
 
-  const brandProfile = { domain: "i-wasp.com", whatsapp: "33626424394" };
+  const brandProfile = { domain: "i-wasp.com", whatsapp: IWASP_WHATSAPP_WA };
 
   const sidebarItems = [
     { id: 'home' as TabId, label: 'Hégémonie', icon: Globe },
@@ -163,7 +164,7 @@ const CheckoutTunnel = () => {
     setIdentity({
       name: isSite ? "Vôtre Enseigne Digitale" : magicInput,
       title: "Identité Souveraine Certifiée",
-      whatsapp: "33626424394",
+      whatsapp: IWASP_WHATSAPP_WA,
       website: isSite ? magicInput : "i-wasp.com",
       location: "Maroc - World Hub",
       avatar: magicInput.charAt(0).toUpperCase(),
@@ -360,7 +361,7 @@ const CheckoutTunnel = () => {
                     <Wand2 className="w-4 h-4" /> Architecte ID
                   </button>
                   <button 
-                    onClick={() => navigate('/order/type')} 
+                    onClick={() => navigate('/order/offre')} 
                     className="px-8 py-6 bg-emerald-600 text-white rounded-full font-black uppercase text-xs tracking-[0.3em] hover:bg-emerald-500 transition-all flex items-center gap-3"
                   >
                     <CreditCard className="w-4 h-4" /> Commander ma Carte
@@ -467,7 +468,7 @@ const CheckoutTunnel = () => {
               {/* CTA Commander */}
               <div className="mt-8 text-center">
                 <button 
-                  onClick={() => navigate('/order/type')}
+                  onClick={() => navigate('/order/offre')}
                   className="px-10 py-5 bg-[#A5A9B4] text-black rounded-full font-black uppercase text-sm tracking-[0.3em] hover:bg-white transition-all inline-flex items-center gap-3"
                 >
                   <CreditCard className="w-5 h-5" />
@@ -526,7 +527,7 @@ const CheckoutTunnel = () => {
                   <h3 className="text-xl font-black text-white mb-1">{identity.name}</h3>
                   <p className="text-sm text-[#A5A9B4] mb-4">{identity.title}</p>
                   <button 
-                    onClick={() => navigate('/order/type')}
+                    onClick={() => navigate('/order/offre')}
                     className="px-8 py-3 bg-[#A5A9B4] text-black rounded-full font-black uppercase text-xs tracking-widest hover:bg-white transition-all"
                   >
                     Commander cette identité
@@ -662,7 +663,7 @@ const CheckoutTunnel = () => {
               <div className="mt-8 p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 text-center">
                 <p className="text-sm text-white/50 mb-4">Ou commandez directement votre carte NFC personnalisée</p>
                 <button 
-                  onClick={() => navigate('/order/type')}
+                  onClick={() => navigate('/order/offre')}
                   className="px-10 py-5 bg-emerald-600 text-white rounded-full font-black uppercase text-sm tracking-[0.3em] hover:bg-emerald-500 transition-all inline-flex items-center gap-3"
                 >
                   <CreditCard className="w-5 h-5" />
@@ -788,7 +789,7 @@ const CheckoutTunnel = () => {
               {/* CTA Commander */}
               <div className="text-center">
                 <button 
-                  onClick={() => navigate('/order/type')}
+                  onClick={() => navigate('/order/offre')}
                   className="px-12 py-6 bg-[#A5A9B4] text-black rounded-full font-black uppercase text-sm tracking-[0.4em] shadow-2xl hover:bg-white transition-all inline-flex items-center gap-4"
                 >
                   <Sparkles className="w-5 h-5" />

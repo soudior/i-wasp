@@ -168,7 +168,7 @@ const VisionSection = () => (
             <span className="text-[#D4AF37]">Aura Digitale.</span>
           </h1>
           <Link
-            to="/commander"
+            to="/order/offre"
             className="inline-flex items-center gap-3 px-8 py-4 bg-[#D4AF37] text-[#0A1931] font-bold rounded-xl hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all duration-300 w-fit"
           >
             Déployer mon Aura

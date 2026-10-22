@@ -12,6 +12,7 @@
 
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { NFC_PRICING } from "@/lib/nfcPricing";
 
 // Offer types
 export type OfferType = "essentiel" | "signature" | "alliance";
@@ -28,9 +29,9 @@ export interface OfferConfig {
 }
 
 export const OFFERS: OfferConfig[] = [
-  { id: "essentiel", name: "Essentielle", price: 19900, priceCurrency: "MAD" },
-  { id: "signature", name: "Professionnelle", price: 34900, priceCurrency: "MAD" },
-  { id: "alliance", name: "Prestige", price: 59900, priceCurrency: "MAD" },
+  { id: "essentiel", name: "Essentielle", price: NFC_PRICING.cards.ESSENTIELLE.priceMad * 100, priceCurrency: "MAD" },
+  { id: "signature", name: "Professionnelle", price: NFC_PRICING.cards.PROFESSIONNELLE.priceMad * 100, priceCurrency: "MAD" },
+  { id: "alliance", name: "Prestige", price: NFC_PRICING.cards.PRESTIGE.priceMad * 100, priceCurrency: "MAD" },
 ];
 
 export const VITRINE_PACKS = [

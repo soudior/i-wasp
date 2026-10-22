@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { 
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
+import {
   Building2, 
   Users, 
   Shield, 
@@ -13,8 +14,8 @@ import {
 } from "lucide-react";
 
 // WhatsApp links
-const WHATSAPP_DEVIS = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20demander%20un%20devis%20pour%20des%20cartes%20NFC%20pour%20mon%20entreprise.";
-const WHATSAPP_DEMO = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20voir%20une%20démo%20de%20la%20solution%20iWasp%20Business.";
+const WHATSAPP_DEVIS = `https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20demander%20un%20devis%20pour%20des%20cartes%20NFC%20pour%20mon%20entreprise.`;
+const WHATSAPP_DEMO = `https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20voir%20une%20démo%20de%20la%20solution%20iWasp%20Business.`;
 
 const benefits = [
   {

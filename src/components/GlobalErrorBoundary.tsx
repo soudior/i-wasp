@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * GlobalErrorBoundary - Gestion globale des erreurs
  * Affiche un écran d'erreur élégant au lieu d'une page blanche
@@ -47,7 +48,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
   };
 
   private handleContact = () => {
-    window.open("https://wa.me/33626424394?text=Bonjour%20👋%20J'ai%20rencontré%20une%20erreur%20sur%20votre%20site.", "_blank");
+    window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%20J'ai%20rencontré%20une%20erreur%20sur%20votre%20site.`, "_blank");
   };
 
   public render() {

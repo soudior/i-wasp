@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { Radio, Smartphone } from "lucide-react";
-import nfcTapVisual from "@/assets/cards/iwasp-nfc-tap-realistic-1920x1080.webp";
+const nfcTapVisual = "/media/hero/hero-nfc.webp";
 
 export function HeroProductVisual() {
   return (
     <div className="relative w-full max-w-[680px]">
       <div className="absolute -inset-8 -z-10 rounded-[3rem] bg-[#DCC7B0]/10 blur-3xl" aria-hidden />
       <motion.figure
-        initial={{ opacity: 0, rotateY: -7, y: 24 }}
+        initial={{ opacity: 1, rotateY: -7, y: 24 }}
         animate={{ opacity: 1, rotateY: 0, y: 0 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#090909] shadow-[0_40px_100px_-28px_rgba(0,0,0,0.9)]"

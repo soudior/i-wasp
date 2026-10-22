@@ -8,6 +8,7 @@ import { FileDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
+import { IWASP_WHATSAPP_DISPLAY } from "@/lib/brandContact";
 
 interface ColorPalette {
   primary: string;
@@ -294,7 +295,7 @@ export function ProposalPdfExport({
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.text("i-wasp Studio • studio@i-wasp.com • +33 6 26 42 43 94", margin, footerY + 5);
+      doc.text(`i-wasp Studio • studio@i-wasp.com • ${IWASP_WHATSAPP_DISPLAY}`, margin, footerY + 5);
       doc.text("www.i-wasp.com", pageWidth - margin - 30, footerY + 5);
 
       // Save

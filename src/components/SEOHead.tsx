@@ -16,7 +16,7 @@ interface SEOHeadProps {
   noindex?: boolean;
 }
 
-const BASE_URL = "https://i-wasp.com";
+const BASE_URL = "https://www.i-wasp.com";
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
 const SITE_NAME = "i-wasp";
 

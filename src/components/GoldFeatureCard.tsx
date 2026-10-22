@@ -84,7 +84,7 @@ export function GoldFeatureCard({
               <p className="text-white/70 text-sm text-center max-w-[200px]">
                 Devenez membre <span className="text-[#D4AF37] font-semibold">GOLD</span> pour activer cette fonctionnalité
               </p>
-              <Link to="/order/type">
+              <Link to="/order/offre">
                 <Button 
                   size="sm"
                   className="bg-gradient-to-r from-[#D4AF37] to-[#F5D76E] text-[#1D1D1F] hover:from-[#C9A431] hover:to-[#E5C75E] font-semibold"

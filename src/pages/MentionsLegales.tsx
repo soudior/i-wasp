@@ -6,6 +6,7 @@ import { ClubNavbar } from "@/components/ClubNavbar";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import { motion } from "framer-motion";
 import { Scale } from "lucide-react";
+import { IWASP_WHATSAPP_DISPLAY } from "@/lib/brandContact";
 
 export default function MentionsLegales() {
   return (
@@ -35,7 +36,7 @@ export default function MentionsLegales() {
                   Capital social : 10 000 €<br />
                   Siège social : Paris, France<br />
                   Email : contact@i-wasp.com<br />
-                  Téléphone : +33 6 26 42 43 94
+                  Téléphone : {IWASP_WHATSAPP_DISPLAY}
                 </p>
               </section>
 

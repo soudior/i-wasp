@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * Floating Cart Summary - Résumé du panier flottant
  * Affiche le total et permet de payer
@@ -83,7 +84,7 @@ export function FloatingCartSummary() {
     const total = getTotalFormatted();
     const message = `Bonjour 👋%0A%0AJe souhaite un devis pour:%0A${itemsList}%0A%0A*Total: ${total}*`;
     
-    window.open(`https://wa.me/33626424394?text=${message}`, '_blank');
+    window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=${message}`, '_blank');
   };
 
   if (itemCount === 0) return null;

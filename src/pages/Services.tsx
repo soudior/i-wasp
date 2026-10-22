@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * Services Page
  * Liste des services i-wasp avec formulaire de devis WhatsApp
@@ -151,7 +152,7 @@ ${company ? `• Entreprise: ${company}` : ""}
 📝 *Description du projet:*
 ${description}`;
 
-    const whatsappUrl = `https://wa.me/33626424394?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${IWASP_WHATSAPP_WA}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
     setSelectedService(null);
     setQuoteForm({ name: "", email: "", phone: "", company: "", description: "" });

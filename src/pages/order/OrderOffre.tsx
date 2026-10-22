@@ -13,6 +13,8 @@ import { useOrderFunnel, OfferType, OrderFunnelGuard } from "@/contexts/OrderFun
 import { Check, ArrowLeft, ArrowRight, Shield, Truck } from "lucide-react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
+import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
 
 interface OfferDetail {
   id: OfferType;
@@ -29,8 +31,8 @@ const offers: OfferDetail[] = [
     id: "essentiel",
     title: "Essentielle",
     subtitle: "Découverte",
-    priceEUR: 29,
-    priceMAD: 199,
+    priceEUR: NFC_PRICING.cards.ESSENTIELLE.priceEur,
+    priceMAD: NFC_PRICING.cards.ESSENTIELLE.priceMad,
     features: [
       "1 carte NFC standard",
       "Profil numérique simple",
@@ -42,8 +44,8 @@ const offers: OfferDetail[] = [
     id: "signature",
     title: "Professionnelle",
     subtitle: "Recommandé",
-    priceEUR: 49,
-    priceMAD: 349,
+    priceEUR: NFC_PRICING.cards.PROFESSIONNELLE.priceEur,
+    priceMAD: NFC_PRICING.cards.PROFESSIONNELLE.priceMad,
     isSignature: true,
     features: [
       "Carte NFC premium",
@@ -57,8 +59,8 @@ const offers: OfferDetail[] = [
     id: "alliance",
     title: "Prestige",
     subtitle: "Premium",
-    priceEUR: 79,
-    priceMAD: 599,
+    priceEUR: NFC_PRICING.cards.PRESTIGE.priceEur,
+    priceMAD: NFC_PRICING.cards.PRESTIGE.priceMad,
     features: [
       "Carte NFC luxe",
       "Personnalisation totale",
@@ -75,6 +77,7 @@ function OrderOffreContent() {
   const [isNavigating, setIsNavigating] = useState(false);
   
   // Tracking conversions
+  const marketCurrency = useMarketCurrency();
   const { trackOfferSelect, trackCheckoutStart, trackCTA } = useConversionTracking({
     pageName: 'OrderOffre',
   });
@@ -263,10 +266,7 @@ function OrderOffreContent() {
                         className="text-right font-light tabular-nums"
                         style={{ color: isSelected ? COUTURE.gold : COUTURE.silk }}
                       >
-                        <span className="block text-2xl">{offer.priceMAD} DH</span>
-                        <span className="block mt-1 text-[10px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
-                          {offer.priceEUR} € international
-                        </span>
+                        <span className="block text-2xl">{formatCatalogAmount(offer.priceEUR, offer.priceMAD, marketCurrency)}</span>
                       </span>
                       
                       {isSelected && (

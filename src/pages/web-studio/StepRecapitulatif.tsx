@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * Étape 5: Récapitulatif et génération
  * Affiche un résumé, génère la proposition automatiquement, permet de commander
@@ -295,7 +296,7 @@ function StepRecapitulatifContent() {
       `💰 Estimation: ${price.eur}€ / ${price.mad}DH\n\n` +
       `Contact: ${formData.contactEmail}`
     );
-    window.open(`https://wa.me/33626424394?text=${message}`, "_blank");
+    window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=${message}`, "_blank");
   };
 
   const price = calculatePrice();

@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, Shield, Clock, Sparkles } from "lucide-react";
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 
-const WHATSAPP_COMMANDER = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20une%20carte%20NFC%20i-wasp.";
-const WHATSAPP_DEMO = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20voir%20une%20démo%20de%20la%20carte%20NFC%20i-wasp.";
+const WHATSAPP_COMMANDER = `https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20commander%20une%20carte%20NFC%20i-wasp.`;
+const WHATSAPP_DEMO = `https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20voir%20une%20démo%20de%20la%20carte%20NFC%20i-wasp.`;
 
 const trustBadges = [
   { icon: Shield, label: "Sans engagement" },

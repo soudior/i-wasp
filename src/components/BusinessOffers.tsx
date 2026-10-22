@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
+import {
   Users, Building2, Crown, Check, Star, 
   Headphones, Code, Award, MessageCircle 
 } from "lucide-react";
@@ -17,7 +18,7 @@ export function BusinessOffers() {
     const message = encodeURIComponent(
       "Bonjour i-wasp, je souhaite obtenir un devis pour un pack Enterprise de [X] cartes pour mon entreprise."
     );
-    window.open(`https://wa.me/212600000000?text=${message}`, "_blank");
+    window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=${message}`, "_blank");
   };
 
   const handleTeamOrder = () => {

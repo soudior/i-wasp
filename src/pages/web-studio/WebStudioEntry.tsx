@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * Web Studio Entry - Redirige vers le tunnel de création
  */
@@ -36,7 +37,7 @@ export default function WebStudioEntry() {
 
   const handleWhatsApp = () => {
     window.open(
-      "https://wa.me/33626424394?text=Bonjour, je souhaite créer un site web professionnel.",
+      `https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour, je souhaite créer un site web professionnel.`,
       "_blank"
     );
   };

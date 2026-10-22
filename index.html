@@ -11,7 +11,25 @@
     <meta name="description" content="Découvrez les cartes de visite NFC personnalisées i-wasp : profil digital, QR code et Apple Wallet. Partagez vos coordonnées en un geste, sur iPhone et Android." />
     <meta name="author" content="i-wasp" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <link rel="canonical" href="https://i-wasp.com/" />
+    <link rel="canonical" href="https://www.i-wasp.com/" />
+    <script>
+      (function () {
+        var path = location.pathname;
+        var link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.setAttribute("fetchpriority", "high");
+        if (path === "/" || path === "/omnia") {
+          link.href = "/media/hero/hero-nfc.webp";
+          link.type = "image/webp";
+          document.head.appendChild(link);
+        } else if (path === "/produits" || path.indexOf("/produits/") === 0) {
+          link.href = "/media/cards/card-base-front-480.webp";
+          link.type = "image/webp";
+          document.head.appendChild(link);
+        }
+      })();
+    </script>
     
     <!-- Audience measurement on public marketing pages only. -->
     <script>
@@ -53,20 +71,20 @@
     <meta property="og:title" content="i-wasp — Carte de visite NFC premium" />
     <meta property="og:description" content="Partagez votre identité professionnelle en un contact : NFC, profil digital, QR code et Apple Wallet." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://i-wasp.com/og-image.png" />
+    <meta property="og:image" content="https://www.i-wasp.com/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Carte de visite NFC premium i-wasp" />
     <meta property="og:locale" content="fr_FR" />
     <meta property="og:site_name" content="i-wasp" />
-    <meta property="og:url" content="https://i-wasp.com" />
+    <meta property="og:url" content="https://www.i-wasp.com" />
 
     <!-- Twitter - i-wasp branded -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@iwasp_ma" />
     <meta name="twitter:title" content="i-wasp — Carte de visite NFC premium" />
     <meta name="twitter:description" content="NFC, profil digital, QR code et Apple Wallet dans une expérience professionnelle premium." />
-    <meta name="twitter:image" content="https://i-wasp.com/og-image.png" />
+    <meta name="twitter:image" content="https://www.i-wasp.com/og-image.png" />
     <meta name="twitter:image:alt" content="Carte de visite NFC premium i-wasp" />
 
     <!-- Machine-readable identity for search engines. Product/price data stays
@@ -76,8 +94,8 @@
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "i-wasp",
-        "url": "https://i-wasp.com/",
-        "logo": "https://i-wasp.com/app-icon-1024.png",
+        "url": "https://www.i-wasp.com/",
+        "logo": "https://www.i-wasp.com/app-icon-1024.png",
         "description": "Cartes de visite NFC premium et profils digitaux professionnels",
         "email": "contact@i-wasp.com"
       }
@@ -87,7 +105,7 @@
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "i-wasp",
-        "url": "https://i-wasp.com/",
+        "url": "https://www.i-wasp.com/",
         "inLanguage": "fr-FR"
       }
     </script>

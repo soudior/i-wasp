@@ -11,6 +11,8 @@ import { useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useExpressCheckout, EXPRESS_OFFERS, ExpressPaymentMethod } from "@/contexts/ExpressCheckoutContext";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
+import { formatMadCents } from "@/lib/nfcPricing";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, CreditCard, Banknote, Check, MapPin, User, Shield, Loader2 } from "lucide-react";
@@ -39,10 +41,9 @@ export default function ExpressPayer() {
   }, [canAccessStep, state.selectedOffer, navigate]);
 
   const selectedOffer = EXPRESS_OFFERS.find(o => o.id === state.selectedOffer);
+  const marketCurrency = useMarketCurrency();
 
-  const formatPrice = (cents: number): string => {
-    return `${(cents / 100).toFixed(0)} MAD`;
-  };
+  const formatPrice = (cents: number): string => formatMadCents(cents, marketCurrency);
 
   const handlePaymentSelect = (method: ExpressPaymentMethod) => {
     setPaymentMethod(method);

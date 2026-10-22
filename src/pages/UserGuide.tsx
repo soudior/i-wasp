@@ -115,7 +115,7 @@ export default function UserGuide() {
           </p>
           
           {/* CTA Button */}
-          <Link to="/order/type" className="block">
+          <Link to="/order/offre" className="block">
             <Button 
               size="lg" 
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold shadow-lg shadow-primary/30"

@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * ClientForm - Formulaire partageable via WhatsApp
  * Pour collecter les infos et créer une carte digitale
@@ -162,7 +163,7 @@ ${photoUrl ? `\n📷 *Photo de profil*: ${photoUrl}` : ""}
 
     // Encoder le message pour WhatsApp
     const encodedMessage = encodeURIComponent(message);
-    const whatsappNumber = "33626424394"; // Numéro IWASP
+    const whatsappNumber = IWASP_WHATSAPP_WA; // Numéro IWASP
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
     // Afficher confetti

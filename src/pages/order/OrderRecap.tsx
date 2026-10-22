@@ -18,6 +18,8 @@ import { COUTURE } from "@/lib/hauteCouturePalette";
 import { ArrowLeft, MapPin, CreditCard, Banknote, Check } from "lucide-react";
 import { toast } from "sonner";
 import { OrderLoader } from "@/components/order/OrderLoader";
+import { formatMadCents } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
 
 type PaymentMethod = "stripe" | "cod";
 
@@ -38,10 +40,9 @@ function OrderRecapContent() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe");
 
   const selectedOffer = OFFERS.find(o => o.id === state.selectedOffer);
+  const marketCurrency = useMarketCurrency();
 
-  const formatPrice = (cents: number): string => {
-    return `${(cents / 100).toFixed(0)} MAD`;
-  };
+  const formatPrice = (cents: number): string => formatMadCents(cents, marketCurrency);
 
   const generateSlug = (firstName: string, lastName: string): string => {
     const base = `${firstName}-${lastName}`.toLowerCase()
