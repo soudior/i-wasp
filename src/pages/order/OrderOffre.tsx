@@ -13,7 +13,7 @@ import { useOrderFunnel, OfferType, OrderFunnelGuard } from "@/contexts/OrderFun
 import { Check, ArrowLeft, ArrowRight, Shield, Truck } from "lucide-react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
-import { NFC_PRICING, PRO_SUBSCRIPTION, formatCatalogAmount } from "@/lib/nfcPricing";
+import { NFC_PRICING, PRO_SUBSCRIPTION, formatCatalogAmount, packTeamSavingsPercent } from "@/lib/nfcPricing";
 import { useMarketCurrency } from "@/contexts/CurrencyContext";
 import { isLaunchOfferActive, LAUNCH_OFFER } from "@/lib/launchOffer";
 import { LaunchOfferBanner, MarketShippingNote } from "@/components/LaunchOfferBanner";
@@ -105,6 +105,8 @@ function OrderOffreContent() {
   // Tracking conversions
   const marketCurrency = useMarketCurrency();
   const offers = buildOffers();
+  const team = NFC_PRICING.cards.PACK_TEAM;
+  const teamSavings = packTeamSavingsPercent(marketCurrency);
   const { trackOfferSelect, trackCheckoutStart, trackCTA } = useConversionTracking({
     pageName: 'OrderOffre',
   });
@@ -317,12 +319,28 @@ function OrderOffreContent() {
             })}
           </div>
 
+          <div
+            className="mt-4 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+            style={{ border: `1px solid ${COUTURE.jetSoft}` }}
+          >
+            <div>
+              <h3 className="font-display text-lg font-light" style={{ color: COUTURE.silk }}>Pack TEAM</h3>
+              <p className="text-xs mt-1" style={{ color: COUTURE.textMuted }}>
+                5 cartes · {formatCatalogAmount(team.priceEur, team.priceMad, marketCurrency)}
+                {teamSavings != null ? ` · ${teamSavings}% d'économie vs le tarif unitaire` : ""}
+              </p>
+            </div>
+            <Link to="/enterprise" className="text-[10px] uppercase tracking-[0.15em]" style={{ color: COUTURE.gold }}>
+              Demander un devis équipe
+            </Link>
+          </div>
+
           <section
             className="mt-12 p-6 md:p-8"
             style={{ border: `1px solid ${COUTURE.gold}30`, backgroundColor: `${COUTURE.gold}05` }}
           >
             <p className="text-[10px] uppercase tracking-[0.25em] mb-3" style={{ color: COUTURE.gold }}>
-              Après vos 3 mois offerts
+              {isLaunchOfferActive() ? "Après la période Pro offerte" : "Après vos 3 mois offerts"}
             </p>
             <h2 className="font-display text-xl md:text-2xl font-light mb-3" style={{ color: COUTURE.silk }}>
               Votre carte partage. Pro transforme chaque rencontre en opportunité.
@@ -385,7 +403,7 @@ function OrderOffreContent() {
             </div>
             <div className="flex items-center gap-2">
               <Truck className="w-3 h-3" style={{ color: COUTURE.gold }} />
-              <span className="text-[9px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
+              <span className="text-[9px] tracking-wider" style={{ color: COUTURE.textMuted }}>
                 <MarketShippingNote currency={marketCurrency} />
               </span>
             </div>
