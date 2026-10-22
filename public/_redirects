@@ -1,4 +1,6 @@
 # Dead order and guide URLs. 301 before the SPA rewrites.
+/produits-nfc   /produits   301
+/produits-nfc/  /produits   301
 /express/pack   /order/offre   301
 /express/pack/  /order/offre   301
 /commander      /order/offre   301

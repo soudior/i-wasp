@@ -422,6 +422,7 @@ function CardsCarousel() {
 }
 
 export default function ProduitsNFC() {
+  const marketCurrency = useMarketCurrency();
   // SEO
   SEOHead(SEO_CONFIGS.products);
 

@@ -137,6 +137,9 @@ function PricingContent() {
   const [activeTab, setActiveTab] = useState<Tab>("web");
   const { currency, addItem, items } = usePricingCart();
   const [loadingPayment, setLoadingPayment] = useState<string | null>(null);
+  const unit = currency === "MAD" ? "DH" : "€";
+  const formatWeb = (mad: number, eur: number) =>
+    (currency === "MAD" ? mad : eur).toLocaleString("fr-FR");
 
   const handleAddPackage = (packageKey: keyof typeof WEB_PACKAGES) => {
     const pkg = WEB_PACKAGES[packageKey];
@@ -307,7 +310,8 @@ function PricingContent() {
                     Création de Sites Web
                   </h2>
                   <p className="text-sm" style={{ color: COLORS.gris }}>
-                    Sites professionnels clé en main, optimisés et responsive · <TarifMarocNote />
+                    Sites professionnels clé en main, optimisés et responsive
+                    {currency === "MAD" ? <> · <TarifMarocNote /></> : null}
                   </p>
                 </div>
                 
@@ -386,13 +390,13 @@ function PricingContent() {
                               className="text-4xl font-light tracking-tight"
                               style={{ color: plan.popular ? COLORS.or : COLORS.ivoire }}
                             >
-                              {plan.priceMAD.toLocaleString('fr-FR')}
+                              {formatWeb(plan.priceMAD, plan.priceEUR)}
                             </span>
                             <span 
                               className="text-base font-light"
                               style={{ color: COLORS.gris }}
                             >
-                              DH
+                              {unit}
                             </span>
                           </div>
                           <p 
@@ -540,9 +544,9 @@ function PricingContent() {
                             {optionInCart && <span className="ml-2 text-xs">(ajouté)</span>}
                           </h4>
                           <p className="text-lg font-light" style={{ color: COLORS.or }}>
-                            +{option.priceMAD}{" "}
+                            +{formatWeb(option.priceMAD, option.priceEUR)}{" "}
                             <span className="text-sm" style={{ color: COLORS.gris }}>
-                              DH{option.unit || ''}
+                              {unit}{option.unit || ''}
                             </span>
                           </p>
                         </div>
@@ -606,10 +610,10 @@ function PricingContent() {
                         
                         <div className="flex items-baseline gap-2 mb-6">
                           <span className="text-4xl font-light">
-                            {plan.priceMAD.toLocaleString('fr-FR')}
+                            {formatWeb(plan.priceMAD, plan.priceEUR)}
                           </span>
                           <span style={{ color: COLORS.gris }}>
-                            DH{plan.period}
+                            {unit}{plan.period}
                           </span>
                         </div>
                         
@@ -653,8 +657,10 @@ function PricingContent() {
             </section>
 
             {/* Quote Calculator */}
-            <p className="text-center text-xs mb-4" style={{ color: COLORS.gris }}><TarifMarocNote /></p>
-            <QuoteCalculator currency="MAD" />
+            {currency === "MAD" ? (
+              <p className="text-center text-xs mb-4" style={{ color: COLORS.gris }}><TarifMarocNote /></p>
+            ) : null}
+            <QuoteCalculator currency={currency} />
           </motion.div>
         ) : (
           <motion.div

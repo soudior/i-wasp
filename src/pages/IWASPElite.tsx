@@ -91,21 +91,29 @@ const EliteNavbar = () => {
             <span className="text-white font-black text-xl tracking-tight">I-WASP</span>
           </Link>
 
-          {/* Navigation Links */}
-          <div className="hidden lg:flex items-center gap-6">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className={`text-sm font-medium tracking-wide transition-all duration-300 py-1 ${
-                  activeSection === item.id 
-                    ? 'text-[#D4AF37]' 
-                    : 'text-gray-300 hover:text-white'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
+          <div className="flex items-center gap-4">
+            {/* Navigation Links */}
+            <div className="hidden lg:flex items-center gap-6">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={`text-sm font-medium tracking-wide transition-all duration-300 py-1 ${
+                    activeSection === item.id 
+                      ? 'text-[#D4AF37]' 
+                      : 'text-gray-300 hover:text-white'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <Link
+              to="/order/offre"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#D4AF37] px-4 py-2 text-sm font-bold text-[#0A1931]"
+            >
+              Commander
+            </Link>
           </div>
         </div>
       </div>
@@ -167,13 +175,21 @@ const VisionSection = () => (
             Maîtrisez votre<br />
             <span className="text-[#D4AF37]">Aura Digitale.</span>
           </h1>
-          <Link
-            to="/order/offre"
-            className="inline-flex items-center gap-3 px-8 py-4 bg-[#D4AF37] text-[#0A1931] font-bold rounded-xl hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all duration-300 w-fit"
-          >
-            Déployer mon Aura
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+          <div className="flex flex-wrap gap-3 relative z-10">
+            <Link
+              to="/order/offre"
+              className="inline-flex min-h-12 items-center gap-3 px-8 py-4 bg-[#D4AF37] text-[#0A1931] font-bold rounded-xl hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all duration-300 w-fit"
+            >
+              Commander
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              to="/order/offre"
+              className="inline-flex min-h-12 items-center px-8 py-4 border border-[#D4AF37]/50 text-[#D4AF37] font-bold rounded-xl w-fit"
+            >
+              Déployer mon Aura
+            </Link>
+          </div>
         </motion.div>
       </motion.div>
 
@@ -1223,7 +1239,7 @@ const EliteFooter = () => (
           <ul className="space-y-2 text-gray-400 text-sm">
             <li><a href="#vision" className="hover:text-[#D4AF37] transition-colors">Vision</a></li>
             <li><a href="#" className="hover:text-[#D4AF37] transition-colors">Intelligence IA</a></li>
-            <li><a href="#" className="hover:text-[#D4AF37] transition-colors">Boutique Elite</a></li>
+            <li><Link to="/order/offre" className="hover:text-[#D4AF37] transition-colors">Commander</Link></li>
           </ul>
         </div>
 

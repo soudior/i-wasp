@@ -76,6 +76,8 @@ describe("table de prix serveur", () => {
     }
     expect(migration).toContain("2026-11-30 23:59:59+01");
     expect(migration).not.toMatch(/\bDROP TABLE\b/i);
+    expect(migration).not.toMatch(/pg_catalog\.(coalesce|nullif|greatest|least)\s*\(/i);
+    expect(migration).toContain("COALESCE(");
   });
 
   it("garde les commandes v7 329 / 549 / 989 DH payables, y compris après l'offre", () => {

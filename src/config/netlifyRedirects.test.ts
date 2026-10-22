@@ -8,6 +8,7 @@ describe("Netlify redirects", () => {
 
   it("sends dead order and guide paths to a live page with 301", () => {
     for (const rule of [
+      "/produits-nfc   /produits   301",
       "/express/pack   /order/offre   301",
       "/commander      /order/offre   301",
       "/user-guide     /guide         301",
@@ -27,7 +28,7 @@ describe("Netlify redirects", () => {
         .map((line) => line.split(/\s+/)[0]),
     );
     const routes = [...app.matchAll(/path="(\/[^"]*)"/g)].map((match) => match[1].replace(/:[A-Za-z0-9_]+/g, "*"));
-    const redirected = new Set(["/express/pack", "/commander", "/user-guide"]);
+    const redirected = new Set(["/express/pack", "/commander", "/user-guide", "/produits-nfc"]);
     for (const route of routes) {
       if (redirected.has(route)) continue;
       expect(rewritten.has(route), route).toBe(true);
