@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
+import { PRO_SUBSCRIPTION, formatCatalogAmount } from "@/lib/nfcPricing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -163,6 +165,7 @@ const eliteFeatures = [
 
 export default function Onboarding() {
   const { user, loading: authLoading } = useAuth();
+  const marketCurrency = useMarketCurrency();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [step, setStep] = useState(0);
@@ -795,12 +798,13 @@ export default function Onboarding() {
                     }}
                   >
                     <div className="flex items-baseline justify-center gap-1 mb-2">
-                      <span className="text-4xl font-bold" style={{ color: COLORS.text }}>49</span>
-                      <span className="text-xl" style={{ color: COLORS.textMuted }}>MAD</span>
+                      <span className="text-4xl font-bold" style={{ color: COLORS.text }}>
+                        {formatCatalogAmount(PRO_SUBSCRIPTION.monthlyEur, PRO_SUBSCRIPTION.monthlyMad, marketCurrency)}
+                      </span>
                       <span style={{ color: COLORS.textDim }}>/mois</span>
                     </div>
                     <p className="text-center text-sm" style={{ color: COLORS.textDim }}>
-                      ou 499 MAD/an <span style={{ color: COLORS.accent }}>(2 mois offerts)</span>
+                      ou {formatCatalogAmount(PRO_SUBSCRIPTION.yearlyEur, PRO_SUBSCRIPTION.yearlyMad, marketCurrency)}/an
                     </p>
                   </div>
 
@@ -823,7 +827,7 @@ export default function Onboarding() {
                     ) : (
                       <>
                         <Crown size={20} />
-                        Passer en ELITE – 49 MAD/mois
+                        Passer en Pro – {formatCatalogAmount(PRO_SUBSCRIPTION.monthlyEur, PRO_SUBSCRIPTION.monthlyMad, marketCurrency)}/mois
                       </>
                     )}
                   </button>

@@ -646,7 +646,7 @@ const CheckoutTunnel = () => {
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <p className="text-2xl font-black text-[#A5A9B4]">{p.prices[currency]} {currency}</p>
+                      <p className="text-2xl font-black text-[#A5A9B4]">{p.prices.MAD.toLocaleString("fr-FR")} DH</p>
                       <button 
                         onClick={() => addToCart(p)} 
                         className="px-6 py-4 bg-[#A5A9B4] text-black rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-white transition-all flex items-center gap-2"
@@ -705,7 +705,7 @@ const CheckoutTunnel = () => {
                             <item.icon className="w-5 h-5 text-[#A5A9B4]" />
                             <span className="font-black">{item.name} (x{item.qty})</span>
                           </div>
-                          <span className="text-[#A5A9B4] font-black">{item.prices[currency] * item.qty} {currency}</span>
+                          <span className="text-[#A5A9B4] font-black">{(item.prices.MAD * item.qty).toLocaleString("fr-FR")} DH</span>
                         </div>
                       ))
                     )}
@@ -714,7 +714,7 @@ const CheckoutTunnel = () => {
                   {cart.length > 0 && (
                     <div className="space-y-4">
                       <p className="text-lg font-black text-right">
-                        Total: <span className="text-[#A5A9B4]">{totals.total} {currency}</span>
+                        Total: <span className="text-[#A5A9B4]">{totals.total.toLocaleString("fr-FR")} DH · Tarif Maroc</span>
                       </p>
                       <button 
                         onClick={handleCheckout} 

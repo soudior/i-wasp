@@ -358,7 +358,7 @@ export default function WebStudio() {
       `📌 Projet: ${proposal?.siteName || formData.businessName || formData.businessType}\n` +
       `📄 Pages: ${proposal?.estimatedPages || "À définir"}\n` +
       `⚡ Express (24-48h): ${isExpress ? "Oui" : "Non"}\n` +
-      `💰 Estimation: ${price.eur}€ / ${price.mad}DH\n\n` +
+      `💰 Estimation: ${price.mad} DH · Tarif Maroc\n\n` +
       `Je souhaite en savoir plus sur cette proposition !`
     );
     window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=${message}`, "_blank");
@@ -2118,7 +2118,7 @@ export default function WebStudio() {
                               color: STUDIO.or,
                             }}
                           >
-                            +50€ / +500DH
+                            +500 DH · Tarif Maroc
                           </span>
                         </div>
                       </motion.button>
@@ -2148,10 +2148,10 @@ export default function WebStudio() {
                               initial={{ scale: 1.2, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
                             >
-                              {calculatePrice().eur}€
+                              {calculatePrice().mad.toLocaleString("fr-FR")} DH
                             </motion.div>
                             <div className="text-sm" style={{ color: STUDIO.gris }}>
-                              {calculatePrice().mad} DH
+                              Tarif Maroc
                             </div>
                           </div>
                         </div>

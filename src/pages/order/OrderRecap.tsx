@@ -20,6 +20,8 @@ import { toast } from "sonner";
 import { OrderLoader } from "@/components/order/OrderLoader";
 import { formatMadCents } from "@/lib/nfcPricing";
 import { useMarketCurrency } from "@/contexts/CurrencyContext";
+import { serverChargeCents, shippingCountryForMarket } from "@/lib/nfcChargeCatalog";
+import { createConfirmedNfcCheckout } from "@/lib/nfcPayment";
 
 type PaymentMethod = "stripe" | "cod";
 
@@ -101,32 +103,35 @@ function OrderRecapContent() {
         }
       }
 
+      const chargeCents = serverChargeCents(state.selectedOffer, marketCurrency);
+      if (chargeCents == null) throw new Error("Offre indisponible pour ce marché");
+
       const orderItem: OrderItem = {
         id: crypto.randomUUID(),
         templateId: "iwasp-signature",
         templateName: `Carte NFC i-Wasp ${selectedOffer?.name || ""}`,
         cardName: `${firstName} ${lastName}`,
         quantity: 1,
-        unitPriceCents: selectedOffer?.price || 59900,
+        unitPriceCents: chargeCents,
         logoUrl: state.cardPersonalization?.imageUrl || null,
       };
 
       const order = createdOrder.current?.key === orderKey ? createdOrder.current : await createOrder.mutateAsync({
         order_items: [orderItem],
         quantity: 1,
-        unit_price_cents: selectedOffer?.price || 59900,
-        total_price_cents: selectedOffer?.price || 59900,
+        unit_price_cents: chargeCents,
+        total_price_cents: chargeCents,
         order_type: "personalized",
         template: "signature",
         card_color: "#0B0B0B",
         logo_url: state.cardPersonalization?.imageUrl || null,
-        currency: "MAD",
+        currency: marketCurrency,
         shipping_name: `${firstName} ${lastName}`,
         shipping_phone: state.shippingInfo?.phone || phone,
         shipping_address: state.shippingInfo?.address,
         shipping_city: state.shippingInfo?.city,
         shipping_postal_code: "",
-        shipping_country: "MA",
+        shipping_country: shippingCountryForMarket(marketCurrency, state.shippingInfo?.country),
         customer_email: (email || userEmail) || null,
         payment_method: paymentMethod,
         user_id: userId,
@@ -138,26 +143,25 @@ function OrderRecapContent() {
 
       if (paymentMethod === "stripe") {
         toast.info("Redirection vers le paiement...");
-        
-        // Le montant est fixé CÔTÉ SERVEUR à partir du tierId (grille canonique).
-        const { data, error } = await supabase.functions.invoke('create-nfc-payment', {
-          body: {
+
+        const confirmed = await createConfirmedNfcCheckout(
+          (name, options) => supabase.functions.invoke(name, options),
+          {
             tierId: state.selectedOffer,
+            currency: marketCurrency,
             orderId: order.id,
             email: (email || userEmail) || undefined,
           },
-        });
+        );
 
         if (!operation.isCurrent()) return;
-        if (error) throw error;
-
-        if (data?.url) {
-          window.location.href = data.url;
-          completed = true;
+        if (!confirmed.ok) {
+          toast.error("Le montant Stripe n'est pas confirmé. Aucun débit n'a été lancé.");
           return;
-        } else {
-          throw new Error('No checkout URL received');
         }
+        window.location.href = confirmed.url;
+        completed = true;
+        return;
       }
 
       markComplete();

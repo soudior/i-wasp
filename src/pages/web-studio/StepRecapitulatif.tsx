@@ -293,7 +293,7 @@ function StepRecapitulatifContent() {
       `📌 Projet: ${formData.businessName || formData.businessType}\n` +
       `📄 Pages: ${proposal?.estimatedPages || "À définir"}\n` +
       `⚡ Express: ${isExpress ? "Oui" : "Non"}\n` +
-      `💰 Estimation: ${price.eur}€ / ${price.mad}DH\n\n` +
+      `💰 Estimation: ${price.mad} DH · Tarif Maroc\n\n` +
       `Contact: ${formData.contactEmail}`
     );
     window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=${message}`, "_blank");
@@ -602,7 +602,7 @@ function StepRecapitulatifContent() {
                   Livraison Express 24-48h
                 </p>
                 <p className="text-xs" style={{ color: STUDIO.gris }}>
-                  +50€ / +500 DH
+                  +500 DH · Tarif Maroc
                 </p>
               </div>
             </div>
@@ -767,10 +767,10 @@ function StepRecapitulatifContent() {
                       className="text-xl font-bold"
                       style={{ color: STUDIO.or }}
                     >
-                      {price.eur}€
+                      {price.mad} DH
                     </span>
                     <span className="text-sm ml-2" style={{ color: STUDIO.gris }}>
-                      / {price.mad} DH
+                      Tarif Maroc
                     </span>
                   </div>
                 </div>

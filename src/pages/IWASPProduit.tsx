@@ -1,4 +1,11 @@
 import { motion, type Transition } from "framer-motion";
+import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
+
+function EssentiellePrice() {
+  const currency = useMarketCurrency();
+  return <>{formatCatalogAmount(NFC_PRICING.cards.ESSENTIELLE.priceEur, NFC_PRICING.cards.ESSENTIELLE.priceMad, currency)}</>;
+}
 import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Shield, Zap, RefreshCw, Smartphone, Users, Lock, Globe, Sparkles } from "lucide-react";
 
@@ -214,7 +221,7 @@ export default function IWASPProduit() {
                   Carte I-WASP
                 </p>
                 <h3 className="font-display text-3xl sm:text-4xl tracking-wide text-white">
-                  490 MAD
+                  <EssentiellePrice />
                 </h3>
                 <p className="font-body text-white/60 mt-2">
                   Paiement unique. Pas d'abonnement.

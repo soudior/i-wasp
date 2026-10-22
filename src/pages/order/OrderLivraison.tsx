@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { ArrowLeft, MapPin, Home, Building, Hotel } from "lucide-react";
 import { toast } from "sonner";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
 
 const ADDRESS_TYPES = [
   { id: "domicile" as const, icon: Home, label: "Domicile" },
@@ -23,6 +24,8 @@ const ADDRESS_TYPES = [
 
 function OrderLivraisonContent() {
   const { state, setShippingInfo, setPaymentInfo, nextStep, prevStep } = useOrderFunnel();
+  const marketCurrency = useMarketCurrency();
+  const defaultCountry = marketCurrency === "MAD" ? "Maroc" : "France";
   const [isNavigating, setIsNavigating] = useState(false);
   
   const [formData, setFormData] = useState<ShippingInfo>(
@@ -30,7 +33,7 @@ function OrderLivraisonContent() {
       addressType: "domicile",
       address: "",
       city: "",
-      country: "Maroc",
+      country: defaultCountry,
       phone: "",
     }
   );
@@ -74,7 +77,7 @@ function OrderLivraisonContent() {
       addressType: formData.addressType,
       address: formData.address.trim(),
       city: formData.city.trim(),
-      country: formData.country.trim() || "Maroc",
+      country: formData.country.trim() || defaultCountry,
       phone: formData.phone.trim(),
     };
 

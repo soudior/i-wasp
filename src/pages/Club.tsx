@@ -1,4 +1,6 @@
 import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
+import { PRO_SUBSCRIPTION, formatCatalogAmount } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
 /**
  * Club / Abonnement — Avantages membres i-wasp
  * Tarifs, avantages, CTA rejoindre le club
@@ -90,7 +92,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "19€",
+    price: "monthly",
     period: "/mois",
     description: "Pour les professionnels",
     features: [
@@ -106,8 +108,8 @@ const plans = [
   },
   {
     name: "Club",
-    price: "49€",
-    period: "/mois",
+    price: "yearly",
+    period: "/an",
     description: "L'expérience complète",
     features: [
       "Cartes illimitées",
@@ -138,6 +140,15 @@ const testimonials = [
 ];
 
 export default function Club() {
+  const currency = useMarketCurrency();
+  const visiblePlans = plans.map((plan) => ({
+    ...plan,
+    price: plan.price === "monthly"
+      ? formatCatalogAmount(PRO_SUBSCRIPTION.monthlyEur, PRO_SUBSCRIPTION.monthlyMad, currency)
+      : plan.price === "yearly"
+        ? formatCatalogAmount(PRO_SUBSCRIPTION.yearlyEur, PRO_SUBSCRIPTION.yearlyMad, currency)
+        : "Gratuit",
+  }));
   return (
     <div className="brand-public antialiased leading-relaxed min-h-screen text-[#FDFCFB]" style={{ backgroundColor: STEALTH.noir }}>
       <ClubNavbar />
@@ -266,7 +277,7 @@ export default function Club() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {plans.map((plan, index) => (
+            {visiblePlans.map((plan, index) => (
               <motion.div
                 key={plan.name}
                 initial={{ opacity: 0, y: 30 }}

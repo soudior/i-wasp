@@ -39,7 +39,7 @@ const Studio = () => {
   const [activeTab, setActiveTab] = useState('membership'); 
   const [selectedPlan, setSelectedPlan] = useState('legacy');
   const [isChameleonActive, setIsChameleonActive] = useState(true);
-  const [currency, setCurrency] = useState<'EUR' | 'MAD'>('EUR');
+  const currency = 'MAD' as const;
 
   const products = [
     { 
@@ -80,7 +80,7 @@ const Studio = () => {
     { 
       id: 'stealth', 
       name: 'Stealth', 
-      prices: { EUR: '0€', MAD: '0 DH' }, 
+      prices: { EUR: 'Gratuit', MAD: 'Gratuit' }, 
       features: ['Profil Digital', 'NFC Basique', 'Analytics 7j'], 
       level: 'Accès Libre' 
     },
@@ -105,10 +105,6 @@ const Studio = () => {
     title: "Membre i-WASP",
     currentMode: "Elite Stealth"
   });
-
-  const toggleCurrency = () => {
-    setCurrency(prev => prev === 'EUR' ? 'MAD' : 'EUR');
-  };
 
   const handleReserveProduct = (product: typeof products[0]) => {
     addItem({
@@ -172,16 +168,7 @@ const Studio = () => {
         </div>
 
         <div className="flex items-center space-x-3 lg:space-x-8">
-          {/* Sélecteur de Devise */}
-          <button 
-            onClick={toggleCurrency}
-            className="flex items-center space-x-2 lg:space-x-3 px-3 lg:px-5 py-2 lg:py-3 rounded-full bg-white/5 border border-white/10 hover:border-[#A5A9B4]/50 transition-all"
-          >
-            <Globe className="w-4 h-4 text-[#A5A9B4]" />
-            <span className="text-[10px] lg:text-xs text-white/60 hidden sm:inline">
-              {currency === 'EUR' ? 'Europe (€)' : 'Maroc (DH)'}
-            </span>
-          </button>
+          <span className="text-[10px] lg:text-xs text-white/60">Tarif Maroc</span>
 
           <div className="hidden md:flex items-center space-x-2 px-4 lg:px-5 py-2 lg:py-3 rounded-full bg-white/5 border border-[#A5A9B4]/30">
             <Crown className="w-4 h-4 text-[#A5A9B4]" />

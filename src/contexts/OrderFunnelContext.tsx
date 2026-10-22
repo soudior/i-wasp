@@ -12,10 +12,10 @@
 
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { NFC_PRICING } from "@/lib/nfcPricing";
+import { serverChargeCents } from "@/lib/nfcChargeCatalog";
 
 // Offer types
-export type OfferType = "essentiel" | "signature" | "alliance";
+export type OfferType = "essentiel" | "signature" | "alliance" | "duo";
 
 // Pack vitrine (upsell)
 export type VitrinePackType = "none" | "solo" | "equipe";
@@ -28,11 +28,18 @@ export interface OfferConfig {
   priceCurrency: string;
 }
 
-export const OFFERS: OfferConfig[] = [
-  { id: "essentiel", name: "Essentielle", price: NFC_PRICING.cards.ESSENTIELLE.priceMad * 100, priceCurrency: "MAD" },
-  { id: "signature", name: "Professionnelle", price: NFC_PRICING.cards.PROFESSIONNELLE.priceMad * 100, priceCurrency: "MAD" },
-  { id: "alliance", name: "Prestige", price: NFC_PRICING.cards.PRESTIGE.priceMad * 100, priceCurrency: "MAD" },
-];
+function listedOffers(): OfferConfig[] {
+  const rows: OfferConfig[] = [
+    { id: "essentiel", name: "Essentielle", price: serverChargeCents("essentiel", "MAD") ?? 0, priceCurrency: "MAD" },
+    { id: "signature", name: "Professionnelle", price: serverChargeCents("signature", "MAD") ?? 0, priceCurrency: "MAD" },
+    { id: "alliance", name: "Prestige", price: serverChargeCents("alliance", "MAD") ?? 0, priceCurrency: "MAD" },
+  ];
+  const duo = serverChargeCents("duo", "MAD");
+  if (duo != null) rows.push({ id: "duo", name: "Pack DUO", price: duo, priceCurrency: "MAD" });
+  return rows;
+}
+
+export const OFFERS: OfferConfig[] = listedOffers();
 
 export const VITRINE_PACKS = [
   { id: "none" as VitrinePackType, name: "Sans pack", price: 0, priceCurrency: "MAD" },

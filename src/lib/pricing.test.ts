@@ -74,7 +74,7 @@ describe("pricing — helpers", () => {
   });
 
   it("formatPrice formate en MAD sans décimale", () => {
-    expect(formatPrice(4900, "MAD")).toBe("49 MAD");
+    expect(formatPrice(4900, "MAD")).toBe("49 DH");
   });
 
   it("formatPriceShort masque les décimales pour un entier", () => {

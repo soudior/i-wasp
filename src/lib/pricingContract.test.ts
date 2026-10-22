@@ -12,9 +12,10 @@
  * DES DEUX CÔTÉS.
  */
 import { describe, it, expect } from "vitest";
-import { NFC_PRICING } from "./nfcPricing";
+import { NFC_PRICING, PRO_SUBSCRIPTION } from "./nfcPricing";
 import { OFFERS } from "@/contexts/OrderFunnelContext";
 import { EXPRESS_OFFERS } from "@/contexts/ExpressCheckoutContext";
+import { serverChargeCents, proTrialMonths } from "./nfcChargeCatalog";
 
 // Centimes MAD canoniques (miroir du catalogue serveur create-nfc-payment).
 const CANONICAL_MAD_CENTS = {
@@ -46,20 +47,62 @@ describe("grille canonique — catalogue nfcPricing", () => {
   });
 });
 
+describe("abonnement Pro — une seule grille", () => {
+  it("aligne le mensuel et l'annuel", () => {
+    expect(PRO_SUBSCRIPTION.yearlyEur).toBe(49);
+    expect(PRO_SUBSCRIPTION.monthlyEur).toBe(4.99);
+    expect(PRO_SUBSCRIPTION.yearlyMad).toBe(349);
+    expect(PRO_SUBSCRIPTION.monthlyMad).toBe(39);
+  });
+});
+
+describe("montants facturés — date de l'offre de lancement", () => {
+  const during = new Date("2026-10-22T12:00:00+01:00");
+  const after = new Date("2026-12-01T00:00:00+01:00");
+
+  it("applique les prix de lancement pendant la fenêtre", () => {
+    expect(serverChargeCents("essentiel", "EUR", during)).toBe(2900);
+    expect(serverChargeCents("essentiel", "MAD", during)).toBe(19900);
+    expect(serverChargeCents("signature", "EUR", during)).toBe(3500);
+    expect(serverChargeCents("signature", "MAD", during)).toBe(24900);
+    expect(serverChargeCents("duo", "EUR", during)).toBe(7900);
+    expect(serverChargeCents("duo", "MAD", during)).toBe(54900);
+    expect(serverChargeCents("alliance", "EUR", during)).toBe(7900);
+    expect(serverChargeCents("alliance", "MAD", during)).toBe(59900);
+    expect(serverChargeCents("pack_team", "EUR", during)).toBe(11900);
+    expect(serverChargeCents("pack_team", "MAD", during)).toBe(129900);
+    expect(proTrialMonths("signature", during)).toBe(12);
+    expect(proTrialMonths("essentiel", during)).toBe(3);
+  });
+
+  it("revient à la grille officielle après le 30 novembre 2026", () => {
+    expect(serverChargeCents("signature", "EUR", after)).toBe(4900);
+    expect(serverChargeCents("signature", "MAD", after)).toBe(34900);
+    expect(serverChargeCents("duo", "EUR", after)).toBeNull();
+    expect(serverChargeCents("duo", "MAD", after)).toBeNull();
+    expect(proTrialMonths("signature", after)).toBe(3);
+    expect(serverChargeCents("pack_team", "EUR", after)).toBe(11900);
+  });
+});
+
 describe("grille canonique — tunnel /order (OrderFunnelContext)", () => {
-  it("est aligné sur la grille canonique (centimes MAD)", () => {
+  it("facture le montant serveur du moment, pas un montant client", () => {
     const byId = Object.fromEntries(OFFERS.map((o) => [o.id, o.price]));
-    expect(byId.essentiel).toBe(CANONICAL_MAD_CENTS.essentielle);
-    expect(byId.signature).toBe(CANONICAL_MAD_CENTS.professionnelle);
-    expect(byId.alliance).toBe(CANONICAL_MAD_CENTS.prestige);
+    expect(byId.essentiel).toBe(serverChargeCents("essentiel", "MAD"));
+    expect(byId.signature).toBe(serverChargeCents("signature", "MAD"));
+    expect(byId.alliance).toBe(serverChargeCents("alliance", "MAD"));
+    const duo = serverChargeCents("duo", "MAD");
+    if (duo == null) expect(byId.duo).toBeUndefined();
+    else expect(byId.duo).toBe(duo);
   });
 });
 
 describe("grille canonique — tunnel /express (ExpressCheckoutContext)", () => {
-  it("est aligné sur la grille canonique (centimes MAD)", () => {
+  it("facture le montant serveur du moment, pas un montant client", () => {
     const byId = Object.fromEntries(EXPRESS_OFFERS.map((o) => [o.id, o.price]));
-    expect(byId.essentiel).toBe(CANONICAL_MAD_CENTS.essentielle);
-    expect(byId.signature).toBe(CANONICAL_MAD_CENTS.professionnelle);
-    expect(byId.alliance).toBe(CANONICAL_MAD_CENTS.prestige);
+    expect(byId.essentiel).toBe(serverChargeCents("essentiel", "MAD"));
+    expect(byId.signature).toBe(serverChargeCents("signature", "MAD"));
+    expect(byId.alliance).toBe(serverChargeCents("alliance", "MAD"));
+    expect(byId.duo).toBeUndefined();
   });
 });

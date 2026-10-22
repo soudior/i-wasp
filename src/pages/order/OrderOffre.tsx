@@ -13,8 +13,10 @@ import { useOrderFunnel, OfferType, OrderFunnelGuard } from "@/contexts/OrderFun
 import { Check, ArrowLeft, ArrowRight, Shield, Truck } from "lucide-react";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
-import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { NFC_PRICING, PRO_SUBSCRIPTION, formatCatalogAmount } from "@/lib/nfcPricing";
 import { useMarketCurrency } from "@/contexts/CurrencyContext";
+import { isLaunchOfferActive, LAUNCH_OFFER } from "@/lib/launchOffer";
+import { LaunchOfferBanner, MarketShippingNote } from "@/components/LaunchOfferBanner";
 
 interface OfferDetail {
   id: OfferType;
@@ -22,11 +24,15 @@ interface OfferDetail {
   subtitle: string;
   priceEUR: number;
   priceMAD: number;
+  compareEUR?: number;
+  compareMAD?: number;
   features: string[];
   isSignature?: boolean;
 }
 
-const offers: OfferDetail[] = [
+function buildOffers(): OfferDetail[] {
+  const launch = isLaunchOfferActive();
+  const rows: OfferDetail[] = [
   {
     id: "essentiel",
     title: "Essentielle",
@@ -44,15 +50,17 @@ const offers: OfferDetail[] = [
     id: "signature",
     title: "Professionnelle",
     subtitle: "Recommandé",
-    priceEUR: NFC_PRICING.cards.PROFESSIONNELLE.priceEur,
-    priceMAD: NFC_PRICING.cards.PROFESSIONNELLE.priceMad,
+    priceEUR: launch ? LAUNCH_OFFER.professionnelle.priceEur : NFC_PRICING.cards.PROFESSIONNELLE.priceEur,
+    priceMAD: launch ? LAUNCH_OFFER.professionnelle.priceMad : NFC_PRICING.cards.PROFESSIONNELLE.priceMad,
+    compareEUR: launch ? LAUNCH_OFFER.professionnelle.compareEur : undefined,
+    compareMAD: launch ? LAUNCH_OFFER.professionnelle.compareMad : undefined,
     isSignature: true,
     features: [
       "Carte NFC premium",
       "Design personnalisé",
       "Analytics avancés",
       "Support prioritaire",
-      "3 mois Pro inclus",
+      launch ? "1 an de Pro offert" : "3 mois Pro inclus",
     ],
   },
   {
@@ -69,7 +77,25 @@ const offers: OfferDetail[] = [
       "3 mois Pro inclus",
     ],
   },
-];
+  ];
+  if (launch) {
+    rows.push({
+      id: "duo",
+      title: "Pack DUO",
+      subtitle: "Couple ou associés",
+      priceEUR: LAUNCH_OFFER.duo.priceEur,
+      priceMAD: LAUNCH_OFFER.duo.priceMad,
+      compareEUR: LAUNCH_OFFER.duo.compareEur,
+      compareMAD: LAUNCH_OFFER.duo.compareMad,
+      features: [
+        "2 cartes Professionnelle",
+        "Pour un couple ou des associés",
+        "Livraison offerte",
+      ],
+    });
+  }
+  return rows;
+}
 
 function OrderOffreContent() {
   const navigate = useNavigate();
@@ -78,6 +104,7 @@ function OrderOffreContent() {
   
   // Tracking conversions
   const marketCurrency = useMarketCurrency();
+  const offers = buildOffers();
   const { trackOfferSelect, trackCheckoutStart, trackCTA } = useConversionTracking({
     pageName: 'OrderOffre',
   });
@@ -103,6 +130,7 @@ function OrderOffreContent() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: COUTURE.jet }}>
+      <LaunchOfferBanner />
       {/* Honeycomb texture */}
       <div 
         className="fixed inset-0 pointer-events-none"
@@ -266,6 +294,9 @@ function OrderOffreContent() {
                         className="text-right font-light tabular-nums"
                         style={{ color: isSelected ? COUTURE.gold : COUTURE.silk }}
                       >
+                        {offer.compareEUR != null && offer.compareMAD != null && (
+                          <span className="block text-sm line-through opacity-60">{formatCatalogAmount(offer.compareEUR, offer.compareMAD, marketCurrency)}</span>
+                        )}
                         <span className="block text-2xl">{formatCatalogAmount(offer.priceEUR, offer.priceMAD, marketCurrency)}</span>
                       </span>
                       
@@ -304,7 +335,7 @@ function OrderOffreContent() {
               <div className="p-5" style={{ border: `1px solid ${COUTURE.jetSoft}` }}>
                 <div className="flex items-baseline justify-between gap-3 mb-4">
                   <h3 className="text-sm uppercase tracking-[0.15em]" style={{ color: COUTURE.silk }}>Gratuit</h3>
-                  <span className="text-lg" style={{ color: COUTURE.silk }}>0 DH</span>
+                  <span className="text-lg" style={{ color: COUTURE.silk }}>Gratuit</span>
                 </div>
                 <p className="text-xs leading-6" style={{ color: COUTURE.textMuted }}>
                   Profil essentiel · NFC & QR · Apple/Google Wallet · partage illimité
@@ -318,8 +349,8 @@ function OrderOffreContent() {
                 <div className="flex items-baseline justify-between gap-3 mb-4">
                   <h3 className="text-sm uppercase tracking-[0.15em]" style={{ color: COUTURE.gold }}>Pro</h3>
                   <div className="text-right">
-                    <span className="block text-lg" style={{ color: COUTURE.gold }}>349 DH/an</span>
-                    <span className="block text-[9px]" style={{ color: COUTURE.textMuted }}>ou 39 DH/mois · 49 €/an international</span>
+                    <span className="block text-lg" style={{ color: COUTURE.gold }}>{formatCatalogAmount(PRO_SUBSCRIPTION.yearlyEur, PRO_SUBSCRIPTION.yearlyMad, marketCurrency)}/an</span>
+                    <span className="block text-[9px]" style={{ color: COUTURE.textMuted }}>ou {formatCatalogAmount(PRO_SUBSCRIPTION.monthlyEur, PRO_SUBSCRIPTION.monthlyMad, marketCurrency)}/mois</span>
                   </div>
                 </div>
                 <p className="text-xs leading-6" style={{ color: COUTURE.textMuted }}>
@@ -355,7 +386,7 @@ function OrderOffreContent() {
             <div className="flex items-center gap-2">
               <Truck className="w-3 h-3" style={{ color: COUTURE.gold }} />
               <span className="text-[9px] uppercase tracking-wider" style={{ color: COUTURE.textMuted }}>
-                Livraison suivie
+                <MarketShippingNote currency={marketCurrency} />
               </span>
             </div>
             <Link to="/cgv" className="text-[9px] uppercase tracking-wider underline underline-offset-4" style={{ color: COUTURE.textMuted }}>

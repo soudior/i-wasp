@@ -10,11 +10,13 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useExpressCheckout, ExpressOfferType, EXPRESS_OFFERS } from "@/contexts/ExpressCheckoutContext";
-import { Check, ArrowRight, Shield, Truck, Star, Clock, Users } from "lucide-react";
+import { Check, ArrowRight, Shield, Truck, Star } from "lucide-react";
 import { CHECKOUT_BRAND as CHECKOUT } from "@/lib/checkoutBrandPalette";
 import "@/styles/checkout-brand.css";
 import { useExpressCheckoutTracking } from "@/hooks/useAnalyticsEvents";
 import { formatMadCents } from "@/lib/nfcPricing";
+import { MarketShippingNote } from "@/components/LaunchOfferBanner";
+import { isLaunchOfferActive, LAUNCH_OFFER } from "@/lib/launchOffer";
 import { useMarketCurrency } from "@/contexts/CurrencyContext";
 
 export default function ExpressOffre() {
@@ -92,19 +94,9 @@ export default function ExpressOffre() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="flex items-center gap-2">
-              <Users className="w-4 h-4" style={{ color: CHECKOUT.accent }} />
-              <span className="text-sm" style={{ color: CHECKOUT.accent }}>
-                <strong>23 personnes</strong> commandent
-              </span>
-            </div>
-            <span style={{ color: CHECKOUT.accent }}>•</span>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" style={{ color: CHECKOUT.accent }} />
-              <span className="text-sm" style={{ color: CHECKOUT.accent }}>
-                Livraison <strong>48h</strong>
-              </span>
-            </div>
+            <span className="text-sm" style={{ color: CHECKOUT.accent }}>
+              <MarketShippingNote currency={marketCurrency} />
+            </span>
           </motion.div>
         </div>
       </div>
@@ -189,7 +181,7 @@ export default function ExpressOffre() {
                         <p className="text-sm mt-0.5" style={{ color: CHECKOUT.textSecondary }}>
                           {offer.id === "essentiel" && "Carte NFC + 5 liens"}
                           {offer.id === "signature" && "Tout débloqué · CRM · Analytics"}
-                          {offer.id === "alliance" && "Pack équipe · Admin centralisé"}
+                          {offer.id === "alliance" && "Carte métal · Gravure laser"}
                         </p>
                       </div>
                     </div>
@@ -198,6 +190,9 @@ export default function ExpressOffre() {
                       className="checkout-offer-price text-xl font-semibold"
                       style={{ color: CHECKOUT.text }}
                     >
+                      {offer.id === "signature" && isLaunchOfferActive() && (
+                        <span className="mr-2 text-sm line-through opacity-60">{formatMadCents(LAUNCH_OFFER.professionnelle.compareMad * 100, marketCurrency)}</span>
+                      )}
                       {formatMadCents(offer.price, marketCurrency)}
                     </span>
                   </div>
@@ -232,7 +227,7 @@ export default function ExpressOffre() {
                 <Truck className="w-5 h-5" style={{ color: CHECKOUT.accent }} />
               </div>
               <p className="text-xs font-medium" style={{ color: CHECKOUT.textSecondary }}>
-                Livraison 48h
+                <MarketShippingNote currency={marketCurrency} />
               </p>
             </div>
             <div className="text-center">

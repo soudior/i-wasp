@@ -28,7 +28,13 @@ import {
   Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { NFC_PRICING, formatPriceMad } from "@/lib/nfcPricing";
+import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
+
+function EssentiellePrice() {
+  const currency = useMarketCurrency();
+  return <>{formatCatalogAmount(NFC_PRICING.cards.ESSENTIELLE.priceEur, NFC_PRICING.cards.ESSENTIELLE.priceMad, currency)}</>;
+}
 
 // Animation variants
 const fadeUp = {
@@ -391,7 +397,7 @@ export default function IWASPProduitConversion() {
             </div>
             
             <p className="text-5xl md:text-6xl font-display mb-2">
-              {formatPriceMad(NFC_PRICING.tiers.SINGLE.priceMad)}
+              <EssentiellePrice />
             </p>
             <p className="text-muted-foreground mb-8">
               Paiement unique • Pas d'abonnement • Hébergement à vie

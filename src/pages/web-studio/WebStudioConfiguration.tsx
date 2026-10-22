@@ -432,7 +432,7 @@ export default function WebStudioConfiguration() {
                 <div className="flex items-center gap-2">
                   <Globe size={16} className="text-blue-400" />
                   <span style={{ color: STUDIO.ivoire }} className="font-medium">Domaine personnalisé</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">+100 MAD/an</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">+100 DH/an · Tarif Maroc</span>
                 </div>
                 <p className="text-xs mt-1" style={{ color: STUDIO.gris }}>
                   Utilisez votre propre nom de domaine (ex: votre-entreprise.ma)
@@ -476,7 +476,7 @@ export default function WebStudioConfiguration() {
               />
               <div className="flex-1">
                 <span style={{ color: STUDIO.ivoire }}>Design de logo</span>
-                <span className="text-amber-500 ml-2 text-sm">+200 MAD</span>
+                <span className="text-amber-500 ml-2 text-sm">+200 DH</span>
               </div>
             </label>
             <label className="flex items-center gap-3 p-3 rounded-xl bg-white/5 cursor-pointer">
@@ -486,7 +486,7 @@ export default function WebStudioConfiguration() {
               />
               <div className="flex-1">
                 <span style={{ color: STUDIO.ivoire }}>Optimisation SEO avancée</span>
-                <span className="text-amber-500 ml-2 text-sm">+150 MAD</span>
+                <span className="text-amber-500 ml-2 text-sm">+150 DH</span>
               </div>
             </label>
           </div>
@@ -520,7 +520,7 @@ export default function WebStudioConfiguration() {
                 <span className="text-2xl font-bold" style={{ color: STUDIO.ivoire }}>
                   {selectedPackage.priceMad}
                 </span>
-                <span className="text-sm ml-1" style={{ color: STUDIO.gris }}>MAD</span>
+                <span className="text-sm ml-1" style={{ color: STUDIO.gris }}>DH · Tarif Maroc</span>
               </div>
             </div>
           </motion.div>

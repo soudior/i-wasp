@@ -22,6 +22,7 @@ import { ModelsSection } from "@/components/home/ModelsSection";
 import { BenefitsSection } from "@/components/home/BenefitsSection";
 import { ComparisonSection } from "@/components/home/ComparisonSection";
 import { PricingSection } from "@/components/home/PricingSection";
+import { LaunchOfferBanner } from "@/components/LaunchOfferBanner";
 import { TrustSection } from "@/components/home/TrustSection";
 import { FaqSection, FAQS } from "@/components/home/FaqSection";
 import {
@@ -150,6 +151,7 @@ const Index = () => {
       <StructuredData id="home" schema={HOME_STRUCTURED_DATA} />
       
       <div className="min-h-screen bg-[#030303] relative overflow-hidden">
+        <LaunchOfferBanner />
         
         {/* ═══════════════════════════════════════════════════════════════
             GLOW AMBIANCE — Multiple layers
@@ -174,8 +176,9 @@ const Index = () => {
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed top-0 left-0 right-0 z-50"
+          className="fixed left-0 right-0 z-50"
           style={{
+            top: "var(--launch-banner-h, 0px)",
             background: "rgba(3, 3, 3, 0.6)",
             backdropFilter: "blur(20px)",
             borderBottom: "1px solid rgba(255, 255, 255, 0.03)",

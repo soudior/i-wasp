@@ -625,7 +625,9 @@ export default function ProduitsNFC() {
                     className="flex flex-wrap items-center justify-between gap-4 pt-4"
                     style={{ borderTop: `1px solid ${STEALTH.border}` }}
                   >
-                    <span className="text-lg font-semibold" style={{ color: STEALTH.accent }}>{product.price}</span>
+                    <span className="text-lg font-semibold" style={{ color: STEALTH.accent }}>
+                      {marketCurrency === "MAD" ? "Tarif sur demande" : product.price.replace("€", " €")}
+                    </span>
                     <a href={WHATSAPP_PROJECT_URL} target="_blank" rel="noopener noreferrer">
                       <Button
                         size="sm"

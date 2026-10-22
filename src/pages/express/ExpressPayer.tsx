@@ -13,6 +13,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useExpressCheckout, EXPRESS_OFFERS, ExpressPaymentMethod } from "@/contexts/ExpressCheckoutContext";
 import { useMarketCurrency } from "@/contexts/CurrencyContext";
 import { formatMadCents } from "@/lib/nfcPricing";
+import { serverChargeCents, shippingCountryForMarket } from "@/lib/nfcChargeCatalog";
+import { createConfirmedNfcCheckout } from "@/lib/nfcPayment";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, CreditCard, Banknote, Check, MapPin, User, Shield, Loader2 } from "lucide-react";
@@ -108,7 +110,7 @@ export default function ExpressPayer() {
             user_id: user.id,
             plan: 'gold',
             status: 'active',
-            price_cents: selectedOffer.price,
+            price_cents: serverChargeCents(state.selectedOffer, marketCurrency) ?? selectedOffer.price,
             expires_at: oneYearFromNow.toISOString(),
             notes: `Express Checkout - ${selectedOffer.name}`,
           });
@@ -122,7 +124,7 @@ export default function ExpressPayer() {
         templateName: `Carte NFC IWASP ${selectedOffer.name}`,
         cardName: `${firstName} ${lastName}`,
         quantity: 1,
-        unitPriceCents: selectedOffer.price,
+        unitPriceCents: serverChargeCents(state.selectedOffer, marketCurrency) ?? selectedOffer.price,
         logoUrl: null,
       }];
 
@@ -133,17 +135,17 @@ export default function ExpressPayer() {
         user_id: user?.id || null,
         order_items: orderItems,
         quantity: 1,
-        unit_price_cents: selectedOffer.price,
-        total_price_cents: selectedOffer.price,
+        unit_price_cents: serverChargeCents(state.selectedOffer, marketCurrency) ?? selectedOffer.price,
+        total_price_cents: serverChargeCents(state.selectedOffer, marketCurrency) ?? selectedOffer.price,
         order_type: "personalized",
         template: "signature",
         card_color: "#0B0B0B",
-        currency: "MAD",
+        currency: marketCurrency,
         shipping_name: `${firstName} ${lastName}`,
         shipping_phone: phone,
         shipping_address: address,
         shipping_city: city,
-        shipping_country: "MA",
+        shipping_country: shippingCountryForMarket(marketCurrency),
         customer_email: email,
         payment_method: state.paymentMethod,
         status: state.paymentMethod === "cod" ? "pending" : "pending",
@@ -156,26 +158,25 @@ export default function ExpressPayer() {
 
       if (state.paymentMethod === "stripe" && order?.id) {
         toast.info("Redirection vers le paiement...");
-        
-        // Le montant est fixé CÔTÉ SERVEUR à partir du tierId (grille canonique).
-        const { data, error } = await supabase.functions.invoke('create-nfc-payment', {
-          body: {
-            tierId: state.selectedOffer,
+
+        const confirmed = await createConfirmedNfcCheckout(
+          (name, options) => supabase.functions.invoke(name, options),
+          {
+            tierId: state.selectedOffer!,
+            currency: marketCurrency,
             orderId: order.id,
             email,
           },
-        });
+        );
 
         if (!operation.isCurrent()) return;
-        if (error) throw error;
-
-        if (data?.url) {
-          window.location.href = data.url;
-          completed = true;
+        if (!confirmed.ok) {
+          toast.error("Le montant Stripe n'est pas confirmé. Aucun débit n'a été lancé.");
           return;
-        } else {
-          throw new Error('No checkout URL received');
         }
+        window.location.href = confirmed.url;
+        completed = true;
+        return;
       }
 
       trackPurchase(orderNumber, selectedOffer.price / 100, selectedOffer.name, state.paymentMethod || 'cod');

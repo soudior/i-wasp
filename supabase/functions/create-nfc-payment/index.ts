@@ -23,29 +23,108 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Grille canonique — centimes de MAD (Stripe: devise à 2 décimales).
-// Équivalents EUR du catalogue client : 29 / 49 / 79 / 119 €.
-const NFC_TIERS: Record<string, { name: string; amountMadCents: number; quantity: number }> = {
-  essentielle:    { name: "Carte NFC Essentielle + 3 mois Pro",    amountMadCents: 19900,  quantity: 1 },
-  professionnelle:{ name: "Carte NFC Professionnelle + 3 mois Pro", amountMadCents: 34900,  quantity: 1 },
-  prestige:       { name: "Carte NFC Prestige + 3 mois Pro",        amountMadCents: 59900,  quantity: 1 },
-  pack_team:      { name: "Pack TEAM (5 cartes) + 3 mois Pro",      amountMadCents: 129900, quantity: 5 },
+// Grille officielle + offre de lancement. Les montants viennent d'ICI.
+// Tout montant envoyé par le client (priceInCents, amount, unit_amount) est ignoré.
+// Garder ces chiffres alignés sur src/lib/launchOffer.ts et src/lib/nfcPricing.ts.
+const LAUNCH_OFFER_ENABLED = true;
+const LAUNCH_OFFER_ENDS_AT = "2026-11-30T23:59:59+01:00";
+const PRICING_VERSION = 2;
+
+type MoneyTier = {
+  name: string;
+  amountMadCents: number;
+  amountEurCents: number;
+  quantity: number;
+  proMonths: number;
 };
 
-// Alias acceptés (ids historiques des tunnels /order et /express).
+function launchOfferActive(now = Date.now()): boolean {
+  return LAUNCH_OFFER_ENABLED && now <= Date.parse(LAUNCH_OFFER_ENDS_AT);
+}
+
+function nfcTiers(now = Date.now()): Record<string, MoneyTier> {
+  const launch = launchOfferActive(now);
+  const table: Record<string, MoneyTier> = {
+    essentielle: {
+      name: "Carte NFC Essentielle + 3 mois Pro",
+      amountMadCents: 19900,
+      amountEurCents: 2900,
+      quantity: 1,
+      proMonths: 3,
+    },
+    professionnelle: launch
+      ? {
+        name: "Carte NFC Professionnelle + 1 an Pro",
+        amountMadCents: 24900,
+        amountEurCents: 3500,
+        quantity: 1,
+        proMonths: 12,
+      }
+      : {
+        name: "Carte NFC Professionnelle + 3 mois Pro",
+        amountMadCents: 34900,
+        amountEurCents: 4900,
+        quantity: 1,
+        proMonths: 3,
+      },
+    prestige: {
+      name: "Carte NFC Prestige + 3 mois Pro",
+      amountMadCents: 59900,
+      amountEurCents: 7900,
+      quantity: 1,
+      proMonths: 3,
+    },
+    pack_team: {
+      name: "Pack TEAM (5 cartes) + 3 mois Pro",
+      amountMadCents: 129900,
+      amountEurCents: 11900,
+      quantity: 5,
+      proMonths: 3,
+    },
+  };
+  if (launch) {
+    table.pack_duo = {
+      name: "Pack DUO (2 cartes Professionnelle)",
+      amountMadCents: 54900,
+      amountEurCents: 7900,
+      quantity: 2,
+      proMonths: 3,
+    };
+  }
+  return table;
+}
+
 const TIER_ALIASES: Record<string, string> = {
   essentiel: "essentielle",
   signature: "professionnelle",
   alliance: "prestige",
   single: "essentielle",
+  duo: "pack_duo",
 };
 
-// Options — prix serveur uniquement (alignés sur nfcPricing.extras).
-const NFC_EXTRAS: Record<string, { name: string; amountMadCents: number }> = {
-  laser_engraving:   { name: "Gravure laser",      amountMadCents: 16500 },
-  express_production:{ name: "Production express", amountMadCents: 22000 },
-  custom_packaging:  { name: "Packaging premium",  amountMadCents: 11000 },
+const NFC_EXTRAS: Record<string, { name: string; amountMadCents: number; amountEurCents: number }> = {
+  laser_engraving: { name: "Gravure laser", amountMadCents: 16500, amountEurCents: 1500 },
+  express_production: { name: "Production express", amountMadCents: 22000, amountEurCents: 2000 },
+  custom_packaging: { name: "Packaging premium", amountMadCents: 11000, amountEurCents: 1000 },
 };
+
+function quotePayload(now = Date.now()) {
+  const tiers = nfcTiers(now);
+  const tierQuotes: Record<string, { EUR: number; MAD: number }> = {};
+  for (const [id, tier] of Object.entries(tiers)) {
+    tierQuotes[id] = { EUR: tier.amountEurCents, MAD: tier.amountMadCents };
+  }
+  const extraQuotes: Record<string, { EUR: number; MAD: number }> = {};
+  for (const [id, extra] of Object.entries(NFC_EXTRAS)) {
+    extraQuotes[id] = { EUR: extra.amountEurCents, MAD: extra.amountMadCents };
+  }
+  return {
+    version: PRICING_VERSION,
+    launchActive: launchOfferActive(now),
+    tiers: tierQuotes,
+    extras: extraQuotes,
+  };
+}
 
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : "";
@@ -60,6 +139,25 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
+    const body = await req.json() as {
+      action?: string;
+      tierId?: string;
+      offerId?: string;
+      orderId?: string;
+      email?: string;
+      customerEmail?: string;
+      currency?: string;
+      extras?: Array<string | { id?: string }>;
+    };
+
+    // Devis sans Stripe. L'ancienne fonction n'a pas cette action : elle refuse
+    // un corps sans tier (400) avant de créer une session.
+    if (body.action === "quote") {
+      return new Response(JSON.stringify(quotePayload()), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -67,25 +165,22 @@ serve(async (req) => {
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY not configured");
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) throw new Error("Backend configuration missing");
 
-    const body = await req.json() as {
-      tierId?: string;
-      offerId?: string;
-      orderId?: string;
-      email?: string;
-      customerEmail?: string;
-      extras?: Array<string | { id?: string }>;
-    };
-
-    // tierId prioritaire, offerId accepté pour les tunnels existants.
+    const tiers = nfcTiers();
     const requestedTier = (body.tierId || body.offerId || "").trim();
-    const canonicalTierId = NFC_TIERS[requestedTier] ? requestedTier : TIER_ALIASES[requestedTier];
-    const tier = canonicalTierId ? NFC_TIERS[canonicalTierId] : undefined;
+    const canonicalTierId = tiers[requestedTier] ? requestedTier : TIER_ALIASES[requestedTier];
+    const tier = canonicalTierId ? tiers[canonicalTierId] : undefined;
+    const requestedCurrency = (body.currency || "").trim().toUpperCase();
+    const currency: "EUR" | "MAD" | null = requestedCurrency === "EUR" || requestedCurrency === "MAD"
+      ? requestedCurrency
+      : requestedCurrency === ""
+        ? "MAD"
+        : null;
 
-    logStep("Request received", { requestedTier, canonicalTierId, orderId: body.orderId });
+    logStep("Request received", { requestedTier, canonicalTierId, orderId: body.orderId, currency });
 
-    if (!tier) {
+    if (!tier || !currency) {
       return new Response(
-        JSON.stringify({ error: "Pack NFC invalide" }),
+        JSON.stringify({ error: !tier ? "Pack NFC invalide" : "Devise invalide" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -123,29 +218,32 @@ serve(async (req) => {
       }
     }
 
-    const origin = req.headers.get("origin") || "https://i-wasp.com";
+    const origin = req.headers.get("origin") || "https://www.i-wasp.com";
+    const stripeCurrency = currency === "EUR" ? "eur" : "mad";
+    const tierAmount = currency === "EUR" ? tier.amountEurCents : tier.amountMadCents;
+    const extraAmount = (id: string) => currency === "EUR" ? NFC_EXTRAS[id].amountEurCents : NFC_EXTRAS[id].amountMadCents;
+    const amount = tierAmount + extraIds.reduce((sum, id) => sum + extraAmount(id), 0);
 
-    // Montants 100 % serveur (price_data, devise MAD).
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
       {
         price_data: {
-          currency: "mad",
+          currency: stripeCurrency,
           product_data: { name: tier.name },
-          unit_amount: tier.amountMadCents,
+          unit_amount: tierAmount,
         },
         quantity: 1,
       },
       ...extraIds.map((id) => ({
         price_data: {
-          currency: "mad" as const,
+          currency: stripeCurrency,
           product_data: { name: NFC_EXTRAS[id].name },
-          unit_amount: NFC_EXTRAS[id].amountMadCents,
+          unit_amount: extraAmount(id),
         },
         quantity: 1,
       })),
     ];
 
-    logStep("Line items prepared", { count: lineItems.length, tier: canonicalTierId, extras: extraIds });
+    logStep("Line items prepared", { count: lineItems.length, tier: canonicalTierId, currency, amount, extras: extraIds });
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -153,30 +251,39 @@ serve(async (req) => {
       line_items: lineItems,
       mode: "payment",
       success_url: `${origin}/nfc-success?session_id={CHECKOUT_SESSION_ID}&tier=${canonicalTierId}`,
-      cancel_url: `${origin}/order/recapitulatif?cancelled=true`,
+      cancel_url: `${origin}/order/recap?cancelled=true`,
       metadata: {
         type: "nfc_order",
-        pro_trial_months: "3",
+        pro_trial_months: String(tier.proMonths),
         tier_id: canonicalTierId,
         quantity: String(tier.quantity),
+        currency,
+        amount: String(amount),
         extras: JSON.stringify(extraIds),
         ...(body.orderId ? { order_id: body.orderId } : {}),
       },
       payment_intent_data: {
         metadata: {
           type: "nfc_order",
-          pro_trial_months: "3",
+          pro_trial_months: String(tier.proMonths),
           tier_id: canonicalTierId,
+          currency,
           ...(body.orderId ? { order_id: body.orderId } : {}),
         },
       },
       ...(userEmail ? {} : { customer_creation: "always" }),
     });
 
-    logStep("Checkout session created", { sessionId: session.id });
+    logStep("Checkout session created", { sessionId: session.id, currency, amount });
 
     return new Response(
-      JSON.stringify({ url: session.url, sessionId: session.id }),
+      JSON.stringify({
+        url: session.url,
+        sessionId: session.id,
+        version: PRICING_VERSION,
+        currency,
+        amount,
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {

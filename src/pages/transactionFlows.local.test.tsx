@@ -75,6 +75,15 @@ const fakeUser = { id: '00000000-0000-4000-8000-000000000001', email: 'qa-only@e
 const fakeCard = { id: '00000000-0000-4000-8000-000000000002', slug: 'synthetic-only', first_name: 'Camille', last_name: 'Test' };
 const fakeOrder = { id: '00000000-0000-4000-8000-000000000003' };
 function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(r => { resolve = r; }); return { promise, resolve }; }
+function quoteThenFail(_name: string, options: { body?: { action?: string } }) {
+  if (options.body?.action === 'quote') {
+    return Promise.resolve({
+      data: { version: 2, tiers: { essentielle: { EUR: 2900, MAD: 19900 }, professionnelle: { EUR: 3500, MAD: 24900 } } },
+      error: null,
+    });
+  }
+  return Promise.resolve({ data: null, error: new Error('Synthetic payment failure') });
+}
 const render = async (component: React.ReactNode) => { await act(async () => root.render(<MemoryRouter>{component}</MemoryRouter>)); };
 function button(name: string) { const node = Array.from(host.querySelectorAll('button')).find(b => b.textContent?.trim().includes(name)); if (!node) throw new Error(`Button not found: ${name}`); return node; }
 const click = async (name: string, twice = false) => { await act(async () => { const node = button(name); node.click(); if (twice) node.click(); }); };
@@ -208,7 +217,7 @@ describe('Order checkout interactions, no remote orders/payments', () => {
     await render(<OrderRecap />); await click('Paiement à la livraison'); await click('Confirmer ma commande', true);
     expect(mocks.insertCard).toHaveBeenCalledTimes(1);
     await act(async () => pending.resolve({ error: null })); expect(mocks.createOrder).toHaveBeenCalledTimes(1);
-    expect(mocks.createOrder.mock.calls[0][0]).toMatchObject({ total_price_cents: 19900, currency: 'MAD', payment_method: 'cod', user_id: fakeUser.id });
+    expect(mocks.createOrder.mock.calls[0][0]).toMatchObject({ total_price_cents: 2900, currency: 'EUR', payment_method: 'cod', user_id: fakeUser.id });
     expect(mocks.invoke).not.toHaveBeenCalled(); expect(mocks.markComplete).toHaveBeenCalledTimes(1);
     expect(mocks.insertCard.mock.calls[0][0].is_pro).toBeUndefined();
     expect(mocks.insertCard.mock.calls[0][0]).not.toHaveProperty('nfc_enabled');
@@ -222,10 +231,11 @@ describe('Order checkout interactions, no remote orders/payments', () => {
     expect(button('Payer 29 €').disabled).toBe(false);
   });
   it('retries a failed payment without duplicating card or order', async () => {
-    mocks.user = fakeUser; mocks.invoke.mockResolvedValue({ error: new Error('Synthetic payment error'), data: null });
+    mocks.user = fakeUser; mocks.invoke.mockImplementation(quoteThenFail);
     await render(<OrderRecap />); await click('Payer 29 €'); await click('Payer 29 €');
-    expect(mocks.invoke).toHaveBeenCalledTimes(2); expect(mocks.insertCard).toHaveBeenCalledTimes(1); expect(mocks.createOrder).toHaveBeenCalledTimes(1);
-    expect(mocks.invoke).toHaveBeenLastCalledWith('create-nfc-payment', { body: { tierId: 'essentiel', orderId: fakeOrder.id, email: fakeUser.email } });
+    expect(mocks.invoke).toHaveBeenCalledTimes(4); expect(mocks.insertCard).toHaveBeenCalledTimes(1); expect(mocks.createOrder).toHaveBeenCalledTimes(1);
+    expect(mocks.invoke).toHaveBeenNthCalledWith(1, 'create-nfc-payment', { body: { action: 'quote' } });
+    expect(mocks.invoke).toHaveBeenLastCalledWith('create-nfc-payment', { body: { tierId: 'essentiel', currency: 'EUR', orderId: fakeOrder.id, email: fakeUser.email } });
     expect(mocks.markComplete).not.toHaveBeenCalled();
   });
   it('does not continue into order creation after the recap was dismissed', async () => {
@@ -285,8 +295,8 @@ describe('Express checkout, synthetic services only', () => {
     expect(values).toMatchObject({ user_id: fakeUser.id, first_name: 'Camille', last_name: 'Test' });
     expect(values).not.toHaveProperty('nfc_enabled'); expect(values).not.toHaveProperty('wallet_enabled'); expect(values).not.toHaveProperty('is_pro');
     expect(mocks.rpc).not.toHaveBeenCalled();
-    expect(mocks.insertSubscription).toHaveBeenCalledWith(expect.objectContaining({ user_id: fakeUser.id, plan: 'gold', status: 'active', price_cents: 19900 }));
-    expect(mocks.insertExpressOrder).toHaveBeenCalledWith(expect.objectContaining({ total_price_cents: 19900, unit_price_cents: 19900, currency: 'MAD', payment_method: 'cod', user_id: fakeUser.id }));
+    expect(mocks.insertSubscription).toHaveBeenCalledWith(expect.objectContaining({ user_id: fakeUser.id, plan: 'gold', status: 'active', price_cents: 2900 }));
+    expect(mocks.insertExpressOrder).toHaveBeenCalledWith(expect.objectContaining({ total_price_cents: 2900, unit_price_cents: 2900, currency: 'EUR', payment_method: 'cod', user_id: fakeUser.id }));
     expect(mocks.markComplete).toHaveBeenCalledTimes(1); expect(mocks.navigate).toHaveBeenCalledWith('/express/succes');
     expect(button('Traitement...').disabled).toBe(true);
   });
@@ -308,11 +318,12 @@ describe('Express checkout, synthetic services only', () => {
   });
   it('retries payment using the saved card and order without client lifecycle grants', async () => {
     mocks.user = fakeUser; expressState.paymentMethod = 'stripe';
-    mocks.invoke.mockResolvedValue({ data: null, error: new Error('Synthetic payment failure') });
+    mocks.invoke.mockImplementation(quoteThenFail);
     await render(<ExpressPayer />); await click('Payer 29 €'); await click('Payer 29 €');
     expect(mocks.insertCard).toHaveBeenCalledTimes(1); expect(mocks.insertExpressOrder).toHaveBeenCalledTimes(1);
-    expect(mocks.invoke).toHaveBeenCalledTimes(2);
-    expect(mocks.invoke).toHaveBeenLastCalledWith('create-nfc-payment', { body: { tierId: 'essentiel', orderId: fakeOrder.id, email: expressState.customerInfo.email } });
+    expect(mocks.invoke).toHaveBeenCalledTimes(4);
+    expect(mocks.invoke).toHaveBeenNthCalledWith(1, 'create-nfc-payment', { body: { action: 'quote' } });
+    expect(mocks.invoke).toHaveBeenLastCalledWith('create-nfc-payment', { body: { tierId: 'essentiel', currency: 'EUR', orderId: fakeOrder.id, email: expressState.customerInfo.email } });
     expect(mocks.markComplete).not.toHaveBeenCalled(); expect(mocks.rpc).not.toHaveBeenCalled();
   });
   it('preserves opted-out publication without creating a public card', async () => {
@@ -323,7 +334,7 @@ describe('Express checkout, synthetic services only', () => {
   it('preserves guest checkout without creating a card or subscription', async () => {
     await render(<ExpressPayer />); await click('Confirmer · 29 €');
     expect(mocks.insertCard).not.toHaveBeenCalled(); expect(mocks.findSubscription).not.toHaveBeenCalled();
-    expect(mocks.insertExpressOrder).toHaveBeenCalledWith(expect.objectContaining({ user_id: null, total_price_cents: 19900 }));
+    expect(mocks.insertExpressOrder).toHaveBeenCalledWith(expect.objectContaining({ user_id: null, total_price_cents: 2900 }));
   });
   it.each(['unmount', 'account change', 'signout/signin'])('abandons pending INSERT after %s without creating subscription or order', async reason => {
     mocks.user = fakeUser;

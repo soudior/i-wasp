@@ -6,6 +6,7 @@ import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 
 import "@/styles/public-brand.css";
 import { useState } from "react";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
 import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brandPalette";
 import { Link } from "react-router-dom";
@@ -74,6 +75,7 @@ const processSteps = [
 ];
 
 export default function Conciergerie() {
+  const marketCurrency = useMarketCurrency();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -318,10 +320,16 @@ ${formData.budget}`;
                     }}
                   >
                     <option value="" style={{ backgroundColor: COLORS.bgCard }}>Sélectionner...</option>
-                    <option value="< 100€" style={{ backgroundColor: COLORS.bgCard }}>Moins de 100€</option>
-                    <option value="100-500€" style={{ backgroundColor: COLORS.bgCard }}>100€ - 500€</option>
-                    <option value="500-1000€" style={{ backgroundColor: COLORS.bgCard }}>500€ - 1000€</option>
-                    <option value="> 1000€" style={{ backgroundColor: COLORS.bgCard }}>Plus de 1000€</option>
+                    {marketCurrency === "EUR" ? (
+                      <>
+                        <option value="< 100€" style={{ backgroundColor: COLORS.bgCard }}>Moins de 100 €</option>
+                        <option value="100-500€" style={{ backgroundColor: COLORS.bgCard }}>100 € - 500 €</option>
+                        <option value="500-1000€" style={{ backgroundColor: COLORS.bgCard }}>500 € - 1 000 €</option>
+                        <option value="> 1000€" style={{ backgroundColor: COLORS.bgCard }}>Plus de 1 000 €</option>
+                      </>
+                    ) : (
+                      <option value="a-preciser" style={{ backgroundColor: COLORS.bgCard }}>À préciser · Tarif Maroc</option>
+                    )}
                   </select>
                 </div>
 
