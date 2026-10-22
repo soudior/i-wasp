@@ -26,6 +26,8 @@ describe("Vercel SPA fallback", () => {
       redirects?: Array<{ source?: string; destination?: string; statusCode?: number; has?: Array<{ type?: string; value?: string }> }>;
     };
     expect(vercelConfig.redirects).toEqual([
+      { source: "/produits-nfc", destination: "/produits", statusCode: 301 },
+      { source: "/produits-nfc/", destination: "/produits", statusCode: 301 },
       {
         source: "/",
         has: [{ type: "host", value: "i-wasp.com" }],

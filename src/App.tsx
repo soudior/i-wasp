@@ -246,6 +246,7 @@ const App = () => {
                             
                             {/* NEW PAGES - Final structure */}
                             <Route path="/produits" element={<ProduitsNFC />} />
+                            <Route path="/produits-nfc" element={<Navigate to="/produits" replace />} />
                             <Route path="/produits/:productId" element={<ProductDetail />} />
                             <Route path="/conciergerie" element={<Conciergerie />} />
                             <Route path="/club" element={<Club />} />

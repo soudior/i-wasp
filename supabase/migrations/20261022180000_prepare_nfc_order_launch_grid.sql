@@ -8,6 +8,10 @@
 -- and stripe-webhook. Legacy v7 amounts 32900 / 54900 / 98900 MAD stay accepted
 -- by those functions for any order that already stores them; this function
 -- prices new orders on the launch grid.
+--
+-- COALESCE and NULLIF are SQL parser forms, not catalog functions.
+-- Schema-qualifying them raises SQLSTATE 42883 and aborts CREATE FUNCTION,
+-- so prepare_nfc_order never updates and PAYER never reaches Stripe.
 
 ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS checkout_key uuid;
 ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS digital_card_id uuid;
@@ -81,9 +85,9 @@ DECLARE
   v_booking_url text;
   v_contract_changed boolean := false;
   v_is_cod boolean := p_payment_method = 'cod';
-  v_card_live boolean := v_is_cod AND pg_catalog.coalesce((p_card ->> 'publish')::boolean, true);
+  v_card_live boolean := v_is_cod AND COALESCE((p_card ->> 'publish')::boolean, true);
   v_slug text;
-  v_currency text := pg_catalog.upper(pg_catalog.coalesce(p_order ->> 'currency', 'MAD'));
+  v_currency text := pg_catalog.upper(COALESCE(p_order ->> 'currency', 'MAD'));
   v_launch boolean := pg_catalog.now() <= timestamptz '2026-11-30 23:59:59+01';
   v_shipping_country text;
 BEGIN
@@ -130,7 +134,7 @@ BEGIN
 
   v_shipping_country := CASE
     WHEN v_currency = 'MAD' THEN 'MA'
-    ELSE pg_catalog.coalesce(
+    ELSE COALESCE(
       NULLIF(pg_catalog.upper(pg_catalog.btrim(p_order ->> 'shippingCountry')), ''),
       'FR'
     )
@@ -390,7 +394,7 @@ BEGIN
     NULLIF(pg_catalog.btrim(p_order ->> 'shippingCity'), ''),
     '',
     v_shipping_country,
-    NULLIF(pg_catalog.btrim(pg_catalog.coalesce(p_order ->> 'customerEmail', p_card ->> 'email')), ''),
+    NULLIF(pg_catalog.btrim(COALESCE(p_order ->> 'customerEmail', p_card ->> 'email')), ''),
     p_payment_method,
     'pending'::public.order_status,
     CASE WHEN v_is_cod THEN pg_catalog.now() ELSE NULL END

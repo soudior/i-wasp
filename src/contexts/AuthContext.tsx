@@ -1,9 +1,7 @@
-import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
-import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { isTransientBootstrapError } from "@/lib/bootstrapAdminRetry";
 
 interface AuthContextType {
   user: User | null;
@@ -17,28 +15,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [authIdentityEpoch, setAuthIdentityEpoch] = useState(0);
-  const latestSessionUserId = useRef<string | null>(null);
-  const activeBootstrap = useRef<{ userId: string; cancel: () => void } | null>(null);
 
   useEffect(() => {
     let disposed = false;
     let receivedAuthEvent = false;
     const applySession = (nextSession: Session | null) => {
-      const nextUserId = nextSession?.user.id ?? null;
-      // Cancel synchronously with auth changes, before React commits the next
-      // render, so a racing old-account response cannot invalidate its cache.
-      if (latestSessionUserId.current !== nextUserId) {
-        latestSessionUserId.current = nextUserId;
-        activeBootstrap.current?.cancel();
-        // Preserve identity transitions even when React batches sign-out and
-        // sign-in of the same user into one render. Token refreshes do not count.
-        setAuthIdentityEpoch((epoch) => epoch + 1);
-      }
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
       setLoading(false);
@@ -77,55 +61,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Server-side bootstrap: if the logged-in user is the founder (ADMIN_EMAIL), grant admin role automatically.
-  useEffect(() => {
-    const uid = session?.user?.id;
-    if (!uid) return;
-
-    // One bounded cycle per authenticated identity epoch. Session/token
-    // refreshes keep both the user ID and epoch unchanged.
-    const controller = new AbortController();
-    let retryTimer: ReturnType<typeof setTimeout> | undefined;
-    let attempts = 0;
-    const cancel = () => {
-      controller.abort();
-      if (retryTimer !== undefined) clearTimeout(retryTimer);
-    };
-    activeBootstrap.current = { userId: uid, cancel };
-
-    const bootstrap = async () => {
-      if (controller.signal.aborted) return;
-      attempts += 1;
-      let error: unknown;
-
-      try {
-        ({ error } = await supabase.functions.invoke("bootstrap-admin", {
-          body: { action: "ensure" },
-          signal: controller.signal,
-        }));
-      } catch (invokeError) {
-        error = invokeError;
-      }
-
-      // A request may finish even after aborting; never invalidate a stale user.
-      if (controller.signal.aborted) return;
-      if (!error) {
-        void queryClient.invalidateQueries({ queryKey: ["isAdmin", uid] });
-        return;
-      }
-
-      console.warn("bootstrap-admin error", error);
-      if (attempts < 3 && isTransientBootstrapError(error)) {
-        retryTimer = setTimeout(() => void bootstrap(), 1_000 * 2 ** (attempts - 1));
-      }
-    };
-
-    void bootstrap();
-    return () => {
-      cancel();
-      if (activeBootstrap.current?.cancel === cancel) activeBootstrap.current = null;
-    };
-  }, [session?.user?.id, authIdentityEpoch, queryClient]);
+  // Customer login does not call bootstrap-admin. That function returns 500
+  // when ADMIN_EMAIL is unset, and a retry treated that 500 as transient, so
+  // every session hit it three times. Founder promotion stays on the dev-only
+  // control in AdminGuard. The deployed function is unchanged.
 
   const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
     const redirectUrl = `${window.location.origin}/dashboard`;
