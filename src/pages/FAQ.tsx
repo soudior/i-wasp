@@ -27,6 +27,11 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NFC_PRICING } from "@/lib/nfcPricing";
+import { IWASP_WHATSAPP_DISPLAY, IWASP_WHATSAPP_E164, iwaspWhatsAppUrl } from "@/lib/brandContact";
+
+const essentielle = NFC_PRICING.cards.ESSENTIELLE;
+const essentiellePrice = `${essentielle.priceMad} DH (${essentielle.priceEur} €)`;
 
 const faqCategories = [
   {
@@ -97,7 +102,7 @@ const faqCategories = [
     faqs: [
       {
         question: "Quel est le prix d'une carte i-wasp ?",
-        answer: "Une carte i-wasp est à 149 DH (au lieu de 249 DH). Ce prix inclut : la carte NFC premium personnalisée, votre profil digital à vie, les mises à jour illimitées, et la livraison gratuite partout au Maroc.",
+        answer: `Une carte i-wasp Essentielle est à ${essentiellePrice}. Ce prix inclut : la carte NFC premium personnalisée, votre profil digital à vie, les mises à jour illimitées, et la livraison gratuite partout au Maroc.`,
       },
       {
         question: "Y a-t-il des frais cachés ou un abonnement ?",
@@ -363,7 +368,7 @@ export default function FAQ() {
                     Essayez une autre recherche ou contactez-nous
                   </p>
                   <a
-                    href="https://wa.me/212667285923?text=Bonjour, j'ai une question..."
+                    href={iwaspWhatsAppUrl("Bonjour, j'ai une question...")}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -438,7 +443,7 @@ export default function FAQ() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
-                  href="https://wa.me/212667285923?text=Bonjour, j'ai une question..."
+                  href={iwaspWhatsAppUrl("Bonjour, j'ai une question...")}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -450,14 +455,14 @@ export default function FAQ() {
                     WhatsApp
                   </Button>
                 </a>
-                <a href="tel:+212667285923">
+                <a href={`tel:${IWASP_WHATSAPP_E164}`}>
                   <Button
                     size="lg"
                     variant="outline"
                     className="rounded-full px-8 h-14 text-base font-medium border border-[#DCC7B0]/30 bg-transparent text-[#FDFCFB] hover:bg-[#DCC7B0]/10 hover:text-[#FDFCFB] w-full sm:w-auto"
                   >
                     <Phone className="w-5 h-5 mr-2" />
-                    +212 667 285 923
+                    {IWASP_WHATSAPP_DISPLAY}
                   </Button>
                 </a>
               </div>
@@ -496,7 +501,7 @@ export default function FAQ() {
               </Link>
 
               <p className="text-[#ABA49C] text-sm mt-4">
-                149 DH seulement • Sans abonnement
+                {essentiellePrice} • Sans abonnement
               </p>
             </motion.div>
           </div>

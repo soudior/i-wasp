@@ -9,6 +9,7 @@
  */
 
 import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
+import { IWASP_WHATSAPP_E164 as IWASP_WHATSAPP } from "@/lib/brandContact";
 
 // Types de produits disponibles
 export interface Product {
@@ -75,8 +76,8 @@ export const MOROCCO_CITIES = [
 const SHIPPING_COST_DH = 40;
 const FREE_SHIPPING_THRESHOLD_DH = 500;
 
-// Numéro WhatsApp IWASP
-export const IWASP_WHATSAPP = "+212600000000"; // À remplacer par le vrai numéro
+// Official support number. The previous placeholder (+212600000000) was never a live line.
+export { IWASP_WHATSAPP };
 
 interface CheckoutContextValue {
   // État

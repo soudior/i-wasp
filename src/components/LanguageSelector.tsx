@@ -17,6 +17,11 @@ export function LanguageSelector() {
 
   const handleLanguageChange = (code: LanguageCode) => {
     i18n.changeLanguage(code);
+    try {
+      localStorage.setItem("iwasp-lang", code);
+    } catch {
+      // The detector also writes this key when storage is available.
+    }
     setOpen(false);
   };
 

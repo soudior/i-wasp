@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * Conciergerie & IA — Formulaire projet i-wasp
  * OMNIA — Obsidienne, champagne et ivoire
@@ -25,7 +26,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-const WHATSAPP_PROJECT_URL = "https://wa.me/33626424394?text=";
+const WHATSAPP_PROJECT_URL = `https://wa.me/${IWASP_WHATSAPP_WA}?text=`;
 
 // Public OMNIA colors
 const COLORS = {

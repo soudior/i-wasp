@@ -298,10 +298,9 @@ const Index = () => {
               
               {/* Carte 3D */}
               <motion.div 
-                custom={4}
-                initial="hidden"
-                animate="visible"
-                variants={scaleIn}
+                initial={{ opacity: 1, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="flex justify-center lg:justify-end order-1 lg:order-2"
               >
                 <HeroProductVisual />

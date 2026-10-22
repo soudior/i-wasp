@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { 
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
+import {
   Check, CreditCard, Smartphone, Truck, Users, ChevronRight, 
   Upload, X, Palette, User, Building2, Briefcase, Crown, Star,
   Headphones, Code, Award, MessageCircle
@@ -749,7 +750,7 @@ export function PricingSection() {
                     const message = encodeURIComponent(
                       "Bonjour i-wasp, je souhaite obtenir un devis pour un pack Enterprise de [X] cartes pour mon entreprise."
                     );
-                    window.open(`https://wa.me/212600000000?text=${message}`, "_blank");
+                    window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=${message}`, "_blank");
                   }}
                 >
                   <MessageCircle size={18} className="mr-2 group-hover:text-primary transition-colors" />

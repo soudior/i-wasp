@@ -477,7 +477,7 @@ export default function EliteDashboard() {
                         <button 
                           className="text-xs font-medium mt-1 hover:underline"
                           style={{ color: COLORS.textMuted }}
-                          onClick={() => navigate('/order/type')}
+                          onClick={() => navigate('/order/offre')}
                         >
                           Réserver →
                         </button>

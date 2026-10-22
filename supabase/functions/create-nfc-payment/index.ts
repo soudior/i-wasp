@@ -5,7 +5,7 @@
  *
  * SÉCURITÉ — le MONTANT est fixé exclusivement CÔTÉ SERVEUR :
  * - le tier vient du catalogue `NFC_TIERS` ci-dessous (grille canonique alignée
- *   sur src/lib/nfcPricing.ts : 329 / 549 / 989 DH, pack TEAM 2189 DH) ;
+ *   sur src/lib/nfcPricing.ts : 199 / 349 / 599 DH, pack TEAM 1299 DH) ;
  * - les extras sont validés contre l'allow-list `NFC_EXTRAS` (id → prix serveur) ;
  * - tout `priceInCents`/prix envoyé par le client est IGNORÉ.
  *
@@ -24,7 +24,7 @@ const corsHeaders = {
 };
 
 // Grille canonique — centimes de MAD (Stripe: devise à 2 décimales).
-// Équivalents EUR affichés côté client (taux 11) : 29,90 / 49,90 / 89,90 / 199 €.
+// Équivalents EUR du catalogue client : 29 / 49 / 79 / 119 €.
 const NFC_TIERS: Record<string, { name: string; amountMadCents: number; quantity: number }> = {
   essentielle:    { name: "Carte NFC Essentielle + 3 mois Pro",    amountMadCents: 19900,  quantity: 1 },
   professionnelle:{ name: "Carte NFC Professionnelle + 3 mois Pro", amountMadCents: 34900,  quantity: 1 },

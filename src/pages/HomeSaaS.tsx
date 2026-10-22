@@ -110,7 +110,7 @@ function SaaSNavbar() {
                 Connexion
               </Button>
             </Link>
-            <Link to="/order/type">
+            <Link to="/order/offre">
               <Button className="btn-premium">
                 Créer mon profil
               </Button>
@@ -152,7 +152,7 @@ function SaaSNavbar() {
                     Connexion
                   </Button>
                 </Link>
-                <Link to="/order/type" className="block">
+                <Link to="/order/offre" className="block">
                   <Button className="w-full btn-premium">
                     Créer mon profil
                   </Button>
@@ -396,7 +396,7 @@ export default function HomeSaaS() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <Link to="/order/type">
+              <Link to="/order/offre">
                 <Button size="lg" className="btn-premium text-lg px-8 py-6 gap-2 min-h-[56px]">
                   Créer mon profil
                   <ArrowRight className="w-5 h-5" />
@@ -1047,7 +1047,7 @@ export default function HomeSaaS() {
                 Rejoins des milliers de professionnels qui ne laissent plus mourir leurs contacts.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link to="/order/type">
+                <Link to="/order/offre">
                   <Button size="lg" className="btn-premium px-10 text-lg min-h-[56px]">
                     Créer mon profil i-wasp
                     <ArrowRight className="w-5 h-5 ml-2" />

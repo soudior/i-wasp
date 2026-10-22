@@ -7,6 +7,7 @@
 import { useNavigate, Link } from "react-router-dom";
 import { Home, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SEOHead } from "@/components/SEOHead";
 import { motion } from "framer-motion";
 
 export default function NotFound() {
@@ -26,6 +27,11 @@ export default function NotFound() {
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center p-6 bg-background relative overflow-hidden">
+      <SEOHead
+        title="Page introuvable"
+        description="Cette adresse n'existe pas sur i-wasp."
+        noindex
+      />
       {/* Premium background effects */}
       <div className="absolute inset-0 bg-grid opacity-10" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-primary/5 to-accent/5 blur-3xl" />

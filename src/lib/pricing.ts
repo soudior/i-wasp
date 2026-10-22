@@ -7,7 +7,8 @@ export const PRICING = {
   
   // B2C Pricing (TTC - includes VAT)
   // Grille CANONIQUE (cf. nfcPricing.ts + serveur create-nfc-payment) :
-  // Essentielle 29,90 € · Professionnelle 49,90 € · Prestige 89,90 €.
+  // Essentielle 29 € / 199 DH · Professionnelle 49 € / 349 DH · Prestige 79 € / 599 DH.
+  // b2c.single est en centimes MAD (19900), pas en centimes d'euro.
   b2c: {
     single: 19900,
     double: 39800,

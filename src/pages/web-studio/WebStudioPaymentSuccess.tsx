@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * WebStudioPaymentSuccess - Page affichée après un paiement réussi
  * Supporte les paiements directs (depuis /pricing) et les paiements avec proposal/génération IA
@@ -402,7 +403,7 @@ export default function WebStudioPaymentSuccess() {
                     }}
                   >
                     <a 
-                      href="https://wa.me/33626424394?text=Bonjour%20!%20Je%20viens%20d'effectuer%20un%20paiement%20et%20j'ai%20une%20question."
+                      href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20!%20Je%20viens%20d'effectuer%20un%20paiement%20et%20j'ai%20une%20question.`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -504,7 +505,7 @@ export default function WebStudioPaymentSuccess() {
                   }}
                 >
                   <a 
-                    href="https://wa.me/33626424394?text=Bonjour%20!%20J'ai%20eu%20une%20erreur%20lors%20de%20mon%20paiement."
+                    href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20!%20J'ai%20eu%20une%20erreur%20lors%20de%20mon%20paiement.`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

@@ -22,17 +22,42 @@ const resources = {
   ar: { translation: ar },
 };
 
+const SUPPORTED_LANGS = ['fr', 'en', 'es', 'it', 'nl', 'de', 'ar'] as const;
+
+/** Explicit choice only. An empty store stays French, including for en-US browsers. */
+function explicitLanguage(): (typeof SUPPORTED_LANGS)[number] | undefined {
+  if (typeof localStorage === 'undefined') return undefined;
+  try {
+    const stored = localStorage.getItem('iwasp-lang');
+    if (stored && (SUPPORTED_LANGS as readonly string[]).includes(stored)) {
+      return stored as (typeof SUPPORTED_LANGS)[number];
+    }
+  } catch {
+    // Private mode: French remains the landing language.
+  }
+  return undefined;
+}
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
+    // Setting lng disables the detector, so apply a stored choice here.
+    // With no choice, French is the landing language.
+    lng: explicitLanguage() ?? 'fr',
     fallbackLng: 'fr',
+    supportedLngs: ['fr', 'en', 'es', 'it', 'nl', 'de', 'ar'],
+    nonExplicitSupportedLngs: true,
+    load: 'languageOnly',
     interpolation: {
       escapeValue: false,
     },
+    // French is the default landing language, including for en-US browsers
+    // and Googlebot. Only an explicit choice (language switch) is remembered.
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage'],
+      lookupLocalStorage: 'iwasp-lang',
       caches: ['localStorage'],
     },
   });

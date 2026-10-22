@@ -19,7 +19,7 @@ describe("PrivacyPolicy", () => {
       "https://www.i-wasp.com/contact",
       "supabase",
       "stripe",
-      "ipapi",
+      "dirham",
       "nominatim",
       "openstreetmap",
       "notifications push",

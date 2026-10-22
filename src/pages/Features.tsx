@@ -132,7 +132,7 @@ export default function Features() {
               Une carte NFC intelligente + un profil digital puissant + des analytics en temps réel. 
             </p>
             
-            <Link to="/order/type">
+            <Link to="/order/offre">
               <Button 
                 size="lg" 
                 className="px-8 py-6 text-sm uppercase tracking-[0.1em] font-medium transition-all duration-500"
@@ -243,7 +243,7 @@ export default function Features() {
               Rejoignez des milliers de professionnels qui ont déjà adopté la carte de visite du futur.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/order/type">
+              <Link to="/order/offre">
                 <Button 
                   size="lg" 
                   className="font-medium px-8 text-sm uppercase tracking-[0.1em]"

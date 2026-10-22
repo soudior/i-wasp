@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
+import {
   Package,
   Truck,
   CheckCircle2,
@@ -382,7 +383,7 @@ export default function TrackOrder() {
                   asChild
                 >
                   <a 
-                    href="https://wa.me/212600000000" 
+                    href={`https://wa.me/${IWASP_WHATSAPP_WA}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                   >

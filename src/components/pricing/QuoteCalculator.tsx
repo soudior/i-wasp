@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * Quote Calculator — Calculateur de devis interactif
  * Style: Premium Noir & Or
@@ -508,7 +509,7 @@ export function QuoteCalculator({ currency }: QuoteCalculatorProps) {
                   
                   {/* CTA */}
                   <a 
-                    href={`https://wa.me/33626424394?text=${generateWhatsAppMessage()}`}
+                    href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=${generateWhatsAppMessage()}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block"

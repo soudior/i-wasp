@@ -1,0 +1,8 @@
+# Netlify is the live host (site iwasp-site). Vercel ignores this file.
+# Build command and publish directory stay in the Netlify UI so this file
+# does not override project settings.
+# Redirects are in public/_redirects. This file only publishes the geo hint.
+
+[[edge_functions]]
+  function = "geo-hint"
+  path = "/geo-hint"

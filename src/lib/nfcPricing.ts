@@ -1,12 +1,14 @@
 /**
  * i-wasp Studio - NFC Cards Pricing Configuration
- * Currency: EUR primary, MAD secondary (11 DH ≈ 1€)
- * 
- * Tarifs cartes physiques:
- * - Essentielle: 29,90€ (329 DH)
- * - Professionnelle: 49,90€ (549 DH)
- * - Prestige: 89,90€ (989 DH)
- * - Pack TEAM (5): 199€ (2189 DH)
+ *
+ * Grille officielle, alignée sur le tunnel /order et sur
+ * supabase/functions/create-nfc-payment (centimes MAD) :
+ * - Essentielle: 29 € / 199 DH (19900)
+ * - Professionnelle: 49 € / 349 DH (34900)
+ * - Prestige: 79 € / 599 DH (59900)
+ * - Pack TEAM (5): 119 € / 1299 DH (129900)
+ *
+ * Les pages publiques lisent ces montants. Ne pas les recalculer avec un taux.
  */
 
 export const NFC_PRICING = {
@@ -243,6 +245,23 @@ export function getNfcPackById(id: string): NfcPack | null {
 
 export function formatPriceEur(amount: number): string {
   return `${amount.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(',', '.')}€`;
+}
+
+/** Prix catalogue tel qu'affiché : MAD au Maroc, EUR partout ailleurs. */
+export function formatCatalogAmount(eur: number, mad: number, currency: string): string {
+  if (currency === "MAD") {
+    return `${Math.round(mad).toLocaleString("fr-FR")} DH`;
+  }
+  if (Number.isInteger(eur)) return `${eur.toLocaleString("fr-FR")} €`;
+  return `${eur.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+}
+
+/** Affiche un montant déjà stocké en centimes MAD (tunnel et paiement). */
+export function formatMadCents(cents: number, currency: string): string {
+  const mad = Math.round(cents / 100);
+  const known = Object.values(NFC_PRICING.cards).find((card) => card.priceMad === mad);
+  if (known) return formatCatalogAmount(known.priceEur, known.priceMad, currency);
+  return `${mad.toLocaleString("fr-FR")} DH`;
 }
 
 export function formatPriceMad(amount: number): string {

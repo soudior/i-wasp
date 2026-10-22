@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * ComingSoon — Page "Bientôt Disponible"
  * Style: Haute Couture Digitale - Noir & Or
@@ -138,7 +139,7 @@ export default function ComingSoon() {
                 backgroundColor: 'transparent',
               }}
               onClick={() => {
-                window.open('https://wa.me/33626424394?text=Je souhaite être notifié des nouvelles fonctionnalités i-wasp', '_blank');
+                window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=Je souhaite être notifié des nouvelles fonctionnalités i-wasp`, '_blank');
               }}
             >
               <Bell className="w-4 h-4 mr-2" />

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SEOHead, SEO_CONFIGS } from "@/components/SEOHead";
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 import {
   ArrowRight, 
   Sparkles, 
@@ -31,8 +32,8 @@ const nailsDemoVideo = "/nails-demo-video.mp4";
 import nailsPoster from "@/assets/posters/nails-demo-poster.webp";
 
 // WhatsApp links
-const WHATSAPP_NAILS = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20un%20Pack%20Nails%20i-wasp.";
-const WHATSAPP_DEMO = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20voir%20une%20démo%20des%20i-wasp%20Nails.";
+const WHATSAPP_NAILS = `https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20commander%20un%20Pack%20Nails%20i-wasp.`;
+const WHATSAPP_DEMO = `https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20voir%20une%20démo%20des%20i-wasp%20Nails.`;
 
 const Nails = () => {
   // SEO

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
+import {
   CheckCircle2, 
   Package,
   MessageCircle,
@@ -312,7 +313,7 @@ export default function PromoPackSuccess() {
                 }}
               >
                 <a 
-                  href="https://wa.me/212661928670?text=Bonjour%20!%20Je%20viens%20de%20commander%20le%20Pack%20Promo%20et%20je%20souhaite%20démarrer%20mon%20projet."
+                  href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20!%20Je%20viens%20de%20commander%20le%20Pack%20Promo%20et%20je%20souhaite%20démarrer%20mon%20projet.`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

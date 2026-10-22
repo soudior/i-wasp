@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * SubscriptionCard - Carte affichant le plan actuel et option upgrade
  * Style SaaS Professional
@@ -39,7 +40,7 @@ export function SubscriptionCard({ onUpgradeRequest }: SubscriptionCardProps) {
       const message = encodeURIComponent(
         "Bonjour ! Je souhaite passer au plan Premium i-wasp à 99 DH/mois. Merci de me contacter pour finaliser l'abonnement."
       );
-      window.open(`https://wa.me/212XXXXXXXXX?text=${message}`, "_blank");
+      window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=${message}`, "_blank");
     }
   };
 
@@ -220,7 +221,7 @@ export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
             const message = encodeURIComponent(
               `Bonjour ! Je souhaite passer au plan Premium i-wasp pour accéder à ${featureLabels[feature]}.`
             );
-            window.open(`https://wa.me/212XXXXXXXXX?text=${message}`, "_blank");
+            window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=${message}`, "_blank");
           }}
         >
           <Crown className="h-4 w-4" />

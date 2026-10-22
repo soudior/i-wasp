@@ -1,7 +1,25 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import fs from "node:fs";
 import { VitePWA } from "vite-plugin-pwa";
+
+/** Netlify uses dist/404.html for unknown paths (real 404). Vercel keeps its SPA rewrite. */
+function netlify404Plugin(): Plugin {
+  return {
+    name: "netlify-404",
+    apply: "build",
+    closeBundle() {
+      const indexPath = path.resolve(__dirname, "dist/index.html");
+      if (!fs.existsSync(indexPath)) return;
+      const html = fs.readFileSync(indexPath, "utf8").replace(
+        'content="index, follow, max-image-preview:large"',
+        'content="noindex, nofollow"',
+      );
+      fs.writeFileSync(path.resolve(__dirname, "dist/404.html"), html);
+    },
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(() => ({
@@ -34,6 +52,7 @@ export default defineConfig(() => ({
   },
   plugins: [
     react(),
+    netlify404Plugin(),
     VitePWA({
       registerType: 'autoUpdate',
       // Manifest unique : on utilise public/manifest.json (lié dans index.html)

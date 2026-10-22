@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_E164 } from "@/lib/brandContact";
 /**
  * Demo page for Ultra-Luxe VIP Template
  * Morocco VIP Premium Experience
@@ -13,9 +14,9 @@ const demoData = {
   tagline: "Tap. Connect. Empower.",
   photoUrl: undefined, // Will show initials
   videoUrl: undefined, // Video removed for performance
-  phone: "+33626424394",
+  phone: IWASP_WHATSAPP_E164,
   email: "contact@i-wasp.com",
-  whatsapp: "+33626424394",
+  whatsapp: IWASP_WHATSAPP_E164,
   linkedin: "https://linkedin.com/company/iwasp",
   instagram: "https://instagram.com/iwasp.ma",
   website: "https://i-wasp.com",

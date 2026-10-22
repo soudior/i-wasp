@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * Club / Abonnement — Avantages membres i-wasp
  * Tarifs, avantages, CTA rejoindre le club
@@ -26,7 +27,7 @@ import {
   Gift
 } from "lucide-react";
 
-const WHATSAPP_CLUB_URL = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20rejoindre%20le%20club%20i-wasp.";
+const WHATSAPP_CLUB_URL = `https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20rejoindre%20le%20club%20i-wasp.`;
 
 // Public OMNIA colors
 const STEALTH = {

@@ -136,11 +136,11 @@ describe('isolated checkout brand', () => {
     expect(continueButton.disabled).toBe(true);
     for (const offer of EXPRESS_OFFERS) {
       expect(host.textContent).toContain(offer.name);
-      expect(host.textContent).toContain(offer.priceDisplay);
+      expect(host.textContent).toContain(offer.id === "essentiel" ? "29 €" : offer.id === "signature" ? "49 €" : "79 €");
     }
     await act(async () => buttonWithText('Professionnelle').click());
     expect(continueButton.disabled).toBe(false);
-    expect(continueButton.textContent).toContain('349 MAD');
+    expect(continueButton.textContent).toContain('49 €');
     expect(continueButton.style.backgroundColor).toBe('rgb(220, 199, 176)');
     expect(continueButton.style.color).toBe('rgb(3, 3, 3)');
     await act(async () => continueButton.click());
@@ -183,10 +183,10 @@ describe('isolated checkout brand', () => {
     expect(buttonWithText('Paiement à la livraison')).toBeTruthy();
     expect(buttonWithText('Carte bancaire')).toBeTruthy();
     const primary = host.querySelector<HTMLButtonElement>('.checkout-action-bar button')!;
-    expect(primary.textContent).toContain('Confirmer · 199 MAD');
+    expect(primary.textContent).toContain('Confirmer · 29 €');
     expect(primary.style.color).toBe('rgb(3, 3, 3)');
     await act(async () => buttonWithText('Carte bancaire').click());
-    expect(primary.textContent).toContain('Payer 199 MAD');
+    expect(primary.textContent).toContain('Payer 29 €');
     expect(buttonWithText('Carte bancaire').querySelector('svg')?.style.color).toBe('rgb(3, 3, 3)');
     expect(mocks.invoke).not.toHaveBeenCalled();
   });

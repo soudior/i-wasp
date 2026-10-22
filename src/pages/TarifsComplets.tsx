@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * Page Tarifs Complets - i-wasp Studio
  * 3 sections: Cartes NFC, Sites Web Studio, Packs Promo
@@ -567,7 +568,7 @@ export default function TarifsComplets() {
                 Appel Conseil Gratuit
               </Button>
             </Link>
-            <a href="https://wa.me/212600000000" target="_blank" rel="noopener noreferrer">
+            <a href={`https://wa.me/${IWASP_WHATSAPP_WA}`} target="_blank" rel="noopener noreferrer">
               <Button size="lg" variant="outline" className="w-full sm:w-auto">
                 <MessageSquare className="w-4 h-4 mr-2" />
                 WhatsApp

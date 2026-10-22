@@ -5,6 +5,9 @@ import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { useWebStudioTracking } from "@/hooks/useAnalyticsEvents";
 import { PortfolioSection } from "@/components/PortfolioSection";
 import { useState, useEffect } from "react";
+import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 
 const luxuryEase = [0.22, 1, 0.36, 1] as const;
 
@@ -105,6 +108,12 @@ function LiveActivity() {
 
 export default function IWASPLanding() {
   const { trackCTAClick } = useWebStudioTracking();
+  const marketCurrency = useMarketCurrency();
+  const cardPrice = formatCatalogAmount(
+    NFC_PRICING.cards.ESSENTIELLE.priceEur,
+    NFC_PRICING.cards.ESSENTIELLE.priceMad,
+    marketCurrency,
+  );
   const cardsCount = useCounter(547, 2500);
   const clientsCount = useCounter(89, 2000);
 
@@ -138,7 +147,7 @@ export default function IWASPLanding() {
           </span>
           <div className="flex items-center gap-6">
             <a 
-              href="https://wa.me/33626424394?text=Bonjour%20👋%0AJ'ai%20une%20question%20sur%20la%20carte%20NFC."
+              href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJ'ai%20une%20question%20sur%20la%20carte%20NFC.`}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:flex items-center gap-2 text-xs text-[hsl(142,70%,45%)] hover:text-[hsl(142,70%,50%)] transition-colors"
@@ -228,8 +237,7 @@ export default function IWASPLanding() {
               {/* Price & CTA */}
               <motion.div variants={fadeUp} className="space-y-4">
                 <div className="flex items-baseline gap-3">
-                  <span className="font-display text-4xl text-foreground">329 DH</span>
-                  <span className="text-lg text-muted-foreground">soit 29,90 €</span>
+                  <span className="font-display text-4xl text-foreground">{cardPrice}</span>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -245,7 +253,7 @@ export default function IWASPLanding() {
                   </Link>
                   
                   <a 
-                    href="https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20plus%20d'infos%20sur%20la%20carte%20NFC."
+                    href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20plus%20d'infos%20sur%20la%20carte%20NFC.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-8 py-4 border border-[hsl(142,70%,45%)]/30 text-[hsl(142,70%,50%)] font-body text-sm tracking-wider uppercase hover:bg-[hsl(142,70%,45%)]/10 transition-all duration-300 text-center flex items-center justify-center gap-2"
@@ -682,9 +690,8 @@ export default function IWASPLanding() {
             variants={fadeUp}
             className="flex items-center justify-center gap-4 mb-8"
           >
-            <span className="font-display text-5xl text-foreground">329 DH</span>
+            <span className="font-display text-5xl text-foreground">{cardPrice}</span>
             <div className="text-left">
-              <span className="text-xl text-muted-foreground block">soit 29,90 €</span>
             </div>
           </motion.div>
 
@@ -706,7 +713,7 @@ export default function IWASPLanding() {
             </Link>
             
             <a 
-              href="https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20une%20carte%20NFC."
+              href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20commander%20une%20carte%20NFC.`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-8 py-5 border border-[hsl(142,70%,45%)] text-[hsl(142,70%,50%)] font-body text-sm tracking-widest uppercase hover:bg-[hsl(142,70%,45%)] hover:text-white transition-all duration-500"
@@ -745,7 +752,7 @@ export default function IWASPLanding() {
           </span>
           <div className="flex items-center gap-6">
             <a 
-              href="https://wa.me/33626424394"
+              href={`https://wa.me/${IWASP_WHATSAPP_WA}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-[hsl(142,70%,50%)] transition-colors"
@@ -764,7 +771,7 @@ export default function IWASPLanding() {
 
       {/* Floating WhatsApp Button */}
       <a 
-        href="https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20des%20informations%20sur%20la%20carte%20NFC."
+        href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20des%20informations%20sur%20la%20carte%20NFC.`}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,50%)] rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300"

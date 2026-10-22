@@ -75,7 +75,7 @@ export default function PrivacyPolicy() {
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
             <li><strong>Supabase :</strong> authentification, base de données, stockage des fichiers, fonctions serveur et événements de statistiques internes.</li>
             <li><strong>Stripe :</strong> paiements et abonnements. Les données de carte sont saisies directement auprès de Stripe ; {COMPANY_NAME} ne les stocke pas et n’y a pas accès.</li>
-            <li><strong>ipapi :</strong> estimation du pays ou de la zone à partir de l’adresse IP, notamment pour adapter la devise.</li>
+            <li><strong>Indication de pays de l’hébergeur :</strong> lorsque le navigateur le demande, le fuseau horaire, la langue régionale et, si disponible, le pays transmis par l’hébergement servent uniquement à afficher les prix en dirham ou en euro. Aucun service de géolocalisation IP tiers n’est appelé pour cela.</li>
             <li><strong>Nominatim / OpenStreetMap :</strong> conversion de coordonnées en adresse lorsque vous déclenchez volontairement la fonction de localisation.</li>
             <li><strong>Web Push :</strong> acheminement des notifications après votre consentement système.</li>
           </ul>

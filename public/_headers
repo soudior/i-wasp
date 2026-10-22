@@ -1,8 +1,5 @@
-# ⚠️ Ce fichier est une convention Netlify / Cloudflare Pages.
-# L'hébergeur de production est VERCEL, qui l'IGNORE totalement.
-# La règle qui compte réellement est dans `vercel.json` (bloc "headers"),
-# verrouillée par le test `src/config/vercel.test.ts`.
-# Conservé uniquement pour rester portable si l'hébergement change un jour.
+# Netlify (site live iwasp-site) reads this file. Vercel ignores it and uses
+# vercel.json. The CSP strings must stay identical (src/config/vercel.test.ts).
 /.well-known/apple-app-site-association
   Content-Type: application/json
 /apple-app-site-association
@@ -10,7 +7,7 @@
 
 # En-têtes de sécurité (miroir de vercel.json — garder les deux synchronisés)
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://placehold.co https://vwlngxifajsziexhkafe.supabase.co https://www.facebook.com; font-src 'self' data:; connect-src 'self' https://vwlngxifajsziexhkafe.supabase.co wss://vwlngxifajsziexhkafe.supabase.co https://ipapi.co https://nominatim.openstreetmap.org https://www.google-analytics.com https://www.googletagmanager.com https://graph.facebook.com https://hooks.zapier.com; frame-src https://www.google.com https://maps.google.com https://open.spotify.com https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://tracker.metricool.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://placehold.co https://vwlngxifajsziexhkafe.supabase.co https://www.facebook.com https://tracker.metricool.com; font-src 'self' data:; connect-src 'self' https://vwlngxifajsziexhkafe.supabase.co wss://vwlngxifajsziexhkafe.supabase.co https://ipapi.co https://nominatim.openstreetmap.org https://www.google-analytics.com https://www.googletagmanager.com https://graph.facebook.com https://hooks.zapier.com https://tracker.metricool.com; frame-src https://www.google.com https://maps.google.com https://open.spotify.com https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
   Strict-Transport-Security: max-age=63072000; includeSubDomains
   X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff

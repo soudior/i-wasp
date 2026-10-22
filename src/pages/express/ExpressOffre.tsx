@@ -14,12 +14,15 @@ import { Check, ArrowRight, Shield, Truck, Star, Clock, Users } from "lucide-rea
 import { CHECKOUT_BRAND as CHECKOUT } from "@/lib/checkoutBrandPalette";
 import "@/styles/checkout-brand.css";
 import { useExpressCheckoutTracking } from "@/hooks/useAnalyticsEvents";
+import { formatMadCents } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
 
 export default function ExpressOffre() {
   const navigate = useNavigate();
   const { state, setSelectedOffer } = useExpressCheckout();
   const [isNavigating, setIsNavigating] = useState(false);
   const { trackOfferSelect } = useExpressCheckoutTracking('offre');
+  const marketCurrency = useMarketCurrency();
 
   const handleSelectOffer = (offerId: ExpressOfferType) => {
     setSelectedOffer(offerId);
@@ -195,7 +198,7 @@ export default function ExpressOffre() {
                       className="checkout-offer-price text-xl font-semibold"
                       style={{ color: CHECKOUT.text }}
                     >
-                      {offer.priceDisplay}
+                      {formatMadCents(offer.price, marketCurrency)}
                     </span>
                   </div>
                 </motion.button>
@@ -269,7 +272,7 @@ export default function ExpressOffre() {
             }}
           >
             <span className="text-base">
-              {isNavigating ? "Chargement..." : selectedOffer ? `Continuer — ${selectedOffer.priceDisplay}` : "Choisir une offre"}
+              {isNavigating ? "Chargement..." : selectedOffer ? `Continuer — ${formatMadCents(selectedOffer.price, marketCurrency)}` : "Choisir une offre"}
             </span>
             {!isNavigating && state.selectedOffer && (
               <ArrowRight className="w-5 h-5" />

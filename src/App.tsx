@@ -16,6 +16,7 @@ import { DashboardGuard } from "@/components/DashboardGuard";
 import { AdminGuard } from "@/components/AdminGuard";
 import { FeatureValidationProvider } from "@/components/FeatureValidationProvider";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { RouteSeo } from "@/components/RouteSeo";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { SplashScreen } from "@/components/SplashScreen";
 import { NetworkProvider } from "@/components/NetworkProvider";
@@ -224,6 +225,7 @@ const App = () => {
                     <Sonner />
                     <BrowserRouter>
                       <ScrollToTop />
+                      <RouteSeo />
                       <ErrorBoundary>
                         <OrderFunnelProvider>
                           <Suspense fallback={<RouteLoader />}>
@@ -409,6 +411,9 @@ const App = () => {
                               {/* NEW ORDER FUNNEL - 7 steps STRICT */}
                               <Route path="/order" element={<Navigate to="/order/offre" replace />} />
                               <Route path="/order/type" element={<Navigate to="/order/offre" replace />} />
+                              <Route path="/commander" element={<Navigate to="/order/offre" replace />} />
+                              <Route path="/express/pack" element={<Navigate to="/order/offre" replace />} />
+                              <Route path="/user-guide" element={<Navigate to="/guide" replace />} />
                               <Route path="/order/offre" element={<OrderOffre />} />
                               <Route path="/order/template" element={<OrderTemplate />} />
                               <Route path="/order/identite" element={<OrderIdentite />} />
@@ -434,8 +439,8 @@ const App = () => {
                               
                               {/* Cart & Checkout */}
                               <Route path="/cart" element={<Cart />} />
-                              <Route path="/boutique" element={<Navigate to="/order/type" replace />} />
-                              <Route path="/shop" element={<Navigate to="/order/type" replace />} />
+                              <Route path="/boutique" element={<Navigate to="/order/offre" replace />} />
+                              <Route path="/shop" element={<Navigate to="/order/offre" replace />} />
                               <Route path="/checkout-tunnel" element={<CheckoutTunnel />} />
                               
                               {/* Wallet Pass */}

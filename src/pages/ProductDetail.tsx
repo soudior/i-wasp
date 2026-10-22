@@ -30,14 +30,19 @@ import {
 } from "lucide-react";
 
 // Import card images
-import cardFront from "@/assets/cards/card-base-front.png";
-import cardBack from "@/assets/cards/card-base-back.png";
+import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
 import cardBlackMatte from "@/assets/cards/card-black-matte.png";
 import cardNavy from "@/assets/cards/card-navy-executive.png";
 import cardGold from "@/assets/cards/card-gold-accent.png";
 import cardWhite from "@/assets/cards/card-white-minimal.png";
 import cardUsage from "@/assets/products/card-usage-tap.png";
 import cardPackaging from "@/assets/products/card-packaging.png";
+
+const cardFront = "/media/cards/card-base-front-800.webp";
+const cardFrontSet = "/media/cards/card-base-front-480.webp 480w, /media/cards/card-base-front-800.webp 800w";
+const cardBack = "/media/cards/card-base-back-800.webp";
+const cardBackSet = "/media/cards/card-base-back-480.webp 480w, /media/cards/card-base-back-800.webp 800w";
 
 // Finition options with colors and images
 interface FinishOption {
@@ -90,16 +95,13 @@ const finishOptions: FinishOption[] = [
 ];
 
 // Material options
-interface MaterialOption {
+const materialOptions: Array<{
   id: string;
   name: string;
-  priceLabel: string;
-  basePrice: number; // In EUR cents
-}
-
-const materialOptions: MaterialOption[] = [
-  { id: "pvc", name: "PVC Premium", priceLabel: "À partir de 29,90 €", basePrice: 2990 },
-  { id: "metal", name: "Métal", priceLabel: "À partir de 89,90 €", basePrice: 8990 }
+  card: typeof NFC_PRICING.cards.ESSENTIELLE | typeof NFC_PRICING.cards.PRESTIGE;
+}> = [
+  { id: "pvc", name: "PVC Premium", card: NFC_PRICING.cards.ESSENTIELLE },
+  { id: "metal", name: "Métal", card: NFC_PRICING.cards.PRESTIGE },
 ];
 
 interface ProductSpec {
@@ -148,6 +150,7 @@ export default function ProductDetail() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedFinish, setSelectedFinish] = useState(finishOptions[0]);
   const [selectedMaterial, setSelectedMaterial] = useState(materialOptions[0]);
+  const marketCurrency = useMarketCurrency();
 
   const product = productId ? products[productId] : null;
 
@@ -174,8 +177,8 @@ export default function ProductDetail() {
   }
 
   const currentImages = selectedFinish.images;
-  const currentPrice = selectedMaterial.basePrice + selectedFinish.priceModifier;
-  const formattedPrice = `${(currentPrice / 100).toFixed(0)} €`;
+  const formattedPrice = formatCatalogAmount(selectedMaterial.card.priceEur, selectedMaterial.card.priceMad, marketCurrency);
+  const metalPrice = formatCatalogAmount(NFC_PRICING.cards.PRESTIGE.priceEur, NFC_PRICING.cards.PRESTIGE.priceMad, marketCurrency);
 
   const handlePrevImage = () => {
     setActiveImageIndex((prev) => (prev === 0 ? currentImages.length - 1 : prev - 1));
@@ -251,8 +254,11 @@ export default function ProductDetail() {
                   <motion.img
                     key={`${selectedFinish.id}-${activeImageIndex}`}
                     src={currentImages[activeImageIndex]}
+                    srcSet={currentImages[activeImageIndex] === cardFront ? cardFrontSet : currentImages[activeImageIndex] === cardBack ? cardBackSet : undefined}
+                    sizes="(max-width: 1024px) 92vw, 640px"
                     alt={`${product.name} - ${selectedFinish.name}`}
                     className="w-full h-full object-contain p-8"
+                    decoding="async"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
@@ -459,7 +465,7 @@ export default function ProductDetail() {
                       className="text-sm"
                       style={{ color: BRAND.textMuted }}
                     >
-                      Métal à partir de 89 €
+                      {`Métal ${metalPrice}`}
                     </span>
                   )}
                 </div>

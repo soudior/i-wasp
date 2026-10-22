@@ -41,7 +41,7 @@ export function StepComplete({ cardId, cardSlug, data }: StepCompleteProps) {
   const handleOrderNFC = () => {
     if (cardId) {
       // Navigate to order flow with card linked
-      navigate(`/order/type?cardId=${cardId}`);
+      navigate(`/order/offre?cardId=${cardId}`);
     }
   };
 

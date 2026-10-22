@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * WebStudioPaymentCancelled - Page affichée quand le paiement est annulé
  */
@@ -71,7 +72,7 @@ export default function WebStudioPaymentCancelled() {
               <p className="text-sm text-muted-foreground">
                 Des questions ? Contactez-nous sur{" "}
                 <a 
-                  href="https://wa.me/212600000000" 
+                  href={`https://wa.me/${IWASP_WHATSAPP_WA}`} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"

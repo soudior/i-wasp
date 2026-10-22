@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import nfcCardWaxSeal from "@/assets/nfc-card-wax-seal.png";
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 
-const WHATSAPP_ORDER_URL = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20une%20carte%20NFC%20i-wasp.";
+const WHATSAPP_ORDER_URL = `https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJe%20souhaite%20commander%20une%20carte%20NFC%20i-wasp.`;
 
 // Stagger container for progressive reveal
 const containerVariants = {

@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA, IWASP_WHATSAPP_DISPLAY } from "@/lib/brandContact";
 /**
  * Contact Page - OMNIA public design
  * Ultra-minimal, clean, professional
@@ -62,7 +63,7 @@ const requestTypes = [
 
 const contactInfo = [
   { icon: Mail, label: "Email", value: "contact@i-wasp.com" },
-  { icon: Phone, label: "WhatsApp", value: "+33 6 26 42 43 94" },
+  { icon: Phone, label: "WhatsApp", value: IWASP_WHATSAPP_DISPLAY },
   { icon: MapPin, label: "Adresse", value: "Paris, France" },
   { icon: Clock, label: "Réponse", value: "Sous 24h" },
 ];
@@ -536,7 +537,7 @@ export default function Contact() {
                     Contactez-nous directement sur WhatsApp pour une réponse immédiate.
                   </p>
                   <a
-                    href="https://wa.me/33626424394?text=Bonjour%20👋%0AJ'ai%20une%20question%20sur%20IWASP."
+                    href={`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour%20👋%0AJ'ai%20une%20question%20sur%20IWASP.`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

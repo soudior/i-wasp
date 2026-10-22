@@ -8,16 +8,17 @@ import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brandPalette";
+import { iwaspWhatsAppUrl } from "@/lib/brandContact";
 
 const footerLinks = {
   product: [
-    { label: "Commander", href: "/order/type" },
+    { label: "Commander", href: "/order/offre" },
     { label: "Fonctionnalités", href: "/features" },
     { label: "Tarifs", href: "/pricing" },
   ],
   support: [
     { label: "Contact", href: "/contact" },
-    { label: "Guide", href: "/user-guide" },
+    { label: "Guide", href: "/guide" },
     { label: "FAQ", href: "/faq" },
   ],
   services: [
@@ -43,7 +44,7 @@ const socialLinks = [
   },
   {
     name: "WhatsApp",
-    href: "https://wa.me/33626424394",
+    href: iwaspWhatsAppUrl(),
   },
 ];
 

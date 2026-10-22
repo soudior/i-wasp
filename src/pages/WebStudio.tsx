@@ -1,3 +1,4 @@
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 /**
  * WebStudio - Générateur de sites web IA
  * Design Premium Noir & Or - Style i-wasp
@@ -360,7 +361,7 @@ export default function WebStudio() {
       `💰 Estimation: ${price.eur}€ / ${price.mad}DH\n\n` +
       `Je souhaite en savoir plus sur cette proposition !`
     );
-    window.open(`https://wa.me/33626424394?text=${message}`, "_blank");
+    window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=${message}`, "_blank");
   };
 
   const [isOrdering, setIsOrdering] = useState(false);
@@ -679,7 +680,7 @@ export default function WebStudio() {
                 </motion.button>
                 
                 <motion.button
-                  onClick={() => window.open("https://wa.me/33626424394?text=Bonjour, je souhaite créer un site web professionnel.", "_blank")}
+                  onClick={() => window.open(`https://wa.me/${IWASP_WHATSAPP_WA}?text=Bonjour, je souhaite créer un site web professionnel.`, "_blank")}
                   className="px-8 py-4 rounded-xl font-medium text-sm flex items-center justify-center gap-3 transition-all duration-300"
                   style={{ 
                     backgroundColor: "transparent",

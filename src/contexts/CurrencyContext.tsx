@@ -4,6 +4,7 @@
  */
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { detectMarketCurrency } from "@/lib/currencyDetection";
 
 export type Currency = "EUR" | "MAD" | "USD" | "GBP";
 
@@ -42,58 +43,77 @@ interface CurrencyProviderProps {
   children: ReactNode;
 }
 
+function readStoredCurrency(): Currency | null {
+  try {
+    const saved = localStorage.getItem("iwasp-currency");
+    if (saved && ["EUR", "MAD", "USD", "GBP"].includes(saved)) return saved as Currency;
+  } catch {
+    // Ignore private-mode storage failures.
+  }
+  return null;
+}
+
+function localMarketCurrency(): "MAD" | "EUR" {
+  try {
+    return detectMarketCurrency({
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      languages: typeof navigator !== "undefined" ? navigator.languages : [],
+    });
+  } catch {
+    return "EUR";
+  }
+}
+
 export function CurrencyProvider({ children }: CurrencyProviderProps) {
   const [currency, setCurrencyState] = useState<Currency>(() => {
-    const saved = localStorage.getItem("iwasp-currency");
-    if (saved && ["EUR", "MAD", "USD", "GBP"].includes(saved)) {
-      return saved as Currency;
+    try {
+      if (localStorage.getItem("iwasp-currency-manual") === "true") {
+        return readStoredCurrency() ?? "EUR";
+      }
+    } catch {
+      // Ignore private-mode storage failures.
     }
-    return "EUR"; // Default to EUR
+    return localMarketCurrency();
   });
   const [isAutoDetected, setIsAutoDetected] = useState(false);
 
-  // Auto-detect currency based on geolocation (only if not manually set)
+  // Confirm Morocco with the hosting geo hint when the device clock/locale
+  // does not already say Morocco. A failed lookup keeps the local result.
   useEffect(() => {
+    let cancelled = false;
     const detectCurrency = async () => {
-      const manuallySet = localStorage.getItem("iwasp-currency-manual");
-      if (manuallySet === "true") return;
+      try {
+        if (localStorage.getItem("iwasp-currency-manual") === "true") return;
+      } catch {
+        return;
+      }
+
+      const local = localMarketCurrency();
+      if (local === "MAD") {
+        setCurrencyState("MAD");
+        setIsAutoDetected(true);
+        return;
+      }
 
       try {
-        const response = await fetch("https://ipapi.co/json/", {
-          signal: AbortSignal.timeout(5000),
-        });
-        
-        if (!response.ok) return;
-        
-        const data = await response.json();
-        const countryCode = data.country_code;
-        
-        // Map country to currency
-        let detectedCurrency: Currency = "EUR"; // Default
-        
-        // Morocco and North Africa
-        if (["MA", "DZ", "TN", "MR", "LY"].includes(countryCode)) {
-          detectedCurrency = "MAD";
+        const response = await fetch("/geo-hint", { signal: AbortSignal.timeout(2500) });
+        const contentType = response.headers.get("content-type") ?? "";
+        if (!response.ok || !contentType.includes("application/json")) return;
+        const data = await response.json() as { country?: string };
+        if (cancelled) return;
+        if ((data.country ?? "").toUpperCase() === "MA") {
+          setCurrencyState("MAD");
+          setIsAutoDetected(true);
         }
-        // UK
-        else if (countryCode === "GB") {
-          detectedCurrency = "GBP";
-        }
-        // Americas
-        else if (["US", "CA", "MX", "BR", "AR", "CO", "CL", "PE"].includes(countryCode)) {
-          detectedCurrency = "USD";
-        }
-        // Rest of the world defaults to EUR
-        
-        setCurrencyState(detectedCurrency);
-        setIsAutoDetected(true);
-        localStorage.setItem("iwasp-currency", detectedCurrency);
-      } catch (error) {
-        console.warn("Currency auto-detection failed:", error);
+      } catch {
+        // Timezone and locale already decided. Do not fall through to a third-party IP API.
       }
     };
 
     detectCurrency();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Persist to localStorage
@@ -192,4 +212,10 @@ export function useCurrency() {
     throw new Error("useCurrency must be used within a CurrencyProvider");
   }
   return context;
+}
+
+/** EUR outside a provider so isolated checkout tests keep a deterministic price. */
+export function useMarketCurrency(): "EUR" | "MAD" {
+  const context = useContext(CurrencyContext);
+  return context?.currency === "MAD" ? "MAD" : "EUR";
 }

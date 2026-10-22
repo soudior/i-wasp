@@ -9,6 +9,9 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useExpressCheckout, ExpressCustomerInfo, EXPRESS_OFFERS } from "@/contexts/ExpressCheckoutContext";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
+import { formatMadCents } from "@/lib/nfcPricing";
+import { iwaspWhatsAppUrl } from "@/lib/brandContact";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, ArrowRight, User, Mail, Phone, MapPin, MessageCircle, CheckCircle, Shield, Truck } from "lucide-react";
@@ -87,6 +90,7 @@ export default function ExpressInfos() {
   const [showCityDropdown, setShowCityDropdown] = useState(false);
 
   const selectedOffer = EXPRESS_OFFERS.find(o => o.id === state.selectedOffer);
+  const marketCurrency = useMarketCurrency();
 
   useEffect(() => {
     if (!canAccessStep(2)) {
@@ -172,8 +176,7 @@ export default function ExpressInfos() {
   };
 
   const handleWhatsAppHelp = () => {
-    const message = encodeURIComponent(`Bonjour ! J'ai besoin d'aide pour ma commande ${selectedOffer?.name || "IWASP"}.`);
-    window.open(`https://wa.me/33626424394?text=${message}`, "_blank");
+    window.open(iwaspWhatsAppUrl(`Bonjour ! J'ai besoin d'aide pour ma commande ${selectedOffer?.name || "IWASP"}.`), "_blank");
   };
 
   const filteredCities = POPULAR_CITIES.filter(city => 
@@ -249,7 +252,7 @@ export default function ExpressInfos() {
               Où vous livrer ?
             </h1>
             <p className="text-base" style={{ color: CHECKOUT.textSecondary }}>
-              {selectedOffer?.name} · {selectedOffer?.priceDisplay}
+              {selectedOffer?.name} · {selectedOffer ? formatMadCents(selectedOffer.price, marketCurrency) : ""}
             </p>
           </motion.div>
 

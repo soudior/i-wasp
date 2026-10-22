@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
+import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
+import {
   ChevronLeft, 
   ChevronDown, 
   CreditCard, 
@@ -278,7 +279,7 @@ const Help = () => {
               <span className="text-[14px]">Email</span>
             </a>
             <a
-              href="https://wa.me/33626424394"
+              href={`https://wa.me/${IWASP_WHATSAPP_WA}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-background text-foreground px-4 py-2.5 rounded-xl transition-colors font-medium hover:bg-background/90"

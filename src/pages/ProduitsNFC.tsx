@@ -32,16 +32,18 @@ import {
   QrCode,
   Box
 } from "lucide-react";
-
-// Import card images
-import cardFront from "@/assets/cards/card-base-front.png";
-import cardBack from "@/assets/cards/card-base-back.png";
-
-// Import product images
+import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
+import { iwaspWhatsAppUrl } from "@/lib/brandContact";
 import nfcTagsImage from "@/assets/products/nfc-tags-collection.png";
 import nfcWearablesImage from "@/assets/products/nfc-wearables.png";
 import nfcBadgesImage from "@/assets/products/nfc-badges-event.png";
 import nfcNailsImage from "@/assets/products/nfc-nails-collection.png";
+
+const cardFront = "/media/cards/card-base-front-800.webp";
+const cardFrontSet = "/media/cards/card-base-front-480.webp 480w, /media/cards/card-base-front-800.webp 800w";
+const cardBack = "/media/cards/card-base-back-800.webp";
+const cardBackSet = "/media/cards/card-base-back-480.webp 480w, /media/cards/card-base-back-800.webp 800w";
 
 // Public OMNIA palette
 const STEALTH = {
@@ -53,14 +55,15 @@ const STEALTH = {
   glass: BRAND.glass
 };
 
-const WHATSAPP_PROJECT_URL = "https://wa.me/33626424394?text=Bonjour%20👋%0AJe%20souhaite%20commander%20des%20produits%20NFC%20i-wasp.";
+const WHATSAPP_PROJECT_URL = iwaspWhatsAppUrl("Bonjour 👋\nJe souhaite commander des produits NFC i-wasp.");
 
 interface CardProduct {
   id: string;
   name: string;
   subtitle: string;
   description: string;
-  price: { EUR: string; MAD: string };
+  priceEur: number;
+  priceMad: number;
   features: string[];
   badge?: string;
   popular?: boolean;
@@ -74,7 +77,8 @@ const cardProducts: CardProduct[] = [
     name: "Carte Signature",
     subtitle: "L'essentiel premium",
     description: "Une carte élégante qui partage ton profil digital en un tap. Design personnalisé, finition luxe.",
-    price: { EUR: "29,90€", MAD: "329 DH" },
+    priceEur: NFC_PRICING.cards.ESSENTIELLE.priceEur,
+    priceMad: NFC_PRICING.cards.ESSENTIELLE.priceMad,
     features: [
       "Design sur mesure",
       "Finition mat ou brillant",
@@ -89,7 +93,8 @@ const cardProducts: CardProduct[] = [
     name: "Carte Executive",
     subtitle: "Pour les professionnels",
     description: "La carte business par excellence. Logo entreprise, personnalisation avancée, support prioritaire.",
-    price: { EUR: "49,90€", MAD: "549 DH" },
+    priceEur: NFC_PRICING.cards.PROFESSIONNELLE.priceEur,
+    priceMad: NFC_PRICING.cards.PROFESSIONNELLE.priceMad,
     features: [
       "Logo entreprise gravé",
       "Personnalisation complète",
@@ -107,7 +112,8 @@ const cardProducts: CardProduct[] = [
     name: "Carte Luxury",
     subtitle: "L'excellence absolue",
     description: "Pour ceux qui ne font aucun compromis. Matériaux nobles, finitions exceptionnelles, service conciergerie.",
-    price: { EUR: "89,90€", MAD: "989 DH" },
+    priceEur: NFC_PRICING.cards.PRESTIGE.priceEur,
+    priceMad: NFC_PRICING.cards.PRESTIGE.priceMad,
     features: [
       "Matériaux premium",
       "Gravure laser HD",
@@ -125,7 +131,8 @@ const cardProducts: CardProduct[] = [
     name: "Pack Team",
     subtitle: "Pour les équipes",
     description: "Équipez toute votre équipe. Tarifs dégressifs, gestion centralisée, design uniforme.",
-    price: { EUR: "39,80€/carte", MAD: "438 DH/carte" },
+    priceEur: NFC_PRICING.cards.PACK_TEAM.priceEur,
+    priceMad: NFC_PRICING.cards.PACK_TEAM.priceMad,
     features: [
       "À partir de 5 cartes",
       "Design uniforme",
@@ -253,8 +260,13 @@ function FlipCard({ product, isFlipped, onFlip }: {
         >
           <img
             src={cardFront}
+            srcSet={cardFrontSet}
+            sizes="(max-width: 1024px) 92vw, 480px"
+            width={800}
+            height={504}
             alt={`${product.name} - Recto`}
             className="w-full h-full object-cover"
+            decoding="async"
           />
           {/* Finish overlay effects */}
           {product.finish === "brillant" && (
@@ -272,8 +284,13 @@ function FlipCard({ product, isFlipped, onFlip }: {
         >
           <img
             src={cardBack}
+            srcSet={cardBackSet}
+            sizes="(max-width: 1024px) 92vw, 480px"
+            width={800}
+            height={504}
             alt={`${product.name} - Verso`}
             className="w-full h-full object-cover"
+            decoding="async"
           />
         </div>
       </motion.div>
@@ -299,6 +316,7 @@ function FlipCard({ product, isFlipped, onFlip }: {
 function CardsCarousel() {
   const [activeCard, setActiveCard] = useState(0);
   const navigate = useNavigate();
+  const marketCurrency = useMarketCurrency();
   const product = cardProducts[activeCard];
 
   return (
@@ -361,7 +379,7 @@ function CardsCarousel() {
           <div className="flex flex-wrap items-center justify-between gap-4 pt-4" style={{ borderTop: `1px solid ${STEALTH.border}` }}>
             <div>
               <p className="text-xs" style={{ color: BRAND.textMuted }}>À partir de</p>
-              <p className="text-2xl font-bold text-[#FDFCFB]">{product.price.EUR}</p>
+              <p className="text-2xl font-bold text-[#FDFCFB]">{formatCatalogAmount(product.priceEur, product.priceMad, marketCurrency)}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button
@@ -373,7 +391,7 @@ function CardsCarousel() {
                 Détails
               </Button>
               <Button
-                onClick={() => navigate("/order")}
+                onClick={() => navigate("/order/offre")}
                 className="rounded-full px-4 gap-2"
                 style={{ backgroundColor: BRAND.accent, color: STEALTH.bg }}
               >
@@ -400,8 +418,9 @@ export default function ProduitsNFC() {
       <section className="pt-32 pb-16 px-6">
         <div className="container mx-auto max-w-5xl text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
