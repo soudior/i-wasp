@@ -96,7 +96,7 @@ export function getUnitPrice(quantity: number, isB2B: boolean = false): number {
 export function formatPrice(cents: number, currency: "EUR" | "MAD" = "EUR"): string {
   const amount = cents / 100;
   if (currency === "MAD") {
-    return `${amount.toFixed(0)} MAD`;
+    return `${amount.toFixed(0)} DH`;
   }
   return `${amount.toFixed(2).replace(".", ",")} ${PRICING.currencySymbol}`;
 }

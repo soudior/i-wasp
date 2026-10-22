@@ -1,5 +1,4 @@
 import { useAccountOperation } from "@/hooks/useAccountOperation";
-import { orderProfileFields } from "@/lib/orderIdentity";
 /**
  * Step 5: Récapitulatif Final
  * /order/recap
@@ -12,14 +11,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useOrderFunnel, OrderFunnelGuard, OFFERS } from "@/contexts/OrderFunnelContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCreateOrder, OrderItem } from "@/hooks/useOrders";
 import { supabase } from "@/integrations/supabase/client";
 import { COUTURE } from "@/lib/hauteCouturePalette";
 import { ArrowLeft, MapPin, CreditCard, Banknote, Check } from "lucide-react";
 import { toast } from "sonner";
 import { OrderLoader } from "@/components/order/OrderLoader";
+import { FunnelAuthStep } from "@/components/order/FunnelAuthStep";
 import { formatMadCents } from "@/lib/nfcPricing";
 import { useMarketCurrency } from "@/contexts/CurrencyContext";
+import { serverChargeCents } from "@/lib/nfcChargeCatalog";
+import { openNfcCheckout } from "@/lib/nfcPayment";
+import { checkoutKeyForUser, prepareNfcOrder, readPreparedOrder } from "@/lib/prepareNfcOrder";
 
 type PaymentMethod = "stripe" | "cod";
 
@@ -27,14 +29,10 @@ function OrderRecapContent() {
   const navigate = useNavigate();
   const { state, prevStep, markComplete, setPaymentInfo } = useOrderFunnel();
   const { user } = useAuth();
-  const createOrder = useCreateOrder();
   const { start, isBusy: isProcessing, accountEpoch } = useAccountOperation(user?.id);
-  // Reuse successful writes when only a later request failed. These in-memory
-  // checkpoints are deliberately scoped to this mounted checkout and user.
-  const createdCardFor = useRef<string | null>(null);
+  // Reuse the server order when only the later Stripe call failed.
   const createdOrder = useRef<{ key: string; id: string } | null>(null);
   useEffect(() => {
-    createdCardFor.current = null;
     createdOrder.current = null;
   }, [user?.id, accountEpoch]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe");
@@ -44,120 +42,88 @@ function OrderRecapContent() {
 
   const formatPrice = (cents: number): string => formatMadCents(cents, marketCurrency);
 
-  const generateSlug = (firstName: string, lastName: string): string => {
-    const base = `${firstName}-${lastName}`.toLowerCase()
-      .replace(/[^a-z0-9-]/g, '-')
-      .replace(/-+/g, '-');
-    return `${base}-${Date.now().toString(36)}`;
-  };
-
   const handleConfirmOrder = async () => {
     if (state.isTransitioning) return;
+    if (!user) {
+      toast.error("Connectez-vous pour finaliser votre commande");
+      return;
+    }
     const operation = start();
     if (!operation) return;
     let completed = false;
     setPaymentInfo({ method: paymentMethod });
 
     try {
-      const { firstName, lastName, email, phone } = state.digitalIdentity || {};
+      const identity = state.digitalIdentity;
+      const { firstName, lastName, email, phone } = identity || {};
 
-      // Sécurité/UX: si l'email appartient déjà à un compte (ou si l'utilisateur n'est pas connecté),
-      // on demande une connexion au lieu de tenter un "auto-signup".
-      if (!user) {
-        toast.error("Veuillez vous connecter pour finaliser votre commande");
-        navigate(`/login?redirect=${encodeURIComponent("/order/recap")}`);
+      if (!identity || !firstName || !lastName || identity.profileVisibilityConfirmed !== true || !selectedOffer || !state.selectedTemplate) {
+        throw new Error("Incomplete checkout identity or offer");
+      }
+      const chargeCents = serverChargeCents(state.selectedOffer, marketCurrency);
+      if (chargeCents == null) throw new Error("Offre indisponible pour ce marché");
+
+      const orderKey = JSON.stringify([
+        user.id,
+        identity,
+        state.selectedTemplate,
+        state.selectedOffer,
+        state.cardPersonalization,
+        state.shippingInfo,
+        paymentMethod,
+        marketCurrency,
+      ]);
+      const orderId = createdOrder.current?.key === orderKey
+        ? createdOrder.current.id
+        : await prepareNfcOrder({
+            checkoutKey: checkoutKeyForUser(user.id),
+            offerId: state.selectedOffer,
+            paymentMethod,
+            currency: marketCurrency,
+            templateId: state.selectedTemplate,
+            firstName,
+            lastName,
+            email,
+            phone,
+            customerEmail: email || user.email,
+            title: identity.title,
+            company: identity.company,
+            whatsapp: identity.whatsapp,
+            instagram: identity.instagram,
+            linkedin: identity.linkedin,
+            website: identity.website,
+            tagline: identity.tagline,
+            photoUrl: identity.photoUrl,
+            logoUrl: state.cardPersonalization?.imageUrl,
+            shippingPhone: state.shippingInfo?.phone || phone,
+            shippingAddress: state.shippingInfo?.address,
+            shippingCity: state.shippingInfo?.city,
+            shippingCountry: state.shippingInfo?.country,
+          });
+
+      if (!operation.isCurrent()) return;
+      createdOrder.current = { key: orderKey, id: orderId };
+      const priced = await readPreparedOrder(orderId);
+      if (!operation.isCurrent()) return;
+      if (priced.currency !== marketCurrency || priced.total_price_cents !== chargeCents) {
+        toast.error("Le montant de la commande ne correspond pas au tarif affiché.");
         return;
       }
 
-      const userId = user.id;
-      const userEmail = user.email;
-
-      if (!firstName || !lastName || !state.digitalIdentity?.profileVisibilityConfirmed || !selectedOffer) {
-        throw new Error("Incomplete checkout identity or offer");
-      }
-      const cardKey = JSON.stringify([userId, state.digitalIdentity, state.selectedTemplate]);
-      const orderKey = JSON.stringify([cardKey, state.selectedOffer, state.cardPersonalization, state.shippingInfo, paymentMethod]);
-
-      if (createdCardFor.current !== cardKey) {
-        const slug = generateSlug(firstName, lastName);
-        
-        const { error: cardError } = await supabase
-          .from('digital_cards')
-          .insert({
-            user_id: userId,
-            slug,
-            ...orderProfileFields(state.digitalIdentity!, state.selectedTemplate),
-            is_active: true,
-          });
-
-        if (!operation.isCurrent()) return;
-        if (cardError) {
-          throw cardError;
-        } else {
-          createdCardFor.current = cardKey;
-          // The free profile is available immediately. Pro is granted only
-          // after Stripe confirms payment (signed webhook / verify-payment).
-          toast.success("Carte digitale créée. Pro sera activé après paiement.");
-        }
-      }
-
-      const orderItem: OrderItem = {
-        id: crypto.randomUUID(),
-        templateId: "iwasp-signature",
-        templateName: `Carte NFC i-Wasp ${selectedOffer?.name || ""}`,
-        cardName: `${firstName} ${lastName}`,
-        quantity: 1,
-        unitPriceCents: selectedOffer?.price || 59900,
-        logoUrl: state.cardPersonalization?.imageUrl || null,
-      };
-
-      const order = createdOrder.current?.key === orderKey ? createdOrder.current : await createOrder.mutateAsync({
-        order_items: [orderItem],
-        quantity: 1,
-        unit_price_cents: selectedOffer?.price || 59900,
-        total_price_cents: selectedOffer?.price || 59900,
-        order_type: "personalized",
-        template: "signature",
-        card_color: "#0B0B0B",
-        logo_url: state.cardPersonalization?.imageUrl || null,
-        currency: "MAD",
-        shipping_name: `${firstName} ${lastName}`,
-        shipping_phone: state.shippingInfo?.phone || phone,
-        shipping_address: state.shippingInfo?.address,
-        shipping_city: state.shippingInfo?.city,
-        shipping_postal_code: "",
-        shipping_country: "MA",
-        customer_email: (email || userEmail) || null,
-        payment_method: paymentMethod,
-        user_id: userId,
-      });
-
-      if (!operation.isCurrent()) return;
-      if (!order?.id) throw new Error("Missing created order identifier");
-      createdOrder.current = { key: orderKey, id: order.id };
-
       if (paymentMethod === "stripe") {
         toast.info("Redirection vers le paiement...");
-        
-        // Le montant est fixé CÔTÉ SERVEUR à partir du tierId (grille canonique).
-        const { data, error } = await supabase.functions.invoke('create-nfc-payment', {
-          body: {
-            tierId: state.selectedOffer,
-            orderId: order.id,
-            email: (email || userEmail) || undefined,
-          },
-        });
-
+        const confirmed = await openNfcCheckout(
+          (name, options) => supabase.functions.invoke(name, options),
+          orderId,
+        );
         if (!operation.isCurrent()) return;
-        if (error) throw error;
-
-        if (data?.url) {
-          window.location.href = data.url;
-          completed = true;
+        if (!confirmed.ok) {
+          toast.error("Le paiement n'a pas pu être ouvert. Aucun débit n'a été lancé.");
           return;
-        } else {
-          throw new Error('No checkout URL received');
         }
+        window.location.assign(confirmed.url);
+        completed = true;
+        return;
       }
 
       markComplete();
@@ -328,6 +294,17 @@ function OrderRecapContent() {
                 {state.shippingInfo?.city}, {state.shippingInfo?.country}
               </p>
             </div>
+
+            {!user && (
+              <FunnelAuthStep
+                accent={COUTURE.gold}
+                ink={COUTURE.jet}
+                surface={COUTURE.jetSoft}
+                text={COUTURE.silk}
+                muted={COUTURE.textMuted}
+                suggestedEmail={state.digitalIdentity?.email}
+              />
+            )}
 
             {/* Payment method */}
             <div className="space-y-3">

@@ -1026,7 +1026,7 @@ const AdminConsoleSection = () => {
   const adminStats = [
     { label: 'Total Utilisateurs', value: '15,482' },
     { label: 'Cartes Actives', value: '12,104' },
-    { label: 'CA Mensuel (estimé)', value: '1.2M MAD' },
+    { label: 'CA Mensuel (estimé)', value: '1,2 M' },
     { label: 'Alertes Système', value: '0' },
   ];
 

@@ -1864,6 +1864,16 @@ export type Database = {
       increment_card_view: { Args: { p_slug: string }; Returns: undefined }
       increment_story_view: { Args: { p_story_id: string }; Returns: undefined }
       is_premium: { Args: { p_user_id: string }; Returns: boolean }
+      prepare_nfc_order: {
+        Args: {
+          p_checkout_key: string
+          p_offer_id: string
+          p_payment_method: string
+          p_card: Json
+          p_order: Json
+        }
+        Returns: string
+      }
       track_story_event: {
         Args: {
           p_device_type?: string

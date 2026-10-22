@@ -12,8 +12,31 @@ describe("Vercel SPA fallback", () => {
 
     expect(vercelConfig.rewrites).toEqual([
       {
+        source: "/geo-hint",
+        destination: "/api/geo-hint",
+      },
+      {
         source: "/(.*)",
         destination: "/index.html",
+      },
+    ]);
+  });
+  it("redirects the apex host to www without touching other hosts", () => {
+    const vercelConfig = JSON.parse(readFileSync(path.resolve(process.cwd(), "vercel.json"), "utf8")) as {
+      redirects?: Array<{ source?: string; destination?: string; statusCode?: number; has?: Array<{ type?: string; value?: string }> }>;
+    };
+    expect(vercelConfig.redirects).toEqual([
+      {
+        source: "/",
+        has: [{ type: "host", value: "i-wasp.com" }],
+        destination: "https://www.i-wasp.com/",
+        statusCode: 308,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "i-wasp.com" }],
+        destination: "https://www.i-wasp.com/:path*",
+        statusCode: 308,
       },
     ]);
   });

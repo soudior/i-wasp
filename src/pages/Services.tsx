@@ -53,7 +53,7 @@ const services: Service[] = [
       "Interface d'administration intuitive",
       "Hébergement et maintenance inclus",
     ],
-    pricing: "À partir de 15 000 MAD",
+    pricing: "À partir de 15 000 DH",
   },
   {
     id: "ecommerce",
@@ -68,7 +68,7 @@ const services: Service[] = [
       "Intégration livraison Maroc",
       "Analytics et reporting",
     ],
-    pricing: "À partir de 25 000 MAD",
+    pricing: "À partir de 25 000 DH",
   },
   {
     id: "apps",
@@ -98,7 +98,7 @@ const services: Service[] = [
       "Templates réseaux sociaux",
       "Guidelines d'utilisation",
     ],
-    pricing: "À partir de 8 000 MAD",
+    pricing: "À partir de 8 000 DH",
   },
   {
     id: "print",
@@ -113,7 +113,7 @@ const services: Service[] = [
       "Packaging et étiquettes",
       "Visuels publicitaires",
     ],
-    pricing: "À partir de 2 000 MAD",
+    pricing: "À partir de 2 000 DH",
   },
 ];
 
@@ -178,7 +178,7 @@ ${description}`;
                 <div>
                   <p className="font-semibold text-foreground">{selectedService.title}</p>
                   <p className="text-sm text-primary font-medium">
-                    {selectedService.pricing}
+                    {selectedService.pricing} · Tarif Maroc
                   </p>
                 </div>
               </div>
@@ -308,7 +308,7 @@ ${description}`;
                   </ul>
                   <div className="flex items-center gap-6">
                     <span className="text-lg font-semibold text-primary">
-                      {service.pricing}
+                      {service.pricing} · Tarif Maroc
                     </span>
                     <Button onClick={() => setSelectedService(service)}>
                       <MessageCircle size={18} className="mr-2" />

@@ -32,7 +32,8 @@ import {
   QrCode,
   Box
 } from "lucide-react";
-import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { NFC_PRICING, formatCatalogAmount, packTeamSavingsPercent } from "@/lib/nfcPricing";
+import { isLaunchOfferActive, LAUNCH_OFFER } from "@/lib/launchOffer";
 import { useMarketCurrency } from "@/contexts/CurrencyContext";
 import { iwaspWhatsAppUrl } from "@/lib/brandContact";
 import nfcTagsImage from "@/assets/products/nfc-tags-collection.png";
@@ -140,7 +141,7 @@ const cardProducts: CardProduct[] = [
       "Analytics équipe",
       "Support dédié"
     ],
-    badge: "-20%",
+    badge: "Équipe",
     finish: "mat",
     icon: Building2
   }
@@ -379,7 +380,21 @@ function CardsCarousel() {
           <div className="flex flex-wrap items-center justify-between gap-4 pt-4" style={{ borderTop: `1px solid ${STEALTH.border}` }}>
             <div>
               <p className="text-xs" style={{ color: BRAND.textMuted }}>À partir de</p>
-              <p className="text-2xl font-bold text-[#FDFCFB]">{formatCatalogAmount(product.priceEur, product.priceMad, marketCurrency)}</p>
+              <p className="text-2xl font-bold text-[#FDFCFB]">
+                {product.id === "pack-team" && isLaunchOfferActive() && (
+                  <span className="mr-2 text-base line-through opacity-60">
+                    {formatCatalogAmount(LAUNCH_OFFER.team.compareEur, LAUNCH_OFFER.team.compareMad, marketCurrency)}
+                  </span>
+                )}
+                {formatCatalogAmount(
+                  product.id === "pack-team" && isLaunchOfferActive() ? LAUNCH_OFFER.team.priceEur : product.priceEur,
+                  product.id === "pack-team" && isLaunchOfferActive() ? LAUNCH_OFFER.team.priceMad : product.priceMad,
+                  marketCurrency,
+                )}
+              </p>
+              {product.id === "pack-team" && packTeamSavingsPercent(marketCurrency) != null && (
+                <p className="text-xs" style={{ color: BRAND.textMuted }}>{packTeamSavingsPercent(marketCurrency)}% d'économie</p>
+              )}
             </div>
             <div className="flex flex-wrap gap-2">
               <Button
@@ -625,7 +640,9 @@ export default function ProduitsNFC() {
                     className="flex flex-wrap items-center justify-between gap-4 pt-4"
                     style={{ borderTop: `1px solid ${STEALTH.border}` }}
                   >
-                    <span className="text-lg font-semibold" style={{ color: STEALTH.accent }}>{product.price}</span>
+                    <span className="text-lg font-semibold" style={{ color: STEALTH.accent }}>
+                      {marketCurrency === "MAD" ? "Tarif sur demande" : product.price.replace("€", " €")}
+                    </span>
                     <a href={WHATSAPP_PROJECT_URL} target="_blank" rel="noopener noreferrer">
                       <Button
                         size="sm"

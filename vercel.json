@@ -40,7 +40,25 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "i-wasp.com" }],
+      "destination": "https://www.i-wasp.com/",
+      "statusCode": 308
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "i-wasp.com" }],
+      "destination": "https://www.i-wasp.com/:path*",
+      "statusCode": 308
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/geo-hint",
+      "destination": "/api/geo-hint"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

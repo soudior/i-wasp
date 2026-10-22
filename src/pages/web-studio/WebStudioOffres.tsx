@@ -129,10 +129,10 @@ export default function WebStudioOffres() {
                       {pkg.priceMad}
                     </span>
                     <span className="text-lg ml-1" style={{ color: STUDIO.gris }}>
-                      MAD
+                      DH
                     </span>
                     <p className="text-xs mt-1" style={{ color: STUDIO.gris }}>
-                      ≈ {pkg.priceEur}€
+                      Tarif Maroc
                     </p>
                   </div>
 

@@ -1,21 +1,28 @@
 /**
  * i-wasp Studio - NFC Cards Pricing Configuration
  *
- * Grille officielle, alignée sur le tunnel /order et sur
- * supabase/functions/create-nfc-payment (centimes MAD) :
- * - Essentielle: 29 € / 199 DH (19900)
- * - Professionnelle: 49 € / 349 DH (34900)
- * - Prestige: 79 € / 599 DH (59900)
- * - Pack TEAM (5): 119 € / 1299 DH (129900)
- *
- * Les pages publiques lisent ces montants. Ne pas les recalculer avec un taux.
+ * Grille officielle. Ne pas la recalculer avec un taux.
+ * L'offre de lancement (src/lib/launchOffer.ts) remplace temporairement
+ * le prix de la Professionnelle et ajoute le Pack DUO.
+ * - Essentielle: 29 € / 199 DH
+ * - Professionnelle: 49 € / 349 DH
+ * - Prestige: 79 € / 599 DH
+ * - Pack TEAM (5): 119 € / 1299 DH
  */
+
+import { isLaunchOfferActive, LAUNCH_OFFER } from "./launchOffer";
+
+export const PRO_SUBSCRIPTION = {
+  yearlyEur: 49,
+  monthlyEur: 4.99,
+  yearlyMad: 349,
+  monthlyMad: 39,
+} as const;
 
 export const NFC_PRICING = {
   currency: {
     primary: 'EUR',
     secondary: 'MAD',
-    eurToMad: 11, // 1 EUR ≈ 11 MAD
   },
 
   // Tarifs cartes NFC individuelles
@@ -78,15 +85,13 @@ export const NFC_PRICING = {
       priceMad: 1299,
       pricePerCardEur: 23.80,
       pricePerCardMad: 259.80,
-      savings: 26,
       badge: '👥 Équipe',
       features: [
         '5 cartes Professionnelle',
         'Design unifié équipe',
         'Logos imprimés',
         'Gestion centralisée',
-        'Livraison 3-5 jours',
-        '-20% vs tarif unitaire',
+        'Livraison offerte',
       ],
     },
   },
@@ -256,21 +261,44 @@ export function formatCatalogAmount(eur: number, mad: number, currency: string):
   return `${eur.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 }
 
-/** Affiche un montant déjà stocké en centimes MAD (tunnel et paiement). */
+const KNOWN_CENT_PAIRS: Array<{ mad: number; eur: number }> = [
+  { mad: NFC_PRICING.cards.ESSENTIELLE.priceMad, eur: NFC_PRICING.cards.ESSENTIELLE.priceEur },
+  { mad: NFC_PRICING.cards.PROFESSIONNELLE.priceMad, eur: NFC_PRICING.cards.PROFESSIONNELLE.priceEur },
+  { mad: NFC_PRICING.cards.PRESTIGE.priceMad, eur: NFC_PRICING.cards.PRESTIGE.priceEur },
+  { mad: NFC_PRICING.cards.PACK_TEAM.priceMad, eur: NFC_PRICING.cards.PACK_TEAM.priceEur },
+  { mad: LAUNCH_OFFER.professionnelle.priceMad, eur: LAUNCH_OFFER.professionnelle.priceEur },
+  { mad: LAUNCH_OFFER.duo.priceMad, eur: LAUNCH_OFFER.duo.priceEur },
+  { mad: LAUNCH_OFFER.team.priceMad, eur: LAUNCH_OFFER.team.priceEur },
+  { mad: NFC_PRICING.extras.laserEngraving.priceMad, eur: NFC_PRICING.extras.laserEngraving.priceEur },
+  { mad: NFC_PRICING.extras.expressProduction.priceMad, eur: NFC_PRICING.extras.expressProduction.priceEur },
+  { mad: NFC_PRICING.extras.customPackaging.priceMad, eur: NFC_PRICING.extras.customPackaging.priceEur },
+];
+
+/** Affiche un montant stocké en centimes MAD s'il appartient à la grille. Jamais de DH dans la vue euro. */
 export function formatMadCents(cents: number, currency: string): string {
   const mad = Math.round(cents / 100);
-  const known = Object.values(NFC_PRICING.cards).find((card) => card.priceMad === mad);
-  if (known) return formatCatalogAmount(known.priceEur, known.priceMad, currency);
-  return `${mad.toLocaleString("fr-FR")} DH`;
+  const known = KNOWN_CENT_PAIRS.find((pair) => pair.mad === mad);
+  if (known) return formatCatalogAmount(known.eur, known.mad, currency);
+  if (currency === "MAD") return `${mad.toLocaleString("fr-FR")} DH`;
+  return "";
 }
 
 export function formatPriceMad(amount: number): string {
   return `${amount.toLocaleString('fr-FR')} DH`;
 }
 
-export function formatPriceBoth(amountEur: number): string {
-  const amountMad = Math.round(amountEur * NFC_PRICING.currency.eurToMad);
-  return `${formatPriceEur(amountEur)} (${formatPriceMad(amountMad)})`;
+/** Économie réelle du Pack TEAM contre le prix unitaire courant de la Professionnelle. */
+export function packTeamSavingsPercent(currency: "EUR" | "MAD", now: Date = new Date()): number | null {
+  const launch = isLaunchOfferActive(now);
+  const unit = currency === "MAD"
+    ? (launch ? LAUNCH_OFFER.professionnelle.priceMad : NFC_PRICING.cards.PROFESSIONNELLE.priceMad)
+    : (launch ? LAUNCH_OFFER.professionnelle.priceEur : NFC_PRICING.cards.PROFESSIONNELLE.priceEur);
+  const pack = currency === "MAD"
+    ? (launch ? LAUNCH_OFFER.team.priceMad : NFC_PRICING.cards.PACK_TEAM.priceMad)
+    : (launch ? LAUNCH_OFFER.team.priceEur : NFC_PRICING.cards.PACK_TEAM.priceEur);
+  const full = unit * NFC_PRICING.cards.PACK_TEAM.quantity;
+  if (pack >= full) return null;
+  return Math.round((1 - pack / full) * 100);
 }
 
 // Liste des cartes pour affichage

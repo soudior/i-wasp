@@ -245,7 +245,7 @@ const DevenirPartenaire = () => {
               Catalogue Prix Pro
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">
-              Prix de vente conseillé : <span className="text-amber-400 font-semibold">149 DH</span> par puce. 
+              Prix de vente conseillé : <span className="text-amber-400 font-semibold">149 DH</span> par puce. Tarif Maroc. 
               Calculez votre marge ci-dessous.
             </p>
           </motion.div>

@@ -7,8 +7,10 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { NFC_PRICING, formatCatalogAmount, packTeamSavingsPercent } from "@/lib/nfcPricing";
 import { useMarketCurrency } from "@/contexts/CurrencyContext";
+import { isLaunchOfferActive, LAUNCH_OFFER } from "@/lib/launchOffer";
+import { MarketShippingNote } from "@/components/LaunchOfferBanner";
 import { HOME, reveal, staggerParent } from "./theme";
 
 // Ordre + prix depuis le catalogue (nfcPricing) ; textes traduits via i18n.
@@ -24,16 +26,24 @@ export function PricingSection() {
   const marketCurrency = useMarketCurrency();
   const team = NFC_PRICING.cards.PACK_TEAM;
 
-  const TIERS = TIER_DEFS.map((def) => ({
-    id: def.card.id,
-    highlighted: def.highlighted,
-    priceEur: def.card.priceEur,
-    priceMad: def.card.priceMad,
-    name: t(`homepage.pricing.tiers.${def.key}.name`),
-    subtitle: t(`homepage.pricing.tiers.${def.key}.subtitle`),
-    badge: t(`homepage.pricing.tiers.${def.key}.badge`, { defaultValue: "" }),
-    features: t(`homepage.pricing.tiers.${def.key}.features`, { returnObjects: true }) as string[],
-  }));
+  const launch = isLaunchOfferActive();
+  const TIERS = TIER_DEFS.map((def) => {
+    const onSale = launch && def.key === "professionnelle";
+    return {
+      id: def.card.id,
+      highlighted: def.highlighted,
+      priceEur: onSale ? LAUNCH_OFFER.professionnelle.priceEur : def.card.priceEur,
+      priceMad: onSale ? LAUNCH_OFFER.professionnelle.priceMad : def.card.priceMad,
+      compareEur: onSale ? LAUNCH_OFFER.professionnelle.compareEur : null,
+      compareMad: onSale ? LAUNCH_OFFER.professionnelle.compareMad : null,
+      name: t(`homepage.pricing.tiers.${def.key}.name`),
+      subtitle: t(`homepage.pricing.tiers.${def.key}.subtitle`),
+      badge: t(`homepage.pricing.tiers.${def.key}.badge`, { defaultValue: "" }),
+      features: t(`homepage.pricing.tiers.${def.key}.features`, { returnObjects: true }) as string[],
+      proYear: onSale,
+    };
+  });
+  const savings = packTeamSavingsPercent(marketCurrency);
 
   return (
     <section id="tarifs" className="relative py-24 sm:py-28 px-6" style={{ background: HOME.bgElevated }}>
@@ -79,7 +89,15 @@ export function PricingSection() {
                 <p className="font-body text-sm font-light mb-6" style={{ color: HOME.textFaint }}>{tier.subtitle}</p>
 
                 <div className="mb-6">
+                  {tier.compareEur != null && tier.compareMad != null && (
+                    <span className="block text-sm line-through opacity-60 mb-1" style={{ color: HOME.textMuted }}>
+                      {formatCatalogAmount(tier.compareEur, tier.compareMad, marketCurrency)}
+                    </span>
+                  )}
                   <span className="font-display text-4xl" style={{ color: HOME.text }}>{formatCatalogAmount(tier.priceEur, tier.priceMad, marketCurrency)}</span>
+                  {tier.proYear && (
+                    <span className="block text-xs mt-2" style={{ color: HOME.textMuted }}>1 an de Pro offert</span>
+                  )}
                 </div>
 
                 <ul className="space-y-3 mb-8 flex-1">
@@ -115,11 +133,22 @@ export function PricingSection() {
             <div className="text-center sm:text-left">
               <h3 className="font-display text-lg" style={{ color: HOME.text }}>{t("homepage.pricing.teamTitle")}</h3>
               <p className="font-body text-sm font-light mt-1" style={{ color: HOME.textMuted }}>
-                {t("homepage.pricing.teamDesc", {
-                  count: team.quantity,
-                  price: formatCatalogAmount(team.priceEur, team.priceMad, marketCurrency),
-                  savings: team.savings,
-                })}
+                {launch && (
+                  <span className="line-through opacity-60 mr-2">
+                    {formatCatalogAmount(LAUNCH_OFFER.team.compareEur, LAUNCH_OFFER.team.compareMad, marketCurrency)}
+                  </span>
+                )}
+                {savings != null
+                  ? t("homepage.pricing.teamDesc", {
+                    count: team.quantity,
+                    price: formatCatalogAmount(
+                      launch ? LAUNCH_OFFER.team.priceEur : team.priceEur,
+                      launch ? LAUNCH_OFFER.team.priceMad : team.priceMad,
+                      marketCurrency,
+                    ),
+                    savings,
+                  })
+                  : `${team.quantity} cartes · ${formatCatalogAmount(team.priceEur, team.priceMad, marketCurrency)}`}
               </p>
             </div>
             <Link
@@ -130,6 +159,15 @@ export function PricingSection() {
               {t("homepage.pricing.teamCta")}
             </Link>
           </motion.div>
+          {launch && (
+            <motion.div variants={reveal(shouldReduceMotion)} className="mt-4 text-center text-sm" style={{ color: HOME.textMuted }}>
+              <span className="line-through opacity-60 mr-2">{formatCatalogAmount(LAUNCH_OFFER.duo.compareEur, LAUNCH_OFFER.duo.compareMad, marketCurrency)}</span>
+              Pack DUO · {formatCatalogAmount(LAUNCH_OFFER.duo.priceEur, LAUNCH_OFFER.duo.priceMad, marketCurrency)}
+            </motion.div>
+          )}
+          <p className="mt-6 text-center text-xs" style={{ color: HOME.textFaint }}>
+            <MarketShippingNote currency={marketCurrency} />
+          </p>
         </motion.div>
       </div>
     </section>

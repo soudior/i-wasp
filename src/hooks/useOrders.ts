@@ -129,7 +129,7 @@ export function useCreateOrder() {
         shipping_address: orderData.shipping_address,
         shipping_city: orderData.shipping_city,
         shipping_postal_code: orderData.shipping_postal_code,
-        shipping_country: orderData.shipping_country || "MA",
+        shipping_country: orderData.shipping_country || (orderData.currency === "MAD" ? "MA" : "FR"),
         customer_email: orderData.customer_email,
         payment_method: orderData.payment_method || "cod",
       };

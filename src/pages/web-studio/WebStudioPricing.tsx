@@ -324,13 +324,13 @@ export default function WebStudioPricing() {
                             >
                               {pkg.priceMad.toLocaleString('fr-FR')}
                             </span>
-                            <span style={{ color: COLORS.gris }}>MAD</span>
+                            <span style={{ color: COLORS.gris }}>DH</span>
                           </div>
                           <p 
                             className="text-sm mt-1"
                             style={{ color: COLORS.gris }}
                           >
-                            ≈ {pkg.priceEur}€ • Paiement unique
+                            Tarif Maroc • Paiement unique
                           </p>
                         </motion.div>
                       </AnimatePresence>
@@ -525,7 +525,7 @@ export default function WebStudioPricing() {
                         className="text-sm line-through mb-1"
                         style={{ color: COLORS.gris }}
                       >
-                        {WEB_MAINTENANCE.monthly.priceMad * 12} MAD/an
+                        {WEB_MAINTENANCE.monthly.priceMad * 12} DH/an · Tarif Maroc
                       </p>
                     )}
                     <div className="flex items-baseline gap-1 justify-center md:justify-end">
@@ -536,21 +536,21 @@ export default function WebStudioPricing() {
                         {isYearly ? WEB_MAINTENANCE.yearly.priceMad : WEB_MAINTENANCE.monthly.priceMad}
                       </span>
                       <span style={{ color: COLORS.gris }}>
-                        MAD{isYearly ? '/an' : '/mois'}
+                        DH{isYearly ? '/an' : '/mois'}
                       </span>
                     </div>
                     <p 
                       className="text-sm mt-1"
                       style={{ color: COLORS.gris }}
                     >
-                      ≈ {isYearly ? WEB_MAINTENANCE.yearly.priceEur : WEB_MAINTENANCE.monthly.priceEur}€{isYearly ? '/an' : '/mois'}
+                      Tarif Maroc
                     </p>
                     {isYearly && (
                       <p 
                         className="text-xs mt-2 font-medium"
                         style={{ color: COLORS.emerald }}
                       >
-                        Soit {Math.round(WEB_MAINTENANCE.yearly.priceMad / 12)} MAD/mois
+                        Soit {Math.round(WEB_MAINTENANCE.yearly.priceMad / 12)} DH/mois
                       </p>
                     )}
                   </motion.div>

@@ -269,19 +269,19 @@ export default function WebStudioPaiement() {
               {orderData.formData.hosting?.type === 'custom' && (
                 <div className="flex justify-between py-2 border-b border-white/10">
                   <span style={{ color: STUDIO.gris }}>Domaine personnalisé</span>
-                  <span style={{ color: STUDIO.ivoire }}>+100 MAD/an</span>
+                  <span style={{ color: STUDIO.ivoire }}>+100 DH/an</span>
                 </div>
               )}
               {orderData.formData.options.logoDesign && (
                 <div className="flex justify-between py-2 border-b border-white/10">
                   <span style={{ color: STUDIO.gris }}>Design de logo</span>
-                  <span style={{ color: STUDIO.ivoire }}>+200 MAD</span>
+                  <span style={{ color: STUDIO.ivoire }}>+200 DH</span>
                 </div>
               )}
               {orderData.formData.options.seoOptimization && (
                 <div className="flex justify-between py-2 border-b border-white/10">
                   <span style={{ color: STUDIO.gris }}>SEO avancé</span>
-                  <span style={{ color: STUDIO.ivoire }}>+150 MAD</span>
+                  <span style={{ color: STUDIO.ivoire }}>+150 DH</span>
                 </div>
               )}
             </div>
@@ -297,10 +297,10 @@ export default function WebStudioPaiement() {
                     {orderData.priceMad}
                   </span>
                   <span className="text-lg ml-1" style={{ color: STUDIO.gris }}>
-                    MAD
+                    DH
                   </span>
                   <p className="text-xs" style={{ color: STUDIO.gris }}>
-                    ≈ {orderData.priceEur}€
+                    Tarif Maroc
                   </p>
                 </div>
               </div>
@@ -369,7 +369,7 @@ export default function WebStudioPaiement() {
               ) : (
                 <>
                   <CreditCard size={18} />
-                  <span>Payer {orderData.priceMad} MAD</span>
+                  <span>Payer {orderData.priceMad} DH</span>
                 </>
               )}
             </motion.button>

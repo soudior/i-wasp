@@ -8,6 +8,8 @@ import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 import { Check, X, Crown, Zap, Bell, BarChart3, Clock, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { PRO_SUBSCRIPTION, formatCatalogAmount } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
 
 interface PlanFeature {
   name: string;
@@ -68,6 +70,7 @@ const planFeatures: PlanFeature[] = [
 ];
 
 export function GoldPricingComparison() {
+  const currency = useMarketCurrency();
   const navigate = useNavigate();
 
   const renderValue = (value: boolean | string) => {
@@ -105,7 +108,7 @@ export function GoldPricingComparison() {
             <div className="p-4 font-medium text-muted-foreground">Fonctionnalité</div>
             <div className="p-4 text-center font-medium text-foreground border-x border-border">
               <h3>Gratuit</h3>
-              <p className="text-2xl font-semibold mt-1">0€</p>
+              <p className="text-2xl font-semibold mt-1">Gratuit</p>
             </div>
             <div className="p-4 text-center font-medium text-foreground bg-primary/5">
               <h3 className="text-primary flex items-center justify-center gap-2">
@@ -113,7 +116,7 @@ export function GoldPricingComparison() {
                 GOLD
               </h3>
               <p className="text-2xl font-semibold mt-1">
-                49€<span className="text-sm text-muted-foreground font-normal">/an</span>
+                {formatCatalogAmount(PRO_SUBSCRIPTION.yearlyEur, PRO_SUBSCRIPTION.yearlyMad, currency)}<span className="text-sm text-muted-foreground font-normal">/an</span>
               </p>
             </div>
           </div>

@@ -391,7 +391,7 @@ export default function AmgBuilding() {
               onChange={(v) => setForm({ ...form, phone: v })}
             />
             <Input
-              placeholder="Budget (ex: 3 000 000 MAD)"
+              placeholder="Budget indicatif"
               value={form.budget}
               onChange={(v) => setForm({ ...form, budget: v })}
             />

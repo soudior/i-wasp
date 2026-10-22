@@ -7,7 +7,7 @@ import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   CreditCard, 
   Globe, 
@@ -32,47 +32,31 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 // Pricing data
-import { NFC_PRICING, getNfcTiersList } from "@/lib/nfcPricing";
+import { NFC_PRICING, formatCatalogAmount, getNfcCardsList } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
+import { isLaunchOfferActive, LAUNCH_OFFER } from "@/lib/launchOffer";
+import { TarifMarocNote } from "@/components/LaunchOfferBanner";
 import { WEB_STUDIO_PACKAGES, WEB_MAINTENANCE } from "@/lib/webStudioPackages";
 import { PROMO_PACKS, getPromoPacksList } from "@/lib/promoPacks";
 
-type Currency = 'MAD' | 'EUR';
-
 export default function TarifsComplets() {
-  const [currency, setCurrency] = useState<Currency>('MAD');
-  const [loadingNfc, setLoadingNfc] = useState<string | null>(null);
+  const marketCurrency = useMarketCurrency();
+  const navigate = useNavigate();
   const [loadingPack, setLoadingPack] = useState<string | null>(null);
 
-  const nfcTiers = getNfcTiersList();
+  const nfcTiers = getNfcCardsList();
   const promoPacks = getPromoPacksList();
+  const launch = isLaunchOfferActive();
 
-  // Taux UNIQUE eur↔mad = 11 (source : NFC_PRICING.currency.eurToMad) — ne pas
-  // utiliser un autre taux ailleurs, sinon deux prix € différents selon la page.
-  const formatPrice = (mad: number) => {
-    if (currency === 'EUR') {
-      return `€${(mad / 11).toFixed(2).replace('.', ',')}`;
+  const formatPrice = (mad: number) => `${Math.round(mad).toLocaleString('fr-FR')} DH`;
+  const formatCard = (id: string, eur: number, mad: number) => {
+    if (launch && id === "professionnelle") {
+      return formatCatalogAmount(LAUNCH_OFFER.professionnelle.priceEur, LAUNCH_OFFER.professionnelle.priceMad, marketCurrency);
     }
-    return `${mad.toLocaleString('fr-FR')} DH`;
-  };
-
-  // Handle NFC payment
-  const handleNfcPayment = async (tierId: string) => {
-    setLoadingNfc(tierId);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-nfc-payment', {
-        body: { tierId },
-      });
-
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (err) {
-      console.error('NFC payment error:', err);
-      toast.error("Erreur lors de la création du paiement");
-    } finally {
-      setLoadingNfc(null);
+    if (launch && id === "pack_team") {
+      return formatCatalogAmount(LAUNCH_OFFER.team.priceEur, LAUNCH_OFFER.team.priceMad, marketCurrency);
     }
+    return formatCatalogAmount(eur, mad, marketCurrency);
   };
 
   // Handle Promo Pack payment
@@ -104,31 +88,6 @@ export default function TarifsComplets() {
             i-wasp<span className="text-primary">.</span>
           </Link>
           <div className="flex items-center gap-4">
-            {/* Currency Toggle */}
-            <div className="flex items-center bg-muted rounded-full p-1">
-              <button
-                onClick={() => setCurrency('MAD')}
-                className={cn(
-                  "px-3 py-1 text-sm font-medium rounded-full transition-all",
-                  currency === 'MAD' 
-                    ? "bg-primary text-primary-foreground" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                DH
-              </button>
-              <button
-                onClick={() => setCurrency('EUR')}
-                className={cn(
-                  "px-3 py-1 text-sm font-medium rounded-full transition-all",
-                  currency === 'EUR' 
-                    ? "bg-primary text-primary-foreground" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                €
-              </button>
-            </div>
             <Link to="/contact">
               <Button variant="outline" size="sm">
                 <Phone className="w-4 h-4 mr-2" />
@@ -217,16 +176,15 @@ export default function TarifsComplets() {
                     <CardDescription>{tier.subtitle}</CardDescription>
                     <div className="mt-4">
                       <span className="text-3xl font-bold">
-                        {formatPrice(tier.priceMad)}
+                        {formatCard(tier.id, tier.priceEur, tier.priceMad)}
                       </span>
-                      {tier.savings && (
-                        <p className="text-sm text-green-600 font-medium mt-1">
-                          -{tier.savings}% économie
-                        </p>
-                      )}
-                      {tier.quantity > 1 && (
+                      {"quantity" in tier && tier.quantity > 1 && "pricePerCardMad" in tier && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          {formatPrice(tier.pricePerCardMad)}/carte
+                          {formatCatalogAmount(
+                            launch && tier.id === "pack_team" ? LAUNCH_OFFER.team.priceEur / LAUNCH_OFFER.team.quantity : tier.pricePerCardEur,
+                            launch && tier.id === "pack_team" ? LAUNCH_OFFER.team.priceMad / LAUNCH_OFFER.team.quantity : tier.pricePerCardMad,
+                            marketCurrency,
+                          )}/carte
                         </p>
                       )}
                     </div>
@@ -243,12 +201,8 @@ export default function TarifsComplets() {
                     <Button 
                       className="w-full mt-6"
                       variant={tier.id === 'professionnelle' ? 'default' : 'outline'}
-                      onClick={() => handleNfcPayment(tier.id)}
-                      disabled={loadingNfc === tier.id}
+                      onClick={() => navigate("/order/offre")}
                     >
-                      {loadingNfc === tier.id ? (
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      ) : null}
                       Commander
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -267,15 +221,15 @@ export default function TarifsComplets() {
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="flex justify-between items-center p-3 bg-background rounded-lg">
                 <span className="text-sm">Gravure laser</span>
-                <span className="font-medium">{formatPrice(500)}</span>
+                <span className="font-medium">{formatCatalogAmount(NFC_PRICING.extras.laserEngraving.priceEur, NFC_PRICING.extras.laserEngraving.priceMad, marketCurrency)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-background rounded-lg">
                 <span className="text-sm">Production express</span>
-                <span className="font-medium">{formatPrice(300)}</span>
+                <span className="font-medium">{formatCatalogAmount(NFC_PRICING.extras.expressProduction.priceEur, NFC_PRICING.extras.expressProduction.priceMad, marketCurrency)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-background rounded-lg">
                 <span className="text-sm">Packaging premium</span>
-                <span className="font-medium">{formatPrice(200)}</span>
+                <span className="font-medium">{formatCatalogAmount(NFC_PRICING.extras.customPackaging.priceEur, NFC_PRICING.extras.customPackaging.priceMad, marketCurrency)}</span>
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-3">
@@ -289,7 +243,7 @@ export default function TarifsComplets() {
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold mb-2">Sites Web Studio</h2>
             <p className="text-muted-foreground">
-              Sites professionnels sur-mesure, design responsive, SEO optimisé
+              Sites professionnels sur-mesure, design responsive, SEO optimisé · <TarifMarocNote />
             </p>
           </div>
 
@@ -397,7 +351,7 @@ export default function TarifsComplets() {
             </Badge>
             <h2 className="text-2xl font-bold mb-2">Packs Promo Fusion</h2>
             <p className="text-muted-foreground">
-              Cartes NFC + Site Web = La solution complète à prix réduit
+              Cartes NFC + Site Web = La solution complète à prix réduit · <TarifMarocNote />
             </p>
           </div>
 

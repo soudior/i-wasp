@@ -99,9 +99,13 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
         const response = await fetch("/geo-hint", { signal: AbortSignal.timeout(2500) });
         const contentType = response.headers.get("content-type") ?? "";
         if (!response.ok || !contentType.includes("application/json")) return;
-        const data = await response.json() as { country?: string };
+        const data = await response.json() as { country?: string; timeZone?: string };
         if (cancelled) return;
-        if ((data.country ?? "").toUpperCase() === "MA") {
+        const hinted = detectMarketCurrency({
+          timeZone: data.timeZone,
+          countryCode: data.country,
+        });
+        if (hinted === "MAD") {
           setCurrencyState("MAD");
           setIsAutoDetected(true);
         }

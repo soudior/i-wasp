@@ -9,7 +9,8 @@
 
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { NFC_PRICING } from "@/lib/nfcPricing";
+import { serverChargeCents } from "@/lib/nfcChargeCatalog";
+import { formatMadCents } from "@/lib/nfcPricing";
 
 // Offer types
 export type ExpressOfferType = "essentiel" | "signature" | "alliance";
@@ -25,9 +26,9 @@ export interface ExpressOfferConfig {
 // Grille CANONIQUE (identique à nfcPricing.ts et au serveur create-nfc-payment) :
 // 199 / 349 / 599 DH ⇔ 29 / 49 / 79 €. Ne pas dériver d'autres montants.
 export const EXPRESS_OFFERS: ExpressOfferConfig[] = [
-  { id: "essentiel", name: "Essentielle", price: NFC_PRICING.cards.ESSENTIELLE.priceMad * 100, priceDisplay: `${NFC_PRICING.cards.ESSENTIELLE.priceMad} MAD` },
-  { id: "signature", name: "Professionnelle", price: NFC_PRICING.cards.PROFESSIONNELLE.priceMad * 100, priceDisplay: `${NFC_PRICING.cards.PROFESSIONNELLE.priceMad} MAD` },
-  { id: "alliance", name: "Prestige", price: NFC_PRICING.cards.PRESTIGE.priceMad * 100, priceDisplay: `${NFC_PRICING.cards.PRESTIGE.priceMad} MAD` },
+  { id: "essentiel", name: "Essentielle", price: serverChargeCents("essentiel", "MAD") ?? 0, priceDisplay: formatMadCents(serverChargeCents("essentiel", "MAD") ?? 0, "MAD") },
+  { id: "signature", name: "Professionnelle", price: serverChargeCents("signature", "MAD") ?? 0, priceDisplay: formatMadCents(serverChargeCents("signature", "MAD") ?? 0, "MAD") },
+  { id: "alliance", name: "Prestige", price: serverChargeCents("alliance", "MAD") ?? 0, priceDisplay: formatMadCents(serverChargeCents("alliance", "MAD") ?? 0, "MAD") },
 ];
 
 // Minimal customer info (fusionné identité + livraison)

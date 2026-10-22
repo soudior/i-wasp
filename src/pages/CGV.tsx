@@ -38,8 +38,7 @@ export default function CGV() {
               <section>
                 <h2 className="text-xl font-semibold text-white mb-4">2. Prix</h2>
                 <p>
-                  Les prix sont indiqués en euros (€) ou dirhams marocains (DH) selon la zone 
-                  géographique, toutes taxes comprises (TTC). i-wasp se réserve le droit de 
+                  Les prix sont indiqués dans la devise du marché, toutes taxes comprises (TTC). i-wasp se réserve le droit de 
                   modifier ses prix à tout moment, les produits étant facturés sur la base des 
                   tarifs en vigueur au moment de la validation de la commande.
                 </p>

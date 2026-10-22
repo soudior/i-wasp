@@ -27,11 +27,12 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { NFC_PRICING } from "@/lib/nfcPricing";
+import { NFC_PRICING, formatCatalogAmount } from "@/lib/nfcPricing";
+import { useMarketCurrency } from "@/contexts/CurrencyContext";
 import { IWASP_WHATSAPP_DISPLAY, IWASP_WHATSAPP_E164, iwaspWhatsAppUrl } from "@/lib/brandContact";
 
 const essentielle = NFC_PRICING.cards.ESSENTIELLE;
-const essentiellePrice = `${essentielle.priceMad} DH (${essentielle.priceEur} €)`;
+const PRICE_TOKEN = "{{price}}";
 
 const faqCategories = [
   {
@@ -102,7 +103,7 @@ const faqCategories = [
     faqs: [
       {
         question: "Quel est le prix d'une carte i-wasp ?",
-        answer: `Une carte i-wasp Essentielle est à ${essentiellePrice}. Ce prix inclut : la carte NFC premium personnalisée, votre profil digital à vie, les mises à jour illimitées, et la livraison gratuite partout au Maroc.`,
+        answer: `Une carte i-wasp Essentielle est à ${PRICE_TOKEN}. Ce prix inclut : la carte NFC premium personnalisée, votre profil digital à vie, les mises à jour illimitées, et la livraison offerte.`,
       },
       {
         question: "Y a-t-il des frais cachés ou un abonnement ?",
@@ -186,7 +187,7 @@ const trustStats = [
   { value: "547+", label: "Cartes livrées" },
   { value: "98%", label: "Clients satisfaits" },
   { value: "24h", label: "Support réactif" },
-  { value: "0 DH", label: "Livraison" },
+  { value: "Offerte", label: "Livraison" },
 ];
 
 // Highlight search matches
@@ -212,11 +213,20 @@ function HighlightText({ text, query }: { text: string; query: string }) {
 export default function FAQ() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const marketCurrency = useMarketCurrency();
+  const essentiellePrice = formatCatalogAmount(essentielle.priceEur, essentielle.priceMad, marketCurrency);
+  const categories = useMemo(
+    () => faqCategories.map((category) => ({
+      ...category,
+      faqs: category.faqs.map((faq) => ({ ...faq, answer: faq.answer.replaceAll(PRICE_TOKEN, essentiellePrice) })),
+    })),
+    [essentiellePrice],
+  );
 
   const filteredCategories = useMemo(() => {
-    if (!searchQuery.trim() && !selectedCategory) return faqCategories;
+    if (!searchQuery.trim() && !selectedCategory) return categories;
 
-    return faqCategories
+    return categories
       .filter(category => !selectedCategory || category.id === selectedCategory)
       .map((category) => ({
         ...category,
@@ -227,9 +237,9 @@ export default function FAQ() {
         ),
       }))
       .filter((category) => category.faqs.length > 0);
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory, categories]);
 
-  const totalFaqs = faqCategories.reduce((acc, cat) => acc + cat.faqs.length, 0);
+  const totalFaqs = categories.reduce((acc, cat) => acc + cat.faqs.length, 0);
 
   return (
     <>

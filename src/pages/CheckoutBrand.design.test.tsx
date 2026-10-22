@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { ExpressCheckoutProvider, EXPRESS_OFFERS } from '@/contexts/ExpressCheckoutContext';
 import { CHECKOUT_BRAND } from '@/lib/checkoutBrandPalette';
+import { isLaunchOfferActive } from '@/lib/launchOffer';
 import { BRAND } from '@/lib/brandPalette';
 import ExpressOffre from './express/ExpressOffre';
 import ExpressInfos from './express/ExpressInfos';
@@ -134,13 +135,14 @@ describe('isolated checkout brand', () => {
     await renderPage('/express/offre');
     const continueButton = host.querySelector<HTMLButtonElement>('.checkout-action-bar button')!;
     expect(continueButton.disabled).toBe(true);
+    const signatureLabel = isLaunchOfferActive() ? "35 €" : "49 €";
     for (const offer of EXPRESS_OFFERS) {
       expect(host.textContent).toContain(offer.name);
-      expect(host.textContent).toContain(offer.id === "essentiel" ? "29 €" : offer.id === "signature" ? "49 €" : "79 €");
+      expect(host.textContent).toContain(offer.id === "essentiel" ? "29 €" : offer.id === "signature" ? signatureLabel : "79 €");
     }
     await act(async () => buttonWithText('Professionnelle').click());
     expect(continueButton.disabled).toBe(false);
-    expect(continueButton.textContent).toContain('49 €');
+    expect(continueButton.textContent).toContain(signatureLabel);
     expect(continueButton.style.backgroundColor).toBe('rgb(220, 199, 176)');
     expect(continueButton.style.color).toBe('rgb(3, 3, 3)');
     await act(async () => continueButton.click());
@@ -206,7 +208,9 @@ describe('isolated checkout brand', () => {
     expect(css).toContain(':focus-visible');
     expect(css).toContain('env(safe-area-inset-bottom)');
     expect(css).toContain('prefers-reduced-motion');
-    expect(payer).toContain('card_color: "#0B0B0B"');
+    const prepare = readFileSync(`${process.cwd()}/src/lib/prepareNfcOrder.ts`, 'utf8');
+    expect(prepare).toContain('accentColor: "#B8860B"');
+    expect(payer).not.toContain("card_color");
     expect(BRAND.background).toBe(CHECKOUT_BRAND.background);
   });
 });

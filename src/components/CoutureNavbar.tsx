@@ -60,8 +60,9 @@ export function CoutureNavbar() {
 
   return (
     <header
-      className="brand-navigation fixed top-0 left-0 right-0 z-50"
+      className="brand-navigation fixed left-0 right-0 z-50"
       style={{
+        top: "var(--launch-banner-h, 0px)",
         transition: "all 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
       }}
     >

@@ -6,7 +6,8 @@
  */
 
 import { useState } from "react";
-import { NFC_PRICING } from "@/lib/nfcPricing";
+import { NFC_PRICING, PRO_SUBSCRIPTION, formatCatalogAmount } from "@/lib/nfcPricing";
+import { LaunchOfferBanner, TarifMarocNote } from "@/components/LaunchOfferBanner";
 import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -134,7 +135,7 @@ type Tab = "nfc" | "web";
 // Inner component that uses the cart context
 function PricingContent() {
   const [activeTab, setActiveTab] = useState<Tab>("web");
-  const { currency, setCurrency, addItem, items } = usePricingCart();
+  const { currency, addItem, items } = usePricingCart();
   const [loadingPayment, setLoadingPayment] = useState<string | null>(null);
 
   const handleAddPackage = (packageKey: keyof typeof WEB_PACKAGES) => {
@@ -286,33 +287,6 @@ function PricingContent() {
             ))}
           </motion.div>
           
-          {/* Currency Toggle */}
-          <motion.div 
-            className="mt-6 flex items-center justify-center gap-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <span className="text-xs" style={{ color: COLORS.gris }}>Devise :</span>
-            <div 
-              className="inline-flex p-1 rounded-lg"
-              style={{ backgroundColor: COLORS.noirCard }}
-            >
-              {["EUR", "MAD"].map((curr) => (
-                <button
-                  key={curr}
-                  onClick={() => setCurrency(curr as "MAD" | "EUR")}
-                  className="px-4 py-1.5 rounded-md text-xs font-medium transition-all"
-                  style={{
-                    backgroundColor: currency === curr ? COLORS.or : "transparent",
-                    color: currency === curr ? COLORS.noir : COLORS.gris,
-                  }}
-                >
-                  {curr === "EUR" ? "🇪🇺 EUR" : "🇲🇦 DH"}
-                </button>
-              ))}
-            </div>
-          </motion.div>
         </div>
       </section>
 
@@ -333,7 +307,7 @@ function PricingContent() {
                     Création de Sites Web
                   </h2>
                   <p className="text-sm" style={{ color: COLORS.gris }}>
-                    Sites professionnels clé en main, optimisés et responsive
+                    Sites professionnels clé en main, optimisés et responsive · <TarifMarocNote />
                   </p>
                 </div>
                 
@@ -412,13 +386,13 @@ function PricingContent() {
                               className="text-4xl font-light tracking-tight"
                               style={{ color: plan.popular ? COLORS.or : COLORS.ivoire }}
                             >
-                              {currency === "MAD" ? plan.priceMAD.toLocaleString('fr-FR') : plan.priceEUR.toLocaleString('fr-FR')}
+                              {plan.priceMAD.toLocaleString('fr-FR')}
                             </span>
                             <span 
                               className="text-base font-light"
                               style={{ color: COLORS.gris }}
                             >
-                              {currency === "MAD" ? "DH" : "€"}
+                              DH
                             </span>
                           </div>
                           <p 
@@ -566,9 +540,9 @@ function PricingContent() {
                             {optionInCart && <span className="ml-2 text-xs">(ajouté)</span>}
                           </h4>
                           <p className="text-lg font-light" style={{ color: COLORS.or }}>
-                            +{currency === "MAD" ? option.priceMAD : option.priceEUR}{" "}
+                            +{option.priceMAD}{" "}
                             <span className="text-sm" style={{ color: COLORS.gris }}>
-                              {currency === "MAD" ? "DH" : "€"}{option.unit || ''}
+                              DH{option.unit || ''}
                             </span>
                           </p>
                         </div>
@@ -632,10 +606,10 @@ function PricingContent() {
                         
                         <div className="flex items-baseline gap-2 mb-6">
                           <span className="text-4xl font-light">
-                            {currency === "MAD" ? plan.priceMAD.toLocaleString() : plan.priceEUR}
+                            {plan.priceMAD.toLocaleString('fr-FR')}
                           </span>
                           <span style={{ color: COLORS.gris }}>
-                            {currency === "MAD" ? "DH" : "€"}{plan.period}
+                            DH{plan.period}
                           </span>
                         </div>
                         
@@ -679,7 +653,8 @@ function PricingContent() {
             </section>
 
             {/* Quote Calculator */}
-            <QuoteCalculator currency={currency} />
+            <p className="text-center text-xs mb-4" style={{ color: COLORS.gris }}><TarifMarocNote /></p>
+            <QuoteCalculator currency="MAD" />
           </motion.div>
         ) : (
           <motion.div
@@ -797,11 +772,11 @@ function PricingContent() {
                         style={{ backgroundColor: `${COLORS.noirCard}80`, border: `1px solid ${COLORS.border}` }}
                       >
                         <div className="flex items-baseline gap-2">
-                          <span className="text-3xl font-light">{currency === "MAD" ? "549" : "49,90"}</span>
-                          <span style={{ color: COLORS.gris }}>{currency === "MAD" ? "DH" : "€"}/an</span>
+                          <span className="text-3xl font-light">{formatCatalogAmount(PRO_SUBSCRIPTION.yearlyEur, PRO_SUBSCRIPTION.yearlyMad, currency)}</span>
+                          <span style={{ color: COLORS.gris }}>/an</span>
                         </div>
                         <p className="text-sm mt-1" style={{ color: COLORS.gris }}>
-                          soit {currency === "MAD" ? "41 DH" : "4€"}/mois
+                          ou {formatCatalogAmount(PRO_SUBSCRIPTION.monthlyEur, PRO_SUBSCRIPTION.monthlyMad, currency)}/mois
                         </p>
                       </div>
                     </div>
@@ -952,7 +927,7 @@ function PricingContent() {
                 </motion.div>
                 
                 <p className="text-center text-xs mt-6 font-light" style={{ color: COLORS.gris }}>
-                  Expédition depuis la France • Suivi inclus • 1 EUR ≈ 10 DH
+                  Livraison offerte • Suivi inclus
                 </p>
               </div>
             </section>
@@ -1272,6 +1247,7 @@ function PricingContent() {
 export default function Pricing() {
   return (
     <PricingCartProvider>
+      <LaunchOfferBanner />
       <PricingContent />
     </PricingCartProvider>
   );

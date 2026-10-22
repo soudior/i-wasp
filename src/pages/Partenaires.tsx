@@ -225,6 +225,7 @@ const Partenaires = () => {
                   <h3 className="text-xl font-bold text-white mb-1">{offer.name}</h3>
                   <p className="text-gray-400 text-sm mb-3">{offer.quantity}</p>
                   <p className="text-3xl font-bold text-amber-400 mb-4">{offer.price}</p>
+                  <p className="text-xs text-amber-200/70 mb-4">Tarif Maroc</p>
                   <ul className="space-y-2">
                     {offer.features.map((feature) => (
                       <li key={feature} className="flex items-center gap-2 text-sm text-gray-300">

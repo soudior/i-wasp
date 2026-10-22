@@ -197,8 +197,9 @@ const Nails = () => {
                       <p className="text-white font-bold text-lg">2 ongles NFC + Écrin</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-zinc-500 text-sm line-through">299 MAD</p>
-                      <p className="text-rose-400 font-bold text-xl">199 MAD</p>
+                      <p className="text-zinc-500 text-sm line-through">299 DH</p>
+                      <p className="text-rose-400 font-bold text-xl">199 DH</p>
+                      <p className="text-[10px] text-zinc-400">Tarif Maroc</p>
                     </div>
                   </div>
                 </div>
@@ -454,7 +455,7 @@ const Nails = () => {
               </a>
               
               <p className="text-zinc-600 text-sm">
-                199 MAD au lieu de <span className="line-through">299 MAD</span> • Paiement à la livraison
+                199 DH au lieu de <span className="line-through">299 DH</span> • Tarif Maroc • Paiement à la livraison
               </p>
             </div>
           </div>

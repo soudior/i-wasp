@@ -633,7 +633,7 @@ export default function HomeLuxeMax() {
             {[
               { icon: Zap, title: "Génération IA", desc: "Proposition en 30 secondes" },
               { icon: Globe, title: "Site Complet", desc: "Design + Contenu + Hébergement" },
-              { icon: Wand2, title: "Premium", desc: "À partir de 2 500 MAD" },
+              { icon: Wand2, title: "Premium", desc: "À partir de 2 500 DH · Tarif Maroc" },
             ].map((feature, i) => (
               <motion.div
                 key={feature.title}
