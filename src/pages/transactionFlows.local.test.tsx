@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => ({
   maybeSingle: vi.fn(), insertCard: vi.fn(), invoke: vi.fn(),
   apple: vi.fn(), google: vi.fn(), createOrder: vi.fn(), markComplete: vi.fn(),
   authListeners: new Set<(event: string, session: { user: { id: string } } | null) => void>(),
-  rpc: vi.fn(), insertExpressOrder: vi.fn(), findSubscription: vi.fn(), insertSubscription: vi.fn(), updateSubscription: vi.fn(),
+  rpc: vi.fn(), readOrder: vi.fn(), insertExpressOrder: vi.fn(), findSubscription: vi.fn(), insertSubscription: vi.fn(), updateSubscription: vi.fn(), signIn: vi.fn(),
   trackPurchase: vi.fn(), resetCheckout: vi.fn(),
   toast: { error: vi.fn(), success: vi.fn(), info: vi.fn() },
 }));
@@ -30,7 +30,7 @@ vi.mock('@/contexts/ExpressCheckoutContext', () => ({
 }));
 vi.mock('@/hooks/useAnalyticsEvents', () => ({ useExpressCheckoutTracking: () => ({ trackPurchase: mocks.trackPurchase }) }));
 vi.mock('react-router-dom', async importOriginal => ({ ...await importOriginal<typeof import('react-router-dom')>(), useNavigate: () => mocks.navigate, useParams: () => ({ slug: 'synthetic-only' }) }));
-vi.mock('@/contexts/AuthContext', () => ({ useAuth: () => ({ user: mocks.user, signUp: mocks.signUp, loading: false }) }));
+vi.mock('@/contexts/AuthContext', () => ({ useAuth: () => ({ user: mocks.user, signUp: mocks.signUp, signIn: mocks.signIn, loading: false }) }));
 vi.mock('@/hooks/useAppleAuth', () => ({ useAppleAuth: () => ({ loading: false, signInWithApple: mocks.appleSignin }) }));
 vi.mock('@/lib/nativeOAuth', () => ({ signInWithGoogleCrossPlatform: mocks.googleSignin }));
 vi.mock('@/lib/walletService', () => ({ addToAppleWallet: mocks.apple, addToGoogleWallet: mocks.google }));
@@ -49,7 +49,10 @@ vi.mock('@/integrations/supabase/client', () => ({ supabase: {
     },
   }, functions: { invoke: mocks.invoke }, rpc: mocks.rpc,
   from: (table: string) => {
-    if (table === 'orders') return { insert: (values: unknown) => ({ select: () => ({ single: () => mocks.insertExpressOrder(values) }) }) };
+    if (table === 'orders') {
+      const orders = { select: () => orders, eq: () => orders, single: () => mocks.readOrder() };
+      return orders;
+    }
     if (table === 'subscriptions') {
       const subscriptions = {
         select: () => subscriptions, eq: () => subscriptions, maybeSingle: mocks.findSubscription,
@@ -75,13 +78,7 @@ const fakeUser = { id: '00000000-0000-4000-8000-000000000001', email: 'qa-only@e
 const fakeCard = { id: '00000000-0000-4000-8000-000000000002', slug: 'synthetic-only', first_name: 'Camille', last_name: 'Test' };
 const fakeOrder = { id: '00000000-0000-4000-8000-000000000003' };
 function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(r => { resolve = r; }); return { promise, resolve }; }
-function quoteThenFail(_name: string, options: { body?: { action?: string } }) {
-  if (options.body?.action === 'quote') {
-    return Promise.resolve({
-      data: { version: 2, tiers: { essentielle: { EUR: 2900, MAD: 19900 }, professionnelle: { EUR: 3500, MAD: 24900 } } },
-      error: null,
-    });
-  }
+function paymentFailure() {
   return Promise.resolve({ data: null, error: new Error('Synthetic payment failure') });
 }
 const render = async (component: React.ReactNode) => { await act(async () => root.render(<MemoryRouter>{component}</MemoryRouter>)); };
@@ -115,6 +112,9 @@ beforeEach(() => {
   mocks.apple.mockResolvedValue(false); mocks.google.mockResolvedValue(false);
   mocks.signUp.mockResolvedValue({ error: null, requiresEmailConfirmation: true });
   mocks.createOrder.mockResolvedValue(fakeOrder);
+  mocks.rpc.mockResolvedValue({ data: fakeOrder.id, error: null });
+  mocks.readOrder.mockResolvedValue({ data: { id: fakeOrder.id, order_number: '26100001', total_price_cents: 2900, currency: 'EUR' }, error: null });
+  sessionStorage.clear();
   host = document.createElement('div'); document.body.append(host); root = createRoot(host);
   // No network call is allowed, even if a new dependency escapes a module mock.
   vi.stubGlobal('fetch', vi.fn(() => { throw new Error('Network forbidden in synthetic interaction tests'); }));
@@ -207,154 +207,159 @@ describe('Signup interactions, no account created', () => {
 });
 
 describe('Order checkout interactions, no remote orders/payments', () => {
-  it('preserves authentication requirement and avoids automatic signup', async () => {
+  it('keeps the funnel in place and asks for an inline login', async () => {
     await render(<OrderRecap />); await click('Payer 29 €');
-    expect(mocks.navigate).toHaveBeenCalledWith('/login?redirect=%2Forder%2Frecap');
-    expect(mocks.insertCard).not.toHaveBeenCalled(); expect(mocks.createOrder).not.toHaveBeenCalled(); expect(mocks.signUp).not.toHaveBeenCalled();
+    expect(host.textContent).toContain('Connectez-vous pour finaliser votre commande');
+    expect(mocks.navigate).not.toHaveBeenCalled();
+    expect(mocks.rpc).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled(); expect(mocks.signUp).not.toHaveBeenCalled();
   });
-  it('locks same-tick confirmation to a single card and COD order', async () => {
-    mocks.user = fakeUser; const pending = deferred<{ error: null }>(); mocks.insertCard.mockReturnValue(pending.promise);
+  it('locks same-tick confirmation to a single authoritative COD order', async () => {
+    mocks.user = fakeUser;
     await render(<OrderRecap />); await click('Paiement à la livraison'); await click('Confirmer ma commande', true);
-    expect(mocks.insertCard).toHaveBeenCalledTimes(1);
-    await act(async () => pending.resolve({ error: null })); expect(mocks.createOrder).toHaveBeenCalledTimes(1);
-    expect(mocks.createOrder.mock.calls[0][0]).toMatchObject({ total_price_cents: 2900, currency: 'EUR', payment_method: 'cod', user_id: fakeUser.id });
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc).toHaveBeenCalledWith('prepare_nfc_order', expect.objectContaining({
+      p_offer_id: 'essentiel', p_payment_method: 'cod', p_order: expect.objectContaining({ currency: 'EUR' }),
+    }));
+    expect(mocks.insertCard).not.toHaveBeenCalled(); expect(mocks.createOrder).not.toHaveBeenCalled();
     expect(mocks.invoke).not.toHaveBeenCalled(); expect(mocks.markComplete).toHaveBeenCalledTimes(1);
-    expect(mocks.insertCard.mock.calls[0][0].is_pro).toBeUndefined();
-    expect(mocks.insertCard.mock.calls[0][0]).not.toHaveProperty('nfc_enabled');
-    expect(mocks.insertCard.mock.calls[0][0]).not.toHaveProperty('wallet_enabled');
-    expect(mocks.rpc).not.toHaveBeenCalled();
   });
-  it('stops before creating an order when card creation fails', async () => {
-    mocks.user = fakeUser; mocks.insertCard.mockResolvedValue({ error: new Error('Synthetic card error') });
+  it('stops before payment when order preparation fails', async () => {
+    mocks.user = fakeUser; mocks.rpc.mockRejectedValue(new Error('Synthetic order error'));
     await render(<OrderRecap />); await click('Payer 29 €');
-    expect(mocks.createOrder).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled();
+    expect(mocks.readOrder).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled();
     expect(button('Payer 29 €').disabled).toBe(false);
   });
-  it('retries a failed payment without duplicating card or order', async () => {
-    mocks.user = fakeUser; mocks.invoke.mockImplementation(quoteThenFail);
+  it('retries a failed payment with the order id only', async () => {
+    mocks.user = fakeUser; mocks.invoke.mockImplementation(paymentFailure);
     await render(<OrderRecap />); await click('Payer 29 €'); await click('Payer 29 €');
-    expect(mocks.invoke).toHaveBeenCalledTimes(4); expect(mocks.insertCard).toHaveBeenCalledTimes(1); expect(mocks.createOrder).toHaveBeenCalledTimes(1);
-    expect(mocks.invoke).toHaveBeenNthCalledWith(1, 'create-nfc-payment', { body: { action: 'quote' } });
-    expect(mocks.invoke).toHaveBeenLastCalledWith('create-nfc-payment', { body: { tierId: 'essentiel', currency: 'EUR', orderId: fakeOrder.id, email: fakeUser.email } });
+    expect(mocks.rpc).toHaveBeenCalledTimes(1); expect(mocks.invoke).toHaveBeenCalledTimes(2);
+    expect(mocks.invoke).toHaveBeenLastCalledWith('create-nfc-payment', { body: { orderId: fakeOrder.id } });
+    expect(Object.keys(mocks.invoke.mock.calls[0][1].body)).toEqual(['orderId']);
     expect(mocks.markComplete).not.toHaveBeenCalled();
   });
   it('does not continue into order creation after the recap was dismissed', async () => {
-    mocks.user = fakeUser; const pending = deferred<{ error: null }>(); mocks.insertCard.mockReturnValue(pending.promise);
+    mocks.user = fakeUser; const pending = deferred<{ data: string; error: null }>(); mocks.rpc.mockReturnValue(pending.promise);
     await render(<OrderRecap />); await click('Payer 29 €'); await render(<div>Accueil</div>);
-    await act(async () => pending.resolve({ error: null })); expect(mocks.createOrder).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled();
+    await act(async () => pending.resolve({ data: fakeOrder.id, error: null }));
+    expect(mocks.readOrder).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled();
   });
   it('does not continue into payment after an in-flight order finishes on a dismissed recap', async () => {
-    mocks.user = fakeUser; const pending = deferred<typeof fakeOrder>(); mocks.createOrder.mockReturnValue(pending.promise);
+    mocks.user = fakeUser; const pending = deferred<{ data: { id: string; order_number: string; total_price_cents: number; currency: string }; error: null }>();
+    mocks.readOrder.mockReturnValue(pending.promise);
     await render(<OrderRecap />); await click('Payer 29 €'); await render(<div>Accueil</div>);
-    await act(async () => pending.resolve(fakeOrder)); expect(mocks.invoke).not.toHaveBeenCalled(); expect(mocks.navigate).not.toHaveBeenCalled();
+    await act(async () => pending.resolve({ data: { id: fakeOrder.id, order_number: '26100001', total_price_cents: 2900, currency: 'EUR' }, error: null }));
+    expect(mocks.invoke).not.toHaveBeenCalled(); expect(mocks.navigate).not.toHaveBeenCalled();
   });
   it('never reuses another user’s successful writes after the authenticated user changes', async () => {
-    mocks.user = fakeUser; mocks.invoke.mockResolvedValue({ error: new Error('Synthetic payment error'), data: null });
-    await render(<OrderRecap />); await click('Payer 29 €'); mocks.user = { id: '00000000-0000-4000-8000-000000000099', email: 'other-qa@example.invalid' };
-    await render(<OrderRecap />); await click('Payer 29 €'); expect(mocks.insertCard).toHaveBeenCalledTimes(2); expect(mocks.createOrder).toHaveBeenCalledTimes(2);
-    expect(mocks.createOrder.mock.calls[1][0].user_id).toBe(mocks.user.id);
+    mocks.user = fakeUser; mocks.invoke.mockImplementation(paymentFailure);
+    await render(<OrderRecap />); await click('Payer 29 €');
+    mocks.user = { id: '00000000-0000-4000-8000-000000000099', email: 'other-qa@example.invalid' };
+    await render(<OrderRecap />); await click('Payer 29 €');
+    expect(mocks.rpc).toHaveBeenCalledTimes(2); expect(mocks.invoke).toHaveBeenCalledTimes(2);
+    expect(mocks.rpc.mock.calls[1][1].p_card.firstName).toBe('Camille');
   });
-  it('retries a failed order without duplicating its already-created card' , async () => {
-    mocks.user = fakeUser; mocks.createOrder.mockRejectedValueOnce(new Error('Synthetic order error'));
+  it('retries a failed order preparation', async () => {
+    mocks.user = fakeUser; mocks.rpc.mockRejectedValueOnce(new Error('Synthetic order error'));
     await render(<OrderRecap />); await click('Paiement à la livraison'); await click('Confirmer ma commande'); await click('Confirmer ma commande');
-    expect(mocks.insertCard).toHaveBeenCalledTimes(1); expect(mocks.createOrder).toHaveBeenCalledTimes(2); expect(mocks.markComplete).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc).toHaveBeenCalledTimes(2); expect(mocks.markComplete).toHaveBeenCalledTimes(1); expect(mocks.insertCard).not.toHaveBeenCalled();
   });
 });
 
 
 describe('Customer account cancellation, synthetic services only', () => {
-  it('stops recap after an in-flight insert when the authenticated account changes', async () => {
+  it('stops recap after an in-flight prepare when the authenticated account changes', async () => {
     mocks.user = fakeUser;
-    const pending = deferred<{ error: null }>(); mocks.insertCard.mockReturnValue(pending.promise);
+    const pending = deferred<{ data: string; error: null }>(); mocks.rpc.mockReturnValue(pending.promise);
     await render(<OrderRecap />); await click('Payer 29 €');
     mocks.user = { id: 'other-synthetic-user', email: 'other@example.invalid' };
     await render(<OrderRecap />);
-    await act(async () => pending.resolve({ error: null }));
-    expect(mocks.createOrder).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled();
-    expect(mocks.toast.success).not.toHaveBeenCalled(); expect(mocks.rpc).not.toHaveBeenCalled();
+    await act(async () => pending.resolve({ data: fakeOrder.id, error: null }));
+    expect(mocks.readOrder).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled();
+    expect(mocks.toast.success).not.toHaveBeenCalled();
   });
   it('stops recap at a signout/signin boundary even when the resulting user ID is unchanged', async () => {
     mocks.user = fakeUser;
-    const pending = deferred<{ error: null }>(); mocks.insertCard.mockReturnValue(pending.promise);
+    const pending = deferred<{ data: string; error: null }>(); mocks.rpc.mockReturnValue(pending.promise);
     await render(<OrderRecap />); await click('Payer 29 €');
     await act(async () => {
       mocks.authListeners.forEach(listener => listener('SIGNED_OUT', null));
       mocks.authListeners.forEach(listener => listener('SIGNED_IN', { user: fakeUser }));
-      pending.resolve({ error: null });
+      pending.resolve({ data: fakeOrder.id, error: null });
     });
-    expect(mocks.createOrder).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled();
+    expect(mocks.readOrder).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled();
     expect(button('Payer 29 €').disabled).toBe(false);
   });
 });
 
 describe('Express checkout, synthetic services only', () => {
-  it('omits lifecycle flags and preserves the existing COD pricing and subscription payload', async () => {
+  it('prepares one COD order through the server and does not grant the subscription itself', async () => {
     mocks.user = fakeUser; await render(<ExpressPayer />); await click('Confirmer · 29 €', true);
-    expect(mocks.insertCard).toHaveBeenCalledTimes(1);
-    const values = mocks.insertCard.mock.calls[0][0];
-    expect(values).toMatchObject({ user_id: fakeUser.id, first_name: 'Camille', last_name: 'Test' });
-    expect(values).not.toHaveProperty('nfc_enabled'); expect(values).not.toHaveProperty('wallet_enabled'); expect(values).not.toHaveProperty('is_pro');
-    expect(mocks.rpc).not.toHaveBeenCalled();
-    expect(mocks.insertSubscription).toHaveBeenCalledWith(expect.objectContaining({ user_id: fakeUser.id, plan: 'gold', status: 'active', price_cents: 2900 }));
-    expect(mocks.insertExpressOrder).toHaveBeenCalledWith(expect.objectContaining({ total_price_cents: 2900, unit_price_cents: 2900, currency: 'EUR', payment_method: 'cod', user_id: fakeUser.id }));
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc.mock.calls[0][1]).toMatchObject({
+      p_offer_id: 'essentiel', p_payment_method: 'cod', p_card: { firstName: 'Camille', lastName: 'Test' },
+    });
+    expect(mocks.rpc.mock.calls[0][1].p_order.currency).toBe('EUR');
+    expect(mocks.insertCard).not.toHaveBeenCalled(); expect(mocks.insertSubscription).not.toHaveBeenCalled();
     expect(mocks.markComplete).toHaveBeenCalledTimes(1); expect(mocks.navigate).toHaveBeenCalledWith('/express/succes');
     expect(button('Traitement...').disabled).toBe(true);
   });
-  it.each(['returned', 'rejected'])('stops all later writes and success on a %s INSERT error, then unlocks', async kind => {
+  it.each(['returned', 'rejected'])('stops all later writes and success on a %s prepare error, then unlocks', async kind => {
     mocks.user = fakeUser;
-    if (kind === 'returned') mocks.insertCard.mockResolvedValue({ error: new Error('Synthetic INSERT rejection') });
-    else mocks.insertCard.mockRejectedValue(new Error('Synthetic transport failure'));
+    if (kind === 'returned') mocks.rpc.mockResolvedValue({ data: null, error: new Error('Synthetic prepare rejection') });
+    else mocks.rpc.mockRejectedValue(new Error('Synthetic transport failure'));
     await render(<ExpressPayer />); await click('Confirmer · 29 €');
-    expect(mocks.findSubscription).not.toHaveBeenCalled(); expect(mocks.insertSubscription).not.toHaveBeenCalled(); expect(mocks.updateSubscription).not.toHaveBeenCalled();
-    expect(mocks.insertExpressOrder).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled(); expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.findSubscription).not.toHaveBeenCalled(); expect(mocks.insertSubscription).not.toHaveBeenCalled();
+    expect(mocks.readOrder).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled();
     expect(mocks.markComplete).not.toHaveBeenCalled(); expect(mocks.trackPurchase).not.toHaveBeenCalled(); expect(mocks.toast.success).not.toHaveBeenCalled();
     expect(button('Confirmer · 29 €').disabled).toBe(false);
   });
-  it('retains a successful card for order retry and locks same-tick clicks', async () => {
+  it('retries a failed read without a second prepare and locks same-tick clicks', async () => {
     mocks.user = fakeUser;
-    mocks.insertExpressOrder.mockResolvedValueOnce({ data: null, error: new Error('Synthetic order failure') });
-    await render(<ExpressPayer />); await click('Confirmer · 29 €', true); await click('Confirmer · 29 €', true);
-    expect(mocks.insertCard).toHaveBeenCalledTimes(1); expect(mocks.insertExpressOrder).toHaveBeenCalledTimes(2); expect(mocks.markComplete).toHaveBeenCalledTimes(1);
+    mocks.readOrder.mockRejectedValueOnce(new Error('Synthetic order failure'));
+    await render(<ExpressPayer />); await click('Confirmer · 29 €', true); await click('Confirmer · 29 €');
+    expect(mocks.rpc).toHaveBeenCalledTimes(1); expect(mocks.readOrder).toHaveBeenCalledTimes(2); expect(mocks.markComplete).toHaveBeenCalledTimes(1);
   });
-  it('retries payment using the saved card and order without client lifecycle grants', async () => {
+  it('retries payment with the saved order id only', async () => {
     mocks.user = fakeUser; expressState.paymentMethod = 'stripe';
-    mocks.invoke.mockImplementation(quoteThenFail);
+    mocks.invoke.mockImplementation(paymentFailure);
     await render(<ExpressPayer />); await click('Payer 29 €'); await click('Payer 29 €');
-    expect(mocks.insertCard).toHaveBeenCalledTimes(1); expect(mocks.insertExpressOrder).toHaveBeenCalledTimes(1);
-    expect(mocks.invoke).toHaveBeenCalledTimes(4);
-    expect(mocks.invoke).toHaveBeenNthCalledWith(1, 'create-nfc-payment', { body: { action: 'quote' } });
-    expect(mocks.invoke).toHaveBeenLastCalledWith('create-nfc-payment', { body: { tierId: 'essentiel', currency: 'EUR', orderId: fakeOrder.id, email: expressState.customerInfo.email } });
-    expect(mocks.markComplete).not.toHaveBeenCalled(); expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.rpc).toHaveBeenCalledTimes(1); expect(mocks.invoke).toHaveBeenCalledTimes(2);
+    expect(mocks.invoke).toHaveBeenLastCalledWith('create-nfc-payment', { body: { orderId: fakeOrder.id } });
+    expect(mocks.insertCard).not.toHaveBeenCalled(); expect(mocks.markComplete).not.toHaveBeenCalled();
   });
-  it('preserves opted-out publication without creating a public card', async () => {
+  it('keeps contact details off the card when publication is declined', async () => {
     mocks.user = fakeUser; expressState.customerInfo.publishNameOnly = false;
     await render(<ExpressPayer />); await click('Confirmer · 29 €');
-    expect(mocks.insertCard).not.toHaveBeenCalled(); expect(mocks.insertExpressOrder).toHaveBeenCalledTimes(1); expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.insertCard).not.toHaveBeenCalled();
+    expect(mocks.rpc.mock.calls[0][1].p_card.email).toBe('');
+    expect(mocks.rpc.mock.calls[0][1].p_card.phone).toBe('');
+    expect(mocks.rpc.mock.calls[0][1].p_card.firstName).toBe('Camille');
   });
-  it('preserves guest checkout without creating a card or subscription', async () => {
+  it('asks a guest to sign in before any order exists', async () => {
     await render(<ExpressPayer />); await click('Confirmer · 29 €');
-    expect(mocks.insertCard).not.toHaveBeenCalled(); expect(mocks.findSubscription).not.toHaveBeenCalled();
-    expect(mocks.insertExpressOrder).toHaveBeenCalledWith(expect.objectContaining({ user_id: null, total_price_cents: 2900 }));
+    expect(host.textContent).toContain('Connectez-vous pour finaliser votre commande');
+    expect(mocks.rpc).not.toHaveBeenCalled(); expect(mocks.insertCard).not.toHaveBeenCalled(); expect(mocks.findSubscription).not.toHaveBeenCalled();
   });
-  it.each(['unmount', 'account change', 'signout/signin'])('abandons pending INSERT after %s without creating subscription or order', async reason => {
+  it.each(['unmount', 'account change', 'signout/signin'])('abandons a pending prepare after %s', async reason => {
     mocks.user = fakeUser;
-    const pending = deferred<{ error: null }>(); mocks.insertCard.mockReturnValue(pending.promise);
-    await render(<ExpressPayer />); await click('Confirmer · 29 €', true); expect(mocks.insertCard).toHaveBeenCalledTimes(1);
+    const pending = deferred<{ data: string; error: null }>(); mocks.rpc.mockReturnValue(pending.promise);
+    await render(<ExpressPayer />); await click('Confirmer · 29 €', true); expect(mocks.rpc).toHaveBeenCalledTimes(1);
     if (reason === 'unmount') await render(<div>Accueil</div>);
     if (reason === 'account change') { mocks.user = { id: 'other-synthetic-user', email: 'other@example.invalid' }; await render(<ExpressPayer />); }
     if (reason === 'signout/signin') await act(async () => {
       mocks.authListeners.forEach(listener => listener('SIGNED_OUT', null));
       mocks.authListeners.forEach(listener => listener('SIGNED_IN', { user: fakeUser }));
     });
-    await act(async () => pending.resolve({ error: null }));
-    expect(mocks.findSubscription).not.toHaveBeenCalled(); expect(mocks.insertExpressOrder).not.toHaveBeenCalled();
-    expect(mocks.invoke).not.toHaveBeenCalled(); expect(mocks.markComplete).not.toHaveBeenCalled(); expect(mocks.toast.success).not.toHaveBeenCalled();
+    await act(async () => pending.resolve({ data: fakeOrder.id, error: null }));
+    expect(mocks.readOrder).not.toHaveBeenCalled(); expect(mocks.invoke).not.toHaveBeenCalled();
+    expect(mocks.markComplete).not.toHaveBeenCalled(); expect(mocks.toast.success).not.toHaveBeenCalled();
   });
   it('does not launch payment when an order resolves after its checkout was dismissed', async () => {
     mocks.user = fakeUser; expressState.paymentMethod = 'stripe';
-    const pending = deferred<{ data: typeof fakeOrder; error: null }>(); mocks.insertExpressOrder.mockReturnValue(pending.promise);
+    const pending = deferred<{ data: { id: string; order_number: string; total_price_cents: number; currency: string }; error: null }>();
+    mocks.readOrder.mockReturnValue(pending.promise);
     await render(<ExpressPayer />); await click('Payer 29 €'); await render(<div>Accueil</div>);
-    await act(async () => pending.resolve({ data: fakeOrder, error: null }));
+    await act(async () => pending.resolve({ data: { id: fakeOrder.id, order_number: '26100001', total_price_cents: 2900, currency: 'EUR' }, error: null }));
     expect(mocks.invoke).not.toHaveBeenCalled(); expect(mocks.markComplete).not.toHaveBeenCalled();
   });
 });

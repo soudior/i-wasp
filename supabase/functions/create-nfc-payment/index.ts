@@ -43,6 +43,7 @@ const handler = createNfcPaymentHandler({
     const customers = await stripe.customers.list({ email, limit: 1 });
     return customers.data[0]?.id;
   },
+  now: () => new Date(),
   createCheckoutSession: (params, options) => stripe.checkout.sessions.create(params, options),
   recordCheckoutSession: async (orderId, userId, sessionId, checkoutRevision) => {
     const { data, error } = await supabase

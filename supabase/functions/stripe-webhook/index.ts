@@ -145,7 +145,7 @@ const handler = createStripeWebhookHandler({
         plan: "premium",
         status: "active",
         price_cents: input.priceCents,
-        currency: "MAD",
+        currency: input.currency,
         started_at: input.paidAt,
         expires_at: expiresAt.toISOString(),
         payment_method: "stripe",

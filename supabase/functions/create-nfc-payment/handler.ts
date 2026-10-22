@@ -29,6 +29,7 @@ export interface CreateNfcPaymentDependencies {
   ) => Promise<void>;
   allowedOrigins?: string;
   defaultOrigin?: string;
+  now?: () => Date;
 }
 
 const corsHeaders = {
@@ -54,7 +55,7 @@ export function createNfcPaymentHandler(dependencies: CreateNfcPaymentDependenci
 
       const input = parseCheckoutRequest(await request.json());
       const order = await dependencies.findOrder(input.orderId);
-      const checkout = resolveCheckoutContract(order, user.id);
+      const checkout = resolveCheckoutContract(order, user.id, dependencies.now?.() ?? new Date());
       const customerId = user.email ? await dependencies.findCustomer(user.email) : undefined;
       const origin = resolveCheckoutOrigin(
         request.headers.get("origin"),

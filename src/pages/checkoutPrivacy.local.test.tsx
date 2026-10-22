@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   getUser: vi.fn(), fetch: vi.fn(),
   authListeners: new Set<(event: string, session: { user: { id: string } } | null) => void>(),
   findSubscription: vi.fn(), insertSubscription: vi.fn(), updateSubscription: vi.fn(),
-  trackPurchase: vi.fn(), trackInfoSubmit: vi.fn(), upload: vi.fn(),
+  trackPurchase: vi.fn(), trackInfoSubmit: vi.fn(), upload: vi.fn(), rpc: vi.fn(), readOrder: vi.fn(),
   geoSuccess: null as null | ((position: { latitude: number | null; longitude: number | null }) => void),
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn(), loading: vi.fn() },
 }));
@@ -32,10 +32,14 @@ vi.mock('@/integrations/supabase/client', () => ({ supabase: {
     },
   },
   functions: { invoke: mocks.invoke },
+  rpc: mocks.rpc,
   storage: { from: () => ({ upload: mocks.upload, getPublicUrl: () => ({ data: { publicUrl: 'https://example.invalid/photo.jpg' } }) }) },
   from: (table: string) => {
     if (table === 'digital_cards') return { insert: mocks.insertCard };
-    if (table === 'orders') return { insert: (values: unknown) => ({ select: () => ({ single: () => mocks.insertOrder(values) }) }) };
+    if (table === 'orders') {
+      const orders = { select: () => orders, eq: () => orders, single: () => mocks.readOrder(), insert: (values: unknown) => ({ select: () => ({ single: () => mocks.insertOrder(values) }) }) };
+      return orders;
+    }
     if (table === 'subscriptions') {
       const query = { select: () => query, eq: () => query, maybeSingle: mocks.findSubscription, insert: mocks.insertSubscription, update: (values: unknown) => ({ eq: () => mocks.updateSubscription(values) }) };
       return query;
@@ -120,6 +124,8 @@ beforeEach(() => {
   mocks.insertCard.mockResolvedValue({ error: null });
   mocks.insertOrder.mockResolvedValue({ data: { id: 'synthetic-order' }, error: null });
   mocks.createOrder.mockResolvedValue({ id: 'synthetic-order' });
+  mocks.rpc.mockResolvedValue({ data: '00000000-0000-4000-8000-000000000003', error: null });
+  mocks.readOrder.mockResolvedValue({ data: { id: '00000000-0000-4000-8000-000000000003', order_number: '26100001', total_price_cents: 2900, currency: 'EUR' }, error: null });
   mocks.findSubscription.mockResolvedValue({ data: null, error: null });
   mocks.insertSubscription.mockResolvedValue({ error: null });
   mocks.updateSubscription.mockResolvedValue({ error: null });
@@ -199,11 +205,11 @@ describe('Order real form and provider public confirmation', () => {
     seedOrder({ ...identity, profileVisibilityConfirmed: true, photoUrl: 'https://example.invalid/photo.jpg' });
     await render('/order/recap');
     await click('Payer');
-    expect(mocks.insertCard).toHaveBeenCalledTimes(1);
-    expect(mocks.insertCard.mock.calls[0][0]).toMatchObject({ first_name: 'Camille', email: null, phone: null, template: 'executive', tagline: 'Profil fictif', photo_url: 'https://example.invalid/photo.jpg' });
-    expect(mocks.insertCard.mock.calls[0][0]).not.toHaveProperty('nfc_enabled');
-    expect(mocks.insertCard.mock.calls[0][0]).not.toHaveProperty('wallet_enabled');
-    expect(mocks.createOrder.mock.calls[0][0]).toMatchObject({ customer_email: user.email, shipping_phone: '+212600000000' });
+    expect(mocks.insertCard).not.toHaveBeenCalled();
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc.mock.calls[0][1].p_card).toMatchObject({ firstName: 'Camille', email: '', phone: '', template: 'executive', tagline: 'Profil fictif', photoUrl: 'https://example.invalid/photo.jpg' });
+    expect(mocks.rpc.mock.calls[0][1].p_card).not.toHaveProperty('nfc_enabled');
+    expect(mocks.rpc.mock.calls[0][1].p_order).toMatchObject({ customerEmail: user.email, shippingPhone: '+212600000000' });
   });
   it('retains the edited draft and reports a blocked browser storage instead of throwing', async () => {
     seedOrder();
@@ -225,7 +231,10 @@ describe('Express real form and provider optional names-only profile', () => {
     await click('Continuer vers le paiement');
     await click('Confirmer');
     expect(mocks.insertCard).not.toHaveBeenCalled();
-    expect(mocks.insertOrder).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc.mock.calls[0][1].p_card).toMatchObject({ publish: false, email: '', phone: '' });
+    expect(mocks.rpc.mock.calls[0][1].p_card).not.toHaveProperty('address');
+    expect(mocks.rpc.mock.calls[0][1].p_order).toMatchObject({ customerEmail: delivery.email, shippingPhone: delivery.phone });
     expect(route()).toBe('/express/succes');
   });
   it('publishes only explicitly selected names and never delivery contacts', async () => {
@@ -234,12 +243,10 @@ describe('Express real form and provider optional names-only profile', () => {
     await toggle('express-publishNameOnly');
     await click('Continuer vers le paiement', true);
     await click('Confirmer', true);
-    expect(mocks.insertCard).toHaveBeenCalledTimes(1);
-    expect(mocks.insertCard.mock.calls[0][0]).toMatchObject({ first_name: 'Camille', last_name: 'Test', email: null, phone: null, template: 'signature' });
-    expect(mocks.insertCard.mock.calls[0][0]).not.toHaveProperty('address');
-    expect(mocks.insertCard.mock.calls[0][0]).not.toHaveProperty('nfc_enabled');
-    expect(mocks.insertCard.mock.calls[0][0]).not.toHaveProperty('wallet_enabled');
-    expect(mocks.insertOrder.mock.calls[0][0]).toMatchObject({ customer_email: delivery.email, shipping_phone: delivery.phone, shipping_address: delivery.address });
+    expect(mocks.insertCard).not.toHaveBeenCalled();
+    expect(mocks.rpc.mock.calls[0][1].p_card).toMatchObject({ firstName: 'Camille', lastName: 'Test', email: '', phone: '', publish: true, template: 'signature' });
+    expect(mocks.rpc.mock.calls[0][1].p_card).not.toHaveProperty('address');
+    expect(mocks.rpc.mock.calls[0][1].p_order).toMatchObject({ customerEmail: delivery.email, shippingPhone: delivery.phone, shippingAddress: delivery.address });
   });
   it('clears an old choice after editing and browser Forward cannot skip revalidating the draft', async () => {
     seedExpress({ ...delivery, publishNameOnly: true });
@@ -253,7 +260,8 @@ describe('Express real form and provider optional names-only profile', () => {
     expect(host.querySelector<HTMLInputElement>('input[placeholder="Prénom"]')?.value).toBe('Autre prénom');
     await click('Continuer vers le paiement'); await click('Confirmer');
     expect(mocks.insertCard).not.toHaveBeenCalled();
-    expect(mocks.insertOrder).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc.mock.calls[0][1].p_card.publish).toBe(false);
   });
 });
 

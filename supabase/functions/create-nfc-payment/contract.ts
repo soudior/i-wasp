@@ -1,6 +1,29 @@
-import { NFC_ORDER_CATALOG } from "../_shared/nfcCatalog.ts";
+import {
+  checkoutPriceAccepted,
+  inferLegacyOffer,
+  NFC_OFFERS,
+  normalizeCurrency,
+  productName,
+  readStoredOfferId,
+  type NfcCurrency,
+  type NfcOfferId,
+} from "../_shared/nfcCatalog.ts";
 
-export { NFC_ORDER_CATALOG } from "../_shared/nfcCatalog.ts";
+export {
+  checkoutPriceAccepted,
+  currentPriceCents,
+  fulfillmentPriceAccepted,
+  inferLegacyOffer,
+  isLaunchOfferActive,
+  knownPriceCents,
+  LAUNCH_OFFER_ENABLED,
+  LAUNCH_OFFER_ENDS_AT,
+  NFC_OFFERS,
+  normalizeCurrency,
+  productName,
+  readStoredOfferId,
+} from "../_shared/nfcCatalog.ts";
+export type { NfcCurrency, NfcOfferId } from "../_shared/nfcCatalog.ts";
 
 export class ContractError extends Error {
   constructor(message: string, public readonly status: number) {
@@ -29,15 +52,15 @@ export interface NfcOrderRecord {
 export interface CheckoutContract {
   orderId: string;
   checkoutKey: string;
-  offer: keyof typeof NFC_ORDER_CATALOG;
+  offer: NfcOfferId;
   amountCents: number;
-  currency: "mad";
+  currency: Lowercase<NfcCurrency>;
   productName: string;
   quantity: 1;
   metadata: {
     type: "nfc_order";
     order_id: string;
-    offer: keyof typeof NFC_ORDER_CATALOG;
+    offer: NfcOfferId;
     quantity: "1";
     checkout_revision: string;
   };
@@ -126,10 +149,6 @@ export function parseCheckoutRequest(value: unknown): { orderId: string } {
   return { orderId };
 }
 
-function productName(offer: (typeof NFC_ORDER_CATALOG)[keyof typeof NFC_ORDER_CATALOG]): string {
-  return `Carte NFC i-Wasp ${offer.name}`;
-}
-
 function hasMatchingOrderItem(orderItems: unknown, expectedName: string, amountCents: number): boolean {
   if (!Array.isArray(orderItems) || orderItems.length !== 1 || !isRecord(orderItems[0])) return false;
   const item = orderItems[0];
@@ -141,6 +160,7 @@ function hasMatchingOrderItem(orderItems: unknown, expectedName: string, amountC
 export function resolveCheckoutContract(
   order: NfcOrderRecord | null,
   verifiedUserId: string,
+  now: Date = new Date(),
 ): CheckoutContract {
   if (!order || order.user_id !== verifiedUserId) {
     throw new ContractError("Commande introuvable", 404);
@@ -158,16 +178,21 @@ export function resolveCheckoutContract(
     throw new ContractError("Commande incohérente", 400);
   }
 
-  const offer = Object.values(NFC_ORDER_CATALOG).find(
-    (candidate) => candidate.priceCents === order.unit_price_cents,
-  );
-  if (!offer) throw new ContractError("Offre de commande non prise en charge", 400);
+  const currency = normalizeCurrency(order.currency);
+  const storedOffer = readStoredOfferId(order.order_items);
+  if (storedOffer.present && !storedOffer.offerId) {
+    throw new ContractError("Offre de commande non prise en charge", 400);
+  }
+  const offerId = storedOffer.offerId ?? inferLegacyOffer(order.currency, order.unit_price_cents);
+  if (!currency || !offerId || !checkoutPriceAccepted(offerId, currency, order.unit_price_cents, now)) {
+    throw new ContractError("Offre de commande non prise en charge", 400);
+  }
+  const offer = NFC_OFFERS[offerId];
 
   const expectedProductName = productName(offer);
   const isConsistent = order.quantity === offer.quantity
-    && order.total_price_cents === offer.priceCents * offer.quantity
-    && order.currency === "MAD"
-    && hasMatchingOrderItem(order.order_items, expectedProductName, offer.priceCents);
+    && order.total_price_cents === order.unit_price_cents
+    && hasMatchingOrderItem(order.order_items, expectedProductName, order.unit_price_cents);
   if (!isConsistent) throw new ContractError("Commande incohérente", 400);
 
   const metadata = {
@@ -182,8 +207,8 @@ export function resolveCheckoutContract(
     orderId: order.id,
     checkoutKey: order.checkout_key,
     offer: offer.id,
-    amountCents: offer.priceCents,
-    currency: "mad",
+    amountCents: order.unit_price_cents,
+    currency: currency.toLowerCase() as Lowercase<NfcCurrency>,
     productName: expectedProductName,
     quantity: 1,
     metadata,

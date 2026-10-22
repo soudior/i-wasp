@@ -47,19 +47,22 @@ describe("offre de lancement", () => {
     expect(LAUNCH_OFFER.team.priceMad).toBeLessThan(LAUNCH_OFFER.professionnelle.priceMad * 5);
   });
 
-  it("verrouille les mêmes montants dans create-nfc-payment, sans montant client", () => {
+  it("verrouille les mêmes montants dans le catalogue serveur, sans montant client", () => {
     const source = readFileSync(
-      path.resolve(process.cwd(), "supabase/functions/create-nfc-payment/index.ts"),
+      path.resolve(process.cwd(), "supabase/functions/_shared/nfcCatalog.ts"),
       "utf8",
     );
-    expect(source).toContain('const LAUNCH_OFFER_ENDS_AT = "2026-11-30T23:59:59+01:00"');
-    expect(source).toContain("const LAUNCH_OFFER_ENABLED = true");
-    for (const amount of ["2900", "4900", "7900", "11900", "19900", "34900", "59900", "129900", "24900", "3500", "54900", "99900"]) {
+    const contract = readFileSync(
+      path.resolve(process.cwd(), "supabase/functions/create-nfc-payment/contract.ts"),
+      "utf8",
+    );
+    expect(source).toContain('export const LAUNCH_OFFER_ENDS_AT = "2026-11-30T23:59:59+01:00"');
+    expect(source).toContain("export const LAUNCH_OFFER_ENABLED = true");
+    for (const amount of ["2900", "4900", "7900", "11900", "19900", "34900", "59900", "129900", "24900", "3500", "54900", "99900", "32900", "98900"]) {
       expect(source, amount).toContain(amount);
     }
-    expect(source).toContain('body.action === "quote"');
-    expect(source).toContain("unit_amount: tierAmount");
-    expect(source).not.toMatch(/unit_amount:\s*body\./);
-    expect(source).not.toMatch(/body\.priceInCents|body\.amount|body\.unit_amount/);
+    expect(contract).toContain("Object.keys(value).length !== 1");
+    expect(contract).not.toMatch(/unit_amount:\s*body\./);
+    expect(contract).not.toMatch(/body\.priceInCents|body\.amount|body\.unit_amount/);
   });
 });

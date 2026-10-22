@@ -1,4 +1,13 @@
-import { NFC_ORDER_CATALOG } from "../_shared/nfcCatalog.ts";
+import {
+  fulfillmentPriceAccepted,
+  inferLegacyOffer,
+  NFC_OFFERS,
+  normalizeCurrency,
+  productName,
+  readStoredOfferId,
+  type NfcCurrency,
+  type NfcOfferId,
+} from "../_shared/nfcCatalog.ts";
 
 export class WebhookSignatureError extends Error {
   constructor() {
@@ -59,8 +68,9 @@ export interface StripeWebhookDependencies {
   }) => Promise<boolean>;
   activateDigitalCard: (cardId: string, userId: string) => Promise<boolean>;
   activateSubscription: (subscriptionId: string, userId: string, input: {
-    offer: keyof typeof NFC_ORDER_CATALOG;
+    offer: NfcOfferId;
     priceCents: number;
+    currency: NfcCurrency;
     paidAt: string;
   }) => Promise<boolean>;
   markFulfillmentActivated: (orderId: string, stripeSessionId: string, activatedAt: string) => Promise<boolean>;
@@ -85,12 +95,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function orderItemMatches(order: NfcFulfillmentOrder, productName: string): boolean {
+function orderItemMatches(order: NfcFulfillmentOrder, expectedName: string): boolean {
   if (!Array.isArray(order.order_items) || order.order_items.length !== 1 || !isRecord(order.order_items[0])) {
     return false;
   }
   const item = order.order_items[0];
-  return item.templateName === productName
+  return item.templateName === expectedName
     && item.quantity === 1
     && item.unitPriceCents === order.unit_price_cents;
 }
@@ -118,21 +128,23 @@ export async function reconcileNfcPayment(
     throw new Error("NFC order is not payable");
   }
 
-  const offer = Object.values(NFC_ORDER_CATALOG).find(
-    (candidate) => candidate.priceCents === order.unit_price_cents,
-  );
-  const productName = offer ? `Carte NFC i-Wasp ${offer.name}` : "";
-  const authoritativeMatch = Boolean(offer)
+  const currency = normalizeCurrency(order.currency);
+  const storedOffer = readStoredOfferId(order.order_items);
+  const offerId = storedOffer.present ? storedOffer.offerId : inferLegacyOffer(order.currency, order.unit_price_cents);
+  const offer = offerId ? NFC_OFFERS[offerId] : null;
+  const expectedName = offer ? productName(offer) : "";
+  const offerResolved = Boolean(offer && currency && offerId && (!storedOffer.present || storedOffer.offerId));
+  const authoritativeMatch = offerResolved
     && order.quantity === 1
-    && order.total_price_cents === offer!.priceCents
-    && order.currency === "MAD"
-    && orderItemMatches(order, productName);
+    && order.total_price_cents === order.unit_price_cents
+    && fulfillmentPriceAccepted(offerId!, currency!, order.unit_price_cents)
+    && orderItemMatches(order, expectedName);
   const sessionIdMatches = order.status === "paid"
     ? order.stripe_session_id === session.id
     : order.stripe_session_id === null || order.stripe_session_id === session.id;
   const stripeMatch = sessionIdMatches
     && session.amount_total === order.total_price_cents
-    && session.currency?.toLowerCase() === "mad"
+    && session.currency?.toLowerCase() === currency?.toLowerCase()
     && metadata?.offer === offer?.id
     && metadata?.quantity === "1"
     && metadata?.checkout_revision === String(order.checkout_revision);
@@ -156,7 +168,8 @@ export async function reconcileNfcPayment(
   if (!cardActivated) throw new Error("Linked NFC card activation failed");
   const subscriptionActivated = await dependencies.activateSubscription(order.subscription_id, order.user_id, {
     offer: offer!.id,
-    priceCents: offer!.priceCents,
+    priceCents: order.unit_price_cents,
+    currency: currency!,
     paidAt,
   });
   if (!subscriptionActivated) throw new Error("Linked NFC subscription activation failed");

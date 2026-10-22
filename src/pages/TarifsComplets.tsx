@@ -7,7 +7,7 @@ import { IWASP_WHATSAPP_WA } from "@/lib/brandContact";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   CreditCard, 
   Globe, 
@@ -41,7 +41,7 @@ import { PROMO_PACKS, getPromoPacksList } from "@/lib/promoPacks";
 
 export default function TarifsComplets() {
   const marketCurrency = useMarketCurrency();
-  const [loadingNfc, setLoadingNfc] = useState<string | null>(null);
+  const navigate = useNavigate();
   const [loadingPack, setLoadingPack] = useState<string | null>(null);
 
   const nfcTiers = getNfcCardsList();
@@ -57,28 +57,6 @@ export default function TarifsComplets() {
       return formatCatalogAmount(LAUNCH_OFFER.team.priceEur, LAUNCH_OFFER.team.priceMad, marketCurrency);
     }
     return formatCatalogAmount(eur, mad, marketCurrency);
-  };
-
-  // Handle NFC payment
-  const handleNfcPayment = async (tierId: string) => {
-    setLoadingNfc(tierId);
-    try {
-      const { createConfirmedNfcCheckout } = await import("@/lib/nfcPayment");
-      const confirmed = await createConfirmedNfcCheckout(
-        (name, options) => supabase.functions.invoke(name, options),
-        { tierId, currency: marketCurrency, orderId: "" },
-      );
-      if (!confirmed.ok) {
-        toast.error("Le montant Stripe n'est pas confirmé. Aucun débit n'a été lancé.");
-        return;
-      }
-      window.open(confirmed.url, '_blank');
-    } catch (err) {
-      console.error('NFC payment error:', err);
-      toast.error("Erreur lors de la création du paiement");
-    } finally {
-      setLoadingNfc(null);
-    }
   };
 
   // Handle Promo Pack payment
@@ -223,12 +201,8 @@ export default function TarifsComplets() {
                     <Button 
                       className="w-full mt-6"
                       variant={tier.id === 'professionnelle' ? 'default' : 'outline'}
-                      onClick={() => handleNfcPayment(tier.id)}
-                      disabled={loadingNfc === tier.id}
+                      onClick={() => navigate("/order/offre")}
                     >
-                      {loadingNfc === tier.id ? (
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      ) : null}
                       Commander
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>

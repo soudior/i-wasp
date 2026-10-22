@@ -208,7 +208,9 @@ describe('isolated checkout brand', () => {
     expect(css).toContain(':focus-visible');
     expect(css).toContain('env(safe-area-inset-bottom)');
     expect(css).toContain('prefers-reduced-motion');
-    expect(payer).toContain('card_color: "#0B0B0B"');
+    const prepare = readFileSync(`${process.cwd()}/src/lib/prepareNfcOrder.ts`, 'utf8');
+    expect(prepare).toContain('accentColor: "#B8860B"');
+    expect(payer).not.toContain("card_color");
     expect(BRAND.background).toBe(CHECKOUT_BRAND.background);
   });
 });
