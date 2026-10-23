@@ -32,7 +32,7 @@ function escapeText(value) {
   return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 function replaceMeta(html, attr, key, value) {
-  const pattern = new RegExp('<meta\s+' + attr + '="' + key + '"[^>]*>', "i");
+  const pattern = new RegExp('<meta\\s+' + attr + '="' + key + '"[^>]*>', "i");
   if (!pattern.test(html)) throw new Error("Balise meta manquante : " + attr + "=" + key);
   return html.replace(pattern, '<meta ' + attr + '="' + key + '" content="' + escapeAttr(value) + '" />');
 }
