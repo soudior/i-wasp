@@ -32,7 +32,7 @@ function escapeText(value) {
   return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 function replaceMeta(html, attr, key, value) {
-  const pattern = new RegExp('<meta\\s+' + attr + '="' + key + '"[^>]*>', "i");
+  const pattern = new RegExp('<meta\s+' + attr + '="' + key + '"[^>]*>', "i");
   if (!pattern.test(html)) throw new Error("Balise meta manquante : " + attr + "=" + key);
   return html.replace(pattern, '<meta ' + attr + '="' + key + '" content="' + escapeAttr(value) + '" />');
 }
@@ -40,7 +40,7 @@ function renderRoute(route) {
   const url = baseUrl + (route.path === "/" ? "/" : route.path);
   let html = baseHtml.replace(/<title>[\s\S]*?<\/title>/i, "<title>" + escapeText(route.title) + "</title>");
   html = replaceMeta(html, "name", "description", route.description);
-  const canonicalPattern = /<link\\s+rel="canonical"[^>]*>/i;
+  const canonicalPattern = /<link\s+rel="canonical"[^>]*>/i;
   if (!canonicalPattern.test(html)) throw new Error("Balise canonical manquante pour " + route.path);
   html = html.replace(canonicalPattern, '<link rel="canonical" href="' + escapeAttr(url) + '" />');
   html = replaceMeta(html, "property", "og:title", route.title);
@@ -63,7 +63,7 @@ for (const route of routes) {
   assert.ok(saved.includes("<title>" + escapeText(route.title) + "</title>"), "title incorrect : " + route.path);
   assert.ok(saved.includes('<link rel="canonical" href="' + result.url + '" />'), "canonical incorrect : " + route.path);
   assert.ok(saved.includes('property="og:url" content="' + result.url + '"'), "og:url incorrect : " + route.path);
-  assert.equal((saved.match(/<link\\s+rel="canonical"/gi) || []).length, 1, "canonical dupliquée : " + route.path);
+  assert.equal((saved.match(/<link\s+rel="canonical"/gi) || []).length, 1, "canonical dupliquée : " + route.path);
   assert.ok(saved.includes("<h1>" + route.h1 + "</h1>"), "fallback sans-JS absent : " + route.path);
 }
 console.log("SEO metadata shell generated and checked for " + routes.length + " routes. Note: React body is not server-rendered by this script.");
