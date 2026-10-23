@@ -32,8 +32,7 @@ import {
   QrCode,
   Box
 } from "lucide-react";
-import { NFC_PRICING, formatCatalogAmount, packTeamSavingsPercent } from "@/lib/nfcPricing";
-import { isLaunchOfferActive, LAUNCH_OFFER } from "@/lib/launchOffer";
+import { NFC_PRICING, cardDisplayPrice, formatCatalogAmount, packTeamSavingsPercent } from "@/lib/nfcPricing";
 import { useMarketCurrency } from "@/contexts/CurrencyContext";
 import { iwaspWhatsAppUrl } from "@/lib/brandContact";
 import nfcTagsImage from "@/assets/products/nfc-tags-collection.png";
@@ -55,6 +54,12 @@ const STEALTH = {
   border: BRAND.border,
   glass: BRAND.glass
 };
+
+/**
+ * Accessoires (ongles, tags, wearables, badges) : pas de prix dans la grille officielle EUR/DH
+ * et pas de paiement en ligne. Même mention dans les deux marchés, jamais un prix en euros seul.
+ */
+const ACCESSORY_PRICE_LABEL = "Sur devis";
 
 const WHATSAPP_PROJECT_URL = iwaspWhatsAppUrl("Bonjour 👋\nJe souhaite commander des produits NFC i-wasp.");
 
@@ -162,7 +167,7 @@ const otherProducts = [
       "Tenue 3-4 semaines",
       "Application en salon"
     ],
-    price: "À partir de 89€",
+    price: ACCESSORY_PRICE_LABEL,
     badge: "Nouveau"
   },
   {
@@ -178,7 +183,7 @@ const otherProducts = [
       "Programmable à volonté",
       "Statistiques de scan"
     ],
-    price: "À partir de 29€"
+    price: ACCESSORY_PRICE_LABEL
   },
   {
     id: "wearables-nfc",
@@ -193,7 +198,7 @@ const otherProducts = [
       "Étanche et durable",
       "Style personnalisable"
     ],
-    price: "À partir de 69€"
+    price: ACCESSORY_PRICE_LABEL
   },
   {
     id: "badges-evenement",
@@ -208,7 +213,7 @@ const otherProducts = [
       "Export contacts Excel",
       "Intégration CRM"
     ],
-    price: "Sur devis"
+    price: ACCESSORY_PRICE_LABEL
   }
 ];
 
@@ -319,6 +324,7 @@ function CardsCarousel() {
   const navigate = useNavigate();
   const marketCurrency = useMarketCurrency();
   const product = cardProducts[activeCard];
+  const displayPrice = cardDisplayPrice(product.id, product.priceEur, product.priceMad);
 
   return (
     <div className="min-w-0 rounded-3xl p-4 sm:p-6" style={{ background: STEALTH.glass, border: `1px solid ${STEALTH.border}` }}>
@@ -380,17 +386,13 @@ function CardsCarousel() {
           <div className="flex flex-wrap items-center justify-between gap-4 pt-4" style={{ borderTop: `1px solid ${STEALTH.border}` }}>
             <div>
               <p className="text-xs" style={{ color: BRAND.textMuted }}>À partir de</p>
-              <p className="text-2xl font-bold text-[#FDFCFB]">
-                {product.id === "pack-team" && isLaunchOfferActive() && (
+              <p className="text-2xl font-bold text-[#FDFCFB]" data-testid={`price-${product.id}`}>
+                {displayPrice.compareEur != null && displayPrice.compareMad != null && (
                   <span className="mr-2 text-base line-through opacity-60">
-                    {formatCatalogAmount(LAUNCH_OFFER.team.compareEur, LAUNCH_OFFER.team.compareMad, marketCurrency)}
+                    {formatCatalogAmount(displayPrice.compareEur, displayPrice.compareMad, marketCurrency)}
                   </span>
                 )}
-                {formatCatalogAmount(
-                  product.id === "pack-team" && isLaunchOfferActive() ? LAUNCH_OFFER.team.priceEur : product.priceEur,
-                  product.id === "pack-team" && isLaunchOfferActive() ? LAUNCH_OFFER.team.priceMad : product.priceMad,
-                  marketCurrency,
-                )}
+                {formatCatalogAmount(displayPrice.priceEur, displayPrice.priceMad, marketCurrency)}
               </p>
               {product.id === "pack-team" && packTeamSavingsPercent(marketCurrency) != null && (
                 <p className="text-xs" style={{ color: BRAND.textMuted }}>{packTeamSavingsPercent(marketCurrency)}% d'économie</p>
@@ -422,7 +424,6 @@ function CardsCarousel() {
 }
 
 export default function ProduitsNFC() {
-  const marketCurrency = useMarketCurrency();
   // SEO
   SEOHead(SEO_CONFIGS.products);
 
@@ -642,7 +643,7 @@ export default function ProduitsNFC() {
                     style={{ borderTop: `1px solid ${STEALTH.border}` }}
                   >
                     <span className="text-lg font-semibold" style={{ color: STEALTH.accent }}>
-                      {marketCurrency === "MAD" ? "Tarif sur demande" : product.price.replace("€", " €")}
+                      {product.price}
                     </span>
                     <a href={WHATSAPP_PROJECT_URL} target="_blank" rel="noopener noreferrer">
                       <Button
