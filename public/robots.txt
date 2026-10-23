@@ -49,4 +49,4 @@ Disallow: /admin
 Disallow: /login
 Disallow: /signup
 
-Sitemap: https://i-wasp.com/sitemap.xml
+Sitemap: https://www.i-wasp.com/sitemap.xml
