@@ -301,6 +301,26 @@ export function packTeamSavingsPercent(currency: "EUR" | "MAD", now: Date = new 
   return Math.round((1 - pack / full) * 100);
 }
 
+/** Prix affiché d'une carte : l'offre de lancement remplace le tarif catalogue tant qu'elle est active. */
+export function cardDisplayPrice(productId: string, priceEur: number, priceMad: number, now: Date = new Date()): {
+  priceEur: number;
+  priceMad: number;
+  compareEur?: number;
+  compareMad?: number;
+} {
+  if (isLaunchOfferActive(now)) {
+    if (productId === "carte-executive") {
+      const o = LAUNCH_OFFER.professionnelle;
+      return { priceEur: o.priceEur, priceMad: o.priceMad, compareEur: o.compareEur, compareMad: o.compareMad };
+    }
+    if (productId === "pack-team") {
+      const o = LAUNCH_OFFER.team;
+      return { priceEur: o.priceEur, priceMad: o.priceMad, compareEur: o.compareEur, compareMad: o.compareMad };
+    }
+  }
+  return { priceEur, priceMad };
+}
+
 // Liste des cartes pour affichage
 export function getNfcCardsList(): NfcCard[] {
   return Object.values(NFC_PRICING.cards);
